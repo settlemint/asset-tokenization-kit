@@ -13,7 +13,7 @@
       "outputs": ["generated/**", ".settlemint/**"]
     },
     "build": {
-      "dependsOn": ["^build", "^codegen"],
+      "dependsOn": ["^build", "codegen", "^codegen"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "out/**", "build/**"]
     },
