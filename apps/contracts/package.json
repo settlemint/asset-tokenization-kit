@@ -25,7 +25,7 @@
     "format": "bunx settlemint forge fmt",
     "lint": "solhint --fix --noPrompt 'src/**/*.sol'",
     "build": "bunx settlemint forge build",
-    "test": "bunx settlemint forge test --coverage",
+    "test": "bunx settlemint forge test",
     "deploy": "bunx settlemint forge create src/AssetERC1155.sol:AssetERC1155"
   },
   "dependencies": { "solhint": "^5.0.3" },
