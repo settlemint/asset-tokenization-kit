@@ -32,7 +32,7 @@ permissions:
 jobs:
   test:
     name: Test and Build
-    runs-on: namespace-profile-sdk
+    runs-on: namespace-profile-starterkit
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
