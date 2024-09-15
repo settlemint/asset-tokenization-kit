@@ -8,7 +8,7 @@ dataSources:
     name: AssetERC1155
     network: mainnet
     source:
-      address: "0x83133A0977Fa35ED7262F5Cf01153FdDC6eE3ad4"
+      address: "0x0000000000000000000000000000000000000000"
       abi: AssetERC1155
       startBlock: 0
     mapping:
