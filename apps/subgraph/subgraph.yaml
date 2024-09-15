@@ -5,11 +5,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Contract
+    name: AssetERC1155
     network: mainnet
     source:
-      address: "0xEE2a03Aa6Dacf51C18679C516ad5283d8E7C2637"
-      abi: Contract
+      address: "0x83133A0977Fa35ED7262F5Cf01153FdDC6eE3ad4"
+      abi: AssetERC1155
       startBlock: 0
     mapping:
       kind: ethereum/events
@@ -24,8 +24,8 @@ dataSources:
         - URI
         - Unpaused
       abis:
-        - name: Contract
-          file: ./abis/Contract.json
+        - name: AssetERC1155
+          file: ../contracts/out/AssetERC1155.sol/AssetERC1155.json
       eventHandlers:
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
@@ -41,4 +41,4 @@ dataSources:
           handler: handleURI
         - event: Unpaused(address)
           handler: handleUnpaused
-      file: ./src/contract.ts
+      file: ./src/asset-erc-1155.ts

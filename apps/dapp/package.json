@@ -1,5 +1,5 @@
 {
-  "name": "@settlemint/starterkit-asset-tokenization",
+  "name": "dapp",
   "description": "SettleMint Starter Kit - Asset Tokenization",
   "version": "0.4.7",
   "private": false,
@@ -9,48 +9,24 @@
     "email": "support@settlemint.com",
     "url": "https://settlemint.com"
   },
-  "homepage": "https://github.com/settlemint/sdk/blob/main/apps/asset-tokenization/README.md",
+  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/dapp/README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/settlemint/sdk.git",
-    "directory": "apps/asset-tokenization"
+    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git",
+    "directory": "apps/dapp"
   },
   "bugs": {
-    "url": "https://github.com/settlemint/sdk/issues",
+    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
     "email": "support@settlemint.com"
   },
-  "files": [
-    "/app",
-    "/components",
-    "/database",
-    "/graphql",
-    "/lib",
-    "/public",
-    "/components.json",
-    "/docker-compose.yml",
-    "/docker-entrypoint.sh",
-    "/Dockerfile",
-    "/LICENSE",
-    "/middleware.ts",
-    "/next.config.mjs",
-    "/package.json",
-    "/postcss.config.mjs",
-    "/README.md",
-    "/tailwind.config.ts",
-    "/tsconfig.json"
-  ],
   "scripts": {
     "dev": "next dev --turbo --port 3330",
-    "connect": "op run --env-file=\".env.connect.1p\" -- bun run --bun ../../packages/cli/src/cli.ts connect",
-    "codegen": "bun run --bun ../../packages/cli/src/cli.ts codegen",
-    "deploy": "cd contracts && bun run --bun ../../../packages/cli/src/cli.ts scs hardhat deploy remote",
+    "connect": "op run --env-file=\"../../.env.connect.1p\" -- bunx settlemint connect",
+    "codegen": "bunx settlemint codegen",
     "build": "next build",
+    "format": "biome format --write .",
     "start": "next start",
-    "lint": "next lint",
-    "forge:dependencies": "cd contracts && forge soldeer update",
-    "forge:build": "cd contracts && bun run --bun ../../../packages/cli/src/cli.ts forge build",
-    "forge:test": "cd contracts && bun run --bun ../../../packages/cli/src/cli.ts forge test",
-    "forge:deploy": "cd contracts && bun run --bun ../../../packages/cli/src/cli.ts forge create src/AssetERC1155.sol:AssetERC1155",
+    "lint": "biome lint --write .",
     "hasura:migrate": "cd database && hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload",
     "hasura:console": "cd database && hasura console",
     "translate": "inlang machine translate --force --project ./project.inlang"
@@ -87,7 +63,7 @@
     "@radix-ui/react-toggle-group": "1.1.0",
     "@radix-ui/react-tooltip": "1.1.2",
     "@rainbow-me/rainbowkit": "2.1.6",
-    "@settlemint/sdk-next": "workspace:*",
+    "@settlemint/sdk-next": "0.4.8",
     "@tanstack/query-sync-storage-persister": "5.55.4",
     "@tanstack/react-query": "5.55.4",
     "@tanstack/react-query-next-experimental": "5.55.4",
@@ -121,7 +97,6 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@settlemint/sdk-cli": "workspace:*",
     "@inlang/cli": "2.18.1",
     "@inlang/paraglide-js": "1.11.2",
     "@types/node": "22.5.4",

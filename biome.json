@@ -4,16 +4,11 @@
     "enabled": true
   },
   "files": {
-    "ignore": [
-      ".vscode/launch.json",
-      "apps/asset-tokenization/.settlemint",
-      "apps/asset-tokenization/contracts/artifacts",
-      "./.settlemint",
-      "./contracts/artifacts"
-    ]
+    "ignore": [".vscode/", ".settlemint/", "paraglide/", "generated/"]
   },
   "linter": {
     "enabled": true,
+    "ignore": ["apps/subgraph/src/"],
     "rules": {
       "recommended": true,
       "a11y": {

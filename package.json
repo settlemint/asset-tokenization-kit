@@ -1,23 +1,72 @@
 {
-  "name": "starterkit-asset-tokenization",
-  "private": true,
+  "name": "@settlemint/starterkit-asset-tokenization",
+  "description": "SettleMint Starter Kit - Asset Tokenization",
+  "version": "0.4.8",
+  "private": false,
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "homepage": "https://github.com/settlemint/sdk/blob/main/apps/asset-tokenization/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/settlemint/sdk.git",
+    "directory": "apps/asset-tokenization"
+  },
+  "bugs": {
+    "url": "https://github.com/settlemint/sdk/issues",
+    "email": "support@settlemint.com"
+  },
   "scripts": {
+    "clean": "git clean -fdX && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' \\) -exec rm -f {} + && bun install",
+    "knip": "knip",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "codegen": "turbo codegen",
+    "format": "turbo format",
+    "connect": "turbo connect"
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
+    "@settlemint/sdk-cli": "0.4.10",
+    "@biomejs/biome": "1.8.3",
+    "@types/bun": "1.1.8",
+    "lefthook": "1.7.15",
     "turbo": "^2.1.2",
     "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "bun@1.1.27",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
+  "workspaces": ["apps/*", "packages/*"],
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "@settlemint/starterkit-asset-tokenization-contracts",
+    "bufferutil",
+    "keccak",
+    "lefthook",
+    "protobufjs",
+    "secp256k1",
+    "utf-8-validate"
+  ],
+  "files": [
+    "/.github",
+    "/.prompts",
+    "/.vscode",
+    "/apps",
+    "/.cursorrules",
+    "/.gitignore",
+    "/.node-version",
+    "/.npmrc",
+    "/biome.json",
+    "/knip.json",
+    "/lefthook.yml",
+    "/LICENSE",
+    "/logo.svg",
+    "/package.json",
+    "/README.md",
+    "/turbo.json"
   ]
 }

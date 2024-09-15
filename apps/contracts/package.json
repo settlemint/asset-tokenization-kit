@@ -1,0 +1,34 @@
+{
+  "name": "contracts",
+  "description": "SettleMint Starter Kit - Asset Tokenization",
+  "version": "0.4.7",
+  "private": false,
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/asset-tokenization/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git",
+    "directory": "apps/contracts"
+  },
+  "bugs": {
+    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
+    "email": "support@settlemint.com"
+  },
+  "scripts": {
+    "connect": "op run --env-file=\"../../.env.connect.1p\" -- bunx settlemint connect",
+    "postinstall": "forge soldeer update",
+    "format": "bunx settlemint forge fmt",
+    "lint": "solhint --fix --noPrompt 'src/**/*.sol'",
+    "build": "bunx settlemint forge build",
+    "test": "bunx settlemint forge test --coverage",
+    "deploy": "bunx settlemint forge create src/AssetERC1155.sol:AssetERC1155"
+  },
+  "dependencies": { "solhint": "^5.0.3" },
+  "devDependencies": {},
+  "peerDependencies": {}
+}

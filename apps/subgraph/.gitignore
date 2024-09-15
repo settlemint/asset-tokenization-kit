@@ -32,3 +32,5 @@ typechain-types
 
 # Hardhat files
 cache
+
+.settlemint/

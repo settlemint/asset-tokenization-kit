@@ -1,11 +1,24 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "dangerouslyDisablePackageManagerCheck": true,
+  "envMode": "loose",
   "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
+    "connect": {
+      "outputs": ["settlemint.config.mjs", ".env.local"]
+    },
+    "codegen": {
+      "dependsOn": ["^codegen", "contracts#build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": ["generated/**", ".settlemint/**"]
+    },
+    "build": {
+      "dependsOn": ["^build", "^codegen"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "out/**", "build/**"]
+    },
+    "format": {
+      "dependsOn": ["^format"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -13,6 +26,9 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "translate": {
+      "inputs": ["messages/**"]
     }
   }
 }
