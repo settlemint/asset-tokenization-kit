@@ -1,18 +1,24 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin-contracts-5.0.2/access/Ownable.sol";
-import "@openzeppelin-contracts-5.0.2/token/ERC1155/ERC1155.sol";
-import "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Burnable.sol";
-import "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Pausable.sol";
-import "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Supply.sol";
+import {Ownable} from "@openzeppelin-contracts-5.0.2/access/Ownable.sol";
+import {ERC1155} from "@openzeppelin-contracts-5.0.2/token/ERC1155/ERC1155.sol";
+import {ERC1155Burnable} from "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Burnable.sol";
+import {ERC1155Pausable} from "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Pausable.sol";
+import {ERC1155Supply} from "@openzeppelin-contracts-5.0.2/token/ERC1155/extensions/ERC1155Supply.sol";
 
 /// @title Generic ERC1155 Token
 /// @dev Extends ERC1155 with burnable, pausable, and supply tracking functionalities.
 /// @custom:security-contact support@settlemint.com
-contract AssetERC1155 is ERC1155, Ownable, ERC1155Pausable, ERC1155Burnable, ERC1155Supply {
+contract AssetERC1155 is
+    ERC1155,
+    Ownable,
+    ERC1155Pausable,
+    ERC1155Burnable,
+    ERC1155Supply
+{
     /// @dev Constructor that initializes the contract with an empty URI and sets the deployer as the owner.
-    constructor() ERC1155("") Ownable(msg.sender) { }
+    constructor() ERC1155("") Ownable(msg.sender) {}
 
     /// @dev Sets a new URI for all token types.
     /// @param newuri The new URI to set.
@@ -38,7 +44,12 @@ contract AssetERC1155 is ERC1155, Ownable, ERC1155Pausable, ERC1155Burnable, ERC
     /// @param amount The amount of tokens to mint.
     /// @param data Additional data with no specified format.
     /// @notice Can only be called by the contract owner.
-    function mint(address account, uint256 id, uint256 amount, bytes memory data) public onlyOwner {
+    function mint(
+        address account,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public onlyOwner {
         _mint(account, id, amount, data);
     }
 
@@ -53,10 +64,7 @@ contract AssetERC1155 is ERC1155, Ownable, ERC1155Pausable, ERC1155Burnable, ERC
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    )
-        public
-        onlyOwner
-    {
+    ) public onlyOwner {
         _mintBatch(to, ids, amounts, data);
     }
 
@@ -71,10 +79,7 @@ contract AssetERC1155 is ERC1155, Ownable, ERC1155Pausable, ERC1155Burnable, ERC
         address to,
         uint256[] memory ids,
         uint256[] memory values
-    )
-        internal
-        override(ERC1155, ERC1155Pausable, ERC1155Supply)
-    {
+    ) internal override(ERC1155, ERC1155Pausable, ERC1155Supply) {
         super._update(from, to, ids, values);
     }
 }
