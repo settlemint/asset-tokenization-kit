@@ -24,7 +24,6 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "format": "biome format --write .",
-    "lint": "biome lint --write .",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ asset-tokenization",
     "create-local": "graph create --node http://localhost:8020/ asset-tokenization",
     "remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",

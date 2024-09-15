@@ -41,3 +41,4 @@ yarn-error.log*
 .settlemintrc.json
 settlemint.config.mjs
 .settlemint/
+chache_forge/
