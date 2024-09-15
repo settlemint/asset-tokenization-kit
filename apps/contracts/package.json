@@ -24,6 +24,7 @@
     "postinstall": "forge soldeer update",
     "format": "bunx settlemint forge fmt",
     "lint": "solhint --fix --noPrompt 'src/**/*.sol'",
+    "compile": "bunx settlemint forge build",
     "build": "bunx settlemint forge build",
     "test": "bunx settlemint forge test",
     "deploy": "bunx settlemint forge create src/AssetERC1155.sol:AssetERC1155"

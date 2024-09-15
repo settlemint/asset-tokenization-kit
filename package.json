@@ -28,7 +28,8 @@
     "codegen": "turbo codegen",
     "format": "turbo format",
     "connect": "turbo connect",
-    "test": "turbo test"
+    "test": "turbo test",
+    "compile": "turbo compile"
   },
   "devDependencies": {
     "@settlemint/sdk-cli": "0.4.10",
