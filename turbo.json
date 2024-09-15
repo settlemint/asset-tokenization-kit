@@ -9,17 +9,14 @@
     },
     "compile": {
       "dependsOn": ["^compile"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["out/**"]
     },
     "codegen": {
-      "dependsOn": ["^codegen", "contracts#compile"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "dependsOn": ["^codegen", "contracts#compile", "connect"],
       "outputs": ["generated/**", ".settlemint/**"]
     },
     "build": {
       "dependsOn": ["^build", "codegen"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "out/**", "build/**"]
     },
     "format": {
