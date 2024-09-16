@@ -84,6 +84,10 @@
     "!/apps/contracts/cache_forge/**",
     "!/apps/contracts/out/**",
     "!/apps/**/node_modules",
-    "!/apps/**/node_modules/**"
+    "!/apps/**/node_modules/**",
+    "!/apps/contracts/dependencies",
+    "!/apps/contracts/dependencies/**",
+    "!apps/**/.turbo",
+    "!apps/**/.turbo/**"
   ]
 }
