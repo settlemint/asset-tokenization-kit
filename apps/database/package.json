@@ -1,0 +1,29 @@
+{
+  "name": "database",
+  "description": "SettleMint Starter Kit - Asset Tokenization",
+  "version": "0.4.7",
+  "private": false,
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git",
+    "directory": "apps/database"
+  },
+  "bugs": {
+    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
+    "email": "support@settlemint.com"
+  },
+  "scripts": {
+    "migrate": "hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload",
+    "dev": "hasura console"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "devDependencies": {}
+}
