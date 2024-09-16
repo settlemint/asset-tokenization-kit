@@ -69,3 +69,9 @@ curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
 # Windows
 iwr -useb https://github.com/hasura/graphql-engine/raw/stable/cli/get.ps1 | iex
 ```
+
+Then launch the development servers by running:
+
+```bash
+bun run dev
+```
