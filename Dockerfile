@@ -1,7 +1,7 @@
 # DEPENDENCIES
 FROM oven/bun:1.1.27-alpine AS dependencies
 
-COPY package.json .
+COPY apps/dapp/package.json .
 RUN bun install
 
 # BUILD
@@ -9,7 +9,8 @@ FROM dependencies as build
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
-COPY . .
+COPY apps/dapp/ .
+COPY apps/database/ ./database
 RUN bun run build
 
 # RUNTIME
