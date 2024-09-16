@@ -88,6 +88,10 @@
     "!/apps/contracts/dependencies",
     "!/apps/contracts/dependencies/**",
     "!apps/**/.turbo",
-    "!apps/**/.turbo/**"
+    "!apps/**/.turbo/**",
+    "!apps/subgraph/build",
+    "!apps/subgraph/build/**",
+    "!apps/subgraph/generated",
+    "!apps/subgraph/generated/**"
   ]
 }
