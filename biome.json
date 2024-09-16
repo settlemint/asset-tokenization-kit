@@ -13,7 +13,10 @@
       "a11y": {
         "useHtmlLang": "warn",
         "useButtonType": "warn",
-        "useAriaPropsForRole": "warn"
+        "useAriaPropsForRole": "warn",
+        "useSemanticElements": "warn",
+        "useFocusableInteractive": "warn",
+        "noRedundantRoles": "warn"
       },
       "security": {
         "noDangerouslySetInnerHtml": "warn"
