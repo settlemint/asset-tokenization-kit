@@ -70,6 +70,9 @@
     "/logo.svg",
     "/package.json",
     "/README.md",
-    "/turbo.json"
+    "/turbo.json",
+    "/docker-compose.yml",
+    "/docker-entrypoint.sh",
+    "/Dockerfile"
   ]
 }
