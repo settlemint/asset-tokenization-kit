@@ -27,8 +27,6 @@
     "format": "biome format --write .",
     "start": "next start",
     "lint": "biome lint --write .",
-    "hasura:migrate": "cd database && hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload",
-    "hasura:console": "cd database && hasura console",
     "translate": "inlang machine translate --force --project ./project.inlang"
   },
   "dependencies": {

@@ -30,6 +30,8 @@
     "connect": "turbo connect",
     "test": "turbo test",
     "compile": "turbo compile",
+    "migrate": "turbo migrate",
+    "console": "turbo console",
     "postinstall": "lefthook install"
   },
   "devDependencies": {
@@ -48,6 +50,7 @@
     "@biomejs/biome",
     "@settlemint/starterkit-asset-tokenization-contracts",
     "bufferutil",
+    "contracts",
     "keccak",
     "lefthook",
     "protobufjs",
@@ -70,6 +73,28 @@
     "/logo.svg",
     "/package.json",
     "/README.md",
-    "/turbo.json"
+    "/turbo.json",
+    "/docker-compose.yml",
+    "/docker-entrypoint.sh",
+    "/Dockerfile",
+    "!/apps/*/.next",
+    "!/apps/*/.next/**",
+    "!/apps/*/.settlemint",
+    "!/apps/*/.settlemint/**",
+    "!/apps/**/.env.local",
+    "!/apps/**/settlemint.config.mjs",
+    "!/apps/**/.settlemint/**",
+    "!/apps/contracts/cache_forge/**",
+    "!/apps/contracts/out/**",
+    "!/apps/**/node_modules",
+    "!/apps/**/node_modules/**",
+    "!/apps/contracts/dependencies",
+    "!/apps/contracts/dependencies/**",
+    "!apps/**/.turbo",
+    "!apps/**/.turbo/**",
+    "!apps/subgraph/build",
+    "!apps/subgraph/build/**",
+    "!apps/subgraph/generated",
+    "!apps/subgraph/generated/**"
   ]
 }
