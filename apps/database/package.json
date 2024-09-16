@@ -19,7 +19,10 @@
     "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
     "email": "support@settlemint.com"
   },
-  "scripts": {},
+  "scripts": {
+    "migrate": "hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload",
+    "dev": "hasura console"
+  },
   "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {}

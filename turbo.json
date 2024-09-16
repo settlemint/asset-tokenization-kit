@@ -28,7 +28,11 @@
     "test": {
       "dependsOn": ["^test"]
     },
+    "migrate": {
+      "cache": false
+    },
     "dev": {
+      "dependsOn": ["^build", "^migrate", "codegen", "^codegen"],
       "cache": false,
       "persistent": true
     },

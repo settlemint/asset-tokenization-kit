@@ -30,6 +30,8 @@
     "connect": "turbo connect",
     "test": "turbo test",
     "compile": "turbo compile",
+    "migrate": "turbo migrate",
+    "console": "turbo console",
     "postinstall": "lefthook install"
   },
   "devDependencies": {
@@ -48,6 +50,7 @@
     "@biomejs/biome",
     "@settlemint/starterkit-asset-tokenization-contracts",
     "bufferutil",
+    "contracts",
     "keccak",
     "lefthook",
     "protobufjs",

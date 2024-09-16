@@ -27,8 +27,6 @@
     "format": "biome format --write .",
     "start": "next start",
     "lint": "biome lint --write .",
-    "hasura:migrate": "cd database && hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload",
-    "hasura:console": "cd database && hasura console",
     "translate": "inlang machine translate --force --project ./project.inlang"
   },
   "dependencies": {
@@ -103,7 +101,8 @@
     "@types/react-dom": "18.3.0",
     "postcss": "8.4.47",
     "tailwindcss": "3.4.11",
-    "typescript": "5.6.2"
+    "typescript": "5.6.2",
+    "database": "workspace:*"
   },
   "peerDependencies": {}
 }

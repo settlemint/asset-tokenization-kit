@@ -56,3 +56,16 @@ This will launch a local instance of:
 - an Ethereum node
 - a The Graph node
 - an Hasura instance
+
+Also make sure to have the Hasura CLI installed:
+
+```bash
+# MacOS
+brew install hasura-cli
+
+# Linux
+curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
+
+# Windows
+iwr -useb https://github.com/hasura/graphql-engine/raw/stable/cli/get.ps1 | iex
+```
