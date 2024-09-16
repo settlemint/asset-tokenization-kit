@@ -32,7 +32,7 @@
       "cache": false
     },
     "dev": {
-      "dependsOn": ["^build", "^migrate", "codegen", "^codegen"],
+      "dependsOn": ["^build", "database#migrate", "codegen", "^codegen"],
       "cache": false,
       "persistent": true
     },
