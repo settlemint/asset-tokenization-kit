@@ -5,6 +5,7 @@ import { NumericInput } from "@/components/ui/input-numeric";
 import { parseAsJson, useQueryState } from "nuqs";
 import type { ArrayPath, Control, FieldArray, FieldValues, Path } from "react-hook-form";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { useLocalStorage } from "usehooks-ts";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Textarea } from "./textarea";
@@ -28,7 +29,8 @@ interface FieldItem extends Record<string, unknown> {
 }
 
 export function RepeatableForm<T extends FieldValues>({ control, name, components }: RepeatableFormProps<T>) {
-  const [state, setState] = useQueryState("state", parseAsJson<T>());
+  const [queryState, setQueryState] = useQueryState("state", parseAsJson<T>());
+  const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
   const { config } = useMultiFormStep();
 
   const { fields, append, remove } = useFieldArray({
@@ -69,15 +71,17 @@ export function RepeatableForm<T extends FieldValues>({ control, name, component
             )}
             <Button
               onClick={() => {
-                // renderFields.length === 1 && addItem();
-                //       renderFields.length === 1 && setIsCleared((prev) => !prev);
                 remove(index);
                 config.useQueryState &&
-                  setState((prev) => {
-                    console.log("state", state);
+                  setQueryState((prev) => {
                     const newState = { ...prev };
                     delete newState?.[name];
-                    console.log("newState", prev, newState);
+                    return newState;
+                  });
+                config.useLocalStorageState &&
+                  setStorageState((prev) => {
+                    const newState = { ...prev };
+                    delete newState?.[name];
                     return newState;
                   });
               }}

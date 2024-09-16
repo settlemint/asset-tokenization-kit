@@ -35,6 +35,7 @@ yarn-error.log*
 
 # Misc
 .DS_Store
+.idea
 *.pem
 
 
@@ -42,3 +43,4 @@ yarn-error.log*
 settlemint.config.mjs
 .settlemint/
 chache_forge/
+uploads/

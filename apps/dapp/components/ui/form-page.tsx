@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { parseAsInteger, parseAsJson, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from "react-hook-form";
+import { useLocalStorage } from "usehooks-ts";
 import { useMultiFormStep } from "./form-multistep";
 
 export const FormPage = <
@@ -21,9 +22,10 @@ export const FormPage = <
   fields?: TName[];
   children: React.ReactNode;
 }) => {
-  const { currentStep, nextStep, prevStep, goToStep, totalSteps, registerFormPage, config } = useMultiFormStep();
+  const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config } = useMultiFormStep();
 
-  const [_, setState] = useQueryState("state", parseAsJson<Record<string, unknown>>());
+  const [queryState, setQueryState] = useQueryState("state", parseAsJson<Record<string, unknown>>());
+  const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
   const [isNavigate, setIsNavigate] = useState(true);
   const pageRef = useRef<number | null>(null);
   const page = pageRef.current ?? currentStep ?? 1;
@@ -109,9 +111,19 @@ export const FormPage = <
   useEffect(() => {
     if (config.useQueryState) {
       const fieldState = Object.fromEntries(fields.map((key, index) => [key, fieldValues[index]]));
-      page === currentStep && setState((prevState) => ({ ...prevState, ...fieldState }));
+      page === currentStep && setQueryState((prevState) => ({ ...prevState, ...fieldState }));
     }
-  }, [fieldValues, setState, page, currentStep, config.useQueryState]);
+    if (config.useLocalStorageState) {
+      const fieldState = Object.fromEntries(fields.map((key, index) => [key, fieldValues[index]]));
+      page === currentStep &&
+        setStorageState((prevState) => {
+          return {
+            ...prevState,
+            ...fieldState,
+          };
+        });
+    }
+  }, [fieldValues, setQueryState, page, currentStep, config.useQueryState]);
 
   return (
     <div className={`${cn("FormPage space-y-4", { hidden: page !== currentStep })}`}>
