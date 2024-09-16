@@ -73,6 +73,17 @@
     "/turbo.json",
     "/docker-compose.yml",
     "/docker-entrypoint.sh",
-    "/Dockerfile"
+    "/Dockerfile",
+    "!/apps/*/.next",
+    "!/apps/*/.next/**",
+    "!/apps/*/.settlemint",
+    "!/apps/*/.settlemint/**",
+    "!/apps/**/.env.local",
+    "!/apps/**/settlemint.config.mjs",
+    "!/apps/**/.settlemint/**",
+    "!/apps/contracts/cache_forge/**",
+    "!/apps/contracts/out/**",
+    "!/apps/**/node_modules",
+    "!/apps/**/node_modules/**"
   ]
 }
