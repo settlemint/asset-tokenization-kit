@@ -43,3 +43,4 @@ yarn-error.log*
 settlemint.config.mjs
 .settlemint/
 chache_forge/
+uploads/
