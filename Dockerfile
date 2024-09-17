@@ -17,9 +17,13 @@ RUN bun run build
 FROM oven/bun:1.1.27-debian
 LABEL org.opencontainers.image.source="https://github.com/settlemint/sdk"
 
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt-get install -yq  curl
-RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
-RUN hasura update-cli
+RUN apt-get update && \
+    apt-get install -yq curl && \
+    curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash && \
+    hasura update-cli && \
+    apt-get remove -yq curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
