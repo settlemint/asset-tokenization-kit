@@ -22,6 +22,7 @@ RUN apt-get update && \
     curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash && \
     hasura update-cli && \
     apt-get remove -yq curl && \
+    apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
