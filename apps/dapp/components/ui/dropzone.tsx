@@ -1,5 +1,6 @@
 "use client";
 
+import { uploadFile } from "@/actions/upload.action";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import {
   CheckIcon,
@@ -11,12 +12,24 @@ import {
   LoaderCircleIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import ReactDropzone from "react-dropzone";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
 import { Skeleton } from "./skeleton";
+
+interface DropzoneProps {
+  label: string;
+  name: string;
+  uploadDir?: string;
+  accept?: {
+    images: Array<".jpg" | ".jpeg" | ".png" | ".webp">;
+    text: Array<".pdf" | ".docx" | ".doc" | ".txt" | ".md" | ".csv" | ".xls" | ".xlsx">;
+  };
+  maxSize?: number;
+  maxFiles?: number;
+  multiple?: boolean;
+}
 
 type Action = {
   file: File;
@@ -58,7 +71,6 @@ function truncateFileName(fileName: string): string {
     )}...${fileNameWithoutExtension.slice(-charsToKeep)}.${fileExtension}`;
     return compressedFileName;
   }
-
   // If the fileName is shorter than the maximum length, return it trimmed
   return fileName.trim();
 }
@@ -70,27 +82,24 @@ function fileToIcon(file_type: string): React.ReactNode {
   return <FileIcon />;
 }
 
-const extensions = {
-  image: ["jpg", "jpeg", "png", "webp"],
-  application: ["pdf"],
-};
-
 export function Dropzone({
   label,
   name,
-  action,
-}: { label: string; name: string; action: (state: unknown, formData: FormData) => void }) {
-  const [state, formAction] = useFormState(action, null);
+  uploadDir,
+  accept = { images: [".jpg", ".jpeg", ".png", ".webp"], text: [".pdf"] },
+  maxSize,
+  maxFiles,
+  multiple = true,
+}: DropzoneProps) {
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [_multiple, setMultiple] = useState<boolean>(Boolean(multiple));
   const [actions, setActions] = useState<Action[]>([]);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [files, setFiles] = useState<Array<File>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const accepted_files = {
-    "image/*": [".jpg", ".jpeg", ".png", ".webp"],
-  };
 
   const reset = () => {
     setIsDone(false);
@@ -99,11 +108,11 @@ export function Dropzone({
     setIsReady(false);
   };
 
-  const handleUpload = (data: Array<File>): void => {
+  const handleUpload = (files: Array<File>): void => {
     handleExitHover();
-    setFiles(data);
+    setFiles(files);
     const temp: Action[] = [];
-    for (const file of data) {
+    for (const file of files) {
       temp.push({
         file_name: file.name,
         file_size: file.size,
@@ -118,13 +127,18 @@ export function Dropzone({
     }
     setActions(temp);
     const formData = new FormData();
-    for (const file of data) {
+    for (const file of files) {
       formData.append(name, file);
     }
-    formAction(formData);
+    startTransition(() => {
+      uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
+    });
   };
+
   const handleHover = (): void => setIsHover(true);
+
   const handleExitHover = (): void => setIsHover(false);
+
   const updateAction = (file_name: string, to: string) => {
     setActions(
       actions.map((action): Action => {
@@ -216,55 +230,63 @@ export function Dropzone({
   }
 
   return (
-    <ReactDropzone
-      onDrop={handleUpload}
-      onDragEnter={handleHover}
-      onDragLeave={handleExitHover}
-      accept={accepted_files}
-      onDropRejected={() => {
-        handleExitHover();
-        toast({
-          variant: "destructive",
-          title: "Error uploading your file(s)",
-          description: "Allowed Files: Audio, Video and Images.",
-          duration: 5000,
-        });
-      }}
-      onError={() => {
-        handleExitHover();
-        toast({
-          variant: "destructive",
-          title: "Error uploading your file(s)",
-          description: "Allowed Files: Audio, Video and Images.",
-          duration: 5000,
-        });
-      }}
-    >
-      {({ getRootProps, getInputProps }) => (
-        <div
-          {...getRootProps()}
-          className=" bg-background h-72 lg:h-80 xl:h-40 rounded-3xl shadow-sm border-secondary border-2 border-dashed cursor-pointer flex items-center justify-center"
-        >
-          <input {...getInputProps()} />
-          <div className="space-y-4 text-foreground">
-            {isHover ? (
-              <>
-                <div className="justify-center flex text-6xl">
-                  <FileSymlinkIcon />
-                </div>
-                <h3 className="text-center font-medium text-md">Yes, right here</h3>
-              </>
-            ) : (
-              <>
-                <div className="justify-center flex text-6xl">
-                  <CloudUploadIcon />
-                </div>
-                <h3 className="text-center font-medium text-md">{label}</h3>
-              </>
-            )}
+    <>
+      <ReactDropzone
+        onDrop={handleUpload}
+        onDragEnter={handleHover}
+        onDragLeave={handleExitHover}
+        accept={{
+          "image/*": accept.images,
+          "text/*": accept.text,
+        }}
+        maxSize={maxSize}
+        maxFiles={maxFiles}
+        multiple={_multiple}
+        onDropRejected={() => {
+          handleExitHover();
+          toast({
+            variant: "destructive",
+            title: "Error uploading your file(s)",
+            description: "Allowed Files: Audio, Video and Images.",
+            duration: 5000,
+          });
+        }}
+        onError={() => {
+          handleExitHover();
+          toast({
+            variant: "destructive",
+            title: "Error uploading your file(s)",
+            description: "Allowed Files: Audio, Video and Images.",
+            duration: 5000,
+          });
+        }}
+      >
+        {({ getRootProps, getInputProps }) => (
+          <div
+            {...getRootProps()}
+            className=" bg-background h-72 lg:h-80 xl:h-40 rounded-3xl shadow-sm border-secondary border-2 border-dashed cursor-pointer flex items-center justify-center"
+          >
+            <input {...getInputProps()} name={name} multiple={_multiple} />
+            <div className="space-y-4 text-foreground">
+              {isHover ? (
+                <>
+                  <div className="justify-center flex text-6xl">
+                    <FileSymlinkIcon />
+                  </div>
+                  <h3 className="text-center font-medium text-md">Yes, right here</h3>
+                </>
+              ) : (
+                <>
+                  <div className="justify-center flex text-6xl">
+                    <CloudUploadIcon />
+                  </div>
+                  <h3 className="text-center font-medium text-md">{label}</h3>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </ReactDropzone>
+        )}
+      </ReactDropzone>
+    </>
   );
 }
