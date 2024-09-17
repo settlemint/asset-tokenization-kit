@@ -212,17 +212,14 @@ export function Dropzone({
               <></>
             )}
 
-            {
-              <span
-                onClick={() => deleteAction(action)}
-                onKeyDown={(e) => e.key === "Enter" && deleteAction(action)}
-                role="button"
-                tabIndex={0}
-                className="cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
-              >
-                <Cross2Icon />
-              </span>
-            }
+            <button
+              onClick={() => deleteAction(action)}
+              className="cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              aria-label="Delete file"
+              type="button"
+            >
+              <Cross2Icon />
+            </button>
           </div>
         ))}
       </div>
