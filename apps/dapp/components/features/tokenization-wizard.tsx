@@ -1,6 +1,5 @@
 "use client";
 
-import { uploadFile } from "@/actions/upload.action";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dropzone } from "@/components/ui/dropzone";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -8,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type * as React from "react";
 import { useForm } from "react-hook-form";
+import { useLocalStorage } from "usehooks-ts";
 import { Checkbox } from "../ui/checkbox";
 import { FormMultiStepProvider } from "../ui/form-multistep";
 import { FormPage } from "../ui/form-page";
@@ -25,9 +25,14 @@ export interface TokenizationWizardProps extends React.HTMLAttributes<HTMLDivEle
 }
 
 export function TokenizationWizard({ className, defaultValues, ...props }: TokenizationWizardProps) {
+  const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
+    "state",
+    defaultValues,
+  );
+
   const form = useForm<TokenizationWizardSchema>({
     resolver: zodResolver(TokenizationWizardValidator),
-    defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues },
+    defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues, ...localStorageState },
     mode: "all",
   });
 
@@ -43,9 +48,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
           <CardDescription>Issue a new token.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider
-            config={{ useLocalStorageState: true, useQueryState: true, useQueryStateComponent: "FormPage" }}
-          >
+          <FormMultiStepProvider config={{ useLocalStorageState: true, useQueryState: false }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormPage form={form} title="Introduction">
@@ -93,7 +96,14 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                       <FormItem>
                         <FormLabel>Token Logo</FormLabel>
                         <FormControl>
-                          <Dropzone label="Click, or drop your logo here" name={field.name} action={uploadFile} />
+                          <Dropzone
+                            label="Click, or drop your logo here"
+                            name={field.name}
+                            accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
+                            maxSize={1024 * 1024 * 10}
+                            maxFiles={10}
+                            multiple={false}
+                          />
                         </FormControl>
                         <FormDescription>This is the logo of the token</FormDescription>
                         <FormMessage />
@@ -148,7 +158,14 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                       <FormItem>
                         <FormLabel>Upload CSV file</FormLabel>
                         <FormControl>
-                          <Dropzone label="Click, or drop your CSV file here" name={field.name} action={uploadFile} />
+                          <Dropzone
+                            label="Click, or drop your CSV file here"
+                            name={field.name}
+                            accept={{ images: [], text: [".csv"] }}
+                            maxSize={1024 * 1024 * 10}
+                            maxFiles={10}
+                            multiple={true}
+                          />
                         </FormControl>
                         <FormDescription>
                           You can upload a csv file with the wallet addresses for the initial distribution of the token
@@ -264,7 +281,15 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                       <FormItem>
                         <FormLabel>Upload documentation files</FormLabel>
                         <FormControl>
-                          <Dropzone label="Click, or drop your documents here" name={field.name} action={uploadFile} />
+                          <Dropzone
+                            label="Click, or drop your documents here"
+                            name={field.name}
+                            uploadDir="documentation"
+                            accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [".pdf"] }}
+                            maxSize={1024 * 1024 * 10}
+                            maxFiles={10}
+                            multiple={true}
+                          />
                         </FormControl>
                         <FormDescription>You can upload documentation files for the token</FormDescription>
                         <FormMessage />
