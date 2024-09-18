@@ -1,5 +1,5 @@
 # DEPENDENCIES
-FROM oven/bun:1.1.27-debian AS dependencies
+FROM oven/bun:1.1.28-debian AS dependencies
 
 COPY apps/dapp/package.json .
 RUN bun install
@@ -14,7 +14,7 @@ COPY apps/database/ ./database
 RUN bun run build
 
 # RUNTIME
-FROM oven/bun:1.1.27-debian
+FROM oven/bun:1.1.28-debian
 LABEL org.opencontainers.image.source="https://github.com/settlemint/sdk"
 
 RUN apt-get update && \
