@@ -16,7 +16,6 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import ReactDropzone from "react-dropzone";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
-import { Skeleton } from "./skeleton";
 
 interface DropzoneProps {
   label: string;
@@ -148,6 +147,8 @@ export function Dropzone({
 
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
 
+          console.log("response", response);
+
           clearInterval(interval);
 
           if (response.message) {
@@ -221,6 +222,8 @@ export function Dropzone({
     }
   }, [actions, checkIsReady]);
 
+  console.log(actions);
+
   if (actions.length) {
     return (
       <div className="space-y-6">
@@ -229,7 +232,7 @@ export function Dropzone({
             key={action.file_name}
             className="w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
-            {!isLoaded && <Skeleton className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
+            {!isLoaded && <div className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
             <div className="flex gap-4 items-center">
               <span className="text-2xl">{fileToIcon(action.file_type)}</span>
               <div className="flex items-center gap-1 w-96">
@@ -244,17 +247,13 @@ export function Dropzone({
                 <TriangleAlertIcon />
               </Badge>
             ) : action.isUploaded ? (
-              <Badge variant="default" className="flex gap-2 bg-green-500">
-                <span>Done</span>
-                <CheckIcon />
-              </Badge>
+              <CheckIcon />
             ) : action.isUploading ? (
-              <Badge variant="default" className="flex gap-2">
-                <span>Uploading</span>
+              <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="animate-spin">
                   <LoaderCircleIcon />
                 </span>
-                {uploadProgress[action.file_name]}
+                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
               <></>
@@ -262,7 +261,7 @@ export function Dropzone({
 
             <button
               onClick={() => deleteAction(action)}
-              className="cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              className="ml-2 cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
               aria-label="Delete file"
               type="button"
             >
