@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eo pipefail
 
 # Function to log messages
@@ -13,7 +13,7 @@ apply_migrations() {
         log "Migrations applied successfully."
     else
         log "Error applying migrations. Exiting."
-        # exit 1
+        exit 1
     fi
 }
 
@@ -24,7 +24,7 @@ apply_metadata() {
         log "Metadata applied successfully."
     else
         log "Error applying metadata. Exiting."
-        # exit 1
+        exit 1
     fi
 }
 
