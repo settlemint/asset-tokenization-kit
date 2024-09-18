@@ -91,6 +91,7 @@ export function Dropzone({
   maxFiles,
   multiple = true,
 }: DropzoneProps) {
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -121,14 +122,61 @@ export function Dropzone({
         file_type: file.type,
         file,
         isUploaded: false,
-        isUploading: false,
+        isUploading: true,
         is_error: false,
       });
     }
     setActions(temp);
+
     const formData = new FormData();
+
     for (const file of files) {
       formData.append(name, file);
+
+      startTransition(async () => {
+        try {
+          // Simulate progress updates
+          const interval = setInterval(() => {
+            setUploadProgress((prev) => {
+              const currentProgress = prev[file.name] || 0;
+              return {
+                ...prev,
+                [file.name]: Math.min(currentProgress + 10, 99),
+              };
+            });
+          }, 200);
+
+          const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
+
+          clearInterval(interval);
+
+          if (response.message) {
+            setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+              ),
+            );
+            toast({
+              title: "Success",
+              description: response.message,
+            });
+          } else {
+            throw new Error("Upload failed");
+          }
+        } catch (error) {
+          setActions((prev) =>
+            prev.map((action) =>
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+            ),
+          );
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to upload ${file.name}`,
+          });
+        }
+      });
     }
     startTransition(() => {
       uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
@@ -149,7 +197,6 @@ export function Dropzone({
             to,
           };
         }
-
         return action;
       }),
     );
@@ -207,6 +254,7 @@ export function Dropzone({
                 <span className="animate-spin">
                   <LoaderCircleIcon />
                 </span>
+                {uploadProgress[action.file_name]}
               </Badge>
             ) : (
               <></>
