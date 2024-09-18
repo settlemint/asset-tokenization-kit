@@ -32,6 +32,10 @@ export const FormMultiStepProvider = ({
   const [totalSteps, setTotalSteps] = useState(1);
   const pageCounterRef = useRef(1);
 
+  if (config.useLocalStorageState === false) {
+    typeof window !== "undefined" && window.localStorage.removeItem("state");
+  }
+
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
   const goToStep = (step: number) => setCurrentStep(Math.min(Math.max(step, 0), totalSteps - 1));

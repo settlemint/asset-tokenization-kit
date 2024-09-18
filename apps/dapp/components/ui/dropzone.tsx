@@ -16,7 +16,6 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import ReactDropzone from "react-dropzone";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
-import { Skeleton } from "./skeleton";
 
 interface DropzoneProps {
   label: string;
@@ -91,6 +90,7 @@ export function Dropzone({
   maxFiles,
   multiple = true,
 }: DropzoneProps) {
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -121,14 +121,63 @@ export function Dropzone({
         file_type: file.type,
         file,
         isUploaded: false,
-        isUploading: false,
+        isUploading: true,
         is_error: false,
       });
     }
     setActions(temp);
+
     const formData = new FormData();
+
     for (const file of files) {
       formData.append(name, file);
+
+      startTransition(async () => {
+        try {
+          // Simulate progress updates
+          const interval = setInterval(() => {
+            setUploadProgress((prev) => {
+              const currentProgress = prev[file.name] || 0;
+              return {
+                ...prev,
+                [file.name]: Math.min(currentProgress + 10, 99),
+              };
+            });
+          }, 200);
+
+          const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
+
+          console.log("response", response);
+
+          clearInterval(interval);
+
+          if (response.message) {
+            setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+              ),
+            );
+            toast({
+              title: "Success",
+              description: response.message,
+            });
+          } else {
+            throw new Error("Upload failed");
+          }
+        } catch (error) {
+          setActions((prev) =>
+            prev.map((action) =>
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+            ),
+          );
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to upload ${file.name}`,
+          });
+        }
+      });
     }
     startTransition(() => {
       uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
@@ -149,7 +198,6 @@ export function Dropzone({
             to,
           };
         }
-
         return action;
       }),
     );
@@ -174,6 +222,8 @@ export function Dropzone({
     }
   }, [actions, checkIsReady]);
 
+  console.log(actions);
+
   if (actions.length) {
     return (
       <div className="space-y-6">
@@ -182,7 +232,7 @@ export function Dropzone({
             key={action.file_name}
             className="w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
-            {!isLoaded && <Skeleton className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
+            {!isLoaded && <div className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
             <div className="flex gap-4 items-center">
               <span className="text-2xl">{fileToIcon(action.file_type)}</span>
               <div className="flex items-center gap-1 w-96">
@@ -197,32 +247,26 @@ export function Dropzone({
                 <TriangleAlertIcon />
               </Badge>
             ) : action.isUploaded ? (
-              <Badge variant="default" className="flex gap-2 bg-green-500">
-                <span>Done</span>
-                <CheckIcon />
-              </Badge>
+              <CheckIcon />
             ) : action.isUploading ? (
-              <Badge variant="default" className="flex gap-2">
-                <span>Uploading</span>
+              <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="animate-spin">
                   <LoaderCircleIcon />
                 </span>
+                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
               <></>
             )}
 
-            {
-              <span
-                onClick={() => deleteAction(action)}
-                onKeyDown={(e) => e.key === "Enter" && deleteAction(action)}
-                role="button"
-                tabIndex={0}
-                className="cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
-              >
-                <Cross2Icon />
-              </span>
-            }
+            <button
+              onClick={() => deleteAction(action)}
+              className="ml-2 cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              aria-label="Delete file"
+              type="button"
+            >
+              <Cross2Icon />
+            </button>
           </div>
         ))}
       </div>
