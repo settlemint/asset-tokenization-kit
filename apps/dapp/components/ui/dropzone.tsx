@@ -135,25 +135,12 @@ export function Dropzone({
 
       startTransition(async () => {
         try {
-          // Simulate progress updates
-          /*   const interval = setInterval(() => {
-            setUploadProgress((prev) => {
-              const currentProgress = prev[file.name] || 0;
-              return {
-                ...prev,
-                [file.name]: Math.min(currentProgress + 10, 99),
-              };
-            });
-          }, 200); */
-
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
-
-          //clearInterval(interval);
 
           if (response.data.id) {
             setUploadIds((prev) => ({ ...prev, [file.name]: response.data.id }));
 
-            // Start listening for progress updates
+            // SSE Start listening for progress updates
             const eventSource = new EventSource(`/api/file-upload/${response.data.id}`);
 
             eventSource.onmessage = (event) => {

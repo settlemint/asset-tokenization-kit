@@ -12,7 +12,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       let progress = 0;
       const interval = setInterval(async () => {
         progress = await getUploadProgress(id);
-        console.log(`Sending progress for ${id}: ${progress}%`); // Add this log
         const data = encoder.encode(`data: ${JSON.stringify({ progress })}\n\n`);
         controller.enqueue(data);
 
