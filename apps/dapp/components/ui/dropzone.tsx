@@ -148,8 +148,6 @@ export function Dropzone({
 
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
 
-          console.log("response", response);
-
           //clearInterval(interval);
 
           if (response.data.id) {
@@ -160,7 +158,6 @@ export function Dropzone({
 
             eventSource.onmessage = (event) => {
               const data = JSON.parse(event.data);
-              console.log("DATA2", data);
               setUploadProgress((prev) => ({
                 ...prev,
                 [file.name]: data.progress,
