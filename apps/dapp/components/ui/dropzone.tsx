@@ -100,6 +100,7 @@ export function Dropzone({
   const [files, setFiles] = useState<Array<File>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
+  const [uploadIds, setUploadIds] = useState<Record<string, string>>({});
 
   const reset = () => {
     setIsDone(false);
@@ -135,7 +136,7 @@ export function Dropzone({
       startTransition(async () => {
         try {
           // Simulate progress updates
-          const interval = setInterval(() => {
+          /*   const interval = setInterval(() => {
             setUploadProgress((prev) => {
               const currentProgress = prev[file.name] || 0;
               return {
@@ -143,15 +144,52 @@ export function Dropzone({
                 [file.name]: Math.min(currentProgress + 10, 99),
               };
             });
-          }, 200);
+          }, 200); */
 
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
 
           console.log("response", response);
 
-          clearInterval(interval);
+          //clearInterval(interval);
 
-          if (response.message) {
+          if (response.data.id) {
+            setUploadIds((prev) => ({ ...prev, [file.name]: response.data.id }));
+
+            // Start listening for progress updates
+            const eventSource = new EventSource(`/api/file-upload/${response.data.id}`);
+
+            eventSource.onmessage = (event) => {
+              const data = JSON.parse(event.data);
+              console.log("DATA2", data);
+              setUploadProgress((prev) => ({
+                ...prev,
+                [file.name]: data.progress,
+              }));
+
+              if (data.progress >= 100) {
+                eventSource.close();
+                setActions((prev) =>
+                  prev.map((action) =>
+                    action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+                  ),
+                );
+              }
+            };
+
+            eventSource.onerror = () => {
+              eventSource.close();
+              setActions((prev) =>
+                prev.map((action) =>
+                  action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+                ),
+              );
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to upload ${file.name}`,
+              });
+            };
+
             setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
             setActions((prev) =>
               prev.map((action) =>
@@ -247,7 +285,10 @@ export function Dropzone({
                 <TriangleAlertIcon />
               </Badge>
             ) : action.isUploaded ? (
-              <CheckIcon />
+              <div>
+                <CheckIcon />
+                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
+              </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="animate-spin">
