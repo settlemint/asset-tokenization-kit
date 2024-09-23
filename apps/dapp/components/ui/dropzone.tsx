@@ -139,7 +139,8 @@ export function Dropzone({
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
 
           if (response.data.id) {
-            setUploadIds((prev) => ({ ...prev, [file.name]: response.data.id }));
+            console.log("response.data.id", response.data.id);
+            //  setUploadIds((prev) => ({ ...prev, [file.name]: response.data.id }));
 
             // SSE Start listening for progress updates
             const eventSource = new EventSource(`/api/file-upload/${response.data.id}`);

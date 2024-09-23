@@ -1,27 +1,31 @@
-import { listenToUploadProgress } from "@/actions/upload.action";
+import { getUploadProgress } from "@/actions/upload.action";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id;
+  console.log("params", params);
 
   const encoder = new TextEncoder();
 
   const customReadable = new ReadableStream({
     async start(controller) {
-      const removeListener = await listenToUploadProgress(id, (progress) => {
+      let progress = 0;
+      const interval = setInterval(async () => {
+        progress = await getUploadProgress(id);
         const data = encoder.encode(`data: ${JSON.stringify({ progress })}\n\n`);
         controller.enqueue(data);
 
         if (progress >= 100) {
-          removeListener();
+          clearInterval(interval);
           controller.close();
         }
-      });
+      }, 1000);
 
-      // Cleanup function
-      return () => {
-        removeListener();
-      };
+      // Clean up on abort
+      request.signal.addEventListener("abort", () => {
+        clearInterval(interval);
+        controller.close();
+      });
     },
   });
 
