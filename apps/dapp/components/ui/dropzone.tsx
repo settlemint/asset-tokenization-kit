@@ -134,6 +134,7 @@ export function Dropzone({
       formData.append(name, file);
 
       startTransition(async () => {
+        console.log("UPLOADING");
         try {
           const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
 
@@ -145,6 +146,7 @@ export function Dropzone({
 
             eventSource.onmessage = (event) => {
               const data = JSON.parse(event.data);
+              console.log("data", data);
               setUploadProgress((prev) => ({
                 ...prev,
                 [file.name]: data.progress,
@@ -174,7 +176,7 @@ export function Dropzone({
               });
             };
 
-            setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
+            //    setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
             setActions((prev) =>
               prev.map((action) =>
                 action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
@@ -201,9 +203,9 @@ export function Dropzone({
         }
       });
     }
-    startTransition(() => {
+    /* startTransition(() => {
       uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
-    });
+    }); */
   };
 
   const handleHover = (): void => setIsHover(true);
@@ -243,8 +245,6 @@ export function Dropzone({
       checkIsReady();
     }
   }, [actions, checkIsReady]);
-
-  console.log(actions);
 
   if (actions.length) {
     return (
