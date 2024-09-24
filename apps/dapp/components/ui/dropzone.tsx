@@ -1,6 +1,5 @@
 "use client";
 
-import { uploadFile } from "@/actions/upload.action";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import {
   CheckIcon,
@@ -54,24 +53,17 @@ function bytesToSize(bytes: number): string {
 }
 
 function truncateFileName(fileName: string): string {
-  // Define the maximum length for the substring
   const maxSubstrLength = 18;
-  // Check if the fileName is longer than the maximum length
   if (fileName.length > maxSubstrLength) {
-    // Extract the first part of the fileName (before the extension)
     const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
-    // Extract the extension from the fileName
     const fileExtension = fileName.split(".").pop() ?? "";
-    // Calculate the length of characters to keep in the middle
     const charsToKeep = maxSubstrLength - (fileNameWithoutExtension.length + fileExtension.length + 3);
-    // Create the compressed fileName
     const compressedFileName = `${fileNameWithoutExtension.substring(
       0,
       maxSubstrLength - fileExtension.length - 3,
     )}...${fileNameWithoutExtension.slice(-charsToKeep)}.${fileExtension}`;
     return compressedFileName;
   }
-  // If the fileName is shorter than the maximum length, return it trimmed
   return fileName.trim();
 }
 
@@ -130,34 +122,50 @@ export function Dropzone({
     setActions(temp);
 
     const formData = new FormData();
-
     for (const file of files) {
       formData.append(name, file);
       const id = uuidv4();
       console.log("id", id);
-      // SSE Start listening for progress updates
-      const eventSource = new EventSource(`/api/file-upload/${id}`);
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log("data", data);
-        setUploadProgress((prev) => ({
-          ...prev,
-          [file.name]: data.progress,
-        }));
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `/api/upload?name=${name}&uploadDir=${uploadDir ?? "uploads"}&id=${id}`, true);
 
-        if (data.progress >= 100) {
-          eventSource.close();
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: progress,
+          }));
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
           setActions((prev) =>
             prev.map((action) =>
               action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
             ),
           );
+          toast({
+            title: "Success",
+            description: "",
+          });
+        } else {
+          setActions((prev) =>
+            prev.map((action) =>
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+            ),
+          );
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to upload ${file.name}`,
+          });
         }
       };
 
-      eventSource.onerror = () => {
-        eventSource.close();
+      xhr.onerror = () => {
         setActions((prev) =>
           prev.map((action) =>
             action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
@@ -170,42 +178,8 @@ export function Dropzone({
         });
       };
 
-      startTransition(async () => {
-        console.log("UPLOADING");
-        try {
-          const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads", id }, formData);
-
-          if (id) {
-            //    setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
-            setActions((prev) =>
-              prev.map((action) =>
-                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
-              ),
-            );
-            toast({
-              title: "Success",
-              description: "",
-            });
-          } else {
-            throw new Error("Upload failed");
-          }
-        } catch (error) {
-          setActions((prev) =>
-            prev.map((action) =>
-              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
-            ),
-          );
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: `Failed to upload ${file.name}`,
-          });
-        }
-      });
+      xhr.send(formData);
     }
-    /* startTransition(() => {
-      uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
-    }); */
   };
 
   const handleHover = (): void => setIsHover(true);
@@ -226,6 +200,7 @@ export function Dropzone({
       }),
     );
   };
+
   const checkIsReady = useCallback((): void => {
     const tempIsReady = actions.every((action) => action.to);
     setIsReady(tempIsReady);
