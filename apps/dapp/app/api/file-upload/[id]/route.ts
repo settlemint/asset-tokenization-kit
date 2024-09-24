@@ -12,6 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       let progress = 0;
       const interval = setInterval(async () => {
         progress = await getUploadProgress(id);
+        console.log("PROGRESS", progress);
         const data = encoder.encode(`data: ${JSON.stringify({ progress })}\n\n`);
         controller.enqueue(data);
 
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           clearInterval(interval);
           controller.close();
         }
-      }, 1000);
+      }, 1);
 
       // Clean up on abort
       request.signal.addEventListener("abort", () => {

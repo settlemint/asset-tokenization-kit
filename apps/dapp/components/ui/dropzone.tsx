@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import ReactDropzone from "react-dropzone";
+import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
 
@@ -132,51 +133,49 @@ export function Dropzone({
 
     for (const file of files) {
       formData.append(name, file);
+      const id = uuidv4();
+      console.log("id", id);
+      // SSE Start listening for progress updates
+      const eventSource = new EventSource(`/api/file-upload/${id}`);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("data", data);
+        setUploadProgress((prev) => ({
+          ...prev,
+          [file.name]: data.progress,
+        }));
+
+        if (data.progress >= 100) {
+          eventSource.close();
+          setActions((prev) =>
+            prev.map((action) =>
+              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+            ),
+          );
+        }
+      };
+
+      eventSource.onerror = () => {
+        eventSource.close();
+        setActions((prev) =>
+          prev.map((action) =>
+            action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+          ),
+        );
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `Failed to upload ${file.name}`,
+        });
+      };
 
       startTransition(async () => {
         console.log("UPLOADING");
         try {
-          const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads" }, formData);
+          const response = await uploadFile({ name, uploadDir: uploadDir ?? "uploads", id }, formData);
 
-          if (response.data.id) {
-            console.log("response.data.id", response.data.id);
-            //  setUploadIds((prev) => ({ ...prev, [file.name]: response.data.id }));
-
-            // SSE Start listening for progress updates
-            const eventSource = new EventSource(`/api/file-upload/${response.data.id}`);
-
-            eventSource.onmessage = (event) => {
-              const data = JSON.parse(event.data);
-              console.log("data", data);
-              setUploadProgress((prev) => ({
-                ...prev,
-                [file.name]: data.progress,
-              }));
-
-              if (data.progress >= 100) {
-                eventSource.close();
-                setActions((prev) =>
-                  prev.map((action) =>
-                    action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
-                  ),
-                );
-              }
-            };
-
-            eventSource.onerror = () => {
-              eventSource.close();
-              setActions((prev) =>
-                prev.map((action) =>
-                  action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
-                ),
-              );
-              toast({
-                variant: "destructive",
-                title: "Error",
-                description: `Failed to upload ${file.name}`,
-              });
-            };
-
+          if (id) {
             //    setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
             setActions((prev) =>
               prev.map((action) =>
@@ -185,7 +184,7 @@ export function Dropzone({
             );
             toast({
               title: "Success",
-              description: response.message,
+              description: "",
             });
           } else {
             throw new Error("Upload failed");
