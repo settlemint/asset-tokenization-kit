@@ -3,9 +3,7 @@ import path, { join } from "node:path";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface UploadResult {
-  // Define the structure of your upload result here
   url: string;
-  // Add other properties as needed
 }
 
 export async function POST(request: NextRequest) {
@@ -52,16 +50,13 @@ export async function GET() {
   try {
     const uploadDir = path.join(process.cwd(), "uploads");
 
-    // Ensure the directory exists
     await mkdir(uploadDir, { recursive: true });
 
-    // Read the contents of the directory
     const files = await readdir(uploadDir);
     if (files.length === 0) {
       return NextResponse.json({ message: "No files found" }, { status: 404 });
     }
 
-    // Map the file names to objects with more information
     const fileList = await Promise.all(
       files.map(async (fileName: string) => {
         const filePath = path.join(uploadDir, fileName);
