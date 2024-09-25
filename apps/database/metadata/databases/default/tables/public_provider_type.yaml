@@ -1,0 +1,11 @@
+table:
+  name: provider_type
+  schema: public
+array_relationships:
+  - name: accounts
+    using:
+      foreign_key_constraint_on:
+        column: type
+        table:
+          name: accounts
+          schema: public

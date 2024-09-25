@@ -31,7 +31,6 @@
     "test": "turbo test",
     "compile": "turbo compile",
     "migrate": "turbo migrate",
-    "console": "turbo console",
     "postinstall": "lefthook install"
   },
   "devDependencies": {
