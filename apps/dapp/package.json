@@ -20,7 +20,7 @@
     "email": "support@settlemint.com"
   },
   "scripts": {
-    "devsa": "next dev --turbo --port 3330",
+    "dev": "next dev --turbo --port 3330",
     "connect": "op run --env-file=\"../../.env.connect.1p\" -- bunx settlemint connect",
     "codegen": "bunx settlemint codegen",
     "build": "next build",
@@ -71,7 +71,7 @@
     "cmdk": "1.0.0",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.3.0",
-    "framer-motion": "11.5.5",
+    "framer-motion": "11.5.6",
     "input-otp": "1.2.4",
     "language-flag-colors": "3.2.0",
     "lucide-react": "0.441.0",
@@ -90,15 +90,15 @@
     "tailwind-merge": "2.5.2",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
-    "vaul": "0.9.4",
-    "wagmi": "2.12.12",
+    "vaul": "0.9.6",
+    "wagmi": "2.12.14",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@inlang/cli": "2.18.1",
     "@inlang/paraglide-js": "1.11.2",
-    "@types/node": "22.5.5",
-    "@types/react": "18.3.8",
+    "@types/node": "22.7.0",
+    "@types/react": "18.3.9",
     "@types/react-dom": "18.3.0",
     "postcss": "8.4.47",
     "tailwindcss": "3.4.13",
