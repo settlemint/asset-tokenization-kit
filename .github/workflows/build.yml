@@ -74,6 +74,13 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
 
+      - name: Launch docker-compose services
+        shell: bash
+        run: |
+          if [[ -f docker-compose.yml ]]; then
+            docker compose -f docker-compose.yml up -d
+          fi
+
       - name: Update package versions
         id: package-version
         run: |
@@ -130,6 +137,9 @@ jobs:
 
       - name: Run translate
         run: bunx turbo translate
+
+      - name: Migrate the local database
+        run: bunx turbo migrate
 
       - name: Run tests and checks
         run: bunx turbo format lint build test --concurrency=100% --summarize
