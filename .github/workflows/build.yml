@@ -46,6 +46,8 @@ jobs:
             ./.turbo
             ~/.bun/install/cache
 
+      - run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -137,8 +139,6 @@ jobs:
 
       - name: Run translate
         run: bunx turbo translate
-
-      - run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | VERSION=v2.43.0 bash
 
       - name: Migrate the local database
         run: bunx turbo migrate
