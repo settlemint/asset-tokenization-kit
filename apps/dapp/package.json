@@ -74,7 +74,7 @@
     "framer-motion": "11.5.5",
     "input-otp": "1.2.4",
     "language-flag-colors": "3.2.0",
-    "lucide-react": "0.445.0",
+    "lucide-react": "0.441.0",
     "next": "14.2.13",
     "next-themes": "0.3.0",
     "nuqs": "1.19.2",
@@ -91,7 +91,7 @@
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
     "vaul": "0.9.4",
-    "wagmi": "2.12.13",
+    "wagmi": "2.12.12",
     "zod": "3.23.8"
   },
   "devDependencies": {

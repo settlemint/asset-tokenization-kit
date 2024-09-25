@@ -102,7 +102,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                             accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
                             maxSize={1024 * 1024 * 10}
                             maxFiles={10}
-                            multiple={false}
+                            multiple={true}
                           />
                         </FormControl>
                         <FormDescription>This is the logo of the token</FormDescription>
