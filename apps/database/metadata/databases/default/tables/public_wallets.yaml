@@ -1,0 +1,3 @@
+table:
+  name: wallets
+  schema: public

@@ -1,7 +1,1 @@
-- "!include public_accounts.yaml"
-- "!include public_private_keys.yaml"
-- "!include public_provider_type.yaml"
-- "!include public_sessions.yaml"
-- "!include public_user_roles.yaml"
-- "!include public_users.yaml"
-- "!include public_verification_tokens.yaml"
+- "!include public_wallets.yaml"
