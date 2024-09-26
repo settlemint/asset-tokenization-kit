@@ -8,10 +8,9 @@ import {
   FileSymlinkIcon,
   FileTextIcon,
   ImageIcon,
-  LoaderCircleIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactDropzone from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
@@ -31,6 +30,7 @@ interface DropzoneProps {
 }
 
 type Action = {
+  id?: string;
   file: File;
   file_name: string;
   file_size: number;
@@ -84,7 +84,6 @@ export function Dropzone({
   multiple = true,
 }: DropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [isHover, setIsHover] = useState<boolean>(false);
   const [_multiple, setMultiple] = useState<boolean>(Boolean(multiple));
@@ -93,7 +92,7 @@ export function Dropzone({
   const [files, setFiles] = useState<Array<File>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const [uploadIds, setUploadIds] = useState<Record<string, string>>({});
+  const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
 
   const reset = () => {
     setIsDone(false);
@@ -107,7 +106,10 @@ export function Dropzone({
     setFiles(files);
     const temp: Action[] = [];
     for (const file of files) {
+      const id = uuidv4();
+      (file as File & { id: string }).id = id;
       temp.push({
+        id,
         file_name: file.name,
         file_size: file.size,
         from: file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2),
@@ -124,9 +126,11 @@ export function Dropzone({
     for (const file of files) {
       const formData = new FormData();
       formData.append(name, file);
-      const id = uuidv4();
+      const id = (file as File & { id: string }).id;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
+
+      setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -142,7 +146,7 @@ export function Dropzone({
         if (xhr.status === 200) {
           setActions((prev) =>
             prev.map((action) =>
-              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
             ),
           );
           toast({
@@ -152,7 +156,7 @@ export function Dropzone({
         } else {
           setActions((prev) =>
             prev.map((action) =>
-              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
             ),
           );
           toast({
@@ -166,9 +170,15 @@ export function Dropzone({
       xhr.onerror = () => {
         setActions((prev) =>
           prev.map((action) =>
-            action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+            action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
           ),
         );
+
+        setActiveUploads((prev) => {
+          const { [id]: _, ...rest } = prev;
+          return rest;
+        });
+
         toast({
           variant: "destructive",
           title: "Error",
@@ -204,9 +214,50 @@ export function Dropzone({
     setIsReady(tempIsReady);
   }, [actions]);
 
-  const deleteAction = (action: Action): void => {
+  const deleteAction = async (action: Action): Promise<void> => {
+    console.log("DELETE", action);
     setActions(actions.filter((elt) => elt !== action));
     setFiles(files.filter((elt) => elt.name !== action.file_name));
+
+    // Cancel the upload if it's still in progress
+    if (activeUploads[action?.id ?? ""]) {
+      console.log("ID", action?.id);
+      activeUploads[action?.id ?? ""].abort();
+      setActiveUploads((prev) => {
+        const { [action?.id ?? ""]: _, ...rest } = prev;
+        return rest;
+      });
+    }
+
+    try {
+      const fileName = action.file_name.split(".").slice(0, -1).join(".");
+      const extension = action.file_name.split(".").pop();
+      const response = await fetch(
+        `/api/upload?fileName=${encodeURIComponent(fileName)}_id_${action.id}.${extension}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete file");
+      }
+
+      // If the server deletion was successful, update the local state
+      setActions(actions.filter((elt) => elt !== action));
+      setFiles(files.filter((elt) => elt.name !== action.file_name));
+
+      toast({
+        title: "Success",
+        description: `File ${action.file_name} deleted successfully`,
+      });
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to delete ${action.file_name}`,
+      });
+    }
   };
 
   useEffect(() => {
@@ -225,9 +276,8 @@ export function Dropzone({
         {actions.map((action: Action) => (
           <div
             key={action.file_name}
-            className="w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
+            className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative rounded-xl border h-fit lg:h-20 px-4 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
-            {!isLoaded && <div className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
             <div className="flex gap-4 items-center">
               <span className="text-2xl">{fileToIcon(action.file_type)}</span>
               <div className="flex items-center gap-1 w-96">
@@ -244,13 +294,9 @@ export function Dropzone({
             ) : action.isUploaded ? (
               <div>
                 <CheckIcon />
-                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
-                <span className="animate-spin">
-                  <LoaderCircleIcon />
-                </span>
                 <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
@@ -259,12 +305,19 @@ export function Dropzone({
 
             <button
               onClick={() => deleteAction(action)}
-              className="ml-2 cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              className="hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
               aria-label="Delete file"
               type="button"
             >
               <Cross2Icon />
             </button>
+
+            {action.isUploading && (
+              <span
+                className="absolute bottom-0 left-0 inline-block h-1 bg-white"
+                style={{ width: `${uploadProgress[action.file_name]}%` }}
+              />
+            )}
           </div>
         ))}
       </div>
