@@ -78,6 +78,7 @@
     "lucide-react": "0.441.0",
     "next": "14.2.13",
     "next-auth": "^5.0.0-beta.21",
+    "next-safe-action": "^7.9.3",
     "next-themes": "0.3.0",
     "nuqs": "1.19.2",
     "pino-pretty": "11.2.2",
@@ -94,7 +95,8 @@
     "usehooks-ts": "3.1.0",
     "vaul": "0.9.6",
     "wagmi": "2.12.14",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "zod-form-data": "^2.0.2"
   },
   "devDependencies": {
     "@inlang/cli": "2.18.1",
