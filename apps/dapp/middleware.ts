@@ -3,7 +3,7 @@ import { middleware as i18nMiddleware } from "@/lib/i18n";
 import { createRouteMatcher, proxyMiddleware } from "@settlemint/sdk-next/edge";
 import { NextResponse } from "next/server";
 
-const isUserAuthenticatedRoute = createRouteMatcher("/wallet");
+const isUserAuthenticatedRoute = createRouteMatcher(["/wallet", "/wallet/(.*)"]);
 
 export default auth((request) => {
   const proxyResponse = proxyMiddleware(request);

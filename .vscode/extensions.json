@@ -5,6 +5,22 @@
     "graphql.vscode-graphql-syntax",
     "apollographql.vscode-apollo",
     "inlang.vs-code-extension",
-    "oven.bun-vscode"
+    "oven.bun-vscode",
+    "stringham.copy-with-imports",
+    "ms-azuretools.vscode-docker",
+    "mikestead.dotenv",
+    "editorconfig.editorconfig",
+    "usernamehw.errorlens",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "codezombiech.gitignore",
+    "nhoizey.gremlins",
+    "tim-koehler.helm-intellisense",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "yoavbls.pretty-ts-errors",
+    "mechatroner.rainbow-csv",
+    "tilt-dev.tiltfile",
+    "shardulm94.trailing-spaces",
+    "vitest.explorer"
   ]
 }

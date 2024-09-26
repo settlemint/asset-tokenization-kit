@@ -16,7 +16,7 @@ mutation createNewWallet($email: String = "", $password: String = "", $wallet: S
 }
 
 query hasAtLeastOneAdmin {
-  wallets_aggregate(limit: 1, where: { role: { _contains: "admin" } }) {
+  wallets_aggregate(limit: 1, where: { role: { _contains: ["admin"] } }) {
     aggregate {
       count
     }

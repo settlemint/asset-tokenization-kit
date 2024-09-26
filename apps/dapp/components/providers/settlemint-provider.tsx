@@ -1,7 +1,5 @@
 "use client";
 
-import { settlemint } from "@/lib/settlemint";
-import { RainbowKitProvider, darkTheme, getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, isServer } from "@tanstack/react-query";
@@ -10,7 +8,7 @@ import { PersistQueryClientProvider, type Persister } from "@tanstack/react-quer
 import { structuralSharing } from "@wagmi/core/query";
 import { ThemeProvider } from "next-themes";
 import type { PropsWithChildren } from "react";
-import { WagmiProvider, cookieToInitialState, deserialize, serialize } from "wagmi";
+import { deserialize, serialize } from "wagmi";
 import { hashFn } from "wagmi/query";
 
 function makeQueryClient() {
@@ -59,28 +57,13 @@ function getPersister() {
 
 export function SettleMintProvider({ children, cookie }: PropsWithChildren<{ cookie?: string | null }>) {
   const queryClient = getQueryClient();
-  const wConfig = getDefaultConfig(settlemint.node.wagmi);
-  const initialState = cookieToInitialState(wConfig, cookie);
   const persister = getPersister();
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
-      <WagmiProvider config={wConfig} initialState={initialState} reconnectOnMount={true}>
-        <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-          <ReactQueryStreamedHydration>
-            <RainbowKitProvider
-              {...wConfig}
-              showRecentTransactions={true}
-              theme={{
-                lightMode: lightTheme({ fontStack: "system" }),
-                darkMode: darkTheme({ fontStack: "system" }),
-              }}
-            >
-              {children}
-            </RainbowKitProvider>
-          </ReactQueryStreamedHydration>
-        </PersistQueryClientProvider>
-      </WagmiProvider>
+      <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+        <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
+      </PersistQueryClientProvider>
     </ThemeProvider>
   );
 }
