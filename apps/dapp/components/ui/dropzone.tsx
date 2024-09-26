@@ -8,7 +8,6 @@ import {
   FileSymlinkIcon,
   FileTextIcon,
   ImageIcon,
-  LoaderCircleIcon,
   TriangleAlertIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
@@ -225,7 +224,7 @@ export function Dropzone({
         {actions.map((action: Action) => (
           <div
             key={action.file_name}
-            className="w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
+            className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
             {!isLoaded && <div className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
             <div className="flex gap-4 items-center">
@@ -244,13 +243,9 @@ export function Dropzone({
             ) : action.isUploaded ? (
               <div>
                 <CheckIcon />
-                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
-                <span className="animate-spin">
-                  <LoaderCircleIcon />
-                </span>
                 <span className="text-xs">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
@@ -265,6 +260,12 @@ export function Dropzone({
             >
               <Cross2Icon />
             </button>
+            {action.isUploading && (
+              <span
+                className="absolute bottom-0 left-0 inline-block h-1 bg-white"
+                style={{ width: `${uploadProgress[action.file_name]}%` }}
+              />
+            )}
           </div>
         ))}
       </div>
