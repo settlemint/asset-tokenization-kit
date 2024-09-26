@@ -10,7 +10,7 @@ import {
   ImageIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactDropzone from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
@@ -84,7 +84,6 @@ export function Dropzone({
   multiple = true,
 }: DropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [isHover, setIsHover] = useState<boolean>(false);
   const [_multiple, setMultiple] = useState<boolean>(Boolean(multiple));
@@ -93,7 +92,7 @@ export function Dropzone({
   const [files, setFiles] = useState<Array<File>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const [uploadIds, setUploadIds] = useState<Record<string, string>>({});
+  const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
 
   const reset = () => {
     setIsDone(false);
@@ -107,7 +106,10 @@ export function Dropzone({
     setFiles(files);
     const temp: Action[] = [];
     for (const file of files) {
+      const id = uuidv4();
+      (file as File & { id: string }).id = id;
       temp.push({
+        id,
         file_name: file.name,
         file_size: file.size,
         from: file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2),
@@ -124,9 +126,11 @@ export function Dropzone({
     for (const file of files) {
       const formData = new FormData();
       formData.append(name, file);
-      const id = uuidv4();
+      const id = (file as File & { id: string }).id;
       const xhr = new XMLHttpRequest();
       xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
+
+      setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -169,6 +173,12 @@ export function Dropzone({
             action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
           ),
         );
+
+        setActiveUploads((prev) => {
+          const { [id]: _, ...rest } = prev;
+          return rest;
+        });
+
         toast({
           variant: "destructive",
           title: "Error",
@@ -208,6 +218,16 @@ export function Dropzone({
     console.log("DELETE", action);
     setActions(actions.filter((elt) => elt !== action));
     setFiles(files.filter((elt) => elt.name !== action.file_name));
+
+    // Cancel the upload if it's still in progress
+    if (activeUploads[action?.id ?? ""]) {
+      console.log("ID", action?.id);
+      activeUploads[action?.id ?? ""].abort();
+      setActiveUploads((prev) => {
+        const { [action?.id ?? ""]: _, ...rest } = prev;
+        return rest;
+      });
+    }
 
     try {
       const fileName = action.file_name.split(".").slice(0, -1).join(".");
