@@ -34,7 +34,7 @@
     "postinstall": "lefthook install"
   },
   "devDependencies": {
-    "@settlemint/sdk-cli": "0.4.15",
+    "@settlemint/sdk-cli": "0.4.17",
     "@biomejs/biome": "1.9.2",
     "@types/bun": "1.1.10",
     "lefthook": "1.7.16",
