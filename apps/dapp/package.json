@@ -61,7 +61,6 @@
     "@radix-ui/react-toggle": "1.1.0",
     "@radix-ui/react-toggle-group": "1.1.0",
     "@radix-ui/react-tooltip": "1.1.2",
-    "@rainbow-me/rainbowkit": "2.1.6",
     "@settlemint/sdk-next": "0.4.17",
     "@tanstack/query-sync-storage-persister": "5.56.2",
     "@tanstack/react-query": "5.56.2",
@@ -95,7 +94,6 @@
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
     "vaul": "0.9.9",
-    "wagmi": "2.12.14",
     "zod": "3.23.8",
     "zod-form-data": "^2.0.2"
   },

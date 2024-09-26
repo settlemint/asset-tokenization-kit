@@ -1,4 +1,3 @@
-import { DisconnectButton } from "@/components/global/disconnect-button";
 import { LanguageToggle } from "@/components/global/language-toggle";
 import { ThemeToggle } from "@/components/global/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -37,7 +36,6 @@ export function SidebarNavigation({ variant = "sidebar" }: { variant?: "sidebar"
         <div className={cn("grid grid-cols-4 gap-2 px-2 mt-8")}>
           <ThemeToggle />
           <LanguageToggle />
-          <DisconnectButton />
         </div>
       </div>
     </div>
