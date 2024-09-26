@@ -121,14 +121,12 @@ export function Dropzone({
     }
     setActions(temp);
 
-    const formData = new FormData();
     for (const file of files) {
+      const formData = new FormData();
       formData.append(name, file);
       const id = uuidv4();
-      console.log("id", id);
-
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", `/api/upload?name=${name}&uploadDir=${uploadDir ?? "uploads"}&id=${id}`, true);
+      xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -149,7 +147,7 @@ export function Dropzone({
           );
           toast({
             title: "Success",
-            description: "",
+            description: `Upload file ${file.name} successfully`,
           });
         } else {
           setActions((prev) =>

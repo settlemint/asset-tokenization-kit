@@ -30,7 +30,7 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.82.0",
+    "@graphprotocol/graph-cli": "0.83.0",
     "@graphprotocol/graph-ts": "0.35.1"
   },
   "peerDependencies": {},
