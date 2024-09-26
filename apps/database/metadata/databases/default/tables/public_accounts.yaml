@@ -1,0 +1,10 @@
+table:
+  name: accounts
+  schema: public
+object_relationships:
+  - name: provider_type
+    using:
+      foreign_key_constraint_on: type
+  - name: user
+    using:
+      foreign_key_constraint_on: userId

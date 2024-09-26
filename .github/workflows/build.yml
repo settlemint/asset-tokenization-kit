@@ -46,6 +46,8 @@ jobs:
             ./.turbo
             ~/.bun/install/cache
 
+      - run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -73,6 +75,13 @@ jobs:
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
+
+      - name: Launch docker-compose services
+        shell: bash
+        run: |
+          if [[ -f docker-compose.yml ]]; then
+            docker compose -f docker-compose.yml up -d
+          fi
 
       - name: Update package versions
         id: package-version
@@ -130,6 +139,9 @@ jobs:
 
       - name: Run translate
         run: bunx turbo translate
+
+      - name: Migrate the local database
+        run: bunx turbo migrate
 
       - name: Run tests and checks
         run: bunx turbo format lint build test --concurrency=100% --summarize

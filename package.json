@@ -31,11 +31,10 @@
     "test": "turbo test",
     "compile": "turbo compile",
     "migrate": "turbo migrate",
-    "console": "turbo console",
     "postinstall": "lefthook install"
   },
   "devDependencies": {
-    "@settlemint/sdk-cli": "0.4.11",
+    "@settlemint/sdk-cli": "0.4.15",
     "@biomejs/biome": "1.9.2",
     "@types/bun": "1.1.10",
     "lefthook": "1.7.16",

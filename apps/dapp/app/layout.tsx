@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import type { ViewportLayout } from "next/dist/lib/metadata/types/extra-types";
 import { Figtree as FontSans } from "next/font/google";
 import { headers } from "next/headers";
+import type { PropsWithChildren } from "react";
 import "./globals.css";
 
 const fontSans = FontSans({
@@ -35,11 +36,7 @@ export const viewport: ViewportLayout = {
   initialScale: 1,
 };
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
-
-export default async function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: PropsWithChildren) {
   const cookie = headers().get("cookie");
 
   return (

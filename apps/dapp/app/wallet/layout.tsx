@@ -1,4 +1,3 @@
-import { WalletOverlay } from "@/components/global/wallet-overlay";
 import { Logo } from "@/components/public/logo";
 import { SidebarNavigation } from "@/components/secure/sidebar/sidebar-navigation";
 import { Link } from "@/lib/i18n";
@@ -19,7 +18,6 @@ export default async function WalletLayout({ children }: PropsWithChildren) {
           </div>
         </div>
       </div>
-      <WalletOverlay />
       {children}
     </div>
   );

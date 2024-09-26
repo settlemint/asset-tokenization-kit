@@ -1,0 +1,24 @@
+query getWalletByEmail($email: String!) {
+  wallets_by_pk(email: $email) {
+    role
+    wallet
+    email
+    password
+  }
+}
+
+mutation createNewWallet($email: String = "", $password: String = "", $wallet: String = "", $role: [String!] = "") {
+  insert_wallets_one(object: { email: $email, password: $password, wallet: $wallet, role: $role }) {
+    email
+    role
+    wallet
+  }
+}
+
+query hasAtLeastOneAdmin {
+  wallets_aggregate(limit: 1, where: { role: { _contains: ["admin"] } }) {
+    aggregate {
+      count
+    }
+  }
+}
