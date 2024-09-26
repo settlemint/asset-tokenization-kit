@@ -1,4 +1,4 @@
-import { mkdir, readdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, stat, unlink, writeFile } from "node:fs/promises";
 import path, { join } from "node:path";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         const uploadPath = join(process.cwd(), uploadDir);
-        const fileNameWithId = id ? `${path.parse(file.name).name}_${id}${path.parse(file.name).ext}` : file.name;
+        const fileNameWithId = id ? `${path.parse(file.name).name}_id_${id}${path.parse(file.name).ext}` : file.name;
         const filePath = join(uploadPath, fileNameWithId);
         filePromises.push(
           writeFile(filePath, buffer).then(() => ({
@@ -62,7 +62,7 @@ export async function GET() {
         const filePath = path.join(uploadDir, fileName);
         try {
           const stats = await stat(filePath);
-          const [name, id] = fileName.split("_");
+          const [name, id] = fileName.split("_id_");
           return {
             id: id || undefined,
             name: name,
@@ -81,5 +81,23 @@ export async function GET() {
   } catch (error) {
     console.error("Error retrieving file list:", error);
     return NextResponse.json({ error: "Failed to retrieve file list" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const fileName = request.nextUrl.searchParams.get("fileName");
+    if (!fileName) {
+      return NextResponse.json({ error: "File name is required" }, { status: 400 });
+    }
+
+    const uploadDir = path.join(process.cwd(), "uploads");
+    const filePath = path.join(uploadDir, fileName);
+    await unlink(filePath);
+
+    return NextResponse.json({ message: "File deleted successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
 }

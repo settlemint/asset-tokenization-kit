@@ -30,6 +30,7 @@ interface DropzoneProps {
 }
 
 type Action = {
+  id?: string;
   file: File;
   file_name: string;
   file_size: number;
@@ -141,7 +142,7 @@ export function Dropzone({
         if (xhr.status === 200) {
           setActions((prev) =>
             prev.map((action) =>
-              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false } : action,
+              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
             ),
           );
           toast({
@@ -151,7 +152,7 @@ export function Dropzone({
         } else {
           setActions((prev) =>
             prev.map((action) =>
-              action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
             ),
           );
           toast({
@@ -165,7 +166,7 @@ export function Dropzone({
       xhr.onerror = () => {
         setActions((prev) =>
           prev.map((action) =>
-            action.file_name === file.name ? { ...action, is_error: true, isUploading: false } : action,
+            action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
           ),
         );
         toast({
@@ -203,9 +204,40 @@ export function Dropzone({
     setIsReady(tempIsReady);
   }, [actions]);
 
-  const deleteAction = (action: Action): void => {
+  const deleteAction = async (action: Action): Promise<void> => {
+    console.log("DELETE", action);
     setActions(actions.filter((elt) => elt !== action));
     setFiles(files.filter((elt) => elt.name !== action.file_name));
+
+    try {
+      const fileName = action.file_name.split(".").slice(0, -1).join(".");
+      const extension = action.file_name.split(".").pop();
+      const response = await fetch(
+        `/api/upload?fileName=${encodeURIComponent(fileName)}_id_${action.id}.${extension}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete file");
+      }
+
+      // If the server deletion was successful, update the local state
+      setActions(actions.filter((elt) => elt !== action));
+      setFiles(files.filter((elt) => elt.name !== action.file_name));
+
+      toast({
+        title: "Success",
+        description: `File ${action.file_name} deleted successfully`,
+      });
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to delete ${action.file_name}`,
+      });
+    }
   };
 
   useEffect(() => {
@@ -224,9 +256,8 @@ export function Dropzone({
         {actions.map((action: Action) => (
           <div
             key={action.file_name}
-            className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative cursor-pointer rounded-xl border h-fit lg:h-20 px-4 lg:px-10 flex flex-wrap lg:flex-nowrap items-center justify-between"
+            className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative rounded-xl border h-fit lg:h-20 px-4 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
-            {!isLoaded && <div className="h-full w-full -ml-10 cursor-pointer absolute rounded-xl" />}
             <div className="flex gap-4 items-center">
               <span className="text-2xl">{fileToIcon(action.file_type)}</span>
               <div className="flex items-center gap-1 w-96">
@@ -254,12 +285,13 @@ export function Dropzone({
 
             <button
               onClick={() => deleteAction(action)}
-              className="ml-2 cursor-pointer hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              className="hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
               aria-label="Delete file"
               type="button"
             >
               <Cross2Icon />
             </button>
+
             {action.isUploading && (
               <span
                 className="absolute bottom-0 left-0 inline-block h-1 bg-white"
