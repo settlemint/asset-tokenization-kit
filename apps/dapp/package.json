@@ -90,7 +90,7 @@
     "tailwind-merge": "2.5.2",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
-    "vaul": "0.9.6",
+    "vaul": "0.9.9",
     "wagmi": "2.12.14",
     "zod": "3.23.8"
   },
