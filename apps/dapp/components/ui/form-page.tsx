@@ -45,9 +45,6 @@ export const FormPage = <
     name: fields,
   });
 
-  console.log("FIELD VALUES", fieldValues);
-  console.log("FIELDS", fields);
-
   const isValidPage =
     page === currentStep &&
     fields
