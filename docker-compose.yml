@@ -43,7 +43,7 @@ services:
       timeout: 5s
       retries: 5
   thegraph-postgres:
-    image: postgres:16
+    image: postgres:17
     command:
       [
         "postgres",
@@ -65,7 +65,7 @@ services:
 
 
   hasura-postgres:
-    image: postgres:16
+    image: postgres:17
     restart: always
     volumes:
       - hasura_db_data:/var/lib/postgresql/data
