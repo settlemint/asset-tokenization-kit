@@ -57,7 +57,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                 <FormPage form={form} title="Terms & Conditions">
                   <div>TERMS & CONDITIONS</div>
                 </FormPage>
-                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol"]}>
+                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol", "tokenLogo"]}>
                   {/* Token Name */}
                   <FormField
                     control={form.control}
@@ -92,23 +92,25 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                   <FormField
                     control={form.control}
                     name="tokenLogo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Logo</FormLabel>
-                        <FormControl>
-                          <Dropzone
-                            label="Click, or drop your logo here"
-                            name={field.name}
-                            accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
-                            maxSize={1024 * 1024 * 10}
-                            maxFiles={10}
-                            multiple={true}
-                          />
-                        </FormControl>
-                        <FormDescription>This is the logo of the token</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Token Logo</FormLabel>
+                          <FormControl>
+                            <Dropzone
+                              label="Click, or drop your logo here"
+                              name={field.name}
+                              accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
+                              maxSize={1024 * 1024 * 10}
+                              maxFiles={10}
+                              multiple={true}
+                            />
+                          </FormControl>
+                          <FormDescription>This is the logo of the token</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                 </FormPage>
                 <FormPage

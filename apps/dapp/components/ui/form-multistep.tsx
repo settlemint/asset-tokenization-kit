@@ -2,6 +2,7 @@
 
 import { parseAsInteger, useQueryState } from "nuqs";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 type FormMultiStepConfig = {
   useLocalStorageState?: boolean;
@@ -18,6 +19,7 @@ interface FormMultiStepContextType {
   setTotalSteps: React.Dispatch<React.SetStateAction<number>>;
   registerFormPage: () => number;
   config: FormMultiStepConfig;
+  formId: string;
 }
 
 const FormMultiStepContext = createContext<FormMultiStepContextType | undefined>(undefined);
@@ -29,7 +31,8 @@ export const FormMultiStepProvider = ({
   config: FormMultiStepConfig;
 }>) => {
   const [currentStep, setCurrentStep] = useQueryState("currentStep", parseAsInteger.withDefault(1));
-  const [totalSteps, setTotalSteps] = useState(1);
+  const [totalSteps, setTotalSteps] = useState<number>(1);
+  const [formId, setFormId] = useState<string>(uuidv4());
   const pageCounterRef = useRef(1);
 
   if (config.useLocalStorageState === false) {
@@ -58,6 +61,7 @@ export const FormMultiStepProvider = ({
         setTotalSteps,
         registerFormPage,
         config,
+        formId,
       }}
     >
       {children}

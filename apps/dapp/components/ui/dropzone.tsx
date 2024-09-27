@@ -1,5 +1,6 @@
 "use client";
 
+import { useMultiFormStep } from "@/components/ui/form-multistep";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import {
   CheckIcon,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import ReactDropzone from "react-dropzone";
+import { useLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
@@ -30,7 +32,7 @@ interface DropzoneProps {
 }
 
 type Action = {
-  id?: string;
+  id: string;
   file: File;
   file_name: string;
   file_size: number;
@@ -90,16 +92,10 @@ export function Dropzone({
   const [actions, setActions] = useState<Action[]>([]);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [files, setFiles] = useState<Array<File>>([]);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
-
-  const reset = () => {
-    setIsDone(false);
-    setActions([]);
-    setFiles([]);
-    setIsReady(false);
-  };
+  const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config, formId } = useMultiFormStep();
+  const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
 
   const handleUpload = (files: Array<File>): void => {
     handleExitHover();
@@ -128,8 +124,8 @@ export function Dropzone({
       formData.append(name, file);
       const id = (file as File & { id: string }).id;
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
 
+      xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
       setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
 
       xhr.upload.onprogress = (event) => {
@@ -153,6 +149,22 @@ export function Dropzone({
             title: "Success",
             description: `Upload file ${file.name} successfully`,
           });
+
+          console.log("STORAGE STATE", formId, storageState, file);
+          const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
+          const localStorageState = {
+            [formId]: {
+              ...localStorageFiles,
+              [(file as File & { id: string }).id]: {
+                id: (file as File & { id: string }).id,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+              },
+            },
+          };
+
+          localStorage.setItem("files", JSON.stringify(localStorageState));
         } else {
           setActions((prev) =>
             prev.map((action) =>
@@ -194,37 +206,20 @@ export function Dropzone({
 
   const handleExitHover = (): void => setIsHover(false);
 
-  const updateAction = (file_name: string, to: string) => {
-    setActions(
-      actions.map((action): Action => {
-        if (action.file_name === file_name) {
-          console.log("FOUND");
-          return {
-            ...action,
-            to,
-          };
-        }
-        return action;
-      }),
-    );
-  };
-
   const checkIsReady = useCallback((): void => {
     const tempIsReady = actions.every((action) => action.to);
     setIsReady(tempIsReady);
   }, [actions]);
 
   const deleteAction = async (action: Action): Promise<void> => {
-    console.log("DELETE", action);
     setActions(actions.filter((elt) => elt !== action));
     setFiles(files.filter((elt) => elt.name !== action.file_name));
 
     // Cancel the upload if it's still in progress
-    if (activeUploads[action?.id ?? ""]) {
-      console.log("ID", action?.id);
-      activeUploads[action?.id ?? ""].abort();
+    if (activeUploads[action.id]) {
+      activeUploads[action.id].abort();
       setActiveUploads((prev) => {
-        const { [action?.id ?? ""]: _, ...rest } = prev;
+        const { [action.id]: _, ...rest } = prev;
         return rest;
       });
     }
