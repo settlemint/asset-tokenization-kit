@@ -95,7 +95,13 @@ export function Dropzone({
   const [isDone, setIsDone] = useState<boolean>(false);
   const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
   const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config, formId } = useMultiFormStep();
-  const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
+  const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>(
+    "files",
+    JSON.parse(typeof window !== "undefined" ? (localStorage.getItem("files") ?? "{}") : "{}"),
+  );
+  const [isNavigate, setIsNavigate] = useState(true);
+
+  console.log("STORAGE STATE2", storageState);
 
   const handleUpload = (files: Array<File>): void => {
     handleExitHover();
@@ -264,6 +270,16 @@ export function Dropzone({
       checkIsReady();
     }
   }, [actions, checkIsReady]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    setIsNavigate(false);
+    const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    const navigationType = navigationEntry?.type;
+
+    if (navigationType === "reload") {
+    }
+  }, []);
 
   if (actions.length) {
     return (
