@@ -271,7 +271,6 @@ export function Dropzone({
     }
   }, [actions, checkIsReady]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setIsNavigate(false);
     const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
