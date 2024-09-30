@@ -43,26 +43,17 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            ./.turbo
             ~/.bun/install/cache
-
-      - run: curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+            node_modules
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: package.json
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version: 22
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
 
       - name: Install Bun dependencies
         run: bun install
@@ -75,13 +66,6 @@ jobs:
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
-
-      - name: Launch docker-compose services
-        shell: bash
-        run: |
-          if [[ -f docker-compose.yml ]]; then
-            docker compose -f docker-compose.yml up -d
-          fi
 
       - name: Update package versions
         id: package-version
@@ -102,49 +86,23 @@ jobs:
           echo "Updating version to $VERSION"
           jq --arg version "$VERSION" '.version = $version' package.json > package.json.tmp && mv package.json.tmp package.json
 
-          update_package_json() {
-            local dir="$1"
-            local version="$2"
-            echo "Updating $dir/package.json version to $version and updating workspace dependencies"
-            jq --arg version "$version" '
-              .version = $version |
-              (.dependencies) |= with_entries(if .value == "workspace:*" then .value = $version else . end) |
-              (.devDependencies) |= with_entries(if .value == "workspace:*" then .value = $version else . end) |
-              (.peerDependencies) |= with_entries(if .value == "workspace:*" then .value = $version else . end)
-            ' "$dir/package.json" > "$dir/package.json.tmp" && mv "$dir/package.json.tmp" "$dir/package.json" || {
-              echo "Error updating $dir/package.json"
-              cat "$dir/package.json.tmp"
-              exit 1
-            }
-          }
-
-          if [ -z "$VERSION" ]; then
-            echo "Error: VERSION is not set"
-            exit 1
-          fi
-
-          for dir in ./packages/*; do
-            if [ -f "$dir/package.json" ]; then
-              update_package_json "$dir" "$VERSION"
-            fi
-          done
-
-          for dir in ./apps/*; do
-            if [ -f "$dir/package.json" ]; then
-              update_package_json "$dir" "$VERSION"
-            fi
-          done
-
           echo "Updated version to $VERSION"
 
       - name: Run translate
-        run: bunx turbo translate
+        run: bun run translate
 
-      - name: Migrate the local database
-        run: bunx turbo migrate
+      - name: Format
+        run: bun run format
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Run tests and checks
-        run: bunx turbo format lint build test --concurrency=100% --summarize
+      - name: Lint
+        run: bun run lint
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Test
+        run: bun run test
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
