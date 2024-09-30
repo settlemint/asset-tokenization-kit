@@ -1,5 +1,5 @@
 query getWalletByEmail($email: String!) {
-  wallets_by_pk(email: $email) {
+  starterkit_wallets_by_pk(email: $email) {
     role
     wallet
     email
@@ -8,7 +8,7 @@ query getWalletByEmail($email: String!) {
 }
 
 mutation createNewWallet($email: String = "", $password: String = "", $wallet: String = "", $role: [String!] = "") {
-  insert_wallets_one(object: { email: $email, password: $password, wallet: $wallet, role: $role }) {
+  insert_starterkit_wallets_one(object: { email: $email, password: $password, wallet: $wallet, role: $role }) {
     email
     role
     wallet
@@ -16,7 +16,7 @@ mutation createNewWallet($email: String = "", $password: String = "", $wallet: S
 }
 
 query hasAtLeastOneAdmin {
-  wallets_aggregate(limit: 1, where: { role: { _contains: ["admin"] } }) {
+  starterkit_wallets_aggregate(limit: 1, where: { role: { _contains: ["admin"] } }) {
     aggregate {
       count
     }
