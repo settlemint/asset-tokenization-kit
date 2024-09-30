@@ -28,11 +28,13 @@ export async function POST(request: NextRequest) {
         const fileNameWithId = id ? `${path.parse(file.name).name}_id_${id}${path.parse(file.name).ext}` : file.name;
         const filePath = join(uploadPath, fileNameWithId);
         filePromises.push(
-          writeFile(filePath, buffer).then(() => ({
-            fileName: fileNameWithId,
-            path: filePath,
-            url: `/${uploadDir}/${fileNameWithId}`,
-          })),
+          mkdir(path.dirname(filePath), { recursive: true })
+            .then(() => writeFile(filePath, buffer))
+            .then(() => ({
+              fileName: fileNameWithId,
+              path: filePath,
+              url: `/${uploadDir}/${fileNameWithId}`,
+            })),
         );
       }
     });

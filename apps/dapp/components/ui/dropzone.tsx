@@ -101,16 +101,33 @@ export function Dropzone({
   );
   const [isNavigate, setIsNavigate] = useState(true);
 
-  console.log("STORAGE STATE2", storageState);
+  const [storageStateActions, setStorageStateActions] = useState<Action[]>(
+    Object.values(storageState[formId] ?? {}).map(
+      (file) =>
+        ({
+          id: file.id,
+          file_name: file.name,
+          file_size: file.size,
+          from: file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2),
+          to: null,
+          file_type: file.type,
+          file: file,
+          isUploaded: true,
+          isUploading: false,
+        }) as Action,
+    ),
+  );
 
   const handleUpload = (files: Array<File>): void => {
     handleExitHover();
-    setFiles(files);
-    const temp: Action[] = [];
+    setFiles((prevFiles) => [...prevFiles, ...files]);
+    const _actions: Action[] = [...actions];
+    console.log("_actions", _actions);
+    console.log("files5", files);
     for (const file of files) {
       const id = uuidv4();
       (file as File & { id: string }).id = id;
-      temp.push({
+      _actions.push({
         id,
         file_name: file.name,
         file_size: file.size,
@@ -123,7 +140,7 @@ export function Dropzone({
         is_error: false,
       });
     }
-    setActions(temp);
+    setActions(_actions);
 
     for (const file of files) {
       const formData = new FormData();
@@ -156,7 +173,6 @@ export function Dropzone({
             description: `Upload file ${file.name} successfully`,
           });
 
-          console.log("STORAGE STATE", formId, storageState, file);
           const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
           const localStorageState = {
             [formId]: {
@@ -169,7 +185,6 @@ export function Dropzone({
               },
             },
           };
-
           localStorage.setItem("files", JSON.stringify(localStorageState));
         } else {
           setActions((prev) =>
@@ -218,8 +233,16 @@ export function Dropzone({
   }, [actions]);
 
   const deleteAction = async (action: Action): Promise<void> => {
-    setActions(actions.filter((elt) => elt !== action));
-    setFiles(files.filter((elt) => elt.name !== action.file_name));
+    const localStoragefiles = JSON.parse(localStorage.getItem("files") ?? "{}");
+    delete localStoragefiles[formId][action.id];
+    localStorage.setItem("files", JSON.stringify(localStoragefiles));
+    const index = storageStateActions.findIndex((a) => a.id === action.id);
+    if (index !== -1) {
+      storageStateActions.splice(index, 1);
+    }
+    setStorageStateActions(storageStateActions);
+    setActions(actions.filter((a) => a !== action));
+    setFiles(files.filter((a) => a.name !== action.file_name));
 
     // Cancel the upload if it's still in progress
     if (activeUploads[action.id]) {
@@ -277,15 +300,20 @@ export function Dropzone({
     const navigationType = navigationEntry?.type;
 
     if (navigationType === "reload") {
+      // setActions(JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? []);
     }
   }, []);
 
-  if (actions.length) {
-    return (
-      <div className="space-y-6">
-        {actions.map((action: Action) => (
+  const fileuploads = storageStateActions.length > 0 ? storageStateActions : actions;
+  console.log("fileuploads.length", fileuploads.length);
+  console.log("storageStateActions.length", storageStateActions.length);
+
+  return (
+    <div>
+      <div className="space-y-6 mb-6">
+        {fileuploads.map((action: Action, i) => (
           <div
-            key={action.file_name}
+            key={`${action.file_name}-${i}`}
             className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative rounded-xl border h-fit lg:h-20 px-4 flex flex-wrap lg:flex-nowrap items-center justify-between"
           >
             <div className="flex gap-4 items-center">
@@ -331,67 +359,65 @@ export function Dropzone({
           </div>
         ))}
       </div>
-    );
-  }
 
-  return (
-    <>
-      <ReactDropzone
-        onDrop={handleUpload}
-        onDragEnter={handleHover}
-        onDragLeave={handleExitHover}
-        accept={{
-          "image/*": accept.images,
-          "text/*": accept.text,
-        }}
-        maxSize={maxSize}
-        maxFiles={maxFiles}
-        multiple={_multiple}
-        onDropRejected={() => {
-          handleExitHover();
-          toast({
-            variant: "destructive",
-            title: "Error uploading your file(s)",
-            description: "Allowed Files: Audio, Video and Images.",
-            duration: 5000,
-          });
-        }}
-        onError={() => {
-          handleExitHover();
-          toast({
-            variant: "destructive",
-            title: "Error uploading your file(s)",
-            description: "Allowed Files: Audio, Video and Images.",
-            duration: 5000,
-          });
-        }}
-      >
-        {({ getRootProps, getInputProps }) => (
-          <div
-            {...getRootProps()}
-            className=" bg-background h-72 lg:h-80 xl:h-40 rounded-3xl shadow-sm border-secondary border-2 border-dashed cursor-pointer flex items-center justify-center"
-          >
-            <input {...getInputProps()} name={name} multiple={_multiple} />
-            <div className="space-y-4 text-foreground">
-              {isHover ? (
-                <>
-                  <div className="justify-center flex text-6xl">
-                    <FileSymlinkIcon />
-                  </div>
-                  <h3 className="text-center font-medium text-md">Yes, right here</h3>
-                </>
-              ) : (
-                <>
-                  <div className="justify-center flex text-6xl">
-                    <CloudUploadIcon />
-                  </div>
-                  <h3 className="text-center font-medium text-md">{label}</h3>
-                </>
-              )}
+      <div className={fileuploads.length === 0 || storageStateActions.length > 0 ? "" : ""}>
+        <ReactDropzone
+          onDrop={handleUpload}
+          onDragEnter={handleHover}
+          onDragLeave={handleExitHover}
+          accept={{
+            "image/*": accept.images,
+            "text/*": accept.text,
+          }}
+          maxSize={maxSize}
+          maxFiles={maxFiles}
+          multiple={_multiple}
+          onDropRejected={() => {
+            handleExitHover();
+            toast({
+              variant: "destructive",
+              title: "Error uploading your file(s)",
+              description: "Allowed Files: Audio, Video and Images.",
+              duration: 5000,
+            });
+          }}
+          onError={() => {
+            handleExitHover();
+            toast({
+              variant: "destructive",
+              title: "Error uploading your file(s)",
+              description: "Allowed Files: Audio, Video and Images.",
+              duration: 5000,
+            });
+          }}
+        >
+          {({ getRootProps, getInputProps }) => (
+            <div
+              {...getRootProps()}
+              className=" bg-background h-72 lg:h-80 xl:h-40 rounded-3xl shadow-sm border-secondary border-2 border-dashed cursor-pointer flex items-center justify-center"
+            >
+              <input {...getInputProps()} name={name} multiple={_multiple} />
+              <div className="space-y-4 text-foreground">
+                {isHover ? (
+                  <>
+                    <div className="justify-center flex text-6xl">
+                      <FileSymlinkIcon />
+                    </div>
+                    <h3 className="text-center font-medium text-md">Yes, right here</h3>
+                  </>
+                ) : (
+                  <>
+                    <div className="justify-center flex text-6xl">
+                      <CloudUploadIcon />
+                    </div>
+                    <h3 className="text-center font-medium text-md">{label}</h3>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </ReactDropzone>
-    </>
+          )}
+        </ReactDropzone>
+      </div>
+    </div>
   );
 }

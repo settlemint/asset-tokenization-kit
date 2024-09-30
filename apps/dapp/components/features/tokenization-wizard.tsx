@@ -22,9 +22,10 @@ import {
 
 export interface TokenizationWizardProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValues: Partial<TokenizationWizardSchema>;
+  formId: string;
 }
 
-export function TokenizationWizard({ className, defaultValues, ...props }: TokenizationWizardProps) {
+export function TokenizationWizard({ className, defaultValues, formId, ...props }: TokenizationWizardProps) {
   const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
     "state",
     defaultValues,
@@ -48,7 +49,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
           <CardDescription>Issue a new token.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider config={{ useLocalStorageState: false, useQueryState: false }}>
+          <FormMultiStepProvider formId={formId} config={{ useLocalStorageState: false, useQueryState: false }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormPage form={form} title="Introduction">
