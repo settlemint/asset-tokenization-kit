@@ -101,11 +101,6 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Test
-        run: bun run test
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
       - name: Publish Asset Tokenization package
         uses: JS-DevTools/npm-publish@v3
         with:

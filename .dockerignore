@@ -1,5 +1,0 @@
-*
-!apps/database
-!apps/dapp
-apps/dapp/.next
-!docker-entrypoint.sh
