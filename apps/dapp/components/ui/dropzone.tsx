@@ -140,6 +140,7 @@ export function Dropzone({
       });
     }
     setActions(_actions);
+    setStorageStateActions(_actions);
 
     for (const file of files) {
       const formData = new FormData();
@@ -235,11 +236,7 @@ export function Dropzone({
     const localStoragefiles = JSON.parse(localStorage.getItem("files") ?? "{}");
     delete localStoragefiles[formId][action.id];
     localStorage.setItem("files", JSON.stringify(localStoragefiles));
-    const index = storageStateActions.findIndex((a) => a.id === action.id);
-    if (index !== -1) {
-      storageStateActions.splice(index, 1);
-    }
-    setStorageStateActions(storageStateActions);
+    setStorageStateActions(storageStateActions.filter((a) => a.id !== action.id));
     setActions(actions.filter((a) => a !== action));
     setFiles(files.filter((a) => a.name !== action.file_name));
 
@@ -297,12 +294,12 @@ export function Dropzone({
     setIsNavigate(false);
   }, []);
 
-  const fileuploads = storageStateActions.length > actions.length ? storageStateActions : actions;
+  const fileuploads = Array.from(new Map([...storageStateActions, ...actions].map((item) => [item.id, item])).values());
 
   return (
     <div>
       <div className="space-y-6 mb-6">
-        {fileuploads.map((action: Action, i) => (
+        {fileuploads.map((action: Action, i: number) => (
           <div
             key={`${action.file_name}-${i}`}
             className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative rounded-xl border h-fit lg:h-20 px-4 flex flex-wrap lg:flex-nowrap items-center justify-between"
@@ -351,7 +348,7 @@ export function Dropzone({
         ))}
       </div>
 
-      <div className={fileuploads.length === 0 || storageStateActions.length > 0 ? "" : ""}>
+      <div className={Array.from(fileuploads).length === 0 || storageStateActions.length > 0 ? "" : ""}>
         <ReactDropzone
           onDrop={handleUpload}
           onDragEnter={handleHover}
