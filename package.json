@@ -144,5 +144,8 @@
     "@biomejs/biome": "1.9.2",
     "lefthook": "1.7.17"
   },
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "trustedDependencies": [
+    "@biomejs/biome"
+  ]
 }
