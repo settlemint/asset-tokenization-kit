@@ -94,7 +94,7 @@ export function Dropzone({
   const [files, setFiles] = useState<Array<File>>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
-  const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config, formId } = useMultiFormStep();
+  const { config, formId } = useMultiFormStep();
   const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>(
     "files",
     JSON.parse(typeof window !== "undefined" ? (localStorage.getItem("files") ?? "{}") : "{}"),
@@ -121,9 +121,8 @@ export function Dropzone({
   const handleUpload = (files: Array<File>): void => {
     handleExitHover();
     setFiles((prevFiles) => [...prevFiles, ...files]);
-    const _actions: Action[] = [...actions];
-    console.log("_actions", _actions);
-    console.log("files5", files);
+    const _actions: Action[] = [...storageStateActions];
+
     for (const file of files) {
       const id = uuidv4();
       (file as File & { id: string }).id = id;
@@ -296,17 +295,9 @@ export function Dropzone({
 
   useEffect(() => {
     setIsNavigate(false);
-    const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
-    const navigationType = navigationEntry?.type;
-
-    if (navigationType === "reload") {
-      // setActions(JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? []);
-    }
   }, []);
 
-  const fileuploads = storageStateActions.length > 0 ? storageStateActions : actions;
-  console.log("fileuploads.length", fileuploads.length);
-  console.log("storageStateActions.length", storageStateActions.length);
+  const fileuploads = storageStateActions.length > actions.length ? storageStateActions : actions;
 
   return (
     <div>

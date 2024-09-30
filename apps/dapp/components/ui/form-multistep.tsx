@@ -42,7 +42,7 @@ export const FormMultiStepProvider = ({
 
   useEffect(() => {
     setFormId(formId);
-  }, []);
+  }, [setFormId, formId]);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
