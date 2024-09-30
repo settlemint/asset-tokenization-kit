@@ -16,9 +16,9 @@ export const signUpAction = actionClient.schema(signUpActionSchema).action(async
       email: formData.username,
     });
 
-    if (!wallet.wallets_by_pk) {
+    if (!wallet.starterkit_wallets_by_pk) {
       const hasAdmin = await settlemint.hasura.gql.hasAtLeastOneAdmin();
-      const role = [(hasAdmin.wallets_aggregate.aggregate?.count ?? 0) > 0 ? "user" : "admin"];
+      const role = [(hasAdmin.starterkit_wallets_aggregate.aggregate?.count ?? 0) > 0 ? "user" : "admin"];
 
       const wallet = await settlemint.portal.gql.createUserWallet({
         keyVaultId: process.env.SETTLEMINT_USER_WALLETS_KEY_VAULT_ID ?? "",
