@@ -145,5 +145,5 @@
     "lefthook": "1.7.17"
   },
   "peerDependencies": {},
-  "trustedDependencies": ["@biomejs/biome", "bufferutil", "keccak", "lefthook", "secp256k1", "utf-8-validate"]
+  "trustedDependencies": ["@biomejs/biome", "lefthook"]
 }
