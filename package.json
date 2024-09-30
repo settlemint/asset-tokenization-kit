@@ -54,7 +54,7 @@
     "clean": "git clean -fdX && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' \\) -exec rm -f {} + && bun install",
     "knip": "knip",
     "dev": "next dev --turbo",
-    "connect": "op run --env-file=\".env.connect.1p\" -- bunx settlemint connect",
+    "connect": "bunx settlemint connect",
     "codegen": "bunx settlemint codegen",
     "build": "next build",
     "format": "biome format --write .",
@@ -145,7 +145,5 @@
     "lefthook": "1.7.17"
   },
   "peerDependencies": {},
-  "trustedDependencies": [
-    "@biomejs/biome"
-  ]
+  "trustedDependencies": ["@biomejs/biome"]
 }
