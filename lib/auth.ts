@@ -57,6 +57,7 @@ export const providerMap = providers
   .filter((provider) => provider.id !== "credentials");
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.SETTLEMINT_AUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
