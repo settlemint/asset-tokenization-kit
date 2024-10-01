@@ -28,18 +28,18 @@ const providers: Provider[] = [
       const walletResponse = await settlemint.hasura.gql.getWalletByEmail({ email: username });
 
       // we could not find a wallet with this email address
-      if (!walletResponse.wallets_by_pk?.email) {
+      if (!walletResponse.starterkit_wallets_by_pk?.email) {
         return null;
       }
 
-      const passwordCorrect = await compare(password, walletResponse.wallets_by_pk.password);
+      const passwordCorrect = await compare(password, walletResponse.starterkit_wallets_by_pk.password);
 
       // the hashed password from the database does not match the one provided
       if (!passwordCorrect) {
         return null;
       }
 
-      const { email, wallet } = walletResponse.wallets_by_pk;
+      const { email, wallet } = walletResponse.starterkit_wallets_by_pk;
 
       return { email, wallet };
     },

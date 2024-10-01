@@ -31,7 +31,7 @@ export const signUpAction = actionClient.schema(signUpActionSchema).action(async
       await settlemint.hasura.gql.createNewWallet({
         email: formData.username,
         password: hashedPassword,
-        wallet: wallet.createWallet?.[0].address ?? "",
+        wallet: wallet.createWallet?.address ?? "",
         role,
       });
     }

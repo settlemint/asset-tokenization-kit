@@ -42,5 +42,5 @@ next-env.d.ts
 dist
 contracts/dependencies
 contracts/cache_forge
-
+settlemint.config.mjs
 apollo.config.js
