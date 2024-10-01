@@ -1,5 +1,5 @@
-import { mkdir, readdir, stat, unlink, writeFile } from "node:fs/promises";
-import path, { join } from "node:path";
+import { mkdir, readdir, stat, unlink } from "node:fs/promises";
+import { join, parse } from "node:path";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface UploadResult {
@@ -13,32 +13,30 @@ export async function POST(request: NextRequest) {
     const uploadDir = request.nextUrl.searchParams.get("uploadDir") || "uploads";
     const id = request.nextUrl.searchParams.get("id");
     const file = formData.get(name) as File | null;
-
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
-
     const filePromises: Promise<UploadResult>[] = [];
-    formData.forEach(async (value, key) => {
+
+    for (const value of Array.from(formData.values())) {
       if (value instanceof File) {
         const file = value;
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         const uploadPath = join(process.cwd(), uploadDir);
-        const fileNameWithId = id ? `${path.parse(file.name).name}_id_${id}${path.parse(file.name).ext}` : file.name;
-        const filePath = join(uploadPath, fileNameWithId);
-        filePromises.push(
-          writeFile(filePath, buffer).then(() => ({
-            fileName: fileNameWithId,
-            path: filePath,
-            url: `/${uploadDir}/${fileNameWithId}`,
-          })),
-        );
+        const fileNameWithId = id ? `${parse(file.name).name}_id_${id}${parse(file.name).ext}` : file.name;
+        // const filePath = join(uploadPath, fileNameWithId);
+        // filePromises.push(
+        //   writeFile(filePath, buffer).then(() => ({
+        //     fileName: fileNameWithId,
+        //     path: filePath,
+        //     url: `/${uploadDir}/${fileNameWithId}`,
+        //   })),
+        // );
       }
-    });
+    }
 
     await Promise.all(filePromises);
-
     return NextResponse.json({ message: "File uploaded successfully", id }, { status: 200 });
   } catch (error) {
     console.error("Error processing upload:", error);
@@ -48,18 +46,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const uploadDir = path.join(process.cwd(), "uploads");
-
+    const uploadDir = join(process.cwd(), "uploads");
     await mkdir(uploadDir, { recursive: true });
-
     const files = await readdir(uploadDir);
     if (files.length === 0) {
       return NextResponse.json({ message: "No files found" }, { status: 404 });
     }
-
     const fileList = await Promise.all(
       files.map(async (fileName: string) => {
-        const filePath = path.join(uploadDir, fileName);
+        const filePath = join(uploadDir, fileName);
         try {
           const stats = await stat(filePath);
           const [name, id] = fileName.split("_id_");
@@ -76,7 +71,6 @@ export async function GET() {
         }
       }),
     );
-
     return NextResponse.json({ files: fileList });
   } catch (error) {
     console.error("Error retrieving file list:", error);
@@ -90,11 +84,9 @@ export async function DELETE(request: NextRequest) {
     if (!fileName) {
       return NextResponse.json({ error: "File name is required" }, { status: 400 });
     }
-
-    const uploadDir = path.join(process.cwd(), "uploads");
-    const filePath = path.join(uploadDir, fileName);
+    const uploadDir = join(process.cwd(), "uploads");
+    const filePath = join(uploadDir, fileName);
     await unlink(filePath);
-
     return NextResponse.json({ message: "File deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error deleting file:", error);
