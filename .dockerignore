@@ -15,3 +15,5 @@
 !postcss.config.mjs
 !tailwind.config.ts
 !tsconfig.json
+!./.next/standalone
+!./.next/static
