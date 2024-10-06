@@ -12,14 +12,40 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
     "plugins": [
       {
         "name": "next"
+      },
+      {
+        "name": "@0no-co/graphqlsp",
+        "schemas": [
+          {
+            "name": "hasura",
+            "schema": "./hasura.schema.graphql",
+            "tadaOutputLocation": "./lib/graphql/hasura-env.d.ts",
+            "tadaTurboLocation": "./lib/graphql/hasura-cache.d.ts",
+            "tadaPersistedLocation": "./lib/graphql/hasura-persisted.json"
+          },
+          {
+            "name": "thegraph",
+            "schema": "./thegraph.schema.graphql",
+            "tadaOutputLocation": "./lib/graphql/thegraph-env.d.ts",
+            "tadaTurboLocation": "./lib/graphql/thegraph-cache.d.ts",
+            "tadaPersistedLocation": "./lib/graphql/thegraph-persisted.json"
+          },
+          {
+            "name": "portal",
+            "schema": "./portal.schema.graphql",
+            "tadaOutputLocation": "./lib/graphql/portal-env.d.ts",
+            "tadaTurboLocation": "./lib/graphql/portal-cache.d.ts",
+            "tadaPersistedLocation": "./lib/graphql/portal-persisted.json"
+          }
+        ]
       }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
