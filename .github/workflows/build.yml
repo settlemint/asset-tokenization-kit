@@ -112,6 +112,8 @@ jobs:
 
       - name: Codegen
         run: bun codegen
+        env:
+          SETTLEMINT_ENVIRONMENT: ci
 
       - name: Format
         run: bun run format
