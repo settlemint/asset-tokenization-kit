@@ -92,7 +92,7 @@ jobs:
         run: bun run translate
 
       - name: Connect
-        run: bun connect -a
+        run: bun connect -a -e ci
         env:
           SETTLEMINT_ENVIRONMENT: ci
           SETTLEMINT_APPLICATION: ${{ secrets.SETTLEMINT_APPLICATION }}
@@ -111,7 +111,7 @@ jobs:
           SETTLEMINT_HASURA_ADMIN_SECRET: ${{ secrets.SETTLEMINT_HASURA_ADMIN_SECRET }}
 
       - name: Codegen
-        run: bun codegen
+        run: bun codegen -e ci
         env:
           SETTLEMINT_ENVIRONMENT: ci
 
