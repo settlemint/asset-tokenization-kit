@@ -107,15 +107,11 @@ jobs:
       - name: Run translate
         run: bun run translate
 
-      # - name: Connect
-      #   run: op run --env-file=".github/.env.connect.1p" -- bun run connect
-      #   env:
-      #     OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      - name: Connect
+        run: bun run connect -a
 
-      # - name: Codegen
-      #   run: bun run codegen
-      #   env:
-      #     OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      - name: Codegen
+        run: bun run codegen
 
       - name: Format
         run: bun run format
