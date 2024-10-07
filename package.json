@@ -126,7 +126,7 @@
     "react-resizable-panels": "2.1.4",
     "recharts": "2.12.7",
     "sonner": "1.5.0",
-    "tailwind-merge": "2.5.2",
+    "tailwind-merge": "2.5.3",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
     "uuid": "10.0.0",
