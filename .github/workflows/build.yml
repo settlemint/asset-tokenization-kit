@@ -92,7 +92,7 @@ jobs:
         run: bun run translate
 
       - name: Connect
-        run: bun connect -a
+        run: bun connect -a -e 'production'
         env:
           SETTLEMINT_APPLICATION: ${{ secrets.SETTLEMINT_APPLICATION }}
           SETTLEMINT_HASURA: ${{ secrets.SETTLEMINT_HASURA }}
