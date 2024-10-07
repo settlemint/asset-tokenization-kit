@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -13,7 +17,9 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "plugins": [
       {
@@ -24,29 +30,35 @@
         "schemas": [
           {
             "name": "hasura",
-            "schema": "./hasura.schema.graphql",
-            "tadaOutputLocation": "./lib/graphql/hasura-env.d.ts",
-            "tadaTurboLocation": "./lib/graphql/hasura-cache.d.ts",
-            "tadaPersistedLocation": "./lib/graphql/hasura-persisted.json"
+            "schema": "hasura-schema.graphql",
+            "tadaOutputLocation": "hasura-env.d.ts"
           },
           {
             "name": "thegraph",
-            "schema": "./thegraph.schema.graphql",
-            "tadaOutputLocation": "./lib/graphql/thegraph-env.d.ts",
-            "tadaTurboLocation": "./lib/graphql/thegraph-cache.d.ts",
-            "tadaPersistedLocation": "./lib/graphql/thegraph-persisted.json"
+            "schema": "the-graph-schema.graphql",
+            "tadaOutputLocation": "the-graph-env.d.ts"
+          },
+          {
+            "name": "thegraph-fallback",
+            "schema": "the-graph-fallback-schema.graphql",
+            "tadaOutputLocation": "the-graph-fallback-env.d.ts"
           },
           {
             "name": "portal",
-            "schema": "./portal.schema.graphql",
-            "tadaOutputLocation": "./lib/graphql/portal-env.d.ts",
-            "tadaTurboLocation": "./lib/graphql/portal-cache.d.ts",
-            "tadaPersistedLocation": "./lib/graphql/portal-persisted.json"
+            "schema": "portal-schema.graphql",
+            "tadaOutputLocation": "portal-env.d.ts"
           }
         ]
       }
     ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

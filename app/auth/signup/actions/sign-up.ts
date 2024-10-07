@@ -1,9 +1,9 @@
 "use server";
 
 import { signIn } from "@/lib/auth";
-import { hasuraClient, hasuraGraphql } from "@/lib/hasura";
-import { portalClient, portalGraphql } from "@/lib/portal";
 import { actionClient } from "@/lib/safe-action";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { genSalt, hash } from "bcryptjs";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";

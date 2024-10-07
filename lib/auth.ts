@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-import { hasuraClient, hasuraGraphql } from "./hasura";
+import { hasuraClient, hasuraGraphql } from "./settlemint/hasura";
 
 const getWalletByEmail = hasuraGraphql(`
   query getWalletByEmail($email: String!) {
