@@ -92,9 +92,8 @@ jobs:
         run: bun run translate
 
       - name: Connect
-        run: bun connect -a -e ci
+        run: bun connect -a
         env:
-          SETTLEMINT_ENVIRONMENT: ci
           SETTLEMINT_APPLICATION: ${{ secrets.SETTLEMINT_APPLICATION }}
           SETTLEMINT_HASURA: ${{ secrets.SETTLEMINT_HASURA }}
           SETTLEMINT_HASURA_ENDPOINT: ${{ secrets.SETTLEMINT_HASURA_ENDPOINT }}
@@ -111,9 +110,7 @@ jobs:
           SETTLEMINT_HASURA_ADMIN_SECRET: ${{ secrets.SETTLEMINT_HASURA_ADMIN_SECRET }}
 
       - name: Codegen
-        run: bun codegen -e ci
-        env:
-          SETTLEMINT_ENVIRONMENT: ci
+        run: bun codegen
 
       - name: Format
         run: bun run format
@@ -123,8 +120,6 @@ jobs:
 
       - name: Build
         run: bun run build
-        env:
-          SETTLEMINT_ENVIRONMENT: ci
 
       - name: Publish Asset Tokenization package
         uses: JS-DevTools/npm-publish@v3
