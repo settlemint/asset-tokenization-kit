@@ -118,8 +118,17 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      - run: |
+          cat tsconfig.json
+          ls -alh
+
       - name: Build
         run: bun run build
+
+      - if: ${{ always() }}
+        run: |
+          cat tsconfig.json
+          ls -alh
 
       - name: Publish Asset Tokenization package
         uses: JS-DevTools/npm-publish@v3
