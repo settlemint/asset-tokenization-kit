@@ -9,16 +9,30 @@ import { signInAction } from "../actions/sign-in";
 import { signInActionSchema } from "../schemas/sign-in-schema";
 
 export function SignInForm({ provider }: { provider: string }) {
-  const { form, handleSubmitWithAction } = useHookFormAction(signInAction, zodResolver(signInActionSchema), {
-    actionProps: {},
-    formProps: {},
-    errorMapProps: {},
-  });
+  const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(
+    signInAction,
+    zodResolver(signInActionSchema),
+    {
+      actionProps: {
+        onSuccess: () => {
+          resetFormAndAction();
+        },
+      },
+      formProps: {
+        mode: "onChange",
+        defaultValues: {
+          username: "",
+          password: "",
+          provider,
+        },
+      },
+      errorMapProps: {},
+    },
+  );
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmitWithAction} className="space-y-8">
-        <input name="provider" type="hidden" value={provider} />
         <FormField
           control={form.control}
           name="username"
@@ -45,7 +59,7 @@ export function SignInForm({ provider }: { provider: string }) {
             </FormItem>
           )}
         />
-        <Button type="submit">Create an account</Button>
+        <Button type="submit">Log in</Button>
       </form>
     </Form>
   );

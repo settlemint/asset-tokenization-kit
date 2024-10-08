@@ -4,7 +4,7 @@ import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
 import { NextResponse } from "next/server";
 import { match } from "path-to-regexp";
 
-const isUserAuthenticatedRoute = match(["/wallet", "/wallet/(.*)"]);
+const isUserAuthenticatedRoute = match(["/wallet", "/wallet/*path"]);
 
 export default auth((request) => {
   const proxyResponse = proxyMiddleware(request);
