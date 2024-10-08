@@ -24,12 +24,13 @@ export async function POST(request: Request): Promise<NextResponse<ActionRespons
       Key: fileName,
       ContentType: fileType,
     });
-
+    console.log("command", command);
     const { UploadId } = await s3Client.send(command);
-
+    console.log("UploadId", UploadId);
     // Construct the tus upload URL
-    const uploadUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}?uploadId=${UploadId}`;
-
+    const encodedFileName = encodeURIComponent(fileName);
+    const uploadUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${encodedFileName}?uploadId=${UploadId}`;
+    console.log("UPLOADURL", uploadUrl);
     return NextResponse.json({ success: true, data: { uploadUrl } });
   } catch (error) {
     console.error("Error generating tus upload URL:", error);

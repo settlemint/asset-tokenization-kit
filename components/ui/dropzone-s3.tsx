@@ -18,8 +18,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
 
-import * as tus from "tus-js-client";
-
 interface DropzoneProps {
   label: string;
   name: string;
@@ -102,7 +100,6 @@ export function Dropzone({
     JSON.parse(typeof window !== "undefined" ? (localStorage.getItem("files") ?? "{}") : "{}"),
   );
   const [isNavigate, setIsNavigate] = useState(true);
-  const [upload, setUpload] = useState<tus.Upload | null>(null);
 
   const [storageStateActions, setStorageStateActions] = useState<Action[]>(
     Object.values(storageState[formId] ?? {}).map(
@@ -165,44 +162,23 @@ export function Dropzone({
         } = await response.json();
         console.log("uploadUrl", uploadUrl, file);
 
-        // Create a new tus upload
-        const upload = new tus.Upload(file, {
-          endpoint: uploadUrl,
-          retryDelays: [0, 3000, 5000, 10000, 20000],
-          metadata: {
-            filename: file.name,
-            filetype: file.type,
-          },
-          onError: (error: Error | tus.DetailedError) => {
-            console.error(`Failed because: ${error.message}`);
-            toast({
-              title: "Upload Failed",
-              description: "There was an error uploading your file.",
-              variant: "destructive",
-            });
-          },
-          onProgress: (bytesUploaded: number, bytesTotal: number) => {
-            const progress = Number(((bytesUploaded / bytesTotal) * 100).toFixed(2));
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("POST", uploadUrl, true);
+        setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
             setUploadProgress((prev) => ({
               ...prev,
               [file.name]: progress,
             }));
-          },
-          onSuccess: () => {
-            if ("name" in upload.file) {
-              console.log("Download %s from %s", upload.file.name, upload.url);
-            } else {
-              console.log("Download file from %s", upload.url);
-            }
-            toast({
-              title: "Upload Successful",
-              description: "Your file has been uploaded to S3.",
-            });
-            setUploadProgress((prev) => ({
-              ...prev,
-              [file.name]: 100,
-            }));
+          }
+        };
 
+        xhr.onload = () => {
+          if (xhr.status === 200) {
             setActions((prev) =>
               prev.map((action) =>
                 action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
@@ -226,13 +202,40 @@ export function Dropzone({
               },
             };
             localStorage.setItem("files", JSON.stringify(localStorageState));
-          },
-        });
+          } else {
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
+              ),
+            );
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: `Failed to upload ${file.name}`,
+            });
+          }
+        };
 
-        setUpload(upload);
+        xhr.onerror = () => {
+          setActions((prev) =>
+            prev.map((action) =>
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
+            ),
+          );
 
-        // Start the upload
-        upload.start();
+          setActiveUploads((prev) => {
+            const { [id]: _, ...rest } = prev;
+            return rest;
+          });
+
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: `Failed to upload ${file.name}`,
+          });
+        };
+
+        xhr.send(formData);
       } catch (error) {
         console.error("Upload error:", error);
         toast({
@@ -241,94 +244,8 @@ export function Dropzone({
           variant: "destructive",
         });
       }
-      /*
-      const formData = new FormData();
-      formData.append(name, file);
-      const id = (file as File & { id: string }).id;
-      const xhr = new XMLHttpRequest();
-
-      xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
-      setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress((prev) => ({
-            ...prev,
-            [file.name]: progress,
-          }));
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          setActions((prev) =>
-            prev.map((action) =>
-              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
-            ),
-          );
-          toast({
-            title: "Success",
-            description: `Upload file ${file.name} successfully`,
-          });
-
-          const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
-          const localStorageState = {
-            [formId]: {
-              ...localStorageFiles,
-              [(file as File & { id: string }).id]: {
-                id: (file as File & { id: string }).id,
-                name: file.name,
-                size: file.size,
-                type: file.type,
-              },
-            },
-          };
-          localStorage.setItem("files", JSON.stringify(localStorageState));
-        } else {
-          setActions((prev) =>
-            prev.map((action) =>
-              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
-            ),
-          );
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: `Failed to upload ${file.name}`,
-          });
-        }
-      };
-
-      xhr.onerror = () => {
-        setActions((prev) =>
-          prev.map((action) =>
-            action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
-          ),
-        );
-
-        setActiveUploads((prev) => {
-          const { [id]: _, ...rest } = prev;
-          return rest;
-        });
-
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: `Failed to upload ${file.name}`,
-        });
-      };
-
-      xhr.send(formData); */
     }
   };
-
-  const handlePause = useCallback(() => {
-    upload?.abort();
-  }, [upload]);
-
-  const handleResume = useCallback(() => {
-    upload?.start();
-  }, [upload]);
 
   const handleHover = (): void => setIsHover(true);
 
@@ -431,12 +348,6 @@ export function Dropzone({
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="text-xs">{uploadProgress[action.file_name]}%</span>
-                <button onClick={handlePause} type="button">
-                  Pause
-                </button>
-                <button onClick={handleResume} type="button">
-                  Resume
-                </button>
               </Badge>
             ) : (
               <></>
