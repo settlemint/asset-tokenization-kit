@@ -427,8 +427,12 @@ export function Dropzone({
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="text-xs">{uploadProgress[action.file_name]}%</span>
-                <button onClick={handlePause}>Pause</button>
-                <button onClick={handleResume}>Resume</button>
+                <button onClick={handlePause} type="button">
+                  Pause
+                </button>
+                <button onClick={handleResume} type="button">
+                  Resume
+                </button>
               </Badge>
             ) : (
               <></>
