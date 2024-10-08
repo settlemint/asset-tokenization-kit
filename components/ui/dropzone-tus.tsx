@@ -18,6 +18,8 @@ import { v4 as uuidv4 } from "uuid";
 import { useToast } from "./../hooks/use-toast";
 import { Badge } from "./badge";
 
+import * as tus from "tus-js-client";
+
 interface DropzoneProps {
   label: string;
   name: string;
@@ -100,6 +102,7 @@ export function Dropzone({
     JSON.parse(typeof window !== "undefined" ? (localStorage.getItem("files") ?? "{}") : "{}"),
   );
   const [isNavigate, setIsNavigate] = useState(true);
+  const [upload, setUpload] = useState<tus.Upload | null>(null);
 
   const [storageStateActions, setStorageStateActions] = useState<Action[]>(
     Object.values(storageState[formId] ?? {}).map(
@@ -118,7 +121,7 @@ export function Dropzone({
     ),
   );
 
-  const handleUpload = (files: Array<File>): void => {
+  const handleUpload = async (files: Array<File>): Promise<void> => {
     handleExitHover();
     setFiles((prevFiles) => [...prevFiles, ...files]);
     const _actions: Action[] = [...storageStateActions];
@@ -143,6 +146,98 @@ export function Dropzone({
     setStorageStateActions(_actions);
 
     for (const file of files) {
+      try {
+        const formData = new FormData();
+        formData.append(name, file);
+        const id = (file as File & { id: string }).id;
+
+        // Get the upload URL from your server
+        const response = await fetch("/api/upload/s3", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+        });
+
+        if (!response.ok) throw new Error("Failed to get upload URL");
+        const { uploadUrl } = await response.json();
+
+        // Create a new tus upload
+        const upload = new tus.Upload(file, {
+          endpoint: uploadUrl,
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          metadata: {
+            filename: file.name,
+            filetype: file.type,
+          },
+          onError: (error: Error | tus.DetailedError) => {
+            console.error(`Failed because: ${error.message}`);
+            toast({
+              title: "Upload Failed",
+              description: "There was an error uploading your file.",
+              variant: "destructive",
+            });
+          },
+          onProgress: (bytesUploaded: number, bytesTotal: number) => {
+            const progress = Number(((bytesUploaded / bytesTotal) * 100).toFixed(2));
+            setUploadProgress((prev) => ({
+              ...prev,
+              [file.name]: progress,
+            }));
+          },
+          onSuccess: () => {
+            if ("name" in upload.file) {
+              console.log("Download %s from %s", upload.file.name, upload.url);
+            } else {
+              console.log("Download file from %s", upload.url);
+            }
+            toast({
+              title: "Upload Successful",
+              description: "Your file has been uploaded to S3.",
+            });
+            setUploadProgress((prev) => ({
+              ...prev,
+              [file.name]: 100,
+            }));
+
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
+              ),
+            );
+            toast({
+              title: "Success",
+              description: `Upload file ${file.name} successfully`,
+            });
+
+            const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
+            const localStorageState = {
+              [formId]: {
+                ...localStorageFiles,
+                [(file as File & { id: string }).id]: {
+                  id: (file as File & { id: string }).id,
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                },
+              },
+            };
+            localStorage.setItem("files", JSON.stringify(localStorageState));
+          },
+        });
+
+        setUpload(upload);
+
+        // Start the upload
+        upload.start();
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast({
+          title: "Upload Failed",
+          description: "There was an error initiating your upload.",
+          variant: "destructive",
+        });
+      }
+      /*
       const formData = new FormData();
       formData.append(name, file);
       const id = (file as File & { id: string }).id;
@@ -219,9 +314,17 @@ export function Dropzone({
         });
       };
 
-      xhr.send(formData);
+      xhr.send(formData); */
     }
   };
+
+  const handlePause = useCallback(() => {
+    upload?.abort();
+  }, [upload]);
+
+  const handleResume = useCallback(() => {
+    upload?.start();
+  }, [upload]);
 
   const handleHover = (): void => setIsHover(true);
 
@@ -324,6 +427,8 @@ export function Dropzone({
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
                 <span className="text-xs">{uploadProgress[action.file_name]}%</span>
+                <button onClick={handlePause}>Pause</button>
+                <button onClick={handleResume}>Resume</button>
               </Badge>
             ) : (
               <></>
