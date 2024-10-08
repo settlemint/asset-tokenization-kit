@@ -8,7 +8,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding", "debug");
+    config.externals.push("pino-pretty", "lokijs", "encoding", "debug", "bcryptjs");
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.performance = {
       hints: false,

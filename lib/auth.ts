@@ -8,7 +8,6 @@ import { hasuraClient, hasuraGraphql } from "./settlemint/hasura";
 const getWalletByEmail = hasuraGraphql(`
   query getWalletByEmail($email: String!) {
     starterkit_wallets_by_pk(email: $email) {
-      role
       wallet
       email
       password
