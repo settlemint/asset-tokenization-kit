@@ -1,5 +1,5 @@
 import { paraglide } from "@inlang/paraglide-next/plugin";
-// import { withSettleMint } from "@settlemint/sdk-next/node";
+import { withSettleMint } from "@settlemint/sdk-next/config/with-settlemint";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,13 +15,14 @@ const nextConfig = {
     };
     return config;
   },
-  output: "standalone",
 };
 
-export default paraglide({
-  paraglide: {
-    project: "./project.inlang",
-    outdir: "./paraglide",
-  },
-  ...nextConfig,
-});
+export default withSettleMint(
+  paraglide({
+    paraglide: {
+      project: "./project.inlang",
+      outdir: "./paraglide",
+    },
+    ...nextConfig,
+  }),
+);
