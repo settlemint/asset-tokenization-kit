@@ -29,7 +29,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env*
 
 # vercel
 .vercel
@@ -44,3 +44,8 @@ contracts/dependencies
 contracts/cache_forge
 settlemint.config.mjs
 apollo.config.js
+
+*-env.d.ts
+*-cache.d.ts
+*-schema.graphql
+lib/settlemint/

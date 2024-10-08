@@ -3,7 +3,17 @@ import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-import { settlemint } from "./settlemint";
+import { hasuraClient, hasuraGraphql } from "./settlemint/hasura";
+
+const getWalletByEmail = hasuraGraphql(`
+  query getWalletByEmail($email: String!) {
+    starterkit_wallets_by_pk(email: $email) {
+      wallet
+      email
+      password
+    }
+  }
+`);
 
 const credentialsSchema = z.object({
   username: z.string().email("Invalid email address"),
@@ -25,7 +35,7 @@ const providers: Provider[] = [
 
       const { username, password } = validatedCredentials.data;
 
-      const walletResponse = await settlemint.hasura.gql.getWalletByEmail({ email: username });
+      const walletResponse = await hasuraClient.request(getWalletByEmail, { email: username });
 
       // we could not find a wallet with this email address
       if (!walletResponse.starterkit_wallets_by_pk?.email) {

@@ -28,7 +28,13 @@
       "matchStrings": ["\"https://biomejs.dev/schemas/(?<currentValue>[^\"]+)/schema.json\""]
     }
   ],
-  "packageRules": [],
+  "packageRules": [
+    {
+      "groupName": "SettleMint packages",
+      "matchPackagePatterns": ["^@settlemint/"],
+      "groupSlug": "settlemint"
+    }
+  ],
   "hostRules": [
     {
       "timeout": 3000000
