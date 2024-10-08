@@ -123,6 +123,12 @@ jobs:
           cat .env
           cat .env.local
 
+      - name: Breakpoint
+        uses: namespacelabs/breakpoint-action@v0
+        with:
+          duration: 30m
+          authorized-users: roderik
+
       - name: Codegen
         run: bun codegen
 
