@@ -63,7 +63,7 @@
     "translate": "inlang machine translate --force --project ./project.inlang"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.665.0",
+    "@aws-sdk/client-s3": "3.666.0",
     "@hookform/resolvers": "3.9.0",
     "@inlang/paraglide-next": "0.5.2",
     "@next-safe-action/adapter-react-hook-form": "1.0.13",
