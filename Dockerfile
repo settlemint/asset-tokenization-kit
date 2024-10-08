@@ -1,4 +1,4 @@
-FROM oven/bun:1.1.29
+FROM oven/bun:1.1.30
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 ENV NEXT_TELEMETRY_DISABLED=1
