@@ -119,6 +119,10 @@ jobs:
           SETTLEMINT_MINIO_SECRET_KEY: ${{ secrets.SETTLEMINT_MINIO_SECRET_KEY }}
           SETTLEMINT_MINIO_ENDPOINT: ${{ secrets.SETTLEMINT_MINIO_ENDPOINT }}
 
+      - run: |
+          cat .env
+          cat .env.local
+
       - name: Codegen
         run: bun codegen
 
