@@ -65,7 +65,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.666.0",
     "@hookform/resolvers": "3.9.0",
-    "@inlang/paraglide-next": "0.5.2",
+    "@inlang/paraglide-next": "0.6.0",
     "@next-safe-action/adapter-react-hook-form": "1.0.13",
     "@radix-ui/react-accordion": "1.2.1",
     "@radix-ui/react-alert-dialog": "1.1.2",
