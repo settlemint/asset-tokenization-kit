@@ -9,7 +9,11 @@ import { signInActionSchema } from "../schemas/sign-in-schema";
 export const signInAction = actionClient.schema(signInActionSchema).action(async ({ parsedInput }) => {
   try {
     const { provider, ...formData } = parsedInput;
-    return await signIn(provider, formData, { redirectTo: "/wallet" });
+    console.log(formData);
+    return await signIn(provider, {
+      ...formData,
+      redirectTo: "/wallet",
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       return redirect(`/auth/error?error=${error.type}`);
