@@ -137,7 +137,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
     "@inlang/cli": "2.18.1",
-    "@inlang/paraglide-js": "1.11.2",
+    "@inlang/paraglide-js": "1.11.3",
     "@settlemint/sdk-cli": "0.5.19",
     "@types/bcryptjs": "2.4.6",
     "@types/node": "22.7.4",
