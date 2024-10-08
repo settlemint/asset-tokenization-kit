@@ -117,6 +117,7 @@
     "next-safe-action": "7.9.3",
     "next-themes": "0.3.0",
     "nuqs": "1.20.0",
+    "path-to-regexp": "^8.2.0",
     "pino-pretty": "11.2.2",
     "react": "18.3.1",
     "react-day-picker": "8.10.1",
