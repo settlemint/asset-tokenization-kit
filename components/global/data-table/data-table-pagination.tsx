@@ -50,10 +50,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          {m.strong_calm_sloth_love({
-            pagenr: pagination.pageIndex + 1,
-            totalpages: pageCount,
-          })}
+          Page {pagination.pageIndex + 1} of {pageCount}
         </div>
         <div className="flex items-center space-x-2">
           <Button
