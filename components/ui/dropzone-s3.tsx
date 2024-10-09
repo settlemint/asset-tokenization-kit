@@ -164,7 +164,7 @@ export function Dropzone({
 
         const xhr = new XMLHttpRequest();
 
-        xhr.open("POST", uploadUrl, true);
+        xhr.open("PUT", uploadUrl, true);
         setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
 
         xhr.upload.onprogress = (event) => {
@@ -235,7 +235,7 @@ export function Dropzone({
           });
         };
 
-        xhr.send(formData);
+        xhr.send(file);
       } catch (error) {
         console.error("Upload error:", error);
         toast({
@@ -276,12 +276,9 @@ export function Dropzone({
     try {
       const fileName = action.file_name.split(".").slice(0, -1).join(".");
       const extension = action.file_name.split(".").pop();
-      const response = await fetch(
-        `/api/upload?fileName=${encodeURIComponent(fileName)}_id_${action.id}.${extension}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await fetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
+        method: "DELETE",
+      });
       if (!response.ok) {
         throw new Error("Failed to delete file");
       }
