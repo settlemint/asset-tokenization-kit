@@ -1,5 +1,0 @@
-mutation createUserWallet($keyVaultId: String!, $name: String!) {
-  createWallet(keyVaultId: $keyVaultId, walletInfo: { name: $name }) {
-    address
-  }
-}
