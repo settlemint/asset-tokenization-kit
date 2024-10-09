@@ -144,23 +144,20 @@ export function Dropzone({
 
     for (const file of files) {
       try {
-        const formData = new FormData();
-        formData.append(name, file);
         const id = (file as File & { id: string }).id;
 
-        // Get the upload URL from your server
+        // Get the upload URL
         const response = await fetch("/api/upload/s3", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: file.name, fileType: file.type }),
         });
 
-        console.log("response", response);
         if (!response.ok) throw new Error("Failed to get upload URL");
+
         const {
           data: { uploadUrl },
         } = await response.json();
-        console.log("uploadUrl", uploadUrl, file);
 
         const xhr = new XMLHttpRequest();
 
