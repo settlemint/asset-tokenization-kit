@@ -1,13 +1,14 @@
 import { LanguageToggle } from "@/components/global/language-toggle";
 import { ThemeToggle } from "@/components/global/theme-toggle";
 import { cn } from "@/lib/utils";
-import { HelpCircle, LineChart, ShoppingCart } from "lucide-react";
+import { Coins, HelpCircle, LineChart, ShoppingCart } from "lucide-react";
 import { NavGroup } from "./sidebar-navigation-group";
 import type { NavItemType } from "./sidebar-navigation-item";
 
 const navItems: Record<string, NavItemType[]> = {
   main: [
     { icon: <LineChart className="h-4 w-4" />, label: "Dashboard", href: "/wallet" },
+    { icon: <Coins className="h-4 w-4" />, label: "Tokens", href: "/wallet/tokens" },
     { icon: <ShoppingCart className="h-4 w-4" />, label: "Orders", href: "/wallet/orders", badge: 6 },
   ],
   footer: [
