@@ -36,6 +36,7 @@ const providers: Provider[] = [
       const { username, password } = validatedCredentials.data;
 
       const walletResponse = await hasuraClient.request(getWalletByEmail, { email: username });
+      console.log("WALLETRESPONSE", walletResponse, password);
 
       // we could not find a wallet with this email address
       if (!walletResponse.starterkit_wallets_by_pk?.email) {
