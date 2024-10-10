@@ -1,12 +1,13 @@
 "use client";
 
+import { createTokenAction } from "@/components/features/create-token-wizard.action";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dropzone } from "@/components/ui/dropzone-s3";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import type * as React from "react";
-import { useForm } from "react-hook-form";
 import { useLocalStorage } from "usehooks-ts";
 import { Checkbox } from "../ui/checkbox";
 import { FormMultiStepProvider } from "../ui/form-multistep";
@@ -15,31 +16,38 @@ import { RepeatableForm } from "../ui/form-repeatable";
 import { NumericInput } from "../ui/input-numeric";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import {
-  type TokenizationWizardSchema,
-  TokenizationWizardValidator,
-  tokenizationWizardDefaultValues,
-} from "./tokenization-wizard.validator";
+  CreateTokenWizardSchema,
+  type CreateTokenWizardSchemaType,
+  createTokenWizardFormPageFields,
+} from "./create-token-wizard.schema";
 
 export interface TokenizationWizardProps extends React.HTMLAttributes<HTMLDivElement> {
-  defaultValues: Partial<TokenizationWizardSchema>;
+  defaultValues: Partial<CreateTokenWizardSchemaType>;
   formId: string;
 }
 
 export function TokenizationWizard({ className, defaultValues, formId, ...props }: TokenizationWizardProps) {
-  const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
+  const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<CreateTokenWizardSchemaType>>(
     "state",
     defaultValues,
   );
 
-  const form = useForm<TokenizationWizardSchema>({
-    resolver: zodResolver(TokenizationWizardValidator),
-    defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues, ...localStorageState },
-    mode: "all",
-  });
-
-  function onSubmit(values: TokenizationWizardSchema) {
-    console.log(values);
-  }
+  const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(
+    createTokenAction,
+    zodResolver(CreateTokenWizardSchema),
+    {
+      actionProps: {
+        onSuccess: () => {
+          resetFormAndAction();
+        },
+      },
+      formProps: {
+        mode: "all",
+        defaultValues: { ...createTokenWizardFormPageFields, ...defaultValues, ...localStorageState },
+      },
+      errorMapProps: {},
+    },
+  );
 
   return (
     <div className="TokenizationWizard container mt-8">
@@ -51,7 +59,7 @@ export function TokenizationWizard({ className, defaultValues, formId, ...props 
         <CardContent>
           <FormMultiStepProvider formId={formId} config={{ useLocalStorageState: false, useQueryState: false }}>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmitWithAction} className="space-y-4">
                 <FormPage form={form} title="Introduction">
                   <div>INTROPAGE</div>
                 </FormPage>

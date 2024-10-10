@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const TokenizationWizardValidator = z.object({
+export const CreateTokenWizardSchema = z.object({
   tokenName: z.string().min(2),
   tokenSymbol: z.string().min(2),
   tokenLogo: z
@@ -52,9 +52,9 @@ export const TokenizationWizardValidator = z.object({
   ),
 });
 
-export type TokenizationWizardSchema = z.infer<typeof TokenizationWizardValidator>;
+export type CreateTokenWizardSchemaType = z.infer<typeof CreateTokenWizardSchema>;
 
-export const tokenizationWizardDefaultValues: TokenizationWizardSchema = {
+export const createTokenWizardDefaultValues: CreateTokenWizardSchemaType = {
   tokenName: "",
   tokenSymbol: "",
   tokenLogo: undefined,
@@ -69,8 +69,8 @@ export const tokenizationWizardDefaultValues: TokenizationWizardSchema = {
   adminWalletAddresses: [],
 } as const;
 
-export type TokenizationWizardFormPageFields = keyof typeof tokenizationWizardDefaultValues;
+export type CreateTokenWizardFormPageFields = keyof typeof createTokenWizardDefaultValues;
 
-export const tokenizationWizardFormPageFields: TokenizationWizardFormPageFields[] = Object.keys(
-  tokenizationWizardDefaultValues,
-) as TokenizationWizardFormPageFields[];
+export const createTokenWizardFormPageFields: CreateTokenWizardFormPageFields[] = Object.keys(
+  createTokenWizardDefaultValues,
+) as CreateTokenWizardFormPageFields[];
