@@ -1,2 +1,0 @@
-
-[0m[2m[35m$[0m [2m[1mop run --env-file="../../.env.connect.1p" -- bunx settlemint connect[0m
