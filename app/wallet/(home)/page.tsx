@@ -1,4 +1,4 @@
-import { TokenizationWizard } from "@/components/features/tokenization-wizard";
+import { TokenizationWizard } from "@/components/features/create-token-wizard";
 import type { BreadcrumbItemType } from "@/components/secure/breadcrumb/ellipsis-dropdown";
 import { Main } from "@/components/secure/main";
 import { SidePanel } from "@/components/ui/sidepanel";
