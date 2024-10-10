@@ -4,12 +4,14 @@ import type { TokenizationWizardSchema } from "@/app/wallet/tokens/forms/create-
 import { auth } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 
+// TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const CreateTokenMutation = portalGraphql(`
 mutation CreateTokenMutation($address: String!, $from: String!, $name_: String!, $symbol_: String!) {
   StarterKitERC20FactoryCreateToken(
     address: $address
     from: $from
     input: {extraData_: "", name_: $name_, symbol_: $symbol_}
+    gasLimit: "2000000"
   ) {
     transactionHash
   }
