@@ -37,7 +37,7 @@ const SidePanel = ({ children, buttonText }: { children: React.ReactNode; button
   };
 
   return (
-    <div className="SidePanel relative flex ">
+    <div className="SidePanel relative flex z-20">
       {/* TODO: use shadcn like sidepanel trigger component for the button that is not part of the sidebar but composed in the page. That way we can open panels wherever we want */}
       {/* Button to open the sidebar */}
       <Button type="button" onClick={togglePanel} className="fixed right-[120px] top-[9px]">
