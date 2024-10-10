@@ -28,9 +28,7 @@ export function TokenTable() {
   const tokens = useSuspenseQuery({
     queryKey: ["all-tokens"],
     queryFn: () => {
-      return theGraphFallbackClient.request(ListAllTokens, {
-        //todo
-      });
+      return theGraphFallbackClient.request(ListAllTokens, {});
     },
   });
 
