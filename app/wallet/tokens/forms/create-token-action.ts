@@ -1,6 +1,5 @@
 "use server";
 
-import { setTimeout } from "node:timers/promises";
 import type { TokenizationWizardSchema } from "@/app/wallet/tokens/forms/create-token-form-validation";
 import { auth } from "@/lib/auth";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -13,16 +12,6 @@ mutation CreateTokenMutation($address: String!, $from: String!, $name_: String!,
     input: {extraData_: "", name_: $name_, symbol_: $symbol_}
   ) {
     transactionHash
-  }
-}
-`);
-
-const CreateTokenReceiptQuery = portalGraphql(`
-query CreateTokenReceipt($transactionHash: String!) {
-  StarterKitERC20FactoryCreateTokenReceipt(transactionHash: $transactionHash) {
-    blockNumber
-    contractAddress
-    status
   }
 }
 `);
@@ -48,25 +37,5 @@ export async function createToken(data: TokenizationWizardSchema) {
     throw new Error("Transaction hash not found");
   }
 
-  const startTime = Date.now();
-  const timeout = 30000; // 30 seconds
-
-  while (Date.now() - startTime < timeout) {
-    const receipt = await portalClient.request(CreateTokenReceiptQuery, {
-      transactionHash,
-    });
-
-    if (receipt.StarterKitERC20FactoryCreateTokenReceipt) {
-      const resolvedReceipt = receipt.StarterKitERC20FactoryCreateTokenReceipt;
-      if (resolvedReceipt.status === "Success") {
-        return resolvedReceipt;
-      }
-      throw new Error("Transaction failed");
-    }
-
-    // Wait for 500 milliseconds before the next attempt
-    await setTimeout(500);
-  }
-
-  throw new Error(`Transaction receipt not found within ${timeout / 1000} seconds`);
+  return transactionHash;
 }

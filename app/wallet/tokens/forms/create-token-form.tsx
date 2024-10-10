@@ -5,6 +5,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { FormMultiStepProvider } from "@/components/ui/form-multistep";
 import { FormPage } from "@/components/ui/form-page";
 import { Input } from "@/components/ui/input";
+import { portalClient, portalGraphql } from "@/lib/settlemint/clientside/portal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type * as React from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,17 @@ export interface CreateTokenFormProps extends React.HTMLAttributes<HTMLDivElemen
   defaultValues: Partial<TokenizationWizardSchema>;
 }
 
+const CreateTokenReceiptQuery = portalGraphql(`
+query CreateTokenReceiptQuery($transactionHash: String!) {
+  getTransaction(transactionHash: $transactionHash) {
+    receipt {
+      contractAddress
+      status
+      blockNumber
+    }
+  }
+}`);
+
 export function CreateTokenForm({ className, defaultValues, ...props }: CreateTokenFormProps) {
   const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
     "state",
@@ -36,7 +48,28 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
   function onSubmit(values: TokenizationWizardSchema) {
     toast.promise(
       async () => {
-        return createToken(values);
+        const transactionHash = await createToken(values);
+
+        const startTime = Date.now();
+        const timeout = 120000; // 2 minutes
+
+        while (Date.now() - startTime < timeout) {
+          const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+            transactionHash,
+          });
+
+          const receipt = txresult.getTransaction?.receipt;
+          if (receipt) {
+            if (receipt.status === "Success") {
+              return receipt;
+            }
+            throw new Error("Transaction failed");
+          }
+
+          // Wait for 500 milliseconds before the next attempt
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
       },
       {
         loading: "Creating token...",
