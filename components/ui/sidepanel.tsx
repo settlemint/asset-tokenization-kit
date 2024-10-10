@@ -8,7 +8,7 @@ import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect, useState, useTransition } from "react";
 import { Button } from "./button";
 
-const SidePanel = ({ children }: { children: React.ReactNode }) => {
+const SidePanel = ({ children, buttonText }: { children: React.ReactNode; buttonText: string }) => {
   const [isOpen, setIsOpen] = useQueryState("isOpen", parseAsBoolean.withDefault(false));
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -38,14 +38,17 @@ const SidePanel = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="SidePanel relative flex ">
+      {/* TODO: use shadcn like sidepanel trigger component for the button that is not part of the sidebar but composed in the page. That way we can open panels wherever we want */}
       {/* Button to open the sidebar */}
       <Button type="button" onClick={togglePanel} className="fixed right-[120px] top-[9px]">
-        Start Wizard
+        {buttonText}
       </Button>
       <Button type="button" onClick={handleSignOut} className="fixed right-[20px] top-[9px]">
         Sign out
       </Button>
 
+      {/* TODO: i would prefer this to be shadcn Sheet component, would fix the previous todo as well */}
+      {/* TODO: z-index issues on the tokens list page*/}
       {/* Radix UI Dialog */}
       <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
         <AnimatePresence>

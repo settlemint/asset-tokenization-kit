@@ -17,7 +17,7 @@ export default function WalletHome({ searchParams }: { searchParams: SearchParam
   return (
     <Main breadcrumbItems={breadcrumbItems}>
       <div>{JSON.stringify(process.env.SETTLEMINT_CONFIG)}</div>
-      <SidePanel>
+      <SidePanel buttonText="Start Wizard">
         <TokenizationWizard defaultValues={parsedParams.state} formId={parsedParams.formId || uuidv4()} />
       </SidePanel>
     </Main>
