@@ -1,1 +1,0 @@
-2024-10-07T14:02:32.987770Z  WARN turborepo_filewatch: encountered error watching filesystem enumerating recursive watch: IO error for operation on /home/pmualaba/Development/settlemint/starterkit-asset-tokenization/.git/.gitstatus.eeoLnN/a/1: No such file or directory (os error 2)
