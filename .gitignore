@@ -49,3 +49,4 @@ apollo.config.js
 *-cache.d.ts
 *-schema.graphql
 lib/settlemint/
+uploads/

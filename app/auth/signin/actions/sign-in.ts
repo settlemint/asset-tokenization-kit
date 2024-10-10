@@ -9,7 +9,6 @@ import { signInActionSchema } from "../schemas/sign-in-schema";
 export const signInAction = actionClient.schema(signInActionSchema).action(async ({ parsedInput }) => {
   try {
     const { provider, ...formData } = parsedInput;
-    console.log(formData);
     return await signIn(provider, {
       ...formData,
       redirectTo: "/wallet",

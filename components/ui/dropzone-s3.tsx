@@ -118,7 +118,7 @@ export function Dropzone({
     ),
   );
 
-  const handleUpload = (files: Array<File>): void => {
+  const handleUpload = async (files: Array<File>): Promise<void> => {
     handleExitHover();
     setFiles((prevFiles) => [...prevFiles, ...files]);
     const _actions: Action[] = [...storageStateActions];
@@ -143,83 +143,104 @@ export function Dropzone({
     setStorageStateActions(_actions);
 
     for (const file of files) {
-      const formData = new FormData();
-      formData.append(name, file);
-      const id = (file as File & { id: string }).id;
-      const xhr = new XMLHttpRequest();
+      try {
+        const id = (file as File & { id: string }).id;
 
-      xhr.open("POST", `/api/upload?id=${id}&name=${name}&uploadDir=${uploadDir ?? "uploads"}`, true);
-      setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
+        // Get the upload URL
+        const response = await fetch("/api/upload/s3", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+        });
 
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress((prev) => ({
-            ...prev,
-            [file.name]: progress,
-          }));
-        }
-      };
+        if (!response.ok) throw new Error("Failed to get upload URL");
 
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          setActions((prev) =>
-            prev.map((action) =>
-              action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
-            ),
-          );
-          toast({
-            title: "Success",
-            description: `Upload file ${file.name} successfully`,
-          });
+        const {
+          data: { uploadUrl },
+        } = await response.json();
 
-          const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
-          const localStorageState = {
-            [formId]: {
-              ...localStorageFiles,
-              [(file as File & { id: string }).id]: {
-                id: (file as File & { id: string }).id,
-                name: file.name,
-                size: file.size,
-                type: file.type,
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("PUT", uploadUrl, true);
+        setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress((prev) => ({
+              ...prev,
+              [file.name]: progress,
+            }));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
+              ),
+            );
+            toast({
+              title: "Success",
+              description: `Upload file ${file.name} successfully`,
+            });
+
+            const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
+            const localStorageState = {
+              [formId]: {
+                ...localStorageFiles,
+                [(file as File & { id: string }).id]: {
+                  id: (file as File & { id: string }).id,
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                },
               },
-            },
-          };
-          localStorage.setItem("files", JSON.stringify(localStorageState));
-        } else {
+            };
+            localStorage.setItem("files", JSON.stringify(localStorageState));
+          } else {
+            setActions((prev) =>
+              prev.map((action) =>
+                action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
+              ),
+            );
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: `Failed to upload ${file.name}`,
+            });
+          }
+        };
+
+        xhr.onerror = () => {
           setActions((prev) =>
             prev.map((action) =>
               action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
             ),
           );
+
+          setActiveUploads((prev) => {
+            const { [id]: _, ...rest } = prev;
+            return rest;
+          });
+
           toast({
             variant: "destructive",
             title: "Error",
             description: `Failed to upload ${file.name}`,
           });
-        }
-      };
+        };
 
-      xhr.onerror = () => {
-        setActions((prev) =>
-          prev.map((action) =>
-            action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
-          ),
-        );
-
-        setActiveUploads((prev) => {
-          const { [id]: _, ...rest } = prev;
-          return rest;
-        });
-
+        xhr.send(file);
+      } catch (error) {
+        console.error("Upload error:", error);
         toast({
+          title: "Upload Failed",
+          description: "There was an error initiating your upload.",
           variant: "destructive",
-          title: "Error",
-          description: `Failed to upload ${file.name}`,
         });
-      };
-
-      xhr.send(formData);
+      }
     }
   };
 
@@ -252,12 +273,9 @@ export function Dropzone({
     try {
       const fileName = action.file_name.split(".").slice(0, -1).join(".");
       const extension = action.file_name.split(".").pop();
-      const response = await fetch(
-        `/api/upload?fileName=${encodeURIComponent(fileName)}_id_${action.id}.${extension}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await fetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
+        method: "DELETE",
+      });
       if (!response.ok) {
         throw new Error("Failed to delete file");
       }

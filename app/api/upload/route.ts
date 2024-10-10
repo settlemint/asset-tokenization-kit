@@ -1,5 +1,5 @@
-import { mkdir, readdir, stat, unlink } from "node:fs/promises";
-import { join, parse } from "node:path";
+import { mkdir, readdir, stat, unlink, writeFile } from "node:fs/promises";
+import path, { join, parse } from "node:path";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface UploadResult {
@@ -25,14 +25,16 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(bytes);
         const uploadPath = join(process.cwd(), uploadDir);
         const fileNameWithId = id ? `${parse(file.name).name}_id_${id}${parse(file.name).ext}` : file.name;
-        // const filePath = join(uploadPath, fileNameWithId);
-        // filePromises.push(
-        //   writeFile(filePath, buffer).then(() => ({
-        //     fileName: fileNameWithId,
-        //     path: filePath,
-        //     url: `/${uploadDir}/${fileNameWithId}`,
-        //   })),
-        // );
+        const filePath = join(uploadPath, fileNameWithId);
+        filePromises.push(
+          mkdir(path.dirname(filePath), { recursive: true })
+            .then(() => writeFile(filePath, buffer))
+            .then(() => ({
+              fileName: fileNameWithId,
+              path: filePath,
+              url: `/${uploadDir}/${fileNameWithId}`,
+            })),
+        );
       }
     }
 

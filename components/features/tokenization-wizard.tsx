@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dropzone } from "@/components/ui/dropzone";
+import { Dropzone } from "@/components/ui/dropzone-s3";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,9 +22,10 @@ import {
 
 export interface TokenizationWizardProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValues: Partial<TokenizationWizardSchema>;
+  formId: string;
 }
 
-export function TokenizationWizard({ className, defaultValues, ...props }: TokenizationWizardProps) {
+export function TokenizationWizard({ className, defaultValues, formId, ...props }: TokenizationWizardProps) {
   const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
     "state",
     defaultValues,
@@ -48,7 +49,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
           <CardDescription>Issue a new token.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider config={{ useLocalStorageState: false, useQueryState: false }}>
+          <FormMultiStepProvider formId={formId} config={{ useLocalStorageState: false, useQueryState: false }}>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormPage form={form} title="Introduction">
@@ -57,7 +58,7 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                 <FormPage form={form} title="Terms & Conditions">
                   <div>TERMS & CONDITIONS</div>
                 </FormPage>
-                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol"]}>
+                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol", "tokenLogo"]}>
                   {/* Token Name */}
                   <FormField
                     control={form.control}
@@ -92,23 +93,25 @@ export function TokenizationWizard({ className, defaultValues, ...props }: Token
                   <FormField
                     control={form.control}
                     name="tokenLogo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Logo</FormLabel>
-                        <FormControl>
-                          <Dropzone
-                            label="Click, or drop your logo here"
-                            name={field.name}
-                            accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
-                            maxSize={1024 * 1024 * 10}
-                            maxFiles={10}
-                            multiple={true}
-                          />
-                        </FormControl>
-                        <FormDescription>This is the logo of the token</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Token Logo</FormLabel>
+                          <FormControl>
+                            <Dropzone
+                              label="Click, or drop your logo here"
+                              name={field.name}
+                              accept={{ images: [".jpg", ".jpeg", ".png", ".webp"], text: [] }}
+                              maxSize={1024 * 1024 * 10}
+                              maxFiles={10}
+                              multiple={true}
+                            />
+                          </FormControl>
+                          <FormDescription>This is the logo of the token</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                 </FormPage>
                 <FormPage
