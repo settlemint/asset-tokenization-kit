@@ -94,7 +94,10 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
           <CardDescription>Issue a new token.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider config={{ useLocalStorageState: false, useQueryState: false }}>
+          <FormMultiStepProvider
+            config={{ useLocalStorageState: false, useQueryState: false }}
+            formId="create-token-form"
+          >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormPage form={form} title="Introduction">
