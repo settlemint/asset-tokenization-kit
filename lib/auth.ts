@@ -1,5 +1,5 @@
 import { compare } from "bcryptjs";
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import type { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
@@ -75,4 +75,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
   },
   providers,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.wallet = (user as { wallet: string }).wallet;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.wallet = token.wallet as string;
+      }
+      return session;
+    },
+  },
 });
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      wallet: string;
+    } & DefaultSession["user"];
+  }
+}

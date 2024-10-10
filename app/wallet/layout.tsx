@@ -1,5 +1,6 @@
 import { Logo } from "@/components/public/logo";
 import { SidebarNavigation } from "@/components/secure/sidebar/sidebar-navigation";
+import { Toaster } from "@/components/ui/sonner";
 import { Link } from "@/lib/i18n";
 import type { PropsWithChildren } from "react";
 
@@ -19,6 +20,7 @@ export default async function WalletLayout({ children }: PropsWithChildren) {
         </div>
       </div>
       {children}
+      <Toaster richColors />
     </div>
   );
 }

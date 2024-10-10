@@ -5,8 +5,9 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect } from "react";
+import { Button } from "./button";
 
-const SidePanel = ({ children }: { children: React.ReactNode }) => {
+const SidePanel = ({ children, buttonText }: { children: React.ReactNode; buttonText: string }) => {
   const [isOpen, setIsOpen] = useQueryState("isOpen", parseAsBoolean.withDefault(false));
 
   useEffect(() => {
@@ -23,15 +24,14 @@ const SidePanel = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="SidePanel relative flex ">
+      {/* TODO: use shadcn like sidepanel trigger component for the button that is not part of the sidebar but composed in the page. That way we can open panels wherever we want */}
       {/* Button to open the sidebar */}
-      <button
-        type="button"
-        onClick={togglePanel}
-        className="fixed right-[330px] top-[9px] bg-blue-500 text-white px-4 py-2 rounded-md"
-      >
-        Start Wizard
-      </button>
+      <Button type="button" onClick={togglePanel} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+        {buttonText}
+      </Button>
 
+      {/* TODO: i would prefer this to be shadcn Sheet component, would fix the previous todo as well */}
+      {/* TODO: z-index issues on the tokens list page*/}
       {/* Radix UI Dialog */}
       <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
         <AnimatePresence>
