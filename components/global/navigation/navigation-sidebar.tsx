@@ -1,26 +1,13 @@
 import { LanguageToggle } from "@/components/global/language-toggle";
+import { NavGroup } from "@/components/global/navigation/navigation-group";
+import type { NavItemType } from "@/components/global/navigation/navigation-item";
 import { ThemeToggle } from "@/components/global/theme-toggle";
 import { cn } from "@/lib/utils";
-import { Coins, HelpCircle, LineChart, ShoppingCart } from "lucide-react";
-import { NavGroup } from "./sidebar-navigation-group";
-import type { NavItemType } from "./sidebar-navigation-item";
 
-const navItems: Record<string, NavItemType[]> = {
-  main: [
-    { icon: <LineChart className="h-4 w-4" />, label: "Dashboard", href: "/wallet" },
-    { icon: <Coins className="h-4 w-4" />, label: "Tokens", href: "/wallet/tokens" },
-    { icon: <ShoppingCart className="h-4 w-4" />, label: "Orders", href: "/wallet/orders", badge: 6 },
-  ],
-  footer: [
-    {
-      icon: <HelpCircle className="h-4 w-4" />,
-      label: "Docs",
-      href: "https://console.settlemint.com/documentation",
-    },
-  ],
-};
-
-export function SidebarNavigation({ variant = "sidebar" }: { variant?: "sidebar" | "mobile" }) {
+export function SidebarNavigation({
+  variant = "sidebar",
+  navItems = { main: [], footer: [] },
+}: { variant?: "sidebar" | "mobile"; navItems?: Record<string, NavItemType[]> }) {
   return (
     <div className={cn(variant === "sidebar" && "flex flex-col h-full")}>
       <NavGroup

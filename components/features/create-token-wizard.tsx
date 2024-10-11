@@ -21,12 +21,12 @@ import {
   createTokenWizardFormPageFields,
 } from "./create-token-wizard.schema";
 
-export interface TokenizationWizardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CreateTokenWizardProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultValues: Partial<CreateTokenWizardSchemaType>;
   formId: string;
 }
 
-export function TokenizationWizard({ className, defaultValues, formId, ...props }: TokenizationWizardProps) {
+export function CreateTokenWizard({ className, defaultValues, formId, ...props }: CreateTokenWizardProps) {
   const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<CreateTokenWizardSchemaType>>(
     "state",
     defaultValues,
@@ -50,7 +50,7 @@ export function TokenizationWizard({ className, defaultValues, formId, ...props 
   );
 
   return (
-    <div className="TokenizationWizard container mt-8">
+    <div className="CreateTokenWizard container mt-8">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Create Token</CardTitle>

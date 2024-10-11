@@ -2,8 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/lib/i18n";
-import { usePathname } from "@/lib/i18n";
+import { Link, usePathname } from "@/lib/i18n";
 import type { MouseEventHandler, ReactNode } from "react";
 
 export interface NavItemType {
@@ -31,7 +30,7 @@ export function NavItem({ icon, label, href, badge, onClick, variant = "sidebar"
     if (isActive) {
       return (
         <span
-          className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+          className={`NavItem NavItem__isActive mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
             isActive ? "bg-accent text-primary font-bold" : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -46,7 +45,7 @@ export function NavItem({ icon, label, href, badge, onClick, variant = "sidebar"
     return onClick ? (
       <Button
         onClick={onClick}
-        className={`mx-[-0.65rem] flex w-full items-center gap-4 rounded-xl px-3 py-2 text-left ${
+        className={`NavItem NavItem__button mx-[-0.65rem] flex w-full items-center gap-4 rounded-xl px-3 py-2 text-left ${
           isActive ? "bg-accent text-primary font-bold" : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -59,7 +58,7 @@ export function NavItem({ icon, label, href, badge, onClick, variant = "sidebar"
     ) : (
       <Link
         href={href}
-        className={`mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+        className={`NavItem NavItem__link mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
           isActive ? "bg-accent text-primary font-bold" : "text-muted-foreground hover:text-foreground"
         }`}
       >
@@ -75,8 +74,10 @@ export function NavItem({ icon, label, href, badge, onClick, variant = "sidebar"
   const commonButtonProps = {
     variant: "ghost" as const,
     size: "sm" as const,
-    className: `w-full justify-start ${
-      isActive ? "bg-accent text-primary font-bold" : "text-muted-foreground hover:text-foreground"
+    className: `NavItem w-full justify-start ${
+      isActive
+        ? "NavItem__isActive bg-accent text-primary font-bold"
+        : "NavItem__button text-muted-foreground hover:text-foreground"
     } disabled:opacity-100 disabled:text-primary disabled:font-bold`,
     disabled: isActive,
   };

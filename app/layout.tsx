@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <LanguageProvider>
       <html lang={languageTag()} suppressHydrationWarning>
-        <body className={cn("min-h-screen font-sans antialiased", fontSans.variable)}>
+        <body className={cn("RootLayout min-h-screen font-sans antialiased", fontSans.variable)}>
           <SettleMintProvider cookie={cookie}>{children}</SettleMintProvider>
         </body>
       </html>

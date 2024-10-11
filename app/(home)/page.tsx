@@ -1,4 +1,4 @@
-import { PublicHero } from "@/components/public/hero";
+import { PublicHero } from "@/components/public/public-hero";
 
 export default function Home() {
   return (

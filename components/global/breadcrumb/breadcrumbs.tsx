@@ -20,7 +20,7 @@ interface ProcessedBreadcrumbItems {
  * @param items - The array of breadcrumb items to process.
  * @returns An object containing visible items and collapsed items.
  */
-function processBreadcrumbItems(items: BreadcrumbItemType[]): ProcessedBreadcrumbItems {
+function procesBreadcrumbItems(items: BreadcrumbItemType[]): ProcessedBreadcrumbItems {
   if (items.length <= 3) {
     return { visibleItems: items, collapsedItems: [] };
   }
@@ -57,17 +57,17 @@ function renderBreadcrumbItem(item: BreadcrumbItemType | null, collapsedItems: B
   return <BreadcrumbPage>{item.label}</BreadcrumbPage>;
 }
 
-interface SecureBreadcrumbProps {
+interface BreadcrumbsProps {
   items: BreadcrumbItemType[];
 }
 
 /**
- * Renders a secure breadcrumb component with collapsible items.
+ * Renders a breadcrumb component with collapsible items.
  * @param props - The component props.
- * @returns The rendered SecureBreadcrumb component.
+ * @returns The rendered Breadcrumb component.
  */
-export default function SecureBreadcrumb({ items }: SecureBreadcrumbProps) {
-  const { visibleItems, collapsedItems } = useMemo(() => processBreadcrumbItems(items), [items]);
+export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const { visibleItems, collapsedItems } = useMemo(() => procesBreadcrumbItems(items), [items]);
 
   return (
     <Breadcrumb>

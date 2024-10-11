@@ -1,4 +1,4 @@
-import { NavItem, type NavItemType } from "./sidebar-navigation-item";
+import { NavItem, type NavItemType } from "./navigation-item";
 
 interface NavGroupProps {
   items: NavItemType[];
@@ -8,7 +8,7 @@ interface NavGroupProps {
 
 export function NavGroup({ items, className, variant = "sidebar" }: NavGroupProps) {
   return (
-    <nav className={className}>
+    <nav className={`NavGroup ${className}`}>
       {items.map((item) => (
         <NavItem key={item.label} {...item} variant={variant} />
       ))}
