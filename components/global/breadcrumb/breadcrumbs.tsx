@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Link } from "@/lib/i18n";
+import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
 import { type BreadcrumbItemType, EllipsisDropdown } from "./ellipsis-dropdown";
 
@@ -67,17 +70,31 @@ interface BreadcrumbsProps {
  * @returns The rendered Breadcrumb component.
  */
 export default function Breadcrumbs({ items }: BreadcrumbsProps) {
-  const { visibleItems, collapsedItems } = useMemo(() => procesBreadcrumbItems(items), [items]);
+  const pathname = usePathname(); // Gets the current path
+
+  const breadcrumbPrefix = items[0];
+  const breadcrumbItems = [breadcrumbPrefix].concat(items.slice(1).find((item) => item.href === pathname) ?? []);
+
+  const { visibleItems, collapsedItems } = useMemo(() => procesBreadcrumbItems(breadcrumbItems), [breadcrumbItems]);
+
+  const visibleBreadcrumbs = visibleItems.map((item, i) => {
+    if (i === visibleItems.length - 1 && item?.href) {
+      return { label: item.label };
+    }
+    return item;
+  });
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {visibleItems.map((item, index) => (
-          <Fragment key={item ? item.label : `ellipsis-${index}`}>
-            {index > 0 && <BreadcrumbSeparator />}
-            <BreadcrumbItem>{renderBreadcrumbItem(item, collapsedItems)}</BreadcrumbItem>
-          </Fragment>
-        ))}
+        {visibleBreadcrumbs.map((item, index) => {
+          return (
+            <Fragment key={item ? item.label : `ellipsis-${index}`}>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem>{renderBreadcrumbItem(item, collapsedItems)}</BreadcrumbItem>
+            </Fragment>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );
