@@ -1,6 +1,6 @@
 "use client";
 
-import { createTokenAction } from "@/components/features/create-token-wizard.action";
+import { createTokenAction } from "@/app/wallet/(home)/forms/create-token-wizard.action";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dropzone } from "@/components/ui/dropzone-s3";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -9,12 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import type * as React from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { Checkbox } from "../ui/checkbox";
-import { FormMultiStepProvider } from "../ui/form-multistep";
-import { FormPage } from "../ui/form-page";
-import { RepeatableForm } from "../ui/form-repeatable";
-import { NumericInput } from "../ui/input-numeric";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Checkbox } from "../../../../components/ui/checkbox";
+import { FormMultiStepProvider } from "../../../../components/ui/form-multistep";
+import { FormPage } from "../../../../components/ui/form-page";
+import { RepeatableForm } from "../../../../components/ui/form-repeatable";
+import { NumericInput } from "../../../../components/ui/input-numeric";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import {
   CreateTokenWizardSchema,
   type CreateTokenWizardSchemaType,

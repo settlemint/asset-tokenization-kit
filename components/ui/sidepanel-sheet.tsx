@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -27,9 +25,9 @@ export function SidePanel({
         </SheetHeader>
         <div className="-ml-8 -mr-8">{children}</div>
         <SheetFooter>
-          <SheetClose asChild>
+          {/* <SheetClose asChild>
             <Button type="submit">Save changes</Button>
-          </SheetClose>
+          </SheetClose> */}
         </SheetFooter>
       </SheetContent>
     </Sheet>

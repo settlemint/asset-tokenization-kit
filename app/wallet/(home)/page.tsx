@@ -1,4 +1,4 @@
-import { CreateTokenWizard } from "@/components/features/create-token-wizard";
+import { CreateTokenWizard } from "@/app/wallet/(home)/forms/create-token-wizard";
 import { Button } from "@/components/ui/button";
 import { SidePanel } from "@/components/ui/sidepanel-sheet";
 import type { Metadata } from "next";
