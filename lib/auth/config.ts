@@ -2,6 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: Omit<NextAuthConfig, "providers"> = {
   secret: process.env.SETTLEMINT_AUTH_SECRET,
+  trustHost: true,
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
