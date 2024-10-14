@@ -1,10 +1,16 @@
-import { auth } from "@/lib/auth";
 import { middleware as i18nMiddleware } from "@/lib/i18n";
 import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import { match } from "path-to-regexp";
+import { authConfig } from "./lib/auth/config";
 
 const isUserAuthenticatedRoute = match(["/wallet", "/wallet/*path"]);
+
+const { auth } = NextAuth({
+  ...authConfig,
+  providers: [], // we don't want to import bcryptjs in the middleware
+});
 
 export default auth((request) => {
   const proxyResponse = proxyMiddleware(request);
