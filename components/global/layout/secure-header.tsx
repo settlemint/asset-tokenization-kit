@@ -21,10 +21,11 @@ import {
 import { Link, usePathname } from "@/lib/i18n";
 import { availableLanguageTags, languageTag } from "@/paraglide/runtime";
 import { getEmoji, getNativeName } from "language-flag-colors";
-import { Globe, LogOut, MoonIcon, SunIcon } from "lucide-react";
+import { Globe, LogOut, MoonIcon, SunIcon, SunMoon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { startTransition, useCallback } from "react";
+import { type GravatarOptions, getGravatarUrl } from "react-awesome-gravatar";
 
 interface SecureHeaderProps {
   breadcrumbItems: BreadcrumbItemType[];
@@ -51,6 +52,11 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
     [setTheme],
   );
 
+  const defaultAvatarOptions: GravatarOptions = {
+    default: "identicon",
+    size: 200,
+  };
+  const avatarUrl = getGravatarUrl(session.data?.user.email ?? "", defaultAvatarOptions);
   const handleSignOut = () => {
     startTransition(async () => {
       try {
@@ -69,13 +75,13 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={avatarUrl} />
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-80">
             <div className="flex flex-col items-center justify-center p-4">
               <Avatar className="cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage src={avatarUrl} />
               </Avatar>
               <div className="pt-4 font-bold">{session.data?.user.email}</div>
               <div className="mt-1 text-xs">{session.data?.user.wallet}</div>
@@ -86,11 +92,11 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
             <DropdownMenuGroup>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Globe className="mr-2 h-4 w-4" />
+                  <SunMoon className="mr-2 h-4 w-4" />
                   <span>Theme</span>
                   <span className="text-md ml-3" aria-hidden="true">
                     {resolvedTheme === "light" && (
-                      <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                      <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-yellow-500" />
                     )}
                     {resolvedTheme === "dark" && (
                       <MoonIcon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -103,7 +109,7 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
                       <DropdownMenuItem key={value} onClick={() => handleSetTheme(value)}>
                         {label === "Light" && (
                           <>
-                            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all text-gray-950 dark:text-yellow-500" />{" "}
+                            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all text-yellow-500 dark:text-yellow-500" />{" "}
                             <span className="ml-3">{label}</span>
                           </>
                         )}

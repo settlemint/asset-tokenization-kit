@@ -125,6 +125,7 @@
     "path-to-regexp": "8.2.0",
     "pino-pretty": "11.2.2",
     "react": "18.3.1",
+    "react-awesome-gravatar": "2.0.3",
     "react-day-picker": "8.10.1",
     "react-dom": "18.3.1",
     "react-dropzone": "14.2.9",
