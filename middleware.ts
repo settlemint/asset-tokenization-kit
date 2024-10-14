@@ -18,6 +18,7 @@ export default auth((request) => {
     return proxyResponse;
   }
 
+  console.log(isUserAuthenticatedRoute(request.nextUrl.pathname), request.auth);
   if (isUserAuthenticatedRoute(request.nextUrl.pathname) && !request.auth) {
     const language = i18nMiddleware.detectLanguage(request);
     return NextResponse.redirect(new URL(`/${language}/auth/signin`, request.url));
