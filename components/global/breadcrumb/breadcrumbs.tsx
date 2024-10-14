@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Link } from "@/lib/i18n";
+import { usePathname } from "next/navigation";
 import { Fragment, useMemo } from "react";
 import { type BreadcrumbItemType, EllipsisDropdown } from "./ellipsis-dropdown";
 
@@ -20,7 +23,7 @@ interface ProcessedBreadcrumbItems {
  * @param items - The array of breadcrumb items to process.
  * @returns An object containing visible items and collapsed items.
  */
-function processBreadcrumbItems(items: BreadcrumbItemType[]): ProcessedBreadcrumbItems {
+function procesBreadcrumbItems(items: BreadcrumbItemType[]): ProcessedBreadcrumbItems {
   if (items.length <= 3) {
     return { visibleItems: items, collapsedItems: [] };
   }
@@ -57,27 +60,41 @@ function renderBreadcrumbItem(item: BreadcrumbItemType | null, collapsedItems: B
   return <BreadcrumbPage>{item.label}</BreadcrumbPage>;
 }
 
-interface SecureBreadcrumbProps {
+interface BreadcrumbsProps {
   items: BreadcrumbItemType[];
 }
 
 /**
- * Renders a secure breadcrumb component with collapsible items.
+ * Renders a breadcrumb component with collapsible items.
  * @param props - The component props.
- * @returns The rendered SecureBreadcrumb component.
+ * @returns The rendered Breadcrumb component.
  */
-export default function SecureBreadcrumb({ items }: SecureBreadcrumbProps) {
-  const { visibleItems, collapsedItems } = useMemo(() => processBreadcrumbItems(items), [items]);
+export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const pathname = usePathname(); // Gets the current path
+
+  const breadcrumbPrefix = items[0];
+  const breadcrumbItems = [breadcrumbPrefix].concat(items.slice(1).find((item) => item.href === pathname) ?? []);
+
+  const { visibleItems, collapsedItems } = useMemo(() => procesBreadcrumbItems(breadcrumbItems), [breadcrumbItems]);
+
+  const visibleBreadcrumbs = visibleItems.map((item, i) => {
+    if (i === visibleItems.length - 1 && item?.href) {
+      return { label: item.label };
+    }
+    return item;
+  });
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {visibleItems.map((item, index) => (
-          <Fragment key={item ? item.label : `ellipsis-${index}`}>
-            {index > 0 && <BreadcrumbSeparator />}
-            <BreadcrumbItem>{renderBreadcrumbItem(item, collapsedItems)}</BreadcrumbItem>
-          </Fragment>
-        ))}
+        {visibleBreadcrumbs.map((item, index) => {
+          return (
+            <Fragment key={item ? item.label : `ellipsis-${index}`}>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem>{renderBreadcrumbItem(item, collapsedItems)}</BreadcrumbItem>
+            </Fragment>
+          );
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   );

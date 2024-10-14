@@ -27,7 +27,6 @@ export async function POST(request: Request): Promise<NextResponse<ActionRespons
 
     const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
 
-    console.log("UPLOADURL", uploadUrl);
     return NextResponse.json({ success: true, data: { uploadUrl } });
   } catch (error) {
     console.error("Error generating presigned URL:", error);

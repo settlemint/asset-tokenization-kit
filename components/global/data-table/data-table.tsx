@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className="p-1">
+    <div className="DataTable p-1">
       <div className="flex py-2 mb-2">
         {data.length > 0 && isSearch && (
           <DataTableFilter table={table} placeholder={filterPlaceholder} column={filterColumn} />

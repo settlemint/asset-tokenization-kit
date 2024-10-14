@@ -11,22 +11,12 @@ import * as m from "@/paraglide/messages.js";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const footerLinks = () => [
-  {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/",
-    label: m.awful_dirty_marten_drip(),
-  },
-  {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/privacy-policy/",
-    label: m.even_dark_parakeet_climb(),
-  },
-  {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/cookie-policy/",
-    label: m.tidy_key_bulldog_grin(),
-  },
-];
+export interface FooterLink {
+  label: string;
+  href: string;
+}
 
-export function PublicFooter() {
+export function PublicFooter({ footerLinks = [] }: { footerLinks: FooterLink[] }) {
   return (
     <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6">
       <p className="text-xs">
@@ -38,7 +28,7 @@ export function PublicFooter() {
       </p>
       <NavigationMenu className="sm:ml-auto flex gap-4 sm:gap-6">
         <NavigationMenuList>
-          {footerLinks().map(({ href, label }) => (
+          {footerLinks.map(({ href, label }) => (
             <NavigationMenuItem key={href}>
               <Link href={href} legacyBehavior passHref>
                 <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-xs")}>{label}</NavigationMenuLink>

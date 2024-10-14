@@ -1,11 +1,14 @@
+import type { NavItemType } from "@/components/global/navigation/navigation-item";
+import { SidebarNavigation } from "@/components/global/navigation/navigation-sidebar";
 import { Logo } from "@/components/public/logo";
-import { SidebarNavigation } from "@/components/secure/sidebar/sidebar-navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "@/lib/i18n";
 import { Menu } from "lucide-react";
 
-export function MobileNavigation() {
+export function MobileNavigation({
+  navItems = { main: [], footer: [] },
+}: { navItems?: Record<string, NavItemType[]> }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -18,7 +21,7 @@ export function MobileNavigation() {
         <Link href="/wallet" className="flex items-center gap-2 text-lg font-semibold mb-4">
           <Logo />
         </Link>
-        <SidebarNavigation variant="mobile" />
+        <SidebarNavigation variant="mobile" navItems={navItems} />
       </SheetContent>
     </Sheet>
   );
