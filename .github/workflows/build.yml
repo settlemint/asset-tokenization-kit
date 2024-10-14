@@ -200,7 +200,7 @@ jobs:
           bunx settlemint platform update custom-deployment ${{ env.VERSION }} --prod --wait
 
       - name: Update the Custom Deployment (development)
-        # if: ${{ env.TAG == 'main' }}
+        if: ${{ env.TAG == 'main' }}
         run: |
           echo "Updating the Custom Deployment with the new version ${{ env.VERSION }}"
           bunx settlemint platform update custom-deployment ${{ env.VERSION }} --wait
