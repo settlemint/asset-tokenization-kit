@@ -36,7 +36,6 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
   const currentLanguage = languageTag();
   const { setTheme, theme, resolvedTheme } = useTheme();
   const session = useSession();
-  console.log("session", session);
 
   const themeOptions = [
     { value: "light", label: "Light" },
