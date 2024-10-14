@@ -1,6 +1,6 @@
 "use client";
 
-import { useMultiFormStep } from "@/components/ui/form-multistep";
+import { useMultiFormStep } from "@/components/ui-settlemint/form-multistep";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import {
   CheckIcon,
@@ -15,8 +15,8 @@ import { useCallback, useEffect, useState } from "react";
 import ReactDropzone from "react-dropzone";
 import { useLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
-import { useToast } from "./../hooks/use-toast";
-import { Badge } from "./badge";
+import { useToast } from "../hooks/use-toast";
+import { Badge } from "../ui/badge";
 
 interface DropzoneProps {
   label: string;

@@ -1,6 +1,6 @@
 import { CreateTokenWizard } from "@/app/wallet/(home)/forms/create-token-wizard";
+import { SidePanel } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Button } from "@/components/ui/button";
-import { SidePanel } from "@/components/ui/sidepanel-sheet";
 import type { Metadata } from "next";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
 import { v4 as uuidv4 } from "uuid";

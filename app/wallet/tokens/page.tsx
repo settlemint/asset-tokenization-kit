@@ -1,6 +1,6 @@
 import type { BreadcrumbItemType } from "@/components/global/breadcrumb/ellipsis-dropdown";
+import { SidePanel } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Button } from "@/components/ui/button";
-import { SidePanel } from "@/components/ui/sidepanel-sheet";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
 import { CreateTokenForm } from "./forms/create-token-form";
 import { TokenTable } from "./tables/tokens-table";
