@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider, isServer } from "@tanstack/react-query";
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
+import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import type { PropsWithChildren } from "react";
 
@@ -32,9 +33,11 @@ export function SettleMintProvider({ children, cookie }: PropsWithChildren<{ coo
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
-      </QueryClientProvider>
+      <SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
+        </QueryClientProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }

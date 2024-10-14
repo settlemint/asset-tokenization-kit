@@ -11,10 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -23,8 +21,10 @@ import {
 import { Link, usePathname } from "@/lib/i18n";
 import { availableLanguageTags, languageTag } from "@/paraglide/runtime";
 import { getEmoji, getNativeName } from "language-flag-colors";
-import { CreditCard, Globe, Keyboard, LogOut, Settings } from "lucide-react";
-import { startTransition } from "react";
+import { Globe, LogOut, MoonIcon, SunIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { startTransition, useCallback } from "react";
 
 interface SecureHeaderProps {
   breadcrumbItems: BreadcrumbItemType[];
@@ -34,6 +34,23 @@ interface SecureHeaderProps {
 export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [] } }: SecureHeaderProps) {
   const pathname = usePathname();
   const currentLanguage = languageTag();
+  const { setTheme, theme, resolvedTheme } = useTheme();
+  const session = useSession();
+
+  const themeOptions = [
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+    { value: "system", label: "System" },
+  ] as const;
+
+  const handleSetTheme = useCallback(
+    (newTheme: string) => {
+      console.log("newTheme", newTheme);
+      setTheme(newTheme);
+    },
+    [setTheme],
+  );
+
   const handleSignOut = () => {
     startTransition(async () => {
       try {
@@ -45,38 +62,62 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
   };
 
   return (
-    <header className="SecureHeader flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6">
+    <header className="SecureHeader relative flex h-14 items-center gap-4 px-4 lg:h-[60px] lg:px-6">
       <MobileNavigation navItems={navItems} />
       <Breadcrumbs items={breadcrumbItems} />
-      <div className="fixed right-20 top-[9px]">
+      <div className="SecureHeader__UserDropdown fixed right-8 top-[9px]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar>
+            <Avatar className="cursor-pointer">
               <AvatarImage src="https://github.com/shadcn.png" />
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CreditCard className="mr-2 h-4 w-4" />
-                <span>Billing</span>
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
+          <DropdownMenuContent className="w-80">
+            <div className="flex flex-col items-center justify-center p-4">
+              <Avatar className="cursor-pointer">
+                <AvatarImage src="https://github.com/shadcn.png" />
+              </Avatar>
+              <div className="pt-4 font-bold">{session.data?.user.email}</div>
+              <div className="mt-1 text-xs">{session.data?.user.wallet}</div>
+            </div>
 
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Keyboard className="mr-2 h-4 w-4" />
-                <span>Keyboard shortcuts</span>
-                <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Globe className="mr-2 h-4 w-4" />
+                  <span>Theme</span>
+                  <span className="text-md ml-3" aria-hidden="true">
+                    {resolvedTheme === "light" && (
+                      <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    )}
+                    {resolvedTheme === "dark" && (
+                      <MoonIcon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    )}
+                  </span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    {themeOptions.map(({ value, label }) => (
+                      <DropdownMenuItem key={value} onClick={() => handleSetTheme(value)}>
+                        {label === "Light" && (
+                          <>
+                            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all text-gray-950 dark:text-yellow-500" />{" "}
+                            <span className="ml-3">{label}</span>
+                          </>
+                        )}
+                        {label === "Dark" && (
+                          <>
+                            <MoonIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all  text-gray-950 dark:text-gray-300" />
+                            <span className="ml-3">{label}</span>
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <Globe className="mr-2 h-4 w-4" />
@@ -103,6 +144,7 @@ export function SecureHeader({ breadcrumbItems, navItems = { main: [], footer: [
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
