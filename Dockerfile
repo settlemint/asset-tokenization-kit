@@ -1,4 +1,5 @@
-FROM oven/bun:1.1.30
+# FROM oven/bun:1.1.30
+FROM node:22.9.0-alpine
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -10,4 +11,6 @@ COPY ./.next/static ./.next/static
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["/usr/local/bin/bun", "run", "server.js"]
+# Bun fails with The Request.signal getter can only be used on instances of Request
+#CMD ["/usr/local/bin/bun", "run", "server.js"]
+CMD ["node", "server.js"]
