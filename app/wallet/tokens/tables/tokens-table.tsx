@@ -69,7 +69,7 @@ export function TokenTable() {
             const { id } = row.original;
 
             return (
-              <Link prefetch={false} href={`/sonybankstablecoin/operator/stablecoin/${id}`}>
+              <Link prefetch={false} href={`/wallet/tokens/${id}/details`}>
                 <Button variant="outline">Details</Button>
               </Link>
             );
