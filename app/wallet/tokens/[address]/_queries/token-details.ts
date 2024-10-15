@@ -2,36 +2,42 @@ import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemin
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 const TokenDetails = theGraphFallbackGraphql(`
-  query TokenDetails($id: ID = "") {
-    erc20Contract(id: $id) {
-      balances {
-        account {
-          id
+query TokenDetails($id: ID!) {
+  erc20Contract(id: $id) {
+    balances {
+      account {
+        id
+        ERC20transferFromEvent {
+          timestamp
         }
-        value
+        ERC20transferToEvent {
+          timestamp
+        }
       }
-      decimals
-      extraData
-      id
-      name
-      symbol
-      totalSupply
-      transfers{
-        from {
-          id
-        }
-        timestamp
-        value
-        to {
-          id
-        }
-        transaction {
-          id
-          blockNumber
-        }
+      value
+    }
+    decimals
+    extraData
+    id
+    name
+    symbol
+    totalSupply
+    transfers {
+      from {
+        id
+      }
+      timestamp
+      value
+      to {
+        id
+      }
+      transaction {
+        id
+        blockNumber
       }
     }
   }
+}
     `);
 
 export function useTokenDetails(address: string) {
