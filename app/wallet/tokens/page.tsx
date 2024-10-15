@@ -1,4 +1,3 @@
-import type { BreadcrumbItemType } from "@/components/global/breadcrumb/ellipsis-dropdown";
 import { SidePanel } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Button } from "@/components/ui/button";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
@@ -10,8 +9,6 @@ const searchParamsCache = createSearchParamsCache({
   state: parseAsJson(),
   formId: parseAsString.withDefault(""),
 });
-
-const breadcrumbItems: BreadcrumbItemType[] = [{ label: "Tokens" }];
 
 interface WalletTokenPageProps {
   searchParams: SearchParams;
@@ -32,6 +29,7 @@ export default function WalletTokenPage({ searchParams }: WalletTokenPageProps) 
       >
         <CreateTokenForm defaultValues={parsedParams.state} />
       </SidePanel>
+
       <div className="mt-10">
         <TokenTable />
       </div>

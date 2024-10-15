@@ -2,6 +2,7 @@
 
 import { FormMultiStepProvider } from "@/components/ui-settlemint/form-multistep";
 import { FormPage } from "@/components/ui-settlemint/form-page";
+import { useSidePanelContext } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -38,7 +39,7 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
     "state",
     defaultValues,
   );
-
+  const { closeRef } = useSidePanelContext();
   const form = useForm<TokenizationWizardSchema>({
     resolver: zodResolver(TokenizationWizardValidator),
     defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues, ...localStorageState },
@@ -46,6 +47,8 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
   });
 
   function onSubmit(values: TokenizationWizardSchema) {
+    closeRef?.current?.click();
+
     toast.promise(
       async () => {
         const transactionHash = await createToken(values);
@@ -82,7 +85,6 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
         },
       },
     );
-    // TODO: close the modal
     // TODO: update the table
   }
 
