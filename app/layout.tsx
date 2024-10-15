@@ -5,7 +5,6 @@ import { LanguageProvider } from "@inlang/paraglide-next";
 import type { Metadata } from "next";
 import type { ViewportLayout } from "next/dist/lib/metadata/types/extra-types";
 import { Figtree as FontSans } from "next/font/google";
-import { headers } from "next/headers";
 import type { PropsWithChildren } from "react";
 import "./globals.css";
 
@@ -37,13 +36,11 @@ export const viewport: ViewportLayout = {
 };
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  const cookie = headers().get("cookie");
-
   return (
     <LanguageProvider>
       <html lang={languageTag()} suppressHydrationWarning>
         <body className={cn("RootLayout min-h-screen font-sans antialiased", fontSans.variable)}>
-          <SettleMintProvider cookie={cookie}>{children}</SettleMintProvider>
+          <SettleMintProvider>{children}</SettleMintProvider>
         </body>
       </html>
     </LanguageProvider>
