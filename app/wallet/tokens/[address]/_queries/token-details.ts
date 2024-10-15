@@ -2,15 +2,12 @@ import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemin
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 const TokenDetails = theGraphFallbackGraphql(`
-  query TokenDetails($id: ID = "", $orderBy: ERC20Balance_orderBy = id, $orderDirection: OrderDirection = asc, $skip: Int = 10, $first: Int = 10, $first1: Int = 10, $orderBy1: ERC20Transfer_orderBy = id, $orderDirection1: OrderDirection = asc, $skip1: Int = 10) {
+  query TokenDetails($id: ID = "") {
     erc20Contract(id: $id) {
-      balances(
-        orderBy: $orderBy
-        orderDirection: $orderDirection
-        skip: $skip
-        first: $first
-      ) {
-        id
+      balances {
+        account {
+          id
+        }
         value
       }
       decimals
@@ -19,12 +16,7 @@ const TokenDetails = theGraphFallbackGraphql(`
       name
       symbol
       totalSupply
-      transfers(
-        first: $first1
-        orderBy: $orderBy1
-        orderDirection: $orderDirection1
-        skip: $skip1
-      ) {
+      transfers{
         from {
           id
         }
@@ -48,5 +40,6 @@ export function useTokenDetails(address: string) {
     queryFn: () => {
       return theGraphFallbackClient.request(TokenDetails, { id: address });
     },
+    refetchInterval: 10000,
   });
 }

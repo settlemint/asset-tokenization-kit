@@ -15,11 +15,11 @@ export function BalancesTable({ address }: { address: string }) {
     <DataTable
       columns={[
         {
-          accessorKey: "id",
+          accessorKey: "account.id",
           header: ({ column }) => <DataTableColumnHeader column={column} title="Holder Address" />,
           cell: ({ row }) => {
-            const value = row.original.id;
-            return <AddressHover address={value} />;
+            const value = row.original.account?.id;
+            return value ? <AddressHover address={value} /> : null;
           },
         },
         {
@@ -32,7 +32,7 @@ export function BalancesTable({ address }: { address: string }) {
         },
       ]}
       data={balances}
-      filterColumn="id"
+      filterColumn="account.id"
       filterPlaceholder="Search by address"
     />
   );
