@@ -1,5 +1,8 @@
+"use client";
+
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -7,29 +10,45 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { PropsWithChildren } from "react";
+import React, { createContext, type ReactNode, useContext, useRef } from "react";
 
-export function SidePanel({
-  children,
-  title,
-  description,
-  trigger,
-}: PropsWithChildren<{ title: string; description: string; trigger: React.ReactNode }>) {
+interface SidePanelProps {
+  title: string;
+  description: string;
+  trigger: React.ReactNode;
+  children: ReactNode;
+}
+
+interface SidePanelContextType {
+  closeRef: React.RefObject<HTMLButtonElement>;
+}
+
+const SidePanelContext = createContext<SidePanelContextType>({
+  closeRef: React.createRef<HTMLButtonElement>(),
+});
+
+export const useSidePanelContext = () => useContext(SidePanelContext);
+
+export function SidePanel({ children, title, description, trigger }: SidePanelProps) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>{trigger}</SheetTrigger>
-      <SheetContent className="w-[33%] lg:max-w-[33%]">
-        <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
-        </SheetHeader>
-        <div className="-ml-8 -mr-8">{children}</div>
-        <SheetFooter>
-          {/* <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose> */}
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+    <div className="SidePanel">
+      <Sheet>
+        <SheetTrigger asChild>{trigger}</SheetTrigger>
+        <SheetContent className="w-[33%] lg:max-w-[33%]">
+          <SheetHeader>
+            <SheetTitle>{title}</SheetTitle>
+            <SheetDescription>{description}</SheetDescription>
+          </SheetHeader>
+          <div className="-ml-8 -mr-8">
+            <SidePanelContext.Provider value={{ closeRef }}>{children}</SidePanelContext.Provider>
+          </div>
+          <SheetFooter>
+            <SheetClose ref={closeRef} />
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 }
