@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { type HTMLAttributes, forwardRef, useState } from "react";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 interface AvatarData {
   avatar: string | null;
@@ -14,6 +15,7 @@ interface ExtendedAvatarProps extends HTMLAttributes<HTMLDivElement> {
   address?: string | null;
   email?: string | null;
   badge?: boolean;
+  variant?: "big" | "small";
 }
 
 /**
@@ -21,15 +23,22 @@ interface ExtendedAvatarProps extends HTMLAttributes<HTMLDivElement> {
  * It shows a skeleton loader while the avatar is being fetched and fades in the actual image when loaded.
  */
 export const ExtendedAvatar = forwardRef<HTMLDivElement, ExtendedAvatarProps>(
-  ({ address, email, className, badge, ...props }, ref) => {
+  ({ address, email, className, badge, variant = "big", ...props }, ref) => {
     const avatar = useAvatar({ address, email }) as AvatarData | null;
     const [imageLoaded, setImageLoaded] = useState(false);
 
     return (
       <div className="relative">
-        <Avatar ref={ref} className={cn("cursor-pointer relative w-10 h-10", className)} {...props}>
+        <Avatar
+          ref={ref}
+          className={cn("cursor-pointer relative", variant === "big" ? "w-10 h-10" : "w-6 h-6", className)}
+          {...props}
+        >
           <AvatarFallback>
-            <Skeleton className={cn("rounded-full absolute inset-0", imageLoaded ? "opacity-0" : "opacity-100")} />
+            {!address && (
+              <Skeleton className={cn("rounded-full absolute inset-0", imageLoaded ? "opacity-0" : "opacity-100")} />
+            )}
+            {address && <Jazzicon diameter={variant === "big" ? 40 : 20} seed={jsNumberForAddress(address)} />}
           </AvatarFallback>
           {avatar?.avatar && (
             <AvatarImage

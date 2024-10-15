@@ -22,6 +22,7 @@ import * as m from "@/paraglide/messages";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import type { Address } from "viem";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileLanguage } from "./profile-language";
 import { PendingTx } from "./profile-pending-tx";
@@ -41,12 +42,13 @@ export function Profile() {
   const session = useSession();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const wallet = session.data?.user.wallet as Address | undefined;
 
   const { data: pendingCount } = useQuery({
-    queryKey: ["pendingtx", session.data?.user.wallet],
+    queryKey: ["pendingtx", wallet],
     queryFn: async () => {
       const response = await portalClient.request(GetPendingTransactions, {
-        from: session.data?.user.wallet,
+        from: wallet,
       });
       if (!response?.getPendingTransactions) {
         return 0;
@@ -72,7 +74,7 @@ export function Profile() {
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-80">
-          <ProfileUserDetails email={session.data?.user.email ?? ""} wallet={session.data?.user.wallet} />
+          <ProfileUserDetails email={session.data?.user.email ?? ""} wallet={wallet} />
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <PendingTx pendingCount={pendingCount} onOpenSheet={handleOpenSheet} />
@@ -89,7 +91,7 @@ export function Profile() {
             <SheetTitle>{m.equal_alert_butterfly_fetch()}</SheetTitle>
             <SheetDescription>{m.last_mean_mink_endure()}</SheetDescription>
           </SheetHeader>
-          <PendingTxTable from={session.data?.user.email ?? undefined} />
+          <PendingTxTable from={wallet} />
           <SheetFooter className="mt-4">
             <SheetClose asChild>
               <Button>{m.neat_many_bee_pinch()}</Button>

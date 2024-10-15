@@ -5,7 +5,7 @@ import { useAvatar } from "@/components/hooks/use-avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link, formatToken } from "@/lib/i18n";
 import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemint/clientside/the-graph-fallback";
-import { shortHex } from "@/lib/utils";
+import { extendedHex, shortHex } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -49,29 +49,32 @@ export function AddressHover({ address }: { address: string }) {
     <HoverCard>
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
-          <ExtendedAvatar address={address} className="h-10 w-10" />
+          <ExtendedAvatar address={address} variant="small" />
           <span>{displayName}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
-        <div className="flex justify-between space-x-4">
-          <div className="space-y-1">
-            <h4 className="text-sm font-semibold">
-              {/* TODO: use the provided explorer link */}
+        <div className="flex items-start">
+          <h4 className="text-sm font-semibold grid grid-cols-[auto,1fr] gap-x-2 items-start">
+            <ExtendedAvatar address={address} className="row-span-2" />
+            <div className="flex flex-col">
+              <span>{avatar?.ensName ?? extendedHex(address)}</span>
               <Link
                 prefetch={false}
                 href={`https://amoy.polygonscan.com/address/${address}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline truncate max-w-[70%] text-primary"
+                className="hover:underline truncate text-primary text-xs"
               >
-                {displayName}
+                View on the explorer
               </Link>
-            </h4>
-            {isLoading && <p>Loading balances...</p>}
-            {isError && <p>Error loading balances</p>}
-            {balances && <BalanceDisplay balances={balances} />}
-          </div>
+            </div>
+          </h4>
+        </div>
+        <div className="mt-2">
+          {isLoading && <p>Loading balances...</p>}
+          {isError && <p>Error loading balances</p>}
+          {balances && <BalanceDisplay balances={balances} />}
         </div>
       </HoverCardContent>
     </HoverCard>

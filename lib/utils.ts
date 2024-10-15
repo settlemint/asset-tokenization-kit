@@ -14,3 +14,13 @@ export function shortHex(hex?: string) {
   }
   return `${hex.slice(0, 6)}…${hex.slice(-4)}`;
 }
+
+export function extendedHex(hex?: string) {
+  if (!hex) {
+    return "…";
+  }
+  if (hex.length < 30) {
+    return hex;
+  }
+  return `${hex.slice(0, 12)}…${hex.slice(-8)}`;
+}

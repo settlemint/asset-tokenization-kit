@@ -7,6 +7,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/clientside/portal"
 import { shortHex } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
 import { useQuery } from "@tanstack/react-query";
+import type { Address } from "viem";
 import { AddressHover } from "./hover-address";
 
 const GetPendingTransactions = portalGraphql(`
@@ -45,9 +46,9 @@ const GetPendingTransactions = portalGraphql(`
   }
   `);
 
-export function PendingTxTable({ from, refetchInterval }: { from?: string; refetchInterval?: number }) {
+export function PendingTxTable({ from, refetchInterval }: { from?: Address; refetchInterval?: number }) {
   const { data: pendingTransactions } = useQuery({
-    queryKey: ["pendingtx", from],
+    queryKey: ["pendingandrecenttx", from],
     queryFn: async () => {
       const response = await portalClient.request(GetPendingTransactions, {
         from: from,
