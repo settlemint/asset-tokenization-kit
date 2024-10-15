@@ -21,7 +21,7 @@ const formatLabel = (key: string): string => {
 
 const formatValue = (key: keyof ContractData, value: unknown, decimals?: number): string => {
   if (value === null || value === undefined) return "N/A";
-  if (Array.isArray(value)) return `${value.length} item(s)`;
+  if (Array.isArray(value)) return `${(value ?? []).length} item(s)`;
   if (typeof value === "object") return JSON.stringify(value);
   if (key === "totalSupply" && decimals !== undefined) {
     return formatUnits(BigInt(value as string), decimals);

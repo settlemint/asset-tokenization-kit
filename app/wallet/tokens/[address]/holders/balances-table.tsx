@@ -16,7 +16,7 @@ export function BalancesTable({ address }: { address: string }) {
     <DataTable
       columns={[
         {
-          accessorKey: "account.id",
+          id: "address",
           header: ({ column }) => <DataTableColumnHeader column={column} title="Holder Address" />,
           cell: ({ row }) => {
             const value = row.original.account?.id;
@@ -72,7 +72,7 @@ export function BalancesTable({ address }: { address: string }) {
         },
       ]}
       data={balances}
-      filterColumn="account.id"
+      filterColumn="address"
       filterPlaceholder="Search by address"
     />
   );
