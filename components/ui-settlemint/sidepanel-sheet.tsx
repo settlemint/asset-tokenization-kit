@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import React, { createContext, type ReactNode, useContext, useRef } from "react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import type React from "react";
+import type { ReactNode } from "react";
 
 interface SidePanelProps {
   title: string;
@@ -19,19 +11,7 @@ interface SidePanelProps {
   children: ReactNode;
 }
 
-interface SidePanelContextType {
-  closeRef: React.RefObject<HTMLButtonElement>;
-}
-
-const SidePanelContext = createContext<SidePanelContextType>({
-  closeRef: React.createRef<HTMLButtonElement>(),
-});
-
-export const useSidePanelContext = () => useContext(SidePanelContext);
-
 export function SidePanel({ children, title, description, trigger }: SidePanelProps) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-
   return (
     <div className="SidePanel">
       <Sheet>
@@ -41,12 +21,7 @@ export function SidePanel({ children, title, description, trigger }: SidePanelPr
             <SheetTitle>{title}</SheetTitle>
             <SheetDescription>{description}</SheetDescription>
           </SheetHeader>
-          <div className="-ml-8 -mr-8">
-            <SidePanelContext.Provider value={{ closeRef }}>{children}</SidePanelContext.Provider>
-          </div>
-          <SheetFooter>
-            <SheetClose ref={closeRef} />
-          </SheetFooter>
+          <div className="-ml-8 -mr-8">{children}</div>
         </SheetContent>
       </Sheet>
     </div>
