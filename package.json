@@ -130,7 +130,7 @@
     "react-dom": "18.3.1",
     "react-dropzone": "14.2.9",
     "react-hook-form": "7.53.0",
-    "react-jazzicon": "^1.0.4",
+    "react-jazzicon": "1.0.4",
     "react-resizable-panels": "2.1.4",
     "recharts": "2.13.0",
     "sonner": "1.5.0",
@@ -139,7 +139,7 @@
     "usehooks-ts": "3.1.0",
     "uuid": "10.0.0",
     "vaul": "1.1.0",
-    "viem": "^2.21.26",
+    "viem": "2.21.27",
     "zod": "3.23.8",
     "zod-form-data": "2.0.2"
   },
