@@ -1,9 +1,9 @@
 import { SidebarNavigation } from "@/components/global/navigation/navigation-sidebar";
 import { Logo } from "@/components/public/logo";
+import type { BreadcrumbItemType } from "@/components/ui/collapsed-breadcrumb/collapsed-breadcrumb";
 import { Toaster } from "@/components/ui/sonner";
 import { Link } from "@/lib/i18n";
 import type { PropsWithChildren } from "react";
-import type { BreadcrumbItemType } from "../breadcrumb/ellipsis-dropdown";
 import type { NavItemType } from "../navigation/navigation-item";
 import { SecureHeader } from "./secure-header";
 

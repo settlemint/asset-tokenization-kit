@@ -1,13 +1,11 @@
 "use client";
 
-import { ExtendedAvatar } from "@/components/global/identity/extended-avatar";
-import { useAvatar } from "@/components/hooks/use-avatar";
+import { AddressAvatar } from "@/components/ui/address-avatar/address-avatar";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link, formatToken } from "@/lib/i18n";
 import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemint/clientside/the-graph-fallback";
 import { extendedHex, shortHex } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 
 const AddressBalances = theGraphFallbackGraphql(`
 query AddressBalances($account: String!) {
@@ -22,8 +20,6 @@ query AddressBalances($account: String!) {
   `);
 
 export function AddressHover({ address }: { address: string }) {
-  const avatar = useAvatar({ address: address });
-
   const {
     data: balances,
     isLoading,
@@ -43,22 +39,20 @@ export function AddressHover({ address }: { address: string }) {
     staleTime: 5000,
   });
 
-  const displayName = useMemo(() => avatar?.ensName ?? shortHex(address), [avatar?.ensName, address]);
-
   return (
     <HoverCard>
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
-          <ExtendedAvatar address={address} variant="small" />
-          <span>{displayName}</span>
+          <AddressAvatar address={address} variant="small" />
+          <span>{shortHex(address)}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
         <div className="flex items-start">
           <h4 className="text-sm font-semibold grid grid-cols-[auto,1fr] gap-x-2 items-start">
-            <ExtendedAvatar address={address} className="row-span-2" />
+            <AddressAvatar address={address} className="row-span-2" />
             <div className="flex flex-col">
-              <span>{avatar?.ensName ?? extendedHex(address)}</span>
+              <span>{extendedHex(address)}</span>
               <Link
                 prefetch={false}
                 href={`https://amoy.polygonscan.com/address/${address}`}

@@ -1,4 +1,6 @@
 import { SettleMintProvider } from "@/components/providers/settlemint-provider";
+import { ThemeProvider } from "@/components/ui/dark-mode/theme-provider";
+import { QueryClientProvider } from "@/components/ui/query-client/query-client-provider";
 import { cn } from "@/lib/utils";
 import { languageTag } from "@/paraglide/runtime.js";
 import { LanguageProvider } from "@inlang/paraglide-next";
@@ -40,7 +42,11 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     <LanguageProvider>
       <html lang={languageTag()} suppressHydrationWarning>
         <body className={cn("RootLayout min-h-screen font-sans antialiased", fontSans.variable)}>
-          <SettleMintProvider>{children}</SettleMintProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
+            <QueryClientProvider>
+              <SettleMintProvider>{children}</SettleMintProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
         </body>
       </html>
     </LanguageProvider>

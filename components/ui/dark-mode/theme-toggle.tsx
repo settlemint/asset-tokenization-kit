@@ -7,10 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
-import { Skeleton } from "../ui/skeleton";
 
 interface ThemeToggleProps {
   variant?: ButtonProps["variant"];
@@ -32,7 +32,7 @@ const skeletonSizes = {
 } as const;
 
 export function ThemeToggle({ variant = "outline", size = "icon", className }: ThemeToggleProps) {
-  const { setTheme, theme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   const handleSetTheme = useCallback(

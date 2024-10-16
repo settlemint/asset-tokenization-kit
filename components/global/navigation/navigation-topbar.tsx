@@ -1,5 +1,6 @@
 import { LanguageToggle } from "@/components/global/language-toggle";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/dark-mode/theme-toggle";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Link } from "@/lib/i18n";
 import type { NavItem } from "../layout/public-header";
-import { ThemeToggle } from "../theme-toggle";
 
 interface PublicNavigationProps {
   noNavButton?: boolean;

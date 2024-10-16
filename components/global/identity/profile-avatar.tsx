@@ -1,7 +1,7 @@
 "use client";
 
+import { AddressAvatar } from "@/components/ui/address-avatar/address-avatar";
 import { type HTMLAttributes, forwardRef } from "react";
-import { ExtendedAvatar } from "./extended-avatar";
 
 interface ProfileAvatarProps extends HTMLAttributes<HTMLDivElement> {
   wallet?: string;
@@ -12,7 +12,7 @@ interface ProfileAvatarProps extends HTMLAttributes<HTMLDivElement> {
 export const ProfileAvatar = forwardRef<HTMLDivElement, ProfileAvatarProps>(
   ({ wallet, email, pendingCount, ...props }, ref) => {
     return (
-      <ExtendedAvatar
+      <AddressAvatar
         ref={ref}
         address={wallet}
         email={email}

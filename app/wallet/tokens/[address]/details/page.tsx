@@ -1,7 +1,6 @@
 "use client";
 
 import { useTokenDetails } from "@/app/wallet/tokens/[address]/_queries/token-details";
-import type { BreadcrumbItemType } from "@/components/global/breadcrumb/ellipsis-dropdown";
 import { SidePanel } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +8,6 @@ import { useParams } from "next/navigation";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
 import { formatUnits } from "viem";
 import { MintTokenForm } from "./_forms/mint-token-form";
-
-const breadcrumbItems: BreadcrumbItemType[] = [{ label: "Tokens" }];
 
 type ContractData = NonNullable<ReturnType<typeof useTokenDetails>["data"]>["erc20Contract"];
 
