@@ -2,13 +2,11 @@
 
 import { FormMultiStepProvider } from "@/components/ui-settlemint/form-multistep";
 import { FormPage } from "@/components/ui-settlemint/form-page";
-import { useSidePanelContext } from "@/components/ui-settlemint/sidepanel-sheet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/clientside/portal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
@@ -19,7 +17,7 @@ import {
   tokenizationWizardDefaultValues,
 } from "./create-token-form-validation";
 
-export interface CreateTokenFormProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CreateTokenFormProps {
   defaultValues: Partial<TokenizationWizardSchema>;
 }
 
@@ -34,12 +32,12 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
-export function CreateTokenForm({ className, defaultValues, ...props }: CreateTokenFormProps) {
+export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProps) {
   const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
     "state",
     defaultValues,
   );
-  const { closeRef } = useSidePanelContext();
+
   const form = useForm<TokenizationWizardSchema>({
     resolver: zodResolver(TokenizationWizardValidator),
     defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues, ...localStorageState },
@@ -47,8 +45,6 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
   });
 
   function onSubmit(values: TokenizationWizardSchema) {
-    closeRef?.current?.click();
-
     toast.promise(
       async () => {
         const transactionHash = await createToken(values);
@@ -102,14 +98,26 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
           >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormPage form={form} title="Introduction">
+                <FormPage
+                  form={form}
+                  title="Introduction"
+                  controls={{
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   <div>
                     <p>Easily convert your assets into digital tokens using this step-by-step wizard.</p>
                     <p>Let's get started!</p>
                   </div>
-                  {/* TODO: allow me to set the next and cancel button text*/}
                 </FormPage>
-                <FormPage form={form} title="Terms & Conditions">
+                <FormPage
+                  form={form}
+                  title="Terms & Conditions"
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   <p>By proceeding with the tokenization process, you agree to the following:</p>
                   <ul>
                     <li>
@@ -122,7 +130,16 @@ export function CreateTokenForm({ className, defaultValues, ...props }: CreateTo
                   <p>Please review the full terms before continuing.</p>
                   {/* TODO: do we want a formal check box here? */}
                 </FormPage>
-                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol"]}>
+                <FormPage
+                  form={form}
+                  title="Token Information"
+                  fields={["tokenName", "tokenSymbol"]}
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    submit: { buttonText: "Submit" },
+                  }}
+                >
                   {/* Token Name */}
                   <FormField
                     control={form.control}

@@ -2,19 +2,19 @@
 
 import { createTokenAction } from "@/app/wallet/(home)/forms/create-token-wizard.action";
 import { Dropzone } from "@/components/ui-settlemint/dropzone-s3";
+import { FormMultiStepProvider } from "@/components/ui-settlemint/form-multistep";
+import { FormPage } from "@/components/ui-settlemint/form-page";
+import { RepeatableForm } from "@/components/ui-settlemint/form-repeatable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { NumericInput } from "@/components/ui/input-numeric";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import type * as React from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { FormMultiStepProvider } from "../../../../components/ui-settlemint/form-multistep";
-import { FormPage } from "../../../../components/ui-settlemint/form-page";
-import { RepeatableForm } from "../../../../components/ui-settlemint/form-repeatable";
-import { Checkbox } from "../../../../components/ui/checkbox";
-import { NumericInput } from "../../../../components/ui/input-numeric";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import {
   CreateTokenWizardSchema,
   type CreateTokenWizardSchemaType,
@@ -60,13 +60,34 @@ export function CreateTokenWizard({ className, defaultValues, formId, ...props }
           <FormMultiStepProvider formId={formId} config={{ useLocalStorageState: false, useQueryState: false }}>
             <Form {...form}>
               <form onSubmit={handleSubmitWithAction} className="space-y-4">
-                <FormPage form={form} title="Introduction">
+                <FormPage
+                  form={form}
+                  title="Introduction"
+                  controls={{
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   <div>INTROPAGE</div>
                 </FormPage>
-                <FormPage form={form} title="Terms & Conditions">
+                <FormPage
+                  form={form}
+                  title="Terms & Conditions"
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   <div>TERMS & CONDITIONS</div>
                 </FormPage>
-                <FormPage form={form} title="Token Information" fields={["tokenName", "tokenSymbol", "tokenLogo"]}>
+                <FormPage
+                  form={form}
+                  title="Token Information"
+                  fields={["tokenName", "tokenSymbol", "tokenLogo"]}
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   {/* Token Name */}
                   <FormField
                     control={form.control}
@@ -126,6 +147,10 @@ export function CreateTokenWizard({ className, defaultValues, formId, ...props }
                   form={form}
                   title="Token Economics"
                   fields={["tokenMaxSupply", "tokenHasMaxSupply", "walletEntries"]}
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
                 >
                   {/* Token Has Max Supply */}
                   <FormField
@@ -213,7 +238,15 @@ export function CreateTokenWizard({ className, defaultValues, formId, ...props }
                     )}
                   />
                 </FormPage>
-                <FormPage form={form} title="Token Documentation" fields={["currency"]}>
+                <FormPage
+                  form={form}
+                  title="Token Documentation"
+                  fields={["currency"]}
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   {/* Category */}
                   <FormField
                     control={form.control}
@@ -308,7 +341,14 @@ export function CreateTokenWizard({ className, defaultValues, formId, ...props }
                     )}
                   />
                 </FormPage>
-                <FormPage form={form} title="Token administrators">
+                <FormPage
+                  form={form}
+                  title="Token administrators"
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    next: { buttonText: "Continue" },
+                  }}
+                >
                   {/* Token administrators */}
                   <FormField
                     control={form.control}
@@ -333,7 +373,15 @@ export function CreateTokenWizard({ className, defaultValues, formId, ...props }
                     )}
                   />
                 </FormPage>
-                <FormPage form={form} title="Review">
+                <FormPage
+                  form={form}
+                  title="Review"
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: "Back" },
+                    submit: { buttonText: "Submit" },
+                  }}
+                >
                   <div>Review</div>
                 </FormPage>
               </form>

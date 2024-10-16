@@ -1,8 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { SheetClose } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { parseAsInteger, parseAsJson, useQueryState } from "nuqs";
+import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from "react-hook-form";
 import { useLocalStorage } from "usehooks-ts";
@@ -15,14 +17,25 @@ export const FormPage = <
   title,
   form,
   fields = [],
+  controls,
+  withSheetClose,
   children,
 }: {
   title?: string;
   form: UseFormReturn<TFieldValues>;
   fields?: TName[];
   children: React.ReactNode;
+  withSheetClose?: boolean;
+  controls?: {
+    prev?: { buttonText: string };
+    next?: { buttonText: string };
+    submit?: { buttonText: string };
+  };
 }) => {
   const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config } = useMultiFormStep();
+  const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose
+    ? [SheetClose, { asChild: true }]
+    : [React.Fragment, {}];
 
   const [queryState, setQueryState] = useQueryState("state", parseAsJson<Record<string, unknown>>());
   const [storageState, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
@@ -131,7 +144,7 @@ export const FormPage = <
       {children}
       <div className="flex gap-x-4 !mt-16 justify-end">
         <Button type="button" className={cn({ hidden: currentStep === 1 })} onClick={() => prevStep()}>
-          Back
+          {controls?.prev?.buttonText}
         </Button>
         <Button
           type="button"
@@ -141,12 +154,18 @@ export const FormPage = <
             nextStep();
           }}
         >
-          Continue
+          {controls?.next?.buttonText}
         </Button>
 
-        <Button type="submit" className={cn({ hidden: currentStep !== totalSteps })} disabled={!form.formState.isValid}>
-          Submit
-        </Button>
+        <SheetCloseWrapper {...sheetCloseWrapperProps}>
+          <Button
+            type="submit"
+            className={cn({ hidden: currentStep !== totalSteps })}
+            disabled={!form.formState.isValid}
+          >
+            {controls?.submit?.buttonText}
+          </Button>
+        </SheetCloseWrapper>
       </div>
     </div>
   );
