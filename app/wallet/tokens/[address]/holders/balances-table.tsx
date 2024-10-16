@@ -1,9 +1,9 @@
 "use client";
 
 import { useTokenDetails } from "@/app/wallet/tokens/[address]/_queries/token-details";
-import { DataTable } from "@/components/global/data-table/data-table";
-import { DataTableColumnHeader } from "@/components/global/data-table/data-table-column-header";
 import { AddressHover } from "@/components/global/identity/hover-address";
+import { DataTable } from "@/components/ui/data-table/data-table";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { formatToken } from "@/lib/i18n";
 
 export function BalancesTable({ address }: { address: string }) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import * as m from "@/paraglide/messages";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -107,7 +106,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  {m.gross_aqua_dachshund_cuddle()}
+                  No results
                 </TableCell>
               </TableRow>
             )}

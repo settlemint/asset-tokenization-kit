@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import * as m from "@/paraglide/messages";
 import type { PaginationState, Table } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useMemo } from "react";
@@ -30,7 +29,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
     <div className="flex items-center justify-between px-2 mt-4">
       <div className="w-full flex items-center justify-between space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">{m.neat_major_walrus_enchant()}</p>
+          <p className="text-sm font-medium">Rows per page</p>
           <Select
             value={`${pagination.pageSize}`}
             onValueChange={(value) => {
@@ -59,7 +58,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{m.north_awake_jurgen_emerge()}</span>
+            <span className="sr-only">Go to first page</span>
             <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
@@ -68,7 +67,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{m.petty_slow_eagle_comfort()}</span>
+            <span className="sr-only">Go to previous page</span>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           {pageNumbers.map((page) => (
@@ -87,7 +86,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{m.awful_these_jackdaw_blend()}</span>
+            <span className="sr-only">Go to next page</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
@@ -96,7 +95,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             onClick={() => table.setPageIndex(pageCount - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{m.proof_whole_emu_quell()}</span>
+            <span className="sr-only">Go to last page</span>
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { DataTable } from "@/components/global/data-table/data-table";
-import { DataTableColumnHeader } from "@/components/global/data-table/data-table-column-header";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table/data-table";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { Link, formatToken } from "@/lib/i18n";
 import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemint/clientside/the-graph-fallback";
 import { useSuspenseQuery } from "@tanstack/react-query";
