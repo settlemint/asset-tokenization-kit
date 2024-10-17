@@ -1,10 +1,11 @@
 "use client";
 
 import { useTokenDetails } from "@/app/wallet/tokens/[address]/_queries/token-details";
-import { AddressHover } from "@/components/global/identity/hover-address";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
-import { formatToken } from "@/lib/i18n";
+import { EvmAddress } from "@/components/ui/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/ui/evm-address/evm-address-balances";
+import { formatTokenValue } from "@/lib/number";
 
 export function BalancesTable({ address }: { address: string }) {
   const { data } = useTokenDetails(address);
@@ -20,7 +21,11 @@ export function BalancesTable({ address }: { address: string }) {
           header: ({ column }) => <DataTableColumnHeader column={column} title="Holder Address" />,
           cell: ({ row }) => {
             const value = row.original.account?.id;
-            return value ? <AddressHover address={value} /> : null;
+            return value ? (
+              <EvmAddress address={value}>
+                <EvmAddressBalances address={value} />
+              </EvmAddress>
+            ) : null;
           },
         },
         {
@@ -28,7 +33,7 @@ export function BalancesTable({ address }: { address: string }) {
           header: ({ column }) => <DataTableColumnHeader column={column} title="Balance" />,
           cell: ({ row }) => {
             const value = row.original.value;
-            return formatToken(Number.parseFloat(value), data?.erc20Contract?.decimals ?? 18);
+            return formatTokenValue(Number.parseFloat(value), data?.erc20Contract?.decimals ?? 18);
           },
         },
         {

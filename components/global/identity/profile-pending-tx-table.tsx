@@ -1,6 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { EvmAddress } from "@/components/ui/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/ui/evm-address/evm-address-balances";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "@/lib/i18n";
 import { portalClient, portalGraphql } from "@/lib/settlemint/clientside/portal";
@@ -8,7 +10,6 @@ import { shortHex } from "@/lib/utils";
 import * as m from "@/paraglide/messages";
 import { useQuery } from "@tanstack/react-query";
 import type { Address } from "viem";
-import { AddressHover } from "./hover-address";
 
 const GetPendingTransactions = portalGraphql(`
   query GetPendingTransactions($from: String) {
@@ -85,7 +86,9 @@ export function PendingTxTable({ from, refetchInterval }: { from?: Address; refe
           <TableRow key={transaction.transactionHash}>
             <TableCell>{transaction.functionName}</TableCell>
             <TableCell className="font-mono">
-              <AddressHover address={transaction.from} />
+              <EvmAddress address={transaction.from}>
+                <EvmAddressBalances address={transaction.from} />
+              </EvmAddress>
             </TableCell>
             <TableCell>
               <Badge

@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
-import { Link, formatToken } from "@/lib/i18n";
+import { Link } from "@/lib/i18n";
+import { formatTokenValue } from "@/lib/number";
 import { theGraphFallbackClient, theGraphFallbackGraphql } from "@/lib/settlemint/clientside/the-graph-fallback";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
@@ -60,7 +61,7 @@ export function TokenTable() {
           },
           cell: ({ getValue }) => {
             const value = getValue<number>();
-            return formatToken(Number.parseFloat(value.toString()), 2);
+            return formatTokenValue(Number.parseFloat(value.toString()), 2);
           },
         },
         {
