@@ -6,14 +6,19 @@ export function PublicHero() {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none ">
               {m.arable_orange_ant_persist()}
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">{m.kind_mean_iguana_agree()}</p>
           </div>
           <div className="space-x-4">
-            <div className="flex justify-center backdrop-blur-2xl static w-auto rounded-xl border bg-muted p-4 overflow-x-auto">
-              <code className="font-mono font-bold whitespace-nowrap">
+            <div
+              className="flex justify-center backdrop-blur-2xl static w-auto rounded-xl border bg-muted p-4 overflow-x-auto"
+              style={{
+                boxShadow: "0px 0px 30px 10px rgba(52,133,238,0.61)",
+              }}
+            >
+              <code className="font-mono font-bold whitespace-nowrap ">
                 bunx @settlemint/sdk-cli create -t asset-tokenization
               </code>
             </div>
