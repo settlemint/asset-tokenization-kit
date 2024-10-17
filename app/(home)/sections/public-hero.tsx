@@ -12,12 +12,7 @@ export function PublicHero() {
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">{m.kind_mean_iguana_agree()}</p>
           </div>
           <div className="space-x-4">
-            <div
-              className="flex justify-center backdrop-blur-2xl static w-auto rounded-xl border bg-muted p-4 overflow-x-auto"
-              style={{
-                boxShadow: "0px 0px 30px 10px rgba(52,133,238,0.61)",
-              }}
-            >
+            <div className="flex justify-center backdrop-blur-2xl static w-auto rounded-xl border bg-muted p-4 overflow-x-auto">
               <code className="font-mono font-bold whitespace-nowrap ">
                 bunx @settlemint/sdk-cli create -t asset-tokenization
               </code>
