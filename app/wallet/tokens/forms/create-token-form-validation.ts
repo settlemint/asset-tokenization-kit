@@ -1,19 +1,19 @@
 import { z } from "zod";
 
-export const TokenizationWizardValidator = z.object({
+export const CreateTokenSchema = z.object({
   tokenName: z.string().min(2),
   tokenSymbol: z.string().min(2),
 });
 
-export type TokenizationWizardSchema = z.infer<typeof TokenizationWizardValidator>;
+export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
 
-export const tokenizationWizardDefaultValues: TokenizationWizardSchema = {
+export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenName: "",
   tokenSymbol: "",
 } as const;
 
-export type TokenizationWizardFormPageFields = keyof typeof tokenizationWizardDefaultValues;
+export type CreateTokenFormPageFields = keyof typeof createTokenDefaultValues;
 
-export const tokenizationWizardFormPageFields: TokenizationWizardFormPageFields[] = Object.keys(
-  tokenizationWizardDefaultValues,
-) as TokenizationWizardFormPageFields[];
+export const createTokenFormPageFields: CreateTokenFormPageFields[] = Object.keys(
+  createTokenDefaultValues,
+) as CreateTokenFormPageFields[];

@@ -12,13 +12,13 @@ import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
 import { createToken } from "./create-token-action";
 import {
-  type TokenizationWizardSchema,
-  TokenizationWizardValidator,
-  tokenizationWizardDefaultValues,
+  CreateTokenSchema,
+  type CreateTokenSchemaType,
+  createTokenDefaultValues,
 } from "./create-token-form-validation";
 
 interface CreateTokenFormProps {
-  defaultValues: Partial<TokenizationWizardSchema>;
+  defaultValues: Partial<CreateTokenSchemaType>;
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
@@ -33,18 +33,18 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProps) {
-  const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<TokenizationWizardSchema>>(
+  const [localStorageState, setLocalStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>(
     "state",
     defaultValues,
   );
 
-  const form = useForm<TokenizationWizardSchema>({
-    resolver: zodResolver(TokenizationWizardValidator),
-    defaultValues: { ...tokenizationWizardDefaultValues, ...defaultValues, ...localStorageState },
+  const form = useForm<CreateTokenSchemaType>({
+    resolver: zodResolver(CreateTokenSchema),
+    defaultValues: { ...createTokenDefaultValues, ...defaultValues, ...localStorageState },
     mode: "all",
   });
 
-  function onSubmit(values: TokenizationWizardSchema) {
+  function onSubmit(values: CreateTokenSchemaType) {
     toast.promise(
       async () => {
         const transactionHash = await createToken(values);
@@ -54,7 +54,7 @@ export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProp
 
         while (Date.now() - startTime < timeout) {
           const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-            transactionHash,
+            transactionHash: transactionHash?.data ?? "",
           });
 
           const receipt = txresult.getTransaction?.receipt;

@@ -19,6 +19,6 @@ export const mintWizardDefaultValues: MintWizardSchema = {
 
 export type MintWizardFormPageFields = keyof typeof mintWizardDefaultValues;
 
-export const tokenizationWizardFormPageFields: MintWizardFormPageFields[] = Object.keys(
+export const CreateTokenFormPageFields: MintWizardFormPageFields[] = Object.keys(
   mintWizardDefaultValues,
 ) as MintWizardFormPageFields[];
