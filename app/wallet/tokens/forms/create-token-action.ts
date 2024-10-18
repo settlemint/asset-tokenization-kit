@@ -1,7 +1,8 @@
 "use server";
 
-import type { TokenizationWizardSchema } from "@/app/wallet/tokens/forms/create-token-form-validation";
+import { CreateTokenSchema } from "@/app/wallet/tokens/forms/create-token-form-validation";
 import { auth } from "@/lib/auth";
+import { actionClient } from "@/lib/safe-action";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
@@ -18,8 +19,9 @@ mutation CreateTokenMutation($address: String!, $from: String!, $name_: String!,
 }
 `);
 
-export async function createToken(data: TokenizationWizardSchema) {
-  const { tokenName, tokenSymbol } = data;
+export const createToken = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
+  const { tokenName, tokenSymbol } = parsedInput;
+  console.log("CREATE TOKEN", parsedInput);
   const session = await auth();
 
   if (!session?.user) {
@@ -33,6 +35,7 @@ export async function createToken(data: TokenizationWizardSchema) {
     symbol_: tokenSymbol,
   });
 
+  console.log("RESULT2", result);
   const transactionHash = result.StarterKitERC20FactoryCreateToken?.transactionHash;
 
   if (!transactionHash) {
@@ -40,4 +43,4 @@ export async function createToken(data: TokenizationWizardSchema) {
   }
 
   return transactionHash;
-}
+});
