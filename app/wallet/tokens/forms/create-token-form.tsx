@@ -45,7 +45,6 @@ export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProp
   });
 
   function onSubmit(values: CreateTokenSchemaType) {
-    console.log("ONSUBMIT", values);
     toast.promise(
       async () => {
         const transactionHash = await createToken(values);
@@ -55,7 +54,7 @@ export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProp
 
         while (Date.now() - startTime < timeout) {
           const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-            transactionHash,
+            transactionHash: transactionHash?.data ?? "",
           });
 
           const receipt = txresult.getTransaction?.receipt;
@@ -74,7 +73,6 @@ export function CreateTokenForm({ defaultValues, ...props }: CreateTokenFormProp
       {
         loading: "Creating token...",
         success: (data) => {
-          console.log("SUCCESS", data);
           return `${values.tokenName} (${values.tokenSymbol}) created in block ${data.blockNumber} on ${data.contractAddress}`;
         },
         error: (error) => {

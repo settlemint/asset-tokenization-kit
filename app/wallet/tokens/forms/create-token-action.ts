@@ -21,7 +21,6 @@ mutation CreateTokenMutation($address: String!, $from: String!, $name_: String!,
 
 export const createToken = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
   const { tokenName, tokenSymbol } = parsedInput;
-  console.log("CREATE TOKEN", parsedInput);
   const session = await auth();
 
   if (!session?.user) {
@@ -35,7 +34,6 @@ export const createToken = actionClient.schema(CreateTokenSchema).action(async (
     symbol_: tokenSymbol,
   });
 
-  console.log("RESULT2", result);
   const transactionHash = result.StarterKitERC20FactoryCreateToken?.transactionHash;
 
   if (!transactionHash) {
