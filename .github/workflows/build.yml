@@ -92,9 +92,6 @@ jobs:
           echo "TAG=${TAG}" >> $GITHUB_OUTPUT
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Run translate
-        run: bun run translate
-
       - name: Connect
         run: bun connect -a
         env:
