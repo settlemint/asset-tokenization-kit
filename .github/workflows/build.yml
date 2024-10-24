@@ -93,7 +93,7 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Connect
-        run: bun connect -a
+        run: bunx settlemint connect -a
         env:
           SETTLEMINT_APPLICATION: ${{ secrets.SETTLEMINT_APPLICATION }}
           SETTLEMINT_HASURA: ${{ secrets.SETTLEMINT_HASURA }}
@@ -127,7 +127,7 @@ jobs:
       #     authorized-users: roderik
 
       - name: Codegen
-        run: bun codegen
+        run: bunx settlemint codegen
 
       - name: Format
         run: bun run format
