@@ -1,4 +1,4 @@
-import placeholder from "@/public/placeholders/placeholder.svg";
+import placeholder from "@/assets/placeholders/placeholder.svg";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
 
