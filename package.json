@@ -94,12 +94,12 @@
     "next-auth": "^5.0.0-beta.25",
     "next-themes": "0.3.0",
     "nuqs": "2.0.4",
-    "react": "19.0.0-rc-69d4b800-20241021",
+    "react": "19.0.0-rc-fb9a90fa48-20240614",
     "react-awesome-gravatar": "2.0.3",
-    "react-dom": "19.0.0-rc-69d4b800-20241021",
+    "react-dom": "19.0.0-rc-fb9a90fa48-20240614",
     "react-dropzone": "14.2.10",
     "react-hook-form": "7.53.1",
-    "react-is": "19.0.0-rc-69d4b800-20241021",
+    "react-is": "19.0.0-rc-fb9a90fa48-20240614",
     "recharts": "^2.13.0",
     "sonner": "1.5.0",
     "tailwind-merge": "^2.5.4",
@@ -113,8 +113,8 @@
     "@biomejs/biome": "^1.9.4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
     "babel-plugin-react-compiler": "19.0.0-beta-8a03594-20241020",
     "eslint": "^9",
     "eslint-config-next": "15.0.1",
@@ -124,7 +124,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "react-is": "19.0.0-rc-69d4b800-20241021"
+    "react-is": "19.0.0-rc-fb9a90fa48-20240614"
   },
   "trustedDependencies": ["@biomejs/biome", "lefthook", "sharp"]
 }
