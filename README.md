@@ -28,49 +28,7 @@
 
 ## Getting started
 
-First we will create a new Next JS project using the following command.
-
-```bash
-# Using npx
-npx @settlemint/sdk@latest create
-
-# Using bun
-bunx @settlemint/sdk@latest create
-
-# Using pnpm
-pnpm dlx @settlemint/sdk@latest create
-```
-
-Then following the next steps in your terminal.
-
-## Working with your new project
-
-Let's begin by running the following command to start the projects dependencies:
-
-```bash
-docker compose up -d
-```
-
-This will launch a local instance of:
-
-- an Ethereum node
-- a The Graph node
-- an Hasura instance
-
-Also make sure to have the Hasura CLI installed:
-
-```bash
-# MacOS
-brew install hasura-cli
-
-# Linux
-curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | sh
-
-# Windows
-iwr -useb https://github.com/hasura/graphql-engine/raw/stable/cli/get.ps1 | iex
-```
-
-Then launch the development servers by running:
+Launch the development server by running:
 
 ```bash
 bun run dev

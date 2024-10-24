@@ -1,4 +1,0 @@
-{
-  "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignoreDependencies": ["graphql-request", "openapi-fetch", "postcss", "postcss-load-config", "@redocly/openapi-core"]
-}

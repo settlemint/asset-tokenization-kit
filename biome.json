@@ -4,29 +4,12 @@
     "enabled": true
   },
   "files": {
-    "ignore": [".vscode/", ".settlemint/", "paraglide/", "generated/"]
+    "ignore": [".vscode/", "src/components/ui/**/*"]
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
-      "a11y": {
-        "useHtmlLang": "warn",
-        "useButtonType": "warn",
-        "useAriaPropsForRole": "warn",
-        "useSemanticElements": "warn",
-        "useFocusableInteractive": "warn",
-        "noRedundantRoles": "warn"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "warn"
-      },
-      "complexity": {
-        "noForEach": "warn"
-      },
-      "correctness": {
-        "useExhaustiveDependencies": "warn"
-      },
       "style": {
         "noNonNullAssertion": "off"
       }

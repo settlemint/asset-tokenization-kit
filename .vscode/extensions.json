@@ -1,24 +1,13 @@
 {
   "recommendations": [
-    "bradlc.vscode-tailwindcss",
     "biomejs.biome",
-    "graphql.vscode-graphql-syntax",
-    "inlang.vs-code-extension",
     "oven.bun-vscode",
-    "stringham.copy-with-imports",
-    "ms-azuretools.vscode-docker",
     "editorconfig.editorconfig",
-    "usernamehw.errorlens",
-    "github.vscode-github-actions",
-    "github.vscode-pull-request-github",
-    "codezombiech.gitignore",
+    "dbaeumer.vscode-eslint",
+    "graphql.vscode-graphql-syntax",
     "nhoizey.gremlins",
-    "tim-koehler.helm-intellisense",
-    "ms-kubernetes-tools.vscode-kubernetes-tools",
     "yoavbls.pretty-ts-errors",
-    "mechatroner.rainbow-csv",
-    "tilt-dev.tiltfile",
-    "shardulm94.trailing-spaces",
-    "vitest.explorer"
+    "bradlc.vscode-tailwindcss",
+    "shardulm94.trailing-spaces"
   ]
 }

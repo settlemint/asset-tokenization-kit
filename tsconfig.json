@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "ES2017",
     "lib": [
       "dom",
       "dom.iterable",
@@ -16,11 +17,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
     "plugins": [
       {
         "name": "next"
@@ -32,23 +28,34 @@
             "name": "hasura",
             "schema": "hasura-schema.graphql",
             "tadaOutputLocation": "hasura-env.d.ts",
-            "tadaTurboLocation": "hasura-cache.d.ts"
+            "tadaTurboLocation": "hasura-cache.d.ts",
+            "trackFieldUsage": false
           },
           {
-            "name": "thegraph-fallback",
-            "schema": "the-graph-fallback-schema.graphql",
-            "tadaOutputLocation": "the-graph-fallback-env.d.ts",
-            "tadaTurboLocation": "the-graph-fallback-cache.d.ts"
+            "name": "thegraph",
+            "schema": "the-graph-schema.graphql",
+            "tadaOutputLocation": "the-graph-env.d.ts",
+            "tadaTurboLocation": "the-graph-cache.d.ts",
+            "trackFieldUsage": false
           },
           {
             "name": "portal",
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",
-            "tadaTurboLocation": "portal-cache.d.ts"
+            "tadaTurboLocation": "portal-cache.d.ts",
+            "trackFieldUsage": false
           }
         ]
       }
-    ]
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@schemas/*": [
+        "./*.d.ts"
+      ]
+    }
   },
   "include": [
     "next-env.d.ts",

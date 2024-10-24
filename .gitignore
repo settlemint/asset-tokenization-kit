@@ -1,13 +1,14 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# IDE
-.idea
-
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
-.yarn/install-state.gz
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # testing
 /coverage
@@ -38,15 +39,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.settlemint/
-dist
-contracts/dependencies
-contracts/cache_forge
-settlemint.config.mjs
-apollo.config.js
-
+# codegen
 *-env.d.ts
 *-cache.d.ts
 *-schema.graphql
 lib/settlemint/
-uploads/
