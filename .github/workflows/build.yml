@@ -129,9 +129,6 @@ jobs:
       - name: Codegen
         run: bunx settlemint codegen
 
-      - name: Format
-        run: bun run format
-
       - name: Lint
         run: bun run lint
 
