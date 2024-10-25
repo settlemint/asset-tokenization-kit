@@ -4,7 +4,7 @@ import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { SessionProvider } from "next-auth/react";
-import { NuqsAdapter } from "nuqs/adapters/next/pages";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 export { metadata } from "@/lib/site-config";
 
