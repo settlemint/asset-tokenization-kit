@@ -20,7 +20,6 @@ import { useMultiFormStep } from "./form-multistep";
 interface DropzoneProps {
   label: string;
   name: string;
-  uploadDir?: string;
   accept?: {
     images: Array<".jpg" | ".jpeg" | ".png" | ".webp">;
     text: Array<".pdf" | ".docx" | ".doc" | ".txt" | ".md" | ".csv" | ".xls" | ".xlsx">;
@@ -28,6 +27,11 @@ interface DropzoneProps {
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
+  server?: {
+    storage: "minio" | "s3" | "local";
+    bucket?: string;
+    uploadDir?: string;
+  };
 }
 
 type Action = {
@@ -82,6 +86,7 @@ export function Dropzone({
   maxSize,
   maxFiles,
   multiple = true,
+  server = { storage: "minio" },
 }: DropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
@@ -147,10 +152,15 @@ export function Dropzone({
         const id = (file as File & { id: string }).id;
 
         // Get the upload URL
-        const response = await fetch("/api/upload/s3", {
+        const response = await fetch("/api/upload/presigned-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type,
+            bucket: server.bucket,
+            storage: server.storage,
+          }),
         });
 
         if (!response.ok) throw new Error("Failed to get upload URL");
@@ -160,8 +170,6 @@ export function Dropzone({
         } = await response.json();
 
         const xhr = new XMLHttpRequest();
-
-        console.log("UPLOAD URL", uploadUrl);
 
         xhr.open("PUT", uploadUrl, true);
         setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
