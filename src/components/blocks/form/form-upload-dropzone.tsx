@@ -331,7 +331,7 @@ export function Dropzone({
               </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
-                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
+                <span className="text-xs text-black dark:text-white">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
               <></>
@@ -348,7 +348,7 @@ export function Dropzone({
 
             {action.isUploading && (
               <span
-                className="absolute bottom-0 left-0 inline-block h-1 bg-white"
+                className="absolute bottom-0 left-0 inline-block h-1 bg-black dark:bg-white"
                 style={{ width: `${uploadProgress[action.file_name]}%` }}
               />
             )}
