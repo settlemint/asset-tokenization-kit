@@ -4,6 +4,7 @@ import { fontSans } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { SessionProvider } from "next-auth/react";
+import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import "./globals.css";
 export { metadata } from "@/lib/site-config";
 
@@ -25,9 +26,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen font-sans antialiased", fontSans.variable)}>
         <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <QueryClientProvider>{children}</QueryClientProvider>
-          </ThemeProvider>
+          <NuqsAdapter>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <QueryClientProvider>{children}</QueryClientProvider>
+            </ThemeProvider>
+          </NuqsAdapter>
         </SessionProvider>
       </body>
     </html>
