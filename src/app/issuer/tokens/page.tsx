@@ -41,7 +41,9 @@ export default async function IssuerTokens({ searchParams }: IssuerTokensPagePro
             </div>
           }
         >
-          <CreateTokenForm defaultValues={parsedParams.state} formId={parsedParams.formId || "create-token-form"} />
+          <div className="p-8">
+            <CreateTokenForm defaultValues={parsedParams.state} formId={parsedParams.formId || "create-token-form"} />
+          </div>
         </SidePanel>
       </div>
       <TokenTable />

@@ -87,12 +87,12 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <AddressAvatar
+              {/*} <AddressAvatar
                 address={wallet}
                 email={email}
                 className="h-8 w-8 rounded-lg"
                 indicator={(pendingCount ?? 0) > 0}
-              />
+              /> */}
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{email}</span>
                 <span className="truncate text-xs">{shortHex(wallet, 12, 8)}</span>
