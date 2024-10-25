@@ -20,7 +20,7 @@ async function getPresignedUploadUrl(bucketName: string, objectName: string, exp
 
 export async function POST(request: Request): Promise<NextResponse<ActionResponse>> {
   try {
-    const { fileName, fileType, storage, bucket } = await request.json();
+    const { fileName, bucket } = await request.json();
 
     const uploadUrl = await getPresignedUploadUrl(
       bucket ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? "",
