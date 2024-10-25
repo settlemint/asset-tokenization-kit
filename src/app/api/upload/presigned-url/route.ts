@@ -6,9 +6,18 @@ type ActionResponse<T = unknown> = {
   error?: string;
 };
 
+type MinioClient = typeof client & {
+  presignedPutObject: (
+    bucketName: string,
+    objectName: string,
+    expirySeconds: number,
+    callback: (err: Error | null, presignedUrl: string) => void,
+  ) => void;
+};
+
 async function getPresignedUploadUrl(bucketName: string, objectName: string, expirySeconds: number): Promise<string> {
   return new Promise((resolve, reject) => {
-    client.presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
+    (client as MinioClient).presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
       if (err) {
         reject(err);
       } else {
