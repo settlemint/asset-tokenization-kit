@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         destination: "/issuer/dashboard",
         permanent: true,
       },
+      {
+        source: "/admin",
+        destination: "/admin/dashboard",
+        permanent: true,
+      },
     ];
   },
   experimental: {
