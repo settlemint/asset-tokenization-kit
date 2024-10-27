@@ -1,6 +1,5 @@
 "use client";
 
-import { CollapsedBreadcrumbSetter } from "@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb-setter";
 import { TokenCharts } from "@/components/token-charts/token-charts";
 import { Card } from "@/components/ui/card";
 import { formatTokenValue } from "@/lib/number";
@@ -40,13 +39,6 @@ export default function WalletTokenDetailsPage() {
 
   return (
     <>
-      <CollapsedBreadcrumbSetter
-        items={[
-          { label: "Issuers", href: "/issuer" },
-          { label: "Tokens", href: "/issuer/tokens" },
-          { label: contract.name ?? "", href: `/issuer/tokens/${address}/details` },
-        ]}
-      />
       <h3 className="text-lg font-semibold text-primary">Token Details</h3>
       <Card className="p-4">
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">

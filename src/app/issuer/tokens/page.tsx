@@ -1,4 +1,3 @@
-import { CollapsedBreadcrumbSetter } from "@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb-setter";
 import { SidePanel } from "@/components/blocks/sidepanel/sidepanel";
 import { Button } from "@/components/ui/button";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
@@ -24,12 +23,6 @@ export default async function IssuerTokens({ searchParams }: IssuerTokensPagePro
   const parsedParams = searchParamsCache.parse(await searchParams);
   return (
     <>
-      <CollapsedBreadcrumbSetter
-        items={[
-          { label: "Issuers", href: "/issuer" },
-          { label: "Tokens", href: "/issuer/tokens" },
-        ]}
-      />
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Tokens</h2>
         <SidePanel
