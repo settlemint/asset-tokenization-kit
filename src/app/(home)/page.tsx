@@ -75,7 +75,7 @@ const MobileNav: FC = () => (
             <NavItem key={item.href} {...item} />
           ))}
           <NavItem href="/issuer/dashboard" label="Issuer Portal" />
-          <NavItem href="/portfolio/dashboard" label="My Portfolio" className="font-extrabold" />
+          <NavItem href="/user/dashboard" label="My Portfolio" className="font-extrabold" />
         </NavigationMenuList>
       </NavigationMenu>
     </SheetContent>
@@ -94,7 +94,7 @@ export default function Home() {
           <NavigationMenuList>
             <NavItem href="/issuer/dashboard" label="Issuer Portal" />
             <NavigationMenuItem>
-              <Link href="/portfolio/dashboard" passHref legacyBehavior>
+              <Link href="/user/dashboard" passHref legacyBehavior>
                 <NavigationMenuLink>
                   <Button>My Portfolio</Button>
                 </NavigationMenuLink>

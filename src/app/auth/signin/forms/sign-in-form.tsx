@@ -10,7 +10,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { signInAction } from "../actions/sign-in";
 
-export function SignInForm({ provider }: { provider: string }) {
+export function SignInForm({ provider, redirectUrl }: { provider: string; redirectUrl?: string }) {
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(
     signInAction,
     zodResolver(
@@ -18,6 +18,7 @@ export function SignInForm({ provider }: { provider: string }) {
         username: zfd.text(z.string().email()),
         password: zfd.text(z.string().min(6)),
         provider: zfd.text(z.string()),
+        redirectUrl: zfd.text(z.string().optional()),
       }),
     ),
     {
@@ -32,6 +33,7 @@ export function SignInForm({ provider }: { provider: string }) {
           username: "",
           password: "",
           provider,
+          redirectUrl,
         },
       },
       errorMapProps: {},
@@ -48,7 +50,7 @@ export function SignInForm({ provider }: { provider: string }) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="m@example.com" {...field} />
+                <Input placeholder="example@settlemint.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

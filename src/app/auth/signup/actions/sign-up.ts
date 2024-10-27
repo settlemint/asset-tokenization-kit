@@ -54,11 +54,12 @@ export const signUpAction = actionClient
       username: zfd.text(z.string().email()),
       password: zfd.text(z.string().min(6)),
       provider: zfd.text(z.string()),
+      redirectUrl: zfd.text(z.string().optional()),
     }),
   )
   .action(async ({ parsedInput }) => {
     try {
-      const { provider, ...formData } = parsedInput;
+      const { provider, redirectUrl, ...formData } = parsedInput;
 
       const walletCount = await hasuraClient.request(walletExists, { email: formData.username });
 
@@ -82,7 +83,8 @@ export const signUpAction = actionClient
         });
       }
 
-      return await signIn(provider, { ...formData, redirectTo: "/issuer/dashboard" });
+      const decodedRedirectUrl = redirectUrl ? decodeURIComponent(redirectUrl) : undefined;
+      return await signIn(provider, { ...formData, redirectTo: decodedRedirectUrl ?? "/" });
     } catch (error) {
       if (error instanceof AuthError) {
         return redirect(`/auth/error?error=${error.type}`);

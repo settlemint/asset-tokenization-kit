@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  redirects: async () => {
+    return [
+      {
+        source: "/user",
+        destination: "/user/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/issuer",
+        destination: "/issuer/dashboard",
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     reactCompiler: true,
   },

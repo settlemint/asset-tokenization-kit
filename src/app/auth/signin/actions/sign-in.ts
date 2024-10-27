@@ -13,14 +13,16 @@ export const signInAction = actionClient
       username: zfd.text(z.string().email()),
       password: zfd.text(z.string().min(6)),
       provider: zfd.text(z.string()),
+      redirectUrl: zfd.text(z.string().optional()),
     }),
   )
   .action(async ({ parsedInput }) => {
     try {
-      const { provider, ...formData } = parsedInput;
+      const { provider, redirectUrl, ...formData } = parsedInput;
+      const decodedRedirectUrl = redirectUrl ? decodeURIComponent(redirectUrl) : undefined;
       return await signIn(provider, {
         ...formData,
-        redirectTo: "/issuer/dashboard",
+        redirectTo: decodedRedirectUrl ?? "/",
       });
     } catch (error) {
       if (error instanceof AuthError) {

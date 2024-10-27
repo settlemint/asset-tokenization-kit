@@ -10,7 +10,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { signUpAction } from "../actions/sign-up";
 
-export function SignUpForm({ provider }: { provider: string }) {
+export function SignUpForm({ provider, redirectUrl }: { provider: string; redirectUrl?: string }) {
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(
     signUpAction,
     zodResolver(
@@ -18,6 +18,7 @@ export function SignUpForm({ provider }: { provider: string }) {
         username: zfd.text(z.string().email()),
         password: zfd.text(z.string().min(6)),
         provider: zfd.text(z.string()),
+        redirectUrl: zfd.text(z.string().optional()),
       }),
     ),
     {
@@ -32,6 +33,7 @@ export function SignUpForm({ provider }: { provider: string }) {
           username: "",
           password: "",
           provider,
+          redirectUrl,
         },
       },
       errorMapProps: {},

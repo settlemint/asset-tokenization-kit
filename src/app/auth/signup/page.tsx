@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { SignUpForm } from "./forms/sign-up-form";
 
-export default function SignUp() {
+interface SignUpPageProps {
+  searchParams: Promise<{
+    rd?: string;
+  }>;
+}
+
+export default async function SignUp({ searchParams }: SignUpPageProps) {
+  const { rd } = await searchParams;
   return (
     <>
       <div className="grid gap-2 text-center">
@@ -11,7 +18,7 @@ export default function SignUp() {
         </p>
       </div>
       <div className="grid gap-4">
-        <SignUpForm provider="credentials" />
+        <SignUpForm provider="credentials" redirectUrl={rd} />
       </div>
       <div className="mt-4 text-center text-sm">
         Already have an account?{" "}

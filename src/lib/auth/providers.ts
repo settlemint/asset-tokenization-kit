@@ -13,6 +13,7 @@ const getWalletByEmail = hasuraGraphql(`
       wallet
       email
       password
+      role
     }
   }
 `);
@@ -62,9 +63,9 @@ export const providers: Provider[] = [
         return null;
       }
 
-      const { email, wallet } = walletResponse.starterkit_wallets_by_pk;
+      const { email, wallet, role } = walletResponse.starterkit_wallets_by_pk;
 
-      return { email, wallet };
+      return { email, wallet, roles: role ? role : ["user"] };
     },
   }),
 ];

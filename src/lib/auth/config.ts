@@ -17,12 +17,14 @@ export const authConfig: Omit<NextAuthConfig, "providers"> = {
     async jwt({ token, user }) {
       if (user) {
         token.wallet = (user as { wallet: string }).wallet;
+        token.roles = (user as { roles: string[] }).roles;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.wallet = token.wallet as string;
+        session.user.roles = token.roles as string[];
       }
       return session;
     },
