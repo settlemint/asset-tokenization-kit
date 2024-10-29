@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
+  output: "standalone",
 };
 
 export default withSettleMint(nextConfig);
