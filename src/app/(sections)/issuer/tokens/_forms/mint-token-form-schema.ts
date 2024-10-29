@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const MintTokenSchema = z.object({
   to: z.string(),
-  amount: z.number(),
+  amount: z.coerce.number(),
 });
 
 export type MintTokenSchemaType = z.infer<typeof MintTokenSchema>;

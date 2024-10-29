@@ -30,7 +30,7 @@ export const mintTokenAction = actionClient.schema(MintTokenSchema).action(async
     address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
     from: session.user.wallet,
     to: to,
-    amount: amount,
+    amount: String(amount),
   });
 
   const transactionHash = result.StarterKitERC20Mint?.transactionHash;
