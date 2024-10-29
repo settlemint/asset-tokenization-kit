@@ -31,7 +31,7 @@ const entries = [
 ];
 
 const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, name = "", placeholder = "", ...props }, ref) => {
+  ({ className, name = "", placeholder = "" }) => {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
     const [width, setWidth] = React.useState(0);
@@ -48,9 +48,8 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
       <Controller
         name={name}
         render={({ field }) => {
-          const _value = field.value === "" ? 0 : Number(field.value);
           return (
-            <div ref={containerRef} className="w-full">
+            <div ref={containerRef} className={cn("w-full", className)}>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" aria-expanded={open} className="w-full justify-between">
