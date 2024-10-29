@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { SessionProvider } from "next-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "sonner";
 import "./globals.css";
 export { metadata } from "@/lib/site-config";
 
@@ -32,6 +33,7 @@ export default function RootLayout({
             </ThemeProvider>
           </NuqsAdapter>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );
