@@ -17,24 +17,21 @@
 
 
 
-FROM node:22.10.0-alpine
+FROM node:22.10.0-slim
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
+COPY --from=oven/bun:1.1.33 --chmod=0777 /usr/local/bin/bun /bin/bun
+
+ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
+ENV BUN_INSTALL_BIN=/bin
 ENV NEXT_TELEMETRY_DISABLED=1
 
-ENV BUN_INSTALL="/home/node/.bun"
-ENV PATH="$BUN_INSTALL/bin:$PATH"
-
 COPY package.json bun.lockb ./
-RUN apk add --no-cache curl libc6-compat bash && \
-    curl -fsSL https://bun.sh/install | bash && \
-    bun install --frozen-lockfile && \
-    rm -rf /var/cache/apk/*
-
+RUN bun install --frozen-lockfile
 COPY . .
 
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 
-CMD ["bunx", "next", "start"]
+CMD ["bun", "run", "start"]
