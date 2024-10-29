@@ -57,7 +57,11 @@ export function TokenTable() {
         {
           accessorKey: "decimals",
           header: ({ column }) => {
-            return <DataTableColumnHeader column={column}>Decimals</DataTableColumnHeader>;
+            return (
+              <DataTableColumnHeader variant="numeric" column={column}>
+                Decimals
+              </DataTableColumnHeader>
+            );
           },
           cell: ({ getValue }) => {
             const value = getValue<string>();
