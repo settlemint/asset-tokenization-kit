@@ -24,7 +24,7 @@ export default async function IssuerTokens({ searchParams }: IssuerTokensPagePro
   return (
     <>
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Tokens</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Trading Pairs</h2>
         <SidePanel
           title="Create a new pair"
           description="Create a new token pair to trade between two tokens."
