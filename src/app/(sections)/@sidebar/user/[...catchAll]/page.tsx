@@ -15,6 +15,11 @@ export default function IssuerSidebar() {
               url: "/user/dashboard",
               icon: ChartNoAxesCombined,
             },
+          ],
+        },
+        {
+          title: "My Portfolio",
+          items: [
             {
               title: "Portfolio",
               url: "/user/portfolio",

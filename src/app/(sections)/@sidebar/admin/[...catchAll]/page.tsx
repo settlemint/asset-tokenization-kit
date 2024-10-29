@@ -8,13 +8,18 @@ export default function AdminSidebar() {
     <SidebarNavigation
       groups={[
         {
-          title: "Platform Management",
+          title: "",
           items: [
             {
               title: "Dashboard",
               url: "/admin/dashboard",
               icon: ChartNoAxesCombined,
             },
+          ],
+        },
+        {
+          title: "Platform Management",
+          items: [
             {
               title: "Users",
               url: "/admin/users",
