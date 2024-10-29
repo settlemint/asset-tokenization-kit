@@ -69,7 +69,6 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
                             key={entry.value}
                             value={entry.label}
                             onSelect={(currentValue) => {
-                              console.log("currentValue", currentValue, value);
                               setValue(currentValue);
                               setOpen(false);
                             }}
