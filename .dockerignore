@@ -1,28 +1,19 @@
-# *
-# !.settlemint
-# !app
-# !components
-# !graphql
-# !lib
-# !messages
-# !paraglide
-# !project.inlang
-# !public
-# !LICENSE
-# !middleware.ts
-# !next.config.mjs
-# !package.json
-# !postcss.config.mjs
-# !tailwind.config.ts
-# !tsconfig.json
-# !./.next/standalone
-# !./.next/static
-# !bun.lockb
-
-Dockerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next
-.git
+*
+!.settlemint
+!app
+!components
+!graphql
+!lib
+!messages
+!paraglide
+!project.inlang
+!public
+!LICENSE
+!middleware.ts
+!next.config.mjs
+!package.json
+!postcss.config.mjs
+!tailwind.config.ts
+!tsconfig.json
+!./.next/standalone
+!./.next/static
