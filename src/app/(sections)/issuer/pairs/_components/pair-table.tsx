@@ -5,32 +5,32 @@
 // import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 // import { Button } from "@/components/ui/button";
 // import { formatTokenValue } from "@/lib/number";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
+// import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+// import { useSuspenseQuery } from "@tanstack/react-query";
 // import { FolderOpen } from "lucide-react";
 // import Link from "next/link";
 
-const ListAllPairs = theGraphGraphql(`
-query ListAllPairs {
-  erc20DexPairs {
-    id
-    quoteReserve
-    quoteTokenPrice
-    baseTokenPrice
-    baseReserve
-    swapFee
-  }
-}
-`);
+// const ListAllPairs = theGraphGraphql(`
+// query ListAllPairs {
+//   erc20DexPairs {
+//     id
+//     quoteReserve
+//     quoteTokenPrice
+//     baseTokenPrice
+//     baseReserve
+//     swapFee
+//   }
+// }
+// `);
 
 export function PairTable() {
-  const tokens = useSuspenseQuery({
-    queryKey: ["all-pairs"],
-    queryFn: () => {
-      return theGraphClient.request(ListAllPairs, {});
-    },
-    refetchInterval: 2000,
-  });
+  // const tokens = useSuspenseQuery({
+  //   queryKey: ["all-pairs"],
+  //   queryFn: () => {
+  //     return theGraphClient.request(ListAllPairs, {});
+  //   },
+  //   refetchInterval: 2000,
+  // });
 
   return (
     <></>
