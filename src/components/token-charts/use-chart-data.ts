@@ -5,7 +5,7 @@ import { type ChartDataPoint, generateTimeArray, getStartOfCurrentDay, getStartO
 
 const TokenVolumes = theGraphGraphql(`
 query TokenVolumes($timestamp_gt: Timestamp!, $interval: Aggregation_interval!) {
-  tokenVolumeStats_collection(
+  erc20TokenVolumeStats_collection(
     where: {timestamp_gt: $timestamp_gt}
     interval: $interval
   ) {
@@ -23,7 +23,7 @@ query TokenVolumes($timestamp_gt: Timestamp!, $interval: Aggregation_interval!) 
 
 const TokenVolumesPerToken = theGraphGraphql(`
   query TokenVolumes($timestamp_gt: Timestamp!, $interval: Aggregation_interval!, $tokenId: Bytes!) {
-    tokenVolumeStats_collection(
+    erc20TokenVolumeStats_collection(
       where: {timestamp_gt: $timestamp_gt, token_: {id: $tokenId}}
       interval: $interval
     ) {
@@ -45,7 +45,7 @@ export const useVolumeChartData = (interval: "hour" | "day", token?: string) => 
     queryFn: async () => {
       const since = interval === "hour" ? subDays(getStartOfCurrentHour(), 2) : subMonths(getStartOfCurrentDay(), 2);
 
-      const { tokenVolumeStats_collection: rawChartData } = token
+      const { erc20TokenVolumeStats_collection: rawChartData } = token
         ? await theGraphClient.request(TokenVolumesPerToken, {
             interval,
             timestamp_gt: `${since.getTime()}000`,
