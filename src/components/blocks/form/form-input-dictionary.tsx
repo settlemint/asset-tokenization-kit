@@ -54,7 +54,13 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" aria-expanded={open} className="w-full justify-between">
-                    {value ? `${entries.find((entry) => entry.label === value)?.value} (${value})` : "Select entry..."}
+                    <div className="flex items-center gap-2">
+                      <AddressAvatar address={entries.find((entry) => entry.label === value)?.value} variant="tiny" />
+                      {value
+                        ? `${entries.find((entry) => entry.label === value)?.value} (${value})`
+                        : "Select entry..."}
+                    </div>
+
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
