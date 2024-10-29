@@ -1,5 +1,6 @@
 "use client";
 
+import { DictionaryInput } from "@/components/blocks/form/form-input-dictionary";
 import { NumericInput } from "@/components/blocks/form/form-input-numeric";
 import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
 import { FormPage } from "@/components/blocks/form/form-page";
@@ -114,7 +115,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                     submit: { buttonText: "Submit" },
                   }}
                 >
-                  {/* Token Name */}
+                  {/* Mint amount */}
                   <FormField
                     control={form.control}
                     name="amount"
@@ -129,7 +130,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                       </FormItem>
                     )}
                   />
-                  {/* Token Symbol */}
+                  {/* Mint to wallet */}
                   <FormField
                     control={form.control}
                     name="to"
@@ -138,6 +139,21 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                         <FormLabel>Wallet address</FormLabel>
                         <FormControl>
                           <Input placeholder="To address" {...field} />
+                        </FormControl>
+                        <FormDescription>This is the wallet address of the token holder</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Mint to wallet */}
+                  <FormField
+                    control={form.control}
+                    name="to"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Wallet address</FormLabel>
+                        <FormControl>
+                          <DictionaryInput placeholder="To address..." {...field} />
                         </FormControl>
                         <FormDescription>This is the wallet address of the token holder</FormDescription>
                         <FormMessage />
