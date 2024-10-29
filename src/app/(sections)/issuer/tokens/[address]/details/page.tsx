@@ -1,9 +1,12 @@
 "use client";
 
+import { SidePanel } from "@/components/blocks/sidepanel/sidepanel";
 import { TokenCharts } from "@/components/token-charts/token-charts";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatTokenValue } from "@/lib/number";
 import { useParams } from "next/navigation";
+import { MintTokenForm } from "../../_forms/mint-token-form";
 import { useTokenDetails } from "../_queries/token-details";
 
 type ContractData = NonNullable<ReturnType<typeof useTokenDetails>["data"]>["erc20Contract"];
@@ -39,6 +42,19 @@ export default function WalletTokenDetailsPage() {
 
   return (
     <>
+      <SidePanel
+        title="Mint new tokens"
+        description="Generate and distribute your digital tokens to your token holders."
+        trigger={
+          <div className="fixed right-8 top-24 flex items-center space-x-2">
+            <Button>Mint tokens</Button>
+          </div>
+        }
+      >
+        <div className="p-8">
+          <MintTokenForm defaultValues={{}} formId="mint-token-form" />
+        </div>
+      </SidePanel>
       <h3 className="text-lg font-semibold text-primary">Token Details</h3>
       <Card className="p-4">
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
