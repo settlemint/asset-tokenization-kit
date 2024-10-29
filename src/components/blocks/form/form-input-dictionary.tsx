@@ -10,23 +10,23 @@ import { Controller } from "react-hook-form";
 const entries = [
   {
     value: "0xb794f5ea0ba39494ce839613fffba7427957926",
-    label: "John Doe",
+    label: "User 1",
   },
   {
     value: "0xb794f5ea0ba39494ce839613fffba7427957927",
-    label: "Alice Cooper",
+    label: "User 2",
   },
   {
     value: "0xb794f5ea0ba39494ce839613fffba7427957928",
-    label: "Bill Gates",
+    label: "User 3",
   },
   {
     value: "0xb794f5ea0ba39494ce839613fffba7427957929",
-    label: "Steve Jobs",
+    label: "User 4",
   },
   {
     value: "0xb794f5ea0ba39494ce839613fffba7427957925",
-    label: "Tim Cook",
+    label: "User 5",
   },
 ];
 
