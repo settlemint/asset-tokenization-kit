@@ -62,7 +62,6 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
         },
       },
     );
-    // TODO: update the table
   }
 
   return (
