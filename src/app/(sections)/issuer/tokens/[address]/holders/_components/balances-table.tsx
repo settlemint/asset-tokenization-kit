@@ -5,7 +5,6 @@ import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/evm-address-balances";
-import { formatTokenValue } from "@/lib/number";
 import { useTokenDetails } from "../../_queries/token-details";
 
 export function BalancesTable({ address }: { address: string }) {
@@ -56,11 +55,7 @@ export function BalancesTable({ address }: { address: string }) {
           ),
           cell: ({ row }) => {
             const value = row.original.value;
-            return (
-              <DataTableColumnCell variant="numeric">
-                {formatTokenValue(Number.parseFloat(value), 2)}
-              </DataTableColumnCell>
-            );
+            return <DataTableColumnCell variant="numeric">{value}</DataTableColumnCell>;
           },
         },
         {

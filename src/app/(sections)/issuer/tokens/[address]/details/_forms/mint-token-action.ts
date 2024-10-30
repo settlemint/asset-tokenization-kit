@@ -3,9 +3,9 @@
 import { auth } from "@/lib/auth/auth";
 import { actionClient } from "@/lib/safe-action";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { parseEther } from "viem";
 import { MintTokenSchema } from "./mint-token-form-schema";
 
-// TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const MintTokenMutation = portalGraphql(`
 mutation MintTokenMutation($address: String!, $from: String!, $to: String!, $amount: String!) {
   StarterKitERC20Mint(
@@ -19,7 +19,7 @@ mutation MintTokenMutation($address: String!, $from: String!, $to: String!, $amo
 `);
 
 export const mintTokenAction = actionClient.schema(MintTokenSchema).action(async ({ parsedInput }) => {
-  const { to, amount } = parsedInput;
+  const { to, amount, tokenAddress } = parsedInput;
   const session = await auth();
 
   if (!session?.user) {
@@ -27,10 +27,10 @@ export const mintTokenAction = actionClient.schema(MintTokenSchema).action(async
   }
 
   const result = await portalClient.request(MintTokenMutation, {
-    address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
+    address: tokenAddress,
     from: session.user.wallet,
     to: to,
-    amount: String(amount),
+    amount: parseEther(amount.toString()).toString(),
   });
 
   const transactionHash = result.StarterKitERC20Mint?.transactionHash;
