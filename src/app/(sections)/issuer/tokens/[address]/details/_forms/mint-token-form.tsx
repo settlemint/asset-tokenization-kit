@@ -104,7 +104,6 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
         },
       },
     );
-    // TODO: update the table
   }
 
   return (

@@ -74,7 +74,7 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
         <CardContent>
           <FormMultiStepProvider
             config={{ useLocalStorageState: false, useQueryState: false }}
-            formId="mint-token-form"
+            formId="create-address-book-entry-form"
           >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

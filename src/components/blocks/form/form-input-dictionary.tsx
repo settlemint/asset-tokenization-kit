@@ -22,7 +22,7 @@ interface DictionaryInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
-  ({ className, name = "", placeholder = "", options = [] }) => {
+  ({ className, name = "", placeholder = "", options = [], ...props }) => {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
     const [width, setWidth] = React.useState(0);
@@ -59,7 +59,16 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                   <Command accessKey="label">
                     <CommandInput placeholder={placeholder} accessKey="label" />
                     <div className="flex m-2 justify-between gap-2">
-                      <Input placeholder="New address" {...field} onChange={(e) => setValue(e.target.value)} />
+                      <Input
+                        placeholder="New address"
+                        {...field}
+                        {...props}
+                        onChange={(e) => {
+                          field.onChange(value);
+                          setValue(e.target.value);
+                        }}
+                        value={value}
+                      />
                       <Button variant="outline" className="w-40" onClick={() => setShowDialog(true)}>
                         Add to Addressbook
                       </Button>
