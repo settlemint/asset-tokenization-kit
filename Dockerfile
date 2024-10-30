@@ -1,4 +1,4 @@
-FROM node:22.10.0-alpine
+FROM node:22.11.0-alpine
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 ENV NEXT_TELEMETRY_DISABLED=1
