@@ -46,6 +46,6 @@ export function useTokenDetails(address: string) {
     queryFn: () => {
       return theGraphClient.request(TokenDetails, { id: address });
     },
-    refetchInterval: 10000,
+    refetchInterval: 2000,
   });
 }

@@ -4,10 +4,10 @@ import { SidePanel } from "@/components/blocks/sidepanel/sidepanel";
 import { TokenCharts } from "@/components/token-charts/token-charts";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatTokenValue } from "@/lib/number";
 import { useParams } from "next/navigation";
-import { MintTokenForm } from "../../_forms/mint-token-form";
+import type { Address } from "viem";
 import { useTokenDetails } from "../_queries/token-details";
+import { MintTokenForm } from "./_forms/mint-token-form";
 
 type ContractData = NonNullable<ReturnType<typeof useTokenDetails>["data"]>["erc20Contract"];
 
@@ -20,9 +20,6 @@ const formatValue = (key: keyof ContractData, value: unknown, decimals?: number)
   if (value === null || value === undefined) return "N/A";
   if (Array.isArray(value)) return `${(value ?? []).length}`;
   if (typeof value === "object") return JSON.stringify(value);
-  if (key === "totalSupply" && decimals !== undefined) {
-    return formatTokenValue(BigInt(value as string), decimals);
-  }
   return String(value);
 };
 
@@ -52,7 +49,7 @@ export default function WalletTokenDetailsPage() {
         }
       >
         <div className="p-8">
-          <MintTokenForm defaultValues={{}} formId="mint-token-form" />
+          <MintTokenForm defaultValues={{ tokenAddress: address as Address }} formId="mint-token-form" />
         </div>
       </SidePanel>
       <h3 className="text-lg font-semibold text-primary">Token Details</h3>

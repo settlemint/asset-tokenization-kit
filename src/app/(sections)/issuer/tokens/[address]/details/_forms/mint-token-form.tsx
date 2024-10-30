@@ -81,7 +81,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
       {
         loading: "Minting token...",
         success: (data) => {
-          return `${values.amount} tokens minted to (${values.to}) in block ${data.blockNumber} on ${data.contractAddress}`;
+          return `${values.amount} tokens minted to (${values.to}) in block ${data.blockNumber}`;
         },
         error: (error) => {
           console.error(error);
