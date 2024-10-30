@@ -32,6 +32,21 @@ query MintTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
+const walletAddresses = [
+  {
+    value: "0xb794f5ea0ba39494ce839613fffba7427957926",
+    label: "User 1",
+  },
+  {
+    value: "0xb794f5ea0ba39494ce839613fffba7427957927",
+    label: "User 2",
+  },
+  {
+    value: "0xb794f5ea0ba39494ce839613fffba7427957928",
+    label: "User 3",
+  },
+];
+
 export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
   const [localStorageState] = useLocalStorage<Partial<MintTokenSchemaType>>("state", defaultValues);
 
@@ -153,7 +168,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                       <FormItem>
                         <FormLabel>Wallet address</FormLabel>
                         <FormControl>
-                          <DictionaryInput placeholder="To address..." {...field} />
+                          <DictionaryInput placeholder="Search user wallet..." options={walletAddresses} {...field} />
                         </FormControl>
                         <FormDescription>This is the wallet address of the token holder</FormDescription>
                         <FormMessage />

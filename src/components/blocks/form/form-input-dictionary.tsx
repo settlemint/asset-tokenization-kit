@@ -1,40 +1,32 @@
+"use client";
+
+import { CreateAddressBookEntryForm } from "@/app/(sections)/issuer/tokens/[address]/details/_forms/create-address-book-entry-form";
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import React, { type InputHTMLAttributes, forwardRef } from "react";
 import { Controller } from "react-hook-form";
 
-const entries = [
-  {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957926",
-    label: "User 1",
-  },
-  {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957927",
-    label: "User 2",
-  },
-  {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957928",
-    label: "User 3",
-  },
-  {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957929",
-    label: "User 4",
-  },
-  {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957925",
-    label: "User 5",
-  },
-];
+interface Option {
+  value: string;
+  label: string;
+}
 
-const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, name = "", placeholder = "" }) => {
+interface DictionaryInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  options: Option[];
+}
+
+const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
+  ({ className, name = "", placeholder = "", options = [] }) => {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
     const [width, setWidth] = React.useState(0);
+    const [showDialog, setShowDialog] = React.useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
@@ -42,22 +34,22 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
         const rect = containerRef.current.getBoundingClientRect();
         setWidth(rect.width);
       }
-    }, []); // Empty deps array since we only need this once on mount
+    }, []);
 
     return (
       <Controller
         name={name}
-        render={() => {
+        render={({ field }) => {
           return (
             <div ref={containerRef} className={cn("w-full", className)}>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" aria-expanded={open} className="w-full justify-between">
                     <div className="flex items-center gap-2">
-                      <AddressAvatar address={entries.find((entry) => entry.label === value)?.value} variant="tiny" />
+                      <AddressAvatar address={options.find((option) => option.label === value)?.value} variant="tiny" />
                       {value
-                        ? `${entries.find((entry) => entry.label === value)?.value} (${value})`
-                        : "Select entry..."}
+                        ? `${options.find((option) => option.label === value)?.value} (${value})`
+                        : "Select option..."}
                     </div>
 
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -66,24 +58,30 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
                 <PopoverContent className="p-0" style={{ width }}>
                   <Command accessKey="label">
                     <CommandInput placeholder={placeholder} accessKey="label" />
+                    <div className="flex m-2 justify-between gap-2">
+                      <Input placeholder="New address" {...field} onChange={(e) => setValue(e.target.value)} />
+                      <Button variant="outline" className="w-40" onClick={() => setShowDialog(true)}>
+                        Add to Addressbook
+                      </Button>
+                    </div>
                     <CommandList>
-                      <CommandEmpty>No entry found.</CommandEmpty>
+                      <CommandEmpty>No option found.</CommandEmpty>
                       <CommandGroup>
-                        {entries.map((entry) => (
+                        {options.map((option) => (
                           <CommandItem
-                            key={entry.value}
-                            value={entry.label}
+                            key={option.value}
+                            value={option.label}
                             onSelect={(currentValue) => {
                               setValue(currentValue);
                               setOpen(false);
                             }}
                           >
                             <Check
-                              className={cn("mr-2 h-4 w-4", value === entry.label ? "opacity-100" : "opacity-0")}
+                              className={cn("mr-2 h-4 w-4", value === option.label ? "opacity-100" : "opacity-0")}
                             />
-                            {entry.label}
-                            <AddressAvatar address={entry.value} variant="tiny" />
-                            <span>{entry.value}</span>
+                            {option.label}
+                            <AddressAvatar address={option.value} variant="tiny" />
+                            <span>{option.value}</span>
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -91,6 +89,17 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
                   </Command>
                 </PopoverContent>
               </Popover>
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add to Addressbook</DialogTitle>
+                  </DialogHeader>
+                  <CreateAddressBookEntryForm
+                    defaultValues={{ walletAddress: value as `0x${string}`, walletName: "" }}
+                    formId="create-address-book-entry-form"
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
           );
         }}
@@ -98,6 +107,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
     );
   },
 );
-DictionaryInput.displayName = "NumericInput";
+
+DictionaryInput.displayName = "DictionaryInput";
 
 export { DictionaryInput };
