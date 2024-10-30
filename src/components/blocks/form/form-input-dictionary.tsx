@@ -47,7 +47,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInp
     return (
       <Controller
         name={name}
-        render={({ field }) => {
+        render={() => {
           return (
             <div ref={containerRef} className={cn("w-full", className)}>
               <Popover open={open} onOpenChange={setOpen}>

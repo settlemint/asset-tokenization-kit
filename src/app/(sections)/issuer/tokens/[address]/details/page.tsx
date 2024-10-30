@@ -16,7 +16,7 @@ const formatLabel = (key: string): string => {
   return words.map((word, index) => (index === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word)).join(" ");
 };
 
-const formatValue = (key: keyof ContractData, value: unknown, decimals?: number): string => {
+const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) return "N/A";
   if (Array.isArray(value)) return `${(value ?? []).length}`;
   if (typeof value === "object") return JSON.stringify(value);
@@ -60,7 +60,7 @@ export default function WalletTokenDetailsPage() {
             .map(([key, value]) => (
               <div key={key}>
                 <dt className="text-sm font-medium text-muted-foreground">{formatLabel(key)}</dt>
-                <dd className="mt-1 text-sm">{formatValue(key, value, 2)}</dd>
+                <dd className="mt-1 text-sm">{formatValue(value)}</dd>
               </div>
             ))}
         </dl>
