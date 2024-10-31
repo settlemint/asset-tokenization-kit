@@ -1,7 +1,7 @@
 "use client";
 
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useRef, useState } from "react";
 
 type FormMultiStepConfig = {
   useLocalStorageState?: boolean;
@@ -32,7 +32,7 @@ export const FormMultiStepProvider = ({
   formId: string;
 }>) => {
   const [currentStep, setCurrentStep] = useQueryState("currentStep", parseAsInteger.withDefault(1));
-  const [, setFormId] = useQueryState("formId", parseAsString.withDefault(formId));
+  const [_formId] = useQueryState("formId", parseAsString.withDefault(formId));
   const [totalSteps, setTotalSteps] = useState<number>(1);
   const pageCounterRef = useRef(1);
 
@@ -41,10 +41,6 @@ export const FormMultiStepProvider = ({
       window.localStorage.removeItem("state");
     }
   }
-
-  useEffect(() => {
-    setFormId(formId);
-  }, [setFormId, formId]);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
