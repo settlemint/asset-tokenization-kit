@@ -24,6 +24,7 @@ export const FormPage = <
   title?: string;
   form: UseFormReturn<TFieldValues>;
   fields?: TName[];
+  trigger?: TName[];
   children: React.ReactNode;
   withSheetClose?: boolean;
   controls?: {
@@ -67,7 +68,7 @@ export const FormPage = <
     fields
       .map((field) => {
         const fieldState = form.getFieldState(field);
-        return !fieldState.invalid;
+        return !fieldState.invalid || form.formState.errors[field] === undefined;
       })
       .every((isValid) => isValid);
 
@@ -178,7 +179,7 @@ export const FormPage = <
           <Button
             type="submit"
             className={cn({ hidden: currentStep !== totalSteps })}
-            disabled={!form.formState.isValid}
+            disabled={(totalSteps === 1 && !isValidPage) || (totalSteps > 1 && !form.formState.isValid)}
           >
             {controls?.submit?.buttonText}
           </Button>
