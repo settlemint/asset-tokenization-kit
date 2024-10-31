@@ -80,11 +80,11 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          accessorKey: "contract.totalSupply",
+          accessorKey: "value",
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
-                Total Supply
+                Amount
               </DataTableColumnHeader>
             );
           },
@@ -92,7 +92,7 @@ export function PortfolioTable({ address }: { address: Address }) {
             const value = getValue<string>();
             return (
               <DataTableColumnCell variant="numeric">
-                {formatTokenValue(Number.parseFloat(value.toString()), 2)}
+                {formatTokenValue(Number.parseFloat(value), 2)}
               </DataTableColumnCell>
             );
           },
