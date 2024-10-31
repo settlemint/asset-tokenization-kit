@@ -54,7 +54,7 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
       {
         loading: "Saving address book entry...",
         success: (data) => {
-          return `${data.walletAddress} (${data.walletName}) saved`;
+          return "address book entry saved";
         },
         error: (error) => {
           console.error(error);
