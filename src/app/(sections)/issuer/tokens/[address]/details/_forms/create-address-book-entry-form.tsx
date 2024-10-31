@@ -50,11 +50,12 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
     toast.promise(
       async () => {
         await createAddressBookEntryAction(values);
+        return { walletAddress: values.walletAddress! };
       },
       {
         loading: "Saving address book entry...",
-        success: (data) => {
-          return "address book entry saved";
+        success: (data: { walletAddress: string }) => {
+          return `${data.walletAddress}  saved`;
         },
         error: (error) => {
           console.error(error);
