@@ -2,7 +2,6 @@
 
 import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
 import { FormPage } from "@/components/blocks/form/form-page";
-import { Dropzone } from "@/components/blocks/form/form-upload-dropzone";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -12,11 +11,11 @@ import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hoo
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
 import { createTokenAction } from "./create-pair-action";
-import type { CreateTokenSchemaType } from "./create-pair-form-schema";
-import { CreateTokenSchema, createTokenFormPageFields } from "./create-pair-form-schema";
+import type { CreateDexPairSchemaType } from "./create-pair-form-schema";
+import { CreateDexPairSchema, createDexPairFormPageFields } from "./create-pair-form-schema";
 
 interface CreateTokenFormProps {
-  defaultValues: Partial<CreateTokenSchemaType>;
+  defaultValues: Partial<CreateDexPairSchemaType>;
   formId: string;
   className?: string;
 }
@@ -33,9 +32,9 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<CreateDexPairSchemaType>>("state", defaultValues);
 
-  const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateTokenSchema), {
+  const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateDexPairSchema), {
     actionProps: {
       onSuccess: () => {
         resetFormAndAction();
@@ -44,7 +43,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
     formProps: {
       mode: "all",
       defaultValues: {
-        ...createTokenFormPageFields,
+        ...createDexPairFormPageFields,
         ...defaultValues,
         ...localStorageState,
       },
@@ -52,7 +51,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
     errorMapProps: {},
   });
 
-  function onSubmit(values: CreateTokenSchemaType) {
+  function onSubmit(values: CreateDexPairSchemaType) {
     toast.promise(
       async () => {
         const transactionHash = await createTokenAction(values);
@@ -81,7 +80,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
       {
         loading: "Creating token...",
         success: (data) => {
-          return `${values.tokenName} (${values.tokenSymbol}) created in block ${data.blockNumber} on ${data.contractAddress}`;
+          return `New pair created in block ${data.blockNumber} on ${data.contractAddress}`;
         },
         error: (error) => {
           console.error(error);
@@ -141,7 +140,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Token Information"
-                  fields={["tokenName", "tokenSymbol"]}
+                  fields={["baseTokenAddress", "quoteTokenAddress"]}
                   withSheetClose
                   controls={{
                     prev: { buttonText: "Back" },
@@ -151,14 +150,14 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                   {/* Token Name */}
                   <FormField
                     control={form.control}
-                    name="tokenName"
+                    name="baseTokenAddress"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Token name</FormLabel>
+                        <FormLabel>Base Token Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="Token Name" {...field} />
+                          <Input placeholder="Base Token Address" {...field} />
                         </FormControl>
-                        <FormDescription>This is the name of the token</FormDescription>
+                        <FormDescription>This is the address of the base token</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -166,47 +165,17 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                   {/* Token Symbol */}
                   <FormField
                     control={form.control}
-                    name="tokenSymbol"
+                    name="quoteTokenAddress"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Token Symbol</FormLabel>
                         <FormControl>
-                          <Input placeholder="Token Symbol" {...field} />
+                          <Input placeholder="Quote Token Address" {...field} />
                         </FormControl>
-                        <FormDescription>This is the symbol of the token</FormDescription>
+                        <FormDescription>This is the address of the quote token</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
-                  {/* Token Logo */}
-                  <FormField
-                    control={form.control}
-                    name="tokenLogo"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Token Logo</FormLabel>
-                          <FormControl>
-                            <Dropzone
-                              label="Click, or drop your logo here"
-                              name={field.name}
-                              accept={{
-                                images: [".jpg", ".jpeg", ".png", ".webp"],
-                                text: [],
-                              }}
-                              maxSize={1024 * 1024 * 10} // 10MB
-                              multiple={false}
-                              server={{
-                                bucket: "settlemint-skat-bucket-poc",
-                                storage: "minio",
-                              }}
-                            />
-                          </FormControl>
-                          <FormDescription>This is the logo of the token</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
                   />
                 </FormPage>
               </form>
