@@ -8,7 +8,7 @@ export default function IssuerSidebar() {
     <SidebarNavigation
       groups={[
         {
-          title: "My Portfolio",
+          title: "Dashboard",
           items: [
             {
               title: "Dashboard",
