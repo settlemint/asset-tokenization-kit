@@ -43,6 +43,7 @@
     "tsconfig.json"
   ],
   "scripts": {
+    "clean": "git clean -fdX && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' \\) -exec rm -f {} + && bun install",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
