@@ -3,38 +3,38 @@
 import { auth } from "@/lib/auth/auth";
 import { actionClient } from "@/lib/safe-action";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { CreateTokenSchema } from "./create-pair-form-schema";
+import { CreateDexPairSchema } from "./create-pair-form-schema";
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
-const CreateTokenMutation = portalGraphql(`
-mutation CreateTokenMutation($address: String!, $from: String!, $name_: String!, $symbol_: String!) {
-  StarterKitERC20FactoryCreateToken(
+const CreateDexPairMutation = portalGraphql(`
+mutation CreateDexPairMutation($address: String!, $from: String!, $baseToken: String!, $quoteToken: String!) {
+  StarterKitERC20DexFactoryCreatePair(
     address: $address
     from: $from
-    input: {extraData_: "", name_: $name_, symbol_: $symbol_}
-    gasLimit: "2000000"
+    input: {quoteToken: $quoteToken, baseToken: $baseToken}
+    gasLimit: "4000000"
   ) {
     transactionHash
   }
 }
 `);
 
-export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
-  const { tokenName, tokenSymbol } = parsedInput;
+export const createTokenAction = actionClient.schema(CreateDexPairSchema).action(async ({ parsedInput }) => {
+  const { baseTokenAddress, quoteTokenAddress } = parsedInput;
   const session = await auth();
 
   if (!session?.user) {
     throw new Error("User not authenticated");
   }
 
-  const result = await portalClient.request(CreateTokenMutation, {
-    address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
+  const result = await portalClient.request(CreateDexPairMutation, {
+    address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_DEX_FACTORY!,
     from: session.user.wallet,
-    name_: tokenName,
-    symbol_: tokenSymbol,
+    baseToken: baseTokenAddress,
+    quoteToken: quoteTokenAddress,
   });
 
-  const transactionHash = result.StarterKitERC20FactoryCreateToken?.transactionHash;
+  const transactionHash = result.StarterKitERC20DexFactoryCreatePair?.transactionHash;
 
   if (!transactionHash) {
     throw new Error("Transaction hash not found");

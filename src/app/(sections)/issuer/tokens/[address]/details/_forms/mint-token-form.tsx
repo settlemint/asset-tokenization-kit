@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
 import { mintTokenAction } from "./mint-token-action";
@@ -34,6 +35,7 @@ query MintTokenReceiptQuery($transactionHash: String!) {
 
 export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
   const [localStorageState] = useLocalStorage<Partial<MintTokenSchemaType>>("state", defaultValues);
+  const queryClient = useQueryClient();
 
   const { form, resetFormAndAction } = useHookFormAction(mintTokenAction, zodResolver(MintTokenSchema), {
     actionProps: {
@@ -81,9 +83,11 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
       {
         loading: "Minting token...",
         success: (data) => {
+          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
           return `${values.amount} tokens minted to (${values.to}) in block ${data.blockNumber}`;
         },
         error: (error) => {
+          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
           console.error(error);
           return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
         },

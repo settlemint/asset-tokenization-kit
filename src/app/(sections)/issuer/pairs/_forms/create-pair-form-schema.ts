@@ -1,28 +1,19 @@
 import { z } from "zod";
 
-export const CreateTokenSchema = z.object({
-  tokenName: z.string(),
-  tokenSymbol: z.string(),
-  tokenLogo: z
-    .instanceof(File)
-    .refine((file) => file.type.startsWith("image/"), {
-      message: "Must be an image file",
-    })
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: "File size should be less than 5MB",
-    })
-    .optional(),
+export const CreateDexPairSchema = z.object({
+  baseTokenAddress: z.string(),
+  quoteTokenAddress: z.string(),
 });
 
-export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
+export type CreateDexPairSchemaType = z.infer<typeof CreateDexPairSchema>;
 
-export const createTokenDefaultValues: CreateTokenSchemaType = {
-  tokenName: "",
-  tokenSymbol: "",
+export const createDexPairDefaultValues: CreateDexPairSchemaType = {
+  baseTokenAddress: "",
+  quoteTokenAddress: "",
 } as const;
 
-export type CreateTokenFormPageFields = keyof typeof createTokenDefaultValues;
+export type CreateDexPairFormPageFields = keyof typeof createDexPairDefaultValues;
 
-export const createTokenFormPageFields: CreateTokenFormPageFields[] = Object.keys(
-  createTokenDefaultValues,
-) as CreateTokenFormPageFields[];
+export const createDexPairFormPageFields: CreateDexPairFormPageFields[] = Object.keys(
+  createDexPairDefaultValues,
+) as CreateDexPairFormPageFields[];
