@@ -30,7 +30,7 @@ export const createAddressBookEntryAction = actionClient
 
     const result = await hasuraClient.request(CreateAddressBookEntryMutation, {
       from: session.user.wallet,
-      walletAddress,
+      walletAddress: walletAddress as string,
       walletName,
     });
 
