@@ -1,8 +1,6 @@
 "use client";
 
 import type { ChartConfig } from "@/components/ui/chart";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
 import { ChartCard } from "./chart-card";
 import { calculateTrend } from "./chart-utils";
 import { useVolumeChartData } from "./use-chart-data";
@@ -19,54 +17,55 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TokenCharts({ token }: { token?: string }) {
-  const [selectedInterval, setSelectedInterval] = useState<"hour" | "day">("day");
-  const { data } = useVolumeChartData(selectedInterval, token);
+  const { data: dataDay } = useVolumeChartData("day", token);
+  const { data: dataHour } = useVolumeChartData("hour", token);
 
-  const volumeTrend = calculateTrend(data ?? [], "volume");
-  const transfersTrend = calculateTrend(data ?? [], "transfers");
+  const volumeTrendDay = calculateTrend(dataDay ?? [], "volume");
+  const transfersTrendDay = calculateTrend(dataDay ?? [], "transfers");
+  const volumeTrendHour = calculateTrend(dataHour ?? [], "volume");
+  const transfersTrendHour = calculateTrend(dataHour ?? [], "transfers");
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-primary">Token Statistics</h3>
-        <Select
-          value={selectedInterval}
-          onValueChange={(value) => {
-            setSelectedInterval(value as "hour" | "day");
-          }}
-        >
-          <SelectTrigger className="h-8 w-[100px] text-sm bg-card">
-            <SelectValue placeholder={selectedInterval} />
-          </SelectTrigger>
-          <SelectContent side="top">
-            <SelectItem key="hour" value="hour">
-              Per hour
-            </SelectItem>
-            <SelectItem key="day" value="day">
-              Per day
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <ChartCard
-          title={`Volume per ${selectedInterval}`}
-          description={`${data?.[0]?.timestamp} - ${data?.[data.length - 1]?.timestamp}`}
-          data={data ?? []}
+          title="Volume per day"
+          description={`${dataDay?.[0]?.timestamp} - ${dataDay?.[dataDay.length - 1]?.timestamp}`}
+          data={dataDay ?? []}
           dataKey="volume"
           color="var(--color-volume)"
-          trend={volumeTrend}
-          interval={selectedInterval}
+          trend={volumeTrendDay}
+          interval="day"
           chartConfig={chartConfig}
         />
         <ChartCard
-          title={`Transfers per ${selectedInterval}`}
-          description={`${data?.[0]?.timestamp} - ${data?.[data.length - 1]?.timestamp}`}
-          data={data ?? []}
+          title="Volume per hour"
+          description={`${dataHour?.[0]?.timestamp} - ${dataHour?.[dataHour.length - 1]?.timestamp}`}
+          data={dataHour ?? []}
+          dataKey="volume"
+          color="var(--color-volume)"
+          trend={volumeTrendHour}
+          interval="hour"
+          chartConfig={chartConfig}
+        />
+        <ChartCard
+          title="Transfers per day"
+          description={`${dataDay?.[0]?.timestamp} - ${dataDay?.[dataDay.length - 1]?.timestamp}`}
+          data={dataDay ?? []}
           dataKey="transfers"
           color="var(--color-transfers)"
-          trend={transfersTrend}
-          interval={selectedInterval}
+          trend={transfersTrendDay}
+          interval="day"
+          chartConfig={chartConfig}
+        />
+        <ChartCard
+          title="Transfers per hour"
+          description={`${dataHour?.[0]?.timestamp} - ${dataHour?.[dataHour.length - 1]?.timestamp}`}
+          data={dataHour ?? []}
+          dataKey="transfers"
+          color="var(--color-transfers)"
+          trend={transfersTrendHour}
+          interval="hour"
           chartConfig={chartConfig}
         />
       </div>
