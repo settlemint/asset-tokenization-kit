@@ -12,6 +12,7 @@ mutation AddLiquidity($address: String!, $from: String!, $baseAmount: String!, $
     address: $address
     from: $from
     input: {baseAmount: $baseAmount, quoteAmount: $quoteAmount}
+    gasLimit: "2000000"
   ) {
     transactionHash
   }

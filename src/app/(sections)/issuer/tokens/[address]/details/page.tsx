@@ -9,6 +9,8 @@ import type { Address } from "viem";
 import { useTokenDetails } from "../_queries/token-details";
 import { MintTokenForm } from "./_forms/mint-token-form";
 
+// TODO: Add pie charts for the distribution of the token
+
 type ContractData = NonNullable<ReturnType<typeof useTokenDetails>["data"]>["erc20Contract"];
 
 const formatLabel = (key: string): string => {

@@ -4,28 +4,40 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { formatTokenValue } from "@/lib/number";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowDown, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Address } from "viem";
+
+// TODO: Literally the worst component I've ever written, needs a complete rewrite
+//    - Look at uniswap on what it should look like and behave like
 
 // Token type definition
 type Token = {
-  symbol: string;
-  name: string;
-  icon: string;
-  balance?: string;
+  contract: {
+    name: string;
+    symbol: string;
+    pairsBaseToken: {
+      id: string;
+      quoteTokenPrice: string;
+      swapFee: string;
+      baseReserve: string;
+      quoteReserve: string;
+      baseReserveExact: string;
+      quoteReserveExact: string;
+      quoteToken: {
+        name: string;
+        symbol: string;
+      };
+    }[];
+  };
+  valueExact: string;
+  value: string;
 };
 
-const tokens: Token[] = [
-  { symbol: "ETH", name: "Ethereum", icon: "🔷" },
-  { symbol: "USDC", name: "USD Coin", icon: "💵" },
-  { symbol: "USDT", name: "Tether USD", icon: "💚" },
-  { symbol: "WBTC", name: "Wrapped Bitcoin", icon: "₿" },
-  { symbol: "WETH", name: "Wrapped Ethereum", icon: "⬡" },
-];
-
+// TODO: I do not like the indexing output one bit, we should simplify based on what we need and take a look at the uniswap indexing code for best practices
 const GetSellableTokens = theGraphGraphql(`
 query GetSellableTokens($account: String!) {
   erc20Balances(
@@ -42,6 +54,10 @@ query GetSellableTokens($account: String!) {
         quoteReserve
         baseReserveExact
         quoteReserveExact
+        quoteToken {
+          name
+          symbol
+        }
       }
     }
     valueExact
@@ -49,6 +65,36 @@ query GetSellableTokens($account: String!) {
   }
 }
 `);
+
+function calculatePriceImpact({
+  sellAmount,
+  baseReserve,
+  quoteReserve,
+}: {
+  sellAmount: number;
+  baseReserve: string;
+  quoteReserve: string;
+}): number {
+  if (!sellAmount || !baseReserve || !quoteReserve) return 0;
+
+  const baseReserveNum = Number(baseReserve);
+  const quoteReserveNum = Number(quoteReserve);
+
+  // Current price
+  const currentPrice = quoteReserveNum / baseReserveNum;
+
+  // New reserves after swap
+  const newBaseReserve = baseReserveNum + sellAmount;
+  const newQuoteReserve = (baseReserveNum * quoteReserveNum) / newBaseReserve;
+
+  // New price
+  const newPrice = newQuoteReserve / newBaseReserve;
+
+  // Calculate price impact
+  const priceImpact = Math.abs((newPrice - currentPrice) / currentPrice) * 100;
+
+  return Math.min(priceImpact, 100);
+}
 
 export function Swap({ address }: { address: Address }) {
   const pairs = useSuspenseQuery({
@@ -58,16 +104,42 @@ export function Swap({ address }: { address: Address }) {
     },
     refetchInterval: 10000,
   });
-  const [sellAmount, setSellAmount] = useState<number>(0);
+  const [sellAmount, setSellAmount] = useState<number>(1);
   const [buyAmount, setBuyAmount] = useState<number>(0);
+  const [fee, setFee] = useState<number>(0);
   const [selectedSellToken, setSelectedSellToken] = useState<Token>();
-  const [selectedBuyToken, setSelectedBuyToken] = useState<Token>();
+  const [selectedPair, setSelectedPair] = useState<Token["contract"]["pairsBaseToken"][0]>();
+  const [priceImpact, setPriceImpact] = useState<number>(0);
 
-  const sellablePairs = (pairs.data?.erc20Balances ?? [])
-    .filter((pair) => pair.contract.symbol !== selectedBuyToken?.symbol)
-    .filter((pair) =>
-      (pair.contract.pairsBaseToken ?? []).some((p) => Number(p.baseReserve) > 0 && Number(p.quoteReserve) > 0),
-    );
+  const sellablePairs = (pairs.data?.erc20Balances ?? []).filter((pair) =>
+    (pair.contract.pairsBaseToken ?? []).some((p) => Number(p.baseReserve) > 0 && Number(p.quoteReserve) > 0),
+  );
+
+  useEffect(() => {
+    if (selectedSellToken) return;
+    if (sellablePairs.length === 0) return;
+    setSelectedSellToken(sellablePairs[0]);
+  }, [sellablePairs, selectedSellToken]);
+
+  useEffect(() => {
+    if (!selectedSellToken) return;
+    if (!selectedPair) {
+      setSelectedPair(selectedSellToken.contract.pairsBaseToken[0]);
+    }
+  }, [selectedSellToken, selectedPair]);
+
+  useEffect(() => {
+    if (!selectedSellToken || !selectedPair) return;
+    setBuyAmount(sellAmount * Number(selectedPair.quoteTokenPrice));
+    setFee(sellAmount * (Number(selectedPair.swapFee) / 10000));
+
+    const impact = calculatePriceImpact({
+      sellAmount,
+      baseReserve: selectedPair.baseReserveExact,
+      quoteReserve: selectedPair.quoteReserveExact,
+    });
+    setPriceImpact(impact);
+  }, [selectedSellToken, selectedPair, sellAmount]);
 
   if (!sellablePairs.length) {
     return <div>No trading pairs with liquidity avaialble for you</div>;
@@ -83,13 +155,17 @@ export function Swap({ address }: { address: Address }) {
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
+                  min={0}
+                  step={0.001}
                   value={sellAmount}
                   onChange={(e) => setSellAmount(Number(e.target.value))}
                   className="border-none bg-transparent text-4xl h-12"
                 />
                 <Select
-                  onValueChange={(value) => setSelectedSellToken(tokens.find((token) => token.symbol === value)!)}
-                  value={selectedSellToken?.symbol}
+                  onValueChange={(value) =>
+                    setSelectedSellToken(sellablePairs.find((token) => token.contract.symbol === value)!)
+                  }
+                  value={selectedSellToken?.contract.symbol}
                 >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select a token to sell" />
@@ -103,7 +179,14 @@ export function Swap({ address }: { address: Address }) {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="text-sm text-gray-500">$257,702.79</div>
+              {selectedSellToken && (
+                <div className="flex items-center gap-2">
+                  <div className="text-sm text-gray-500">
+                    Max: {formatTokenValue(Number(selectedSellToken?.value ?? "0"), 2)}{" "}
+                    {selectedSellToken.contract.symbol}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center">
@@ -116,32 +199,30 @@ export function Swap({ address }: { address: Address }) {
               <div className="text-lg text-gray-300">Buy</div>
               <div className="flex items-center gap-2">
                 <Input
-                  type="number"
-                  value={buyAmount}
-                  onChange={(e) => setBuyAmount(Number(e.target.value))}
+                  type="text"
+                  value={`~${formatTokenValue(buyAmount, 3)}`}
                   className="border-none bg-transparent text-4xl h-12"
+                  disabled={true}
                 />
                 <Select
-                  onValueChange={(value) => setSelectedBuyToken(tokens.find((token) => token.symbol === value)!)}
-                  value={selectedBuyToken?.symbol}
+                  onValueChange={(value) => {
+                    const pair = selectedSellToken?.contract.pairsBaseToken.find((p) => p.id === value);
+                    setSelectedPair(pair);
+                  }}
+                  value={selectedPair?.id}
                 >
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a token to buy">
-                      {selectedBuyToken ? `${selectedBuyToken.name} (${selectedBuyToken.symbol})` : null}
-                    </SelectValue>
+                    <SelectValue placeholder="Select a token to buy" />
                   </SelectTrigger>
                   <SelectContent>
-                    {tokens
-                      .filter((token) => token.symbol !== selectedSellToken?.symbol)
-                      .map((token) => (
-                        <SelectItem key={token.symbol} value={token.symbol}>
-                          {token.name} ({token.symbol})
-                        </SelectItem>
-                      ))}
+                    {selectedSellToken?.contract.pairsBaseToken.map((baseToken) => (
+                      <SelectItem key={baseToken.quoteToken.symbol} value={baseToken.id}>
+                        {baseToken.quoteToken.name} ({baseToken.quoteToken.symbol})
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="text-sm text-gray-500">$255,768.88</div>
             </div>
           </CardContent>
         </Card>
@@ -152,16 +233,18 @@ export function Swap({ address }: { address: Address }) {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-gray-400">
               <div className="flex items-center gap-1">
-                Fee (0.25%) <Info className="h-4 w-4" />
+                Fee ({(Number(selectedSellToken?.contract.pairsBaseToken[0].swapFee ?? "0") / 100).toFixed(2)}%)
               </div>
-              <span>$641.02</span>
+              <span>
+                {formatTokenValue(fee, 2)} {selectedSellToken?.contract.symbol}
+              </span>
             </div>
 
             <div className="flex items-center justify-between text-gray-400">
               <div className="flex items-center gap-1">
                 Price impact <Info className="h-4 w-4" />
               </div>
-              <span>0%</span>
+              <span className={priceImpact > 5 ? "text-red-500" : ""}>{formatTokenValue(priceImpact, 2)}%</span>
             </div>
 
             <div className="flex items-center justify-between text-gray-400">

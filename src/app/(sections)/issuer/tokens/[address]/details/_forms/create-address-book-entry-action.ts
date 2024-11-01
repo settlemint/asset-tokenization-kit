@@ -6,14 +6,10 @@ import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { CreateAddressBookEntrySchema } from "./create-address-book-entry-schema";
 
 const CreateAddressBookEntryMutation = hasuraGraphql(`
-mutation CreateAddressBookEntry($walletName: String!, $from: String!, $walletAddress: String!) {
-  insert_starterkit_addressbookentry_one(
-    from: $from
-    input: {walletName: $walletName, walletAddress: $walletAddress}
-  ) {
-    id
+mutation CreateAddressBookEntry($address: String!, $name: String!, $walletAddress: String!) {
+  insert_starterkit_addressbook_one(object: {address: $address, name: $name, walletAddress: $walletAddress}) {
+    name
     walletAddress
-    walletName
   }
 }
 `);
@@ -29,9 +25,9 @@ export const createAddressBookEntryAction = actionClient
     }
 
     const result = await hasuraClient.request(CreateAddressBookEntryMutation, {
-      from: session.user.wallet,
-      walletAddress: walletAddress as string,
-      walletName,
+      address: session.user.wallet,
+      name: walletName,
+      walletAddress: walletAddress,
     });
 
     return result;

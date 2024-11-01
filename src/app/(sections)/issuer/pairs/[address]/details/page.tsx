@@ -8,6 +8,10 @@ import type { Address } from "viem";
 import { usePairDetails } from "../_queries/pair-details";
 import { StakeTokenForm } from "./_forms/stake-token-form";
 
+// CONCEPT: Initial DEX Offering (IDO): Similar to IEOs, IDOs are conducted on decentralized
+// exchanges (DEXs). This decentralized approach offers immediate trading opportunities and reduces
+// reliance on centralized platforms
+
 type ContractData = NonNullable<ReturnType<typeof usePairDetails>["data"]>["erc20DexPair"];
 
 const formatLabel = (key: string): string => {
@@ -56,7 +60,14 @@ export default function WalletTokenDetailsPage() {
         }
       >
         <div className="p-8">
-          <StakeTokenForm defaultValues={{ tokenAddress: address as Address }} formId="stake-token-form" />
+          <StakeTokenForm
+            defaultValues={{
+              tokenAddress: address as Address,
+              baseTokenAddress: contract.baseToken.id as Address,
+              quoteTokenAddress: contract.quoteToken.id as Address,
+            }}
+            formId="stake-token-form"
+          />
         </div>
       </SidePanel>
       <h3 className="text-lg font-semibold text-primary">Liquidity Pool Details</h3>

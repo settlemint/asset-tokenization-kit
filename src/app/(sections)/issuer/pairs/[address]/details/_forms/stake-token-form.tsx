@@ -8,8 +8,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
+import { approveTokenAction } from "./approve-token-action";
 import { stakeTokenAction } from "./stake-token-action";
 import { StakeTokenSchema, type StakeTokenSchemaType, stakeTokenFormPageFields } from "./stake-token-form-schema";
 
@@ -36,10 +38,11 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
   const { form, resetFormAndAction } = useHookFormAction(stakeTokenAction, zodResolver(StakeTokenSchema), {
     actionProps: {
       onSuccess: () => {
+        console.log("[Action Success]");
         resetFormAndAction();
       },
       onError: (error) => {
-        console.error(error);
+        console.error("[Action Error]:", error);
       },
     },
     formProps: {
@@ -53,14 +56,45 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
     errorMapProps: {},
   });
 
+  // Debug form values in real-time
+  console.log("[Form Values]:", form.watch());
+
+  // Debug form state
+  console.log("[Form State]:", {
+    isDirty: form.formState.isDirty,
+    isSubmitting: form.formState.isSubmitting,
+    isValid: form.formState.isValid,
+    errors: form.formState.errors,
+  });
+
+  // Debug validation
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      console.log(`[Field Update] Name: ${name}, Type: ${type}`, "Value:", value, "Errors:", form.formState.errors);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   function onSubmit(values: StakeTokenSchemaType) {
-    console.log("values", values);
     toast.promise(
       async () => {
+        await Promise.all([
+          approveTokenAction({
+            tokenAddress: values.baseTokenAddress,
+            spender: values.tokenAddress,
+            approveAmount: values.baseAmount,
+          }),
+          approveTokenAction({
+            tokenAddress: values.quoteTokenAddress,
+            spender: values.tokenAddress,
+            approveAmount: values.quoteAmount,
+          }),
+        ]);
         const transactionHash = await stakeTokenAction(values);
 
         const startTime = Date.now();
-        const timeout = 120000; // 2 minutes
+        const timeout = 240000; // 4 minutes
 
         while (Date.now() - startTime < timeout) {
           const txresult = await portalClient.request(StakeTokenReceiptQuery, {
@@ -83,7 +117,7 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
       {
         loading: "Staking tokens...",
         success: (data) => {
-          return `${values.baseAmount}/${values.quoteAmount} tokens stakes to (${values.to}) in block ${data.blockNumber}`;
+          return `${values.baseAmount}/${values.quoteAmount} tokens stakes in block ${data.blockNumber}`;
         },
         error: (error) => {
           console.error(error);
