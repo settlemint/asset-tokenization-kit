@@ -3,10 +3,7 @@ import { z } from "zod";
 
 export const CreateAddressBookEntrySchema = z.object({
   walletName: z.string().min(1),
-  walletAddress: z
-    .string()
-    .refine((address) => isAddress(address), { message: "Please enter a valid Wallet address" })
-    .optional(),
+  walletAddress: z.string().refine((address) => isAddress(address), { message: "Please enter a valid Wallet address" }),
 });
 
 export type CreateAddressBookEntrySchemaType = z.infer<typeof CreateAddressBookEntrySchema>;
