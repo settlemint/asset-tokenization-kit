@@ -43,6 +43,7 @@ export default function IssuerSidebar() {
             },
           ],
         },
+        // TODO: we need to expose transactions and events that are relevant for the user
       ]}
     />
   );
