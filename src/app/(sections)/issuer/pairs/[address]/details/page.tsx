@@ -56,7 +56,14 @@ export default function WalletTokenDetailsPage() {
         }
       >
         <div className="p-8">
-          <StakeTokenForm defaultValues={{ tokenAddress: address as Address }} formId="stake-token-form" />
+          <StakeTokenForm
+            defaultValues={{
+              tokenAddress: address as Address,
+              baseTokenAddress: contract.baseToken.id as Address,
+              quoteTokenAddress: contract.quoteToken.id as Address,
+            }}
+            formId="stake-token-form"
+          />
         </div>
       </SidePanel>
       <h3 className="text-lg font-semibold text-primary">Liquidity Pool Details</h3>
