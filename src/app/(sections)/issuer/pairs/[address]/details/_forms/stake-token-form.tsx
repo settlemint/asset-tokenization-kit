@@ -32,6 +32,8 @@ query StakeTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
+// TODO: we need to provide deep insights in how the action will impact the pool
+
 export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
   const [localStorageState] = useLocalStorage<Partial<StakeTokenSchemaType>>("state", defaultValues);
 
