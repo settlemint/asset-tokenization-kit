@@ -41,6 +41,7 @@ export default function IssuerSidebar() {
               url: "/user/swap",
               icon: Replace,
             },
+            // TODO: the issuer should be able to allow staking by users
           ],
         },
         // TODO: we need to expose transactions and events that are relevant for the user
