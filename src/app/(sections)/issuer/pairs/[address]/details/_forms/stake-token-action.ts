@@ -6,18 +6,6 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { parseEther } from "viem";
 import { StakeTokenSchema } from "./stake-token-form-schema";
 
-const ApproveTokenMutation = portalGraphql(`
-mutation ApproveToken($address: String!, $from: String!, $spender: String!, $value: String!) {
-  StarterKitERC20Approve(
-    address: $address
-    from: $from
-    input: {spender: $spender, value: $value}
-  ) {
-    transactionHash
-  }
-}
-`);
-
 const AddLiquidityMutation = portalGraphql(`
 mutation AddLiquidity($address: String!, $from: String!, $baseAmount: String!, $quoteAmount: String!) {
   StarterKitERC20DexAddLiquidity(
