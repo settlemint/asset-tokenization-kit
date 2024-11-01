@@ -27,6 +27,7 @@ export default function IssuerSidebar() {
             },
           ],
         },
+        // TODO: under buy and swap we will need subsections for types of tokens, there will be differences of sorts of tokens
         {
           title: "Trading",
           items: [
