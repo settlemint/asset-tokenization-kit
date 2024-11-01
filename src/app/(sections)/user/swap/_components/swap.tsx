@@ -13,6 +13,8 @@ import type { Address } from "viem";
 
 // TODO: Literally the worst component I've ever written, needs a complete rewrite
 //    - Look at uniswap on what it should look like and behave like
+//    - We need to volidate the math here, it is completely untested
+//    - and i think we should explain the math as well. Maybe it makes sense to have a default help system?
 
 // Token type definition
 type Token = {
