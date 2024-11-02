@@ -97,7 +97,7 @@
     "react-dropzone": "14.2.10",
     "react-hook-form": "7.53.1",
     "react-is": "rc",
-    "recharts": "2.13.2",
+    "recharts": "2.13.3",
     "sonner": "1.5.0",
     "tailwind-merge": "2.5.4",
     "tailwindcss-animate": "1.0.7",
