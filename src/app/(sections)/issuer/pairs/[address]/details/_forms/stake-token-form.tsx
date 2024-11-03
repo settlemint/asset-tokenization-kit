@@ -32,9 +32,12 @@ query StakeTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
+// TODO: we need to provide deep insights in how the action will impact the pool
+
 export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
   const [localStorageState] = useLocalStorage<Partial<StakeTokenSchemaType>>("state", defaultValues);
 
+  // TODO: i added a ton of logging here because i could not capture errors on validation (the schema required a field i did not send) and i still can't, we need to fogure out how to have full visibility
   const { form, resetFormAndAction } = useHookFormAction(stakeTokenAction, zodResolver(StakeTokenSchema), {
     actionProps: {
       onSuccess: () => {
@@ -76,6 +79,8 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
     return () => subscription.unsubscribe();
   }, [form]);
 
+  // TODO: i would like to see three toasts, one for each action
+  // TODO: The action flow for portal mutations is always the same, so we should abstract it away while keeping full types
   function onSubmit(values: StakeTokenSchemaType) {
     toast.promise(
       async () => {

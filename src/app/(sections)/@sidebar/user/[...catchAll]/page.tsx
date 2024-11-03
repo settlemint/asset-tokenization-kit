@@ -27,6 +27,7 @@ export default function IssuerSidebar() {
             },
           ],
         },
+        // TODO: under buy and swap we will need subsections for types of tokens, there will be differences of sorts of tokens
         {
           title: "Trading",
           items: [
@@ -40,8 +41,10 @@ export default function IssuerSidebar() {
               url: "/user/swap",
               icon: Replace,
             },
+            // TODO: the issuer should be able to allow staking by users
           ],
         },
+        // TODO: we need to expose transactions and events that are relevant for the user
       ]}
     />
   );

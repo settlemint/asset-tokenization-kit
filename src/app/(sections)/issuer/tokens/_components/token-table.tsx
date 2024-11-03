@@ -22,6 +22,13 @@ query ListAllTokens {
 }
 `);
 
+// TODO: i hate the refetch intervals, and that i need to keep all these things on the
+// client side. I'm wondering if we can do better
+//   - is there a way to refesh in the background server side without the user noticing?
+//   - can we listen to events from the portal?
+//   - can we invalidate from the user actions? e.g. When i add a token i want a table update, but if someone else does it it can wait until the data is stale
+//   - but how do we account for the time lag between tx processed and the data being updated in the graph? Best guess? Or using the _meta queries?
+//   - see https://nextjs.org/docs/app/building-your-application/caching#time-based-revalidation
 export function TokenTable() {
   const tokens = useSuspenseQuery({
     queryKey: ["all-tokens"],

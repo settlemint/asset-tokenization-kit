@@ -8,9 +8,7 @@ import type { Address } from "viem";
 import { usePairDetails } from "../_queries/pair-details";
 import { StakeTokenForm } from "./_forms/stake-token-form";
 
-// CONCEPT: Initial DEX Offering (IDO): Similar to IEOs, IDOs are conducted on decentralized
-// exchanges (DEXs). This decentralized approach offers immediate trading opportunities and reduces
-// reliance on centralized platforms
+// TODO: we need to provide deep insights in how the pool is performing
 
 type ContractData = NonNullable<ReturnType<typeof usePairDetails>["data"]>["erc20DexPair"];
 
