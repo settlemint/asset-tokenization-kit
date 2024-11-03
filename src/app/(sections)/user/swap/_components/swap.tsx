@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatTokenValue } from "@/lib/number";
-import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowDown, Info } from "lucide-react";
@@ -69,31 +68,31 @@ query GetSellableTokens($account: String!) {
 }
 `);
 
-const SwapBaseToQuote = portalGraphql(`
-  mutation SwapBaseToQuote($address: String!, $from: String!, $baseAmount: String!, $minQuoteAmount: String!, $deadline: String!) {
-    StarterKitERC20DexSwapBaseToQuote(
-      address: $address
-      from: $from
-      input: {baseAmount: $baseAmount, minQuoteAmount: $minQuoteAmount, deadline: $deadline}
-      gasLimit: "2000000"
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const SwapBaseToQuote = portalGraphql(`
+//   mutation SwapBaseToQuote($address: String!, $from: String!, $baseAmount: String!, $minQuoteAmount: String!, $deadline: String!) {
+//     StarterKitERC20DexSwapBaseToQuote(
+//       address: $address
+//       from: $from
+//       input: {baseAmount: $baseAmount, minQuoteAmount: $minQuoteAmount, deadline: $deadline}
+//       gasLimit: "2000000"
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
-const SwapQuoteToBase = portalGraphql(`
-  mutation SwapQuoteToBase($address: String!, $from: String!, $quoteAmount: String!, $minBaseAmount: String!, $deadline: String!) {
-    StarterKitERC20DexSwapQuoteToBase(
-      address: $address
-      from: $from
-      input: {quoteAmount: $quoteAmount, minBaseAmount: $minBaseAmount, deadline: $deadline}
-      gasLimit: "2000000"
-    ) {
-      transactionHash
-    }
-  }
-`);
+// const SwapQuoteToBase = portalGraphql(`
+//   mutation SwapQuoteToBase($address: String!, $from: String!, $quoteAmount: String!, $minBaseAmount: String!, $deadline: String!) {
+//     StarterKitERC20DexSwapQuoteToBase(
+//       address: $address
+//       from: $from
+//       input: {quoteAmount: $quoteAmount, minBaseAmount: $minBaseAmount, deadline: $deadline}
+//       gasLimit: "2000000"
+//     ) {
+//       transactionHash
+//     }
+//   }
+// `);
 
 function calculatePriceImpact({
   sellAmount,
