@@ -52,6 +52,8 @@ Before responding to any request, follow these steps:
 - Avoid enums; use const maps instead
 - Implement proper type safety and inference
 - Use satisfies operator for type validation
+- Never, ever, use any!
+- Prefer for...of instead of forEach.
 
 ## React 19 and Next.js 15 Best Practices
 ### Component Architecture
@@ -91,7 +93,8 @@ const searchParams = await props.searchParams
 - Fetch requests are no longer cached by default
 - Use cache: 'force-cache' for specific cached requests
 - Implement fetchCache = 'default-cache' for layout/page-level caching
-- Use appropriate fetching methods (Server Components, SWR, React Query)
+- Use appropriate fetching methods (Server Components, React Query)
+- When in a client component, use react-query for data fetching
 
 ### Route Handlers
 
@@ -131,6 +134,180 @@ export async function GET(request: Request) {
 - Use next/font for font optimization
 - Configure staleTimes for client-side router cache
 - Monitor Core Web Vitals
+
+### Environment and Security
+- Never commit secrets or private keys
+- Use .env.local for local development
+- Use proper secret management in production
+- Implement environment validation
+
+## Solidity Development
+
+### Compiler and Language Version
+
+- Use Solidity version ^0.8.24 or higher
+- Enable optimization for deployment
+- Take advantage of latest language features:
+  - Custom errors instead of revert strings
+  - User defined value types
+  - Push0 opcode support
+  - Typed immutables
+
+### Code Style and Structure
+
+- Use NatSpec documentation format
+- Explicit function visibility modifiers
+- Explicit uint256 instead of uint
+- Order functions: constructor, receive, fallback, external, public, internal, private
+- Use custom errors instead of require/revert strings
+- Favor immutable over constant for gas optimization
+
+### Security Best Practices
+
+- Access Control
+  - Implement proper role-based access control (RBAC)
+  - Use OpenZeppelin's AccessControl or Ownable as base
+  - Check permissions before state changes
+  - Implement timelock for critical functions
+
+- State Management
+  - Use checks-effects-interactions pattern
+  - Guard against reentrancy attacks
+  - Validate all inputs and state transitions
+  - Use SafeMath for versions < 0.8.0
+
+- External Interactions
+  - Never trust external contract calls
+  - Implement pull over push for payments
+  - Guard against flash loan attacks
+  - Check return values of external calls
+
+- Asset Security
+  - Implement emergency pause functionality
+  - Add withdrawal limits and timeouts
+  - Implement upgradability carefully
+  - Use secure random number generation
+
+- Common Vulnerabilities to Prevent
+  - Reentrancy
+  - Integer overflow/underflow
+  - Timestamp manipulation
+  - Front-running
+  - Denial of Service (DoS)
+  - Contract balance manipulation
+  - Weak randomness
+  - Unauthorized access
+  - Logic errors in state transitions
+
+- Testing and Validation
+  - Comprehensive unit tests
+  - Integration tests with mainnet forking
+  - Fuzzing tests for edge cases
+  - Static analysis tools (Slither, Mythril)
+  - Professional security audit before mainnet
+
+### Viem Integration Best Practices
+
+- Client Configuration
+  - Use public client for read operations
+  - Use wallet client for write operations
+  - Configure transport with fallback providers
+  - Implement proper error handling for RPC failures
+  ```typescript
+  const client = createPublicClient({
+    chain: mainnet,
+    transport: fallback([
+      http('https://eth-mainnet.g.alchemy.com/v2'),
+      http('https://cloudflare-eth.com'),
+    ]),
+  })
+  ```
+
+- Contract Interactions
+  - Use strong typing with generated contract types
+  - Implement proper error handling for contract calls
+  - Use multicall for batching reads
+  - Handle ABI management systematically
+  ```typescript
+  import { getContract } from 'viem'
+  import { erc20Abi } from 'viem/abis'
+
+  const contract = getContract({
+    address: '0x...',
+    abi: erc20Abi,
+    publicClient,
+  })
+  ```
+
+- Data Handling
+  - Use zod for runtime validation of contract responses
+  - Implement proper BigInt handling
+  - Format values using viem's formatters
+  - Cache repeated reads with SWR/TanStack Query
+  ```typescript
+  import { formatEther, parseEther } from 'viem'
+
+  const balance = await publicClient.readContract({
+    address: '0x...',
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: ['0x...'],
+  })
+
+  const formatted = formatEther(balance)
+  ```
+
+- Transaction Management
+  - Implement proper transaction lifecycle handling
+  - Use waitForTransactionReceipt for confirmations
+  - Handle transaction replacements
+  - Implement proper gas estimation
+  ```typescript
+  const hash = await walletClient.writeContract({
+    address: '0x...',
+    abi: erc20Abi,
+    functionName: 'transfer',
+    args: ['0x...', parseEther('1.0')],
+  })
+
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash,
+    confirmations: 2,
+  })
+  ```
+
+- Error Handling
+  - Handle network-specific errors
+  - Implement proper user feedback
+  - Handle transaction failures gracefully
+  - Use custom error types
+  ```typescript
+  try {
+    const result = await contract.read.balanceOf(['0x...'])
+  } catch (e) {
+    if (e.cause?.code === -32603) {
+      // Handle RPC internal error
+    } else if (e.cause?.code === 4001) {
+      // Handle user rejection
+    }
+    throw e
+  }
+  ```
+
+- Testing
+  - Use anvil for local testing
+  - Implement proper mock providers
+  - Test error conditions
+  - Validate event emissions
+  ```typescript
+  import { createTestClient, publicActions } from 'viem'
+  import { foundry } from 'viem/chains'
+
+  const testClient = createTestClient({
+    chain: foundry,
+    mode: 'anvil',
+  }).extend(publicActions)
+  ```
 
 ## Configuration
 
