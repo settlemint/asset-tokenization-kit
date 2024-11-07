@@ -6,6 +6,7 @@ import { FormPage } from "@/components/blocks/form/form-page";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useEffect } from "react";
@@ -28,6 +29,7 @@ query StakeTokenReceiptQuery($transactionHash: String!) {
       contractAddress
       status
       blockNumber
+      revertReasonDecoded
     }
   }
 }`);
@@ -98,26 +100,15 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
         ]);
         const transactionHash = await stakeTokenAction(values);
 
-        const startTime = Date.now();
-        const timeout = 240000; // 4 minutes
+        return waitForTransactionReceipt({
+          receiptFetcher: async () => {
+            const txresult = await portalClient.request(StakeTokenReceiptQuery, {
+              transactionHash: transactionHash?.data ?? "",
+            });
 
-        while (Date.now() - startTime < timeout) {
-          const txresult = await portalClient.request(StakeTokenReceiptQuery, {
-            transactionHash: transactionHash?.data ?? "",
-          });
-
-          const receipt = txresult.getTransaction?.receipt;
-          if (receipt) {
-            if (receipt.status === "Success") {
-              return receipt;
-            }
-            throw new Error("Transaction failed");
-          }
-
-          // Wait for 500 milliseconds before the next attempt
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
+            return txresult.getTransaction?.receipt;
+          },
+        });
       },
       {
         loading: "Staking tokens...",

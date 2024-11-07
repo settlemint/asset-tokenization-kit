@@ -34,34 +34,6 @@ export interface ProcessedTokenData {
   findPairByTokens: (token0Symbol: string, token1Symbol: string) => PairInfo | undefined;
 }
 
-interface RawTokenBalance {
-  contract: {
-    id: string;
-    name: string;
-    symbol: string;
-    pairsBaseToken?: Array<{
-      id: string;
-      quoteTokenPrice: string;
-      swapFee: string;
-      baseReserve: string;
-      quoteReserve: string;
-      baseReserveExact: string;
-      quoteReserveExact: string;
-      quoteToken: {
-        id: string;
-        name: string;
-        symbol: string;
-      };
-    }>;
-  };
-  value: string;
-  valueExact: string;
-}
-
-interface RawPairsData {
-  erc20Balances?: RawTokenBalance[];
-}
-
 export function useSwapTokens(address: Address): ProcessedTokenData {
   const { data: rawPairsData } = useSuspenseQuery({
     queryKey: ["pairs-for-swap", address],

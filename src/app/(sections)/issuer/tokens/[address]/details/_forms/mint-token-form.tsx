@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ query MintTokenReceiptQuery($transactionHash: String!) {
       contractAddress
       status
       blockNumber
+      revertReasonDecoded
     }
   }
 }`);
@@ -73,27 +75,15 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
     toast.promise(
       async () => {
         const transactionHash = await mintTokenAction(values);
+        return waitForTransactionReceipt({
+          receiptFetcher: async () => {
+            const txresult = await portalClient.request(MintTokenReceiptQuery, {
+              transactionHash: transactionHash?.data ?? "",
+            });
 
-        const startTime = Date.now();
-        const timeout = 120000; // 2 minutes
-
-        while (Date.now() - startTime < timeout) {
-          const txresult = await portalClient.request(MintTokenReceiptQuery, {
-            transactionHash: transactionHash?.data ?? "",
-          });
-
-          const receipt = txresult.getTransaction?.receipt;
-          if (receipt) {
-            if (receipt.status === "Success") {
-              return receipt;
-            }
-            throw new Error("Transaction failed");
-          }
-
-          // Wait for 500 milliseconds before the next attempt
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
+            return txresult.getTransaction?.receipt;
+          },
+        });
       },
       {
         loading: "Minting token...",

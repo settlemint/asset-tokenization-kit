@@ -1,31 +1,36 @@
 "use server";
 
 import { approveTokenAction } from "@/app/(sections)/issuer/pairs/[address]/details/_forms/approve-token-action";
+import { auth } from "@/lib/auth/auth";
+import { actionClient } from "@/lib/safe-action";
 import { portalClient } from "@/lib/settlemint/portal";
-import type { Address } from "viem";
+import { isAddress } from "viem";
+import { z } from "zod";
 import { SwapBaseToQuote, SwapQuoteToBase } from "../_graphql/mutations";
 
-interface SwapParams {
-  pairAddress: string;
-  baseTokenAddress: string;
-  quoteTokenAddress: string;
-  from: Address;
-  amount: string;
-  minAmount: string;
-  isBaseToQuote: boolean;
-  deadline: string;
-}
+/** Schema for validating swap transaction parameters */
+const SwapParamsSchema = z.object({
+  pairAddress: z.string().refine(isAddress, "Invalid pair address"),
+  baseTokenAddress: z.string().refine(isAddress, "Invalid base token address"),
+  quoteTokenAddress: z.string().refine(isAddress, "Invalid quote token address"),
+  from: z.string().refine(isAddress, "Invalid from address"),
+  amount: z.string().min(1, "Amount is required"),
+  minAmount: z.string().min(1, "Minimum amount is required"),
+  isBaseToQuote: z.boolean(),
+  deadline: z.string().min(1, "Deadline is required"),
+});
 
-export async function executeSwap({
-  pairAddress,
-  baseTokenAddress,
-  quoteTokenAddress,
-  from,
-  amount,
-  minAmount,
-  isBaseToQuote,
-  deadline,
-}: SwapParams) {
+export type SwapParams = z.infer<typeof SwapParamsSchema>;
+
+export const executeSwapAction = actionClient.schema(SwapParamsSchema).action(async ({ parsedInput }) => {
+  const { isBaseToQuote, amount, baseTokenAddress, quoteTokenAddress, pairAddress, from, minAmount, deadline } =
+    parsedInput;
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("User not authenticated");
+  }
+
   if (isBaseToQuote) {
     await approveTokenAction({
       tokenAddress: baseTokenAddress,
@@ -69,4 +74,4 @@ export async function executeSwap({
   }
 
   return transactionHash;
-}
+});

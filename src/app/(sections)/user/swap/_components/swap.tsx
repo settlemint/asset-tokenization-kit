@@ -1,19 +1,23 @@
 "use client";
 
+import { executeSwapAction } from "@/app/(sections)/user/swap/_actions/execute-swap";
 import { TokenSelect } from "@/app/(sections)/user/swap/_components/token-select";
-import { SwapTokenReceiptQuery } from "@/app/(sections)/user/swap/_graphql/queries";
+import {
+  SwapBaseToQuoteTokenReceiptQuery,
+  SwapQuoteToBaseTokenReceiptQuery,
+} from "@/app/(sections)/user/swap/_graphql/queries";
+import { useSwapTokens } from "@/app/(sections)/user/swap/_hooks/use-swap-tokens";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useSwapTokens } from "@/hooks/use-swap-tokens";
 import { formatTokenValue } from "@/lib/number";
 import { portalClient } from "@/lib/settlemint/portal";
+import { waitForTransactionReceipt } from "@/lib/transactions";
 import { ArrowDown, Info } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { Address } from "viem";
 import { parseUnits } from "viem";
-import { executeSwap } from "../_actions/execute-swap";
 import { calculatePriceImpact } from "../_utils/price-impact";
 import { calculateDynamicSlippage } from "../_utils/slippage";
 
@@ -33,10 +37,9 @@ export function Swap({ address }: { address: Address }) {
     setIsSwapping(true);
     toast.promise(
       async () => {
-        // Calculate minAmount with 0.5% slippage
         const expectedAmount = buyAmount;
         const slippagePercent = calculateDynamicSlippage(BigInt(currentPair?.reserve0Exact ?? 0));
-        const minAmount = expectedAmount * (1 - Number.parseFloat(slippagePercent) / 100);
+        const minAmount = expectedAmount * (1 - slippagePercent / 100);
 
         // Set deadline to 20 minutes from now
         const deadline = Math.floor(Date.now() / 1000) + 1200;
@@ -45,7 +48,7 @@ export function Swap({ address }: { address: Address }) {
         const sellAmountWei = parseUnits(sellAmount.toString(), 18).toString();
         const minAmountWei = parseUnits(minAmount.toString(), 18).toString();
 
-        const transactionHash = await executeSwap({
+        const transactionHash = await executeSwapAction({
           pairAddress: currentPair.pairId,
           baseTokenAddress: currentPair.token0.address,
           quoteTokenAddress: currentPair.token1.address,
@@ -56,26 +59,18 @@ export function Swap({ address }: { address: Address }) {
           deadline: deadline.toString(),
         });
 
-        const startTime = Date.now();
-        const timeout = 120000; // 2 minutes
+        return waitForTransactionReceipt({
+          receiptFetcher: async () => {
+            const txresult = await portalClient.request(
+              currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
+              {
+                transactionHash: transactionHash?.data ?? "",
+              },
+            );
 
-        while (Date.now() - startTime < timeout) {
-          const txresult = await portalClient.request(SwapTokenReceiptQuery, {
-            transactionHash: transactionHash ?? "",
-          });
-
-          const receipt = txresult.getTransaction?.receipt;
-          if (receipt) {
-            if (receipt.status === "Success") {
-              return receipt;
-            }
-            throw new Error("Transaction failed");
-          }
-
-          // Wait for 500 milliseconds before the next attempt
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
+            return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
+          },
+        });
       },
       {
         loading: "Swapping tokens...",

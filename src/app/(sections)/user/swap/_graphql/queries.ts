@@ -32,13 +32,22 @@ export const GetSellableTokens = theGraphGraphql(`
   }
   `);
 
-export const SwapTokenReceiptQuery = portalGraphql(`
-  query SwapTokenReceiptQuery($transactionHash: String!) {
-    getTransaction(transactionHash: $transactionHash) {
-      receipt {
-        contractAddress
-        status
-        blockNumber
-      }
+export const SwapBaseToQuoteTokenReceiptQuery = portalGraphql(`
+  query SwapBaseToQuoteTokenReceiptQuery($transactionHash: String!) {
+    StarterKitERC20DexSwapBaseToQuoteReceipt(transactionHash: $transactionHash) {
+      contractAddress
+      status
+      blockNumber
+      revertReasonDecoded
+    }
+  }`);
+
+export const SwapQuoteToBaseTokenReceiptQuery = portalGraphql(`
+  query SwapQuoteToBaseTokenReceiptQuery($transactionHash: String!) {
+    StarterKitERC20DexSwapQuoteToBaseReceipt(transactionHash: $transactionHash) {
+      contractAddress
+      status
+      blockNumber
+      revertReasonDecoded
     }
   }`);

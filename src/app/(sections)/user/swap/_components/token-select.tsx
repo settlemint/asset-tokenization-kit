@@ -1,7 +1,7 @@
 "use client";
 
+import type { TokenInfo } from "@/app/(sections)/user/swap/_hooks/use-swap-tokens";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { TokenInfo } from "@/hooks/use-swap-tokens";
 
 export interface TokenSelectProps {
   tokens: TokenInfo[];
