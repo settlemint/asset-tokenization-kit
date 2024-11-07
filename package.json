@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.4.7",
+  "version": "0.0.1",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -123,5 +123,9 @@
   "overrides": {
     "react-is": "19.0.0-rc-28668d39-20241023"
   },
-  "trustedDependencies": ["@biomejs/biome", "lefthook", "sharp"]
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "lefthook",
+    "sharp"
+  ]
 }
