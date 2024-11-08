@@ -108,17 +108,23 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
           cell: ({ row }) => {
             const {
-              contract: { pairsQuoteToken },
+              contract: { pairsQuoteToken, symbol },
             } = row.original;
 
             return (
               <DataTableColumnCell variant="numeric">
                 <ul className="text-right">
-                  {pairsQuoteToken.map((pair) => (
-                    <li key={pair.baseToken.symbol}>
-                      {pair.baseTokenPrice} {pair.baseToken.symbol}
+                  {pairsQuoteToken.length > 0 ? (
+                    pairsQuoteToken.map((pair) => (
+                      <li key={pair.baseToken.symbol}>
+                        {formatTokenValue(Number.parseFloat(pair.baseTokenPrice), 2)} {pair.baseToken.symbol}
+                      </li>
+                    ))
+                  ) : (
+                    <li>
+                      {formatTokenValue(Number.parseFloat("1"), 2)} {symbol}
                     </li>
-                  ))}
+                  )}
                 </ul>
               </DataTableColumnCell>
             );

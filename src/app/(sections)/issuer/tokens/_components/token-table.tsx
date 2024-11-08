@@ -50,11 +50,13 @@ export function TokenTable() {
           },
           cell: ({ getValue }) => {
             const value = getValue<string>();
-            <DataTableColumnCell>
-              <EvmAddress address={value} prefixLength={100}>
-                <EvmAddressBalances address={value} />
-              </EvmAddress>
-            </DataTableColumnCell>;
+            return (
+              <DataTableColumnCell>
+                <EvmAddress address={value} prefixLength={100}>
+                  <EvmAddressBalances address={value} />
+                </EvmAddress>
+              </DataTableColumnCell>
+            );
           },
         },
         {
