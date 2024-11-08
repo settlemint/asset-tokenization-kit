@@ -1,5 +1,6 @@
 "use client";
 
+import { approveTokenAction } from "@/app/(sections)/issuer/pairs/[address]/details/_forms/approve-token-action";
 import { executeSwapAction } from "@/app/(sections)/user/swap/_actions/execute-swap";
 import { TokenSelect } from "@/app/(sections)/user/swap/_components/token-select";
 import {
@@ -35,58 +36,82 @@ export function Swap({ address }: { address: Address }) {
   const handleSwap = async () => {
     if (!currentPair || !inputToken || !outputToken || sellAmount <= 0) return;
     setIsSwapping(true);
-    toast.promise(
-      async () => {
-        const expectedAmount = buyAmount;
-        const slippagePercent = calculateDynamicSlippage(BigInt(currentPair?.reserve0Exact ?? 0));
-        const minAmount = expectedAmount * (1 - slippagePercent / 100);
 
-        // Set deadline to 20 minutes from now
-        const deadline = Math.floor(Date.now() / 1000) + 1200;
+    try {
+      // First approve the token
+      toast.promise(
+        (async () => {
+          const transactionHash = await approveTokenAction({
+            tokenAddress: currentPair.isBaseToQuote ? currentPair.token0.address : currentPair.token1.address,
+            spender: currentPair.pairId,
+            approveAmount: sellAmount,
+          });
 
-        // Format amounts to wei strings (assuming 18 decimals)
-        const sellAmountWei = parseUnits(sellAmount.toString(), 18).toString();
-        const minAmountWei = parseUnits(minAmount.toString(), 18).toString();
+          await waitForTransactionReceipt({
+            receiptFetcher: async () => {
+              const txresult = await portalClient.request(
+                currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
+                { transactionHash: transactionHash?.data ?? "" },
+              );
+              return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
+            },
+          });
+        })(),
+        {
+          loading: "Approving token...",
+          success: async () => {
+            // Execute the swap after successful approval
+            const expectedAmount = buyAmount;
+            const slippagePercent = calculateDynamicSlippage(BigInt(currentPair?.reserve0Exact ?? 0));
+            const minAmount = Math.floor(expectedAmount * (1 - slippagePercent / 100));
+            const deadline = Math.floor(Date.now() / 1000) + 1200;
 
-        const transactionHash = await executeSwapAction({
-          pairAddress: currentPair.pairId,
-          baseTokenAddress: currentPair.token0.address,
-          quoteTokenAddress: currentPair.token1.address,
-          from: address,
-          amount: sellAmountWei,
-          minAmount: minAmountWei,
-          isBaseToQuote: currentPair.isBaseToQuote,
-          deadline: deadline.toString(),
-        });
+            const sellAmountWei = parseUnits(sellAmount.toString(), 18).toString();
+            const minAmountWei = parseUnits(minAmount.toString(), 18).toString();
 
-        return waitForTransactionReceipt({
-          receiptFetcher: async () => {
-            const txresult = await portalClient.request(
-              currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
+            toast.promise(
+              (async () => {
+                const transactionHash = await executeSwapAction({
+                  pairAddress: currentPair.pairId,
+                  baseTokenAddress: currentPair.token0.address,
+                  quoteTokenAddress: currentPair.token1.address,
+                  from: address,
+                  amount: sellAmountWei,
+                  minAmount: minAmountWei,
+                  isBaseToQuote: currentPair.isBaseToQuote,
+                  deadline: deadline.toString(),
+                });
+
+                await waitForTransactionReceipt({
+                  receiptFetcher: async () => {
+                    const txresult = await portalClient.request(
+                      currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
+                      { transactionHash: transactionHash?.data ?? "" },
+                    );
+                    return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
+                  },
+                });
+
+                setSellAmount(0);
+                setBuyAmount(0);
+                setIsSwapping(false);
+              })(),
               {
-                transactionHash: transactionHash?.data ?? "",
+                loading: "Swapping tokens...",
+                success: `${sellAmount}/${buyAmount} tokens swapped`,
+                error: (error) => `Swap failed: ${error instanceof Error ? error.message : "Unknown error"}`,
               },
             );
 
-            return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
+            return "Token approved successfully";
           },
-        });
-      },
-      {
-        loading: "Swapping tokens...",
-        success: () => {
-          // Reset form after successful swap
-          setSellAmount(0);
-          setBuyAmount(0);
-          return `${sellAmount}/${buyAmount} tokens swapped`;
+          error: (error) => `Approval failed: ${error instanceof Error ? error.message : "Unknown error"}`,
         },
-        error: (error) => {
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
-        },
-      },
-    );
-    setIsSwapping(false);
+      );
+    } catch (error) {
+      console.error(error);
+      setIsSwapping(false);
+    }
   };
 
   /**

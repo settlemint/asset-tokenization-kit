@@ -1,6 +1,5 @@
 "use server";
 
-import { approveTokenAction } from "@/app/(sections)/issuer/pairs/[address]/details/_forms/approve-token-action";
 import { auth } from "@/lib/auth/auth";
 import { actionClient } from "@/lib/safe-action";
 import { portalClient } from "@/lib/settlemint/portal";
@@ -23,8 +22,7 @@ const SwapParamsSchema = z.object({
 export type SwapParams = z.infer<typeof SwapParamsSchema>;
 
 export const executeSwapAction = actionClient.schema(SwapParamsSchema).action(async ({ parsedInput }) => {
-  const { isBaseToQuote, amount, baseTokenAddress, quoteTokenAddress, pairAddress, from, minAmount, deadline } =
-    parsedInput;
+  const { isBaseToQuote, amount, pairAddress, from, minAmount, deadline } = parsedInput;
   const session = await auth();
 
   if (!session?.user) {
@@ -32,12 +30,6 @@ export const executeSwapAction = actionClient.schema(SwapParamsSchema).action(as
   }
 
   if (isBaseToQuote) {
-    await approveTokenAction({
-      tokenAddress: baseTokenAddress,
-      spender: pairAddress,
-      approveAmount: Number.parseFloat(amount),
-    });
-
     const result = await portalClient.request(SwapBaseToQuote, {
       address: pairAddress,
       from,
@@ -53,12 +45,6 @@ export const executeSwapAction = actionClient.schema(SwapParamsSchema).action(as
 
     return transactionHash;
   }
-
-  await approveTokenAction({
-    tokenAddress: quoteTokenAddress,
-    spender: pairAddress,
-    approveAmount: Number.parseFloat(amount),
-  });
 
   const result = await portalClient.request(SwapQuoteToBase, {
     address: pairAddress,
