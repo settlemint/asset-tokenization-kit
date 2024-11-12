@@ -8,9 +8,9 @@ import {
   SwapQuoteToBaseTokenReceiptQuery,
 } from "@/app/(sections)/user/swap/_graphql/queries";
 import { useSwapTokens } from "@/app/(sections)/user/swap/_hooks/use-swap-tokens";
+import { Input } from "@/components/blocks/form/form-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { formatTokenValue } from "@/lib/number";
 import { portalClient } from "@/lib/settlemint/portal";
 import { waitForTransactionReceipt } from "@/lib/transactions";

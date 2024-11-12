@@ -2,10 +2,10 @@
 
 import { CreateAddressBookEntryForm } from "@/app/(sections)/issuer/tokens/[address]/details/_forms/create-address-book-entry-form";
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { Input } from "@/components/blocks/form/form-input";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";

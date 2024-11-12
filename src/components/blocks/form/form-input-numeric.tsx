@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/blocks/form/form-input";
 import { type InputHTMLAttributes, forwardRef } from "react";
 import { Controller } from "react-hook-form";
 
