@@ -3,6 +3,8 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/evm-address-balances";
 import { Button } from "@/components/ui/button";
 import { formatTokenValue } from "@/lib/number";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
@@ -41,6 +43,22 @@ export function TokenTable() {
   return (
     <DataTable
       columns={[
+        {
+          accessorKey: "id",
+          header: ({ column }) => {
+            return <DataTableColumnHeader column={column}>Contract Address</DataTableColumnHeader>;
+          },
+          cell: ({ getValue }) => {
+            const value = getValue<string>();
+            return (
+              <DataTableColumnCell>
+                <EvmAddress address={value} prefixLength={100}>
+                  <EvmAddressBalances address={value} />
+                </EvmAddress>
+              </DataTableColumnCell>
+            );
+          },
+        },
         {
           accessorKey: "name",
           header: ({ column }) => {

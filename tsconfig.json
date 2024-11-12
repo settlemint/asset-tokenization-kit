@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
@@ -43,6 +43,13 @@
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",
             "tadaTurboLocation": "portal-cache.d.ts",
+            "trackFieldUsage": false
+          },
+          {
+            "name": "blockscout",
+            "schema": "blockscout-schema.graphql",
+            "tadaOutputLocation": "blockscout-env.d.ts",
+            "tadaTurboLocation": "blockscout-cache.d.ts",
             "trackFieldUsage": false
           }
         ]

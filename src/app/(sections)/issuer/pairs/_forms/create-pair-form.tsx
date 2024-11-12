@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
       contractAddress
       status
       blockNumber
+      revertReasonDecoded
     }
   }
 }`);
@@ -56,26 +58,15 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
       async () => {
         const transactionHash = await createTokenAction(values);
 
-        const startTime = Date.now();
-        const timeout = 120000; // 2 minutes
+        return waitForTransactionReceipt({
+          receiptFetcher: async () => {
+            const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+              transactionHash: transactionHash?.data ?? "",
+            });
 
-        while (Date.now() - startTime < timeout) {
-          const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-            transactionHash: transactionHash?.data ?? "",
-          });
-
-          const receipt = txresult.getTransaction?.receipt;
-          if (receipt) {
-            if (receipt.status === "Success") {
-              return receipt;
-            }
-            throw new Error("Transaction failed");
-          }
-
-          // Wait for 500 milliseconds before the next attempt
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
+            return txresult.getTransaction?.receipt;
+          },
+        });
       },
       {
         loading: "Creating token...",

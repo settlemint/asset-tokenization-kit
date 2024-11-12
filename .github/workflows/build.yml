@@ -46,6 +46,52 @@ jobs:
             ~/.bun/install/cache
             node_modules
 
+      - name: Split .env into individual secrets
+        run: |
+          echo "${{ secrets.ENV_FILE }}" | while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip empty lines and comments
+            if [[ -n "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+              # Remove any trailing comments
+              line="${line%%#*}"
+              # Trim whitespace
+              line="$(echo -e "${line}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+              if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+                # Extract key and value
+                key="${line%%=*}"
+                value="${line#*=}"
+                # Remove surrounding quotes if they exist
+                value="${value#[\"\']}"
+                value="${value%[\"\']}"
+
+                echo "$key=$value" >> $GITHUB_ENV
+              fi
+            fi
+          done
+
+      - name: Split .env.local into individual secrets
+        run: |
+          echo "${{ secrets.ENV_FILE_LOCAL }}" | while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip empty lines and comments
+            if [[ -n "$line" ]] && [[ ! "$line" =~ ^[[:space:]]*# ]]; then
+              # Remove any trailing comments
+              line="${line%%#*}"
+              # Trim whitespace
+              line="$(echo -e "${line}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+              if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+                # Extract key and value
+                key="${line%%=*}"
+                value="${line#*=}"
+                # Remove surrounding quotes if they exist
+                value="${value#[\"\']}"
+                value="${value%[\"\']}"
+
+                echo "$key=$value" >> $GITHUB_ENV
+              fi
+            fi
+          done
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
@@ -65,7 +111,7 @@ jobs:
           version: 2.29.0
 
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
+        uses: rlespinasse/github-slug-action@v5
 
       - name: Update package versions
         id: package-version
@@ -94,31 +140,7 @@ jobs:
 
       - name: Connect
         run: bunx settlemint connect -a
-        env:
-          SETTLEMINT_APPLICATION: ${{ secrets.SETTLEMINT_APPLICATION }}
-          SETTLEMINT_HASURA: ${{ secrets.SETTLEMINT_HASURA }}
-          SETTLEMINT_HASURA_ENDPOINT: ${{ secrets.SETTLEMINT_HASURA_ENDPOINT }}
-          SETTLEMINT_HD_PRIVATE_KEY: ${{ secrets.SETTLEMINT_HD_PRIVATE_KEY }}
-          SETTLEMINT_INSTANCE: ${{ secrets.SETTLEMINT_INSTANCE }}
-          SETTLEMINT_PORTAL: ${{ secrets.SETTLEMINT_PORTAL }}
-          SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT: ${{ secrets.SETTLEMINT_PORTAL_GRAPHQL_ENDPOINT }}
-          SETTLEMINT_PORTAL_REST_ENDPOINT: ${{ secrets.SETTLEMINT_PORTAL_REST_ENDPOINT }}
-          SETTLEMINT_THEGRAPH: ${{ secrets.SETTLEMINT_THEGRAPH }}
-          SETTLEMINT_THEGRAPH_SUBGRAPH_ENDPOINT: ${{ secrets.SETTLEMINT_THEGRAPH_SUBGRAPH_ENDPOINT }}
-          SETTLEMINT_THEGRAPH_SUBGRAPH_ENDPOINT_FALLBACK: ${{ secrets.SETTLEMINT_THEGRAPH_SUBGRAPH_ENDPOINT_FALLBACK }}
-          SETTLEMINT_WORKSPACE: ${{ secrets.SETTLEMINT_WORKSPACE }}
-          SETTLEMINT_ACCESS_TOKEN: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          SETTLEMINT_HASURA_ADMIN_SECRET: ${{ secrets.SETTLEMINT_HASURA_ADMIN_SECRET }}
-          SETTLEMINT_AUTH_SECRET: ${{ secrets.SETTLEMINT_AUTH_SECRET }}
-          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          SETTLEMINT_IPFS: ${{ secrets.SETTLEMINT_IPFS }}
-          SETTLEMINT_IPFS_API_ENDPOINT: ${{ secrets.SETTLEMINT_IPFS_API_ENDPOINT }}
-          SETTLEMINT_IPFS_GATEWAY_ENDPOINT: ${{ secrets.SETTLEMINT_IPFS_GATEWAY_ENDPOINT }}
-          SETTLEMINT_IPFS_PINNING_ENDPOINT: ${{ secrets.SETTLEMINT_IPFS_PINNING_ENDPOINT }}
-          SETTLEMINT_MINIO: ${{ secrets.SETTLEMINT_MINIO }}
-          SETTLEMINT_MINIO_ACCESS_KEY: ${{ secrets.SETTLEMINT_MINIO_ACCESS_KEY }}
-          SETTLEMINT_MINIO_SECRET_KEY: ${{ secrets.SETTLEMINT_MINIO_SECRET_KEY }}
-          SETTLEMINT_MINIO_ENDPOINT: ${{ secrets.SETTLEMINT_MINIO_ENDPOINT }}
+
 
       # - name: Breakpoint
       #   uses: namespacelabs/breakpoint-action@v0

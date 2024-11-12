@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { toast } from "sonner";
@@ -23,12 +24,11 @@ interface CreateTokenFormProps {
 
 const CreateTokenReceiptQuery = portalGraphql(`
 query CreateTokenReceiptQuery($transactionHash: String!) {
-  getTransaction(transactionHash: $transactionHash) {
-    receipt {
-      contractAddress
-      status
-      blockNumber
-    }
+  StarterKitERC20FactoryCreateTokenReceipt(transactionHash: $transactionHash) {
+    contractAddress
+    status
+    blockNumber
+    revertReasonDecoded
   }
 }`);
 
@@ -56,27 +56,15 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
     toast.promise(
       async () => {
         const transactionHash = await createTokenAction(values);
+        return waitForTransactionReceipt({
+          receiptFetcher: async () => {
+            const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+              transactionHash: transactionHash?.data ?? "",
+            });
 
-        const startTime = Date.now();
-        const timeout = 120000; // 2 minutes
-
-        while (Date.now() - startTime < timeout) {
-          const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-            transactionHash: transactionHash?.data ?? "",
-          });
-
-          const receipt = txresult.getTransaction?.receipt;
-          if (receipt) {
-            if (receipt.status === "Success") {
-              return receipt;
-            }
-            throw new Error("Transaction failed");
-          }
-
-          // Wait for 500 milliseconds before the next attempt
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-        throw new Error(`Transaction not processed within ${timeout / 1000} seconds`);
+            return txresult.StarterKitERC20FactoryCreateTokenReceipt;
+          },
+        });
       },
       {
         loading: "Creating token...",
@@ -196,10 +184,6 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                               }}
                               maxSize={1024 * 1024 * 10} // 10MB
                               multiple={false}
-                              server={{
-                                bucket: "settlemint-skat-bucket-poc",
-                                storage: "minio",
-                              }}
                             />
                           </FormControl>
                           <FormDescription>This is the logo of the token</FormDescription>
