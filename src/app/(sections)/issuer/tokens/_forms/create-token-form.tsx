@@ -184,6 +184,10 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                               }}
                               maxSize={1024 * 1024 * 10} // 10MB
                               multiple={false}
+                              server={{
+                                bucket: "default-bucket",
+                                storage: "minio",
+                              }}
                             />
                           </FormControl>
                           <FormDescription>This is the logo of the token</FormDescription>

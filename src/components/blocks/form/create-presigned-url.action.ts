@@ -25,7 +25,7 @@ export const createPresignedUrlAction = actionClient
     }
 
     const uploadUrl = await getPresignedUploadUrl(
-      bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? "",
+      bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? "default-bucket",
       objectName,
       expirySeconds ?? 3600,
     );

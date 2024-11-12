@@ -15,12 +15,12 @@ import { useCallback, useEffect, useState } from "react";
 import ReactDropzone from "react-dropzone";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
+import { createPresignedUrlAction } from "./create-presigned-url.action";
 import { useMultiFormStep } from "./form-multistep";
 
 interface DropzoneProps {
   label: string;
   name: string;
-  uploadDir?: string;
   accept?: {
     images: Array<".jpg" | ".jpeg" | ".png" | ".webp">;
     text: Array<".pdf" | ".docx" | ".doc" | ".txt" | ".md" | ".csv" | ".xls" | ".xlsx">;
@@ -28,6 +28,11 @@ interface DropzoneProps {
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
+  server?: {
+    storage: "minio" | "s3" | "local";
+    bucket?: string;
+    uploadDir?: string;
+  };
 }
 
 type Action = {
@@ -82,6 +87,7 @@ export function Dropzone({
   maxSize,
   maxFiles,
   multiple = true,
+  server = { storage: "minio" },
 }: DropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
@@ -146,18 +152,15 @@ export function Dropzone({
       try {
         const id = (file as File & { id: string }).id;
 
-        // Get the upload URL
-        const response = await fetch("/api/upload/s3", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+        const result = await createPresignedUrlAction({
+          bucketName: server.bucket ?? "",
+          objectName: file.name,
+          expirySeconds: 3600,
         });
 
-        if (!response.ok) throw new Error("Failed to get upload URL");
+        const uploadUrl = result?.data?.data?.uploadUrl ?? "";
 
-        const {
-          data: { uploadUrl },
-        } = await response.json();
+        if (!result?.data?.success) throw new Error("Failed to get upload URL");
 
         const xhr = new XMLHttpRequest();
 
@@ -323,7 +326,7 @@ export function Dropzone({
               </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
-                <span className="text-xs">{uploadProgress[action.file_name]}%</span>
+                <span className="text-xs text-black dark:text-white">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
               <></>
@@ -340,7 +343,7 @@ export function Dropzone({
 
             {action.isUploading && (
               <span
-                className="absolute bottom-0 left-0 inline-block h-1 bg-white"
+                className="absolute bottom-0 left-0 inline-block h-1 bg-black dark:bg-white"
                 style={{ width: `${uploadProgress[action.file_name]}%` }}
               />
             )}
