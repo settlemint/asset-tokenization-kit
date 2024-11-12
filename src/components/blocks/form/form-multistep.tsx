@@ -64,7 +64,7 @@ export const FormMultiStepProvider = ({
         setTotalSteps,
         registerFormPage,
         config,
-        formId: formId,
+        formId: formId ?? _formId,
       }}
     >
       {children}
