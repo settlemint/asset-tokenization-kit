@@ -10,6 +10,10 @@ on:
     tags:
       - "v*"
 
+env:
+  ONE_PASSWORD_SECRET: not-production
+  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -37,7 +41,7 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
