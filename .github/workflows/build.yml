@@ -48,6 +48,8 @@ jobs:
         uses: 1password/load-secrets-action@v2
         env:
           NPM_TOKEN: op://platform/npmjs/credential
+          DOCKERHUB_USER: op://platform/dockerhub/username
+          DOCKERHUB_PASS: op://platform/dockerhub/credential
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
@@ -196,8 +198,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASS }}
+          username: ${{ env.DOCKERHUB_USER }}
+          password: ${{ env.DOCKERHUB_PASS }}
 
       - name: Generate Docker metadata
         id: meta
