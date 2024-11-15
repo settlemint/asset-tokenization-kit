@@ -10,10 +10,6 @@ on:
     tags:
       - "v*"
 
-env:
-  ONE_PASSWORD_SECRET: not-production
-  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -42,6 +38,16 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v5
         with:
           fetch-depth: 0
+
+      - name: Configure 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          NPM_TOKEN: op://platform/npmjs/credential
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
@@ -173,7 +179,7 @@ jobs:
       - name: Publish Asset Tokenization package
         uses: JS-DevTools/npm-publish@v3
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ env.NPM_TOKEN }}
           package: ./package.json
           access: public
           provenance: false
