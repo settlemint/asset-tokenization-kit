@@ -36,8 +36,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
