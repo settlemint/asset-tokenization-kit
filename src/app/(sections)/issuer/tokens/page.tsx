@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { type SearchParams, createSearchParamsCache, parseAsInteger, parseAsJson, parseAsString } from "nuqs/server";
 import { TokenTable } from "./_components/token-table";
 import { CreateTokenForm } from "./_forms/create-token-form";
-import { CreateTokenFormPocWizard } from "./_forms/create-token-form-poc-wizard";
 
 const searchParamsCache = createSearchParamsCache({
   currentStep: parseAsInteger.withDefault(1),
@@ -37,10 +36,6 @@ export default async function IssuerTokens({ searchParams }: IssuerTokensPagePro
         >
           <div className="p-8">
             <CreateTokenForm defaultValues={parsedParams.state} formId={parsedParams.formId || "create-token-form"} />
-            <CreateTokenFormPocWizard
-              defaultValues={parsedParams.state}
-              formId={parsedParams.formId || "create-token-form-poc-wizard"}
-            />
           </div>
         </SidePanel>
       </div>
