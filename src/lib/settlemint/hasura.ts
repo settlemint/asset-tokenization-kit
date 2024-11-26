@@ -1,4 +1,4 @@
-//import type { introspection } from "@schemas/hasura-env";
+// import type { introspection } from "@schemas/hasura-env";
 import { createHasuraClient } from "@settlemint/sdk-hasura";
 
 type introspection = {
