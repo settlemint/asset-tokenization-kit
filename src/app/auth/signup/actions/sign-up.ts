@@ -10,6 +10,14 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
+type WalletCount = {
+  starterkit_wallets_aggregate: {
+    aggregate: {
+      count: number;
+    } | null;
+  };
+};
+
 const walletExists = hasuraGraphql(`
   query getWalletByEmail($email: String!) {
     starterkit_wallets_aggregate(where: {email: {_eq: $email}}) {
@@ -63,7 +71,7 @@ export const signUpAction = actionClient
 
       const walletCount = await hasuraClient.request(walletExists, { email: formData.username });
 
-      if (walletCount.starterkit_wallets_aggregate.aggregate?.count === 0) {
+      if ((walletCount as WalletCount).starterkit_wallets_aggregate.aggregate?.count === 0) {
         const hasAdmin = await hasuraClient.request(hasAtLeastOneAdmin);
         const role = [(hasAdmin.starterkit_wallets_aggregate.aggregate?.count ?? 0) > 0 ? "user" : "admin"];
 
