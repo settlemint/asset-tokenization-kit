@@ -11,6 +11,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { FolderOpen } from "lucide-react";
 import Link from "next/link";
 
+type Wallet = {
+  email: string;
+  role: string[] | null;
+  wallet: string;
+};
+
 const ListAllUsers = hasuraGraphql(`
 query ListAllUsers {
   starterkit_wallets(order_by: {email: asc}) {
@@ -49,8 +55,8 @@ export function UsersTable() {
             return <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>;
           },
           cell: ({ getValue }) => {
-            const value = getValue<string>();
-            return <DataTableColumnCell>{value}</DataTableColumnCell>;
+            const value = getValue<string[] | null>();
+            return <DataTableColumnCell>{value?.join(", ") ?? ""}</DataTableColumnCell>;
           },
         },
         {
@@ -87,7 +93,7 @@ export function UsersTable() {
           },
         },
       ]}
-      data={tokens.data.starterkit_wallets ?? []}
+      data={(tokens.data as { starterkit_wallets: Wallet[] }).starterkit_wallets ?? []}
       filterColumn="email"
       filterPlaceholder="Search by email..."
     />
