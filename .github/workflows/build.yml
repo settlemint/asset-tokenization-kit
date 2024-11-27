@@ -108,6 +108,13 @@ jobs:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
           version: 2.29.0
 
+      - name: Load secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          NPM_TOKEN: op://platform/npmjs/credential
+          DOCKERHUB_USER: op://platform/dockerhub/username
+          DOCKERHUB_PASS: op://platform/dockerhub/credential
+
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
 
@@ -167,7 +174,7 @@ jobs:
       - name: Publish Asset Tokenization package
         uses: JS-DevTools/npm-publish@v3
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ env.NPM_TOKEN }}
           package: ./package.json
           access: public
           provenance: false
@@ -184,8 +191,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASS }}
+          username: ${{ env.DOCKERHUB_USER }}
+          password: ${{ env.DOCKERHUB_PASS }}
 
       - name: Generate Docker metadata
         id: meta
