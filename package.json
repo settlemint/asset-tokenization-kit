@@ -103,7 +103,7 @@
     "react-is": "19.0.0-rc-02c0e824-20241028",
     "recharts": "2.13.3",
     "sonner": "1.7.0",
-    "tailwind-merge": "2.5.4",
+    "tailwind-merge": "2.5.5",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
     "viem": "2.21.45",
