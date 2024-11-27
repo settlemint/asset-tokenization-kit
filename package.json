@@ -121,7 +121,7 @@
     "eslint-config-next": "15.0.3",
     "lefthook": "1.8.2",
     "postcss": "8.4.49",
-    "tailwindcss": "3.4.14",
+    "tailwindcss": "3.4.15",
     "typescript": "5.6.3"
   },
   "overrides": {
