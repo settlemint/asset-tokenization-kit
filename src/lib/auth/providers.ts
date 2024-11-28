@@ -4,6 +4,15 @@ import type { Provider } from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 
+type WalletResponse = {
+  starterkit_wallets_by_pk: {
+    wallet: string;
+    email: string;
+    password: string;
+    role: string[] | null;
+  } | null;
+};
+
 /**
  * GraphQL query to fetch a wallet by email address.
  */
@@ -51,19 +60,21 @@ export const providers: Provider[] = [
 
       const walletResponse = await hasuraClient.request(getWalletByEmail, { email: username });
 
+      const walletData = (walletResponse as WalletResponse).starterkit_wallets_by_pk;
+
       // we could not find a wallet with this email address
-      if (!walletResponse.starterkit_wallets_by_pk?.email) {
+      if (!walletData?.email) {
         return null;
       }
 
-      const passwordCorrect = await compare(password, walletResponse.starterkit_wallets_by_pk.password);
+      const passwordCorrect = await compare(password, walletData.password);
 
       // the hashed password from the database does not match the one provided
       if (!passwordCorrect) {
         return null;
       }
 
-      const { email, wallet, role } = walletResponse.starterkit_wallets_by_pk;
+      const { email, wallet, role } = walletData;
 
       return { email, wallet, roles: role ? role : ["user"] };
     },
