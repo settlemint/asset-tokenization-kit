@@ -1,10 +1,10 @@
 "use client";
 
+import { Input } from "@/components/blocks/form/form-input";
 import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
 import { FormPage } from "@/components/blocks/form/form-page";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { toast } from "sonner";
