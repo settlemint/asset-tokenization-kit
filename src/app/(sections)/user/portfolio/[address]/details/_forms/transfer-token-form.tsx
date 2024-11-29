@@ -1,11 +1,11 @@
 "use client";
 
+import { Input } from "@/components/blocks/form/form-input";
 import { NumericInput } from "@/components/blocks/form/form-input-numeric";
 import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
 import { FormPage } from "@/components/blocks/form/form-page";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";

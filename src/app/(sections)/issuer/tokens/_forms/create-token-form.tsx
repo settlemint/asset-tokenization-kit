@@ -1,11 +1,11 @@
 "use client";
 
+import { Input } from "@/components/blocks/form/form-input";
 import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
 import { FormPage } from "@/components/blocks/form/form-page";
 import { Dropzone } from "@/components/blocks/form/form-upload-dropzone";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { waitForTransactionReceipt } from "@/lib/transactions";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -184,6 +184,10 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                               }}
                               maxSize={1024 * 1024 * 10} // 10MB
                               multiple={false}
+                              server={{
+                                bucket: "default-bucket",
+                                storage: "minio",
+                              }}
                             />
                           </FormControl>
                           <FormDescription>This is the logo of the token</FormDescription>
