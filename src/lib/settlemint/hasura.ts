@@ -1,13 +1,5 @@
-// import type { introspection } from "@schemas/hasura-env";
+import type { introspection } from "@schemas/hasura-env";
 import { createHasuraClient } from "@settlemint/sdk-hasura";
-
-type introspection = {
-  name: "hasura";
-  query: "query_root";
-  mutation: "mutation_root";
-  subscription: "subscription_root";
-  types: Record<string, unknown>;
-};
 
 export const { client: hasuraClient, graphql: hasuraGraphql } = createHasuraClient<{
   introspection: introspection;
