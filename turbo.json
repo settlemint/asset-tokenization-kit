@@ -40,7 +40,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^test"]
+      "dependsOn": ["dependencies", "^test"]
     },
     "test:deploy": {
       "dependsOn": ["^test:deploy"]
