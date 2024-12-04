@@ -63,6 +63,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+
       - name: Publish
         run: |
           PUBLISH_TASKS=""
@@ -81,4 +85,12 @@ jobs:
 
       - name: Update Custom Deployment
         if: ${{ env.TAG != 'pr' }}
-        run: bash .github/scripts/update-deployment.sh
+        working-directory: kit/dapp
+        run: |
+          echo "Updating the Custom Deployment with the new version $VERSION"
+
+          if [[ $TAG == "latest" ]]; then
+            bun settlemint platform update custom-deployment $VERSION --prod --wait
+          elif [[ $TAG == "main" ]]; then
+            bun settlemint platform update custom-deployment $VERSION --wait
+          fi
