@@ -141,10 +141,10 @@ jobs:
         if: ${{ env.TAG == 'latest' }}
         run: |
           echo "Updating the Custom Deployment with the new version ${{ env.VERSION }}"
-          bun deploy -- --prod
+          bun run deploy -- --prod
 
       - name: Update the Custom Deployment (development)
         if: ${{ env.TAG == 'main' }}
         run: |
           echo "Updating the Custom Deployment with the new version ${{ env.VERSION }}"
-          bun deploy
+          bun run deploy
