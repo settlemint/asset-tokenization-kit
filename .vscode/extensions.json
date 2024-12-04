@@ -8,6 +8,7 @@
     "nhoizey.gremlins",
     "yoavbls.pretty-ts-errors",
     "bradlc.vscode-tailwindcss",
-    "shardulm94.trailing-spaces"
+    "shardulm94.trailing-spaces",
+    "nomicfoundation.hardhat-solidity"
   ]
 }

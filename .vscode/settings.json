@@ -23,6 +23,11 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[solidity]": {
+    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+  },
+  "solidity.formatter": "forge",
+  "solidity.telemetry": false,
   "editor.stickyScroll.enabled": true,
   "editor.tabSize": 2,
   "errorLens.fontStyleItalic": true,

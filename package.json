@@ -38,6 +38,8 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "test": "turbo test",
+    "test:deploy": "turbo test:deploy",
     "check-types": "turbo check-types",
     "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",

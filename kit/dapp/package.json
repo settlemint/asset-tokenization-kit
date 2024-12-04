@@ -1,6 +1,5 @@
 {
   "name": "dapp",
-  "description": "SettleMint Starter Kit - Asset Tokenization",
   "version": "0.0.1",
   "private": false,
   "license": "FSL-1.1-MIT",
@@ -9,39 +8,6 @@
     "email": "support@settlemint.com",
     "url": "https://settlemint.com"
   },
-  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/dapp/README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git"
-  },
-  "bugs": {
-    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
-    "email": "support@settlemint.com"
-  },
-  "files": [
-    ".github",
-    ".prompts",
-    ".vscode",
-    "public",
-    "src",
-    ".cursorrules",
-    ".dockerignore",
-    ".eslintrc.json",
-    ".gitignore",
-    "biome.json",
-    "bunfig.toml",
-    "components.json",
-    "Dockerfile",
-    "lefthook.yml",
-    "LICENSE",
-    "logo.svg",
-    "next.config.ts",
-    "package.json",
-    "postcss.config.mjs",
-    "README.md",
-    "tailwind.config.ts",
-    "tsconfig.json"
-  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
