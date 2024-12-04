@@ -27,6 +27,9 @@ jobs:
             ~/.bun/install/cache
             node_modules
 
+      - name: Start Docker Compose
+        run: docker compose up -d
+
       - name: Process environment files
         run: bash .github/scripts/process-env.sh "${{ secrets.ENV_FILE }}" "${{ secrets.ENV_FILE_LOCAL }}"
 
@@ -54,15 +57,18 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
-      - name: Start Docker Compose
-        run: docker compose up -d
-
       - name: Connect
         run: bunx settlemint connect -a
         working-directory: kit/dapp
 
       - name: Lint & Check Types
-        run: bunx turbo run lint check-types test test:deploy
+        run: bunx turbo run lint check-types test test:deploy genesis
+
+      - name: Store genesis output
+        uses: actions/upload-artifact@v4
+        with:
+          name: genesis-output
+          path: kit/contracts/genesis-output.json
 
       - name: Login to GitHub Container Registry
         if: ${{ env.TAG != 'pr' }}

@@ -48,6 +48,10 @@
     "dependencies": {
       "dependsOn": ["^dependencies"],
       "outputs": ["dependencies/**"]
+    },
+    "genesis": {
+      "dependsOn": ["^genesis"],
+      "outputs": ["genesis-output.json"]
     }
   }
 }
