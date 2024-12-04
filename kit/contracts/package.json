@@ -16,7 +16,7 @@
     "prebuild": "hardhat compile",
     "test": "forge test -vvv",
     "test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts",
-    "genesis": "bash genesis-output.sh"
+    "genesis": "bash -ex genesis-output.sh"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.3",
