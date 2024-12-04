@@ -50,7 +50,7 @@
       "outputs": ["dependencies/**"]
     },
     "genesis": {
-      "dependsOn": ["^genesis"],
+      "dependsOn": ["dependencies", "^genesis"],
       "outputs": ["genesis-output.json"]
     }
   }
