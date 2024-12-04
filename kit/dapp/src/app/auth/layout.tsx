@@ -1,6 +1,6 @@
-import placeholder from "@/assets/placeholders/placeholder.svg";
 import Image from "next/image";
 import type { PropsWithChildren } from "react";
+import placeholder from "./placeholder.svg";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
   return (
