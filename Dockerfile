@@ -1,15 +1,31 @@
-FROM node:22.11.0-alpine
+# BUILD DEPENDENCIES
+FROM node:22.12.0 AS deps
+COPY --from=oven/bun:1.1.38-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY package.json .
+RUN bun install
+
+FROM deps AS build
+
+COPY --chmod=0777 . .
+RUN bun run build
+
+# RUN
+FROM node:22.12.0-slim
+
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
+ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY ./public public
-COPY ./.next/standalone ./
-COPY ./.next/static ./.next/static
+COPY --from=build --chmod=0777  /app/public public
+COPY --from=build --chmod=0777  /app/.next/standalone ./
+COPY --from=build --chmod=0777  /app/.next/static ./.next/static
 
 ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
+ENV HOSTNAME="0.0.0.0"
 
-# Bun fails with The Request.signal getter can only be used on instances of Request
-#CMD ["/usr/local/bin/bun", "run", "server.js"]
-CMD ["node", "server.js"]
+CMD ["server.js"]

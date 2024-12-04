@@ -1,0 +1,4057 @@
+"""
+Marks the GraphQL type as indexable entity.  Each type that should be an entity is required to be annotated with this directive.
+"""
+directive @entity on OBJECT
+
+"""Defined a Subgraph ID for an object type"""
+directive @subgraphId(id: String!) on OBJECT
+
+"""
+creates a virtual field on the entity that may be queried but cannot be set manually through the mappings API.
+"""
+directive @derivedFrom(field: String!) on FIELD_DEFINITION
+
+"Represents an account in the system, which can be either a user or a contract address. Accounts can hold ERC20 tokens, approve token spending, and participate in token transfers.\n"
+type Account {
+  """Unique Ethereum address that identifies this account"""
+  id: Bytes!
+
+  """
+  Links to ERC20Contract entity if this account is an ERC20 token contract
+  """
+  asERC20: ERC20Contract
+
+  """All ERC20 token balances held by this account"""
+  ERC20balances(skip: Int = 0, first: Int = 100, orderBy: ERC20Balance_orderBy, orderDirection: OrderDirection, where: ERC20Balance_filter): [ERC20Balance!]!
+
+  """All ERC20 token spending approvals granted by this account"""
+  ERC20approvalsOwner(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+
+  """All ERC20 token spending approvals received by this account"""
+  ERC20approvalsSpender(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+
+  """All outgoing ERC20 token transfers from this account"""
+  ERC20transferFromEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+
+  """All incoming ERC20 token transfers to this account"""
+  ERC20transferToEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+
+  """All DEX pairs associated with this account"""
+  ERC20DexMints(skip: Int = 0, first: Int = 100, orderBy: ERC20DexMint_orderBy, orderDirection: OrderDirection, where: ERC20DexMint_filter): [ERC20DexMint!]!
+  ERC20DexBurns(skip: Int = 0, first: Int = 100, orderBy: ERC20DexBurn_orderBy, orderDirection: OrderDirection, where: ERC20DexBurn_filter): [ERC20DexBurn!]!
+  ERC20DexSwaps(skip: Int = 0, first: Int = 100, orderBy: ERC20DexSwap_orderBy, orderDirection: OrderDirection, where: ERC20DexSwap_filter): [ERC20DexSwap!]!
+
+  """All blockchain events where this account is the emitter"""
+  events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
+}
+
+input Account_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  asERC20: String
+  asERC20_not: String
+  asERC20_gt: String
+  asERC20_lt: String
+  asERC20_gte: String
+  asERC20_lte: String
+  asERC20_in: [String!]
+  asERC20_not_in: [String!]
+  asERC20_contains: String
+  asERC20_contains_nocase: String
+  asERC20_not_contains: String
+  asERC20_not_contains_nocase: String
+  asERC20_starts_with: String
+  asERC20_starts_with_nocase: String
+  asERC20_not_starts_with: String
+  asERC20_not_starts_with_nocase: String
+  asERC20_ends_with: String
+  asERC20_ends_with_nocase: String
+  asERC20_not_ends_with: String
+  asERC20_not_ends_with_nocase: String
+  asERC20_: ERC20Contract_filter
+  ERC20balances_: ERC20Balance_filter
+  ERC20approvalsOwner_: ERC20Approval_filter
+  ERC20approvalsSpender_: ERC20Approval_filter
+  ERC20transferFromEvent_: ERC20Transfer_filter
+  ERC20transferToEvent_: ERC20Transfer_filter
+  ERC20DexMints_: ERC20DexMint_filter
+  ERC20DexBurns_: ERC20DexBurn_filter
+  ERC20DexSwaps_: ERC20DexSwap_filter
+  events_: Event_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Account_filter]
+  or: [Account_filter]
+}
+
+enum Account_orderBy {
+  id
+  asERC20
+  asERC20__id
+  asERC20__name
+  asERC20__symbol
+  asERC20__decimals
+  asERC20__extraData
+  asERC20__totalSupply
+  asERC20__totalSupplyExact
+  ERC20balances
+  ERC20approvalsOwner
+  ERC20approvalsSpender
+  ERC20transferFromEvent
+  ERC20transferToEvent
+  ERC20DexMints
+  ERC20DexBurns
+  ERC20DexSwaps
+  events
+}
+
+enum Aggregation_interval {
+  hour
+  day
+}
+
+scalar BigDecimal
+
+scalar BigInt
+
+input BlockChangedFilter {
+  number_gte: Int!
+}
+
+input Block_height {
+  hash: Bytes
+  number: Int
+  number_gte: Int
+}
+
+scalar Bytes
+
+"Records an approval for delegated ERC20 token spending between accounts.\nThis represents an allowance granted by one account to another to spend tokens on their behalf.\n"
+type ERC20Approval {
+  """Unique identifier for this approval"""
+  id: ID!
+
+  """The ERC20 token contract the approval is for"""
+  contract: ERC20Contract!
+
+  """Account granting the approval (token holder)"""
+  owner: Account!
+
+  """Account receiving spending permission (spender)"""
+  spender: Account!
+
+  """Approved amount in decimal format for human readability"""
+  value: BigDecimal!
+
+  """Approved amount as raw integer value (full precision)"""
+  valueExact: BigInt!
+}
+
+input ERC20Approval_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  contract: String
+  contract_not: String
+  contract_gt: String
+  contract_lt: String
+  contract_gte: String
+  contract_lte: String
+  contract_in: [String!]
+  contract_not_in: [String!]
+  contract_contains: String
+  contract_contains_nocase: String
+  contract_not_contains: String
+  contract_not_contains_nocase: String
+  contract_starts_with: String
+  contract_starts_with_nocase: String
+  contract_not_starts_with: String
+  contract_not_starts_with_nocase: String
+  contract_ends_with: String
+  contract_ends_with_nocase: String
+  contract_not_ends_with: String
+  contract_not_ends_with_nocase: String
+  contract_: ERC20Contract_filter
+  owner: String
+  owner_not: String
+  owner_gt: String
+  owner_lt: String
+  owner_gte: String
+  owner_lte: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_contains: String
+  owner_contains_nocase: String
+  owner_not_contains: String
+  owner_not_contains_nocase: String
+  owner_starts_with: String
+  owner_starts_with_nocase: String
+  owner_not_starts_with: String
+  owner_not_starts_with_nocase: String
+  owner_ends_with: String
+  owner_ends_with_nocase: String
+  owner_not_ends_with: String
+  owner_not_ends_with_nocase: String
+  owner_: Account_filter
+  spender: String
+  spender_not: String
+  spender_gt: String
+  spender_lt: String
+  spender_gte: String
+  spender_lte: String
+  spender_in: [String!]
+  spender_not_in: [String!]
+  spender_contains: String
+  spender_contains_nocase: String
+  spender_not_contains: String
+  spender_not_contains_nocase: String
+  spender_starts_with: String
+  spender_starts_with_nocase: String
+  spender_not_starts_with: String
+  spender_not_starts_with_nocase: String
+  spender_ends_with: String
+  spender_ends_with_nocase: String
+  spender_not_ends_with: String
+  spender_not_ends_with_nocase: String
+  spender_: Account_filter
+  value: BigDecimal
+  value_not: BigDecimal
+  value_gt: BigDecimal
+  value_lt: BigDecimal
+  value_gte: BigDecimal
+  value_lte: BigDecimal
+  value_in: [BigDecimal!]
+  value_not_in: [BigDecimal!]
+  valueExact: BigInt
+  valueExact_not: BigInt
+  valueExact_gt: BigInt
+  valueExact_lt: BigInt
+  valueExact_gte: BigInt
+  valueExact_lte: BigInt
+  valueExact_in: [BigInt!]
+  valueExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20Approval_filter]
+  or: [ERC20Approval_filter]
+}
+
+enum ERC20Approval_orderBy {
+  id
+  contract
+  contract__id
+  contract__name
+  contract__symbol
+  contract__decimals
+  contract__extraData
+  contract__totalSupply
+  contract__totalSupplyExact
+  owner
+  owner__id
+  spender
+  spender__id
+  value
+  valueExact
+}
+
+"Tracks an account's balance of a specific ERC20 token, including transfer history.\nThis entity maintains the current balance and links to historical transfers.\n"
+type ERC20Balance {
+  """
+  Composite identifier combining token contract and holder account addresses
+  """
+  id: ID!
+
+  """The ERC20 token contract this balance is for"""
+  contract: ERC20Contract!
+
+  """The account holding this token balance"""
+  account: Account
+
+  """Current balance in decimal format for human readability"""
+  value: BigDecimal!
+
+  """Current balance as raw integer value (full precision)"""
+  valueExact: BigInt!
+
+  """History of outgoing transfers affecting this balance"""
+  transferFromEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+
+  """History of incoming transfers affecting this balance"""
+  transferToEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+}
+
+input ERC20Balance_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  contract: String
+  contract_not: String
+  contract_gt: String
+  contract_lt: String
+  contract_gte: String
+  contract_lte: String
+  contract_in: [String!]
+  contract_not_in: [String!]
+  contract_contains: String
+  contract_contains_nocase: String
+  contract_not_contains: String
+  contract_not_contains_nocase: String
+  contract_starts_with: String
+  contract_starts_with_nocase: String
+  contract_not_starts_with: String
+  contract_not_starts_with_nocase: String
+  contract_ends_with: String
+  contract_ends_with_nocase: String
+  contract_not_ends_with: String
+  contract_not_ends_with_nocase: String
+  contract_: ERC20Contract_filter
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  value: BigDecimal
+  value_not: BigDecimal
+  value_gt: BigDecimal
+  value_lt: BigDecimal
+  value_gte: BigDecimal
+  value_lte: BigDecimal
+  value_in: [BigDecimal!]
+  value_not_in: [BigDecimal!]
+  valueExact: BigInt
+  valueExact_not: BigInt
+  valueExact_gt: BigInt
+  valueExact_lt: BigInt
+  valueExact_gte: BigInt
+  valueExact_lte: BigInt
+  valueExact_in: [BigInt!]
+  valueExact_not_in: [BigInt!]
+  transferFromEvent_: ERC20Transfer_filter
+  transferToEvent_: ERC20Transfer_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20Balance_filter]
+  or: [ERC20Balance_filter]
+}
+
+enum ERC20Balance_orderBy {
+  id
+  contract
+  contract__id
+  contract__name
+  contract__symbol
+  contract__decimals
+  contract__extraData
+  contract__totalSupply
+  contract__totalSupplyExact
+  account
+  account__id
+  value
+  valueExact
+  transferFromEvent
+  transferToEvent
+}
+
+"Represents an ERC20 token contract with its standard properties, supply information, and related entities like balances, approvals and transfers.\nThe ERC20 standard defines a common interface for fungible tokens on Ethereum.\n"
+type ERC20Contract {
+  """Contract address of the ERC20 token"""
+  id: Bytes!
+
+  """Links to the Account entity representing this contract address"""
+  asAccount: Account!
+
+  """Official name of the token (e.g. 'Ethereum')"""
+  name: String!
+
+  """Trading symbol/ticker of the token (e.g. 'ETH')"""
+  symbol: String!
+
+  """
+  Number of decimal places for token amount representation (e.g. 18 for ETH)
+  """
+  decimals: Int!
+
+  """
+  Additional metadata or custom information about the token stored as a JSON string
+  """
+  extraData: String
+
+  """Current total token supply in decimal format for human readability"""
+  totalSupply: BigDecimal!
+
+  """Current total token supply as raw integer value (full precision)"""
+  totalSupplyExact: BigInt!
+
+  """All holder balances for this token"""
+  balances(skip: Int = 0, first: Int = 100, orderBy: ERC20Balance_orderBy, orderDirection: OrderDirection, where: ERC20Balance_filter): [ERC20Balance!]!
+
+  """All spending approvals for this token"""
+  approvals(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+
+  """All transfer events involving this token"""
+  transfers(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+
+  """All DEX pairs where this token is being traded"""
+  pairsBaseToken(skip: Int = 0, first: Int = 100, orderBy: ERC20DexPair_orderBy, orderDirection: OrderDirection, where: ERC20DexPair_filter): [ERC20DexPair!]!
+  pairsQuoteToken(skip: Int = 0, first: Int = 100, orderBy: ERC20DexPair_orderBy, orderDirection: OrderDirection, where: ERC20DexPair_filter): [ERC20DexPair!]!
+}
+
+input ERC20Contract_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  asAccount: String
+  asAccount_not: String
+  asAccount_gt: String
+  asAccount_lt: String
+  asAccount_gte: String
+  asAccount_lte: String
+  asAccount_in: [String!]
+  asAccount_not_in: [String!]
+  asAccount_contains: String
+  asAccount_contains_nocase: String
+  asAccount_not_contains: String
+  asAccount_not_contains_nocase: String
+  asAccount_starts_with: String
+  asAccount_starts_with_nocase: String
+  asAccount_not_starts_with: String
+  asAccount_not_starts_with_nocase: String
+  asAccount_ends_with: String
+  asAccount_ends_with_nocase: String
+  asAccount_not_ends_with: String
+  asAccount_not_ends_with_nocase: String
+  asAccount_: Account_filter
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_contains_nocase: String
+  symbol_not_contains: String
+  symbol_not_contains_nocase: String
+  symbol_starts_with: String
+  symbol_starts_with_nocase: String
+  symbol_not_starts_with: String
+  symbol_not_starts_with_nocase: String
+  symbol_ends_with: String
+  symbol_ends_with_nocase: String
+  symbol_not_ends_with: String
+  symbol_not_ends_with_nocase: String
+  decimals: Int
+  decimals_not: Int
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
+  decimals_in: [Int!]
+  decimals_not_in: [Int!]
+  extraData: String
+  extraData_not: String
+  extraData_gt: String
+  extraData_lt: String
+  extraData_gte: String
+  extraData_lte: String
+  extraData_in: [String!]
+  extraData_not_in: [String!]
+  extraData_contains: String
+  extraData_contains_nocase: String
+  extraData_not_contains: String
+  extraData_not_contains_nocase: String
+  extraData_starts_with: String
+  extraData_starts_with_nocase: String
+  extraData_not_starts_with: String
+  extraData_not_starts_with_nocase: String
+  extraData_ends_with: String
+  extraData_ends_with_nocase: String
+  extraData_not_ends_with: String
+  extraData_not_ends_with_nocase: String
+  totalSupply: BigDecimal
+  totalSupply_not: BigDecimal
+  totalSupply_gt: BigDecimal
+  totalSupply_lt: BigDecimal
+  totalSupply_gte: BigDecimal
+  totalSupply_lte: BigDecimal
+  totalSupply_in: [BigDecimal!]
+  totalSupply_not_in: [BigDecimal!]
+  totalSupplyExact: BigInt
+  totalSupplyExact_not: BigInt
+  totalSupplyExact_gt: BigInt
+  totalSupplyExact_lt: BigInt
+  totalSupplyExact_gte: BigInt
+  totalSupplyExact_lte: BigInt
+  totalSupplyExact_in: [BigInt!]
+  totalSupplyExact_not_in: [BigInt!]
+  balances_: ERC20Balance_filter
+  approvals_: ERC20Approval_filter
+  transfers_: ERC20Transfer_filter
+  pairsBaseToken_: ERC20DexPair_filter
+  pairsQuoteToken_: ERC20DexPair_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20Contract_filter]
+  or: [ERC20Contract_filter]
+}
+
+enum ERC20Contract_orderBy {
+  id
+  asAccount
+  asAccount__id
+  name
+  symbol
+  decimals
+  extraData
+  totalSupply
+  totalSupplyExact
+  balances
+  approvals
+  transfers
+  pairsBaseToken
+  pairsQuoteToken
+}
+
+"Records a liquidity removal (burn) event for a DEX pair.\nTracks the amounts of tokens removed from the pair's liquidity.\n"
+type ERC20DexBurn implements Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+
+  """The DEX pair liquidity is being removed from"""
+  pair: ERC20DexPair!
+
+  """The account that made the swap"""
+  sender: Account!
+
+  """Amount of base token removed (decimal)"""
+  baseAmount: BigDecimal!
+
+  """Amount of base token removed (raw)"""
+  baseAmountExact: BigInt!
+
+  """Amount of quote token removed (decimal)"""
+  quoteAmount: BigDecimal!
+
+  """Amount of quote token removed (raw)"""
+  quoteAmountExact: BigInt!
+
+  """Amount of LP tokens burned (decimal)"""
+  liquidity: BigDecimal!
+
+  """Amount of LP tokens burned (raw)"""
+  liquidityExact: BigInt!
+}
+
+input ERC20DexBurn_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  sender: String
+  sender_not: String
+  sender_gt: String
+  sender_lt: String
+  sender_gte: String
+  sender_lte: String
+  sender_in: [String!]
+  sender_not_in: [String!]
+  sender_contains: String
+  sender_contains_nocase: String
+  sender_not_contains: String
+  sender_not_contains_nocase: String
+  sender_starts_with: String
+  sender_starts_with_nocase: String
+  sender_not_starts_with: String
+  sender_not_starts_with_nocase: String
+  sender_ends_with: String
+  sender_ends_with_nocase: String
+  sender_not_ends_with: String
+  sender_not_ends_with_nocase: String
+  sender_: Account_filter
+  baseAmount: BigDecimal
+  baseAmount_not: BigDecimal
+  baseAmount_gt: BigDecimal
+  baseAmount_lt: BigDecimal
+  baseAmount_gte: BigDecimal
+  baseAmount_lte: BigDecimal
+  baseAmount_in: [BigDecimal!]
+  baseAmount_not_in: [BigDecimal!]
+  baseAmountExact: BigInt
+  baseAmountExact_not: BigInt
+  baseAmountExact_gt: BigInt
+  baseAmountExact_lt: BigInt
+  baseAmountExact_gte: BigInt
+  baseAmountExact_lte: BigInt
+  baseAmountExact_in: [BigInt!]
+  baseAmountExact_not_in: [BigInt!]
+  quoteAmount: BigDecimal
+  quoteAmount_not: BigDecimal
+  quoteAmount_gt: BigDecimal
+  quoteAmount_lt: BigDecimal
+  quoteAmount_gte: BigDecimal
+  quoteAmount_lte: BigDecimal
+  quoteAmount_in: [BigDecimal!]
+  quoteAmount_not_in: [BigDecimal!]
+  quoteAmountExact: BigInt
+  quoteAmountExact_not: BigInt
+  quoteAmountExact_gt: BigInt
+  quoteAmountExact_lt: BigInt
+  quoteAmountExact_gte: BigInt
+  quoteAmountExact_lte: BigInt
+  quoteAmountExact_in: [BigInt!]
+  quoteAmountExact_not_in: [BigInt!]
+  liquidity: BigDecimal
+  liquidity_not: BigDecimal
+  liquidity_gt: BigDecimal
+  liquidity_lt: BigDecimal
+  liquidity_gte: BigDecimal
+  liquidity_lte: BigDecimal
+  liquidity_in: [BigDecimal!]
+  liquidity_not_in: [BigDecimal!]
+  liquidityExact: BigInt
+  liquidityExact_not: BigInt
+  liquidityExact_gt: BigInt
+  liquidityExact_lt: BigInt
+  liquidityExact_gte: BigInt
+  liquidityExact_lte: BigInt
+  liquidityExact_in: [BigInt!]
+  liquidityExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexBurn_filter]
+  or: [ERC20DexBurn_filter]
+}
+
+enum ERC20DexBurn_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  sender
+  sender__id
+  baseAmount
+  baseAmountExact
+  quoteAmount
+  quoteAmountExact
+  liquidity
+  liquidityExact
+}
+
+"Records an emergency withdrawal event from a DEX pair.\nTracks the token and amount withdrawn in an emergency situation.\n"
+type ERC20DexEmergencyWithdraw implements Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+
+  """The DEX pair the withdrawal was from"""
+  pair: ERC20DexPair!
+
+  """The token that was withdrawn"""
+  token: ERC20Contract!
+
+  """Amount of tokens withdrawn"""
+  amount: BigInt!
+}
+
+input ERC20DexEmergencyWithdraw_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: ERC20Contract_filter
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexEmergencyWithdraw_filter]
+  or: [ERC20DexEmergencyWithdraw_filter]
+}
+
+enum ERC20DexEmergencyWithdraw_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  token
+  token__id
+  token__name
+  token__symbol
+  token__decimals
+  token__extraData
+  token__totalSupply
+  token__totalSupplyExact
+  amount
+}
+
+"Records a fee update event on a DEX pair.\nTracks changes to the swap fee percentage.\n"
+type ERC20DexFeeUpdate implements Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+
+  """The DEX pair whose fee was updated"""
+  pair: ERC20DexPair!
+
+  """Previous swap fee in basis points"""
+  oldFee: BigInt!
+
+  """New swap fee in basis points"""
+  newFee: BigInt!
+}
+
+input ERC20DexFeeUpdate_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  oldFee: BigInt
+  oldFee_not: BigInt
+  oldFee_gt: BigInt
+  oldFee_lt: BigInt
+  oldFee_gte: BigInt
+  oldFee_lte: BigInt
+  oldFee_in: [BigInt!]
+  oldFee_not_in: [BigInt!]
+  newFee: BigInt
+  newFee_not: BigInt
+  newFee_gt: BigInt
+  newFee_lt: BigInt
+  newFee_gte: BigInt
+  newFee_lte: BigInt
+  newFee_in: [BigInt!]
+  newFee_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexFeeUpdate_filter]
+  or: [ERC20DexFeeUpdate_filter]
+}
+
+enum ERC20DexFeeUpdate_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  oldFee
+  newFee
+}
+
+"Records a liquidity provision (mint) event for a DEX pair.\nTracks the amounts of tokens added to the pair's liquidity.\n"
+type ERC20DexMint implements Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+
+  """The DEX pair receiving liquidity"""
+  pair: ERC20DexPair!
+
+  """The account that made the swap"""
+  sender: Account!
+
+  """Amount of base token added (decimal)"""
+  baseAmount: BigDecimal!
+
+  """Amount of base token added (raw)"""
+  baseAmountExact: BigInt!
+
+  """Amount of quote token added (decimal)"""
+  quoteAmount: BigDecimal!
+
+  """Amount of quote token added (raw)"""
+  quoteAmountExact: BigInt!
+
+  """Amount of LP tokens minted (decimal)"""
+  liquidity: BigDecimal!
+
+  """Amount of LP tokens minted (raw)"""
+  liquidityExact: BigInt!
+}
+
+input ERC20DexMint_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  sender: String
+  sender_not: String
+  sender_gt: String
+  sender_lt: String
+  sender_gte: String
+  sender_lte: String
+  sender_in: [String!]
+  sender_not_in: [String!]
+  sender_contains: String
+  sender_contains_nocase: String
+  sender_not_contains: String
+  sender_not_contains_nocase: String
+  sender_starts_with: String
+  sender_starts_with_nocase: String
+  sender_not_starts_with: String
+  sender_not_starts_with_nocase: String
+  sender_ends_with: String
+  sender_ends_with_nocase: String
+  sender_not_ends_with: String
+  sender_not_ends_with_nocase: String
+  sender_: Account_filter
+  baseAmount: BigDecimal
+  baseAmount_not: BigDecimal
+  baseAmount_gt: BigDecimal
+  baseAmount_lt: BigDecimal
+  baseAmount_gte: BigDecimal
+  baseAmount_lte: BigDecimal
+  baseAmount_in: [BigDecimal!]
+  baseAmount_not_in: [BigDecimal!]
+  baseAmountExact: BigInt
+  baseAmountExact_not: BigInt
+  baseAmountExact_gt: BigInt
+  baseAmountExact_lt: BigInt
+  baseAmountExact_gte: BigInt
+  baseAmountExact_lte: BigInt
+  baseAmountExact_in: [BigInt!]
+  baseAmountExact_not_in: [BigInt!]
+  quoteAmount: BigDecimal
+  quoteAmount_not: BigDecimal
+  quoteAmount_gt: BigDecimal
+  quoteAmount_lt: BigDecimal
+  quoteAmount_gte: BigDecimal
+  quoteAmount_lte: BigDecimal
+  quoteAmount_in: [BigDecimal!]
+  quoteAmount_not_in: [BigDecimal!]
+  quoteAmountExact: BigInt
+  quoteAmountExact_not: BigInt
+  quoteAmountExact_gt: BigInt
+  quoteAmountExact_lt: BigInt
+  quoteAmountExact_gte: BigInt
+  quoteAmountExact_lte: BigInt
+  quoteAmountExact_in: [BigInt!]
+  quoteAmountExact_not_in: [BigInt!]
+  liquidity: BigDecimal
+  liquidity_not: BigDecimal
+  liquidity_gt: BigDecimal
+  liquidity_lt: BigDecimal
+  liquidity_gte: BigDecimal
+  liquidity_lte: BigDecimal
+  liquidity_in: [BigDecimal!]
+  liquidity_not_in: [BigDecimal!]
+  liquidityExact: BigInt
+  liquidityExact_not: BigInt
+  liquidityExact_gt: BigInt
+  liquidityExact_lt: BigInt
+  liquidityExact_gte: BigInt
+  liquidityExact_lte: BigInt
+  liquidityExact_in: [BigInt!]
+  liquidityExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexMint_filter]
+  or: [ERC20DexMint_filter]
+}
+
+enum ERC20DexMint_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  sender
+  sender__id
+  baseAmount
+  baseAmountExact
+  quoteAmount
+  quoteAmountExact
+  liquidity
+  liquidityExact
+}
+
+"Represents a trading pair on a decentralized exchange (DEX).\nTracks reserves, prices, volume and other key metrics for a token pair.\n"
+type ERC20DexPair {
+  """Unique identifier for the pair"""
+  id: Bytes!
+
+  """Links to the Account entity representing this contract address"""
+  asAccount: Account!
+
+  """Official name of the token (e.g. 'Ethereum')"""
+  name: String
+
+  """Trading symbol/ticker of the token (e.g. 'ETH')"""
+  symbol: String
+
+  """
+  Number of decimal places for token amount representation (e.g. 18 for ETH)
+  """
+  decimals: Int!
+
+  """The base token in the trading pair"""
+  baseToken: ERC20Contract!
+
+  """The quote token in the trading pair"""
+  quoteToken: ERC20Contract!
+
+  """Current base token reserve in decimal format"""
+  baseReserve: BigDecimal!
+
+  """Current base token reserve as raw integer"""
+  baseReserveExact: BigInt!
+
+  """Current quote token reserve in decimal format"""
+  quoteReserve: BigDecimal!
+
+  """Current quote token reserve as raw integer"""
+  quoteReserveExact: BigInt!
+
+  """Total supply of LP tokens in decimal format"""
+  totalSupply: BigDecimal!
+
+  """Total supply of LP tokens as raw integer"""
+  totalSupplyExact: BigInt!
+
+  """Current price of base token in quote token units (decimal)"""
+  baseTokenPrice: BigDecimal!
+  baseTokenPriceExact: BigInt!
+
+  """Current price of quote token in base token units (decimal)"""
+  quoteTokenPrice: BigDecimal!
+  quoteTokenPriceExact: BigInt!
+
+  """Current swap fee in basis points"""
+  swapFee: BigInt!
+
+  """All swap events for this pair"""
+  swaps(skip: Int = 0, first: Int = 100, orderBy: ERC20DexSwap_orderBy, orderDirection: OrderDirection, where: ERC20DexSwap_filter): [ERC20DexSwap!]!
+
+  """All liquidity mint events for this pair"""
+  mints(skip: Int = 0, first: Int = 100, orderBy: ERC20DexMint_orderBy, orderDirection: OrderDirection, where: ERC20DexMint_filter): [ERC20DexMint!]!
+
+  """All liquidity burn events for this pair"""
+  burns(skip: Int = 0, first: Int = 100, orderBy: ERC20DexBurn_orderBy, orderDirection: OrderDirection, where: ERC20DexBurn_filter): [ERC20DexBurn!]!
+
+  """All stakes for this pair"""
+  stakes(skip: Int = 0, first: Int = 100, orderBy: ERC20DexStake_orderBy, orderDirection: OrderDirection, where: ERC20DexStake_filter): [ERC20DexStake!]!
+}
+
+"Time-series tracking of DEX pair metrics.\nCaptures periodic snapshots of reserves, prices, volume and other key metrics.\n"
+type ERC20DexPairSnapshot {
+  """Sequential numeric identifier"""
+  id: Int8!
+
+  """Timestamp of snapshot"""
+  timestamp: Timestamp!
+
+  """The DEX pair being tracked"""
+  pair: ERC20DexPair!
+
+  """Base token reserve in decimal format"""
+  baseReserve: BigDecimal!
+
+  """Base token reserve as raw integer"""
+  baseReserveExact: BigInt!
+
+  """Quote token reserve in decimal format"""
+  quoteReserve: BigDecimal!
+
+  """Quote token reserve as raw integer"""
+  quoteReserveExact: BigInt!
+
+  """Total supply of LP tokens in decimal format"""
+  totalSupply: BigDecimal!
+
+  """Total supply of LP tokens as raw integer"""
+  totalSupplyExact: BigInt!
+
+  """Base token price in quote token units (decimal)"""
+  baseTokenPrice: BigDecimal!
+
+  """Base token price in quote token units (raw)"""
+  baseTokenPriceExact: BigInt!
+
+  """Quote token price in base token units (decimal)"""
+  quoteTokenPrice: BigDecimal!
+
+  """Quote token price in base token units (raw)"""
+  quoteTokenPriceExact: BigInt!
+
+  """Volume in base token units (decimal)"""
+  volumeBaseToken: BigDecimal!
+
+  """Volume in base token units (raw)"""
+  volumeBaseTokenExact: BigInt!
+
+  """Volume in quote token units (decimal)"""
+  volumeQuoteToken: BigDecimal!
+
+  """Volume in quote token units (raw)"""
+  volumeQuoteTokenExact: BigInt!
+
+  """Number of transactions in period"""
+  txCount: BigInt!
+
+  """Amount of LP tokens minted (decimal)"""
+  liquidity: BigDecimal!
+
+  """Amount of LP tokens minted (raw)"""
+  liquidityExact: BigInt!
+}
+
+input ERC20DexPairSnapshot_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  baseReserve: BigDecimal
+  baseReserve_not: BigDecimal
+  baseReserve_gt: BigDecimal
+  baseReserve_lt: BigDecimal
+  baseReserve_gte: BigDecimal
+  baseReserve_lte: BigDecimal
+  baseReserve_in: [BigDecimal!]
+  baseReserve_not_in: [BigDecimal!]
+  baseReserveExact: BigInt
+  baseReserveExact_not: BigInt
+  baseReserveExact_gt: BigInt
+  baseReserveExact_lt: BigInt
+  baseReserveExact_gte: BigInt
+  baseReserveExact_lte: BigInt
+  baseReserveExact_in: [BigInt!]
+  baseReserveExact_not_in: [BigInt!]
+  quoteReserve: BigDecimal
+  quoteReserve_not: BigDecimal
+  quoteReserve_gt: BigDecimal
+  quoteReserve_lt: BigDecimal
+  quoteReserve_gte: BigDecimal
+  quoteReserve_lte: BigDecimal
+  quoteReserve_in: [BigDecimal!]
+  quoteReserve_not_in: [BigDecimal!]
+  quoteReserveExact: BigInt
+  quoteReserveExact_not: BigInt
+  quoteReserveExact_gt: BigInt
+  quoteReserveExact_lt: BigInt
+  quoteReserveExact_gte: BigInt
+  quoteReserveExact_lte: BigInt
+  quoteReserveExact_in: [BigInt!]
+  quoteReserveExact_not_in: [BigInt!]
+  totalSupply: BigDecimal
+  totalSupply_not: BigDecimal
+  totalSupply_gt: BigDecimal
+  totalSupply_lt: BigDecimal
+  totalSupply_gte: BigDecimal
+  totalSupply_lte: BigDecimal
+  totalSupply_in: [BigDecimal!]
+  totalSupply_not_in: [BigDecimal!]
+  totalSupplyExact: BigInt
+  totalSupplyExact_not: BigInt
+  totalSupplyExact_gt: BigInt
+  totalSupplyExact_lt: BigInt
+  totalSupplyExact_gte: BigInt
+  totalSupplyExact_lte: BigInt
+  totalSupplyExact_in: [BigInt!]
+  totalSupplyExact_not_in: [BigInt!]
+  baseTokenPrice: BigDecimal
+  baseTokenPrice_not: BigDecimal
+  baseTokenPrice_gt: BigDecimal
+  baseTokenPrice_lt: BigDecimal
+  baseTokenPrice_gte: BigDecimal
+  baseTokenPrice_lte: BigDecimal
+  baseTokenPrice_in: [BigDecimal!]
+  baseTokenPrice_not_in: [BigDecimal!]
+  baseTokenPriceExact: BigInt
+  baseTokenPriceExact_not: BigInt
+  baseTokenPriceExact_gt: BigInt
+  baseTokenPriceExact_lt: BigInt
+  baseTokenPriceExact_gte: BigInt
+  baseTokenPriceExact_lte: BigInt
+  baseTokenPriceExact_in: [BigInt!]
+  baseTokenPriceExact_not_in: [BigInt!]
+  quoteTokenPrice: BigDecimal
+  quoteTokenPrice_not: BigDecimal
+  quoteTokenPrice_gt: BigDecimal
+  quoteTokenPrice_lt: BigDecimal
+  quoteTokenPrice_gte: BigDecimal
+  quoteTokenPrice_lte: BigDecimal
+  quoteTokenPrice_in: [BigDecimal!]
+  quoteTokenPrice_not_in: [BigDecimal!]
+  quoteTokenPriceExact: BigInt
+  quoteTokenPriceExact_not: BigInt
+  quoteTokenPriceExact_gt: BigInt
+  quoteTokenPriceExact_lt: BigInt
+  quoteTokenPriceExact_gte: BigInt
+  quoteTokenPriceExact_lte: BigInt
+  quoteTokenPriceExact_in: [BigInt!]
+  quoteTokenPriceExact_not_in: [BigInt!]
+  volumeBaseToken: BigDecimal
+  volumeBaseToken_not: BigDecimal
+  volumeBaseToken_gt: BigDecimal
+  volumeBaseToken_lt: BigDecimal
+  volumeBaseToken_gte: BigDecimal
+  volumeBaseToken_lte: BigDecimal
+  volumeBaseToken_in: [BigDecimal!]
+  volumeBaseToken_not_in: [BigDecimal!]
+  volumeBaseTokenExact: BigInt
+  volumeBaseTokenExact_not: BigInt
+  volumeBaseTokenExact_gt: BigInt
+  volumeBaseTokenExact_lt: BigInt
+  volumeBaseTokenExact_gte: BigInt
+  volumeBaseTokenExact_lte: BigInt
+  volumeBaseTokenExact_in: [BigInt!]
+  volumeBaseTokenExact_not_in: [BigInt!]
+  volumeQuoteToken: BigDecimal
+  volumeQuoteToken_not: BigDecimal
+  volumeQuoteToken_gt: BigDecimal
+  volumeQuoteToken_lt: BigDecimal
+  volumeQuoteToken_gte: BigDecimal
+  volumeQuoteToken_lte: BigDecimal
+  volumeQuoteToken_in: [BigDecimal!]
+  volumeQuoteToken_not_in: [BigDecimal!]
+  volumeQuoteTokenExact: BigInt
+  volumeQuoteTokenExact_not: BigInt
+  volumeQuoteTokenExact_gt: BigInt
+  volumeQuoteTokenExact_lt: BigInt
+  volumeQuoteTokenExact_gte: BigInt
+  volumeQuoteTokenExact_lte: BigInt
+  volumeQuoteTokenExact_in: [BigInt!]
+  volumeQuoteTokenExact_not_in: [BigInt!]
+  txCount: BigInt
+  txCount_not: BigInt
+  txCount_gt: BigInt
+  txCount_lt: BigInt
+  txCount_gte: BigInt
+  txCount_lte: BigInt
+  txCount_in: [BigInt!]
+  txCount_not_in: [BigInt!]
+  liquidity: BigDecimal
+  liquidity_not: BigDecimal
+  liquidity_gt: BigDecimal
+  liquidity_lt: BigDecimal
+  liquidity_gte: BigDecimal
+  liquidity_lte: BigDecimal
+  liquidity_in: [BigDecimal!]
+  liquidity_not_in: [BigDecimal!]
+  liquidityExact: BigInt
+  liquidityExact_not: BigInt
+  liquidityExact_gt: BigInt
+  liquidityExact_lt: BigInt
+  liquidityExact_gte: BigInt
+  liquidityExact_lte: BigInt
+  liquidityExact_in: [BigInt!]
+  liquidityExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexPairSnapshot_filter]
+  or: [ERC20DexPairSnapshot_filter]
+}
+
+enum ERC20DexPairSnapshot_orderBy {
+  id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  baseReserve
+  baseReserveExact
+  quoteReserve
+  quoteReserveExact
+  totalSupply
+  totalSupplyExact
+  baseTokenPrice
+  baseTokenPriceExact
+  quoteTokenPrice
+  quoteTokenPriceExact
+  volumeBaseToken
+  volumeBaseTokenExact
+  volumeQuoteToken
+  volumeQuoteTokenExact
+  txCount
+  liquidity
+  liquidityExact
+}
+
+"Aggregated DEX pair metrics over configurable time periods.\nProvides statistical analysis of pair activity including volume, prices, and reserves.\n"
+type ERC20DexPairStats {
+  """Sequential numeric identifier"""
+  id: Int8!
+
+  """Start of aggregation period"""
+  timestamp: Timestamp!
+
+  """The DEX pair being analyzed"""
+  pair: ERC20DexPair!
+
+  """Final base token reserve in period"""
+  lastBaseReserve: BigDecimal!
+
+  """Final quote token reserve in period"""
+  lastQuoteReserve: BigDecimal!
+
+  """Total base token volume in period"""
+  totalVolumeBaseToken: BigDecimal!
+
+  """Total quote token volume in period"""
+  totalVolumeQuoteToken: BigDecimal!
+
+  """Highest base token price in period"""
+  highestBasePrice: BigDecimal!
+
+  """Lowest base token price in period"""
+  lowestBasePrice: BigDecimal!
+
+  """Opening base token price in period"""
+  firstBasePrice: BigDecimal!
+
+  """Closing base token price in period"""
+  lastBasePrice: BigDecimal!
+
+  """Highest quote token price in period"""
+  highestQuotePrice: BigDecimal!
+
+  """Lowest quote token price in period"""
+  lowestQuotePrice: BigDecimal!
+
+  """Opening quote token price in period"""
+  firstQuotePrice: BigDecimal!
+
+  """Closing quote token price in period"""
+  lastQuotePrice: BigDecimal!
+
+  """Total number of transactions in period"""
+  totalTxCount: BigInt!
+
+  """Amount of LP tokens minted in period"""
+  totalLiquidity: BigDecimal!
+}
+
+input ERC20DexPairStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  pair: String
+  pair_: ERC20DexPair_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexPairStats_filter]
+  or: [ERC20DexPairStats_filter]
+}
+
+input ERC20DexPair_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  asAccount: String
+  asAccount_not: String
+  asAccount_gt: String
+  asAccount_lt: String
+  asAccount_gte: String
+  asAccount_lte: String
+  asAccount_in: [String!]
+  asAccount_not_in: [String!]
+  asAccount_contains: String
+  asAccount_contains_nocase: String
+  asAccount_not_contains: String
+  asAccount_not_contains_nocase: String
+  asAccount_starts_with: String
+  asAccount_starts_with_nocase: String
+  asAccount_not_starts_with: String
+  asAccount_not_starts_with_nocase: String
+  asAccount_ends_with: String
+  asAccount_ends_with_nocase: String
+  asAccount_not_ends_with: String
+  asAccount_not_ends_with_nocase: String
+  asAccount_: Account_filter
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_contains_nocase: String
+  symbol_not_contains: String
+  symbol_not_contains_nocase: String
+  symbol_starts_with: String
+  symbol_starts_with_nocase: String
+  symbol_not_starts_with: String
+  symbol_not_starts_with_nocase: String
+  symbol_ends_with: String
+  symbol_ends_with_nocase: String
+  symbol_not_ends_with: String
+  symbol_not_ends_with_nocase: String
+  decimals: Int
+  decimals_not: Int
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
+  decimals_in: [Int!]
+  decimals_not_in: [Int!]
+  baseToken: String
+  baseToken_not: String
+  baseToken_gt: String
+  baseToken_lt: String
+  baseToken_gte: String
+  baseToken_lte: String
+  baseToken_in: [String!]
+  baseToken_not_in: [String!]
+  baseToken_contains: String
+  baseToken_contains_nocase: String
+  baseToken_not_contains: String
+  baseToken_not_contains_nocase: String
+  baseToken_starts_with: String
+  baseToken_starts_with_nocase: String
+  baseToken_not_starts_with: String
+  baseToken_not_starts_with_nocase: String
+  baseToken_ends_with: String
+  baseToken_ends_with_nocase: String
+  baseToken_not_ends_with: String
+  baseToken_not_ends_with_nocase: String
+  baseToken_: ERC20Contract_filter
+  quoteToken: String
+  quoteToken_not: String
+  quoteToken_gt: String
+  quoteToken_lt: String
+  quoteToken_gte: String
+  quoteToken_lte: String
+  quoteToken_in: [String!]
+  quoteToken_not_in: [String!]
+  quoteToken_contains: String
+  quoteToken_contains_nocase: String
+  quoteToken_not_contains: String
+  quoteToken_not_contains_nocase: String
+  quoteToken_starts_with: String
+  quoteToken_starts_with_nocase: String
+  quoteToken_not_starts_with: String
+  quoteToken_not_starts_with_nocase: String
+  quoteToken_ends_with: String
+  quoteToken_ends_with_nocase: String
+  quoteToken_not_ends_with: String
+  quoteToken_not_ends_with_nocase: String
+  quoteToken_: ERC20Contract_filter
+  baseReserve: BigDecimal
+  baseReserve_not: BigDecimal
+  baseReserve_gt: BigDecimal
+  baseReserve_lt: BigDecimal
+  baseReserve_gte: BigDecimal
+  baseReserve_lte: BigDecimal
+  baseReserve_in: [BigDecimal!]
+  baseReserve_not_in: [BigDecimal!]
+  baseReserveExact: BigInt
+  baseReserveExact_not: BigInt
+  baseReserveExact_gt: BigInt
+  baseReserveExact_lt: BigInt
+  baseReserveExact_gte: BigInt
+  baseReserveExact_lte: BigInt
+  baseReserveExact_in: [BigInt!]
+  baseReserveExact_not_in: [BigInt!]
+  quoteReserve: BigDecimal
+  quoteReserve_not: BigDecimal
+  quoteReserve_gt: BigDecimal
+  quoteReserve_lt: BigDecimal
+  quoteReserve_gte: BigDecimal
+  quoteReserve_lte: BigDecimal
+  quoteReserve_in: [BigDecimal!]
+  quoteReserve_not_in: [BigDecimal!]
+  quoteReserveExact: BigInt
+  quoteReserveExact_not: BigInt
+  quoteReserveExact_gt: BigInt
+  quoteReserveExact_lt: BigInt
+  quoteReserveExact_gte: BigInt
+  quoteReserveExact_lte: BigInt
+  quoteReserveExact_in: [BigInt!]
+  quoteReserveExact_not_in: [BigInt!]
+  totalSupply: BigDecimal
+  totalSupply_not: BigDecimal
+  totalSupply_gt: BigDecimal
+  totalSupply_lt: BigDecimal
+  totalSupply_gte: BigDecimal
+  totalSupply_lte: BigDecimal
+  totalSupply_in: [BigDecimal!]
+  totalSupply_not_in: [BigDecimal!]
+  totalSupplyExact: BigInt
+  totalSupplyExact_not: BigInt
+  totalSupplyExact_gt: BigInt
+  totalSupplyExact_lt: BigInt
+  totalSupplyExact_gte: BigInt
+  totalSupplyExact_lte: BigInt
+  totalSupplyExact_in: [BigInt!]
+  totalSupplyExact_not_in: [BigInt!]
+  baseTokenPrice: BigDecimal
+  baseTokenPrice_not: BigDecimal
+  baseTokenPrice_gt: BigDecimal
+  baseTokenPrice_lt: BigDecimal
+  baseTokenPrice_gte: BigDecimal
+  baseTokenPrice_lte: BigDecimal
+  baseTokenPrice_in: [BigDecimal!]
+  baseTokenPrice_not_in: [BigDecimal!]
+  baseTokenPriceExact: BigInt
+  baseTokenPriceExact_not: BigInt
+  baseTokenPriceExact_gt: BigInt
+  baseTokenPriceExact_lt: BigInt
+  baseTokenPriceExact_gte: BigInt
+  baseTokenPriceExact_lte: BigInt
+  baseTokenPriceExact_in: [BigInt!]
+  baseTokenPriceExact_not_in: [BigInt!]
+  quoteTokenPrice: BigDecimal
+  quoteTokenPrice_not: BigDecimal
+  quoteTokenPrice_gt: BigDecimal
+  quoteTokenPrice_lt: BigDecimal
+  quoteTokenPrice_gte: BigDecimal
+  quoteTokenPrice_lte: BigDecimal
+  quoteTokenPrice_in: [BigDecimal!]
+  quoteTokenPrice_not_in: [BigDecimal!]
+  quoteTokenPriceExact: BigInt
+  quoteTokenPriceExact_not: BigInt
+  quoteTokenPriceExact_gt: BigInt
+  quoteTokenPriceExact_lt: BigInt
+  quoteTokenPriceExact_gte: BigInt
+  quoteTokenPriceExact_lte: BigInt
+  quoteTokenPriceExact_in: [BigInt!]
+  quoteTokenPriceExact_not_in: [BigInt!]
+  swapFee: BigInt
+  swapFee_not: BigInt
+  swapFee_gt: BigInt
+  swapFee_lt: BigInt
+  swapFee_gte: BigInt
+  swapFee_lte: BigInt
+  swapFee_in: [BigInt!]
+  swapFee_not_in: [BigInt!]
+  swaps_: ERC20DexSwap_filter
+  mints_: ERC20DexMint_filter
+  burns_: ERC20DexBurn_filter
+  stakes_: ERC20DexStake_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexPair_filter]
+  or: [ERC20DexPair_filter]
+}
+
+enum ERC20DexPair_orderBy {
+  id
+  asAccount
+  asAccount__id
+  name
+  symbol
+  decimals
+  baseToken
+  baseToken__id
+  baseToken__name
+  baseToken__symbol
+  baseToken__decimals
+  baseToken__extraData
+  baseToken__totalSupply
+  baseToken__totalSupplyExact
+  quoteToken
+  quoteToken__id
+  quoteToken__name
+  quoteToken__symbol
+  quoteToken__decimals
+  quoteToken__extraData
+  quoteToken__totalSupply
+  quoteToken__totalSupplyExact
+  baseReserve
+  baseReserveExact
+  quoteReserve
+  quoteReserveExact
+  totalSupply
+  totalSupplyExact
+  baseTokenPrice
+  baseTokenPriceExact
+  quoteTokenPrice
+  quoteTokenPriceExact
+  swapFee
+  swaps
+  mints
+  burns
+  stakes
+}
+
+type ERC20DexStake {
+  """
+  Composite identifier combining token contract and holder account addresses
+  """
+  id: ID!
+
+  """The ERC20 token contract this balance is for"""
+  pair: ERC20DexPair!
+
+  """The account holding this token balance"""
+  account: Account
+
+  """Current balance in decimal format for human readability"""
+  value: BigDecimal!
+
+  """Current balance as raw integer value (full precision)"""
+  valueExact: BigInt!
+}
+
+input ERC20DexStake_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  value: BigDecimal
+  value_not: BigDecimal
+  value_gt: BigDecimal
+  value_lt: BigDecimal
+  value_gte: BigDecimal
+  value_lte: BigDecimal
+  value_in: [BigDecimal!]
+  value_not_in: [BigDecimal!]
+  valueExact: BigInt
+  valueExact_not: BigInt
+  valueExact_gt: BigInt
+  valueExact_lt: BigInt
+  valueExact_gte: BigInt
+  valueExact_lte: BigInt
+  valueExact_in: [BigInt!]
+  valueExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexStake_filter]
+  or: [ERC20DexStake_filter]
+}
+
+enum ERC20DexStake_orderBy {
+  id
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  account
+  account__id
+  value
+  valueExact
+}
+
+"Records a token swap event on a DEX pair.\nTracks the input and output amounts for both tokens in the pair.\n"
+type ERC20DexSwap implements Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+
+  """The DEX pair the swap occurred on"""
+  pair: ERC20DexPair!
+
+  """The account that made the swap"""
+  sender: Account!
+
+  """Amount of base token input (decimal)"""
+  baseAmountIn: BigDecimal!
+
+  """Amount of base token input (raw)"""
+  baseAmountInExact: BigInt!
+
+  """Amount of quote token input (decimal)"""
+  quoteAmountIn: BigDecimal!
+
+  """Amount of quote token input (raw)"""
+  quoteAmountInExact: BigInt!
+
+  """Amount of base token output (decimal)"""
+  baseAmountOut: BigDecimal!
+
+  """Amount of base token output (raw)"""
+  baseAmountOutExact: BigInt!
+
+  """Amount of quote token output (decimal)"""
+  quoteAmountOut: BigDecimal!
+
+  """Amount of quote token output (raw)"""
+  quoteAmountOutExact: BigInt!
+}
+
+input ERC20DexSwap_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_contains_nocase: String
+  pair_not_contains: String
+  pair_not_contains_nocase: String
+  pair_starts_with: String
+  pair_starts_with_nocase: String
+  pair_not_starts_with: String
+  pair_not_starts_with_nocase: String
+  pair_ends_with: String
+  pair_ends_with_nocase: String
+  pair_not_ends_with: String
+  pair_not_ends_with_nocase: String
+  pair_: ERC20DexPair_filter
+  sender: String
+  sender_not: String
+  sender_gt: String
+  sender_lt: String
+  sender_gte: String
+  sender_lte: String
+  sender_in: [String!]
+  sender_not_in: [String!]
+  sender_contains: String
+  sender_contains_nocase: String
+  sender_not_contains: String
+  sender_not_contains_nocase: String
+  sender_starts_with: String
+  sender_starts_with_nocase: String
+  sender_not_starts_with: String
+  sender_not_starts_with_nocase: String
+  sender_ends_with: String
+  sender_ends_with_nocase: String
+  sender_not_ends_with: String
+  sender_not_ends_with_nocase: String
+  sender_: Account_filter
+  baseAmountIn: BigDecimal
+  baseAmountIn_not: BigDecimal
+  baseAmountIn_gt: BigDecimal
+  baseAmountIn_lt: BigDecimal
+  baseAmountIn_gte: BigDecimal
+  baseAmountIn_lte: BigDecimal
+  baseAmountIn_in: [BigDecimal!]
+  baseAmountIn_not_in: [BigDecimal!]
+  baseAmountInExact: BigInt
+  baseAmountInExact_not: BigInt
+  baseAmountInExact_gt: BigInt
+  baseAmountInExact_lt: BigInt
+  baseAmountInExact_gte: BigInt
+  baseAmountInExact_lte: BigInt
+  baseAmountInExact_in: [BigInt!]
+  baseAmountInExact_not_in: [BigInt!]
+  quoteAmountIn: BigDecimal
+  quoteAmountIn_not: BigDecimal
+  quoteAmountIn_gt: BigDecimal
+  quoteAmountIn_lt: BigDecimal
+  quoteAmountIn_gte: BigDecimal
+  quoteAmountIn_lte: BigDecimal
+  quoteAmountIn_in: [BigDecimal!]
+  quoteAmountIn_not_in: [BigDecimal!]
+  quoteAmountInExact: BigInt
+  quoteAmountInExact_not: BigInt
+  quoteAmountInExact_gt: BigInt
+  quoteAmountInExact_lt: BigInt
+  quoteAmountInExact_gte: BigInt
+  quoteAmountInExact_lte: BigInt
+  quoteAmountInExact_in: [BigInt!]
+  quoteAmountInExact_not_in: [BigInt!]
+  baseAmountOut: BigDecimal
+  baseAmountOut_not: BigDecimal
+  baseAmountOut_gt: BigDecimal
+  baseAmountOut_lt: BigDecimal
+  baseAmountOut_gte: BigDecimal
+  baseAmountOut_lte: BigDecimal
+  baseAmountOut_in: [BigDecimal!]
+  baseAmountOut_not_in: [BigDecimal!]
+  baseAmountOutExact: BigInt
+  baseAmountOutExact_not: BigInt
+  baseAmountOutExact_gt: BigInt
+  baseAmountOutExact_lt: BigInt
+  baseAmountOutExact_gte: BigInt
+  baseAmountOutExact_lte: BigInt
+  baseAmountOutExact_in: [BigInt!]
+  baseAmountOutExact_not_in: [BigInt!]
+  quoteAmountOut: BigDecimal
+  quoteAmountOut_not: BigDecimal
+  quoteAmountOut_gt: BigDecimal
+  quoteAmountOut_lt: BigDecimal
+  quoteAmountOut_gte: BigDecimal
+  quoteAmountOut_lte: BigDecimal
+  quoteAmountOut_in: [BigDecimal!]
+  quoteAmountOut_not_in: [BigDecimal!]
+  quoteAmountOutExact: BigInt
+  quoteAmountOutExact_not: BigInt
+  quoteAmountOutExact_gt: BigInt
+  quoteAmountOutExact_lt: BigInt
+  quoteAmountOutExact_gte: BigInt
+  quoteAmountOutExact_lte: BigInt
+  quoteAmountOutExact_in: [BigInt!]
+  quoteAmountOutExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20DexSwap_filter]
+  or: [ERC20DexSwap_filter]
+}
+
+enum ERC20DexSwap_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+  pair
+  pair__id
+  pair__name
+  pair__symbol
+  pair__decimals
+  pair__baseReserve
+  pair__baseReserveExact
+  pair__quoteReserve
+  pair__quoteReserveExact
+  pair__totalSupply
+  pair__totalSupplyExact
+  pair__baseTokenPrice
+  pair__baseTokenPriceExact
+  pair__quoteTokenPrice
+  pair__quoteTokenPriceExact
+  pair__swapFee
+  sender
+  sender__id
+  baseAmountIn
+  baseAmountInExact
+  quoteAmountIn
+  quoteAmountInExact
+  baseAmountOut
+  baseAmountOutExact
+  quoteAmountOut
+  quoteAmountOutExact
+}
+
+"Time-series tracking of token transfer activity metrics.\nThis entity captures transfer volume and count data over time for analysis.\n"
+type ERC20TokenVolume {
+  """Sequential numeric identifier"""
+  id: Int8!
+
+  """Timestamp of the volume record"""
+  timestamp: Timestamp!
+
+  """The ERC20 token being monitored"""
+  token: ERC20Contract!
+
+  """Number of transfers in period"""
+  transferCount: Int!
+
+  """Total token amount transferred"""
+  volume: BigInt!
+}
+
+"Aggregated token transfer statistics over configurable time periods.\nProvides summarized metrics about token transfer activity for analysis.\n"
+type ERC20TokenVolumeStats {
+  """Sequential numeric identifier"""
+  id: Int8!
+
+  """Start of aggregation period"""
+  timestamp: Timestamp!
+
+  """The ERC20 token being analyzed"""
+  token: ERC20Contract!
+
+  """Total transfers in period"""
+  totalTransfers: Int!
+
+  """Total volume transferred"""
+  totalVolume: BigInt!
+}
+
+input ERC20TokenVolumeStats_filter {
+  id: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  token: String
+  token_: ERC20Contract_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20TokenVolumeStats_filter]
+  or: [ERC20TokenVolumeStats_filter]
+}
+
+input ERC20TokenVolume_filter {
+  id: Int8
+  id_not: Int8
+  id_gt: Int8
+  id_lt: Int8
+  id_gte: Int8
+  id_lte: Int8
+  id_in: [Int8!]
+  id_not_in: [Int8!]
+  timestamp: Timestamp
+  timestamp_not: Timestamp
+  timestamp_gt: Timestamp
+  timestamp_lt: Timestamp
+  timestamp_gte: Timestamp
+  timestamp_lte: Timestamp
+  timestamp_in: [Timestamp!]
+  timestamp_not_in: [Timestamp!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: ERC20Contract_filter
+  transferCount: Int
+  transferCount_not: Int
+  transferCount_gt: Int
+  transferCount_lt: Int
+  transferCount_gte: Int
+  transferCount_lte: Int
+  transferCount_in: [Int!]
+  transferCount_not_in: [Int!]
+  volume: BigInt
+  volume_not: BigInt
+  volume_gt: BigInt
+  volume_lt: BigInt
+  volume_gte: BigInt
+  volume_lte: BigInt
+  volume_in: [BigInt!]
+  volume_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20TokenVolume_filter]
+  or: [ERC20TokenVolume_filter]
+}
+
+enum ERC20TokenVolume_orderBy {
+  id
+  timestamp
+  token
+  token__id
+  token__name
+  token__symbol
+  token__decimals
+  token__extraData
+  token__totalSupply
+  token__totalSupplyExact
+  transferCount
+  volume
+}
+
+"Records an ERC20 token transfer between accounts with full context.\nThis entity captures all details about a token transfer including the involved accounts and balances.\n"
+type ERC20Transfer implements Event {
+  """Unique identifier for this transfer event"""
+  id: ID!
+
+  """Contract that emitted the transfer event"""
+  emitter: Account!
+
+  """Transaction containing this transfer"""
+  transaction: Transaction!
+
+  """Block timestamp of the transfer"""
+  timestamp: BigInt!
+
+  """The ERC20 token contract being transferred"""
+  contract: ERC20Contract!
+
+  """Sending account (null for mints)"""
+  from: Account
+
+  """Sender's balance record pre-transfer"""
+  fromBalance: ERC20Balance
+
+  """Receiving account (null for burns)"""
+  to: Account
+
+  """Receiver's balance record post-transfer"""
+  toBalance: ERC20Balance
+
+  """Transfer amount in decimal format for human readability"""
+  value: BigDecimal!
+
+  """Transfer amount as raw integer value (full precision)"""
+  valueExact: BigInt!
+}
+
+input ERC20Transfer_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  contract: String
+  contract_not: String
+  contract_gt: String
+  contract_lt: String
+  contract_gte: String
+  contract_lte: String
+  contract_in: [String!]
+  contract_not_in: [String!]
+  contract_contains: String
+  contract_contains_nocase: String
+  contract_not_contains: String
+  contract_not_contains_nocase: String
+  contract_starts_with: String
+  contract_starts_with_nocase: String
+  contract_not_starts_with: String
+  contract_not_starts_with_nocase: String
+  contract_ends_with: String
+  contract_ends_with_nocase: String
+  contract_not_ends_with: String
+  contract_not_ends_with_nocase: String
+  contract_: ERC20Contract_filter
+  from: String
+  from_not: String
+  from_gt: String
+  from_lt: String
+  from_gte: String
+  from_lte: String
+  from_in: [String!]
+  from_not_in: [String!]
+  from_contains: String
+  from_contains_nocase: String
+  from_not_contains: String
+  from_not_contains_nocase: String
+  from_starts_with: String
+  from_starts_with_nocase: String
+  from_not_starts_with: String
+  from_not_starts_with_nocase: String
+  from_ends_with: String
+  from_ends_with_nocase: String
+  from_not_ends_with: String
+  from_not_ends_with_nocase: String
+  from_: Account_filter
+  fromBalance: String
+  fromBalance_not: String
+  fromBalance_gt: String
+  fromBalance_lt: String
+  fromBalance_gte: String
+  fromBalance_lte: String
+  fromBalance_in: [String!]
+  fromBalance_not_in: [String!]
+  fromBalance_contains: String
+  fromBalance_contains_nocase: String
+  fromBalance_not_contains: String
+  fromBalance_not_contains_nocase: String
+  fromBalance_starts_with: String
+  fromBalance_starts_with_nocase: String
+  fromBalance_not_starts_with: String
+  fromBalance_not_starts_with_nocase: String
+  fromBalance_ends_with: String
+  fromBalance_ends_with_nocase: String
+  fromBalance_not_ends_with: String
+  fromBalance_not_ends_with_nocase: String
+  fromBalance_: ERC20Balance_filter
+  to: String
+  to_not: String
+  to_gt: String
+  to_lt: String
+  to_gte: String
+  to_lte: String
+  to_in: [String!]
+  to_not_in: [String!]
+  to_contains: String
+  to_contains_nocase: String
+  to_not_contains: String
+  to_not_contains_nocase: String
+  to_starts_with: String
+  to_starts_with_nocase: String
+  to_not_starts_with: String
+  to_not_starts_with_nocase: String
+  to_ends_with: String
+  to_ends_with_nocase: String
+  to_not_ends_with: String
+  to_not_ends_with_nocase: String
+  to_: Account_filter
+  toBalance: String
+  toBalance_not: String
+  toBalance_gt: String
+  toBalance_lt: String
+  toBalance_gte: String
+  toBalance_lte: String
+  toBalance_in: [String!]
+  toBalance_not_in: [String!]
+  toBalance_contains: String
+  toBalance_contains_nocase: String
+  toBalance_not_contains: String
+  toBalance_not_contains_nocase: String
+  toBalance_starts_with: String
+  toBalance_starts_with_nocase: String
+  toBalance_not_starts_with: String
+  toBalance_not_starts_with_nocase: String
+  toBalance_ends_with: String
+  toBalance_ends_with_nocase: String
+  toBalance_not_ends_with: String
+  toBalance_not_ends_with_nocase: String
+  toBalance_: ERC20Balance_filter
+  value: BigDecimal
+  value_not: BigDecimal
+  value_gt: BigDecimal
+  value_lt: BigDecimal
+  value_gte: BigDecimal
+  value_lte: BigDecimal
+  value_in: [BigDecimal!]
+  value_not_in: [BigDecimal!]
+  valueExact: BigInt
+  valueExact_not: BigInt
+  valueExact_gt: BigInt
+  valueExact_lt: BigInt
+  valueExact_gte: BigInt
+  valueExact_lte: BigInt
+  valueExact_in: [BigInt!]
+  valueExact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [ERC20Transfer_filter]
+  or: [ERC20Transfer_filter]
+}
+
+enum ERC20Transfer_orderBy {
+  id
+  emitter
+  emitter__id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  timestamp
+  contract
+  contract__id
+  contract__name
+  contract__symbol
+  contract__decimals
+  contract__extraData
+  contract__totalSupply
+  contract__totalSupplyExact
+  from
+  from__id
+  fromBalance
+  fromBalance__id
+  fromBalance__value
+  fromBalance__valueExact
+  to
+  to__id
+  toBalance
+  toBalance__id
+  toBalance__value
+  toBalance__valueExact
+  value
+  valueExact
+}
+
+"Common interface for all blockchain events providing core event data.\nThis ensures consistent tracking of basic event information across different event types.\n"
+interface Event {
+  """Unique event identifier"""
+  id: ID!
+
+  """Transaction containing the event"""
+  transaction: Transaction!
+
+  """Contract that emitted the event"""
+  emitter: Account!
+
+  """Block timestamp of the event"""
+  timestamp: BigInt!
+}
+
+input Event_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transaction: String
+  transaction_not: String
+  transaction_gt: String
+  transaction_lt: String
+  transaction_gte: String
+  transaction_lte: String
+  transaction_in: [String!]
+  transaction_not_in: [String!]
+  transaction_contains: String
+  transaction_contains_nocase: String
+  transaction_not_contains: String
+  transaction_not_contains_nocase: String
+  transaction_starts_with: String
+  transaction_starts_with_nocase: String
+  transaction_not_starts_with: String
+  transaction_not_starts_with_nocase: String
+  transaction_ends_with: String
+  transaction_ends_with_nocase: String
+  transaction_not_ends_with: String
+  transaction_not_ends_with_nocase: String
+  transaction_: Transaction_filter
+  emitter: String
+  emitter_not: String
+  emitter_gt: String
+  emitter_lt: String
+  emitter_gte: String
+  emitter_lte: String
+  emitter_in: [String!]
+  emitter_not_in: [String!]
+  emitter_contains: String
+  emitter_contains_nocase: String
+  emitter_not_contains: String
+  emitter_not_contains_nocase: String
+  emitter_starts_with: String
+  emitter_starts_with_nocase: String
+  emitter_not_starts_with: String
+  emitter_not_starts_with_nocase: String
+  emitter_ends_with: String
+  emitter_ends_with_nocase: String
+  emitter_not_ends_with: String
+  emitter_not_ends_with_nocase: String
+  emitter_: Account_filter
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Event_filter]
+  or: [Event_filter]
+}
+
+enum Event_orderBy {
+  id
+  transaction
+  transaction__id
+  transaction__timestamp
+  transaction__blockNumber
+  emitter
+  emitter__id
+  timestamp
+}
+
+"8 bytes signed integer\n"
+scalar Int8
+
+"""Defines the order direction, either ascending or descending"""
+enum OrderDirection {
+  asc
+  desc
+}
+
+type Query {
+  account(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Account
+  accounts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Account!]!
+  erc20Contract(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Contract
+  erc20Contracts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Contract_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Contract_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Contract!]!
+  erc20Balance(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Balance
+  erc20Balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Balance_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Balance_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Balance!]!
+  erc20Approval(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Approval
+  erc20Approvals(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Approval_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Approval_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Approval!]!
+  erc20Transfer(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Transfer
+  erc20Transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Transfer!]!
+  transaction(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Transaction
+  transactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transaction_orderBy
+    orderDirection: OrderDirection
+    where: Transaction_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Transaction!]!
+  erc20TokenVolume(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20TokenVolume
+  erc20TokenVolumes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20TokenVolume_orderBy
+    orderDirection: OrderDirection
+    where: ERC20TokenVolume_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20TokenVolume!]!
+  erc20DexPair(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexPair
+  erc20DexPairs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPair_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPair_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPair!]!
+  erc20DexStake(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexStake
+  erc20DexStakes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexStake_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexStake_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexStake!]!
+  erc20DexMint(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexMint
+  erc20DexMints(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexMint_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexMint_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexMint!]!
+  erc20DexBurn(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexBurn
+  erc20DexBurns(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexBurn_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexBurn_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexBurn!]!
+  erc20DexSwap(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexSwap
+  erc20DexSwaps(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexSwap_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexSwap_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexSwap!]!
+  erc20DexEmergencyWithdraw(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexEmergencyWithdraw
+  erc20DexEmergencyWithdraws(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexEmergencyWithdraw_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexEmergencyWithdraw_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexEmergencyWithdraw!]!
+  erc20DexFeeUpdate(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexFeeUpdate
+  erc20DexFeeUpdates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexFeeUpdate_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexFeeUpdate_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexFeeUpdate!]!
+  erc20DexPairSnapshot(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexPairSnapshot
+  erc20DexPairSnapshots(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPairSnapshot_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPairSnapshot_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPairSnapshot!]!
+  event(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Event
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Event!]!
+
+  """Collection of aggregated `ERC20TokenVolumeStats` values"""
+  erc20TokenVolumeStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    where: ERC20TokenVolumeStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20TokenVolumeStats!]!
+
+  """Collection of aggregated `ERC20DexPairStats` values"""
+  erc20DexPairStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    where: ERC20DexPairStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPairStats!]!
+
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+type Subscription {
+  account(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Account
+  accounts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Account_orderBy
+    orderDirection: OrderDirection
+    where: Account_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Account!]!
+  erc20Contract(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Contract
+  erc20Contracts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Contract_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Contract_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Contract!]!
+  erc20Balance(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Balance
+  erc20Balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Balance_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Balance_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Balance!]!
+  erc20Approval(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Approval
+  erc20Approvals(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Approval_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Approval_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Approval!]!
+  erc20Transfer(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20Transfer
+  erc20Transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20Transfer!]!
+  transaction(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Transaction
+  transactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transaction_orderBy
+    orderDirection: OrderDirection
+    where: Transaction_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Transaction!]!
+  erc20TokenVolume(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20TokenVolume
+  erc20TokenVolumes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20TokenVolume_orderBy
+    orderDirection: OrderDirection
+    where: ERC20TokenVolume_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20TokenVolume!]!
+  erc20DexPair(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexPair
+  erc20DexPairs(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPair_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPair_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPair!]!
+  erc20DexStake(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexStake
+  erc20DexStakes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexStake_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexStake_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexStake!]!
+  erc20DexMint(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexMint
+  erc20DexMints(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexMint_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexMint_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexMint!]!
+  erc20DexBurn(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexBurn
+  erc20DexBurns(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexBurn_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexBurn_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexBurn!]!
+  erc20DexSwap(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexSwap
+  erc20DexSwaps(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexSwap_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexSwap_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexSwap!]!
+  erc20DexEmergencyWithdraw(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexEmergencyWithdraw
+  erc20DexEmergencyWithdraws(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexEmergencyWithdraw_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexEmergencyWithdraw_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexEmergencyWithdraw!]!
+  erc20DexFeeUpdate(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexFeeUpdate
+  erc20DexFeeUpdates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexFeeUpdate_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexFeeUpdate_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexFeeUpdate!]!
+  erc20DexPairSnapshot(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ERC20DexPairSnapshot
+  erc20DexPairSnapshots(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPairSnapshot_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPairSnapshot_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPairSnapshot!]!
+  event(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Event
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Event!]!
+
+  """Collection of aggregated `ERC20TokenVolumeStats` values"""
+  erc20TokenVolumeStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    where: ERC20TokenVolumeStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20TokenVolumeStats!]!
+
+  """Collection of aggregated `ERC20DexPairStats` values"""
+  erc20DexPairStats_collection(
+    skip: Int = 0
+    first: Int = 100
+    interval: Aggregation_interval!
+    where: ERC20DexPairStats_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ERC20DexPairStats!]!
+
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+"A string representation of microseconds UNIX timestamp (16 digits)\n"
+scalar Timestamp
+
+"Records an Ethereum transaction and aggregates its associated events.\nThis provides context for all events that occurred within a single transaction.\n"
+type Transaction {
+  """Transaction hash identifier"""
+  id: ID!
+
+  """Block timestamp when transaction was mined"""
+  timestamp: BigInt!
+
+  """Block number containing the transaction"""
+  blockNumber: BigInt!
+
+  """All events emitted during this transaction"""
+  events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
+}
+
+input Transaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  events_: Event_filter
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Transaction_filter]
+  or: [Transaction_filter]
+}
+
+enum Transaction_orderBy {
+  id
+  timestamp
+  blockNumber
+  events
+}
+
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+
+  """The block number"""
+  number: Int!
+
+  """Integer representation of the timestamp stored in blocks for the chain"""
+  timestamp: Int
+
+  """The hash of the parent block"""
+  parentHash: Bytes
+}
+
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n"
+  block: _Block_!
+
+  """The deployment ID"""
+  deployment: String!
+
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
+}
+
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+
+  """
+  If the subgraph has indexing errors, data will be omitted. The default.
+  """
+  deny
+}

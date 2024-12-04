@@ -41,7 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # codegen
-*-env.d.ts
 *-cache.d.ts
-*-schema.graphql
-lib/settlemint/
