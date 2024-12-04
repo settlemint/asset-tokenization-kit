@@ -6,43 +6,13 @@ ALL_ALLOCATIONS_FILE="${SCRIPT_DIR}/genesis-output.json"
 
 rm -Rf "${ALL_ALLOCATIONS_FILE}"
 
-# Check bash version and use appropriate array type
-if ((BASH_VERSINFO[0] >= 4)); then
-    # Use associative array for bash 4+
-    declare -A CONTRACT_ADDRESSES
-    CONTRACT_ADDRESSES=(
-        ["CryptoCurrencyFactory"]="0x5e771e1417100000000000000000000000000001"
-        ["StableCoinFactory"]="0x5e771e1417100000000000000000000000000002"
-        ["EquityFactory"]="0x5e771e1417100000000000000000000000000003"
-        ["BondFactory"]="0x5e771e1417100000000000000000000000000004"
-    )
-else
-    # Fallback for older bash versions
-    CONTRACT_NAMES=(
-        "CryptoCurrencyFactory"
-        "StableCoinFactory"
-        "EquityFactory"
-        "BondFactory"
-    )
-    CONTRACT_ADDRS=(
-        "0x5e771e1417100000000000000000000000000001"
-        "0x5e771e1417100000000000000000000000000002"
-        "0x5e771e1417100000000000000000000000000003"
-        "0x5e771e1417100000000000000000000000000004"
-    )
-
-    # Function to get address by name for older bash
-    get_contract_address() {
-        local name="$1"
-        for i in "${!CONTRACT_NAMES[@]}"; do
-            if [[ "${CONTRACT_NAMES[$i]}" == "$name" ]]; then
-                echo "${CONTRACT_ADDRS[$i]}"
-                return 0
-            fi
-        done
-        echo ""
-    }
-fi
+declare -A CONTRACT_ADDRESSES
+CONTRACT_ADDRESSES=(
+    ["CryptoCurrencyFactory"]="0x5e771e1417100000000000000000000000000001"
+    ["StableCoinFactory"]="0x5e771e1417100000000000000000000000000002"
+    ["EquityFactory"]="0x5e771e1417100000000000000000000000000003"
+    ["BondFactory"]="0x5e771e1417100000000000000000000000000004"
+)
 
 # Initialize an empty JSON object for all allocations
 echo "{}" > "${ALL_ALLOCATIONS_FILE}"
@@ -53,12 +23,8 @@ process_sol_file() {
     local contract_name="$(basename "${sol_file%.*}")"
     local target_address
 
-    # Get address based on bash version
-    if ((BASH_VERSINFO[0] >= 4)); then
-        target_address="${CONTRACT_ADDRESSES[$contract_name]}"
-    else
-        target_address="$(get_contract_address "$contract_name")"
-    fi
+
+    target_address="${CONTRACT_ADDRESSES[$contract_name]}"
 
     local args_file="${sol_file%.*}.args"
     local forge_args=("${sol_file}:${contract_name}" --broadcast --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
@@ -82,7 +48,7 @@ process_sol_file() {
     fi
 
     # Get storage layout
-    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storage-layout)
+    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force)
     if [[ -z "$STORAGE_LAYOUT" ]]; then
         echo "Error: Unable to get storage layout for $contract_name"
         return
