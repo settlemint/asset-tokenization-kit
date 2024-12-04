@@ -46,7 +46,8 @@
     "deploy": "turbo deploy",
     "codegen": "turbo codegen",
     "lint:biome": "biome lint --write --unsafe .",
-    "format:biome": "biome format --write ."
+    "format:biome": "biome format --write .",
+    "genesis": "turbo genesis"
   },
   "dependencies": {},
   "devDependencies": {
