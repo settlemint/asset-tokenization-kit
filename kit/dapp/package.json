@@ -64,12 +64,12 @@
     "next-auth": "5.0.0-beta.25",
     "next-themes": "0.4.3",
     "nuqs": "2.2.3",
-    "react": "19.0.0-rc-66855b96-20241106",
+    "react": "19.0.0-rc-fb9a90fa48-20240614",
     "react-awesome-gravatar": "2.0.3",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-fb9a90fa48-20240614",
     "react-dropzone": "14.3.5",
     "react-hook-form": "7.53.2",
-    "react-is": "19.0.0-rc-66855b96-20241106",
+    "react-is": "19.0.0-rc-fb9a90fa48-20240614",
     "recharts": "2.14.1",
     "sonner": "1.7.0",
     "tailwind-merge": "2.5.5",
@@ -82,7 +82,7 @@
   "devDependencies": {
     "@types/bcryptjs": "2.4.6",
     "@types/node": "22.10.1",
-    "@types/react": "18.3.12",
+    "@types/react": "18.3.13",
     "@types/react-dom": "18.3.1",
     "babel-plugin-react-compiler": "latest",
     "eslint": "9.16.0",
@@ -93,6 +93,6 @@
   },
   "trustedDependencies": ["sharp"],
   "overrides": {
-    "react-is": "19.0.0-rc-66855b96-20241106"
+    "react-is": "19.0.0-rc-fb9a90fa48-20240614"
   }
 }
