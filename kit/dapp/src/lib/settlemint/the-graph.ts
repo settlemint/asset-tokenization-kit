@@ -1,5 +1,5 @@
-import type { introspection } from "@schemas/the-graph-env";
-import { createTheGraphClient } from "@settlemint/sdk-thegraph";
+import type { introspection } from '@schemas/the-graph-env';
+import { createTheGraphClient } from '@settlemint/sdk-thegraph';
 
 export const { client: theGraphClient, graphql: theGraphGraphql } = createTheGraphClient<{
   introspection: introspection;

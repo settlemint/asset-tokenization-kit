@@ -1,5 +1,5 @@
-import { Input } from "@/components/blocks/form/form-input";
-import type { Table } from "@tanstack/react-table";
+import { Input } from '@/components/blocks/form/form-input';
+import type { Table } from '@tanstack/react-table';
 
 /**
  * Props for the DataTableFilter component.
@@ -24,7 +24,7 @@ export function DataTableFilter<TData>({ table, placeholder, column }: DataTable
   return (
     <Input
       placeholder={placeholder}
-      value={(table.getColumn(column)?.getFilterValue() as string) ?? ""}
+      value={(table.getColumn(column)?.getFilterValue() as string) ?? ''}
       onChange={(event) => table.getColumn(column)?.setFilterValue(event.target.value)}
       className="max-w-sm bg-card"
     />

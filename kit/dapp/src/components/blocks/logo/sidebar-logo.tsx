@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { SidebarMenu, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { Logo } from "./logo";
+import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
+import { Logo } from './logo';
 
 export function SidebarLogo() {
   const { open } = useSidebar();
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className="h-12 group-data-[state=collapsed]:h-8 flex items-center">
+      <SidebarMenuItem className="flex h-12 items-center group-data-[state=collapsed]:h-8">
         <Logo
-          variant={open ? "horizontal" : "icon"}
+          variant={open ? 'horizontal' : 'icon'}
           className={cn(
-            "duration-200 relative transition-[width] ease-linear",
-            "w-[--sidebar-width] h-9",
-            "group-data-[state=collapsed]:w-[--sidebar-width-icon] group-data-[state=collapsed]:h-8",
+            'relative transition-[width] duration-200 ease-linear',
+            'h-9 w-[--sidebar-width]',
+            'group-data-[state=collapsed]:h-8 group-data-[state=collapsed]:w-[--sidebar-width-icon]'
           )}
         />
       </SidebarMenuItem>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { NavigationMenu, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { usePathname } from "next/navigation";
-import { TabItem, type TabItemProps } from "./tab-item";
+import { NavigationMenu, NavigationMenuList } from '@/components/ui/navigation-menu';
+import { usePathname } from 'next/navigation';
+import { TabItem, type TabItemProps } from './tab-item';
 
 interface TabNavigationProps {
   items: TabItemProps[];
@@ -12,7 +12,7 @@ export function TabNavigation({ items }: TabNavigationProps) {
   const pathname = usePathname();
 
   return (
-    <div className="border-b border-card">
+    <div className="border-card border-b">
       <NavigationMenu>
         <NavigationMenuList>
           {items.map((item) => (

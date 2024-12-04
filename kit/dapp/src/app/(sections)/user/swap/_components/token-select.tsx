@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import type { TokenInfo } from "@/app/(sections)/user/swap/_hooks/use-swap-tokens";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { TokenInfo } from '@/app/(sections)/user/swap/_hooks/use-swap-tokens';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export interface TokenSelectProps {
   tokens: TokenInfo[];
@@ -14,7 +14,7 @@ export function TokenSelect({ tokens, selectedToken, onSelectAction, placeholder
   return (
     <Select value={selectedToken} onValueChange={onSelectAction}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={placeholder || "Select token"} />
+        <SelectValue placeholder={placeholder || 'Select token'} />
       </SelectTrigger>
       <SelectContent>
         {tokens.map((token) => (

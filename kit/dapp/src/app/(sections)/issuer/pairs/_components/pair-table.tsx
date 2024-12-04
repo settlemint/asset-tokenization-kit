@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { DataTable } from "@/components/blocks/data-table/data-table";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
-import { Button } from "@/components/ui/button";
-import { formatTokenValue } from "@/lib/number";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { FolderOpen } from "lucide-react";
-import Link from "next/link";
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { Button } from '@/components/ui/button';
+import { formatTokenValue } from '@/lib/number';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { FolderOpen } from 'lucide-react';
+import Link from 'next/link';
 
 const ListAllPairs = theGraphGraphql(`
 query ListAllPairs {
@@ -29,7 +29,7 @@ query ListAllPairs {
 
 export function PairTable() {
   const tokens = useSuspenseQuery({
-    queryKey: ["all-pairs"],
+    queryKey: ['all-pairs'],
     queryFn: () => {
       return theGraphClient.request(ListAllPairs, {});
     },
@@ -40,7 +40,7 @@ export function PairTable() {
     <DataTable
       columns={[
         {
-          accessorKey: "name",
+          accessorKey: 'name',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>;
           },
@@ -50,7 +50,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "symbol",
+          accessorKey: 'symbol',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>;
           },
@@ -60,7 +60,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "decimals",
+          accessorKey: 'decimals',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader variant="numeric" column={column}>
@@ -74,7 +74,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "totalSupply",
+          accessorKey: 'totalSupply',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -92,7 +92,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "quoteReserve",
+          accessorKey: 'quoteReserve',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -110,7 +110,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "quoteTokenPrice",
+          accessorKey: 'quoteTokenPrice',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -128,7 +128,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "baseTokenPrice",
+          accessorKey: 'baseTokenPrice',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -146,7 +146,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "baseReserve",
+          accessorKey: 'baseReserve',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -164,7 +164,7 @@ export function PairTable() {
           },
         },
         {
-          accessorKey: "swapFee",
+          accessorKey: 'swapFee',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -182,15 +182,15 @@ export function PairTable() {
           },
         },
         {
-          id: "actions",
+          id: 'actions',
           cell: ({ row }) => {
             const { id } = row.original;
 
             return (
-              <div className="flex items-center space-x-2 px-4 py-2 justify-end">
+              <div className="flex items-center justify-end space-x-2 px-4 py-2">
                 <Link prefetch={false} href={`/issuer/pairs/${id}/details`}>
                   <Button variant="outline">
-                    <FolderOpen className="w-4 h-4" />
+                    <FolderOpen className="h-4 w-4" />
                     Details
                   </Button>
                 </Link>

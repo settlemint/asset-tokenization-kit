@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { DataTable } from "@/components/blocks/data-table/data-table";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { EvmAddressBalances } from "@/components/evm-address-balances";
-import { Button } from "@/components/ui/button";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { FolderOpen } from "lucide-react";
-import Link from "next/link";
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/evm-address-balances';
+import { Button } from '@/components/ui/button';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { FolderOpen } from 'lucide-react';
+import Link from 'next/link';
 
 type Wallet = {
   email: string;
@@ -29,7 +29,7 @@ query ListAllUsers {
 
 export function UsersTable() {
   const tokens = useSuspenseQuery({
-    queryKey: ["all-users"],
+    queryKey: ['all-users'],
     queryFn: () => {
       return hasuraClient.request(ListAllUsers, {});
     },
@@ -40,7 +40,7 @@ export function UsersTable() {
     <DataTable
       columns={[
         {
-          accessorKey: "email",
+          accessorKey: 'email',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>;
           },
@@ -50,17 +50,17 @@ export function UsersTable() {
           },
         },
         {
-          accessorKey: "role",
+          accessorKey: 'role',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>;
           },
           cell: ({ getValue }) => {
             const value = getValue<string[] | null>();
-            return <DataTableColumnCell>{value?.join(", ") ?? ""}</DataTableColumnCell>;
+            return <DataTableColumnCell>{value?.join(', ') ?? ''}</DataTableColumnCell>;
           },
         },
         {
-          accessorKey: "wallet",
+          accessorKey: 'wallet',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>;
           },
@@ -76,7 +76,7 @@ export function UsersTable() {
           },
         },
         {
-          id: "actions",
+          id: 'actions',
           cell: ({ row }) => {
             const { email } = row.original;
 
@@ -84,7 +84,7 @@ export function UsersTable() {
               <DataTableColumnCell variant="numeric">
                 <Link href={`/issuer/users/${email}/details`}>
                   <Button variant="outline">
-                    <FolderOpen className="w-4 h-4" />
+                    <FolderOpen className="h-4 w-4" />
                     Details
                   </Button>
                 </Link>

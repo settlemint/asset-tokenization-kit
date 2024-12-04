@@ -1,8 +1,8 @@
-import { SidebarLogo } from "@/components/blocks/logo/sidebar-logo";
-import { NavUser } from "@/components/side-bar/sidebar-user";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import Link from "next/link";
-import type { PropsWithChildren } from "react";
+import { SidebarLogo } from '@/components/blocks/logo/sidebar-logo';
+import { NavUser } from '@/components/side-bar/sidebar-user';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import Link from 'next/link';
+import type { PropsWithChildren } from 'react';
 
 export default function SidebarLayout({ children }: PropsWithChildren) {
   return (

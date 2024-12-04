@@ -4,9 +4,9 @@
  * It also extends the NextAuth Session type to include a wallet property.
  */
 
-import NextAuth, { type DefaultSession } from "next-auth";
-import { authConfig } from "./config";
-import { providers } from "./providers";
+import NextAuth, { type DefaultSession } from 'next-auth';
+import { authConfig } from './config';
+import { providers } from './providers';
 
 /**
  * Configures and initializes NextAuth with the provided configuration and providers.
@@ -17,7 +17,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: providers,
 });
 
-declare module "next-auth" {
+declare module 'next-auth' {
   /**
    * Extends the Session interface to include a wallet property in the user object.
    */
@@ -25,6 +25,6 @@ declare module "next-auth" {
     user: {
       wallet: string;
       roles: string[];
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 }

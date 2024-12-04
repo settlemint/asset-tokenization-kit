@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { Badge } from '@/components/ui/badge';
+import { NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export interface TabItemProps {
   href: string;
@@ -16,8 +16,8 @@ export const TabItem: React.FC<TabItemProps> = ({ href, name, badge, active }) =
       <NavigationMenuLink
         className={cn(
           navigationMenuTriggerStyle(),
-          "text-md pb-4 rounded-none hover:bg-transparent border-b-2 hover:border-primary",
-          active && "text-primary border-primary",
+          'rounded-none border-b-2 pb-4 text-md hover:border-primary hover:bg-transparent',
+          active && 'border-primary text-primary'
         )}
       >
         {name}

@@ -1,8 +1,8 @@
 export const formatCurrency = (amount: number, currency: string, locale?: Intl.LocalesArgument) => {
   return new Intl.NumberFormat(locale, {
-    style: "currency",
+    style: 'currency',
     currency,
-    currencyDisplay: "symbol",
+    currencyDisplay: 'symbol',
   }).format(amount);
 };
 
@@ -15,7 +15,7 @@ export const formatCurrency = (amount: number, currency: string, locale?: Intl.L
  */
 export const formatTokenValue = (amount: number | bigint, decimals: number, locale?: Intl.LocalesArgument) => {
   return new Intl.NumberFormat(locale, {
-    style: "decimal",
+    style: 'decimal',
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(amount);
@@ -34,13 +34,12 @@ export const formatPercentage = (amount: number | bigint | string, locale?: Intl
     const dividedValue = numericValue / 100;
 
     return new Intl.NumberFormat(locale, {
-      style: "percent",
+      style: 'percent',
       minimumFractionDigits: 1,
       maximumFractionDigits: 2,
     }).format(dividedValue);
-  } catch (error) {
-    console.error(error, amount);
-    return "0%";
+  } catch {
+    return '0%';
   }
 };
 
@@ -52,28 +51,28 @@ export const formatPercentage = (amount: number | bigint | string, locale?: Intl
 export function formatLargeNumber(value: string | number | bigint): string {
   const bigIntValue = BigInt(Math.floor(Number(value)));
   const units = [
-    "",
-    "Thousand",
-    "Million",
-    "Billion",
-    "Trillion",
-    "Quadrillion",
-    "Quintillion",
-    "Sextillion",
-    "Septillion",
-    "Octillion",
-    "Nonillion",
-    "Decillion",
-    "Undecillion",
-    "Duodecillion",
-    "Tredecillion",
-    "Quattuordecillion",
-    "Quindecillion",
-    "Sexdecillion",
-    "Septendecillion",
-    "Octodecillion",
-    "Novemdecillion",
-    "Vigintillion",
+    '',
+    'Thousand',
+    'Million',
+    'Billion',
+    'Trillion',
+    'Quadrillion',
+    'Quintillion',
+    'Sextillion',
+    'Septillion',
+    'Octillion',
+    'Nonillion',
+    'Decillion',
+    'Undecillion',
+    'Duodecillion',
+    'Tredecillion',
+    'Quattuordecillion',
+    'Quindecillion',
+    'Sexdecillion',
+    'Septendecillion',
+    'Octodecillion',
+    'Novemdecillion',
+    'Vigintillion',
   ];
   const divisor = BigInt(1000);
 

@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { parseEther } from "viem";
-import { TransferTokenSchema } from "./transfer-token-form-schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { parseEther } from 'viem';
+import { TransferTokenSchema } from './transfer-token-form-schema';
 
 const TransferTokenMutation = portalGraphql(`
 mutation TransferTokenMutation($address: String!, $from: String!, $to: String!, $amount: String!) {
@@ -23,7 +23,7 @@ export const transferTokenAction = actionClient.schema(TransferTokenSchema).acti
   const session = await auth();
 
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(TransferTokenMutation, {
@@ -36,7 +36,7 @@ export const transferTokenAction = actionClient.schema(TransferTokenSchema).acti
   const transactionHash = result.StarterKitERC20Transfer?.transactionHash;
 
   if (!transactionHash) {
-    throw new Error("Transaction hash not found");
+    throw new Error('Transaction hash not found');
   }
 
   return transactionHash;

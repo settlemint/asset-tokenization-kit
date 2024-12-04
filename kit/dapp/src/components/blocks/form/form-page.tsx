@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { SheetClose } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import { parseAsInteger, parseAsJson, useQueryState } from "nuqs";
-import * as React from "react";
-import { useEffect, useRef, useState } from "react";
-import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from "react-hook-form";
-import { useLocalStorage } from "usehooks-ts";
-import { useMultiFormStep } from "./form-multistep";
+import { Button } from '@/components/ui/button';
+import { SheetClose } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { parseAsInteger, parseAsJson, useQueryState } from 'nuqs';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from 'react-hook-form';
+import { useLocalStorage } from 'usehooks-ts';
+import { useMultiFormStep } from './form-multistep';
 
 export const FormPage = <
   TFieldValues extends FieldValues,
@@ -39,15 +39,15 @@ export const FormPage = <
 
   // TODO: Add querySchema https://nuqs.47ng.com/docs/parsers/built-in#json
   const [, setQueryState] = useQueryState(
-    "state",
-    parseAsJson((value) => value as Record<string, unknown>),
+    'state',
+    parseAsJson((value) => value as Record<string, unknown>)
   );
-  const [, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
+  const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const [isNavigate, setIsNavigate] = useState(true);
   const pageRef = useRef<number | null>(null);
   const page = pageRef.current ?? currentStep ?? 1;
 
-  const [, setCurrentStep] = useQueryState("currentStep", parseAsInteger.withDefault(1));
+  const [, setCurrentStep] = useQueryState('currentStep', parseAsInteger.withDefault(1));
 
   const [isValid, setIsValid] = useState(false);
 
@@ -74,7 +74,7 @@ export const FormPage = <
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setIsNavigate(false);
-    const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    const navigationEntry = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     const navigationType = navigationEntry?.type;
     async function triggerFields() {
       if (page === currentStep) {
@@ -88,8 +88,8 @@ export const FormPage = <
       return isValid;
     }
 
-    if (navigationType === "reload") {
-      if (config.useQueryState && config.useQueryStateComponent === "FormPage") {
+    if (navigationType === 'reload') {
+      if (config.useQueryState && config.useQueryStateComponent === 'FormPage') {
         setCurrentStep(1);
       }
       triggerFields().then((isValid) => {
@@ -110,10 +110,10 @@ export const FormPage = <
   }, []);
 
   useEffect(() => {
-    const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+    const navigationEntry = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     const navigationType = navigationEntry?.type;
 
-    if (navigationType === "navigate") {
+    if (navigationType === 'navigate') {
       setIsNavigate(true);
       const validFields = fields.map((field) => {
         const fieldState = form.getFieldState(field);
@@ -156,10 +156,10 @@ export const FormPage = <
   }, [fieldValues, setQueryState, page, currentStep, config.useQueryState]);
 
   return (
-    <div className={`${cn("FormPage space-y-4", { hidden: page !== currentStep })}`}>
+    <div className={`${cn('FormPage space-y-4', { hidden: page !== currentStep })}`}>
       {title && <h3>{title}</h3>}
       {children}
-      <div className="flex gap-x-4 !mt-16 justify-end">
+      <div className="!mt-16 flex justify-end gap-x-4">
         <Button type="button" className={cn({ hidden: currentStep === 1 })} onClick={() => prevStep()}>
           {controls?.prev?.buttonText}
         </Button>

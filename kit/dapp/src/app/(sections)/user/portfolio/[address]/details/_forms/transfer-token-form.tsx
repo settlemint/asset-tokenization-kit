@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { NumericInput } from "@/components/blocks/form/form-input-numeric";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { transferTokenAction } from "./transfer-token-action";
+import { Input } from '@/components/blocks/form/form-input';
+import { NumericInput } from '@/components/blocks/form/form-input-numeric';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { transferTokenAction } from './transfer-token-action';
 import {
   TransferTokenSchema,
   type TransferTokenSchemaType,
   transferTokenFormPageFields,
-} from "./transfer-token-form-schema";
+} from './transfer-token-form-schema';
 
 interface TransferTokenFormProps {
   defaultValues: Partial<TransferTokenSchemaType>;
@@ -39,7 +39,7 @@ query TransferTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<TransferTokenSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<TransferTokenSchemaType>>('state', defaultValues);
   const queryClient = useQueryClient();
 
   const { form, resetFormAndAction } = useHookFormAction(transferTokenAction, zodResolver(TransferTokenSchema), {
@@ -49,7 +49,7 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
       },
     },
     formProps: {
-      mode: "all",
+      mode: 'all',
       defaultValues: {
         ...transferTokenFormPageFields,
         ...defaultValues,
@@ -66,7 +66,7 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
         return waitForTransactionReceipt({
           receiptFetcher: async () => {
             const txresult = await portalClient.request(TransferTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? "",
+              transactionHash: transactionHash?.data ?? '',
             });
 
             return txresult.getTransaction?.receipt;
@@ -74,17 +74,16 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
         });
       },
       {
-        loading: "Transferring token...",
+        loading: 'Transferring token...',
         success: (data) => {
-          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
+          queryClient.invalidateQueries({ queryKey: ['token-volumes'] });
           return `${values.amount} tokens transferred to (${values.to}) in block ${data.blockNumber}`;
         },
         error: (error) => {
-          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          queryClient.invalidateQueries({ queryKey: ['token-volumes'] });
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
   }
 
@@ -105,10 +104,10 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Transfer tokens"
-                  fields={["amount", "to"]}
+                  fields={['amount', 'to']}
                   withSheetClose
                   controls={{
-                    submit: { buttonText: "Submit" },
+                    submit: { buttonText: 'Submit' },
                   }}
                 >
                   {/* Transfer amount */}

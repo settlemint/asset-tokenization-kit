@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { signOutAction } from "@/app/auth/signout/actions/sign-out";
-import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
-import { Badge } from "@/components/ui/badge";
+import { signOutAction } from '@/app/auth/signout/actions/sign-out';
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,18 +11,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { shortHex } from "@/lib/hex";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { useQuery } from "@tanstack/react-query";
-import { BringToFront, ChevronsUpDown, LogOut, Moon, Sun } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
-import Link from "next/link";
-import { useCallback } from "react";
-import type { Address } from "viem";
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { shortHex } from '@/lib/hex';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { useQuery } from '@tanstack/react-query';
+import { BringToFront, ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { useCallback } from 'react';
+import type { Address } from 'viem';
 
 const GetPendingTransactions = portalGraphql(`
   query GetPendingTransactions($from: String) {
@@ -57,7 +57,7 @@ export function NavUser() {
   const { setTheme, resolvedTheme } = useTheme();
 
   const { data: pendingCount } = useQuery({
-    queryKey: ["pendingtx", email, wallet],
+    queryKey: ['pendingtx', email, wallet],
     queryFn: async () => {
       const response = await portalClient.request(GetPendingTransactions, {
         from: wallet,
@@ -74,7 +74,7 @@ export function NavUser() {
     await signOutAction({});
   }, []);
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return <SkeletonNavUser />;
   }
 
@@ -102,7 +102,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -131,13 +131,13 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {resolvedTheme === "dark" ? (
-                <DropdownMenuItem onSelect={() => setTheme("light")}>
+              {resolvedTheme === 'dark' ? (
+                <DropdownMenuItem onSelect={() => setTheme('light')}>
                   <Sun />
                   Switch to light mode
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onSelect={() => setTheme("dark")}>
+                <DropdownMenuItem onSelect={() => setTheme('dark')}>
                   <Moon />
                   Switch to dark mode
                 </DropdownMenuItem>

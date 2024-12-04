@@ -1,5 +1,5 @@
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import type { ReactNode } from "react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import type { ReactNode } from 'react';
 
 interface SidePanelProps {
   title: string;

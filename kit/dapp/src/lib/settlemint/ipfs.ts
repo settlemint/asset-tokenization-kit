@@ -1,4 +1,4 @@
-import { createServerIpfsClient } from "@settlemint/sdk-ipfs";
+import { createServerIpfsClient } from '@settlemint/sdk-ipfs';
 
 export const { client } = createServerIpfsClient({
   instance: process.env.SETTLEMINT_HASURA_ENDPOINT!,

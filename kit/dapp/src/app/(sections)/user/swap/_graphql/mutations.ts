@@ -1,4 +1,4 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
+import { portalGraphql } from '@/lib/settlemint/portal';
 
 export const SwapBaseToQuote = portalGraphql(`
   mutation SwapBaseToQuote($address: String!, $from: String!, $baseAmount: String!, $minQuoteAmount: String!, $deadline: String!) {

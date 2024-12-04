@@ -1,17 +1,17 @@
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig } from 'next-auth';
 
 /**
  * Configuration object for NextAuth, excluding the providers.
  * @type {Omit<NextAuthConfig, "providers">}
  */
-export const authConfig: Omit<NextAuthConfig, "providers"> = {
+export const authConfig: Omit<NextAuthConfig, 'providers'> = {
   secret: process.env.SETTLEMINT_AUTH_SECRET,
   trustHost: true,
   pages: {
-    signIn: "/auth/signin",
-    signOut: "/auth/signout",
-    newUser: "/auth/new-user",
-    error: "/auth/error",
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    newUser: '/auth/new-user',
+    error: '/auth/error',
   },
   callbacks: {
     async jwt({ token, user }) {

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import { StakesTable } from "./_components/stakes-table";
+import { useParams } from 'next/navigation';
+import { StakesTable } from './_components/stakes-table';
 
 export default function WalletTokenDetailsPage() {
   const params = useParams();
@@ -9,7 +9,7 @@ export default function WalletTokenDetailsPage() {
 
   return (
     <div className="WalletTokenDetailPage">
-      <h3 className="text-lg font-semibold text-primary">Stakes</h3>
+      <h3 className="font-semibold text-lg text-primary">Stakes</h3>
       <StakesTable address={address} />
     </div>
   );

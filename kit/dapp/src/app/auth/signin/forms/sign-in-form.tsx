@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import Link from "next/link";
-import { z } from "zod";
-import { zfd } from "zod-form-data";
-import { signInAction } from "../actions/sign-in";
+import { Input } from '@/components/blocks/form/form-input';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import Link from 'next/link';
+import { z } from 'zod';
+import { zfd } from 'zod-form-data';
+import { signInAction } from '../actions/sign-in';
 
 export function SignInForm({ provider, redirectUrl }: { provider: string; redirectUrl?: string }) {
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(
@@ -19,7 +19,7 @@ export function SignInForm({ provider, redirectUrl }: { provider: string; redire
         password: zfd.text(z.string().min(6)),
         provider: zfd.text(z.string()),
         redirectUrl: zfd.text(z.string().optional()),
-      }),
+      })
     ),
     {
       actionProps: {
@@ -28,16 +28,16 @@ export function SignInForm({ provider, redirectUrl }: { provider: string; redire
         },
       },
       formProps: {
-        mode: "onChange",
+        mode: 'onChange',
         defaultValues: {
-          username: "",
-          password: "",
+          username: '',
+          password: '',
           provider,
           redirectUrl,
         },
       },
       errorMapProps: {},
-    },
+    }
   );
 
   return (

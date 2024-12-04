@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const CreateDexPairSchema = z.object({
   baseTokenAddress: z.string(),
@@ -8,12 +8,12 @@ export const CreateDexPairSchema = z.object({
 export type CreateDexPairSchemaType = z.infer<typeof CreateDexPairSchema>;
 
 export const createDexPairDefaultValues: CreateDexPairSchemaType = {
-  baseTokenAddress: "",
-  quoteTokenAddress: "",
+  baseTokenAddress: '',
+  quoteTokenAddress: '',
 } as const;
 
 export type CreateDexPairFormPageFields = keyof typeof createDexPairDefaultValues;
 
 export const createDexPairFormPageFields: CreateDexPairFormPageFields[] = Object.keys(
-  createDexPairDefaultValues,
+  createDexPairDefaultValues
 ) as CreateDexPairFormPageFields[];

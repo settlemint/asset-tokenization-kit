@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import { BalancesTable } from "./_components/balances-table";
+import { useParams } from 'next/navigation';
+import { BalancesTable } from './_components/balances-table';
 
 export default function WalletTokenDetailsPage() {
   const params = useParams();
@@ -9,7 +9,7 @@ export default function WalletTokenDetailsPage() {
 
   return (
     <div className="WalletTokenDetailPage">
-      <h3 className="text-lg font-semibold text-primary">Holders</h3>
+      <h3 className="font-semibold text-lg text-primary">Holders</h3>
       <BalancesTable address={address} />
     </div>
   );

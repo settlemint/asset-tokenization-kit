@@ -1,6 +1,6 @@
-import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import type { PropsWithChildren, ReactNode } from "react";
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 export default function IssuerLayout({
   children,
@@ -18,7 +18,7 @@ export default function IssuerLayout({
             {breadcrumbs}
           </div>
         </header>
-        <div className="flex-1 space-y-4 p-8 pt-6 rounded-tl-lg bg-background">{children}</div>
+        <div className="flex-1 space-y-4 rounded-tl-lg bg-background p-8 pt-6">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

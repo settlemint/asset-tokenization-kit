@@ -1,5 +1,5 @@
-import type { introspection } from "@schemas/hasura-env";
-import { createHasuraClient } from "@settlemint/sdk-hasura";
+import type { introspection } from '@schemas/hasura-env';
+import { createHasuraClient } from '@settlemint/sdk-hasura';
 
 export const { client: hasuraClient, graphql: hasuraGraphql } = createHasuraClient<{
   introspection: introspection;

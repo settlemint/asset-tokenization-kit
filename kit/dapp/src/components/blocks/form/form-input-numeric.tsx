@@ -1,14 +1,14 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
-import { Controller } from "react-hook-form";
-import { Input } from "./form-input";
+import { type InputHTMLAttributes, forwardRef } from 'react';
+import { Controller } from 'react-hook-form';
+import { Input } from './form-input';
 
 const NumericInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, name = "", placeholder = "", ...props }, ref) => {
+  ({ className, name = '', placeholder = '', ...props }, ref) => {
     return (
       <Controller
         name={name}
         render={({ field }) => {
-          const _value = field.value === "" ? 0 : Number(field.value);
+          const _value = field.value === '' ? 0 : Number(field.value);
           return (
             <Input
               {...field}
@@ -18,7 +18,7 @@ const NumericInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
               type="number"
               placeholder={placeholder}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const value = e.target.value === "" ? "" : Number(e.target.value);
+                const value = e.target.value === '' ? '' : Number(e.target.value);
                 field.onChange(value);
               }}
               value={Number.isNaN(_value) ? 0 : _value}
@@ -28,8 +28,8 @@ const NumericInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
         }}
       />
     );
-  },
+  }
 );
-NumericInput.displayName = "NumericInput";
+NumericInput.displayName = 'NumericInput';
 
 export { NumericInput };

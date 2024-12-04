@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { parseAsJson, useQueryState } from "nuqs";
-import type { ArrayPath, Control, FieldArray, FieldValues, Path } from "react-hook-form";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { useLocalStorage } from "usehooks-ts";
-import { Input } from "./form-input";
-import { NumericInput } from "./form-input-numeric";
-import { useMultiFormStep } from "./form-multistep";
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { parseAsJson, useQueryState } from 'nuqs';
+import type { ArrayPath, Control, FieldArray, FieldValues, Path } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useLocalStorage } from 'usehooks-ts';
+import { Input } from './form-input';
+import { NumericInput } from './form-input-numeric';
+import { useMultiFormStep } from './form-multistep';
 
 interface RepeatableFormProps<T extends FieldValues> {
   control: Control<T>;
@@ -20,7 +20,7 @@ interface RepeatableFormProps<T extends FieldValues> {
   }>;
 }
 
-type ComponentType = "Input" | "Textarea" | "NumericInput";
+type ComponentType = 'Input' | 'Textarea' | 'NumericInput';
 
 const componentMap: Record<ComponentType, React.ElementType> = {
   Input,
@@ -35,10 +35,10 @@ interface FieldItem extends Record<string, unknown> {
 export function RepeatableForm<T extends FieldValues>({ control, name, components }: RepeatableFormProps<T>) {
   // TODO: Add querySchema https://nuqs.47ng.com/docs/parsers/built-in#json
   const [, setQueryState] = useQueryState(
-    "state",
-    parseAsJson<T>((value) => value as T),
+    'state',
+    parseAsJson<T>((value) => value as T)
   );
-  const [, setStorageState] = useLocalStorage<Record<string, unknown>>("state", {});
+  const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const { config } = useMultiFormStep();
 
   const { fields, append, remove } = useFieldArray({
@@ -51,12 +51,12 @@ export function RepeatableForm<T extends FieldValues>({ control, name, component
     append({} as FieldArray<T, ArrayPath<T>>);
   };
 
-  const renderFields = fields.length > 0 ? fields : [{ id: "initial" }];
+  const renderFields = fields.length > 0 ? fields : [{ id: 'initial' }];
 
   return (
     <div className="RepeatableForm">
       {renderFields.map((field: FieldItem, index) => (
-        <div key={field.id} className="flex flex-col mb-4 gap-y-3">
+        <div key={field.id} className="mb-4 flex flex-col gap-y-3">
           {components.map((component) => {
             const ComponentType = componentMap[component.type];
             return (
@@ -69,7 +69,7 @@ export function RepeatableForm<T extends FieldValues>({ control, name, component
             );
           })}
 
-          <div className="RepeatableForm__buttons flex justify-between mt-1">
+          <div className="RepeatableForm__buttons mt-1 flex justify-between">
             {renderFields.length === index + 1 ? (
               <Button onClick={addItem} type="button" variant="ghost" className="underline">
                 + Add item

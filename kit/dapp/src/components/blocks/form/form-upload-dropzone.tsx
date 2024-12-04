@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 import {
   CheckIcon,
   CloudUploadIcon,
@@ -10,26 +10,26 @@ import {
   ImageIcon,
   TriangleAlertIcon,
   X,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import ReactDropzone from "react-dropzone";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { createPresignedUrlAction } from "./create-presigned-url.action";
-import { useMultiFormStep } from "./form-multistep";
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import ReactDropzone from 'react-dropzone';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { createPresignedUrlAction } from './create-presigned-url.action';
+import { useMultiFormStep } from './form-multistep';
 
 interface DropzoneProps {
   label: string;
   name: string;
   accept?: {
-    images: Array<".jpg" | ".jpeg" | ".png" | ".webp">;
-    text: Array<".pdf" | ".docx" | ".doc" | ".txt" | ".md" | ".csv" | ".xls" | ".xlsx">;
+    images: Array<'.jpg' | '.jpeg' | '.png' | '.webp'>;
+    text: Array<'.pdf' | '.docx' | '.doc' | '.txt' | '.md' | '.csv' | '.xls' | '.xlsx'>;
   };
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
   server?: {
-    storage: "minio" | "s3" | "local";
+    storage: 'minio' | 's3' | 'local';
     bucket?: string;
     uploadDir?: string;
   };
@@ -51,8 +51,10 @@ type Action = {
 };
 
 function bytesToSize(bytes: number): string {
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  if (bytes === 0) return "0 Byte";
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) {
+    return '0 Byte';
+  }
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const size = (bytes / 1024 ** i).toFixed(2);
   return `${size} ${sizes[i]}`;
@@ -61,33 +63,39 @@ function bytesToSize(bytes: number): string {
 function truncateFileName(fileName: string): string {
   const maxSubstrLength = 18;
   if (fileName.length > maxSubstrLength) {
-    const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
-    const fileExtension = fileName.split(".").pop() ?? "";
+    const fileNameWithoutExtension = fileName.split('.').slice(0, -1).join('.');
+    const fileExtension = fileName.split('.').pop() ?? '';
     const charsToKeep = maxSubstrLength - (fileNameWithoutExtension.length + fileExtension.length + 3);
     const compressedFileName = `${fileNameWithoutExtension.substring(
       0,
-      maxSubstrLength - fileExtension.length - 3,
+      maxSubstrLength - fileExtension.length - 3
     )}...${fileNameWithoutExtension.slice(-charsToKeep)}.${fileExtension}`;
     return compressedFileName;
   }
   return fileName.trim();
 }
 
-function fileToIcon(file_type: string): React.ReactNode {
-  if (file_type.includes("application")) return <FileTextIcon />;
-  if (file_type.includes("text")) return <FileTextIcon />;
-  if (file_type.includes("image")) return <ImageIcon />;
+function fileToIcon(fileType: string): React.ReactNode {
+  if (fileType.includes('application')) {
+    return <FileTextIcon />;
+  }
+  if (fileType.includes('text')) {
+    return <FileTextIcon />;
+  }
+  if (fileType.includes('image')) {
+    return <ImageIcon />;
+  }
   return <FileIcon />;
 }
 
 export function Dropzone({
   label,
   name,
-  accept = { images: [".jpg", ".jpeg", ".png", ".webp"], text: [".pdf"] },
+  accept = { images: ['.jpg', '.jpeg', '.png', '.webp'], text: ['.pdf'] },
   maxSize,
   maxFiles,
   multiple = true,
-  server = { storage: "minio" },
+  server = { storage: 'minio' },
 }: DropzoneProps) {
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
@@ -95,13 +103,13 @@ export function Dropzone({
   const [_multiple] = useState<boolean>(Boolean(multiple));
   const [actions, setActions] = useState<Action[]>([]);
   const [, setIsReady] = useState<boolean>(false);
-  const [files, setFiles] = useState<Array<File>>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [, setIsDone] = useState<boolean>(false);
   const [activeUploads, setActiveUploads] = useState<Record<string, XMLHttpRequest>>({});
   const { formId } = useMultiFormStep();
   const [storageState] = useLocalStorage<Record<string, unknown>>(
-    "files",
-    JSON.parse(typeof window !== "undefined" ? (localStorage.getItem("files") ?? "{}") : "{}"),
+    'files',
+    JSON.parse(typeof window !== 'undefined' ? (localStorage.getItem('files') ?? '{}') : '{}')
   );
   const [, setIsNavigate] = useState(true);
 
@@ -112,19 +120,19 @@ export function Dropzone({
           id: file.id,
           file_name: file.name,
           file_size: file.size,
-          from: file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2),
+          from: file.name.slice(((file.name.lastIndexOf('.') - 1) >>> 0) + 2),
           to: null,
           file_type: file.type,
           file: file,
           isUploaded: true,
           isUploading: false,
-        }) as Action,
-    ),
+        }) as Action
+    )
   );
 
   const generateUniqueId = () => `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  const handleUpload = async (files: Array<File>): Promise<void> => {
+  const handleUpload = async (files: File[]): Promise<void> => {
     handleExitHover();
     setFiles((prevFiles) => [...prevFiles, ...files]);
     const _actions: Action[] = [...storageStateActions];
@@ -136,7 +144,7 @@ export function Dropzone({
         id,
         file_name: file.name,
         file_size: file.size,
-        from: file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2),
+        from: file.name.slice(((file.name.lastIndexOf('.') - 1) >>> 0) + 2),
         to: null,
         file_type: file.type,
         file,
@@ -153,20 +161,20 @@ export function Dropzone({
         const id = (file as File & { id: string }).id;
 
         const result = await createPresignedUrlAction({
-          bucketName: server.bucket ?? "",
+          bucketName: server.bucket ?? '',
           objectName: file.name,
           expirySeconds: 3600,
         });
 
-        const uploadUrl = result?.data?.data?.uploadUrl ?? "";
+        const uploadUrl = result?.data?.data?.uploadUrl ?? '';
 
-        if (!result?.data?.success) throw new Error("Failed to get upload URL");
+        if (!result?.data?.success) {
+          throw new Error('Failed to get upload URL');
+        }
 
         const xhr = new XMLHttpRequest();
 
-        console.log("UPLOAD URL", uploadUrl);
-
-        xhr.open("PUT", uploadUrl, true);
+        xhr.open('PUT', uploadUrl, true);
         setActiveUploads((prev) => ({ ...prev, [id]: xhr }));
 
         xhr.upload.onprogress = (event) => {
@@ -183,12 +191,12 @@ export function Dropzone({
           if (xhr.status === 200) {
             setActions((prev) =>
               prev.map((action) =>
-                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action,
-              ),
+                action.file_name === file.name ? { ...action, isUploaded: true, isUploading: false, id } : action
+              )
             );
             toast.success(`Upload file ${file.name} successfully`);
 
-            const localStorageFiles = JSON.parse(localStorage.getItem("files") ?? "{}")[formId] ?? {};
+            const localStorageFiles = JSON.parse(localStorage.getItem('files') ?? '{}')[formId] ?? {};
             const localStorageState = {
               [formId]: {
                 ...localStorageFiles,
@@ -200,12 +208,12 @@ export function Dropzone({
                 },
               },
             };
-            localStorage.setItem("files", JSON.stringify(localStorageState));
+            localStorage.setItem('files', JSON.stringify(localStorageState));
           } else {
             setActions((prev) =>
               prev.map((action) =>
-                action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
-              ),
+                action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action
+              )
             );
             toast.error(`Failed to upload ${file.name}`);
           }
@@ -214,8 +222,8 @@ export function Dropzone({
         xhr.onerror = () => {
           setActions((prev) =>
             prev.map((action) =>
-              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action,
-            ),
+              action.file_name === file.name ? { ...action, is_error: true, isUploading: false, id } : action
+            )
           );
 
           setActiveUploads((prev) => {
@@ -228,9 +236,8 @@ export function Dropzone({
         };
 
         xhr.send(file);
-      } catch (error) {
-        console.error("Upload error:", error);
-        toast.error("There was an error initiating your upload.");
+      } catch {
+        toast.error('There was an error initiating your upload.');
       }
     }
   };
@@ -245,9 +252,9 @@ export function Dropzone({
   }, [actions]);
 
   const deleteAction = async (action: Action): Promise<void> => {
-    const localStoragefiles = JSON.parse(localStorage.getItem("files") ?? "{}");
+    const localStoragefiles = JSON.parse(localStorage.getItem('files') ?? '{}');
     delete localStoragefiles[formId][action.id];
-    localStorage.setItem("files", JSON.stringify(localStoragefiles));
+    localStorage.setItem('files', JSON.stringify(localStoragefiles));
     setStorageStateActions(storageStateActions.filter((a) => a.id !== action.id));
     setActions(actions.filter((a) => a !== action));
     setFiles(files.filter((a) => a.name !== action.file_name));
@@ -263,13 +270,13 @@ export function Dropzone({
     }
 
     try {
-      const fileName = action.file_name.split(".").slice(0, -1).join(".");
-      const extension = action.file_name.split(".").pop();
+      const fileName = action.file_name.split('.').slice(0, -1).join('.');
+      const extension = action.file_name.split('.').pop();
       const response = await fetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
       if (!response.ok) {
-        throw new Error("Failed to delete file");
+        throw new Error('Failed to delete file');
       }
 
       // If the server deletion was successful, update the local state
@@ -277,19 +284,18 @@ export function Dropzone({
       setFiles(files.filter((elt) => elt.name !== action.file_name));
 
       toast.success(`File ${action.file_name} deleted successfully`);
-    } catch (error) {
-      console.error("Error deleting file:", error);
+    } catch {
       toast.error(`Failed to delete ${action.file_name}`);
     }
   };
 
   useEffect(() => {
-    if (!actions.length) {
+    if (actions.length) {
+      checkIsReady();
+    } else {
       setIsDone(false);
       setFiles([]);
       setIsReady(false);
-    } else {
-      checkIsReady();
     }
   }, [actions, checkIsReady]);
 
@@ -301,16 +307,16 @@ export function Dropzone({
 
   return (
     <div className="Dropzone">
-      <div className="space-y-6 mb-6">
+      <div className="mb-6 space-y-6">
         {fileuploads.map((action: Action, i: number) => (
           <div
             key={`${action.file_name}-${i}`}
-            className="overflow-hidden w-full py-4 space-y-2 lg:py-0 relative rounded-xl border h-fit lg:h-20 px-4 flex flex-wrap lg:flex-nowrap items-center justify-between"
+            className="relative flex h-fit w-full flex-wrap items-center justify-between space-y-2 overflow-hidden rounded-xl border px-4 py-4 lg:h-20 lg:flex-nowrap lg:py-0"
           >
-            <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-4">
               <span className="text-2xl">{fileToIcon(action.file_type)}</span>
-              <div className="flex items-center gap-1 w-96">
-                <span className="text-md font-medium overflow-x-hidden">{truncateFileName(action.file_name)}</span>
+              <div className="flex w-96 items-center gap-1">
+                <span className="overflow-x-hidden font-medium text-md">{truncateFileName(action.file_name)}</span>
                 <span className="text-muted-foreground text-sm">({bytesToSize(action.file_size)})</span>
               </div>
             </div>
@@ -326,7 +332,7 @@ export function Dropzone({
               </div>
             ) : action.isUploading ? (
               <Badge variant="default" className="flex gap-2 bg-transparent">
-                <span className="text-xs text-black dark:text-white">{uploadProgress[action.file_name]}%</span>
+                <span className="text-black text-xs dark:text-white">{uploadProgress[action.file_name]}%</span>
               </Badge>
             ) : (
               <></>
@@ -334,7 +340,7 @@ export function Dropzone({
 
             <button
               onClick={() => deleteAction(action)}
-              className="hover:bg-muted rounded-full h-10 w-10 flex items-center justify-center text-2xl text-foreground"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-2xl text-foreground hover:bg-muted"
               aria-label="Delete file"
               type="button"
             >
@@ -353,7 +359,7 @@ export function Dropzone({
 
       <div
         className={
-          Array.from(fileuploads).length === 1 && multiple === false ? "Dropzone__content hidden" : "Dropzone__content"
+          Array.from(fileuploads).length === 1 && multiple === false ? 'Dropzone__content hidden' : 'Dropzone__content'
         }
       >
         <ReactDropzone
@@ -361,38 +367,38 @@ export function Dropzone({
           onDragEnter={handleHover}
           onDragLeave={handleExitHover}
           accept={{
-            "image/*": accept.images,
-            "text/*": accept.text,
+            'image/*': accept.images,
+            'text/*': accept.text,
           }}
           maxSize={maxSize}
           maxFiles={maxFiles}
           multiple={_multiple}
           onDropRejected={() => {
             handleExitHover();
-            toast.error("Error uploading your file(s). Allowed Files: Audio, Video and Images.");
+            toast.error('Error uploading your file(s). Allowed Files: Audio, Video and Images.');
           }}
           onError={() => {
             handleExitHover();
-            toast.error("Error uploading your file(s). Allowed Files: Audio, Video and Images.");
+            toast.error('Error uploading your file(s). Allowed Files: Audio, Video and Images.');
           }}
         >
           {({ getRootProps, getInputProps }) => (
             <div
               {...getRootProps()}
-              className=" bg-background h-72 lg:h-80 xl:h-40 rounded-3xl shadow-sm border-secondary border-2 border-dashed cursor-pointer flex items-center justify-center"
+              className=" flex h-72 cursor-pointer items-center justify-center rounded-3xl border-2 border-secondary border-dashed bg-background shadow-sm lg:h-80 xl:h-40"
             >
               <input {...getInputProps()} name={name} multiple={_multiple} />
               <div className="space-y-4 text-foreground">
                 {isHover ? (
                   <>
-                    <div className="justify-center flex text-6xl">
+                    <div className="flex justify-center text-6xl">
                       <FileSymlinkIcon />
                     </div>
                     <h3 className="text-center font-medium text-md">Yes, right here</h3>
                   </>
                 ) : (
                   <>
-                    <div className="justify-center flex text-6xl">
+                    <div className="flex justify-center text-6xl">
                       <CloudUploadIcon />
                     </div>
                     <h3 className="text-center font-medium text-md">{label}</h3>

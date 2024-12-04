@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { parseEther } from "viem";
-import { MintTokenSchema } from "./mint-token-form-schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { parseEther } from 'viem';
+import { MintTokenSchema } from './mint-token-form-schema';
 
 const MintTokenMutation = portalGraphql(`
 mutation MintTokenMutation($address: String!, $from: String!, $to: String!, $amount: String!) {
@@ -23,7 +23,7 @@ export const mintTokenAction = actionClient.schema(MintTokenSchema).action(async
   const session = await auth();
 
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(MintTokenMutation, {
@@ -36,7 +36,7 @@ export const mintTokenAction = actionClient.schema(MintTokenSchema).action(async
   const transactionHash = result.StarterKitERC20Mint?.transactionHash;
 
   if (!transactionHash) {
-    throw new Error("Transaction hash not found");
+    throw new Error('Transaction hash not found');
   }
 
   return transactionHash;

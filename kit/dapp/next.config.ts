@@ -1,10 +1,10 @@
-import { withSettleMint } from "@settlemint/sdk-next/config/with-settlemint";
-import type { NextConfig } from "next";
+import { withSettleMint } from '@settlemint/sdk-next/config/with-settlemint';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   webpack: (config) => {
-    config.externals.push("pino-pretty", "lokijs", "encoding", "debug");
+    config.externals.push('pino-pretty', 'lokijs', 'encoding', 'debug');
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.performance = {
       hints: false,
@@ -14,18 +14,18 @@ const nextConfig: NextConfig = {
   redirects: async () => {
     return [
       {
-        source: "/user",
-        destination: "/user/dashboard",
+        source: '/user',
+        destination: '/user/dashboard',
         permanent: true,
       },
       {
-        source: "/issuer",
-        destination: "/issuer/dashboard",
+        source: '/issuer',
+        destination: '/issuer/dashboard',
         permanent: true,
       },
       {
-        source: "/admin",
-        destination: "/admin/dashboard",
+        source: '/admin',
+        destination: '/admin/dashboard',
         permanent: true,
       },
     ];
@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
       static: 180,
     },
   },
-  output: "standalone",
+  output: 'standalone',
 };
 
 export default withSettleMint(nextConfig);

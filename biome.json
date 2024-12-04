@@ -1,32 +1,31 @@
 {
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "extends": ["ultracite"],
   "files": {
-    "ignore": [".vscode/", "src/components/ui/**/*"]
+    "ignore": [".vscode/", "kit/dapp/src/components/ui/**/*", "*-env.d.ts"]
   },
   "linter": {
-    "enabled": true,
     "rules": {
-      "recommended": true,
       "style": {
         "noNonNullAssertion": "off"
+      },
+      "nursery": {
+        "noSecrets": "off"
       }
     }
   },
-  "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "attributePosition": "auto",
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 120
+  "javascript": {
+    "formatter": {
+      "lineWidth": 120
+    }
   },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
+  "css": {
+    "formatter": {
+      "lineWidth": 120
+    }
+  },
+  "json": {
+    "formatter": {
+      "lineWidth": 120
+    }
   }
 }

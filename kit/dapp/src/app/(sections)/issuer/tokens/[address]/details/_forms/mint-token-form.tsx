@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { DictionaryInput } from "@/components/blocks/form/form-input-dictionary";
-import { NumericInput } from "@/components/blocks/form/form-input-numeric";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { mintTokenAction } from "./mint-token-action";
-import { MintTokenSchema, type MintTokenSchemaType, mintTokenFormPageFields } from "./mint-token-form-schema";
+import { Input } from '@/components/blocks/form/form-input';
+import { DictionaryInput } from '@/components/blocks/form/form-input-dictionary';
+import { NumericInput } from '@/components/blocks/form/form-input-numeric';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { mintTokenAction } from './mint-token-action';
+import { MintTokenSchema, type MintTokenSchemaType, mintTokenFormPageFields } from './mint-token-form-schema';
 
 interface MintTokenFormProps {
   defaultValues: Partial<MintTokenSchemaType>;
@@ -37,21 +37,21 @@ query MintTokenReceiptQuery($transactionHash: String!) {
 
 const walletAddresses = [
   {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957926",
-    label: "User 1",
+    value: '0xb794f5ea0ba39494ce839613fffba7427957926',
+    label: 'User 1',
   },
   {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957927",
-    label: "User 2",
+    value: '0xb794f5ea0ba39494ce839613fffba7427957927',
+    label: 'User 2',
   },
   {
-    value: "0xb794f5ea0ba39494ce839613fffba7427957928",
-    label: "User 3",
+    value: '0xb794f5ea0ba39494ce839613fffba7427957928',
+    label: 'User 3',
   },
 ];
 
 export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<MintTokenSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<MintTokenSchemaType>>('state', defaultValues);
   const queryClient = useQueryClient();
 
   const { form, resetFormAndAction } = useHookFormAction(mintTokenAction, zodResolver(MintTokenSchema), {
@@ -61,7 +61,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
       },
     },
     formProps: {
-      mode: "all",
+      mode: 'all',
       defaultValues: {
         ...mintTokenFormPageFields,
         ...defaultValues,
@@ -78,7 +78,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
         return waitForTransactionReceipt({
           receiptFetcher: async () => {
             const txresult = await portalClient.request(MintTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? "",
+              transactionHash: transactionHash?.data ?? '',
             });
 
             return txresult.getTransaction?.receipt;
@@ -86,17 +86,16 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
         });
       },
       {
-        loading: "Minting token...",
+        loading: 'Minting token...',
         success: (data) => {
-          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
+          queryClient.invalidateQueries({ queryKey: ['token-volumes'] });
           return `${values.amount} tokens minted to (${values.to}) in block ${data.blockNumber}`;
         },
         error: (error) => {
-          queryClient.invalidateQueries({ queryKey: ["token-volumes"] });
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          queryClient.invalidateQueries({ queryKey: ['token-volumes'] });
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
   }
 
@@ -117,10 +116,10 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Mint tokens"
-                  fields={["amount", "to"]}
+                  fields={['amount', 'to']}
                   withSheetClose
                   controls={{
-                    submit: { buttonText: "Submit" },
+                    submit: { buttonText: 'Submit' },
                   }}
                 >
                   {/* Mint amount */}
