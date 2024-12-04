@@ -25,6 +25,8 @@ process_sol_file() {
     local sol_file="$1"
     local contract_name="$(basename "${sol_file%.*}")"
     local target_address="${CONTRACT_ADDRESSES[$contract_name]}"
+    local args_file="${sol_file%.*}.args"
+    local forge_args=("${sol_file}:${contract_name}" --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json)
 
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then
@@ -32,8 +34,13 @@ process_sol_file() {
         return
     fi
 
+    # Add constructor args if they exist
+    if [[ -f "$args_file" ]]; then
+        forge_args+=(--constructor-args-path "$args_file")
+    fi
+
     # Deploy the contract to a temporary blockchain
-    local DEPLOYED_ADDRESS=$(forge create "${sol_file}:${contract_name}" --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json | jq -r .deployedTo)
+    local DEPLOYED_ADDRESS=$(forge create "${forge_args[@]}" | jq -r .deployedTo)
     if [[ -z "$DEPLOYED_ADDRESS" ]]; then
         echo "Error: Unable to deploy $contract_name"
         return
