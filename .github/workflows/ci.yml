@@ -54,7 +54,7 @@ jobs:
         working-directory: kit/dapp
 
       - name: Lint & Check Types
-        run: turbo run lint check-types
+        run: bunx turbo run lint check-types
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -73,7 +73,7 @@ jobs:
             PUBLISH_TASKS="$PUBLISH_TASKS publish-docker"
           fi
           if [[ -n "$PUBLISH_TASKS" ]]; then
-            turbo run $PUBLISH_TASKS
+            bunx turbo run $PUBLISH_TASKS
           fi
         env:
           PUBLISH_NPM: true
