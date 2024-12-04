@@ -121,3 +121,5 @@ for sol_file in contracts/*.sol; do
 done
 
 echo "Complete genesis allocation has been written to ${ALL_ALLOCATIONS_FILE}"
+
+cat "${ALL_ALLOCATIONS_FILE}"
