@@ -7,22 +7,14 @@ on:
       - main
 
 permissions:
-  actions: write
-  checks: write
-  contents: write
-  deployments: write
-  id-token: write
-  issues: write
-  discussions: write
-  packages: write
-  pages: write
-  pull-requests: write
-  repository-projects: write
-  security-events: write
-  statuses: write
+  contents: read # the config file
+  issues: write # for labeling issues (on: issues)
+  pull-requests: write # for labeling pull requests (on: pull_request_target or on: pull_request)
+  statuses: write # to generate status
+  checks: write # to generate status
 
 jobs:
   labels:
-    runs-on: namespace-profile-sony-bank-app
+    runs-on: namespace-profile-starterkit
     steps:
       - uses: fuxingloh/multi-labeler@v4
