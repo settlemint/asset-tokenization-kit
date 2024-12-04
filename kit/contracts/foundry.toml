@@ -18,6 +18,8 @@
 
 [dependencies]
 forge-std = "1.9.4"
+"@openzeppelin-contracts" = "5.1.0"
+openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.com/OpenZeppelin/openzeppelin-community-contracts.git", rev = "e33f73d1957e46b9ed17c319ed607bb3c7137944" }
 
 [profile.default]
   src = 'contracts'
