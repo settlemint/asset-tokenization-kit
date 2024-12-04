@@ -43,14 +43,14 @@
       "dependsOn": ["dependencies", "^test"]
     },
     "test:deploy": {
-      "dependsOn": ["^test:deploy"]
+      "dependsOn": ["genesis", "^test:deploy"]
     },
     "dependencies": {
       "dependsOn": ["^dependencies"],
       "outputs": ["dependencies/**"]
     },
     "genesis": {
-      "dependsOn": ["^genesis"],
+      "dependsOn": ["dependencies", "^genesis"],
       "outputs": ["genesis-output.json"]
     }
   }
