@@ -32,10 +32,7 @@
       "cache": false,
       "persistent": true
     },
-    "publish-npm": {
-      "dependsOn": [
-        "^publish-npm"
-      ],
+    "//#publish-npm": {
       "cache": false
     },
     "publish-docker": {

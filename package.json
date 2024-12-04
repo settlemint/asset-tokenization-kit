@@ -39,7 +39,7 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "check-types": "turbo check-types",
-    "publish-npm": "turbo publish-npm",
+    "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",
     "deploy": "turbo deploy",
     "codegen": "turbo codegen"
