@@ -26,6 +26,7 @@
   },
   "devDependencies": {},
   "overrides": {
-    "elliptic": "6.5.7"
+    "elliptic": "6.6.0",
+    "ws": "7.5.10"
   }
 }
