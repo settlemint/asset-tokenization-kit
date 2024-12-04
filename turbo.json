@@ -4,9 +4,9 @@
   "envMode": "loose",
   "tasks": {
     "build": {
-      "dependsOn": ["codegen", "^build"],
+      "dependsOn": ["codegen", "^build", "dependencies"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "cache_forge/**", "cache/**", "out/**", "artifacts/**"]
     },
     "lint": {
       "dependsOn": ["codegen", "^lint", "//#format:biome"]
@@ -38,6 +38,16 @@
     },
     "//#lint:biome": {
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["dependencies", "^test"]
+    },
+    "test:deploy": {
+      "dependsOn": ["^test:deploy"]
+    },
+    "dependencies": {
+      "dependsOn": ["^dependencies"],
+      "outputs": ["dependencies/**"]
     }
   }
 }

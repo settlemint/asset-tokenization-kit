@@ -38,6 +38,8 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "test": "turbo test",
+    "test:deploy": "turbo test:deploy",
     "check-types": "turbo check-types",
     "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",
@@ -58,6 +60,8 @@
   "packageManager": "bun@1.1.38",
   "workspaces": ["kit/*"],
   "overrides": {
-    "react-is": "19.0.0-rc-66855b96-20241106"
+    "react-is": "19.0.0-rc-66855b96-20241106",
+    "elliptic": "6.6.0",
+    "ws": "7.5.10"
   }
 }

@@ -39,6 +39,11 @@ jobs:
           node-version: 22
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: Install Bun dependencies
         run: bun install
 
@@ -49,14 +54,18 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Start Docker Compose
+        run: docker compose up -d
+
       - name: Connect
         run: bunx settlemint connect -a
         working-directory: kit/dapp
 
       - name: Lint & Check Types
-        run: bunx turbo run lint check-types
+        run: bunx turbo run lint check-types test test:deploy
 
       - name: Login to GitHub Container Registry
+        if: ${{ env.TAG != 'pr' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -64,10 +73,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to npm
+        if: ${{ env.TAG != 'pr' }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
 
       - name: Publish
+        if: ${{ env.TAG != 'pr' }}
         run: |
           PUBLISH_TASKS=""
           if [[ "$PUBLISH_NPM" == "true" ]]; then
