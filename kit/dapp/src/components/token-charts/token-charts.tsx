@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import type { ChartConfig } from "@/components/ui/chart";
-import { ChartCard } from "./chart-card";
-import { calculateTrend } from "./chart-utils";
-import { useVolumeChartData } from "./use-chart-data";
+import type { ChartConfig } from '@/components/ui/chart';
+import { ChartCard } from './chart-card';
+import { calculateTrend } from './chart-utils';
+import { useVolumeChartData } from './use-chart-data';
 
 const chartConfig = {
   volume: {
-    label: "Volume",
-    color: "hsl(var(--chart-1))",
+    label: 'Volume',
+    color: 'hsl(var(--chart-1))',
   },
   transfers: {
-    label: "Transfers",
-    color: "hsl(var(--chart-2))",
+    label: 'Transfers',
+    color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
 
 export function TokenCharts({ token }: { token?: string }) {
-  const { data: dataDay } = useVolumeChartData("day", token);
-  const { data: dataHour } = useVolumeChartData("hour", token);
+  const { data: dataDay } = useVolumeChartData('day', token);
+  const { data: dataHour } = useVolumeChartData('hour', token);
 
-  const volumeTrendDay = calculateTrend(dataDay ?? [], "volume");
-  const transfersTrendDay = calculateTrend(dataDay ?? [], "transfers");
-  const volumeTrendHour = calculateTrend(dataHour ?? [], "volume");
-  const transfersTrendHour = calculateTrend(dataHour ?? [], "transfers");
+  const volumeTrendDay = calculateTrend(dataDay ?? [], 'volume');
+  const transfersTrendDay = calculateTrend(dataDay ?? [], 'transfers');
+  const volumeTrendHour = calculateTrend(dataHour ?? [], 'volume');
+  const transfersTrendHour = calculateTrend(dataHour ?? [], 'transfers');
 
   return (
     <>

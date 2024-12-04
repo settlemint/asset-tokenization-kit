@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { parseEther } from "viem";
-import { ApproveTokenSchema } from "./approve-token-schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { parseEther } from 'viem';
+import { ApproveTokenSchema } from './approve-token-schema';
 
 const ApproveTokenMutation = portalGraphql(`
 mutation ApproveToken($address: String!, $from: String!, $spender: String!, $value: String!) {
@@ -23,7 +23,7 @@ export const approveTokenAction = actionClient.schema(ApproveTokenSchema).action
   const session = await auth();
 
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(ApproveTokenMutation, {
@@ -36,7 +36,7 @@ export const approveTokenAction = actionClient.schema(ApproveTokenSchema).action
   const transactionHash = result.StarterKitERC20Approve?.transactionHash;
 
   if (!transactionHash) {
-    throw new Error("Transaction hash not found");
+    throw new Error('Transaction hash not found');
   }
 
   return transactionHash;

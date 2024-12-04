@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { formatTokenValue } from "@/lib/number";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { formatTokenValue } from '@/lib/number';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 const EvmAddressBalancesQuery = theGraphGraphql(`
   query AddressBalances($account: String!) {
@@ -24,7 +24,7 @@ const EvmAddressBalancesQuery = theGraphGraphql(`
  */
 export function EvmAddressBalances({ address }: { address: string }) {
   const { data: balances } = useSuspenseQuery({
-    queryKey: ["evm-address-balances", address],
+    queryKey: ['evm-address-balances', address],
     queryFn: async () => {
       const response = await theGraphClient.request(EvmAddressBalancesQuery, {
         account: address,

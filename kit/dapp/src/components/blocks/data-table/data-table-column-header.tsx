@@ -1,50 +1,50 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import type { Column } from "@tanstack/react-table";
-import { type VariantProps, cva } from "class-variance-authority";
-import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
-import type { PropsWithChildren } from "react";
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import type { Column } from '@tanstack/react-table';
+import { type VariantProps, cva } from 'class-variance-authority';
+import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from 'lucide-react';
+import type { PropsWithChildren } from 'react';
 
-const headerVariants = cva("", {
+const headerVariants = cva('', {
   variants: {
     variant: {
-      default: "",
-      numeric: "text-right",
+      default: '',
+      numeric: 'text-right',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
-const wrapperVariants = cva("flex items-center space-x-2 px-4 py-0", {
+const wrapperVariants = cva('flex items-center space-x-2 px-4 py-0', {
   variants: {
     variant: {
-      default: "",
-      numeric: "justify-end",
+      default: '',
+      numeric: 'justify-end',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
-const buttonVariants = cva("-ml-3 h-8 data-[state=open]:bg-accent", {
+const buttonVariants = cva('-ml-3 h-8 data-[state=open]:bg-accent', {
   variants: {
     variant: {
-      default: "",
-      numeric: "ml-auto",
+      default: '',
+      numeric: 'ml-auto',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
@@ -59,7 +59,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
   /** The column object from react-table. */
   column: Column<TData, TValue>;
   /** The type of the column. */
-  variant?: "default" | "numeric";
+  variant?: 'default' | 'numeric';
 }
 
 /**
@@ -72,7 +72,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
 export function DataTableColumnHeader<TData, TValue>({
   column,
   className,
-  variant = "default",
+  variant = 'default',
   children,
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
   if (!column.getCanSort()) {
@@ -85,9 +85,9 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className={buttonVariants({ variant })}>
             <span className="capitalize">{children}</span>
-            {column.getIsSorted() === "desc" ? (
+            {column.getIsSorted() === 'desc' ? (
               <SortDesc className="ml-2 h-4 w-4" />
-            ) : column.getIsSorted() === "asc" ? (
+            ) : column.getIsSorted() === 'asc' ? (
               <SortAsc className="ml-2 h-4 w-4" />
             ) : (
               <ArrowDownUp className="ml-2 h-4 w-4" />

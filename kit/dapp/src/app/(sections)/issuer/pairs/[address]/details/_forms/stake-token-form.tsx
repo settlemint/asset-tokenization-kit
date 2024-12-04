@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { NumericInput } from "@/components/blocks/form/form-input-numeric";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { approveTokenAction } from "./approve-token-action";
-import { stakeTokenAction } from "./stake-token-action";
-import { StakeTokenSchema, type StakeTokenSchemaType, stakeTokenFormPageFields } from "./stake-token-form-schema";
+import { NumericInput } from '@/components/blocks/form/form-input-numeric';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { approveTokenAction } from './approve-token-action';
+import { stakeTokenAction } from './stake-token-action';
+import { StakeTokenSchema, type StakeTokenSchemaType, stakeTokenFormPageFields } from './stake-token-form-schema';
 
 interface StakeTokenFormProps {
   defaultValues: Partial<StakeTokenSchemaType>;
@@ -37,21 +37,17 @@ query StakeTokenReceiptQuery($transactionHash: String!) {
 // TODO: we need to provide deep insights in how the action will impact the pool
 
 export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<StakeTokenSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<StakeTokenSchemaType>>('state', defaultValues);
 
   // TODO: i added a ton of logging here because i could not capture errors on validation (the schema required a field i did not send) and i still can't, we need to fogure out how to have full visibility
   const { form, resetFormAndAction } = useHookFormAction(stakeTokenAction, zodResolver(StakeTokenSchema), {
     actionProps: {
       onSuccess: () => {
-        console.log("[Action Success]");
         resetFormAndAction();
-      },
-      onError: (error) => {
-        console.error("[Action Error]:", error);
       },
     },
     formProps: {
-      mode: "all",
+      mode: 'all',
       defaultValues: {
         ...stakeTokenFormPageFields,
         ...defaultValues,
@@ -61,22 +57,9 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
     errorMapProps: {},
   });
 
-  // Debug form values in real-time
-  console.log("[Form Values]:", form.watch());
-
-  // Debug form state
-  console.log("[Form State]:", {
-    isDirty: form.formState.isDirty,
-    isSubmitting: form.formState.isSubmitting,
-    isValid: form.formState.isValid,
-    errors: form.formState.errors,
-  });
-
   // Debug validation
   useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      console.log(`[Field Update] Name: ${name}, Type: ${type}`, "Value:", value, "Errors:", form.formState.errors);
-    });
+    const subscription = form.watch(() => {});
 
     return () => subscription.unsubscribe();
   }, [form]);
@@ -103,7 +86,7 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
         return waitForTransactionReceipt({
           receiptFetcher: async () => {
             const txresult = await portalClient.request(StakeTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? "",
+              transactionHash: transactionHash?.data ?? '',
             });
 
             return txresult.getTransaction?.receipt;
@@ -111,15 +94,14 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
         });
       },
       {
-        loading: "Staking tokens...",
+        loading: 'Staking tokens...',
         success: (data) => {
           return `${values.baseAmount}/${values.quoteAmount} tokens stakes in block ${data.blockNumber}`;
         },
         error: (error) => {
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
   }
 
@@ -137,10 +119,10 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Stake tokens"
-                  fields={["baseAmount", "quoteAmount"]} // This should be typed
+                  fields={['baseAmount', 'quoteAmount']} // This should be typed
                   withSheetClose
                   controls={{
-                    submit: { buttonText: "Submit" },
+                    submit: { buttonText: 'Submit' },
                   }}
                 >
                   {/* Base amount, should be enhanced with the actual token info */}

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
+import { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 type FormMultiStepConfig = {
   useLocalStorageState?: boolean;
   useQueryState?: boolean;
-  useQueryStateComponent?: "Form" | "FormPage";
+  useQueryStateComponent?: 'Form' | 'FormPage';
 };
 
 interface FormMultiStepContextType {
@@ -25,21 +25,19 @@ const FormMultiStepContext = createContext<FormMultiStepContextType | undefined>
 
 export const FormMultiStepProvider = ({
   children,
-  config = { useLocalStorageState: false, useQueryState: false, useQueryStateComponent: "FormPage" },
+  config = { useLocalStorageState: false, useQueryState: false, useQueryStateComponent: 'FormPage' },
   formId,
 }: React.PropsWithChildren<{
   config: FormMultiStepConfig;
   formId: string;
 }>) => {
-  const [currentStep, setCurrentStep] = useQueryState("currentStep", parseAsInteger.withDefault(1));
-  const [_formId] = useQueryState("formId", parseAsString.withDefault(formId));
+  const [currentStep, setCurrentStep] = useQueryState('currentStep', parseAsInteger.withDefault(1));
+  const [_formId] = useQueryState('formId', parseAsString.withDefault(formId));
   const [totalSteps, setTotalSteps] = useState<number>(1);
   const pageCounterRef = useRef(1);
 
-  if (config.useLocalStorageState === false) {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("state");
-    }
+  if (config.useLocalStorageState === false && typeof window !== 'undefined') {
+    window.localStorage.removeItem('state');
   }
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
@@ -75,7 +73,7 @@ export const FormMultiStepProvider = ({
 export const useMultiFormStep = (): FormMultiStepContextType => {
   const context = useContext(FormMultiStepContext);
   if (!context) {
-    throw new Error("useMultiFormStep must be used within a FormMultiStepProvider");
+    throw new Error('useMultiFormStep must be used within a FormMultiStepProvider');
   }
   return context;
 };

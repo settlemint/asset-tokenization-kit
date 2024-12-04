@@ -1,17 +1,17 @@
-import { Logo } from "@/components/blocks/logo/logo";
-import { Button } from "@/components/ui/button";
+import { Logo } from '@/components/blocks/logo/logo';
+import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-import { Menu } from "lucide-react";
-import Link from "next/link";
-import type { FC } from "react";
+} from '@/components/ui/navigation-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { Menu } from 'lucide-react';
+import Link from 'next/link';
+import type { FC } from 'react';
 
 interface MenuItem {
   href: string;
@@ -20,23 +20,23 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { href: "/", label: "Home" },
-  { href: "https://console.settlemint.com", label: "Platform" },
-  { href: "https://console.settlemint.com/documentation", label: "Documentation" },
+  { href: '/', label: 'Home' },
+  { href: 'https://console.settlemint.com', label: 'Platform' },
+  { href: 'https://console.settlemint.com/documentation', label: 'Documentation' },
 ];
 
 const footerLinks = [
   {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/",
-    label: "Terms of Service",
+    href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/',
+    label: 'Terms of Service',
   },
   {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/privacy-policy/",
-    label: "Privacy Policy",
+    href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/privacy-policy/',
+    label: 'Privacy Policy',
   },
   {
-    href: "https://console.settlemint.com/documentation/docs/terms-and-policies/cookie-policy/",
-    label: "Cookie Policy",
+    href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/cookie-policy/',
+    label: 'Cookie Policy',
   },
 ];
 
@@ -49,7 +49,7 @@ const NavItem: FC<MenuItem> = ({ href, label, className }) => (
 );
 
 const DesktopNav: FC = () => (
-  <NavigationMenu className="hidden md:flex flex-grow justify-center">
+  <NavigationMenu className="hidden flex-grow justify-center md:flex">
     <NavigationMenuList>
       {menuItems.map((item) => (
         <NavItem key={item.href} {...item} />
@@ -70,7 +70,7 @@ const MobileNav: FC = () => (
         <SheetTitle>Navigation</SheetTitle>
       </SheetHeader>
       <NavigationMenu className="mt-6">
-        <NavigationMenuList className="flex flex-col items-start space-y-2 space-x-0">
+        <NavigationMenuList className="flex flex-col items-start space-x-0 space-y-2">
           {menuItems.map((item) => (
             <NavItem key={item.href} {...item} />
           ))}
@@ -84,8 +84,8 @@ const MobileNav: FC = () => (
 
 export default function Home() {
   return (
-    <div className="min-h-[100dvh] flex flex-col relative">
-      <div className="flex justify-between items-center p-4">
+    <div className="relative flex min-h-[100dvh] flex-col">
+      <div className="flex items-center justify-between p-4">
         <div className="w-24">
           <Logo />
         </div>
@@ -104,11 +104,11 @@ export default function Home() {
         </NavigationMenu>
         <MobileNav />
       </div>
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 flex-grow">
+      <section className="w-full flex-grow py-12 md:py-24 lg:py-32 xl:py-48">
         <div className="px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none ">
+              <h1 className="font-bold text-3xl tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none ">
                 Unlock the Power of Asset Tokenization
               </h1>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
@@ -117,8 +117,8 @@ export default function Home() {
               </p>
             </div>
             <div className="space-x-4">
-              <div className="flex justify-center backdrop-blur-2xl static w-auto rounded-xl border bg-muted p-4 overflow-x-auto">
-                <code className="font-mono font-bold whitespace-nowrap ">
+              <div className="static flex w-auto justify-center overflow-x-auto rounded-xl border bg-muted p-4 backdrop-blur-2xl">
+                <code className="whitespace-nowrap font-bold font-mono ">
                   bunx @settlemint/sdk-cli create -t asset-tokenization
                 </code>
               </div>
@@ -126,20 +126,20 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6">
+      <footer className="flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">
         <p className="text-xs">
-          &copy; {new Date().getFullYear()}{" "}
+          &copy; {new Date().getFullYear()}
           <Link href="https://settlemint.com" className="hover:underline">
             SettleMint
           </Link>
           . Functional Source License, Version 1.1, MIT Future License.
         </p>
-        <NavigationMenu className="sm:ml-auto flex gap-4 sm:gap-6">
+        <NavigationMenu className="flex gap-4 sm:ml-auto sm:gap-6">
           <NavigationMenuList>
             {footerLinks.map(({ href, label }) => (
               <NavigationMenuItem key={href}>
                 <Link href={href} legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), "text-xs")}>
+                  <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), 'text-xs')}>
                     {label}
                   </NavigationMenuLink>
                 </Link>

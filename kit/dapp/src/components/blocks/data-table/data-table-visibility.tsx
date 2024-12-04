@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Table } from "@tanstack/react-table";
-import { ChevronDownIcon } from "lucide-react";
+} from '@/components/ui/dropdown-menu';
+import type { Table } from '@tanstack/react-table';
+import { ChevronDownIcon } from 'lucide-react';
 
 interface DataTableVisibilityProps<TData> {
   /** The table instance from react-table. */

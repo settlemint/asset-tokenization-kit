@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { SidebarNavigation } from "@/components/side-bar/sidebar-navigation";
-import { ChartCandlestick, ChartNoAxesCombined, Coins } from "lucide-react";
+import { SidebarNavigation } from '@/components/side-bar/sidebar-navigation';
+import { ChartCandlestick, ChartNoAxesCombined, Coins } from 'lucide-react';
 
 export default function IssuerSidebar() {
   return (
     <SidebarNavigation
       groups={[
         {
-          title: "",
+          title: '',
           items: [
             {
-              title: "Dashboard",
-              url: "/issuer/dashboard",
+              title: 'Dashboard',
+              url: '/issuer/dashboard',
               icon: ChartNoAxesCombined,
             },
           ],
         },
         {
-          title: "Asset Management",
+          title: 'Asset Management',
           items: [
             {
-              title: "Tokens",
-              url: "/issuer/tokens",
+              title: 'Tokens',
+              url: '/issuer/tokens',
               icon: Coins,
             },
             // {
@@ -39,11 +39,11 @@ export default function IssuerSidebar() {
           ],
         },
         {
-          title: "Trading Management",
+          title: 'Trading Management',
           items: [
             {
-              title: "Pairs",
-              url: "/issuer/pairs",
+              title: 'Pairs',
+              url: '/issuer/pairs',
               icon: ChartCandlestick,
             },
             // {

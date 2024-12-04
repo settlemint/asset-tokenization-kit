@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -10,11 +10,11 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { ChevronRight, type LucideIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+} from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 type Item = {
   title: string;
@@ -55,7 +55,7 @@ export function SidebarNavigation({
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={`${item.url}`} className={cn(active ? "font-bold" : "")}>
+                      <Link href={`${item.url}`} className={cn(active ? 'font-bold' : '')}>
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
                       </Link>
@@ -68,7 +68,7 @@ export function SidebarNavigation({
                 <Collapsible key={item.title} asChild defaultOpen={active} className="group/collapsible">
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title} className={cn(active ? "font-bold" : "")}>
+                      <SidebarMenuButton tooltip={item.title} className={cn(active ? 'font-bold' : '')}>
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -81,7 +81,7 @@ export function SidebarNavigation({
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <Link href={`${subItem.url}`} className={subActive ? "font-bold" : ""}>
+                                <Link href={`${subItem.url}`} className={subActive ? 'font-bold' : ''}>
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>

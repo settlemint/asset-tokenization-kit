@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { signIn } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { genSalt, hash } from "bcryptjs";
-import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
-import { z } from "zod";
-import { zfd } from "zod-form-data";
+import { signIn } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { genSalt, hash } from 'bcryptjs';
+import { AuthError } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+import { zfd } from 'zod-form-data';
 
 type AggregateCount = {
   starterkit_wallets_aggregate: {
@@ -63,7 +63,7 @@ export const signUpAction = actionClient
       password: zfd.text(z.string().min(6)),
       provider: zfd.text(z.string()),
       redirectUrl: zfd.text(z.string().optional()),
-    }),
+    })
   )
   .action(async ({ parsedInput }) => {
     try {
@@ -74,7 +74,7 @@ export const signUpAction = actionClient
       if ((walletCount as AggregateCount).starterkit_wallets_aggregate.aggregate?.count === 0) {
         const hasAdmin = await hasuraClient.request(hasAtLeastOneAdmin);
         const role = [
-          ((hasAdmin as AggregateCount).starterkit_wallets_aggregate.aggregate?.count ?? 0) > 0 ? "user" : "admin",
+          ((hasAdmin as AggregateCount).starterkit_wallets_aggregate.aggregate?.count ?? 0) > 0 ? 'user' : 'admin',
         ];
 
         const wallet = await portalClient.request(createUserWallet, {
@@ -88,13 +88,13 @@ export const signUpAction = actionClient
         await hasuraClient.request(createNewWallet, {
           email: formData.username,
           password: hashedPassword,
-          wallet: wallet.createWallet?.address ?? "",
+          wallet: wallet.createWallet?.address ?? '',
           role,
         });
       }
 
       const decodedRedirectUrl = redirectUrl ? decodeURIComponent(redirectUrl) : undefined;
-      return await signIn(provider, { ...formData, redirectTo: decodedRedirectUrl ?? "/" });
+      return await signIn(provider, { ...formData, redirectTo: decodedRedirectUrl ?? '/' });
     } catch (error) {
       if (error instanceof AuthError) {
         return redirect(`/auth/error?error=${error.type}`);

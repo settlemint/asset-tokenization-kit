@@ -1,4 +1,4 @@
-import CollapsedBreadcrumbs from "@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb";
+import CollapsedBreadcrumbs from '@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb';
 
 type PageProps = {
   params: Promise<{

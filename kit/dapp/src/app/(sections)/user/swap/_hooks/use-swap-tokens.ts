@@ -1,8 +1,8 @@
-import { GetSellableTokens } from "@/app/(sections)/user/swap/_graphql/queries";
-import { theGraphClient } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-import type { Address } from "viem";
+import { GetSellableTokens } from '@/app/(sections)/user/swap/_graphql/queries';
+import { theGraphClient } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import type { Address } from 'viem';
 
 export interface TokenInfo {
   address: string;
@@ -36,7 +36,7 @@ export interface ProcessedTokenData {
 
 export function useSwapTokens(address: Address): ProcessedTokenData {
   const { data: rawPairsData } = useSuspenseQuery({
-    queryKey: ["pairs-for-swap", address],
+    queryKey: ['pairs-for-swap', address],
     queryFn: () => theGraphClient.request(GetSellableTokens, { account: address }),
   });
 
@@ -114,10 +114,12 @@ export function useSwapTokens(address: Address): ProcessedTokenData {
       const pair = pairs.find(
         (pair) =>
           (pair.token0.symbol === token0Symbol && pair.token1.symbol === token1Symbol) ||
-          (pair.token0.symbol === token1Symbol && pair.token1.symbol === token0Symbol),
+          (pair.token0.symbol === token1Symbol && pair.token1.symbol === token0Symbol)
       );
 
-      if (!pair) return undefined;
+      if (!pair) {
+        return undefined;
+      }
 
       // If the order matches the original pair order, use the original isBaseToQuote
       // If the order is reversed, flip isBaseToQuote

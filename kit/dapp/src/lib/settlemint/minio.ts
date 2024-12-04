@@ -1,4 +1,4 @@
-import { createServerMinioClient } from "@settlemint/sdk-minio";
+import { createServerMinioClient } from '@settlemint/sdk-minio';
 
 export const { client } = createServerMinioClient({
   instance: process.env.SETTLEMINT_MINIO_ENDPOINT!,

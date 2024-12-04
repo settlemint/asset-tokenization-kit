@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { type HTMLAttributes, forwardRef, useState } from "react";
-import { getGravatarUrl } from "react-awesome-gravatar";
-import { http, type Address, createPublicClient } from "viem";
-import { mainnet } from "viem/chains";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { type HTMLAttributes, forwardRef, useState } from 'react';
+import { getGravatarUrl } from 'react-awesome-gravatar';
+import { http, type Address, createPublicClient } from 'viem';
+import { mainnet } from 'viem/chains';
 
 /**
  * Props for the AddressAvatar component.
@@ -20,7 +20,7 @@ interface AddressAvatarProps extends HTMLAttributes<HTMLDivElement> {
   address?: string | null;
   email?: string | null;
   indicator?: boolean;
-  variant?: "big" | "small" | "tiny";
+  variant?: 'big' | 'small' | 'tiny';
 }
 
 /**
@@ -32,14 +32,14 @@ interface AddressAvatarProps extends HTMLAttributes<HTMLDivElement> {
  * @returns {JSX.Element} The rendered AddressAvatar component.
  */
 export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  ({ address, email, className, indicator, variant = "big", ...props }, ref) => {
+  ({ address, email, className, indicator, variant = 'big', ...props }, ref) => {
     const { data: avatar } = useSuspenseQuery({
-      queryKey: ["avatar", email, address],
+      queryKey: ['avatar', email, address],
       queryFn: async () => {
         if (address) {
           const publicClient = createPublicClient({
             chain: mainnet,
-            transport: http("https://eth.merkle.io"),
+            transport: http('https://eth.merkle.io'),
           });
 
           const ensName = await publicClient.getEnsName({
@@ -50,8 +50,8 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             return { ensName, avatar: `https://metadata.ens.domains/mainnet/avatar/${ensName}` };
           }
         }
-        const avatarUrl = getGravatarUrl(email ?? address ?? "", {
-          default: "identicon",
+        const avatarUrl = getGravatarUrl(email ?? address ?? '', {
+          default: 'identicon',
           size: 400,
         });
 
@@ -65,29 +65,29 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       <div className="relative">
         <Avatar
           ref={ref}
-          className={cn(variant === "big" ? "w-10 h-10" : variant === "small" ? "w-6 h-6" : "w-4 h-4", className)}
+          className={cn(variant === 'big' ? 'h-10 w-10' : variant === 'small' ? 'h-6 w-6' : 'h-4 w-4', className)}
           {...props}
         >
           <AvatarFallback
-            className={cn(variant === "big" ? "w-10 h-10" : variant === "small" ? "w-6 h-6" : "w-4 h-4", className)}
+            className={cn(variant === 'big' ? 'h-10 w-10' : variant === 'small' ? 'h-6 w-6' : 'h-4 w-4', className)}
           >
-            <Skeleton className={cn("rounded-full absolute inset-0", imageLoaded ? "opacity-0" : "opacity-100")} />
+            <Skeleton className={cn('absolute inset-0 rounded-full', imageLoaded ? 'opacity-0' : 'opacity-100')} />
           </AvatarFallback>
           <AvatarImage
             src={avatar.avatar}
-            className={cn("transition-opacity duration-300", imageLoaded ? "opacity-100" : "opacity-0")}
+            className={cn('transition-opacity duration-300', imageLoaded ? 'opacity-100' : 'opacity-0')}
             onLoad={() => setImageLoaded(true)}
           />
         </Avatar>
         {indicator && (
-          <span className="absolute -top-0.5 -right-0.5  flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary" />
+          <span className="-top-0.5 -right-0.5 absolute flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-primary" />
           </span>
         )}
       </div>
     );
-  },
+  }
 );
 
-AddressAvatar.displayName = "AddressAvatar";
+AddressAvatar.displayName = 'AddressAvatar';

@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { client } from "@/lib/settlemint/minio";
-import { CreatePresignedUrlSchema } from "./create-presigned-url.schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { client } from '@/lib/settlemint/minio';
+import { CreatePresignedUrlSchema } from './create-presigned-url.schema';
 
 type MinioClient = typeof client & {
   presignedPutObject: (
     bucketName: string,
     objectName: string,
     expirySeconds: number,
-    callback: (err: Error | null, presignedUrl: string) => void,
+    callback: (err: Error | null, presignedUrl: string) => void
   ) => void;
 };
 
@@ -21,17 +21,17 @@ export const createPresignedUrlAction = actionClient
     const session = await auth();
 
     if (!session?.user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     const uploadUrl = await getPresignedUploadUrl(
-      bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? "default-bucket",
+      bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? 'default-bucket',
       objectName,
-      expirySeconds ?? 3600,
+      expirySeconds ?? 3600
     );
 
     if (!uploadUrl) {
-      return { success: false, error: "Failed to generate upload URL" };
+      return { success: false, error: 'Failed to generate upload URL' };
     }
     return { success: true, data: { uploadUrl } };
   });

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { DataTable } from "@/components/blocks/data-table/data-table";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
-import { Button } from "@/components/ui/button";
-import { formatTokenValue } from "@/lib/number";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { FolderOpen } from "lucide-react";
-import Link from "next/link";
-import type { Address } from "viem";
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { Button } from '@/components/ui/button';
+import { formatTokenValue } from '@/lib/number';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { FolderOpen } from 'lucide-react';
+import Link from 'next/link';
+import type { Address } from 'viem';
 
 const ListPortfolioTokens = theGraphGraphql(`
 query ListPortfolioTokens($account: String!) {
@@ -34,7 +34,7 @@ query ListPortfolioTokens($account: String!) {
 
 export function PortfolioTable({ address }: { address: Address }) {
   const tokens = useSuspenseQuery({
-    queryKey: ["portfolio-tokens", address],
+    queryKey: ['portfolio-tokens', address],
     queryFn: () => {
       return theGraphClient.request(ListPortfolioTokens, { account: address });
     },
@@ -45,8 +45,8 @@ export function PortfolioTable({ address }: { address: Address }) {
     <DataTable
       columns={[
         {
-          accessorKey: "contract.name",
-          id: "name",
+          accessorKey: 'contract.name',
+          id: 'name',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>;
           },
@@ -56,7 +56,7 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          accessorKey: "contract.symbol",
+          accessorKey: 'contract.symbol',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>;
           },
@@ -66,7 +66,7 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          accessorKey: "contract.decimals",
+          accessorKey: 'contract.decimals',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader variant="numeric" column={column}>
@@ -80,7 +80,7 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          accessorKey: "value",
+          accessorKey: 'value',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -98,7 +98,7 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          id: "prices",
+          id: 'prices',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -122,7 +122,7 @@ export function PortfolioTable({ address }: { address: Address }) {
                     ))
                   ) : (
                     <li>
-                      {formatTokenValue(Number.parseFloat("1"), 2)} {symbol}
+                      {formatTokenValue(Number.parseFloat('1'), 2)} {symbol}
                     </li>
                   )}
                 </ul>
@@ -131,17 +131,16 @@ export function PortfolioTable({ address }: { address: Address }) {
           },
         },
         {
-          id: "actions",
+          id: 'actions',
           cell: ({ row }) => {
             const {
               contract: { id },
             } = row.original;
-            console.log(id);
             return (
-              <div className="flex items-center space-x-2 px-4 py-2 justify-end">
+              <div className="flex items-center justify-end space-x-2 px-4 py-2">
                 <Link prefetch={false} href={`/user/portfolio/${id}/details`}>
                   <Button variant="outline">
-                    <FolderOpen className="w-4 h-4" />
+                    <FolderOpen className="h-4 w-4" />
                     Details
                   </Button>
                 </Link>

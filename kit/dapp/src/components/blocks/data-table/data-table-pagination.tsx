@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { PaginationState, Table } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import { useMemo } from "react";
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { PaginationState, Table } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { useMemo } from 'react';
 
 /**
  * Props for the DataTablePagination component.
@@ -37,10 +37,10 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   }, [pageCount, pagination]);
 
   return (
-    <div className="flex items-center justify-between px-2 mt-4">
-      <div className="w-full flex items-center justify-between space-x-6 lg:space-x-8">
+    <div className="mt-4 flex items-center justify-between px-2">
+      <div className="flex w-full items-center justify-between space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="font-medium text-sm">Rows per page</p>
           <Select
             value={`${pagination.pageSize}`}
             onValueChange={(value) => {
@@ -59,7 +59,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-[100px] items-center justify-center font-medium text-sm">
           Page {pagination.pageIndex + 1} of {pageCount}
         </div>
         <div className="flex items-center space-x-2">
@@ -84,7 +84,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           {pageNumbers.map((page) => (
             <Button
               key={page}
-              variant={pagination.pageIndex + 1 === page ? "secondary" : "outline"}
+              variant={pagination.pageIndex + 1 === page ? 'secondary' : 'outline'}
               className="h-8 w-8 p-0"
               onClick={() => table.setPageIndex(page - 1)}
             >

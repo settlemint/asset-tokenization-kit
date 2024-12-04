@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { CreateAddressBookEntryForm } from "@/app/(sections)/issuer/tokens/[address]/details/_forms/create-address-book-entry-form";
-import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
-import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import React, { type InputHTMLAttributes, forwardRef } from "react";
-import { Controller } from "react-hook-form";
+import { CreateAddressBookEntryForm } from '@/app/(sections)/issuer/tokens/[address]/details/_forms/create-address-book-entry-form';
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import React, { type InputHTMLAttributes, forwardRef } from 'react';
+import { Controller } from 'react-hook-form';
 
 interface Option {
   value: string;
@@ -22,9 +22,9 @@ interface DictionaryInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
-  ({ className, name = "", placeholder = "", options = [], ...props }) => {
+  ({ className, name = '', placeholder = '', options = [], ...props }) => {
     const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState("");
+    const [value, setValue] = React.useState('');
     const [width, setWidth] = React.useState(0);
     const [showDialog, setShowDialog] = React.useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
         name={name}
         render={({ field }) => {
           return (
-            <div ref={containerRef} className={cn("w-full", className)}>
+            <div ref={containerRef} className={cn('w-full', className)}>
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" aria-expanded={open} className="w-full justify-between">
@@ -49,7 +49,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                       <AddressAvatar address={options.find((option) => option.label === value)?.value} variant="tiny" />
                       {value
                         ? `${options.find((option) => option.label === value)?.value} (${value})`
-                        : "Select option..."}
+                        : 'Select option...'}
                     </div>
 
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -58,7 +58,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                 <PopoverContent className="p-0" style={{ width }}>
                   <Command accessKey="label">
                     <CommandInput placeholder={placeholder} accessKey="label" />
-                    <div className="flex m-2 justify-between gap-2">
+                    <div className="m-2 flex justify-between gap-2">
                       <Input
                         placeholder="New address"
                         {...field}
@@ -86,7 +86,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                             }}
                           >
                             <Check
-                              className={cn("mr-2 h-4 w-4", value === option.label ? "opacity-100" : "opacity-0")}
+                              className={cn('mr-2 h-4 w-4', value === option.label ? 'opacity-100' : 'opacity-0')}
                             />
                             {option.label}
                             <AddressAvatar address={option.value} variant="tiny" />
@@ -104,7 +104,7 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                     <DialogTitle>Add to Addressbook</DialogTitle>
                   </DialogHeader>
                   <CreateAddressBookEntryForm
-                    defaultValues={{ walletAddress: value as `0x${string}`, walletName: "" }}
+                    defaultValues={{ walletAddress: value as `0x${string}`, walletName: '' }}
                     formId="create-address-book-entry-form"
                   />
                 </DialogContent>
@@ -114,9 +114,9 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
         }}
       />
     );
-  },
+  }
 );
 
-DictionaryInput.displayName = "DictionaryInput";
+DictionaryInput.displayName = 'DictionaryInput';
 
 export { DictionaryInput };

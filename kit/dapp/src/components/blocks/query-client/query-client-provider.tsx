@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { QueryClient, QueryClientProvider as ReactQueryClientProvider, isServer } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
-import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import type { PropsWithChildren } from "react";
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { QueryClient, QueryClientProvider as ReactQueryClientProvider, isServer } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryStreamedHydration } from '@tanstack/react-query-next-experimental';
+import { persistQueryClient } from '@tanstack/react-query-persist-client';
+import type { PropsWithChildren } from 'react';
 
 /**
  * Creates and configures a new QueryClient instance.
@@ -20,7 +20,7 @@ function makeQueryClient(): QueryClient {
     },
   });
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     const persister = createSyncStoragePersister({
       storage: window.localStorage,
     });
@@ -34,7 +34,7 @@ function makeQueryClient(): QueryClient {
   return client;
 }
 
-let browserQueryClient: QueryClient | undefined = undefined;
+let browserQueryClient: QueryClient | undefined;
 
 /**
  * Gets or creates a QueryClient instance.

@@ -1,5 +1,5 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 const TokenDetails = theGraphGraphql(`
 query TokenDetails($id: ID!) {
@@ -42,7 +42,7 @@ query TokenDetails($id: ID!) {
 
 export function useTokenDetails(address: string) {
   return useSuspenseQuery({
-    queryKey: ["token-details", address],
+    queryKey: ['token-details', address],
     queryFn: () => {
       return theGraphClient.request(TokenDetails, { id: address });
     },

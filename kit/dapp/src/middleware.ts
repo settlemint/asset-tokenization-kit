@@ -1,12 +1,12 @@
-import { authConfig } from "@/lib/auth/config";
-import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
-import NextAuth from "next-auth";
-import { type NextRequest, NextResponse } from "next/server";
-import { match } from "path-to-regexp";
+import { authConfig } from '@/lib/auth/config';
+import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
+import NextAuth from 'next-auth';
+import { type NextRequest, NextResponse } from 'next/server';
+import { match } from 'path-to-regexp';
 
-const isUserAuthenticatedRoute = match(["/user", "/user/*path"]);
-const isIssuerAuthenticatedRoute = match(["/issuer", "/issuer/*path"]);
-const isAdminAuthenticatedRoute = match(["/admin", "/admin/*path"]);
+const isUserAuthenticatedRoute = match(['/user', '/user/*path']);
+const isIssuerAuthenticatedRoute = match(['/issuer', '/issuer/*path']);
+const isAdminAuthenticatedRoute = match(['/admin', '/admin/*path']);
 
 const { auth } = NextAuth({
   ...authConfig,
@@ -14,17 +14,17 @@ const { auth } = NextAuth({
 });
 
 const routeRoleMap = [
-  { checker: isUserAuthenticatedRoute, role: "user" },
-  { checker: isIssuerAuthenticatedRoute, role: "issuer" },
-  { checker: isAdminAuthenticatedRoute, role: "admin" },
+  { checker: isUserAuthenticatedRoute, role: 'user' },
+  { checker: isIssuerAuthenticatedRoute, role: 'issuer' },
+  { checker: isAdminAuthenticatedRoute, role: 'admin' },
 ] as const;
 
 function buildRedirectUrl(request: NextRequest): URL {
-  const redirectUrl = new URL("/auth/signin", request.url);
+  const redirectUrl = new URL('/auth/signin', request.url);
   const returnPath = request.nextUrl.search
     ? `${request.nextUrl.pathname}${request.nextUrl.search}`
     : request.nextUrl.pathname;
-  redirectUrl.searchParams.set("rd", encodeURIComponent(returnPath));
+  redirectUrl.searchParams.set('rd', encodeURIComponent(returnPath));
   return redirectUrl;
 }
 
@@ -35,7 +35,7 @@ export default auth((request) => {
   }
 
   const userRoles = request.auth?.user?.roles ?? [];
-  if (userRoles.includes("admin")) {
+  if (userRoles.includes('admin')) {
     return NextResponse.next();
   }
 
@@ -57,6 +57,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };

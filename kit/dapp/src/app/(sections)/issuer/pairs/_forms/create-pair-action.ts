@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { CreateDexPairSchema } from "./create-pair-form-schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { CreateDexPairSchema } from './create-pair-form-schema';
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const CreateDexPairMutation = portalGraphql(`
@@ -24,7 +24,7 @@ export const createTokenAction = actionClient.schema(CreateDexPairSchema).action
   const session = await auth();
 
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(CreateDexPairMutation, {
@@ -37,7 +37,7 @@ export const createTokenAction = actionClient.schema(CreateDexPairSchema).action
   const transactionHash = result.StarterKitERC20DexFactoryCreatePair?.transactionHash;
 
   if (!transactionHash) {
-    throw new Error("Transaction hash not found");
+    throw new Error('Transaction hash not found');
   }
 
   return transactionHash;

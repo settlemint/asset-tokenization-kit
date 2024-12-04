@@ -1,20 +1,20 @@
-import { isAddress } from "viem";
-import { z } from "zod";
+import { isAddress } from 'viem';
+import { z } from 'zod';
 
 export const CreateAddressBookEntrySchema = z.object({
   walletName: z.string().min(1),
-  walletAddress: z.string().refine((address) => isAddress(address), { message: "Please enter a valid Wallet address" }),
+  walletAddress: z.string().refine((address) => isAddress(address), { message: 'Please enter a valid Wallet address' }),
 });
 
 export type CreateAddressBookEntrySchemaType = z.infer<typeof CreateAddressBookEntrySchema>;
 
 export const createAddressBookEntryDefaultValues: CreateAddressBookEntrySchemaType = {
-  walletName: "",
-  walletAddress: "0x",
+  walletName: '',
+  walletAddress: '0x',
 } as const;
 
 export type CreateAddressBookEntryFormPageFields = keyof typeof createAddressBookEntryDefaultValues;
 
 export const createAddressBookEntryFormPageFields: CreateAddressBookEntryFormPageFields[] = Object.keys(
-  createAddressBookEntryDefaultValues,
+  createAddressBookEntryDefaultValues
 ) as CreateAddressBookEntryFormPageFields[];

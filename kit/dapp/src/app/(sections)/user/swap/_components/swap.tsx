@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { approveTokenAction } from "@/app/(sections)/issuer/pairs/[address]/details/_forms/approve-token-action";
-import { executeSwapAction } from "@/app/(sections)/user/swap/_actions/execute-swap";
-import { TokenSelect } from "@/app/(sections)/user/swap/_components/token-select";
+import { approveTokenAction } from '@/app/(sections)/issuer/pairs/[address]/details/_forms/approve-token-action';
+import { executeSwapAction } from '@/app/(sections)/user/swap/_actions/execute-swap';
+import { TokenSelect } from '@/app/(sections)/user/swap/_components/token-select';
 import {
   SwapBaseToQuoteTokenReceiptQuery,
   SwapQuoteToBaseTokenReceiptQuery,
-} from "@/app/(sections)/user/swap/_graphql/queries";
-import { useSwapTokens } from "@/app/(sections)/user/swap/_hooks/use-swap-tokens";
-import { Input } from "@/components/blocks/form/form-input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { formatTokenValue } from "@/lib/number";
-import { portalClient } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { ArrowDown, Info } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import type { Address } from "viem";
-import { parseUnits } from "viem";
-import { calculatePriceImpact } from "../_utils/price-impact";
-import { calculateDynamicSlippage } from "../_utils/slippage";
+} from '@/app/(sections)/user/swap/_graphql/queries';
+import { useSwapTokens } from '@/app/(sections)/user/swap/_hooks/use-swap-tokens';
+import { Input } from '@/components/blocks/form/form-input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { formatTokenValue } from '@/lib/number';
+import { portalClient } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { ArrowDown, Info } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import type { Address } from 'viem';
+import { parseUnits } from 'viem';
+import { calculatePriceImpact } from '../_utils/price-impact';
+import { calculateDynamicSlippage } from '../_utils/slippage';
 
 export function Swap({ address }: { address: Address }) {
   const { validInputTokens, getOutputTokensForInput, findPairByTokens } = useSwapTokens(address);
@@ -34,7 +34,9 @@ export function Swap({ address }: { address: Address }) {
   const [isSwapping, setIsSwapping] = useState(false);
 
   const handleSwap = async () => {
-    if (!currentPair || !inputToken || !outputToken || sellAmount <= 0) return;
+    if (!currentPair || !inputToken || !outputToken || sellAmount <= 0) {
+      return;
+    }
     setIsSwapping(true);
 
     try {
@@ -51,14 +53,16 @@ export function Swap({ address }: { address: Address }) {
             receiptFetcher: async () => {
               const txresult = await portalClient.request(
                 currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
-                { transactionHash: transactionHash?.data ?? "" },
+                {
+                  transactionHash: transactionHash?.data ?? '',
+                }
               );
               return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
             },
           });
         })(),
         {
-          loading: "Approving token...",
+          loading: 'Approving token...',
           success: async () => {
             // Execute the swap after successful approval
             const expectedAmount = buyAmount;
@@ -86,7 +90,7 @@ export function Swap({ address }: { address: Address }) {
                   receiptFetcher: async () => {
                     const txresult = await portalClient.request(
                       currentPair.isBaseToQuote ? SwapBaseToQuoteTokenReceiptQuery : SwapQuoteToBaseTokenReceiptQuery,
-                      { transactionHash: transactionHash?.data ?? "" },
+                      { transactionHash: transactionHash?.data ?? '' }
                     );
                     return txresult.StarterKitERC20DexSwapBaseToQuoteReceipt;
                   },
@@ -97,19 +101,18 @@ export function Swap({ address }: { address: Address }) {
                 setIsSwapping(false);
               })(),
               {
-                loading: "Swapping tokens...",
+                loading: 'Swapping tokens...',
                 success: `${sellAmount}/${buyAmount} tokens swapped`,
-                error: (error) => `Swap failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-              },
+                error: (error) => `Swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              }
             );
 
-            return "Token approved successfully";
+            return 'Token approved successfully';
           },
-          error: (error) => `Approval failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-        },
+          error: (error) => `Approval failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        }
       );
-    } catch (error) {
-      console.error(error);
+    } catch {
       setIsSwapping(false);
     }
   };
@@ -118,7 +121,9 @@ export function Swap({ address }: { address: Address }) {
    * Swaps the input and output tokens if both are selected
    */
   const handleSwapTokens = () => {
-    if (!inputToken || !outputToken) return;
+    if (!inputToken || !outputToken) {
+      return;
+    }
 
     const newInputToken = outputToken;
     const newOutputToken = inputToken;
@@ -133,7 +138,9 @@ export function Swap({ address }: { address: Address }) {
 
   // Get available output tokens based on selected input token
   const availableOutputTokens = useMemo(() => {
-    if (!inputToken) return [];
+    if (!inputToken) {
+      return [];
+    }
     return getOutputTokensForInput(inputToken);
   }, [inputToken, getOutputTokensForInput]);
 
@@ -156,7 +163,9 @@ export function Swap({ address }: { address: Address }) {
 
   // Get current pair information
   const currentPair = useMemo(() => {
-    if (!inputToken || !outputToken) return undefined;
+    if (!inputToken || !outputToken) {
+      return undefined;
+    }
     return findPairByTokens(inputToken, outputToken);
   }, [inputToken, outputToken, findPairByTokens]);
 
@@ -181,7 +190,9 @@ export function Swap({ address }: { address: Address }) {
   }, [currentPair, sellAmount]); // Explicit dependency on sellAmount
 
   const getMaxSellAmount = (token?: string): number => {
-    if (!token || !currentPair) return 0;
+    if (!token || !currentPair) {
+      return 0;
+    }
     const tokenInfo = currentPair.token0.symbol === token ? currentPair.token0 : currentPair.token1;
     return tokenInfo.balance ? Number(tokenInfo.balance) : 0;
   };
@@ -206,12 +217,12 @@ export function Swap({ address }: { address: Address }) {
                     step={0.001}
                     value={sellAmount}
                     onChange={(e) => setSellAmount(Number(e.target.value))}
-                    className="border-none bg-transparent text-4xl h-12"
+                    className="h-12 border-none bg-transparent text-4xl"
                   />
                   {inputToken && (
                     <button
                       onClick={() => setSellAmount(getMaxSellAmount(inputToken))}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs bg-neutral-800 hover:bg-neutral-700 rounded-md transition-colors"
+                      className="-translate-y-1/2 absolute top-1/2 right-2 rounded-md bg-neutral-800 px-2 py-1 text-xs transition-colors hover:bg-neutral-700"
                       type="button"
                     >
                       Max: {formatTokenValue(getMaxSellAmount(inputToken), 2)}
@@ -232,7 +243,7 @@ export function Swap({ address }: { address: Address }) {
               <button
                 type="button"
                 onClick={handleSwapTokens}
-                className="rounded-full bg-neutral-800 p-4 transition-colors hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-full bg-neutral-800 p-4 transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!inputToken || !outputToken}
                 aria-label="Swap tokens"
               >
@@ -246,8 +257,8 @@ export function Swap({ address }: { address: Address }) {
               <div className="flex items-center gap-2">
                 <Input
                   type="text"
-                  value={inputToken && outputToken ? `${formatTokenValue(buyAmount, 3)}` : ""}
-                  className="border-none bg-transparent text-4xl h-12"
+                  value={inputToken && outputToken ? `${formatTokenValue(buyAmount, 3)}` : ''}
+                  className="h-12 border-none bg-transparent text-4xl"
                   disabled={true}
                 />
                 <TokenSelect
@@ -266,14 +277,14 @@ export function Swap({ address }: { address: Address }) {
           disabled={!inputToken || !outputToken || sellAmount <= 0 || isSwapping}
           onClick={handleSwap}
         >
-          {isSwapping ? "Swapping..." : "Swap"}
+          {isSwapping ? 'Swapping...' : 'Swap'}
         </Button>
 
         <div className="space-y-3 text-sm">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-gray-400">
               <div className="flex items-center gap-1">
-                Fee ({(Number(currentPair?.swapFee ?? "0") / 100).toFixed(2)}%)
+                Fee ({(Number(currentPair?.swapFee ?? '0') / 100).toFixed(2)}%)
               </div>
               <span>
                 {formatTokenValue(fee, 2)} {inputToken}
@@ -284,7 +295,7 @@ export function Swap({ address }: { address: Address }) {
               <div className="flex items-center gap-1">
                 Price impact <Info className="h-4 w-4" />
               </div>
-              <span className={priceImpact > 5 ? "text-red-500" : ""}>{formatTokenValue(priceImpact, 2)}%</span>
+              <span className={priceImpact > 5 ? 'text-red-500' : ''}>{formatTokenValue(priceImpact, 2)}%</span>
             </div>
 
             <div className="flex items-center justify-between text-gray-400">

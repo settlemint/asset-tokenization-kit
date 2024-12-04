@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth/auth";
-import { actionClient } from "@/lib/safe-action";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { CreateAddressBookEntrySchema } from "./create-address-book-entry-schema";
+import { auth } from '@/lib/auth/auth';
+import { actionClient } from '@/lib/safe-action';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { CreateAddressBookEntrySchema } from './create-address-book-entry-schema';
 
 const CreateAddressBookEntryMutation = hasuraGraphql(`
 mutation CreateAddressBookEntry($address: String!, $name: String!, $walletAddress: String!) {
@@ -21,7 +21,7 @@ export const createAddressBookEntryAction = actionClient
     const session = await auth();
 
     if (!session?.user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     const result = await hasuraClient.request(CreateAddressBookEntryMutation, {

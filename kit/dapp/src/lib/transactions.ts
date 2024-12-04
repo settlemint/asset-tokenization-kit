@@ -1,18 +1,18 @@
 export interface TransactionReceiptWithDecodedError {
   blockNumber: string;
-  status: "Success" | "Reverted";
+  status: 'Success' | 'Reverted';
   revertReasonDecoded?: string | null;
   contractAddress?: string | null;
 }
 
 function checkReceipt(receipt: TransactionReceiptWithDecodedError) {
-  if (receipt.status === "Success") {
+  if (receipt.status === 'Success') {
     return receipt;
   }
   if (receipt.revertReasonDecoded) {
     throw new Error(`Transaction failed: ${receipt.revertReasonDecoded}`);
   }
-  throw new Error("Transaction failed");
+  throw new Error('Transaction failed');
 }
 
 export interface WaitForTransactionReceiptOptions {

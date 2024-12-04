@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import type { PropsWithChildren } from "react";
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import type { PropsWithChildren } from 'react';
 
 interface EllipsisDropdownProps extends PropsWithChildren {
   items: {
@@ -21,7 +21,7 @@ export function EllipsisDropdown({ items, className }: EllipsisDropdownProps) {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className={cn("h-auto py-0 px-2 font-normal", className)}
+          className={cn('h-auto px-2 py-0 font-normal', className)}
           aria-label="Toggle hidden breadcrumb items"
         >
           …
@@ -31,10 +31,10 @@ export function EllipsisDropdown({ items, className }: EllipsisDropdownProps) {
         {items.map(({ label, href }) => (
           <Link
             key={label}
-            href={href ?? ""}
+            href={href ?? ''}
             className={cn(
-              "block px-2 py-1 text-sm hover:bg-accent hover:text-accent-foreground rounded transition-colors",
-              className,
+              'block rounded px-2 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground',
+              className
             )}
           >
             {label}

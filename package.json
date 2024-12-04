@@ -42,23 +42,21 @@
     "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",
     "deploy": "turbo deploy",
-    "codegen": "turbo codegen"
+    "codegen": "turbo codegen",
+    "lint:biome": "biome lint --write --unsafe .",
+    "format:biome": "biome format --write ."
   },
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "lefthook": "1.8.5",
     "turbo": "^2.3.3",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "ultracite": "^4.1.7"
   },
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "lefthook"
-  ],
+  "trustedDependencies": ["@biomejs/biome", "lefthook"],
   "packageManager": "bun@1.1.38",
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0-rc-66855b96-20241106"
   }

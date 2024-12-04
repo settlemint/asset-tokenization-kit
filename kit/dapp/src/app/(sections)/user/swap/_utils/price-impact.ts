@@ -5,24 +5,26 @@ interface CalculatePriceImpactParams {
 }
 
 export function calculatePriceImpact({ sellAmount, baseReserve, quoteReserve }: CalculatePriceImpactParams): number {
-  if (sellAmount <= 0) return 0;
+  if (sellAmount <= 0) {
+    return 0;
+  }
 
   // Convert reserves to BigInt to maintain precision
-  const baseReserveBI = BigInt(baseReserve);
-  const quoteReserveBI = BigInt(quoteReserve);
+  const baseReserveBi = BigInt(baseReserve);
+  const quoteReserveBi = BigInt(quoteReserve);
 
   // Convert sell amount to same decimal precision as reserves
-  const sellAmountBI = BigInt(Math.floor(sellAmount * 1e18));
+  const sellAmountBi = BigInt(Math.floor(sellAmount * 1e18));
 
   // Calculate quote amount out using constant product formula
-  const k = baseReserveBI * quoteReserveBI;
-  const newBaseReserveBI = baseReserveBI + sellAmountBI;
-  const newQuoteReserveBI = k / newBaseReserveBI;
-  const quoteAmountBI = quoteReserveBI - newQuoteReserveBI;
+  const k = baseReserveBi * quoteReserveBi;
+  const newBaseReserveBi = baseReserveBi + sellAmountBi;
+  const newQuoteReserveBi = k / newBaseReserveBi;
+  const quoteAmountBi = quoteReserveBi - newQuoteReserveBi;
 
   // Calculate prices using floating point for better precision in small numbers
-  const spotPrice = Number(quoteReserveBI) / Number(baseReserveBI);
-  const executionPrice = Number(quoteAmountBI) / Number(sellAmountBI);
+  const spotPrice = Number(quoteReserveBi) / Number(baseReserveBi);
+  const executionPrice = Number(quoteAmountBi) / Number(sellAmountBi);
 
   // Calculate price impact as percentage
   const priceImpact = ((spotPrice - executionPrice) / spotPrice) * 100;

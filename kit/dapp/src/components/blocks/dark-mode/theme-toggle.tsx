@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { Button, type ButtonProps } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useCallback, useEffect, useState } from "react";
+} from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
+import { MoonIcon, SunIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Props for the ThemeToggle component.
  */
 interface ThemeToggleProps {
   /** The variant of the button. */
-  variant?: ButtonProps["variant"];
+  variant?: ButtonProps['variant'];
   /** The size of the button. */
-  size?: ButtonProps["size"];
+  size?: ButtonProps['size'];
   /** Additional CSS classes to apply to the button. */
   className?: string;
 }
@@ -28,19 +28,19 @@ interface ThemeToggleProps {
  * Array of theme options available for selection.
  */
 const themeOptions = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
 ] as const;
 
 /**
  * Mapping of button sizes to skeleton sizes.
  */
 const skeletonSizes = {
-  icon: "h-10 w-10",
-  default: "h-10 w-16",
-  sm: "h-9 w-14",
-  lg: "h-11 w-20",
+  icon: 'h-10 w-10',
+  default: 'h-10 w-16',
+  sm: 'h-9 w-14',
+  lg: 'h-11 w-20',
 } as const;
 
 /**
@@ -48,7 +48,7 @@ const skeletonSizes = {
  * @param props - The component props.
  * @returns A dropdown menu for theme selection.
  */
-export function ThemeToggle({ variant = "outline", size = "icon", className }: ThemeToggleProps) {
+export function ThemeToggle({ variant = 'outline', size = 'icon', className }: ThemeToggleProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -60,7 +60,7 @@ export function ThemeToggle({ variant = "outline", size = "icon", className }: T
     (newTheme: string) => {
       setTheme(newTheme);
     },
-    [setTheme],
+    [setTheme]
   );
 
   useEffect(() => {
@@ -76,9 +76,9 @@ export function ThemeToggle({ variant = "outline", size = "icon", className }: T
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={className} aria-label="Toggle theme">
-          <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <SunIcon className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          {size !== "icon" && <span className="ml-2">{resolvedTheme}</span>}
+          {size !== 'icon' && <span className="ml-2">{resolvedTheme}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,7 +1,7 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { format, subDays, subMonths } from "date-fns";
-import { type ChartDataPoint, generateTimeArray, getStartOfCurrentDay, getStartOfCurrentHour } from "./chart-utils";
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { format, subDays, subMonths } from 'date-fns';
+import { type ChartDataPoint, generateTimeArray, getStartOfCurrentDay, getStartOfCurrentHour } from './chart-utils';
 
 const TokenVolumes = theGraphGraphql(`
 query TokenVolumes($timestamp_gt: Timestamp!, $interval: Aggregation_interval!) {
@@ -39,11 +39,11 @@ const TokenVolumesPerToken = theGraphGraphql(`
   }
   `);
 
-export const useVolumeChartData = (interval: "hour" | "day", token?: string) => {
+export const useVolumeChartData = (interval: 'hour' | 'day', token?: string) => {
   return useSuspenseQuery({
-    queryKey: ["token-volumes", interval, token],
+    queryKey: ['token-volumes', interval, token],
     queryFn: async () => {
-      const since = interval === "hour" ? subDays(getStartOfCurrentHour(), 2) : subMonths(getStartOfCurrentDay(), 2);
+      const since = interval === 'hour' ? subDays(getStartOfCurrentHour(), 2) : subMonths(getStartOfCurrentDay(), 2);
 
       const { erc20TokenVolumeStats_collection: rawChartData } = token
         ? await theGraphClient.request(TokenVolumesPerToken, {
@@ -59,7 +59,7 @@ export const useVolumeChartData = (interval: "hour" | "day", token?: string) => 
         (acc, item) => {
           const itemDate = new Date(Number(item.timestamp) / 1000);
           const key =
-            interval === "hour"
+            interval === 'hour'
               ? `${itemDate.getDate()}-${itemDate.getHours()}`
               : `${itemDate.getMonth()}-${itemDate.getDate()}`;
 
@@ -70,16 +70,16 @@ export const useVolumeChartData = (interval: "hour" | "day", token?: string) => 
           acc[key].volume += BigInt(item.totalVolume);
           return acc;
         },
-        {} as Record<string, { transfers: number; volume: bigint }>,
+        {} as Record<string, { transfers: number; volume: bigint }>
       );
 
       const formattedData: ChartDataPoint[] = timeArray.map((time) => {
         const key =
-          interval === "hour" ? `${time.getDate()}-${time.getHours()}` : `${time.getMonth()}-${time.getDate()}`;
+          interval === 'hour' ? `${time.getDate()}-${time.getHours()}` : `${time.getMonth()}-${time.getDate()}`;
         const aggregatedItem = aggregatedData[key];
 
         return {
-          timestamp: format(time, interval === "hour" ? "HH:mm" : "MMM d"),
+          timestamp: format(time, interval === 'hour' ? 'HH:mm' : 'MMM d'),
           transfers: aggregatedItem?.transfers ?? 0,
           volume: Number(aggregatedItem?.volume ?? BigInt(0)) / 1e18,
         };

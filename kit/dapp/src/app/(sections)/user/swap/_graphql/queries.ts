@@ -1,5 +1,5 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { portalGraphql } from '@/lib/settlemint/portal';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
 
 // TODO: I do not like the indexing output one bit, we should simplify based on what we need and take a look at the uniswap indexing code for best practices
 export const GetSellableTokens = theGraphGraphql(`

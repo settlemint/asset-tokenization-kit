@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { DataTable } from "@/components/blocks/data-table/data-table";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { EvmAddressBalances } from "@/components/evm-address-balances";
-import { Button } from "@/components/ui/button";
-import { formatTokenValue } from "@/lib/number";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { FolderOpen } from "lucide-react";
-import Link from "next/link";
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/evm-address-balances';
+import { Button } from '@/components/ui/button';
+import { formatTokenValue } from '@/lib/number';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { FolderOpen } from 'lucide-react';
+import Link from 'next/link';
 
 const ListAllTokens = theGraphGraphql(`
 query ListAllTokens {
@@ -33,7 +33,7 @@ query ListAllTokens {
 //   - see https://nextjs.org/docs/app/building-your-application/caching#time-based-revalidation
 export function TokenTable() {
   const tokens = useSuspenseQuery({
-    queryKey: ["all-tokens"],
+    queryKey: ['all-tokens'],
     queryFn: () => {
       return theGraphClient.request(ListAllTokens, {});
     },
@@ -44,7 +44,7 @@ export function TokenTable() {
     <DataTable
       columns={[
         {
-          accessorKey: "id",
+          accessorKey: 'id',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Contract Address</DataTableColumnHeader>;
           },
@@ -60,7 +60,7 @@ export function TokenTable() {
           },
         },
         {
-          accessorKey: "name",
+          accessorKey: 'name',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>;
           },
@@ -70,7 +70,7 @@ export function TokenTable() {
           },
         },
         {
-          accessorKey: "symbol",
+          accessorKey: 'symbol',
           header: ({ column }) => {
             return <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>;
           },
@@ -80,7 +80,7 @@ export function TokenTable() {
           },
         },
         {
-          accessorKey: "decimals",
+          accessorKey: 'decimals',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader variant="numeric" column={column}>
@@ -94,7 +94,7 @@ export function TokenTable() {
           },
         },
         {
-          accessorKey: "totalSupply",
+          accessorKey: 'totalSupply',
           header: ({ column }) => {
             return (
               <DataTableColumnHeader column={column} variant="numeric">
@@ -112,15 +112,15 @@ export function TokenTable() {
           },
         },
         {
-          id: "actions",
+          id: 'actions',
           cell: ({ row }) => {
             const { id } = row.original;
 
             return (
-              <div className="flex items-center space-x-2 px-4 py-2 justify-end">
+              <div className="flex items-center justify-end space-x-2 px-4 py-2">
                 <Link prefetch={false} href={`/issuer/tokens/${id}/details`}>
                   <Button variant="outline">
-                    <FolderOpen className="w-4 h-4" />
+                    <FolderOpen className="h-4 w-4" />
                     Details
                   </Button>
                 </Link>

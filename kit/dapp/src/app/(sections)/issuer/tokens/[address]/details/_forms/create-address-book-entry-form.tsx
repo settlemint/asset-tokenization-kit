@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { createAddressBookEntryAction } from "./create-address-book-entry-action";
+import { Input } from '@/components/blocks/form/form-input';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { createAddressBookEntryAction } from './create-address-book-entry-action';
 import {
   CreateAddressBookEntrySchema,
   type CreateAddressBookEntrySchemaType,
   createAddressBookEntryFormPageFields,
-} from "./create-address-book-entry-schema";
+} from './create-address-book-entry-schema';
 
 interface CreateAddressBookEntryFormProps {
   defaultValues: Partial<CreateAddressBookEntrySchemaType>;
@@ -23,7 +23,7 @@ interface CreateAddressBookEntryFormProps {
 }
 
 export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookEntryFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateAddressBookEntrySchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<CreateAddressBookEntrySchemaType>>('state', defaultValues);
 
   const { form, resetFormAndAction } = useHookFormAction(
     createAddressBookEntryAction,
@@ -35,7 +35,7 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
         },
       },
       formProps: {
-        mode: "all",
+        mode: 'all',
         defaultValues: {
           ...createAddressBookEntryFormPageFields,
           ...defaultValues,
@@ -43,7 +43,7 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
         },
       },
       errorMapProps: {},
-    },
+    }
   );
 
   function onSubmit(values: CreateAddressBookEntrySchemaType) {
@@ -53,15 +53,14 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
         return { walletAddress: values.walletAddress! };
       },
       {
-        loading: "Saving address book entry...",
+        loading: 'Saving address book entry...',
         success: (data: { walletAddress: string }) => {
           return `${data.walletAddress}  saved`;
         },
         error: (error) => {
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
   }
 
@@ -82,10 +81,10 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
                 <FormPage
                   form={form}
                   title=""
-                  fields={["walletName"]}
+                  fields={['walletName']}
                   withSheetClose
                   controls={{
-                    submit: { buttonText: "Save" },
+                    submit: { buttonText: 'Save' },
                   }}
                 >
                   {/* Wallet address */}

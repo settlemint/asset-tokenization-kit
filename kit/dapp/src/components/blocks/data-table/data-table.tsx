@@ -1,7 +1,7 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+'use client';
+'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -13,11 +13,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import { DataTableFilter } from "./data-table-filter";
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableVisibility } from "./data-table-visibility";
+} from '@tanstack/react-table';
+import { useState } from 'react';
+import { DataTableFilter } from './data-table-filter';
+import { DataTablePagination } from './data-table-pagination';
+import { DataTableVisibility } from './data-table-visibility';
 
 /**
  * Props for the DataTable component.
@@ -77,13 +77,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="DataTable p-1">
-      <div className="flex py-2 mb-2">
+      <div className="mb-2 flex py-2">
         {data.length > 0 && isSearch && (
           <DataTableFilter table={table} placeholder={filterPlaceholder} column={filterColumn} />
         )}
         <DataTableVisibility table={table} />
       </div>
-      <div className="w-full bg-card shadow-sm text-sidebar-foreground rounded-md border">
+      <div className="w-full rounded-md border bg-card text-sidebar-foreground shadow-sm">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -101,7 +101,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}

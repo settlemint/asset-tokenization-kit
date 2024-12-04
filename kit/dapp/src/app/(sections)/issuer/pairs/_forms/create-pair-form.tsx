@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { createTokenAction } from "./create-pair-action";
-import type { CreateDexPairSchemaType } from "./create-pair-form-schema";
-import { CreateDexPairSchema, createDexPairFormPageFields } from "./create-pair-form-schema";
+import { Input } from '@/components/blocks/form/form-input';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { createTokenAction } from './create-pair-action';
+import type { CreateDexPairSchemaType } from './create-pair-form-schema';
+import { CreateDexPairSchema, createDexPairFormPageFields } from './create-pair-form-schema';
 
 interface CreateTokenFormProps {
   defaultValues: Partial<CreateDexPairSchemaType>;
@@ -34,7 +34,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateDexPairSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<CreateDexPairSchemaType>>('state', defaultValues);
 
   const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateDexPairSchema), {
     actionProps: {
@@ -43,7 +43,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
       },
     },
     formProps: {
-      mode: "all",
+      mode: 'all',
       defaultValues: {
         ...createDexPairFormPageFields,
         ...defaultValues,
@@ -61,7 +61,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
         return waitForTransactionReceipt({
           receiptFetcher: async () => {
             const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? "",
+              transactionHash: transactionHash?.data ?? '',
             });
 
             return txresult.getTransaction?.receipt;
@@ -69,15 +69,14 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
         });
       },
       {
-        loading: "Creating token...",
+        loading: 'Creating token...',
         success: (data) => {
           return `New pair created in block ${data.blockNumber} on ${data.contractAddress}`;
         },
         error: (error) => {
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
     // TODO: update the table
   }
@@ -100,7 +99,7 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                   form={form}
                   title="Introduction"
                   controls={{
-                    next: { buttonText: "Continue" },
+                    next: { buttonText: 'Continue' },
                   }}
                 >
                   <div>
@@ -112,8 +111,8 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                   form={form}
                   title="Terms & Conditions"
                   controls={{
-                    prev: { buttonText: "Back" },
-                    next: { buttonText: "Continue" },
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Continue' },
                   }}
                 >
                   <p>By proceeding with the tokenization process, you agree to the following:</p>
@@ -131,11 +130,11 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Token Information"
-                  fields={["baseTokenAddress", "quoteTokenAddress"]}
+                  fields={['baseTokenAddress', 'quoteTokenAddress']}
                   withSheetClose
                   controls={{
-                    prev: { buttonText: "Back" },
-                    submit: { buttonText: "Submit" },
+                    prev: { buttonText: 'Back' },
+                    submit: { buttonText: 'Submit' },
                   }}
                 >
                   {/* Token Name */}

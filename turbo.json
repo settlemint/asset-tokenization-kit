@@ -4,29 +4,15 @@
   "envMode": "loose",
   "tasks": {
     "build": {
-      "dependsOn": [
-        "codegen",
-        "^build"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        ".env*"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
-      ]
+      "dependsOn": ["codegen", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": [
-        "codegen",
-        "^lint"
-      ]
+      "dependsOn": ["codegen", "^lint", "//#format:biome"]
     },
     "check-types": {
-      "dependsOn": [
-        "^check-types"
-      ]
+      "dependsOn": ["^check-types"]
     },
     "dev": {
       "cache": false,
@@ -36,22 +22,21 @@
       "cache": false
     },
     "publish-docker": {
-      "dependsOn": [
-        "codegen",
-        "^publish-docker"
-      ],
+      "dependsOn": ["codegen", "^publish-docker"],
       "cache": false
     },
     "deploy": {
-      "dependsOn": [
-        "^deploy"
-      ],
+      "dependsOn": ["^deploy"],
       "cache": false
     },
     "codegen": {
-      "dependsOn": [
-        "^codegen"
-      ],
+      "dependsOn": ["^codegen"],
+      "cache": false
+    },
+    "//#format:biome": {
+      "cache": false
+    },
+    "//#lint:biome": {
       "cache": false
     }
   }

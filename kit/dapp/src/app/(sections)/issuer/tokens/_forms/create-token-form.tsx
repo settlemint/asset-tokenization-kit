@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/blocks/form/form-input";
-import { FormMultiStepProvider } from "@/components/blocks/form/form-multistep";
-import { FormPage } from "@/components/blocks/form/form-page";
-import { Dropzone } from "@/components/blocks/form/form-upload-dropzone";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { waitForTransactionReceipt } from "@/lib/transactions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
-import { createTokenAction } from "./create-token-action";
-import type { CreateTokenSchemaType } from "./create-token-form-schema";
-import { CreateTokenSchema, createTokenFormPageFields } from "./create-token-form-schema";
+import { Input } from '@/components/blocks/form/form-input';
+import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
+import { FormPage } from '@/components/blocks/form/form-page';
+import { Dropzone } from '@/components/blocks/form/form-upload-dropzone';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { waitForTransactionReceipt } from '@/lib/transactions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { createTokenAction } from './create-token-action';
+import type { CreateTokenSchemaType } from './create-token-form-schema';
+import { CreateTokenSchema, createTokenFormPageFields } from './create-token-form-schema';
 
 interface CreateTokenFormProps {
   defaultValues: Partial<CreateTokenSchemaType>;
@@ -33,7 +33,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>("state", defaultValues);
+  const [localStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>('state', defaultValues);
 
   const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateTokenSchema), {
     actionProps: {
@@ -42,7 +42,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
       },
     },
     formProps: {
-      mode: "all",
+      mode: 'all',
       defaultValues: {
         ...createTokenFormPageFields,
         ...defaultValues,
@@ -59,7 +59,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
         return waitForTransactionReceipt({
           receiptFetcher: async () => {
             const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? "",
+              transactionHash: transactionHash?.data ?? '',
             });
 
             return txresult.StarterKitERC20FactoryCreateTokenReceipt;
@@ -67,15 +67,14 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
         });
       },
       {
-        loading: "Creating token...",
+        loading: 'Creating token...',
         success: (data) => {
           return `${values.tokenName} (${values.tokenSymbol}) created in block ${data.blockNumber} on ${data.contractAddress}`;
         },
         error: (error) => {
-          console.error(error);
-          return `Error: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
         },
-      },
+      }
     );
     // TODO: update the table
   }
@@ -98,7 +97,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                   form={form}
                   title="Introduction"
                   controls={{
-                    next: { buttonText: "Continue" },
+                    next: { buttonText: 'Continue' },
                   }}
                 >
                   <div>
@@ -110,8 +109,8 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                   form={form}
                   title="Terms & Conditions"
                   controls={{
-                    prev: { buttonText: "Back" },
-                    next: { buttonText: "Continue" },
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Continue' },
                   }}
                 >
                   <p>By proceeding with the tokenization process, you agree to the following:</p>
@@ -129,11 +128,11 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                 <FormPage
                   form={form}
                   title="Token Information"
-                  fields={["tokenName", "tokenSymbol"]}
+                  fields={['tokenName', 'tokenSymbol']}
                   withSheetClose
                   controls={{
-                    prev: { buttonText: "Back" },
-                    submit: { buttonText: "Submit" },
+                    prev: { buttonText: 'Back' },
+                    submit: { buttonText: 'Submit' },
                   }}
                 >
                   {/* Token Name */}
@@ -179,14 +178,14 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                               label="Click, or drop your logo here"
                               name={field.name}
                               accept={{
-                                images: [".jpg", ".jpeg", ".png", ".webp"],
+                                images: ['.jpg', '.jpeg', '.png', '.webp'],
                                 text: [],
                               }}
                               maxSize={1024 * 1024 * 10} // 10MB
                               multiple={false}
                               server={{
-                                bucket: "default-bucket",
-                                storage: "minio",
+                                bucket: 'default-bucket',
+                                storage: 'minio',
                               }}
                             />
                           </FormControl>
