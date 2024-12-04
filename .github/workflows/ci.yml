@@ -51,81 +51,10 @@ jobs:
 
       - name: Connect
         run: bunx settlemint connect -a
+        working-directory: kit/dapp
 
-      - name: Codegen
-        run: bunx settlemint codegen
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Build
-        run: bun run build
-
-  npm-publish:
-    name: NPM Publish
-    runs-on: namespace-profile-starterkit
-    needs: test
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
-      - name: Update package versions
-        id: package-version
-        run: bash .github/scripts/update-version.sh
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Publish Asset Tokenization package
-        run: bun run publish-npm
-
-      - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@v5
-        if: ${{ env.TAG == 'latest' }}
-        with:
-          commit_message: "chore: update package versions [skip ci]"
-          branch: main
-          file_pattern: 'package.json'
-
-  docker-publish:
-    name: Docker Publish
-    runs-on: namespace-profile-starterkit
-    needs: test
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
-
-      - name: Setup caches
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-
-      - name: Install Bun dependencies
-        run: bun install
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
-      - name: Update package versions
-        id: package-version
-        run: bash .github/scripts/update-version.sh
-
-      - name: Process environment files
-        run: bash .github/scripts/process-env.sh "${{ secrets.ENV_FILE }}" "${{ secrets.ENV_FILE_LOCAL }}"
-
-      - name: Connect
-        run: bunx settlemint connect -a
-
-      - name: Codegen
-        run: bunx settlemint codegen
+      - name: Lint & Check Types
+        run: bunx turbo run lint check-types
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -134,17 +63,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish Docker image
-        run: bun run publish-docker
-
-      - name: Update the Custom Deployment (production)
-        if: ${{ env.TAG == 'latest' }}
+      - name: Publish
         run: |
-          echo "Updating the Custom Deployment with the new version ${{ env.VERSION }}"
-          bun run deploy -- --prod
+          PUBLISH_TASKS=""
+          if [[ "$PUBLISH_NPM" == "true" ]]; then
+            PUBLISH_TASKS="$PUBLISH_TASKS publish-npm"
+          fi
+          if [[ "$PUBLISH_DOCKER" == "true" ]]; then
+            PUBLISH_TASKS="$PUBLISH_TASKS publish-docker"
+          fi
+          if [[ -n "$PUBLISH_TASKS" ]]; then
+            bunx turbo run $PUBLISH_TASKS
+          fi
+        env:
+          PUBLISH_NPM: true
+          PUBLISH_DOCKER: true
 
-      - name: Update the Custom Deployment (development)
-        if: ${{ env.TAG == 'main' }}
-        run: |
-          echo "Updating the Custom Deployment with the new version ${{ env.VERSION }}"
-          bun run deploy
+      - name: Update Custom Deployment
+        if: ${{ env.TAG != 'pr' }}
+        run: bash .github/scripts/update-deployment.sh
