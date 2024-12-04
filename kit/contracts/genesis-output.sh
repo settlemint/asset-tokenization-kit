@@ -11,15 +11,24 @@ if ((BASH_VERSINFO[0] >= 4)); then
     # Use associative array for bash 4+
     declare -A CONTRACT_ADDRESSES
     CONTRACT_ADDRESSES=(
-        ["Lock"]="0x5e771e1417100000000000000000000000000001"
+        ["CryptoCurrencyFactory"]="0x5e771e1417100000000000000000000000000001"
+        ["StableCoinFactory"]="0x5e771e1417100000000000000000000000000002"
+        ["EquityFactory"]="0x5e771e1417100000000000000000000000000003"
+        ["BondFactory"]="0x5e771e1417100000000000000000000000000004"
     )
 else
     # Fallback for older bash versions
     CONTRACT_NAMES=(
-        "Lock"
+        "CryptoCurrencyFactory"
+        "StableCoinFactory"
+        "EquityFactory"
+        "BondFactory"
     )
     CONTRACT_ADDRS=(
         "0x5e771e1417100000000000000000000000000001"
+        "0x5e771e1417100000000000000000000000000002"
+        "0x5e771e1417100000000000000000000000000003"
+        "0x5e771e1417100000000000000000000000000004"
     )
 
     # Function to get address by name for older bash
