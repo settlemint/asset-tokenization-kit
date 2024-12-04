@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash -ex
 
 # Get the absolute path of the script's directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -79,14 +79,14 @@ process_sol_file() {
         return
     fi
 
-    # Initialize an empty JSON object for storage
+    # Process storage slots without using a pipe
     local STORAGE_JSON="{}"
+    local slots=($(echo "$STORAGE_LAYOUT" | jq -r '.storage[] | .slot'))
 
-    # Read storage slots
-    echo "$STORAGE_LAYOUT" | jq -c '.storage[]' | while read -r slot; do
-        local SLOT_NUMBER=$(echo "$slot" | jq -r .slot)
-        local SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$SLOT_NUMBER")
-        STORAGE_JSON=$(echo "$STORAGE_JSON" | jq --arg slot "0x000000000000000000000000000000000000000000000000000000000000000$SLOT_NUMBER" --arg value "$SLOT_VALUE" '. + {($slot): $value}')
+    for slot in "${slots[@]}"; do
+        local SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$slot")
+        local padded_slot=$(printf "0x%064d" "$slot")
+        STORAGE_JSON=$(echo "$STORAGE_JSON" | jq --arg slot "$padded_slot" --arg value "$SLOT_VALUE" '. + {($slot): $value}')
     done
 
     # Get bytecode from the deployed contract
@@ -110,7 +110,7 @@ process_sol_file() {
     fi
     mv "${SCRIPT_DIR}/temp.json" "${ALL_ALLOCATIONS_FILE}"
 
-    echo "Added genesis configuration for $contract_name to all_allocations.json"
+    echo "Added genesis configuration for $contract_name"
 }
 
 # Find all .sol files in the contracts directory and process them
