@@ -52,7 +52,7 @@ process_sol_file() {
     fi
 
     local args_file="${sol_file%.*}.args"
-    local forge_args=("${sol_file}:${contract_name}" --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
+    local forge_args=("${sol_file}:${contract_name}" --broadcast --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
 
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then
