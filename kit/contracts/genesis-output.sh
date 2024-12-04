@@ -6,16 +6,34 @@ ALL_ALLOCATIONS_FILE="${SCRIPT_DIR}/genesis-output.json"
 
 rm -Rf "${ALL_ALLOCATIONS_FILE}"
 
-# Declare associative array for contract addresses
-declare -A CONTRACT_ADDRESSES
+# Check bash version and use appropriate array type
+if ((BASH_VERSINFO[0] >= 4)); then
+    # Use associative array for bash 4+
+    declare -A CONTRACT_ADDRESSES
+    CONTRACT_ADDRESSES=(
+        ["Lock"]="0x5e771e1417100000000000000000000000000001"
+    )
+else
+    # Fallback for older bash versions
+    CONTRACT_NAMES=(
+        "Lock"
+    )
+    CONTRACT_ADDRS=(
+        "0x5e771e1417100000000000000000000000000001"
+    )
 
-################################################################
-# NEVER EVER EVER EVER CHANGE THE ADDRESSES IN THIS LIST!!!!!!
-################################################################
-
-CONTRACT_ADDRESSES=(
-    ["Lock"]="0x5e771e1417100000000000000000000000000001"
-)
+    # Function to get address by name for older bash
+    get_contract_address() {
+        local name="$1"
+        for i in "${!CONTRACT_NAMES[@]}"; do
+            if [[ "${CONTRACT_NAMES[$i]}" == "$name" ]]; then
+                echo "${CONTRACT_ADDRS[$i]}"
+                return 0
+            fi
+        done
+        echo ""
+    }
+fi
 
 # Initialize an empty JSON object for all allocations
 echo "{}" > "${ALL_ALLOCATIONS_FILE}"
@@ -24,9 +42,17 @@ echo "{}" > "${ALL_ALLOCATIONS_FILE}"
 process_sol_file() {
     local sol_file="$1"
     local contract_name="$(basename "${sol_file%.*}")"
-    local target_address="${CONTRACT_ADDRESSES[$contract_name]}"
+    local target_address
+
+    # Get address based on bash version
+    if ((BASH_VERSINFO[0] >= 4)); then
+        target_address="${CONTRACT_ADDRESSES[$contract_name]}"
+    else
+        target_address="$(get_contract_address "$contract_name")"
+    fi
+
     local args_file="${sol_file%.*}.args"
-    local forge_args=("${sol_file}:${contract_name}" --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json)
+    local forge_args=("${sol_file}:${contract_name}" --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
 
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then
@@ -59,12 +85,12 @@ process_sol_file() {
     # Read storage slots
     echo "$STORAGE_LAYOUT" | jq -c '.storage[]' | while read -r slot; do
         local SLOT_NUMBER=$(echo "$slot" | jq -r .slot)
-        local SLOT_VALUE=$(cast storage "$DEPLOYED_ADDRESS" "$SLOT_NUMBER")
+        local SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$SLOT_NUMBER")
         STORAGE_JSON=$(echo "$STORAGE_JSON" | jq --arg slot "0x000000000000000000000000000000000000000000000000000000000000000$SLOT_NUMBER" --arg value "$SLOT_VALUE" '. + {($slot): $value}')
     done
 
     # Get bytecode from the deployed contract
-    local BYTECODE=$(cast code "$DEPLOYED_ADDRESS" | sed 's/^0x//')
+    local BYTECODE=$(cast code --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" | sed 's/^0x//')
     if [[ -z "$BYTECODE" ]]; then
         echo "Error: Unable to get bytecode for deployed $contract_name"
         return
