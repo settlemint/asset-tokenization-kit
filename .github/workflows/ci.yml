@@ -118,6 +118,9 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Process environment files
+        run: bash .github/scripts/process-env.sh "${{ secrets.ENV_FILE }}" "${{ secrets.ENV_FILE_LOCAL }}"
+
       - name: Connect
         run: bunx settlemint connect -a
 
