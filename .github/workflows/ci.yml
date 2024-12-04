@@ -118,6 +118,12 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Connect
+        run: bunx settlemint connect -a
+
+      - name: Codegen
+        run: bunx settlemint codegen
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
