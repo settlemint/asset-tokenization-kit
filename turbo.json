@@ -30,7 +30,7 @@
       "cache": false
     },
     "codegen": {
-      "dependsOn": ["^codegen"],
+      "dependsOn": ["^codegen", "contracts#build"],
       "cache": false
     },
     "//#format:biome": {
