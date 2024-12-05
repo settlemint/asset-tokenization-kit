@@ -52,12 +52,11 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "lefthook": "1.8.5",
     "turbo": "2.3.3",
     "typescript": "5.7.2",
     "ultracite": "4.1.8"
   },
-  "trustedDependencies": ["@biomejs/biome", "lefthook"],
+  "trustedDependencies": ["@biomejs/biome"],
   "packageManager": "bun@1.1.38",
   "workspaces": ["kit/*"],
   "overrides": {

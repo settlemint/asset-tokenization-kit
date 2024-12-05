@@ -4,6 +4,7 @@
     "ignore": [".vscode/", "kit/dapp/src/components/ui/**/*", "*-env.d.ts"]
   },
   "linter": {
+    "ignore": ["kit/subgraph/src/**/*"],
     "rules": {
       "style": {
         "noNonNullAssertion": "off",

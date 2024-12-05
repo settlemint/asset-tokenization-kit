@@ -1,0 +1,12 @@
+type BondCreated @entity(immutable: true) {
+  id: Bytes!
+  bond: Bytes! # address
+  name: String! # string
+  symbol: String! # string
+  owner: Bytes! # address
+  maturityDate: BigInt! # uint256
+  bondCount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

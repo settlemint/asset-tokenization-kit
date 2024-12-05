@@ -8,7 +8,6 @@ import { StableCoin } from "./StableCoin.sol";
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
 contract StableCoinFactory {
-    error ZeroAddress();
     error InvalidLiveness();
 
     /// @notice Emitted when a new stablecoin token is created
@@ -40,28 +39,25 @@ contract StableCoinFactory {
     /// @dev Uses CREATE2 for deterministic addresses and emits a StableCoinCreated event
     /// @param name The name of the token
     /// @param symbol The symbol of the token
-    /// @param owner The address that will own the token
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @return token The address of the newly created token
-    function createToken(
+    function create(
         string memory name,
         string memory symbol,
-        address owner,
         uint48 collateralLivenessSeconds
     )
         external
         returns (address token)
     {
-        if (owner == address(0)) revert ZeroAddress();
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, owner, collateralLivenessSeconds));
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, msg.sender, collateralLivenessSeconds));
 
-        StableCoin newToken = new StableCoin{ salt: salt }(name, symbol, owner, collateralLivenessSeconds);
+        StableCoin newToken = new StableCoin{ salt: salt }(name, symbol, msg.sender, collateralLivenessSeconds);
 
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit StableCoinCreated(token, name, symbol, owner, collateralLivenessSeconds, allTokens.length);
+        emit StableCoinCreated(token, name, symbol, msg.sender, collateralLivenessSeconds, allTokens.length);
     }
 }

@@ -1,0 +1,73 @@
+[
+  {
+    "type": "function",
+    "name": "allBonds",
+    "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [{ "name": "", "type": "address", "internalType": "contract Bond" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "allBondsLength",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "createBond",
+    "inputs": [
+      { "name": "name", "type": "string", "internalType": "string" },
+      { "name": "symbol", "type": "string", "internalType": "string" },
+      { "name": "owner", "type": "address", "internalType": "address" },
+      { "name": "maturityDate", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [{ "name": "bond", "type": "address", "internalType": "address" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "BondCreated",
+    "inputs": [
+      {
+        "name": "bond",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "symbol",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "maturityDate",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "bondCount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  { "type": "error", "name": "InvalidMaturityDate", "inputs": [] },
+  { "type": "error", "name": "ZeroAddress", "inputs": [] }
+]

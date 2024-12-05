@@ -14,16 +14,16 @@ contract EquityFactory {
     /// @param token The address of the newly created token
     /// @param name The name of the token
     /// @param symbol The symbol of the token
-    /// @param class The equity class (e.g., "Common", "Preferred")
-    /// @param category The equity category (e.g., "Series A", "Seed")
+    /// @param equityClass The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @param owner The owner of the token
     /// @param tokenCount The total number of tokens created so far
     event EquityCreated(
         address indexed token,
         string name,
         string symbol,
-        string class,
-        string category,
+        string equityClass,
+        string equityCategory,
         address indexed owner,
         uint256 tokenCount
     );
@@ -41,15 +41,15 @@ contract EquityFactory {
     /// @dev Uses CREATE2 for deterministic addresses and emits an EquityCreated event
     /// @param name The name of the token
     /// @param symbol The symbol of the token
-    /// @param class The equity class (e.g., "Common", "Preferred")
-    /// @param category The equity category (e.g., "Series A", "Seed")
+    /// @param equityClass The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @param owner The address that will own the token
     /// @return token The address of the newly created token
     function createToken(
         string memory name,
         string memory symbol,
-        string memory class,
-        string memory category,
+        string memory equityClass,
+        string memory equityCategory,
         address owner
     )
         external
@@ -57,13 +57,13 @@ contract EquityFactory {
     {
         if (owner == address(0)) revert ZeroAddress();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, class, category, owner));
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, equityClass, equityCategory, owner));
 
-        Equity newToken = new Equity{ salt: salt }(name, symbol, class, category, owner);
+        Equity newToken = new Equity{ salt: salt }(name, symbol, equityClass, equityCategory, owner);
 
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit EquityCreated(token, name, symbol, class, category, owner, allTokens.length);
+        emit EquityCreated(token, name, symbol, equityClass, equityCategory, owner, allTokens.length);
     }
 }

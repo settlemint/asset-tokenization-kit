@@ -26,7 +26,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.createBond(name, symbol, owner, futureDate);
+        address bondAddress = factory.create(name, symbol, futureDate);
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
         assertEq(factory.allBondsLength(), 1, "Should have created one bond");
@@ -47,16 +47,11 @@ contract BondFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress = factory.createBond(name, symbol, owner, futureDate);
+            address bondAddress = factory.create(name, symbol, futureDate);
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
         }
 
         assertEq(factory.allBondsLength(), count, "Should have created three bonds");
-    }
-
-    function test_RevertWhenZeroAddress() public {
-        vm.expectRevert(BondFactory.ZeroAddress.selector);
-        factory.createBond("Test Bond", "TBOND", address(0), futureDate);
     }
 
     function test_RevertWhenInvalidMaturityDate() public {
@@ -64,24 +59,24 @@ contract BondFactoryTest is Test {
         vm.warp(2 days); // Move time forward to avoid underflow
         uint256 pastDate = block.timestamp - 1 days;
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.createBond("Test Bond", "TBOND", owner, pastDate);
+        factory.create("Test Bond", "TBOND", pastDate);
 
         // Try to create a bond with current timestamp
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.createBond("Test Bond", "TBOND", owner, block.timestamp);
+        factory.create("Test Bond", "TBOND", block.timestamp);
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 = factory.createBond(name, symbol, owner, futureDate);
+        address bond1 = factory.create(name, symbol, futureDate);
 
         // Create a new factory instance
         BondFactory newFactory = new BondFactory();
 
         // Create a bond with the same parameters
-        address bond2 = newFactory.createBond(name, symbol, owner, futureDate);
+        address bond2 = newFactory.create(name, symbol, futureDate);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(bond1, bond2, "Bonds should have different addresses due to different factory addresses");
@@ -91,7 +86,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.createBond(name, symbol, owner, futureDate);
+        address bondAddress = factory.create(name, symbol, futureDate);
         Bond bond = Bond(bondAddress);
 
         // Test initial state
@@ -104,7 +99,7 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.recordLogs();
-        address bondAddress = factory.createBond(name, symbol, owner, futureDate);
+        address bondAddress = factory.create(name, symbol, futureDate);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 2, "Should emit 2 events: OwnershipTransferred and BondCreated");
@@ -130,7 +125,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.createBond(name, symbol, owner, futureDate);
+        address bondAddress = factory.create(name, symbol, futureDate);
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date

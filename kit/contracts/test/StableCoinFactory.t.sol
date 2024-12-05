@@ -29,7 +29,7 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.createToken(name, symbol, owner, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, LIVENESS);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -49,7 +49,7 @@ contract StableCoinFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.createToken(name, symbol, owner, LIVENESS);
+            address tokenAddress = factory.create(name, symbol, LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
@@ -61,27 +61,22 @@ contract StableCoinFactoryTest is Test {
         assertEq(factory.allTokensLength(), count, "Should have created three tokens");
     }
 
-    function test_RevertWhenZeroAddress() public {
-        vm.expectRevert(StableCoinFactory.ZeroAddress.selector);
-        factory.createToken("Test Stable", "TSTB", address(0), LIVENESS);
-    }
-
     function test_RevertWhenInvalidLiveness() public {
         vm.expectRevert(StableCoinFactory.InvalidLiveness.selector);
-        factory.createToken("Test Stable", "TSTB", owner, 0);
+        factory.create("Test Stable", "TSTB", 0);
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address token1 = factory.createToken(name, symbol, owner, LIVENESS);
+        address token1 = factory.create(name, symbol, LIVENESS);
 
         // Create a new factory instance
         StableCoinFactory newFactory = new StableCoinFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.createToken(name, symbol, owner, LIVENESS);
+        address token2 = newFactory.create(name, symbol, LIVENESS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -91,7 +86,7 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.createToken(name, symbol, owner, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
@@ -108,7 +103,7 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.createToken(name, symbol, owner, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // First update collateral
@@ -139,7 +134,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.recordLogs();
-        address tokenAddress = factory.createToken(name, symbol, owner, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, LIVENESS);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 2, "Should emit 2 events: OwnershipTransferred and StableCoinCreated");
