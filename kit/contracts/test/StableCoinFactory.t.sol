@@ -11,15 +11,6 @@ contract StableCoinFactoryTest is Test {
     address public owner;
     uint48 public constant LIVENESS = 7 days;
 
-    event StableCoinCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        address indexed owner,
-        uint48 collateralLivenessSeconds,
-        uint256 tokenCount
-    );
-
     function setUp() public {
         factory = new StableCoinFactory();
         owner = address(this);
@@ -145,7 +136,7 @@ contract StableCoinFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("StableCoinCreated(address,string,string,address,uint48,uint256)"),
+            keccak256("StableCoinCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 

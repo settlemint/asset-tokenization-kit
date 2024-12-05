@@ -11,10 +11,6 @@ contract BondFactoryTest is Test {
     address public owner;
     uint256 public futureDate;
 
-    event BondCreated(
-        address indexed bond, string name, string symbol, address indexed owner, uint256 maturityDate, uint256 bondCount
-    );
-
     function setUp() public {
         factory = new BondFactory();
         owner = address(this);
@@ -110,7 +106,7 @@ contract BondFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,address,uint256,uint256)"),
+            keccak256("BondCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 

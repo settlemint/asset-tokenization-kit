@@ -10,16 +10,6 @@ contract EquityFactoryTest is Test {
     EquityFactory public factory;
     address public owner;
 
-    event EquityCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        string class,
-        string category,
-        address indexed owner,
-        uint256 tokenCount
-    );
-
     function setUp() public {
         factory = new EquityFactory();
         owner = address(this);
@@ -153,7 +143,7 @@ contract EquityFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,string,string,address,uint256)"),
+            keccak256("EquityCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 

@@ -1,26 +1,266 @@
-specVersion: 1.0.0
+specVersion: 1.2.0
 indexerHints:
   prune: auto
+features:
+  - nonFatalErrors
+  - fullTextSearch
+  - ipfsOnEthereumContracts
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum
+  - kind: ethereum/contract
     name: BondFactory
-    network: mainnet
+    network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000001"
+      address: "0x5e771e1417100000000000000000000000000004"
       abi: BondFactory
-      startBlock: 0
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - BondCreated
+        - Event_BondCreated
       abis:
         - name: BondFactory
-          file: ./abis/BondFactory.json
+          file: ../contracts/artifacts/contracts/BondFactory.sol/BondFactory.json
+        - name: Bond
+          file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,indexed address,uint256,uint256)
+        - event: BondCreated(indexed address,string,string,indexed address,uint256)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
+  - kind: ethereum/contract
+    name: CryptoCurrencyFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000001"
+      abi: CryptoCurrencyFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_CryptoCurrencyCreated
+      abis:
+        - name: CryptoCurrencyFactory
+          file: ../contracts/artifacts/contracts/CryptoCurrencyFactory.sol/CryptoCurrencyFactory.json
+        - name: CryptoCurrency
+          file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
+      eventHandlers:
+        - event: CryptoCurrencyCreated(indexed address,string,string,indexed address,uint256)
+          handler: handleCryptoCurrencyCreated
+      file: ./src/crypto-currency-factory.ts
+  - kind: ethereum/contract
+    name: EquityFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000003"
+      abi: EquityFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_EquityCreated
+      abis:
+        - name: EquityFactory
+          file: ../contracts/artifacts/contracts/EquityFactory.sol/EquityFactory.json
+        - name: Equity
+          file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
+      eventHandlers:
+        - event: EquityCreated(indexed address,string,string,indexed address,uint256)
+          handler: handleEquityCreated
+      file: ./src/equity-factory.ts
+  - kind: ethereum/contract
+    name: StableCoinFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000002"
+      abi: StableCoinFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_StableCoinCreated
+      abis:
+        - name: StableCoinFactory
+          file: ../contracts/artifacts/contracts/StableCoinFactory.sol/StableCoinFactory.json
+        - name: StableCoin
+          file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
+      eventHandlers:
+        - event: StableCoinCreated(indexed address,string,string,indexed address,uint256)
+          handler: handleStableCoinCreated
+      file: ./src/stable-coin-factory.ts
+templates:
+  - kind: ethereum/contract
+    name: Bond
+    network: settlemint
+    source:
+      abi: Bond
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_Approval
+        - Event_BondMatured
+        - Event_EIP712DomainChanged
+        - Event_OwnershipTransferred
+        - Event_Paused
+        - Event_TokensFrozen
+        - Event_TokensUnfrozen
+        - Event_Transfer
+        - Event_Unpaused
+        - Event_UserBlocked
+        - Event_UserUnblocked
+      abis:
+        - name: Bond
+          file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: BondMatured(uint256)
+          handler: handleBondMatured
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,uint256)
+          handler: handleTokensUnfrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserBlocked(indexed address)
+          handler: handleUserBlocked
+        - event: UserUnblocked(indexed address)
+          handler: handleUserUnblocked
+      file: ./src/bond.ts
+  - kind: ethereum/contract
+    name: CryptoCurrency
+    network: settlemint
+    source:
+      abi: CryptoCurrency
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_Approval
+        - Event_EIP712DomainChanged
+        - Event_OwnershipTransferred
+        - Event_Transfer
+      abis:
+        - name: CryptoCurrency
+          file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/crypto-currency.ts
+  - kind: ethereum/contract
+    name: Equity
+    network: settlemint
+    source:
+      abi: Equity
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_Approval
+        - Event_DelegateChanged
+        - Event_DelegateVotesChanged
+        - Event_EIP712DomainChanged
+        - Event_OwnershipTransferred
+        - Event_Paused
+        - Event_TokensFrozen
+        - Event_TokensUnfrozen
+        - Event_Transfer
+        - Event_Unpaused
+        - Event_UserBlocked
+        - Event_UserUnblocked
+      abis:
+        - name: Equity
+          file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,uint256)
+          handler: handleTokensUnfrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserBlocked(indexed address)
+          handler: handleUserBlocked
+        - event: UserUnblocked(indexed address)
+          handler: handleUserUnblocked
+      file: ./src/equity.ts
+  - kind: ethereum/contract
+    name: StableCoin
+    network: settlemint
+    source:
+      abi: StableCoin
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_Approval
+        - Event_EIP712DomainChanged
+        - Event_OwnershipTransferred
+        - Event_Paused
+        - Event_TokensFrozen
+        - Event_TokensUnfrozen
+        - Event_Transfer
+        - Event_Unpaused
+        - Event_UserBlocked
+        - Event_UserUnblocked
+      abis:
+        - name: StableCoin
+          file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,uint256)
+          handler: handleTokensUnfrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserBlocked(indexed address)
+          handler: handleUserBlocked
+        - event: UserUnblocked(indexed address)
+          handler: handleUserUnblocked
+      file: ./src/stable-coin.ts

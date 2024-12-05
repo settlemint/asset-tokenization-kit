@@ -11,15 +11,6 @@ contract CryptoCurrencyFactoryTest is Test {
     address public owner;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
 
-    event CryptoCurrencyCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint256 initialSupply,
-        address indexed owner,
-        uint256 tokenCount
-    );
-
     function setUp() public {
         factory = new CryptoCurrencyFactory();
         owner = address(this);
@@ -138,7 +129,7 @@ contract CryptoCurrencyFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,uint256,address,uint256)"),
+            keccak256("CryptoCurrencyCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 

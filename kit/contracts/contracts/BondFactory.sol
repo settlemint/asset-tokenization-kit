@@ -15,16 +15,8 @@ contract BondFactory {
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
     /// @param owner The owner of the bond token
-    /// @param maturityDate The timestamp when the bond matures
-    /// @param bondCount The total number of bonds created so far
-    event BondCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        address indexed owner,
-        uint256 maturityDate,
-        uint256 bondCount
-    );
+    /// @param tokenCount The total number of bonds created so far
+    event BondCreated(address indexed token, string name, string symbol, address indexed owner, uint256 tokenCount);
 
     /// @notice Array of all bonds created by this factory
     Bond[] public allBonds;
@@ -51,6 +43,6 @@ contract BondFactory {
         bond = address(newBond);
         allBonds.push(newBond);
 
-        emit BondCreated(bond, name, symbol, msg.sender, maturityDate, allBonds.length);
+        emit BondCreated(bond, name, symbol, msg.sender, allBonds.length);
     }
 }

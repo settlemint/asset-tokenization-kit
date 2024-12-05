@@ -12,16 +12,10 @@ contract CryptoCurrencyFactory {
     /// @param token The address of the newly created token
     /// @param name The name of the token
     /// @param symbol The symbol of the token
-    /// @param initialSupply The initial supply of tokens minted to the owner
     /// @param owner The owner of the token
     /// @param tokenCount The total number of tokens created so far
     event CryptoCurrencyCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint256 initialSupply,
-        address indexed owner,
-        uint256 tokenCount
+        address indexed token, string name, string symbol, address indexed owner, uint256 tokenCount
     );
 
     /// @notice Array of all tokens created by this factory
@@ -47,6 +41,6 @@ contract CryptoCurrencyFactory {
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit CryptoCurrencyCreated(token, name, symbol, initialSupply, msg.sender, allTokens.length);
+        emit CryptoCurrencyCreated(token, name, symbol, msg.sender, allTokens.length);
     }
 }

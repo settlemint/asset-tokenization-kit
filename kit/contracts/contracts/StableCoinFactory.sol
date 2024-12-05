@@ -15,15 +15,9 @@ contract StableCoinFactory {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param owner The owner of the token
-    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @param tokenCount The total number of tokens created so far
     event StableCoinCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        address indexed owner,
-        uint48 collateralLivenessSeconds,
-        uint256 tokenCount
+        address indexed token, string name, string symbol, address indexed owner, uint256 tokenCount
     );
 
     /// @notice Array of all tokens created by this factory
@@ -58,6 +52,6 @@ contract StableCoinFactory {
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit StableCoinCreated(token, name, symbol, msg.sender, collateralLivenessSeconds, allTokens.length);
+        emit StableCoinCreated(token, name, symbol, msg.sender, allTokens.length);
     }
 }
