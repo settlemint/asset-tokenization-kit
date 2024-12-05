@@ -10,13 +10,12 @@ import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { toast } from 'sonner';
-import { useLocalStorage } from 'usehooks-ts';
 import { createTokenAction } from './create-pair-action';
 import type { CreateDexPairSchemaType } from './create-pair-form-schema';
 import { CreateDexPairSchema, createDexPairFormStepFields } from './create-pair-form-schema';
 
 interface CreateTokenFormProps {
-  defaultValues: Partial<CreateDexPairSchemaType>;
+  defaultValues?: Partial<CreateDexPairSchemaType>;
   formId: string;
   className?: string;
 }
@@ -34,8 +33,6 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateDexPairSchemaType>>('state', defaultValues);
-
   const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateDexPairSchema), {
     actionProps: {
       onSuccess: () => {
@@ -47,7 +44,6 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
       defaultValues: {
         ...createDexPairFormStepFields,
         ...defaultValues,
-        ...localStorageState,
       },
     },
     errorMapProps: {},

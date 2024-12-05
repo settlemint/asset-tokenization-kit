@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { parseAsJson, useQueryState } from 'nuqs';
 import type { ArrayPath, Control, FieldArray, FieldValues, Path } from 'react-hook-form';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
@@ -33,11 +32,6 @@ interface FieldItem extends Record<string, unknown> {
 }
 
 export function RepeatableForm<T extends FieldValues>({ control, name, components }: RepeatableFormProps<T>) {
-  // TODO: Add querySchema https://nuqs.47ng.com/docs/parsers/built-in#json
-  const [, _setQueryState] = useQueryState(
-    'state',
-    parseAsJson<T>((value) => value as T)
-  );
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const { config } = useMultiFormStep();
 
