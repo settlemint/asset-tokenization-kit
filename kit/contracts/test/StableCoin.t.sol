@@ -117,7 +117,7 @@ contract StableCoinTest is Test {
         assertEq(amount, collateralAmount);
         assertEq(timestamp, block.timestamp);
 
-        assertEq(stableCoin.provenCollateral(), collateralAmount);
+        assertEq(stableCoin.collateral(), collateralAmount);
     }
 
     function testFail_UpdateCollateralNonOwner() public {
