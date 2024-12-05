@@ -75,7 +75,7 @@
     "tailwind-merge": "2.5.5",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
-    "viem": "2.21.53",
+    "viem": "2.21.54",
     "zod": "3.23.8",
     "zod-form-data": "2.0.2"
   },
