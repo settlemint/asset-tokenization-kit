@@ -1,6 +1,6 @@
 import { Address, ethereum } from '@graphprotocol/graph-ts';
 import { Account } from '../../generated/schema';
-import { fetchNativeBalance } from './balance';
+import { toDecimals } from '../utils/decimals';
 
 export function fetchAccount(address: Address): Account {
   let account = Account.load(address);
@@ -13,7 +13,8 @@ export function fetchAccount(address: Address): Account {
     }
   }
 
-  account.nativeBalance = fetchNativeBalance(address).id;
+  account.nativeBalanceExact = ethereum.getBalance(address);
+  account.nativeBalance = toDecimals(account.nativeBalanceExact);
   account.save();
 
   return account;

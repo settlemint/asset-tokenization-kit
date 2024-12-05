@@ -1,8 +1,8 @@
-import { Address } from '@graphprotocol/graph-ts';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { CryptoCurrency } from '../../generated/schema';
 import { CryptoCurrency as CryptoCurrencyContract } from '../../generated/templates/CryptoCurrency/CryptoCurrency';
+import { toDecimals } from '../utils/decimals';
 import { fetchAccount } from './account';
-import { fetchTotalSupply } from './balance';
 
 export function fetchCryptoCurrency(address: Address): CryptoCurrency {
   let cryptoCurrency = CryptoCurrency.load(address);
@@ -11,6 +11,7 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
+    let totalSupply = endpoint.try_totalSupply();
 
     const account = fetchAccount(address);
 
@@ -18,7 +19,8 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.name = name.reverted ? '' : name.value;
     cryptoCurrency.symbol = symbol.reverted ? '' : symbol.value;
     cryptoCurrency.decimals = decimals.reverted ? 18 : decimals.value;
-    cryptoCurrency.totalSupply = fetchTotalSupply(address).id;
+    cryptoCurrency.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
+    cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact);
     cryptoCurrency.asAccount = cryptoCurrency.id;
     cryptoCurrency.save();
 

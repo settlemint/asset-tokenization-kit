@@ -1,8 +1,8 @@
-import { Address } from '@graphprotocol/graph-ts';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { Bond } from '../../generated/schema';
 import { Bond as BondContract } from '../../generated/templates/Bond/Bond';
+import { toDecimals } from '../utils/decimals';
 import { fetchAccount } from './account';
-import { fetchTotalSupply } from './balance';
 
 export function fetchBond(address: Address): Bond {
   let bond = Bond.load(address);
@@ -11,6 +11,9 @@ export function fetchBond(address: Address): Bond {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
+    let totalSupply = endpoint.try_totalSupply();
+    let maturityDate = endpoint.try_maturityDate();
+    let isMatured = endpoint.try_isMatured();
 
     const account = fetchAccount(address);
 
@@ -18,7 +21,10 @@ export function fetchBond(address: Address): Bond {
     bond.name = name.reverted ? '' : name.value;
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
-    bond.totalSupply = fetchTotalSupply(address).id;
+    bond.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
+    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+    bond.maturityDate = maturityDate.reverted ? BigInt.zero() : maturityDate.value;
+    bond.isMatured = maturityDate.reverted ? false : isMatured.value;
     bond.asAccount = bond.id;
     bond.save();
 

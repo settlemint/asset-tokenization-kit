@@ -24,7 +24,7 @@ contract StableCoin is
     ERC20Custodian
 {
     /// @dev The amount of proven collateral backing this stablecoin
-    uint256 public provenCollateral;
+    uint256 private provenCollateral;
 
     /// @param name The token name
     /// @param symbol The token symbol
