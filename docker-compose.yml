@@ -19,7 +19,7 @@ services:
       PGDATA: "/var/lib/postgresql/data"
       POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
   graph-node:
-    image: graphprotocol/graph-node:v0.36.0
+    image: graphprotocol/graph-node:fc80657
     ports:
       - '8000:8000'
       - '8001:8001'
@@ -36,4 +36,4 @@ services:
       postgres_db: graph-node
       ipfs: "https://ipfs.network.thegraph.com"
       ethereum: 'settlemint:http://anvil:8545'
-      GRAPH_LOG: debug
+      CARGO_TERM_COLOR: always

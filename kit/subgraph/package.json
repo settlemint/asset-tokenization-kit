@@ -1,0 +1,22 @@
+{
+  "name": "asset-tokenization",
+  "license": "UNLICENSED",
+  "scripts": {
+    "graph:codegen": "graph codegen",
+    "graph:build": "graph build",
+    "graph:deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ asset-tokenization",
+    "graph:create-local": "graph create --node http://localhost:8020/ asset-tokenization",
+    "graph:remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",
+    "graph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization",
+    "graph:test": "graph test",
+    "test:deploy": "bash graph-local-deploy.sh"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.90.1",
+    "@graphprotocol/graph-ts": "0.35.1"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.6.0",
+    "contracts": "workspace:*"
+  }
+}

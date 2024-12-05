@@ -11,15 +11,6 @@ contract CryptoCurrencyFactoryTest is Test {
     address public owner;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
 
-    event CryptoCurrencyCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint256 initialSupply,
-        address indexed owner,
-        uint256 tokenCount
-    );
-
     function setUp() public {
         factory = new CryptoCurrencyFactory();
         owner = address(this);
@@ -29,7 +20,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        address tokenAddress = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -51,7 +42,7 @@ contract CryptoCurrencyFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+            address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             CryptoCurrency token = CryptoCurrency(tokenAddress);
@@ -61,22 +52,17 @@ contract CryptoCurrencyFactoryTest is Test {
         assertEq(factory.allTokensLength(), count, "Should have created three tokens");
     }
 
-    function test_RevertWhenZeroAddress() public {
-        vm.expectRevert(CryptoCurrencyFactory.ZeroAddress.selector);
-        factory.createToken("Test Token", "TEST", INITIAL_SUPPLY, address(0));
-    }
-
     function test_DeterministicAddresses() public {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        address token1 = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address token1 = factory.create(name, symbol, INITIAL_SUPPLY);
 
         // Create a new factory instance
         CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address token2 = newFactory.create(name, symbol, INITIAL_SUPPLY);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -86,7 +72,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        address tokenAddress = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test initial state
@@ -98,7 +84,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        address tokenAddress = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test minting as owner
@@ -120,7 +106,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
         uint256 zeroSupply = 0;
 
-        address tokenAddress = factory.createToken(name, symbol, zeroSupply, owner);
+        address tokenAddress = factory.create(name, symbol, zeroSupply);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
@@ -132,7 +118,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.recordLogs();
-        address tokenAddress = factory.createToken(name, symbol, INITIAL_SUPPLY, owner);
+        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 3, "Should emit 3 events: OwnershipTransferred, Transfer, and CryptoCurrencyCreated");
@@ -143,7 +129,7 @@ contract CryptoCurrencyFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,uint256,address,uint256)"),
+            keccak256("CryptoCurrencyCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 
