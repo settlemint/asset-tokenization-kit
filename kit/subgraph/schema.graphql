@@ -3,7 +3,8 @@ type Account @entity {
   isContract: Boolean!
   asAsset: Asset
   balances: [Balance!]! @derivedFrom(field: "account")
-  nativeBalance: NativeBalance
+  nativeBalance: BigDecimal!
+  nativeBalanceExact: BigInt!
   transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "from")
   transferToEvent: [Event_Transfer!]! @derivedFrom(field: "to")
 }
@@ -14,7 +15,8 @@ interface Asset {
   name: String
   symbol: String
   decimals: Int!
-  totalSupply: Balance!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
 }
@@ -25,9 +27,12 @@ type Bond implements Asset @entity {
   name: String
   symbol: String
   decimals: Int!
-  totalSupply: Balance!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  maturityDate: BigInt!
+  isMatured: Boolean!
 }
 
 type Equity implements Asset @entity {
@@ -36,9 +41,12 @@ type Equity implements Asset @entity {
   name: String
   symbol: String
   decimals: Int!
-  totalSupply: Balance!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  equityClass: String!
+  equityCategory: String!
 }
 
 type StableCoin implements Asset @entity {
@@ -47,9 +55,12 @@ type StableCoin implements Asset @entity {
   name: String
   symbol: String
   decimals: Int!
-  totalSupply: Balance!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  collateral: BigDecimal!
+  collateralExact: BigInt!
 }
 
 type CryptoCurrency implements Asset @entity {
@@ -58,22 +69,16 @@ type CryptoCurrency implements Asset @entity {
   name: String
   symbol: String
   decimals: Int!
-  totalSupply: Balance!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-}
-
-type NativeBalance @entity {
-  id: Bytes!
-  account: Account
-  value: BigDecimal!
-  valueExact: BigInt!
 }
 
 type Balance @entity {
   id: Bytes!
   asset: Asset!
-  account: Account
+  account: Account!
   value: BigDecimal!
   valueExact: BigInt!
   transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "fromBalance")
@@ -82,7 +87,6 @@ type Balance @entity {
 
 interface Event {
   id: Bytes!
-  transaction: Transaction!
   emitter: Asset!
   timestamp: BigInt!
 }
@@ -90,7 +94,6 @@ interface Event {
 type Event_Transfer implements Event @entity(immutable: true) {
   id: Bytes!
   emitter: Asset!
-  transaction: Transaction!
   timestamp: BigInt!
   asset: Asset!
   from: Account
@@ -99,11 +102,4 @@ type Event_Transfer implements Event @entity(immutable: true) {
   toBalance: Balance
   value: BigDecimal!
   valueExact: BigInt!
-}
-
-type Transaction @entity(immutable: true) {
-  id: Bytes!
-  timestamp: BigInt!
-  blockNumber: BigInt!
-  events: [Event!]! @derivedFrom(field: "transaction")
 }

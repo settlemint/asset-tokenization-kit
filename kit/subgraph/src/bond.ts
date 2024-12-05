@@ -1,3 +1,5 @@
+import { Address, log } from '@graphprotocol/graph-ts';
+import { Event_Transfer } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   BondMatured as BondMaturedEvent,
@@ -11,6 +13,12 @@ import {
   UserBlocked as UserBlockedEvent,
   UserUnblocked as UserUnblockedEvent,
 } from '../generated/templates/Bond/Bond';
+import { fetchAccount } from './fetch/account';
+import { fetchBalance } from './fetch/balance';
+import { fetchBond } from './fetch/bond';
+import { balanceId } from './utils/balance';
+import { toDecimals } from './utils/decimals';
+import { eventId } from './utils/events';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
@@ -26,7 +34,54 @@ export function handleTokensFrozen(event: TokensFrozenEvent): void {}
 
 export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {}
 
-export function handleTransfer(event: TransferEvent): void {}
+export function handleTransfer(event: TransferEvent): void {
+  log.info('Transfer event received: {} {} {} {}', [
+    event.address.toHexString(),
+    event.params.from.toHexString(),
+    event.params.to.toHexString(),
+    event.params.value.toString(),
+  ]);
+
+  let bond = fetchBond(event.address);
+
+  let eventTransfer = new Event_Transfer(eventId(event));
+  eventTransfer.emitter = bond.id;
+  eventTransfer.timestamp = event.block.timestamp;
+  eventTransfer.asset = bond.id;
+  eventTransfer.from = bond.id;
+  eventTransfer.to = bond.id;
+  eventTransfer.valueExact = event.params.value;
+  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+
+  if (event.params.from.equals(Address.zero())) {
+    bond.totalSupplyExact = bond.totalSupplyExact.plus(eventTransfer.valueExact);
+    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+  } else {
+    let from = fetchAccount(event.params.from);
+    let fromBalance = fetchBalance(balanceId(bond.id, from), bond.id, from.id);
+    fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
+    fromBalance.value = toDecimals(fromBalance.valueExact);
+    fromBalance.save();
+
+    eventTransfer.from = from.id;
+    eventTransfer.fromBalance = fromBalance.id;
+  }
+
+  if (event.params.to.equals(Address.zero())) {
+    bond.totalSupplyExact = bond.totalSupplyExact.minus(eventTransfer.valueExact);
+    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+  } else {
+    let to = fetchAccount(event.params.to);
+    let toBalance = fetchBalance(balanceId(bond.id, to), bond.id, to.id);
+    toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
+    toBalance.value = toDecimals(toBalance.valueExact);
+    toBalance.save();
+
+    eventTransfer.to = to.id;
+    eventTransfer.toBalance = toBalance.id;
+  }
+  eventTransfer.save();
+}
 
 export function handleUnpaused(event: UnpausedEvent): void {}
 

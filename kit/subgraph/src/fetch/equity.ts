@@ -1,8 +1,8 @@
-import { Address } from '@graphprotocol/graph-ts';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { Equity } from '../../generated/schema';
 import { Equity as EquityContract } from '../../generated/templates/Equity/Equity';
+import { toDecimals } from '../utils/decimals';
 import { fetchAccount } from './account';
-import { fetchTotalSupply } from './balance';
 
 export function fetchEquity(address: Address): Equity {
   let equity = Equity.load(address);
@@ -11,6 +11,9 @@ export function fetchEquity(address: Address): Equity {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
+    let totalSupply = endpoint.try_totalSupply();
+    let equityClass = endpoint.try_equityClass();
+    let equityCategory = endpoint.try_equityCategory();
 
     const account = fetchAccount(address);
 
@@ -18,7 +21,10 @@ export function fetchEquity(address: Address): Equity {
     equity.name = name.reverted ? '' : name.value;
     equity.symbol = symbol.reverted ? '' : symbol.value;
     equity.decimals = decimals.reverted ? 18 : decimals.value;
-    equity.totalSupply = fetchTotalSupply(address).id;
+    equity.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
+    equity.totalSupply = toDecimals(equity.totalSupplyExact);
+    equity.equityClass = equityClass.reverted ? '' : equityClass.value;
+    equity.equityCategory = equityCategory.reverted ? '' : equityCategory.value;
     equity.asAccount = equity.id;
     equity.save();
 

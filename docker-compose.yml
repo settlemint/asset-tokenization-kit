@@ -36,4 +36,3 @@ services:
       postgres_db: graph-node
       ipfs: "https://ipfs.network.thegraph.com"
       ethereum: 'settlemint:http://anvil:8545'
-      CARGO_TERM_COLOR: always
