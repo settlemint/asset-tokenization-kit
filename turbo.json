@@ -30,7 +30,7 @@
       "cache": false
     },
     "codegen": {
-      "dependsOn": ["^codegen", "contracts#build"],
+      "dependsOn": ["^codegen"],
       "cache": false
     },
     "//#format:biome": {
@@ -43,7 +43,7 @@
       "dependsOn": ["dependencies", "^test"]
     },
     "test:deploy": {
-      "dependsOn": ["genesis", "^test:deploy", "contracts#build"]
+      "dependsOn": ["genesis", "^test:deploy"]
     },
     "dependencies": {
       "dependsOn": ["^dependencies"],

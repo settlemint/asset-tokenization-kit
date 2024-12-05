@@ -62,7 +62,10 @@ jobs:
         working-directory: kit/dapp
 
       - name: Lint & Check Types
-        run: bunx turbo run lint check-types test test:deploy genesis
+        run: bunx turbo run lint check-types test genesis
+
+      - name: Test Deploy
+        run: bunx turbo run test:deploy
 
       - name: Store genesis output
         uses: actions/upload-artifact@v4
