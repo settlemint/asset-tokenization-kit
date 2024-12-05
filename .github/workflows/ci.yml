@@ -62,7 +62,7 @@ jobs:
         working-directory: kit/dapp
 
       - name: Lint & Check Types
-        run: bunx turbo run lint check-types test genesis
+        run: bunx turbo run lint check-types test
 
       - name: Test Deploy
         run: bunx turbo run test:deploy
