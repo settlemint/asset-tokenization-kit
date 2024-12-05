@@ -25,8 +25,8 @@ export const stakeTokenDefaultValues: StakeTokenSchemaType = {
   quoteTokenAddress: '0x',
 } as const;
 
-export type StakeTokenFormPageFields = keyof typeof stakeTokenDefaultValues;
+export type StakeTokenFormStepFields = keyof typeof stakeTokenDefaultValues;
 
-export const stakeTokenFormPageFields: StakeTokenFormPageFields[] = Object.keys(
+export const stakeTokenFormStepFields: StakeTokenFormStepFields[] = Object.keys(
   stakeTokenDefaultValues
-) as StakeTokenFormPageFields[];
+) as StakeTokenFormStepFields[];

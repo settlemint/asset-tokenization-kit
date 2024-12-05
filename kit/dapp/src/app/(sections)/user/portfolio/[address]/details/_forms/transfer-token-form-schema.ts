@@ -17,8 +17,8 @@ export const transferTokenDefaultValues: TransferTokenSchemaType = {
   tokenAddress: '0x',
 } as const;
 
-export type TransferTokenFormPageFields = keyof typeof transferTokenDefaultValues;
+export type TransferTokenFormStepFields = keyof typeof transferTokenDefaultValues;
 
-export const transferTokenFormPageFields: TransferTokenFormPageFields[] = Object.keys(
+export const transferTokenFormStepFields: TransferTokenFormStepFields[] = Object.keys(
   transferTokenDefaultValues
-) as TransferTokenFormPageFields[];
+) as TransferTokenFormStepFields[];

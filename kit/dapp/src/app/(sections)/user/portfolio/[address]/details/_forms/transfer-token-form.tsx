@@ -2,10 +2,10 @@
 
 import { Input } from '@/components/blocks/form/form-input';
 import { NumericInput } from '@/components/blocks/form/form-input-numeric';
-import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
-import { FormPage } from '@/components/blocks/form/form-step';
+import { FormMultiStep } from '@/components/blocks/form/form-multistep';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +17,7 @@ import { transferTokenAction } from './transfer-token-action';
 import {
   TransferTokenSchema,
   type TransferTokenSchemaType,
-  transferTokenFormPageFields,
+  transferTokenFormStepFields,
 } from './transfer-token-form-schema';
 
 interface TransferTokenFormProps {
@@ -51,7 +51,7 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...transferTokenFormPageFields,
+        ...transferTokenFormStepFields,
         ...defaultValues,
         ...localStorageState,
       },
@@ -95,55 +95,53 @@ export function TransferTokenForm({ defaultValues }: TransferTokenFormProps) {
           <CardDescription>Transfer your tokens to another wallet</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider
-            config={{ useLocalStorageState: false, useQueryState: false }}
+          <FormMultiStep<TransferTokenSchemaType>
+            form={form}
+            config={{ useLocalStorageState: false }}
             formId="transfer-token-form"
+            onSubmit={onSubmit}
           >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormPage
-                  form={form}
-                  title="Transfer tokens"
-                  fields={['amount', 'to']}
-                  withSheetClose
-                  controls={{
-                    submit: { buttonText: 'Submit' },
-                  }}
-                >
-                  {/* Transfer amount */}
-                  <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Amount</FormLabel>
-                        <FormControl>
-                          <NumericInput placeholder="Amount" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the amount of tokens you want to transfer</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Transfer to wallet */}
-                  <FormField
-                    control={form.control}
-                    name="to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Wallet address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="To address" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the wallet address of the token holder</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </FormPage>
-              </form>
-            </Form>
-          </FormMultiStepProvider>
+            <FormStep
+              form={form}
+              title="Transfer tokens"
+              fields={['amount', 'to']}
+              withSheetClose
+              controls={{
+                submit: { buttonText: 'Submit' },
+              }}
+            >
+              {/* Transfer amount */}
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <NumericInput placeholder="Amount" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the amount of tokens you want to transfer</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Transfer to wallet */}
+              <FormField
+                control={form.control}
+                name="to"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Wallet address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="To address" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the wallet address of the token holder</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </FormStep>
+          </FormMultiStep>
         </CardContent>
       </Card>
     </div>

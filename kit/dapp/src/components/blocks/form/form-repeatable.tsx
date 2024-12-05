@@ -34,7 +34,7 @@ interface FieldItem extends Record<string, unknown> {
 
 export function RepeatableForm<T extends FieldValues>({ control, name, components }: RepeatableFormProps<T>) {
   // TODO: Add querySchema https://nuqs.47ng.com/docs/parsers/built-in#json
-  const [, setQueryState] = useQueryState(
+  const [, _setQueryState] = useQueryState(
     'state',
     parseAsJson<T>((value) => value as T)
   );
@@ -80,13 +80,6 @@ export function RepeatableForm<T extends FieldValues>({ control, name, component
             <Button
               onClick={() => {
                 remove(index);
-                if (config.useQueryState) {
-                  setQueryState((prev) => {
-                    const newState = { ...prev };
-                    delete newState?.[name];
-                    return newState;
-                  });
-                }
                 if (config.useLocalStorageState) {
                   setStorageState((prev) => {
                     const newState = { ...prev };

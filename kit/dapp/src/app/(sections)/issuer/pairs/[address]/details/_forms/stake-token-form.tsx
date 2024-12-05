@@ -1,10 +1,10 @@
 'use client';
 
 import { NumericInput } from '@/components/blocks/form/form-input-numeric';
-import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
-import { FormPage } from '@/components/blocks/form/form-step';
+import { FormMultiStep } from '@/components/blocks/form/form-multistep';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { useLocalStorage } from 'usehooks-ts';
 import { approveTokenAction } from './approve-token-action';
 import { stakeTokenAction } from './stake-token-action';
-import { StakeTokenSchema, type StakeTokenSchemaType, stakeTokenFormPageFields } from './stake-token-form-schema';
+import { StakeTokenSchema, type StakeTokenSchemaType, stakeTokenFormStepFields } from './stake-token-form-schema';
 
 interface StakeTokenFormProps {
   defaultValues: Partial<StakeTokenSchemaType>;
@@ -49,7 +49,7 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...stakeTokenFormPageFields,
+        ...stakeTokenFormStepFields,
         ...defaultValues,
         ...localStorageState,
       },
@@ -113,51 +113,52 @@ export function StakeTokenForm({ defaultValues, formId }: StakeTokenFormProps) {
           <CardDescription>Distribute your digital tokens to token holder</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider config={{ useLocalStorageState: false, useQueryState: false }} formId={formId}>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormPage
-                  form={form}
-                  title="Stake tokens"
-                  fields={['baseAmount', 'quoteAmount']} // This should be typed
-                  withSheetClose
-                  controls={{
-                    submit: { buttonText: 'Submit' },
-                  }}
-                >
-                  {/* Base amount, should be enhanced with the actual token info */}
-                  <FormField
-                    control={form.control}
-                    name="baseAmount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Base Amount</FormLabel>
-                        <FormControl>
-                          <NumericInput placeholder="Base Amount" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the amount of base tokens you want to stake</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="quoteAmount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Quote Amount</FormLabel>
-                        <FormControl>
-                          <NumericInput placeholder="Quote Amount" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the amount of quote tokens you want to stake</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </FormPage>
-              </form>
-            </Form>
-          </FormMultiStepProvider>
+          <FormMultiStep<StakeTokenSchemaType>
+            config={{ useLocalStorageState: false }}
+            form={form}
+            formId={formId}
+            onSubmit={onSubmit}
+          >
+            <FormStep
+              form={form}
+              title="Stake tokens"
+              fields={['baseAmount', 'quoteAmount']} // This should be typed
+              withSheetClose
+              controls={{
+                submit: { buttonText: 'Submit' },
+              }}
+            >
+              {/* Base amount, should be enhanced with the actual token info */}
+              <FormField
+                control={form.control}
+                name="baseAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Base Amount</FormLabel>
+                    <FormControl>
+                      <NumericInput placeholder="Base Amount" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the amount of base tokens you want to stake</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="quoteAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quote Amount</FormLabel>
+                    <FormControl>
+                      <NumericInput placeholder="Quote Amount" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the amount of quote tokens you want to stake</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </FormStep>
+          </FormMultiStep>
         </CardContent>
       </Card>
     </div>

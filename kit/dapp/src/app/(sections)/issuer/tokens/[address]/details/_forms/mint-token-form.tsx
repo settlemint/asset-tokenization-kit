@@ -3,10 +3,10 @@
 import { Input } from '@/components/blocks/form/form-input';
 import { DictionaryInput } from '@/components/blocks/form/form-input-dictionary';
 import { NumericInput } from '@/components/blocks/form/form-input-numeric';
-import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
-import { FormPage } from '@/components/blocks/form/form-step';
+import { FormMultiStep } from '@/components/blocks/form/form-multistep';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useLocalStorage } from 'usehooks-ts';
 import { mintTokenAction } from './mint-token-action';
-import { MintTokenSchema, type MintTokenSchemaType, mintTokenFormPageFields } from './mint-token-form-schema';
+import { MintTokenSchema, type MintTokenSchemaType, mintTokenFormStepFields } from './mint-token-form-schema';
 
 interface MintTokenFormProps {
   defaultValues: Partial<MintTokenSchemaType>;
@@ -63,7 +63,7 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...mintTokenFormPageFields,
+        ...mintTokenFormStepFields,
         ...defaultValues,
         ...localStorageState,
       },
@@ -107,70 +107,68 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
           <CardDescription>Distribute your digital tokens to token holder</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider
-            config={{ useLocalStorageState: false, useQueryState: false }}
+          <FormMultiStep<MintTokenSchemaType>
+            config={{ useLocalStorageState: false }}
+            form={form}
             formId="mint-token-form"
+            onSubmit={onSubmit}
           >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormPage
-                  form={form}
-                  title="Mint tokens"
-                  fields={['amount', 'to']}
-                  withSheetClose
-                  controls={{
-                    submit: { buttonText: 'Submit' },
-                  }}
-                >
-                  {/* Mint amount */}
-                  <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Amount</FormLabel>
-                        <FormControl>
-                          <NumericInput placeholder="Amount" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the amount of tokens you want to mint</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Mint to wallet */}
-                  <FormField
-                    control={form.control}
-                    name="to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Wallet address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="To address" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the wallet address of the token holder</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Mint to wallet */}
-                  <FormField
-                    control={form.control}
-                    name="to"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Wallet address</FormLabel>
-                        <FormControl>
-                          <DictionaryInput placeholder="Search user wallet..." options={walletAddresses} {...field} />
-                        </FormControl>
-                        <FormDescription>This is the wallet address of the token holder</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </FormPage>
-              </form>
-            </Form>
-          </FormMultiStepProvider>
+            <FormStep
+              form={form}
+              title="Mint tokens"
+              fields={['amount', 'to']}
+              withSheetClose
+              controls={{
+                submit: { buttonText: 'Submit' },
+              }}
+            >
+              {/* Mint amount */}
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <NumericInput placeholder="Amount" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the amount of tokens you want to mint</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Mint to wallet */}
+              <FormField
+                control={form.control}
+                name="to"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Wallet address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="To address" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the wallet address of the token holder</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Mint to wallet */}
+              <FormField
+                control={form.control}
+                name="to"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Wallet address</FormLabel>
+                    <FormControl>
+                      <DictionaryInput placeholder="Search user wallet..." options={walletAddresses} {...field} />
+                    </FormControl>
+                    <FormDescription>This is the wallet address of the token holder</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </FormStep>
+          </FormMultiStep>
         </CardContent>
       </Card>
     </div>

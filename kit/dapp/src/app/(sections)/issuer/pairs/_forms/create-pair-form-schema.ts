@@ -12,8 +12,8 @@ export const createDexPairDefaultValues: CreateDexPairSchemaType = {
   quoteTokenAddress: '',
 } as const;
 
-export type CreateDexPairFormPageFields = keyof typeof createDexPairDefaultValues;
+export type CreateDexPairFormStepFields = keyof typeof createDexPairDefaultValues;
 
-export const createDexPairFormPageFields: CreateDexPairFormPageFields[] = Object.keys(
+export const createDexPairFormStepFields: CreateDexPairFormStepFields[] = Object.keys(
   createDexPairDefaultValues
-) as CreateDexPairFormPageFields[];
+) as CreateDexPairFormStepFields[];

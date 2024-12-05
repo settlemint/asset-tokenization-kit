@@ -21,8 +21,8 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenSymbol: '',
 } as const;
 
-export type CreateTokenFormPageFields = keyof typeof createTokenDefaultValues;
+export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;
 
-export const createTokenFormPageFields: CreateTokenFormPageFields[] = Object.keys(
+export const createTokenFormStepFields: CreateTokenFormStepFields[] = Object.keys(
   createTokenDefaultValues
-) as CreateTokenFormPageFields[];
+) as CreateTokenFormStepFields[];
