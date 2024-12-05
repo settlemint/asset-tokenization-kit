@@ -60,8 +60,8 @@
   "packageManager": "bun@1.1.38",
   "workspaces": ["kit/*"],
   "overrides": {
-    "react-is": "19.0.0-rc-66855b96-20241106",
-    "elliptic": "6.6.0",
+    "react-is": "19.0.0-rc-fb9a90fa48-20240614",
+    "elliptic": "6.6.1",
     "ws": "7.5.10"
   }
 }
