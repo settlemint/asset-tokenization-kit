@@ -1,11 +1,8 @@
 'use client';
-
-import type { CreateTokenSchemaType } from '@/app/(sections)/issuer/tokens/_forms/create-token-form-schema';
 import { Form } from '@/components/ui/form';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 import type { FieldValues, UseFormReturn } from 'react-hook-form';
-import { useLocalStorage } from 'usehooks-ts';
 
 type FormMultiStepConfig = {
   useLocalStorageState?: boolean;
@@ -45,8 +42,6 @@ export const FormMultiStep = <T extends FieldValues>({
 
   if (config.useLocalStorageState === false && typeof window !== 'undefined') {
     window.localStorage.removeItem('state');
-  } else {
-    const [_localStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>('state', {});
   }
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, totalSteps));

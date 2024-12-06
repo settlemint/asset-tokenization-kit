@@ -3,7 +3,9 @@ Marks the GraphQL type as indexable entity.  Each type that should be an entity 
 """
 directive @entity on OBJECT
 
-"""Defined a Subgraph ID for an object type"""
+"""
+Defined a Subgraph ID for an object type
+"""
 directive @subgraphId(id: String!) on OBJECT
 
 """
@@ -13,7 +15,9 @@ directive @derivedFrom(field: String!) on FIELD_DEFINITION
 
 "Represents an account in the system, which can be either a user or a contract address. Accounts can hold ERC20 tokens, approve token spending, and participate in token transfers.\n"
 type Account {
-  """Unique Ethereum address that identifies this account"""
+  """
+  Unique Ethereum address that identifies this account
+  """
   id: Bytes!
 
   """
@@ -21,28 +25,96 @@ type Account {
   """
   asERC20: ERC20Contract
 
-  """All ERC20 token balances held by this account"""
-  ERC20balances(skip: Int = 0, first: Int = 100, orderBy: ERC20Balance_orderBy, orderDirection: OrderDirection, where: ERC20Balance_filter): [ERC20Balance!]!
+  """
+  All ERC20 token balances held by this account
+  """
+  ERC20balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Balance_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Balance_filter
+  ): [ERC20Balance!]!
 
-  """All ERC20 token spending approvals granted by this account"""
-  ERC20approvalsOwner(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+  """
+  All ERC20 token spending approvals granted by this account
+  """
+  ERC20approvalsOwner(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Approval_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Approval_filter
+  ): [ERC20Approval!]!
 
-  """All ERC20 token spending approvals received by this account"""
-  ERC20approvalsSpender(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+  """
+  All ERC20 token spending approvals received by this account
+  """
+  ERC20approvalsSpender(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Approval_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Approval_filter
+  ): [ERC20Approval!]!
 
-  """All outgoing ERC20 token transfers from this account"""
-  ERC20transferFromEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+  """
+  All outgoing ERC20 token transfers from this account
+  """
+  ERC20transferFromEvent(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+  ): [ERC20Transfer!]!
 
-  """All incoming ERC20 token transfers to this account"""
-  ERC20transferToEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+  """
+  All incoming ERC20 token transfers to this account
+  """
+  ERC20transferToEvent(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+  ): [ERC20Transfer!]!
 
-  """All DEX pairs associated with this account"""
-  ERC20DexMints(skip: Int = 0, first: Int = 100, orderBy: ERC20DexMint_orderBy, orderDirection: OrderDirection, where: ERC20DexMint_filter): [ERC20DexMint!]!
-  ERC20DexBurns(skip: Int = 0, first: Int = 100, orderBy: ERC20DexBurn_orderBy, orderDirection: OrderDirection, where: ERC20DexBurn_filter): [ERC20DexBurn!]!
-  ERC20DexSwaps(skip: Int = 0, first: Int = 100, orderBy: ERC20DexSwap_orderBy, orderDirection: OrderDirection, where: ERC20DexSwap_filter): [ERC20DexSwap!]!
+  """
+  All DEX pairs associated with this account
+  """
+  ERC20DexMints(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexMint_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexMint_filter
+  ): [ERC20DexMint!]!
+  ERC20DexBurns(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexBurn_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexBurn_filter
+  ): [ERC20DexBurn!]!
+  ERC20DexSwaps(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexSwap_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexSwap_filter
+  ): [ERC20DexSwap!]!
 
-  """All blockchain events where this account is the emitter"""
-  events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
+  """
+  All blockchain events where this account is the emitter
+  """
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+  ): [Event!]!
 }
 
 input Account_filter {
@@ -87,7 +159,9 @@ input Account_filter {
   ERC20DexSwaps_: ERC20DexSwap_filter
   events_: Event_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Account_filter]
   or: [Account_filter]
@@ -137,22 +211,34 @@ scalar Bytes
 
 "Records an approval for delegated ERC20 token spending between accounts.\nThis represents an allowance granted by one account to another to spend tokens on their behalf.\n"
 type ERC20Approval {
-  """Unique identifier for this approval"""
+  """
+  Unique identifier for this approval
+  """
   id: ID!
 
-  """The ERC20 token contract the approval is for"""
+  """
+  The ERC20 token contract the approval is for
+  """
   contract: ERC20Contract!
 
-  """Account granting the approval (token holder)"""
+  """
+  Account granting the approval (token holder)
+  """
   owner: Account!
 
-  """Account receiving spending permission (spender)"""
+  """
+  Account receiving spending permission (spender)
+  """
   spender: Account!
 
-  """Approved amount in decimal format for human readability"""
+  """
+  Approved amount in decimal format for human readability
+  """
   value: BigDecimal!
 
-  """Approved amount as raw integer value (full precision)"""
+  """
+  Approved amount as raw integer value (full precision)
+  """
   valueExact: BigInt!
 }
 
@@ -245,7 +331,9 @@ input ERC20Approval_filter {
   valueExact_in: [BigInt!]
   valueExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20Approval_filter]
   or: [ERC20Approval_filter]
@@ -276,23 +364,47 @@ type ERC20Balance {
   """
   id: ID!
 
-  """The ERC20 token contract this balance is for"""
+  """
+  The ERC20 token contract this balance is for
+  """
   contract: ERC20Contract!
 
-  """The account holding this token balance"""
+  """
+  The account holding this token balance
+  """
   account: Account
 
-  """Current balance in decimal format for human readability"""
+  """
+  Current balance in decimal format for human readability
+  """
   value: BigDecimal!
 
-  """Current balance as raw integer value (full precision)"""
+  """
+  Current balance as raw integer value (full precision)
+  """
   valueExact: BigInt!
 
-  """History of outgoing transfers affecting this balance"""
-  transferFromEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+  """
+  History of outgoing transfers affecting this balance
+  """
+  transferFromEvent(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+  ): [ERC20Transfer!]!
 
-  """History of incoming transfers affecting this balance"""
-  transferToEvent(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+  """
+  History of incoming transfers affecting this balance
+  """
+  transferToEvent(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+  ): [ERC20Transfer!]!
 }
 
 input ERC20Balance_filter {
@@ -365,7 +477,9 @@ input ERC20Balance_filter {
   transferFromEvent_: ERC20Transfer_filter
   transferToEvent_: ERC20Transfer_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20Balance_filter]
   or: [ERC20Balance_filter]
@@ -391,16 +505,24 @@ enum ERC20Balance_orderBy {
 
 "Represents an ERC20 token contract with its standard properties, supply information, and related entities like balances, approvals and transfers.\nThe ERC20 standard defines a common interface for fungible tokens on Ethereum.\n"
 type ERC20Contract {
-  """Contract address of the ERC20 token"""
+  """
+  Contract address of the ERC20 token
+  """
   id: Bytes!
 
-  """Links to the Account entity representing this contract address"""
+  """
+  Links to the Account entity representing this contract address
+  """
   asAccount: Account!
 
-  """Official name of the token (e.g. 'Ethereum')"""
+  """
+  Official name of the token (e.g. 'Ethereum')
+  """
   name: String!
 
-  """Trading symbol/ticker of the token (e.g. 'ETH')"""
+  """
+  Trading symbol/ticker of the token (e.g. 'ETH')
+  """
   symbol: String!
 
   """
@@ -413,24 +535,66 @@ type ERC20Contract {
   """
   extraData: String
 
-  """Current total token supply in decimal format for human readability"""
+  """
+  Current total token supply in decimal format for human readability
+  """
   totalSupply: BigDecimal!
 
-  """Current total token supply as raw integer value (full precision)"""
+  """
+  Current total token supply as raw integer value (full precision)
+  """
   totalSupplyExact: BigInt!
 
-  """All holder balances for this token"""
-  balances(skip: Int = 0, first: Int = 100, orderBy: ERC20Balance_orderBy, orderDirection: OrderDirection, where: ERC20Balance_filter): [ERC20Balance!]!
+  """
+  All holder balances for this token
+  """
+  balances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Balance_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Balance_filter
+  ): [ERC20Balance!]!
 
-  """All spending approvals for this token"""
-  approvals(skip: Int = 0, first: Int = 100, orderBy: ERC20Approval_orderBy, orderDirection: OrderDirection, where: ERC20Approval_filter): [ERC20Approval!]!
+  """
+  All spending approvals for this token
+  """
+  approvals(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Approval_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Approval_filter
+  ): [ERC20Approval!]!
 
-  """All transfer events involving this token"""
-  transfers(skip: Int = 0, first: Int = 100, orderBy: ERC20Transfer_orderBy, orderDirection: OrderDirection, where: ERC20Transfer_filter): [ERC20Transfer!]!
+  """
+  All transfer events involving this token
+  """
+  transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20Transfer_orderBy
+    orderDirection: OrderDirection
+    where: ERC20Transfer_filter
+  ): [ERC20Transfer!]!
 
-  """All DEX pairs where this token is being traded"""
-  pairsBaseToken(skip: Int = 0, first: Int = 100, orderBy: ERC20DexPair_orderBy, orderDirection: OrderDirection, where: ERC20DexPair_filter): [ERC20DexPair!]!
-  pairsQuoteToken(skip: Int = 0, first: Int = 100, orderBy: ERC20DexPair_orderBy, orderDirection: OrderDirection, where: ERC20DexPair_filter): [ERC20DexPair!]!
+  """
+  All DEX pairs where this token is being traded
+  """
+  pairsBaseToken(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPair_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPair_filter
+  ): [ERC20DexPair!]!
+  pairsQuoteToken(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexPair_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexPair_filter
+  ): [ERC20DexPair!]!
 }
 
 input ERC20Contract_filter {
@@ -555,7 +719,9 @@ input ERC20Contract_filter {
   pairsBaseToken_: ERC20DexPair_filter
   pairsQuoteToken_: ERC20DexPair_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20Contract_filter]
   or: [ERC20Contract_filter]
@@ -580,40 +746,64 @@ enum ERC20Contract_orderBy {
 
 "Records a liquidity removal (burn) event for a DEX pair.\nTracks the amounts of tokens removed from the pair's liquidity.\n"
 type ERC20DexBurn implements Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 
-  """The DEX pair liquidity is being removed from"""
+  """
+  The DEX pair liquidity is being removed from
+  """
   pair: ERC20DexPair!
 
-  """The account that made the swap"""
+  """
+  The account that made the swap
+  """
   sender: Account!
 
-  """Amount of base token removed (decimal)"""
+  """
+  Amount of base token removed (decimal)
+  """
   baseAmount: BigDecimal!
 
-  """Amount of base token removed (raw)"""
+  """
+  Amount of base token removed (raw)
+  """
   baseAmountExact: BigInt!
 
-  """Amount of quote token removed (decimal)"""
+  """
+  Amount of quote token removed (decimal)
+  """
   quoteAmount: BigDecimal!
 
-  """Amount of quote token removed (raw)"""
+  """
+  Amount of quote token removed (raw)
+  """
   quoteAmountExact: BigInt!
 
-  """Amount of LP tokens burned (decimal)"""
+  """
+  Amount of LP tokens burned (decimal)
+  """
   liquidity: BigDecimal!
 
-  """Amount of LP tokens burned (raw)"""
+  """
+  Amount of LP tokens burned (raw)
+  """
   liquidityExact: BigInt!
 }
 
@@ -767,7 +957,9 @@ input ERC20DexBurn_filter {
   liquidityExact_in: [BigInt!]
   liquidityExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexBurn_filter]
   or: [ERC20DexBurn_filter]
@@ -810,25 +1002,39 @@ enum ERC20DexBurn_orderBy {
 
 "Records an emergency withdrawal event from a DEX pair.\nTracks the token and amount withdrawn in an emergency situation.\n"
 type ERC20DexEmergencyWithdraw implements Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 
-  """The DEX pair the withdrawal was from"""
+  """
+  The DEX pair the withdrawal was from
+  """
   pair: ERC20DexPair!
 
-  """The token that was withdrawn"""
+  """
+  The token that was withdrawn
+  """
   token: ERC20Contract!
 
-  """Amount of tokens withdrawn"""
+  """
+  Amount of tokens withdrawn
+  """
   amount: BigInt!
 }
 
@@ -942,7 +1148,9 @@ input ERC20DexEmergencyWithdraw_filter {
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexEmergencyWithdraw_filter]
   or: [ERC20DexEmergencyWithdraw_filter]
@@ -986,25 +1194,39 @@ enum ERC20DexEmergencyWithdraw_orderBy {
 
 "Records a fee update event on a DEX pair.\nTracks changes to the swap fee percentage.\n"
 type ERC20DexFeeUpdate implements Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 
-  """The DEX pair whose fee was updated"""
+  """
+  The DEX pair whose fee was updated
+  """
   pair: ERC20DexPair!
 
-  """Previous swap fee in basis points"""
+  """
+  Previous swap fee in basis points
+  """
   oldFee: BigInt!
 
-  """New swap fee in basis points"""
+  """
+  New swap fee in basis points
+  """
   newFee: BigInt!
 }
 
@@ -1105,7 +1327,9 @@ input ERC20DexFeeUpdate_filter {
   newFee_in: [BigInt!]
   newFee_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexFeeUpdate_filter]
   or: [ERC20DexFeeUpdate_filter]
@@ -1142,40 +1366,64 @@ enum ERC20DexFeeUpdate_orderBy {
 
 "Records a liquidity provision (mint) event for a DEX pair.\nTracks the amounts of tokens added to the pair's liquidity.\n"
 type ERC20DexMint implements Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 
-  """The DEX pair receiving liquidity"""
+  """
+  The DEX pair receiving liquidity
+  """
   pair: ERC20DexPair!
 
-  """The account that made the swap"""
+  """
+  The account that made the swap
+  """
   sender: Account!
 
-  """Amount of base token added (decimal)"""
+  """
+  Amount of base token added (decimal)
+  """
   baseAmount: BigDecimal!
 
-  """Amount of base token added (raw)"""
+  """
+  Amount of base token added (raw)
+  """
   baseAmountExact: BigInt!
 
-  """Amount of quote token added (decimal)"""
+  """
+  Amount of quote token added (decimal)
+  """
   quoteAmount: BigDecimal!
 
-  """Amount of quote token added (raw)"""
+  """
+  Amount of quote token added (raw)
+  """
   quoteAmountExact: BigInt!
 
-  """Amount of LP tokens minted (decimal)"""
+  """
+  Amount of LP tokens minted (decimal)
+  """
   liquidity: BigDecimal!
 
-  """Amount of LP tokens minted (raw)"""
+  """
+  Amount of LP tokens minted (raw)
+  """
   liquidityExact: BigInt!
 }
 
@@ -1329,7 +1577,9 @@ input ERC20DexMint_filter {
   liquidityExact_in: [BigInt!]
   liquidityExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexMint_filter]
   or: [ERC20DexMint_filter]
@@ -1372,16 +1622,24 @@ enum ERC20DexMint_orderBy {
 
 "Represents a trading pair on a decentralized exchange (DEX).\nTracks reserves, prices, volume and other key metrics for a token pair.\n"
 type ERC20DexPair {
-  """Unique identifier for the pair"""
+  """
+  Unique identifier for the pair
+  """
   id: Bytes!
 
-  """Links to the Account entity representing this contract address"""
+  """
+  Links to the Account entity representing this contract address
+  """
   asAccount: Account!
 
-  """Official name of the token (e.g. 'Ethereum')"""
+  """
+  Official name of the token (e.g. 'Ethereum')
+  """
   name: String
 
-  """Trading symbol/ticker of the token (e.g. 'ETH')"""
+  """
+  Trading symbol/ticker of the token (e.g. 'ETH')
+  """
   symbol: String
 
   """
@@ -1389,114 +1647,208 @@ type ERC20DexPair {
   """
   decimals: Int!
 
-  """The base token in the trading pair"""
+  """
+  The base token in the trading pair
+  """
   baseToken: ERC20Contract!
 
-  """The quote token in the trading pair"""
+  """
+  The quote token in the trading pair
+  """
   quoteToken: ERC20Contract!
 
-  """Current base token reserve in decimal format"""
+  """
+  Current base token reserve in decimal format
+  """
   baseReserve: BigDecimal!
 
-  """Current base token reserve as raw integer"""
+  """
+  Current base token reserve as raw integer
+  """
   baseReserveExact: BigInt!
 
-  """Current quote token reserve in decimal format"""
+  """
+  Current quote token reserve in decimal format
+  """
   quoteReserve: BigDecimal!
 
-  """Current quote token reserve as raw integer"""
+  """
+  Current quote token reserve as raw integer
+  """
   quoteReserveExact: BigInt!
 
-  """Total supply of LP tokens in decimal format"""
+  """
+  Total supply of LP tokens in decimal format
+  """
   totalSupply: BigDecimal!
 
-  """Total supply of LP tokens as raw integer"""
+  """
+  Total supply of LP tokens as raw integer
+  """
   totalSupplyExact: BigInt!
 
-  """Current price of base token in quote token units (decimal)"""
+  """
+  Current price of base token in quote token units (decimal)
+  """
   baseTokenPrice: BigDecimal!
   baseTokenPriceExact: BigInt!
 
-  """Current price of quote token in base token units (decimal)"""
+  """
+  Current price of quote token in base token units (decimal)
+  """
   quoteTokenPrice: BigDecimal!
   quoteTokenPriceExact: BigInt!
 
-  """Current swap fee in basis points"""
+  """
+  Current swap fee in basis points
+  """
   swapFee: BigInt!
 
-  """All swap events for this pair"""
-  swaps(skip: Int = 0, first: Int = 100, orderBy: ERC20DexSwap_orderBy, orderDirection: OrderDirection, where: ERC20DexSwap_filter): [ERC20DexSwap!]!
+  """
+  All swap events for this pair
+  """
+  swaps(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexSwap_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexSwap_filter
+  ): [ERC20DexSwap!]!
 
-  """All liquidity mint events for this pair"""
-  mints(skip: Int = 0, first: Int = 100, orderBy: ERC20DexMint_orderBy, orderDirection: OrderDirection, where: ERC20DexMint_filter): [ERC20DexMint!]!
+  """
+  All liquidity mint events for this pair
+  """
+  mints(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexMint_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexMint_filter
+  ): [ERC20DexMint!]!
 
-  """All liquidity burn events for this pair"""
-  burns(skip: Int = 0, first: Int = 100, orderBy: ERC20DexBurn_orderBy, orderDirection: OrderDirection, where: ERC20DexBurn_filter): [ERC20DexBurn!]!
+  """
+  All liquidity burn events for this pair
+  """
+  burns(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexBurn_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexBurn_filter
+  ): [ERC20DexBurn!]!
 
-  """All stakes for this pair"""
-  stakes(skip: Int = 0, first: Int = 100, orderBy: ERC20DexStake_orderBy, orderDirection: OrderDirection, where: ERC20DexStake_filter): [ERC20DexStake!]!
+  """
+  All stakes for this pair
+  """
+  stakes(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ERC20DexStake_orderBy
+    orderDirection: OrderDirection
+    where: ERC20DexStake_filter
+  ): [ERC20DexStake!]!
 }
 
 "Time-series tracking of DEX pair metrics.\nCaptures periodic snapshots of reserves, prices, volume and other key metrics.\n"
 type ERC20DexPairSnapshot {
-  """Sequential numeric identifier"""
+  """
+  Sequential numeric identifier
+  """
   id: Int8!
 
-  """Timestamp of snapshot"""
+  """
+  Timestamp of snapshot
+  """
   timestamp: Timestamp!
 
-  """The DEX pair being tracked"""
+  """
+  The DEX pair being tracked
+  """
   pair: ERC20DexPair!
 
-  """Base token reserve in decimal format"""
+  """
+  Base token reserve in decimal format
+  """
   baseReserve: BigDecimal!
 
-  """Base token reserve as raw integer"""
+  """
+  Base token reserve as raw integer
+  """
   baseReserveExact: BigInt!
 
-  """Quote token reserve in decimal format"""
+  """
+  Quote token reserve in decimal format
+  """
   quoteReserve: BigDecimal!
 
-  """Quote token reserve as raw integer"""
+  """
+  Quote token reserve as raw integer
+  """
   quoteReserveExact: BigInt!
 
-  """Total supply of LP tokens in decimal format"""
+  """
+  Total supply of LP tokens in decimal format
+  """
   totalSupply: BigDecimal!
 
-  """Total supply of LP tokens as raw integer"""
+  """
+  Total supply of LP tokens as raw integer
+  """
   totalSupplyExact: BigInt!
 
-  """Base token price in quote token units (decimal)"""
+  """
+  Base token price in quote token units (decimal)
+  """
   baseTokenPrice: BigDecimal!
 
-  """Base token price in quote token units (raw)"""
+  """
+  Base token price in quote token units (raw)
+  """
   baseTokenPriceExact: BigInt!
 
-  """Quote token price in base token units (decimal)"""
+  """
+  Quote token price in base token units (decimal)
+  """
   quoteTokenPrice: BigDecimal!
 
-  """Quote token price in base token units (raw)"""
+  """
+  Quote token price in base token units (raw)
+  """
   quoteTokenPriceExact: BigInt!
 
-  """Volume in base token units (decimal)"""
+  """
+  Volume in base token units (decimal)
+  """
   volumeBaseToken: BigDecimal!
 
-  """Volume in base token units (raw)"""
+  """
+  Volume in base token units (raw)
+  """
   volumeBaseTokenExact: BigInt!
 
-  """Volume in quote token units (decimal)"""
+  """
+  Volume in quote token units (decimal)
+  """
   volumeQuoteToken: BigDecimal!
 
-  """Volume in quote token units (raw)"""
+  """
+  Volume in quote token units (raw)
+  """
   volumeQuoteTokenExact: BigInt!
 
-  """Number of transactions in period"""
+  """
+  Number of transactions in period
+  """
   txCount: BigInt!
 
-  """Amount of LP tokens minted (decimal)"""
+  """
+  Amount of LP tokens minted (decimal)
+  """
   liquidity: BigDecimal!
 
-  """Amount of LP tokens minted (raw)"""
+  """
+  Amount of LP tokens minted (raw)
+  """
   liquidityExact: BigInt!
 }
 
@@ -1675,7 +2027,9 @@ input ERC20DexPairSnapshot_filter {
   liquidityExact_in: [BigInt!]
   liquidityExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexPairSnapshot_filter]
   or: [ERC20DexPairSnapshot_filter]
@@ -1721,55 +2075,89 @@ enum ERC20DexPairSnapshot_orderBy {
 
 "Aggregated DEX pair metrics over configurable time periods.\nProvides statistical analysis of pair activity including volume, prices, and reserves.\n"
 type ERC20DexPairStats {
-  """Sequential numeric identifier"""
+  """
+  Sequential numeric identifier
+  """
   id: Int8!
 
-  """Start of aggregation period"""
+  """
+  Start of aggregation period
+  """
   timestamp: Timestamp!
 
-  """The DEX pair being analyzed"""
+  """
+  The DEX pair being analyzed
+  """
   pair: ERC20DexPair!
 
-  """Final base token reserve in period"""
+  """
+  Final base token reserve in period
+  """
   lastBaseReserve: BigDecimal!
 
-  """Final quote token reserve in period"""
+  """
+  Final quote token reserve in period
+  """
   lastQuoteReserve: BigDecimal!
 
-  """Total base token volume in period"""
+  """
+  Total base token volume in period
+  """
   totalVolumeBaseToken: BigDecimal!
 
-  """Total quote token volume in period"""
+  """
+  Total quote token volume in period
+  """
   totalVolumeQuoteToken: BigDecimal!
 
-  """Highest base token price in period"""
+  """
+  Highest base token price in period
+  """
   highestBasePrice: BigDecimal!
 
-  """Lowest base token price in period"""
+  """
+  Lowest base token price in period
+  """
   lowestBasePrice: BigDecimal!
 
-  """Opening base token price in period"""
+  """
+  Opening base token price in period
+  """
   firstBasePrice: BigDecimal!
 
-  """Closing base token price in period"""
+  """
+  Closing base token price in period
+  """
   lastBasePrice: BigDecimal!
 
-  """Highest quote token price in period"""
+  """
+  Highest quote token price in period
+  """
   highestQuotePrice: BigDecimal!
 
-  """Lowest quote token price in period"""
+  """
+  Lowest quote token price in period
+  """
   lowestQuotePrice: BigDecimal!
 
-  """Opening quote token price in period"""
+  """
+  Opening quote token price in period
+  """
   firstQuotePrice: BigDecimal!
 
-  """Closing quote token price in period"""
+  """
+  Closing quote token price in period
+  """
   lastQuotePrice: BigDecimal!
 
-  """Total number of transactions in period"""
+  """
+  Total number of transactions in period
+  """
   totalTxCount: BigInt!
 
-  """Amount of LP tokens minted in period"""
+  """
+  Amount of LP tokens minted in period
+  """
   totalLiquidity: BigDecimal!
 }
 
@@ -1789,7 +2177,9 @@ input ERC20DexPairStats_filter {
   pair: String
   pair_: ERC20DexPair_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexPairStats_filter]
   or: [ERC20DexPairStats_filter]
@@ -2010,7 +2400,9 @@ input ERC20DexPair_filter {
   burns_: ERC20DexBurn_filter
   stakes_: ERC20DexStake_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexPair_filter]
   or: [ERC20DexPair_filter]
@@ -2062,16 +2454,24 @@ type ERC20DexStake {
   """
   id: ID!
 
-  """The ERC20 token contract this balance is for"""
+  """
+  The ERC20 token contract this balance is for
+  """
   pair: ERC20DexPair!
 
-  """The account holding this token balance"""
+  """
+  The account holding this token balance
+  """
   account: Account
 
-  """Current balance in decimal format for human readability"""
+  """
+  Current balance in decimal format for human readability
+  """
   value: BigDecimal!
 
-  """Current balance as raw integer value (full precision)"""
+  """
+  Current balance as raw integer value (full precision)
+  """
   valueExact: BigInt!
 }
 
@@ -2143,7 +2543,9 @@ input ERC20DexStake_filter {
   valueExact_in: [BigInt!]
   valueExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexStake_filter]
   or: [ERC20DexStake_filter]
@@ -2175,46 +2577,74 @@ enum ERC20DexStake_orderBy {
 
 "Records a token swap event on a DEX pair.\nTracks the input and output amounts for both tokens in the pair.\n"
 type ERC20DexSwap implements Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 
-  """The DEX pair the swap occurred on"""
+  """
+  The DEX pair the swap occurred on
+  """
   pair: ERC20DexPair!
 
-  """The account that made the swap"""
+  """
+  The account that made the swap
+  """
   sender: Account!
 
-  """Amount of base token input (decimal)"""
+  """
+  Amount of base token input (decimal)
+  """
   baseAmountIn: BigDecimal!
 
-  """Amount of base token input (raw)"""
+  """
+  Amount of base token input (raw)
+  """
   baseAmountInExact: BigInt!
 
-  """Amount of quote token input (decimal)"""
+  """
+  Amount of quote token input (decimal)
+  """
   quoteAmountIn: BigDecimal!
 
-  """Amount of quote token input (raw)"""
+  """
+  Amount of quote token input (raw)
+  """
   quoteAmountInExact: BigInt!
 
-  """Amount of base token output (decimal)"""
+  """
+  Amount of base token output (decimal)
+  """
   baseAmountOut: BigDecimal!
 
-  """Amount of base token output (raw)"""
+  """
+  Amount of base token output (raw)
+  """
   baseAmountOutExact: BigInt!
 
-  """Amount of quote token output (decimal)"""
+  """
+  Amount of quote token output (decimal)
+  """
   quoteAmountOut: BigDecimal!
 
-  """Amount of quote token output (raw)"""
+  """
+  Amount of quote token output (raw)
+  """
   quoteAmountOutExact: BigInt!
 }
 
@@ -2384,7 +2814,9 @@ input ERC20DexSwap_filter {
   quoteAmountOutExact_in: [BigInt!]
   quoteAmountOutExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20DexSwap_filter]
   or: [ERC20DexSwap_filter]
@@ -2429,37 +2861,57 @@ enum ERC20DexSwap_orderBy {
 
 "Time-series tracking of token transfer activity metrics.\nThis entity captures transfer volume and count data over time for analysis.\n"
 type ERC20TokenVolume {
-  """Sequential numeric identifier"""
+  """
+  Sequential numeric identifier
+  """
   id: Int8!
 
-  """Timestamp of the volume record"""
+  """
+  Timestamp of the volume record
+  """
   timestamp: Timestamp!
 
-  """The ERC20 token being monitored"""
+  """
+  The ERC20 token being monitored
+  """
   token: ERC20Contract!
 
-  """Number of transfers in period"""
+  """
+  Number of transfers in period
+  """
   transferCount: Int!
 
-  """Total token amount transferred"""
+  """
+  Total token amount transferred
+  """
   volume: BigInt!
 }
 
 "Aggregated token transfer statistics over configurable time periods.\nProvides summarized metrics about token transfer activity for analysis.\n"
 type ERC20TokenVolumeStats {
-  """Sequential numeric identifier"""
+  """
+  Sequential numeric identifier
+  """
   id: Int8!
 
-  """Start of aggregation period"""
+  """
+  Start of aggregation period
+  """
   timestamp: Timestamp!
 
-  """The ERC20 token being analyzed"""
+  """
+  The ERC20 token being analyzed
+  """
   token: ERC20Contract!
 
-  """Total transfers in period"""
+  """
+  Total transfers in period
+  """
   totalTransfers: Int!
 
-  """Total volume transferred"""
+  """
+  Total volume transferred
+  """
   totalVolume: BigInt!
 }
 
@@ -2479,7 +2931,9 @@ input ERC20TokenVolumeStats_filter {
   token: String
   token_: ERC20Contract_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20TokenVolumeStats_filter]
   or: [ERC20TokenVolumeStats_filter]
@@ -2540,7 +2994,9 @@ input ERC20TokenVolume_filter {
   volume_in: [BigInt!]
   volume_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20TokenVolume_filter]
   or: [ERC20TokenVolume_filter]
@@ -2563,37 +3019,59 @@ enum ERC20TokenVolume_orderBy {
 
 "Records an ERC20 token transfer between accounts with full context.\nThis entity captures all details about a token transfer including the involved accounts and balances.\n"
 type ERC20Transfer implements Event {
-  """Unique identifier for this transfer event"""
+  """
+  Unique identifier for this transfer event
+  """
   id: ID!
 
-  """Contract that emitted the transfer event"""
+  """
+  Contract that emitted the transfer event
+  """
   emitter: Account!
 
-  """Transaction containing this transfer"""
+  """
+  Transaction containing this transfer
+  """
   transaction: Transaction!
 
-  """Block timestamp of the transfer"""
+  """
+  Block timestamp of the transfer
+  """
   timestamp: BigInt!
 
-  """The ERC20 token contract being transferred"""
+  """
+  The ERC20 token contract being transferred
+  """
   contract: ERC20Contract!
 
-  """Sending account (null for mints)"""
+  """
+  Sending account (null for mints)
+  """
   from: Account
 
-  """Sender's balance record pre-transfer"""
+  """
+  Sender's balance record pre-transfer
+  """
   fromBalance: ERC20Balance
 
-  """Receiving account (null for burns)"""
+  """
+  Receiving account (null for burns)
+  """
   to: Account
 
-  """Receiver's balance record post-transfer"""
+  """
+  Receiver's balance record post-transfer
+  """
   toBalance: ERC20Balance
 
-  """Transfer amount in decimal format for human readability"""
+  """
+  Transfer amount in decimal format for human readability
+  """
   value: BigDecimal!
 
-  """Transfer amount as raw integer value (full precision)"""
+  """
+  Transfer amount as raw integer value (full precision)
+  """
   valueExact: BigInt!
 }
 
@@ -2778,7 +3256,9 @@ input ERC20Transfer_filter {
   valueExact_in: [BigInt!]
   valueExact_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [ERC20Transfer_filter]
   or: [ERC20Transfer_filter]
@@ -2819,16 +3299,24 @@ enum ERC20Transfer_orderBy {
 
 "Common interface for all blockchain events providing core event data.\nThis ensures consistent tracking of basic event information across different event types.\n"
 interface Event {
-  """Unique event identifier"""
+  """
+  Unique event identifier
+  """
   id: ID!
 
-  """Transaction containing the event"""
+  """
+  Transaction containing the event
+  """
   transaction: Transaction!
 
-  """Contract that emitted the event"""
+  """
+  Contract that emitted the event
+  """
   emitter: Account!
 
-  """Block timestamp of the event"""
+  """
+  Block timestamp of the event
+  """
   timestamp: BigInt!
 }
 
@@ -2892,7 +3380,9 @@ input Event_filter {
   timestamp_in: [BigInt!]
   timestamp_not_in: [BigInt!]
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Event_filter]
   or: [Event_filter]
@@ -2912,7 +3402,9 @@ enum Event_orderBy {
 "8 bytes signed integer\n"
 scalar Int8
 
-"""Defines the order direction, either ascending or descending"""
+"""
+Defines the order direction, either ascending or descending
+"""
 enum OrderDirection {
   asc
   desc
@@ -3400,7 +3892,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Event!]!
 
-  """Collection of aggregated `ERC20TokenVolumeStats` values"""
+  """
+  Collection of aggregated `ERC20TokenVolumeStats` values
+  """
   erc20TokenVolumeStats_collection(
     skip: Int = 0
     first: Int = 100
@@ -3418,7 +3912,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ERC20TokenVolumeStats!]!
 
-  """Collection of aggregated `ERC20DexPairStats` values"""
+  """
+  Collection of aggregated `ERC20DexPairStats` values
+  """
   erc20DexPairStats_collection(
     skip: Int = 0
     first: Int = 100
@@ -3436,7 +3932,9 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ERC20DexPairStats!]!
 
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 
@@ -3922,7 +4420,9 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Event!]!
 
-  """Collection of aggregated `ERC20TokenVolumeStats` values"""
+  """
+  Collection of aggregated `ERC20TokenVolumeStats` values
+  """
   erc20TokenVolumeStats_collection(
     skip: Int = 0
     first: Int = 100
@@ -3940,7 +4440,9 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ERC20TokenVolumeStats!]!
 
-  """Collection of aggregated `ERC20DexPairStats` values"""
+  """
+  Collection of aggregated `ERC20DexPairStats` values
+  """
   erc20DexPairStats_collection(
     skip: Int = 0
     first: Int = 100
@@ -3958,7 +4460,9 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ERC20DexPairStats!]!
 
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 
@@ -3967,17 +4471,31 @@ scalar Timestamp
 
 "Records an Ethereum transaction and aggregates its associated events.\nThis provides context for all events that occurred within a single transaction.\n"
 type Transaction {
-  """Transaction hash identifier"""
+  """
+  Transaction hash identifier
+  """
   id: ID!
 
-  """Block timestamp when transaction was mined"""
+  """
+  Block timestamp when transaction was mined
+  """
   timestamp: BigInt!
 
-  """Block number containing the transaction"""
+  """
+  Block number containing the transaction
+  """
   blockNumber: BigInt!
 
-  """All events emitted during this transaction"""
-  events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
+  """
+  All events emitted during this transaction
+  """
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+  ): [Event!]!
 }
 
 input Transaction_filter {
@@ -4007,7 +4525,9 @@ input Transaction_filter {
   blockNumber_not_in: [BigInt!]
   events_: Event_filter
 
-  """Filter for the block changed event."""
+  """
+  Filter for the block changed event.
+  """
   _change_block: BlockChangedFilter
   and: [Transaction_filter]
   or: [Transaction_filter]
@@ -4021,33 +4541,49 @@ enum Transaction_orderBy {
 }
 
 type _Block_ {
-  """The hash of the block"""
+  """
+  The hash of the block
+  """
   hash: Bytes
 
-  """The block number"""
+  """
+  The block number
+  """
   number: Int!
 
-  """Integer representation of the timestamp stored in blocks for the chain"""
+  """
+  Integer representation of the timestamp stored in blocks for the chain
+  """
   timestamp: Int
 
-  """The hash of the parent block"""
+  """
+  The hash of the parent block
+  """
   parentHash: Bytes
 }
 
-"""The type for the top-level _meta field"""
+"""
+The type for the top-level _meta field
+"""
 type _Meta_ {
   "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n"
   block: _Block_!
 
-  """The deployment ID"""
+  """
+  The deployment ID
+  """
   deployment: String!
 
-  """If `true`, the subgraph encountered indexing errors at some past block"""
+  """
+  If `true`, the subgraph encountered indexing errors at some past block
+  """
   hasIndexingErrors: Boolean!
 }
 
 enum _SubgraphErrorPolicy_ {
-  """Data will be returned even if the subgraph has indexing errors"""
+  """
+  Data will be returned even if the subgraph has indexing errors
+  """
   allow
 
   """
