@@ -29,9 +29,17 @@ export function handleDelegateVotesChanged(event: DelegateVotesChangedEvent): vo
 
 export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
 
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {}
+export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
+  let equity = fetchEquity(event.address);
+  equity.owner = event.params.newOwner;
+  equity.save();
+}
 
-export function handlePaused(event: PausedEvent): void {}
+export function handlePaused(event: PausedEvent): void {
+  let equity = fetchEquity(event.address);
+  equity.paused = true;
+  equity.save();
+}
 
 export function handleTokensFrozen(event: TokensFrozenEvent): void {}
 
@@ -86,7 +94,11 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.save();
 }
 
-export function handleUnpaused(event: UnpausedEvent): void {}
+export function handleUnpaused(event: UnpausedEvent): void {
+  let equity = fetchEquity(event.address);
+  equity.paused = false;
+  equity.save();
+}
 
 export function handleUserBlocked(event: UserBlockedEvent): void {}
 
