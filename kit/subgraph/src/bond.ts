@@ -1,5 +1,5 @@
-import { Address, log } from '@graphprotocol/graph-ts';
-import { Event_Transfer } from '../generated/schema';
+import { Address, log, store } from '@graphprotocol/graph-ts';
+import { BlockedAccount, Event_Transfer } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   BondMatured as BondMaturedEvent,
@@ -97,6 +97,20 @@ export function handleUnpaused(event: UnpausedEvent): void {
   bond.save();
 }
 
-export function handleUserBlocked(event: UserBlockedEvent): void {}
+export function handleUserBlocked(event: UserBlockedEvent): void {
+  let bond = fetchBond(event.address);
+  let id = bond.id.concat(event.params.user);
+  let blockedAccount = BlockedAccount.load(id);
+  if (!blockedAccount) {
+    blockedAccount = new BlockedAccount(id);
+    blockedAccount.account = event.params.user;
+    blockedAccount.asset = bond.id;
+    blockedAccount.save();
+  }
+}
 
-export function handleUserUnblocked(event: UserUnblockedEvent): void {}
+export function handleUserUnblocked(event: UserUnblockedEvent): void {
+  let bond = fetchBond(event.address);
+  let id = bond.id.concat(event.params.user);
+  store.remove('BlockedAccount', id.toHexString());
+}
