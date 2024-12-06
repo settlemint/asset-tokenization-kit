@@ -19,6 +19,7 @@ interface Asset {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  owner: Account!
 }
 
 type Bond implements Asset @entity {
@@ -33,6 +34,8 @@ type Bond implements Asset @entity {
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   maturityDate: BigInt!
   isMatured: Boolean!
+  paused: Boolean!
+  owner: Account!
 }
 
 type Equity implements Asset @entity {
@@ -47,6 +50,8 @@ type Equity implements Asset @entity {
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   equityClass: String!
   equityCategory: String!
+  paused: Boolean!
+  owner: Account!
 }
 
 type StableCoin implements Asset @entity {
@@ -61,6 +66,8 @@ type StableCoin implements Asset @entity {
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   collateral: BigDecimal!
   collateralExact: BigInt!
+  paused: Boolean!
+  owner: Account!
 }
 
 type CryptoCurrency implements Asset @entity {
@@ -73,6 +80,7 @@ type CryptoCurrency implements Asset @entity {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  owner: Account!
 }
 
 type Balance @entity {

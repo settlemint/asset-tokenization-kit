@@ -14,6 +14,8 @@ export function fetchBond(address: Address): Bond {
     let totalSupply = endpoint.try_totalSupply();
     let maturityDate = endpoint.try_maturityDate();
     let isMatured = endpoint.try_isMatured();
+    let paused = endpoint.try_paused();
+    let owner = endpoint.try_owner();
 
     const account = fetchAccount(address);
 
@@ -25,6 +27,8 @@ export function fetchBond(address: Address): Bond {
     bond.totalSupply = toDecimals(bond.totalSupplyExact);
     bond.maturityDate = maturityDate.reverted ? BigInt.zero() : maturityDate.value;
     bond.isMatured = maturityDate.reverted ? false : isMatured.value;
+    bond.paused = paused.reverted ? false : paused.value;
+    bond.owner = owner.reverted ? Address.zero() : owner.value;
     bond.asAccount = bond.id;
     bond.save();
 

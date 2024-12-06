@@ -23,9 +23,17 @@ export function handleApproval(event: ApprovalEvent): void {}
 
 export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
 
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {}
+export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  stableCoin.owner = event.params.newOwner;
+  stableCoin.save();
+}
 
-export function handlePaused(event: PausedEvent): void {}
+export function handlePaused(event: PausedEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  stableCoin.paused = true;
+  stableCoin.save();
+}
 
 export function handleTokensFrozen(event: TokensFrozenEvent): void {}
 
@@ -80,7 +88,11 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.save();
 }
 
-export function handleUnpaused(event: UnpausedEvent): void {}
+export function handleUnpaused(event: UnpausedEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  stableCoin.paused = false;
+  stableCoin.save();
+}
 
 export function handleUserBlocked(event: UserBlockedEvent): void {}
 

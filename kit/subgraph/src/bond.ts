@@ -26,9 +26,17 @@ export function handleBondMatured(event: BondMaturedEvent): void {}
 
 export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
 
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {}
+export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
+  let bond = fetchBond(event.address);
+  bond.owner = event.params.newOwner;
+  bond.save();
+}
 
-export function handlePaused(event: PausedEvent): void {}
+export function handlePaused(event: PausedEvent): void {
+  let bond = fetchBond(event.address);
+  bond.paused = true;
+  bond.save();
+}
 
 export function handleTokensFrozen(event: TokensFrozenEvent): void {}
 
@@ -83,7 +91,11 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.save();
 }
 
-export function handleUnpaused(event: UnpausedEvent): void {}
+export function handleUnpaused(event: UnpausedEvent): void {
+  let bond = fetchBond(event.address);
+  bond.paused = false;
+  bond.save();
+}
 
 export function handleUserBlocked(event: UserBlockedEvent): void {}
 

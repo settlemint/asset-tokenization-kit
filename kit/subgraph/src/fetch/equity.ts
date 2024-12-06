@@ -14,6 +14,8 @@ export function fetchEquity(address: Address): Equity {
     let totalSupply = endpoint.try_totalSupply();
     let equityClass = endpoint.try_equityClass();
     let equityCategory = endpoint.try_equityCategory();
+    let paused = endpoint.try_paused();
+    let owner = endpoint.try_owner();
 
     const account = fetchAccount(address);
 
@@ -25,6 +27,8 @@ export function fetchEquity(address: Address): Equity {
     equity.totalSupply = toDecimals(equity.totalSupplyExact);
     equity.equityClass = equityClass.reverted ? '' : equityClass.value;
     equity.equityCategory = equityCategory.reverted ? '' : equityCategory.value;
+    equity.paused = paused.reverted ? false : paused.value;
+    equity.owner = owner.reverted ? Address.zero() : owner.value;
     equity.asAccount = equity.id;
     equity.save();
 
