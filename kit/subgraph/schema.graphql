@@ -7,6 +7,13 @@ type Account @entity {
   nativeBalanceExact: BigInt!
   transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "from")
   transferToEvent: [Event_Transfer!]! @derivedFrom(field: "to")
+  blockedAssets: [BlockedAccount!]! @derivedFrom(field: "account")
+}
+
+type BlockedAccount @entity {
+  id: Bytes!
+  account: Account!
+  asset: Asset!
 }
 
 interface Asset {
