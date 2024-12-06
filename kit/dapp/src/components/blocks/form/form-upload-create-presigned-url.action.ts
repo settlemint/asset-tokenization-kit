@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { client } from '@/lib/settlemint/minio';
-import { CreatePresignedUrlSchema } from './create-presigned-url.schema';
+import { CreatePresignedUrlSchema } from './form-upload-create-presigned-url.schema';
 
 type MinioClient = typeof client & {
   presignedPutObject: (

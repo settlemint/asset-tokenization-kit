@@ -1,23 +1,22 @@
 'use client';
 
 import { Input } from '@/components/blocks/form/form-input';
-import { FormMultiStepProvider } from '@/components/blocks/form/form-multistep';
-import { FormPage } from '@/components/blocks/form/form-page';
+import { FormMultiStep } from '@/components/blocks/form/form-multistep';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { Dropzone } from '@/components/blocks/form/form-upload-dropzone';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { toast } from 'sonner';
-import { useLocalStorage } from 'usehooks-ts';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
-import { CreateTokenSchema, createTokenFormPageFields } from './create-token-form-schema';
+import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
 
 interface CreateTokenFormProps {
-  defaultValues: Partial<CreateTokenSchemaType>;
+  defaultValues?: Partial<CreateTokenSchemaType>;
   formId: string;
   className?: string;
 }
@@ -33,8 +32,6 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
-  const [localStorageState] = useLocalStorage<Partial<CreateTokenSchemaType>>('state', defaultValues);
-
   const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateTokenSchema), {
     actionProps: {
       onSuccess: () => {
@@ -44,9 +41,8 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...createTokenFormPageFields,
+        ...createTokenDefaultValues,
         ...defaultValues,
-        ...localStorageState,
       },
     },
     errorMapProps: {},
@@ -87,118 +83,114 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
           <CardDescription>Issue a new token.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FormMultiStepProvider
-            config={{ useLocalStorageState: false, useQueryState: false }}
+          <FormMultiStep<CreateTokenSchemaType>
+            form={form}
+            config={{ useLocalStorageState: false }}
             formId="create-token-form"
+            onSubmit={onSubmit}
           >
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormPage
-                  form={form}
-                  title="Introduction"
-                  controls={{
-                    next: { buttonText: 'Continue' },
-                  }}
-                >
-                  <div>
-                    <p>Easily convert your assets into digital tokens using this step-by-step wizard.</p>
-                    <p>Let&apos;s get started!</p>
-                  </div>
-                </FormPage>
-                <FormPage
-                  form={form}
-                  title="Terms & Conditions"
-                  controls={{
-                    prev: { buttonText: 'Back' },
-                    next: { buttonText: 'Continue' },
-                  }}
-                >
-                  <p>By proceeding with the tokenization process, you agree to the following:</p>
-                  <ul>
-                    <li>
-                      Ensure that all asset details provided are accurate and comply with local laws and regulations.
-                    </li>
-                    <li>You are solely responsible for the legal implications of tokenizing assets.</li>
-                    <li>We do not offer legal or financial advice regarding tokenized assets.</li>
-                    <li>Your use of the platform is subject to our Privacy Policy and Terms of Service.</li>
-                  </ul>
-                  <p>Please review the full terms before continuing.</p>
-                  {/* TODO: do we want a formal check box here? */}
-                </FormPage>
-                <FormPage
-                  form={form}
-                  title="Token Information"
-                  fields={['tokenName', 'tokenSymbol']}
-                  withSheetClose
-                  controls={{
-                    prev: { buttonText: 'Back' },
-                    submit: { buttonText: 'Submit' },
-                  }}
-                >
-                  {/* Token Name */}
-                  <FormField
-                    control={form.control}
-                    name="tokenName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Token Name" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the name of the token</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Token Symbol */}
-                  <FormField
-                    control={form.control}
-                    name="tokenSymbol"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Token Symbol</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Token Symbol" {...field} />
-                        </FormControl>
-                        <FormDescription>This is the symbol of the token</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Token Logo */}
-                  <FormField
-                    control={form.control}
-                    name="tokenLogo"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Token Logo</FormLabel>
-                          <FormControl>
-                            <Dropzone
-                              label="Click, or drop your logo here"
-                              name={field.name}
-                              accept={{
-                                images: ['.jpg', '.jpeg', '.png', '.webp'],
-                                text: [],
-                              }}
-                              maxSize={1024 * 1024 * 10} // 10MB
-                              multiple={false}
-                              server={{
-                                bucket: 'default-bucket',
-                                storage: 'minio',
-                              }}
-                            />
-                          </FormControl>
-                          <FormDescription>This is the logo of the token</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </FormPage>
-              </form>
-            </Form>
-          </FormMultiStepProvider>
+            <FormStep
+              form={form}
+              title="Introduction"
+              controls={{
+                next: { buttonText: 'Continue' },
+              }}
+            >
+              <div>
+                <p>Easily convert your assets into digital tokens using this step-by-step wizard.</p>
+                <p>Let&apos;s get started!</p>
+              </div>
+            </FormStep>
+            <FormStep
+              form={form}
+              title="Terms & Conditions"
+              controls={{
+                prev: { buttonText: 'Back' },
+                next: { buttonText: 'Continue' },
+              }}
+            >
+              <p>By proceeding with the tokenization process, you agree to the following:</p>
+              <ul>
+                <li>Ensure that all asset details provided are accurate and comply with local laws and regulations.</li>
+                <li>You are solely responsible for the legal implications of tokenizing assets.</li>
+                <li>We do not offer legal or financial advice regarding tokenized assets.</li>
+                <li>Your use of the platform is subject to our Privacy Policy and Terms of Service.</li>
+              </ul>
+              <p>Please review the full terms before continuing.</p>
+              {/* TODO: do we want a formal check box here? */}
+            </FormStep>
+            <FormStep
+              form={form}
+              title="Token Information"
+              fields={['tokenName', 'tokenSymbol']}
+              withSheetClose
+              controls={{
+                prev: { buttonText: 'Back' },
+                submit: { buttonText: 'Submit' },
+              }}
+            >
+              {/* Token Name */}
+              <FormField
+                control={form.control}
+                name="tokenName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Token name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Token Name" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the name of the token</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Token Symbol */}
+              <FormField
+                control={form.control}
+                name="tokenSymbol"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Token Symbol</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Token Symbol" {...field} />
+                    </FormControl>
+                    <FormDescription>This is the symbol of the token</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Token Logo */}
+              <FormField
+                control={form.control}
+                name="tokenLogo"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Token Logo</FormLabel>
+                      <FormControl>
+                        <Dropzone
+                          label="Click, or drop your logo here"
+                          name={field.name}
+                          accept={{
+                            images: ['.jpg', '.jpeg', '.png', '.webp'],
+                            text: [],
+                          }}
+                          maxSize={1024 * 1024 * 10} // 10MB
+                          multiple={false}
+                          server={{
+                            bucket: 'default-bucket',
+                            storage: 'minio',
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>This is the logo of the token</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </FormStep>
+          </FormMultiStep>
         </CardContent>
       </Card>
     </div>

@@ -17,8 +17,8 @@ export const mintTokenDefaultValues: MintTokenSchemaType = {
   tokenAddress: '0x',
 } as const;
 
-export type MintTokenFormPageFields = keyof typeof mintTokenDefaultValues;
+export type MintTokenFormStepFields = keyof typeof mintTokenDefaultValues;
 
-export const mintTokenFormPageFields: MintTokenFormPageFields[] = Object.keys(
+export const mintTokenFormStepFields: MintTokenFormStepFields[] = Object.keys(
   mintTokenDefaultValues
-) as MintTokenFormPageFields[];
+) as MintTokenFormStepFields[];

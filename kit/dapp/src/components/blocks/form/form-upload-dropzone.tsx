@@ -15,8 +15,8 @@ import { useCallback, useEffect, useState } from 'react';
 import ReactDropzone from 'react-dropzone';
 import { toast } from 'sonner';
 import { useLocalStorage } from 'usehooks-ts';
-import { createPresignedUrlAction } from './create-presigned-url.action';
 import { useMultiFormStep } from './form-multistep';
+import { createPresignedUrlAction } from './form-upload-create-presigned-url.action';
 
 interface DropzoneProps {
   label: string;

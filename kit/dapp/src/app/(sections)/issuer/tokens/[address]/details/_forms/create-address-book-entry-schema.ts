@@ -15,6 +15,6 @@ export const createAddressBookEntryDefaultValues: CreateAddressBookEntrySchemaTy
 
 export type CreateAddressBookEntryFormPageFields = keyof typeof createAddressBookEntryDefaultValues;
 
-export const createAddressBookEntryFormPageFields: CreateAddressBookEntryFormPageFields[] = Object.keys(
+export const createAddressBookEntryFormStepFields: CreateAddressBookEntryFormPageFields[] = Object.keys(
   createAddressBookEntryDefaultValues
 ) as CreateAddressBookEntryFormPageFields[];

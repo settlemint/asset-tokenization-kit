@@ -1,35 +1,39 @@
 'use client';
-
+import { Form } from '@/components/ui/form';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import type { FieldValues, UseFormReturn } from 'react-hook-form';
 
 type FormMultiStepConfig = {
   useLocalStorageState?: boolean;
-  useQueryState?: boolean;
-  useQueryStateComponent?: 'Form' | 'FormPage';
 };
 
-interface FormMultiStepContextType {
+interface FormMultiStepContextType<T extends FieldValues> {
   currentStep: number;
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (step: number) => void;
   totalSteps: number;
   setTotalSteps: React.Dispatch<React.SetStateAction<number>>;
-  registerFormPage: () => number;
+  registerFormStep: () => number;
   config: FormMultiStepConfig;
+  form: UseFormReturn<T>;
   formId: string;
 }
 
-const FormMultiStepContext = createContext<FormMultiStepContextType | undefined>(undefined);
+const FormMultiStepContext = createContext<FormMultiStepContextType<FieldValues> | undefined>(undefined);
 
-export const FormMultiStepProvider = ({
+export const FormMultiStep = <T extends FieldValues>({
   children,
-  config = { useLocalStorageState: false, useQueryState: false, useQueryStateComponent: 'FormPage' },
+  config = { useLocalStorageState: false },
+  form,
   formId,
+  onSubmit,
 }: React.PropsWithChildren<{
   config: FormMultiStepConfig;
+  form: UseFormReturn<T>;
   formId: string;
+  onSubmit: (values: T) => void;
 }>) => {
   const [currentStep, setCurrentStep] = useQueryState('currentStep', parseAsInteger.withDefault(1));
   const [_formId] = useQueryState('formId', parseAsString.withDefault(formId));
@@ -44,7 +48,7 @@ export const FormMultiStepProvider = ({
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
   const goToStep = (step: number) => setCurrentStep(Math.min(Math.max(step, 0), totalSteps - 1));
 
-  const registerFormPage = useCallback(() => {
+  const registerFormStep = useCallback(() => {
     const pageNumber = pageCounterRef.current;
     setTotalSteps((prev) => Math.max(prev, pageNumber));
     pageCounterRef.current += 1;
@@ -60,20 +64,25 @@ export const FormMultiStepProvider = ({
         goToStep,
         totalSteps,
         setTotalSteps,
-        registerFormPage,
+        registerFormStep,
         config,
+        form: form as UseFormReturn<FieldValues>,
         formId: formId ?? _formId,
       }}
     >
-      {children}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {children}
+        </form>
+      </Form>
     </FormMultiStepContext.Provider>
   );
 };
 
-export const useMultiFormStep = (): FormMultiStepContextType => {
-  const context = useContext(FormMultiStepContext);
+export const useMultiFormStep = <T extends FieldValues>(): FormMultiStepContextType<T> => {
+  const context = useContext(FormMultiStepContext as React.Context<FormMultiStepContextType<T> | undefined>);
   if (!context) {
-    throw new Error('useMultiFormStep must be used within a FormMultiStepProvider');
+    throw new Error('useMultiFormStep must be used within a FormMultiStep');
   }
   return context;
 };

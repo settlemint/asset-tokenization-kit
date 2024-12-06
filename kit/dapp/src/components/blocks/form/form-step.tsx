@@ -3,14 +3,13 @@
 import { Button } from '@/components/ui/button';
 import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { parseAsInteger, parseAsJson, useQueryState } from 'nuqs';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
 import { useMultiFormStep } from './form-multistep';
 
-export const FormPage = <
+export const FormStep = <
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
@@ -32,30 +31,23 @@ export const FormPage = <
     submit?: { buttonText: string };
   };
 }) => {
-  const { currentStep, nextStep, prevStep, totalSteps, registerFormPage, config } = useMultiFormStep();
+  const { currentStep, nextStep, prevStep, totalSteps, registerFormStep, config } = useMultiFormStep();
   const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose
     ? [SheetClose, { asChild: true }]
     : [React.Fragment, {}];
 
-  // TODO: Add querySchema https://nuqs.47ng.com/docs/parsers/built-in#json
-  const [, setQueryState] = useQueryState(
-    'state',
-    parseAsJson((value) => value as Record<string, unknown>)
-  );
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const [isNavigate, setIsNavigate] = useState(true);
   const pageRef = useRef<number | null>(null);
   const page = pageRef.current ?? currentStep ?? 1;
 
-  const [, setCurrentStep] = useQueryState('currentStep', parseAsInteger.withDefault(1));
-
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     if (pageRef.current === null) {
-      pageRef.current = registerFormPage();
+      pageRef.current = registerFormStep();
     }
-  }, [registerFormPage]);
+  }, [registerFormStep]);
 
   const fieldValues = useWatch({
     control: form.control,
@@ -89,9 +81,6 @@ export const FormPage = <
     }
 
     if (navigationType === 'reload') {
-      if (config.useQueryState && config.useQueryStateComponent === 'FormPage') {
-        setCurrentStep(1);
-      }
       triggerFields().then((isValid) => {
         if (page === currentStep) {
           setIsValid(isValid);
@@ -135,12 +124,6 @@ export const FormPage = <
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (config.useQueryState) {
-      const fieldState = Object.fromEntries(fields.map((key, index) => [key, fieldValues[index]]));
-      if (page === currentStep) {
-        setQueryState((prevState) => ({ ...prevState, ...fieldState }));
-      }
-    }
     if (config.useLocalStorageState) {
       const fieldState = Object.fromEntries(fields.map((key, index) => [key, fieldValues[index]]));
       if (page === currentStep) {
@@ -153,10 +136,10 @@ export const FormPage = <
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fieldValues, setQueryState, page, currentStep, config.useQueryState]);
+  }, [fieldValues, page, currentStep]);
 
   return (
-    <div className={`${cn('FormPage space-y-4', { hidden: page !== currentStep })}`}>
+    <div className={`${cn('FormStep space-y-4', { hidden: page !== currentStep })}`}>
       {title && <h3>{title}</h3>}
       {children}
       <div className="!mt-16 flex justify-end gap-x-4">
