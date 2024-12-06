@@ -2,6 +2,11 @@ import { Button } from '@/components/ui/button';
 import { signOut } from '@/lib/auth/auth';
 import Link from 'next/link';
 
+async function handleSignOut() {
+  'use server';
+  await signOut();
+}
+
 export default function SignOut() {
   return (
     <>
@@ -10,12 +15,7 @@ export default function SignOut() {
         <p className="text-balance text-muted-foreground">Are you sure you want to sign out?</p>
       </div>
       <div className="grid gap-4">
-        <form
-          action={async () => {
-            'use server';
-            await signOut();
-          }}
-        >
+        <form action={handleSignOut}>
           <Button type="submit" className="w-full">
             Sign out
           </Button>

@@ -10,16 +10,6 @@ contract EquityFactoryTest is Test {
     EquityFactory public factory;
     address public owner;
 
-    event EquityCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        string class,
-        string category,
-        address indexed owner,
-        uint256 tokenCount
-    );
-
     function setUp() public {
         factory = new EquityFactory();
         owner = address(this);
@@ -31,7 +21,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.createToken(name, symbol, class, category, owner);
+        address tokenAddress = factory.create(name, symbol, class, category);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -60,7 +50,7 @@ contract EquityFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.createToken(name, symbol, classes[i], categories[i], owner);
+            address tokenAddress = factory.create(name, symbol, classes[i], categories[i]);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Equity token = Equity(tokenAddress);
@@ -71,24 +61,19 @@ contract EquityFactoryTest is Test {
         assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
-    function test_RevertWhenZeroAddress() public {
-        vm.expectRevert(EquityFactory.ZeroAddress.selector);
-        factory.createToken("Test Equity", "TEQT", "Common", "Series A", address(0));
-    }
-
     function test_DeterministicAddresses() public {
         string memory name = "Test Equity";
         string memory symbol = "TEQT";
         string memory class = "Common";
         string memory category = "Series A";
 
-        address token1 = factory.createToken(name, symbol, class, category, owner);
+        address token1 = factory.create(name, symbol, class, category);
 
         // Create a new factory instance
         EquityFactory newFactory = new EquityFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.createToken(name, symbol, class, category, owner);
+        address token2 = newFactory.create(name, symbol, class, category);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -100,7 +85,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.createToken(name, symbol, class, category, owner);
+        address tokenAddress = factory.create(name, symbol, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test initial state
@@ -115,7 +100,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.createToken(name, symbol, class, category, owner);
+        address tokenAddress = factory.create(name, symbol, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test minting
@@ -147,7 +132,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.recordLogs();
-        address tokenAddress = factory.createToken(name, symbol, class, category, owner);
+        address tokenAddress = factory.create(name, symbol, class, category);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(entries.length, 2, "Should emit 2 events: OwnershipTransferred and EquityCreated");
@@ -158,7 +143,7 @@ contract EquityFactoryTest is Test {
         // Topic 0 is the event signature
         assertEq(
             lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,string,string,address,uint256)"),
+            keccak256("EquityCreated(address,string,string,address,uint256)"),
             "Wrong event signature"
         );
 

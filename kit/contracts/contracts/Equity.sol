@@ -27,41 +27,41 @@ contract Equity is
     ERC20Custodian,
     ERC20Votes
 {
-    string private _class;
-    string private _category;
+    string private _equityClass;
+    string private _equityCategory;
 
     /// @notice Deploys a new Equity token contract
     /// @dev Initializes the token with name, symbol, class, category and sets up voting capabilities
     /// @param name The token name
     /// @param symbol The token symbol
-    /// @param class The equity class (e.g., "Common", "Preferred")
-    /// @param category The equity category (e.g., "Series A", "Seed")
+    /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
     /// @param initialOwner The address that will receive ownership and admin rights
     constructor(
         string memory name,
         string memory symbol,
-        string memory class,
-        string memory category,
+        string memory equityClass_,
+        string memory equityCategory_,
         address initialOwner
     )
         ERC20(name, symbol)
         Ownable(initialOwner)
         ERC20Permit(name)
     {
-        _class = class;
-        _category = category;
+        _equityClass = equityClass_;
+        _equityCategory = equityCategory_;
     }
 
     /// @notice Returns the class of equity this token represents
     /// @return The equity class as a string
     function equityClass() public view returns (string memory) {
-        return _class;
+        return _equityClass;
     }
 
     /// @notice Returns the category of equity this token represents
     /// @return The equity category as a string
     function equityCategory() public view returns (string memory) {
-        return _category;
+        return _equityCategory;
     }
 
     /// @notice Pauses all token transfers

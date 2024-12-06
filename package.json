@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -52,17 +52,17 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "lefthook": "1.8.5",
     "turbo": "2.3.3",
     "typescript": "5.7.2",
     "ultracite": "4.1.8"
   },
-  "trustedDependencies": ["@biomejs/biome", "lefthook"],
+  "trustedDependencies": ["@biomejs/biome"],
   "packageManager": "bun@1.1.38",
   "workspaces": ["kit/*"],
   "overrides": {
-    "react-is": "19.0.0-rc-fb9a90fa48-20240614",
+    "react-is": "19.0.0",
     "elliptic": "6.6.1",
-    "ws": "7.5.10"
+    "ws": "8.18.0",
+    "graphql": "16.9.0"
   }
 }

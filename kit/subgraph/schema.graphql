@@ -1,0 +1,120 @@
+type Account @entity {
+  id: Bytes!
+  isContract: Boolean!
+  asAsset: Asset
+  balances: [Balance!]! @derivedFrom(field: "account")
+  nativeBalance: BigDecimal!
+  nativeBalanceExact: BigInt!
+  transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "from")
+  transferToEvent: [Event_Transfer!]! @derivedFrom(field: "to")
+  blockedAssets: [BlockedAccount!]! @derivedFrom(field: "account")
+}
+
+type BlockedAccount @entity {
+  id: Bytes!
+  account: Account!
+  asset: Asset!
+}
+
+interface Asset {
+  id: Bytes!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  owner: Account!
+}
+
+type Bond implements Asset @entity {
+  id: Bytes!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  maturityDate: BigInt!
+  isMatured: Boolean!
+  paused: Boolean!
+  owner: Account!
+}
+
+type Equity implements Asset @entity {
+  id: Bytes!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  equityClass: String!
+  equityCategory: String!
+  paused: Boolean!
+  owner: Account!
+}
+
+type StableCoin implements Asset @entity {
+  id: Bytes!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  paused: Boolean!
+  owner: Account!
+}
+
+type CryptoCurrency implements Asset @entity {
+  id: Bytes!
+  asAccount: Account!
+  name: String
+  symbol: String
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  owner: Account!
+}
+
+type Balance @entity {
+  id: Bytes!
+  asset: Asset!
+  account: Account!
+  value: BigDecimal!
+  valueExact: BigInt!
+  transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "fromBalance")
+  transferToEvent: [Event_Transfer!]! @derivedFrom(field: "toBalance")
+}
+
+interface Event {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+}
+
+type Event_Transfer implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  asset: Asset!
+  from: Account
+  fromBalance: Balance
+  to: Account
+  toBalance: Balance
+  value: BigDecimal!
+  valueExact: BigInt!
+}

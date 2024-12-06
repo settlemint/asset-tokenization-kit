@@ -1,6 +1,6 @@
 {
   "name": "contracts",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -28,6 +28,6 @@
   "devDependencies": {},
   "overrides": {
     "elliptic": "6.6.1",
-    "ws": "7.5.10"
+    "ws": "8.18.0"
   }
 }
