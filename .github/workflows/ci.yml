@@ -118,7 +118,7 @@ jobs:
         if: ${{ env.TAG != 'pr' }}
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          image-ref: 'ghcr.io/settlemint-collaboration/kawasaki:${{ env.VERSION }}'
+          image-ref: 'ghcr.io/settlemint/starterkit-asset-tokenization:${{ env.VERSION }}'
           format: 'table'
           exit-code: '1'
           trivy-config: trivy-secret.yaml
