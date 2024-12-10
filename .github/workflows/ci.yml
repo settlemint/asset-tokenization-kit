@@ -20,6 +20,17 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
 
+      - name: Secret Scanning (Trivy)
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          format: 'table'
+          exit-code: '1'
+          scanners: 'secret'
+
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
         with:
@@ -102,6 +113,17 @@ jobs:
         env:
           PUBLISH_NPM: true
           PUBLISH_DOCKER: true
+
+      - name: Run Trivy vulnerability scanner on the docker image
+        if: ${{ env.TAG != 'pr' }}
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: 'ghcr.io/settlemint-collaboration/kawasaki:${{ env.VERSION }}'
+          format: 'table'
+          exit-code: '1'
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          scanners: 'secret'
 
       - name: Update Custom Deployment
         if: ${{ env.TAG != 'pr' }}
