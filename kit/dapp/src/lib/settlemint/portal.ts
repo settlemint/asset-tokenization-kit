@@ -1,5 +1,5 @@
-import type { introspection } from '@schemas/portal-env';
-import { createPortalClient } from '@settlemint/sdk-portal';
+import { createPortalClient } from "@settlemint/sdk-portal";
+import type { introspection } from "@schemas/portal-env";
 
 export const { client: portalClient, graphql: portalGraphql } = createPortalClient<{
   introspection: introspection;

@@ -1,79 +1,49 @@
 input CreateWalletInfoInput {
-  """
-  The name of the wallet
-  """
+  """The name of the wallet"""
   name: String!
 }
 
-"""
-Details of the created wallet
-"""
+"""Details of the created wallet"""
 type CreateWalletOutput {
-  """
-  The Ethereum address of the created wallet
-  """
+  """The Ethereum address of the created wallet"""
   address: String
 
-  """
-  The derivation path used to generate the wallet
-  """
+  """The derivation path used to generate the wallet"""
   derivationPath: String
 
-  """
-  The unique identifier of the created wallet
-  """
+  """The unique identifier of the created wallet"""
   id: String
 
-  """
-  The name of the created wallet
-  """
+  """The name of the created wallet"""
   name: String
 }
 
 input CreateWalletVerificationInput {
-  """
-  OTP verification settings. Provide this for OTP verification.
-  """
+  """OTP verification settings. Provide this for OTP verification."""
   otp: OTPSettingsInput
 
-  """
-  PINCODE verification settings. Provide this for PINCODE verification.
-  """
+  """PINCODE verification settings. Provide this for PINCODE verification."""
   pincode: PincodeSettingsInput
 }
 
-"""
-Output for creating a wallet verification
-"""
+"""Output for creating a wallet verification"""
 type CreateWalletVerificationOutput {
-  """
-  Unique identifier of the created wallet verification
-  """
+  """Unique identifier of the created wallet verification"""
   id: String
 
-  """
-  Name of the created wallet verification
-  """
+  """Name of the created wallet verification"""
   name: String
 
-  """
-  Additional parameters of the created wallet verification
-  """
+  """Additional parameters of the created wallet verification"""
   parameters: JSON
 
-  """
-  Type of the created wallet verification
-  """
+  """Type of the created wallet verification"""
   verificationType: WalletVerificationType
 }
 
-"""
-Output for deleting a wallet verification
-"""
+"""Output for deleting a wallet verification"""
 type DeleteWalletVerificationOutput {
-  """
-  Indicates whether the wallet verification was successfully deleted
-  """
+  """Indicates whether the wallet verification was successfully deleted"""
   success: Boolean
 }
 
@@ -84,9 +54,7 @@ scalar JSON
 
 type Mutation {
   StarterKitERC20Approve(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -94,41 +62,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20ApproveInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20DexAddLiquidity(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -136,41 +90,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexAddLiquidityInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexApprove(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -178,41 +118,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexApproveInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexEmergencyWithdraw(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -220,41 +146,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexEmergencyWithdrawInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexFactoryCreatePair(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -262,41 +174,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexFactoryCreatePairInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexFactoryTransactionOutput
   StarterKitERC20DexGrantRole(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -304,41 +202,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexGrantRoleInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexPause(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -346,40 +230,26 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexPermit(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -387,41 +257,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexPermitInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexRemoveLiquidity(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -429,41 +285,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexRemoveLiquidityInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexRenounceRole(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -471,41 +313,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexRenounceRoleInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexRevokeRole(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -513,41 +341,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexRevokeRoleInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexSetFee(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -555,41 +369,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexSetFeeInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexSwapBaseToQuote(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -597,41 +397,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexSwapBaseToQuoteInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexSwapQuoteToBase(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -639,41 +425,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexSwapQuoteToBaseInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexTransfer(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -681,41 +453,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexTransferInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexTransferFrom(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -723,41 +481,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20DexTransferFromInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20DexUnpause(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -765,40 +509,26 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20DexTransactionOutput
   StarterKitERC20FactoryCreateToken(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -806,41 +536,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20FactoryCreateTokenInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20FactoryTransactionOutput
   StarterKitERC20Mint(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -848,41 +564,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20MintInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20Permit(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -890,41 +592,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20PermitInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20RegistryAddToken(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -932,41 +620,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20RegistryAddTokenInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20RegistryTransactionOutput
   StarterKitERC20RenounceOwnership(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -974,40 +648,26 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20Transfer(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -1015,41 +675,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20TransferInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20TransferFrom(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -1057,41 +703,27 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20TransferFromInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   StarterKitERC20TransferOwnership(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
 
     """
@@ -1099,99 +731,63 @@ type Mutation {
     """
     challengeResponse: String
 
-    """
-    The address of the sender
-    """
+    """The address of the sender"""
     from: String!
 
-    """
-    Gas limit
-    """
+    """Gas limit"""
     gasLimit: String
 
-    """
-    Gas price
-    """
+    """Gas price"""
     gasPrice: String
     input: StarterKitERC20TransferOwnershipInput!
 
-    """
-    Metadata (store custom metadata from your application)
-    """
+    """Metadata (store custom metadata from your application)"""
     metadata: JSON
 
-    """
-    Simulate the transaction before sending it
-    """
+    """Simulate the transaction before sending it"""
     simulate: Boolean
 
-    """
-    Payable value (wei)
-    """
+    """Payable value (wei)"""
     value: String
   ): StarterKitERC20TransactionOutput
   createWallet(
-    """
-    The ID of the key vault where the wallet will be created
-    """
+    """The ID of the key vault where the wallet will be created"""
     keyVaultId: String!
 
-    """
-    Information about the wallet to be created
-    """
+    """Information about the wallet to be created"""
     walletInfo: CreateWalletInfoInput!
   ): CreateWalletOutput
 
-  """
-  Create a new verification for a specific user wallet
-  """
+  """Create a new verification for a specific user wallet"""
   createWalletVerification(
-    """
-    The Ethereum address of the user wallet
-    """
+    """The Ethereum address of the user wallet"""
     userWalletAddress: String!
     verificationInfo: CreateWalletVerificationInput!
   ): CreateWalletVerificationOutput
 
-  """
-  Removes a specific verification method from a user's wallet
-  """
+  """Removes a specific verification method from a user's wallet"""
   deleteWalletVerification(
-    """
-    Ethereum address of the user's wallet
-    """
+    """Ethereum address of the user's wallet"""
     userWalletAddress: String!
 
-    """
-    Unique identifier of the verification to delete
-    """
+    """Unique identifier of the verification to delete"""
     verificationId: String!
   ): DeleteWalletVerificationOutput
 
-  """
-  Verifies the response to a wallet verification challenge
-  """
+  """Verifies the response to a wallet verification challenge"""
   verifyWalletVerificationChallenge(
-    """
-    The response to the verification challenge
-    """
+    """The response to the verification challenge"""
     challengeResponse: String!
 
-    """
-    Ethereum address of the user's wallet
-    """
+    """Ethereum address of the user's wallet"""
     userWalletAddress: String!
 
-    """
-    Optional unique identifier of the specific verification to verify
-    """
+    """Optional unique identifier of the specific verification to verify"""
     verificationId: String
   ): VerifyWalletVerificationChallengeOutput
 }
 
-"""
-Algorithm used for OTP verification
-"""
+"""Algorithm used for OTP verification"""
 enum OTPAlgorithm {
   SHA1
   SHA3_224
@@ -1205,248 +801,164 @@ enum OTPAlgorithm {
 }
 
 input OTPSettingsInput {
-  """
-  The algorithm for OTP verification
-  """
+  """The algorithm for OTP verification"""
   algorithm: OTPAlgorithm
 
-  """
-  The number of digits for OTP verification
-  """
+  """The number of digits for OTP verification"""
   digits: Int
 
-  """
-  The name of the OTP verification
-  """
+  """The name of the OTP verification"""
   name: String!
 
-  """
-  The period (in seconds) for OTP verification
-  """
+  """The period (in seconds) for OTP verification"""
   period: Int
 }
 
 input PincodeSettingsInput {
-  """
-  The name of the PINCODE verification
-  """
+  """The name of the PINCODE verification"""
   name: String!
 
-  """
-  The pincode for PINCODE verification
-  """
+  """The pincode for PINCODE verification"""
   pincode: String!
 }
 
 type Query {
   StarterKitERC20(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
   ): StarterKitERC20
   StarterKitERC20ApproveReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20Dex(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
   ): StarterKitERC20Dex
   StarterKitERC20DexAddLiquidityReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexApproveReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexEmergencyWithdrawReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexFactory(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
   ): StarterKitERC20DexFactory
   StarterKitERC20DexFactoryCreatePairReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexFactoryTransactionReceiptOutput
   StarterKitERC20DexGrantRoleReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexPauseReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexPermitReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexRemoveLiquidityReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexRenounceRoleReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexRevokeRoleReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexSetFeeReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexSwapBaseToQuoteReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexSwapQuoteToBaseReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexTransferFromReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexTransferReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20DexUnpauseReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20DexTransactionReceiptOutput
   StarterKitERC20Factory(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
   ): StarterKitERC20Factory
   StarterKitERC20FactoryCreateTokenReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20FactoryTransactionReceiptOutput
   StarterKitERC20MintReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20PermitReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20Registry(
-    """
-    The address of the contract
-    """
+    """The address of the contract"""
     address: String!
   ): StarterKitERC20Registry
   StarterKitERC20RegistryAddTokenReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20RegistryTransactionReceiptOutput
   StarterKitERC20RenounceOwnershipReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20TransferFromReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20TransferOwnershipReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
   StarterKitERC20TransferReceipt(
-    """
-    The transaction hash
-    """
+    """The transaction hash"""
     transactionHash: String!
   ): StarterKitERC20TransactionReceiptOutput
 
-  """
-  Get the list of pending and recently processed transactions
-  """
+  """Get the list of pending and recently processed transactions"""
   getPendingAndRecentlyProcessedTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
 
     """
@@ -1455,63 +967,39 @@ type Query {
     processedAfter: String
   ): TransactionsPaginatedOutput
 
-  """
-  Get the list of pending transactions
-  """
+  """Get the list of pending transactions"""
   getPendingTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
   ): TransactionsPaginatedOutput
 
-  """
-  Get the list of processed transactions
-  """
+  """Get the list of processed transactions"""
   getProcessedTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
 
     """
@@ -1520,13 +1008,9 @@ type Query {
     processedAfter: String
   ): TransactionsPaginatedOutput
 
-  """
-  Get a transaction
-  """
+  """Get a transaction"""
   getTransaction(
-    """
-    Transaction hash
-    """
+    """Transaction hash"""
     transactionHash: String!
   ): TransactionOutput
 
@@ -1534,19 +1018,13 @@ type Query {
   Generates and returns challenges for all or specific verification methods of a user's wallet
   """
   getWalletVerificationChallenges(
-    """
-    Ethereum address of the user's wallet
-    """
+    """Ethereum address of the user's wallet"""
     userWalletAddress: String!
   ): [WalletVerificationChallenge!]
 
-  """
-  Retrieves all active verification methods for a user's wallet
-  """
+  """Retrieves all active verification methods for a user's wallet"""
   getWalletVerifications(
-    """
-    Ethereum address of the user's wallet
-    """
+    """Ethereum address of the user's wallet"""
     userWalletAddress: String!
   ): [WalletVerification!]
 }
@@ -1557,14 +1035,10 @@ type StarterKitERC20 {
   """
   DOMAIN_SEPARATOR: String
 
-  """
-  See {IERC20-allowance}.
-  """
+  """See {IERC20-allowance}."""
   allowance(owner: String!, spender: String!): String
 
-  """
-  See {IERC20-balanceOf}.
-  """
+  """See {IERC20-balanceOf}."""
   balanceOf(account: String!): String
 
   """
@@ -1572,15 +1046,11 @@ type StarterKitERC20 {
   """
   decimals: Int
 
-  """
-  See {IERC-5267}.
-  """
+  """See {IERC-5267}."""
   eip712Domain: StarterKitERC20Eip712DomainOutput
   id: ID
 
-  """
-  Returns the name of the token.
-  """
+  """Returns the name of the token."""
   name: String
 
   """
@@ -1588,9 +1058,7 @@ type StarterKitERC20 {
   """
   nonces(owner: String!): String
 
-  """
-  Returns the address of the current owner.
-  """
+  """Returns the address of the current owner."""
   owner: String
 
   """
@@ -1598,9 +1066,7 @@ type StarterKitERC20 {
   """
   symbol: String
 
-  """
-  See {IERC20-totalSupply}.
-  """
+  """See {IERC20-totalSupply}."""
   totalSupply: String
 }
 
@@ -1621,14 +1087,10 @@ type StarterKitERC20Dex {
   MAX_FEE: String
   MAX_TOKEN_AMOUNT: String
 
-  """
-  See {IERC20-allowance}.
-  """
+  """See {IERC20-allowance}."""
   allowance(owner: String!, spender: String!): String
 
-  """
-  See {IERC20-balanceOf}.
-  """
+  """See {IERC20-balanceOf}."""
   balanceOf(account: String!): String
   baseToken: String
 
@@ -1637,15 +1099,9 @@ type StarterKitERC20Dex {
   """
   decimals: Int
 
-  """
-  See {IERC-5267}.
-  """
+  """See {IERC-5267}."""
   eip712Domain: StarterKitERC20DexEip712DomainOutput
-  getAmountOfTokens(
-    inputAmount: String!
-    inputReserve: String!
-    outputReserve: String!
-  ): String
+  getAmountOfTokens(inputAmount: String!, inputReserve: String!, outputReserve: String!): String
   getBaseToQuotePrice(baseAmount: String!): String
   getBaseTokenBalance: String
   getQuoteToBasePrice(quoteAmount: String!): String
@@ -1656,15 +1112,11 @@ type StarterKitERC20Dex {
   """
   getRoleAdmin(role: String!): String
 
-  """
-  Returns `true` if `account` has been granted `role`.
-  """
+  """Returns `true` if `account` has been granted `role`."""
   hasRole(account: String!, role: String!): Boolean
   id: ID
 
-  """
-  Returns the name of the token.
-  """
+  """Returns the name of the token."""
   name: String
 
   """
@@ -1672,15 +1124,11 @@ type StarterKitERC20Dex {
   """
   nonces(owner: String!): String
 
-  """
-  Returns true if the contract is paused, and false otherwise.
-  """
+  """Returns true if the contract is paused, and false otherwise."""
   paused: Boolean
   quoteToken: String
 
-  """
-  See {IERC165-supportsInterface}.
-  """
+  """See {IERC165-supportsInterface}."""
   supportsInterface(interfaceId: String!): Boolean
   swapFee: String
 
@@ -1690,9 +1138,7 @@ type StarterKitERC20Dex {
   symbol: String
   timelock: String
 
-  """
-  See {IERC20-totalSupply}.
-  """
+  """See {IERC20-totalSupply}."""
   totalSupply: String
   verifyBalances: Boolean
 }
@@ -1734,110 +1180,68 @@ input StarterKitERC20DexFactoryCreatePairInput {
   quoteToken: String!
 }
 
-"""
-Returns the transaction hash
-"""
+"""Returns the transaction hash"""
 type StarterKitERC20DexFactoryTransactionOutput {
   transactionHash: String
 }
 
-"""
-Returns the transaction receipt
-"""
+"""Returns the transaction receipt"""
 type StarterKitERC20DexFactoryTransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
@@ -1889,110 +1293,68 @@ input StarterKitERC20DexSwapQuoteToBaseInput {
   quoteAmount: String!
 }
 
-"""
-Returns the transaction hash
-"""
+"""Returns the transaction hash"""
 type StarterKitERC20DexTransactionOutput {
   transactionHash: String
 }
 
-"""
-Returns the transaction receipt
-"""
+"""Returns the transaction receipt"""
 type StarterKitERC20DexTransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
@@ -2029,138 +1391,86 @@ type StarterKitERC20Factory {
 }
 
 input StarterKitERC20FactoryCreateTokenInput {
-  """
-  Additional data to be stored with the token in the registry
-  """
+  """Additional data to be stored with the token in the registry"""
   extraData_: String!
 
-  """
-  The name of the new token
-  """
+  """The name of the new token"""
   name_: String!
 
-  """
-  The symbol of the new token
-  """
+  """The symbol of the new token"""
   symbol_: String!
 }
 
-"""
-Returns the transaction hash
-"""
+"""Returns the transaction hash"""
 type StarterKitERC20FactoryTransactionOutput {
   transactionHash: String
 }
 
-"""
-Returns the transaction receipt
-"""
+"""Returns the transaction receipt"""
 type StarterKitERC20FactoryTransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
 input StarterKitERC20MintInput {
-  """
-  The quantity of tokens to be minted
-  """
+  """The quantity of tokens to be minted"""
   amount: String!
 
-  """
-  The address that will receive the minted tokens
-  """
+  """The address that will receive the minted tokens"""
   to: String!
 }
 
@@ -2180,9 +1490,7 @@ type StarterKitERC20Registry {
   Retrieves a token by its address.
   The token information.
   """
-  getTokenByAddress(
-    tokenAddress: String!
-  ): StarterKitERC20RegistryGetTokenByAddressOutput
+  getTokenByAddress(tokenAddress: String!): StarterKitERC20RegistryGetTokenByAddressOutput
 
   """
   Reverts if the index is out of bounds.
@@ -2196,9 +1504,7 @@ type StarterKitERC20Registry {
   Retrieves a token by its symbol.
   The token information.
   """
-  getTokenBySymbol(
-    symbol: String!
-  ): StarterKitERC20RegistryGetTokenBySymbolOutput
+  getTokenBySymbol(symbol: String!): StarterKitERC20RegistryGetTokenBySymbolOutput
 
   """
   Retrieves the list of all tokens in the registry.
@@ -2209,21 +1515,15 @@ type StarterKitERC20Registry {
 }
 
 input StarterKitERC20RegistryAddTokenInput {
-  """
-  Additional data associated with the token
-  """
+  """Additional data associated with the token"""
   extraData: String!
   factoryAddress: String!
   name: String!
 
-  """
-  The symbol of the token to be added
-  """
+  """The symbol of the token to be added"""
   symbol: String!
 
-  """
-  The address of the token to be added
-  """
+  """The address of the token to be added"""
   tokenAddress: String!
 }
 
@@ -2272,110 +1572,68 @@ type StarterKitERC20RegistryTokenGetTokenBySymbolOutput {
   tokenAddress: String
 }
 
-"""
-Returns the transaction hash
-"""
+"""Returns the transaction hash"""
 type StarterKitERC20RegistryTransactionOutput {
   transactionHash: String
 }
 
-"""
-Returns the transaction receipt
-"""
+"""Returns the transaction receipt"""
 type StarterKitERC20RegistryTransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
@@ -2389,110 +1647,68 @@ type StarterKitERC20RegistryTuple0GetTokenListOutput {
   tokenAddress: String
 }
 
-"""
-Returns the transaction hash
-"""
+"""Returns the transaction hash"""
 type StarterKitERC20TransactionOutput {
   transactionHash: String
 }
 
-"""
-Returns the transaction receipt
-"""
+"""Returns the transaction receipt"""
 type StarterKitERC20TransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
@@ -2512,33 +1728,21 @@ input StarterKitERC20TransferOwnershipInput {
 }
 
 type Subscription {
-  """
-  Get the list of pending and recently processed transactions
-  """
+  """Get the list of pending and recently processed transactions"""
   getPendingAndRecentlyProcessedTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
 
     """
@@ -2547,63 +1751,39 @@ type Subscription {
     processedAfter: String
   ): TransactionsPaginatedOutput
 
-  """
-  Get the list of pending transactions
-  """
+  """Get the list of pending transactions"""
   getPendingTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
   ): TransactionsPaginatedOutput
 
-  """
-  Get the list of processed transactions
-  """
+  """Get the list of processed transactions"""
   getProcessedTransactions(
-    """
-    Address of the contract
-    """
+    """Address of the contract"""
     address: String
 
-    """
-    Address of the sender
-    """
+    """Address of the sender"""
     from: String
 
-    """
-    Function name
-    """
+    """Function name"""
     functionName: String
 
-    """
-    Page number, starts from 0
-    """
+    """Page number, starts from 0"""
     page: Int = 0
 
-    """
-    Number of items per page
-    """
+    """Number of items per page"""
     pageSize: Int = 100
 
     """
@@ -2612,159 +1792,97 @@ type Subscription {
     processedAfter: String
   ): TransactionsPaginatedOutput
 
-  """
-  Get a transaction
-  """
+  """Get a transaction"""
   getTransaction(
-    """
-    Transaction hash
-    """
+    """Transaction hash"""
     transactionHash: String!
   ): TransactionOutput
 }
 
-"""
-Returns the transaction
-"""
+"""Returns the transaction"""
 type TransactionOutput {
-  """
-  Contract address
-  """
+  """Contract address"""
   address: String!
 
-  """
-  Created at
-  """
+  """Created at"""
   createdAt: String
 
-  """
-  From address
-  """
+  """From address"""
   from: String!
 
-  """
-  Function name
-  """
+  """Function name"""
   functionName: String!
 
-  """
-  Metadata
-  """
+  """Metadata"""
   metadata: JSON
 
-  """
-  Receipt
-  """
+  """Receipt"""
   receipt: TransactionReceiptOutput
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Created at
-  """
+  """Created at"""
   updatedAt: String
 }
 
-"""
-The transaction receipt
-"""
+"""The transaction receipt"""
 type TransactionReceiptOutput {
-  """
-  Blob Gas Price
-  """
+  """Blob Gas Price"""
   blobGasPrice: String
 
-  """
-  Blob Gas Used
-  """
+  """Blob Gas Used"""
   blobGasUsed: String
 
-  """
-  Block Hash
-  """
+  """Block Hash"""
   blockHash: String!
 
-  """
-  Block Number
-  """
+  """Block Number"""
   blockNumber: String!
 
-  """
-  Contract Address
-  """
+  """Contract Address"""
   contractAddress: String
 
-  """
-  Cumulative Gas Used
-  """
+  """Cumulative Gas Used"""
   cumulativeGasUsed: String!
 
-  """
-  Effective Gas Price
-  """
+  """Effective Gas Price"""
   effectiveGasPrice: String!
 
-  """
-  From
-  """
+  """From"""
   from: String!
 
-  """
-  Gas Used
-  """
+  """Gas Used"""
   gasUsed: String!
 
-  """
-  Logs
-  """
+  """Logs"""
   logs: [String!]!
 
-  """
-  Logs Bloom
-  """
+  """Logs Bloom"""
   logsBloom: String!
 
-  """
-  ABI-encoded string containing the revert reason
-  """
+  """ABI-encoded string containing the revert reason"""
   revertReason: String
 
-  """
-  Decoded revert reason
-  """
+  """Decoded revert reason"""
   revertReasonDecoded: String
 
-  """
-  Root
-  """
+  """Root"""
   root: String
 
-  """
-  Status
-  """
+  """Status"""
   status: TransactionReceiptStatus!
 
-  """
-  To
-  """
+  """To"""
   to: String
 
-  """
-  Transaction Hash
-  """
+  """Transaction Hash"""
   transactionHash: String!
 
-  """
-  Transaction Index
-  """
+  """Transaction Index"""
   transactionIndex: Int!
 
-  """
-  Type
-  """
+  """Type"""
   type: String!
 }
 
@@ -2773,70 +1891,44 @@ enum TransactionReceiptStatus {
   Success
 }
 
-"""
-Transactions paginated output
-"""
+"""Transactions paginated output"""
 type TransactionsPaginatedOutput {
-  """
-  Total number of results
-  """
+  """Total number of results"""
   count: Int!
   records: [TransactionOutput!]!
 }
 
-"""
-Result of verifying a wallet verification challenge
-"""
+"""Result of verifying a wallet verification challenge"""
 type VerifyWalletVerificationChallengeOutput {
-  """
-  Indicates whether the verification challenge was successful
-  """
+  """Indicates whether the verification challenge was successful"""
   verified: Boolean
 }
 
-"""
-Wallet verification details
-"""
+"""Wallet verification details"""
 type WalletVerification {
-  """
-  Unique identifier of the verification
-  """
+  """Unique identifier of the verification"""
   id: String
 
-  """
-  Name of the verification
-  """
+  """Name of the verification"""
   name: String
 
-  """
-  Type of the created wallet verification
-  """
+  """Type of the created wallet verification"""
   verificationType: WalletVerificationType
 }
 
-"""
-Wallet verification challenge
-"""
+"""Wallet verification challenge"""
 type WalletVerificationChallenge {
-  """
-  Challenge object
-  """
+  """Challenge object"""
   challenge: JSON
 
-  """
-  Name of the verification
-  """
+  """Name of the verification"""
   name: String
 
-  """
-  Type of the created wallet verification
-  """
+  """Type of the created wallet verification"""
   verificationType: WalletVerificationType
 }
 
-"""
-Verification type
-"""
+"""Verification type"""
 enum WalletVerificationType {
   OTP
   PINCODE
