@@ -1,5 +1,5 @@
-import type { introspection } from '@schemas/blockscout-env';
-import { createBlockscoutClient } from '@settlemint/sdk-blockscout';
+import { createBlockscoutClient } from "@settlemint/sdk-blockscout";
+import type { introspection } from "@schemas/blockscout-env";
 
 export const { client: blockscoutClient, graphql: blockscoutGraphql } = createBlockscoutClient<{
   introspection: introspection;
