@@ -3,7 +3,6 @@ import { Input, type InputProps } from '@/components/ui/input';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
 type TextInputProps<T extends FieldValues> = {
-  variant?: 'default';
   label?: string;
   description?: string;
 } & Omit<InputProps, 'variant' | 'name'> & {
@@ -13,14 +12,7 @@ type TextInputProps<T extends FieldValues> = {
     rules?: Pick<RegisterOptions<T, Path<T>>, 'required' | 'minLength' | 'maxLength' | 'pattern'>;
   };
 
-export function TextInput<T extends FieldValues>({
-  variant,
-  label,
-  description,
-  name,
-  control,
-  ...props
-}: TextInputProps<T>) {
+export function TextInput<T extends FieldValues>({ label, description, name, control, ...props }: TextInputProps<T>) {
   return (
     <FormField
       control={control}
