@@ -1,0 +1,4 @@
+version: 3
+endpoint: https://pmu-skat-hasura-42403.gke-europe-staging.settlemint.com
+admin_secret: e8fd343eaa4f9ea25536
+metadata_directory: metadata

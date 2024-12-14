@@ -1,15 +1,15 @@
 'use client';
-
-import { Input } from '@/components/blocks/form/form-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { Dropzone } from '@/components/blocks/form/form-upload-dropzone';
+import { TextInput } from '@/components/forms/controls/text-input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { SunIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
@@ -75,6 +75,8 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
     // TODO: update the table
   }
 
+  console.log('watch', form.watch());
+
   return (
     <div className="TokenizationWizard container mt-8">
       <Card className="w-full">
@@ -130,35 +132,24 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               }}
             >
               {/* Token Name */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Token Name"
                 name="tokenName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Token name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Token Name" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the name of the token</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the name of the token"
+                placeholder="Token Name"
               />
               {/* Token Symbol */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Token Symbol"
                 name="tokenSymbol"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Token Symbol</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Token Symbol" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the symbol of the token</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the symbol of the token"
+                placeholder="Token Symbol"
+                variant="icon"
+                icon={<SunIcon />}
               />
+
               {/* Token Logo */}
               <FormField
                 control={form.control}
