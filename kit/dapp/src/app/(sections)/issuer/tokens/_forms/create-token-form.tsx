@@ -75,8 +75,6 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
     // TODO: update the table
   }
 
-  console.log('watch', form.watch());
-
   return (
     <div className="TokenizationWizard container mt-8">
       <Card className="w-full">
