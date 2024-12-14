@@ -41,9 +41,6 @@ jobs:
       - name: Start Docker Compose
         run: docker compose up -d
 
-      - name: Process environment files
-        run: bash .github/scripts/process-env.sh "${{ secrets.ENV_FILE }}" "${{ secrets.ENV_FILE_LOCAL }}"
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
@@ -68,9 +65,13 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
-      - name: Connect
-        run: bunx settlemint connect -a
-        working-directory: kit/dapp
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          personal-access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Lint & Check Types
         run: bunx turbo run lint check-types test
@@ -125,14 +126,14 @@ jobs:
           severity: "HIGH,CRITICAL"
           scanners: 'secret'
 
-      - name: Update Custom Deployment
+      - name: Connect to SettleMint
         if: ${{ env.TAG != 'pr' }}
-        working-directory: kit/dapp
-        run: |
-          echo "Updating the Custom Deployment with the new version $VERSION"
-
-          if [[ $TAG == "latest" ]]; then
-            bun settlemint platform update custom-deployment $VERSION --prod --wait
-          elif [[ $TAG == "main" ]]; then
-            bun settlemint platform update custom-deployment $VERSION --wait
-          fi
+        uses: settlemint/settlemint-action@main
+        with:
+          auto-connect: false
+          auto-login: false
+          personal-access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+          command: platform update custom-deployment ${{ env.VERSION }} --wait
