@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "clean": "git clean -fdX && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' \\) -exec rm -f {} + && bun install",
+    "clean": "git clean -fdX -e .env -e .env.local && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' \\) -exec rm -f {} + && bun install",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
@@ -51,14 +51,22 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@settlemint/sdk-cli": "0.6.35",
     "@biomejs/biome": "1.9.4",
     "turbo": "2.3.3",
     "typescript": "5.7.2",
     "ultracite": "4.1.12"
   },
-  "trustedDependencies": ["@biomejs/biome"],
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "keccak",
+    "protobufjs",
+    "secp256k1"
+  ],
   "packageManager": "bun@1.1.38",
-  "workspaces": ["kit/*"],
+  "workspaces": [
+    "kit/*"
+  ],
   "overrides": {
     "react-is": "19.0.0",
     "elliptic": "6.6.1",
