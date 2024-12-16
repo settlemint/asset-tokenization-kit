@@ -1,10 +1,9 @@
 'use client';
-
-import { Input } from '@/components/blocks/form/form-input';
-import { FormMultiStep } from '@/components/blocks/form/form-multistep';
-import { FormStep } from '@/components/blocks/form/form-step';
+import { TextInput } from '@/components/forms/controls/text-input';
+import { FormMultiStep } from '@/components/forms/form-multistep';
+import { FormStep } from '@/components/forms/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {} from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -131,35 +130,22 @@ export function CreatePairForm({ defaultValues }: CreateTokenFormProps) {
                 submit: { buttonText: 'Submit' },
               }}
             >
-              {/* Token Name */}
-              <FormField
+              {/* Base Token Address */}
+              <TextInput
                 control={form.control}
+                label="Base Token Address"
                 name="baseTokenAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Base Token Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Base Token Address" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the address of the base token</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the address of the base token"
+                placeholder="Base Token Address"
               />
-              {/* Token Symbol */}
-              <FormField
+
+              {/* Quote Token Address */}
+              <TextInput
                 control={form.control}
+                label="Quote Token Address"
                 name="quoteTokenAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Token Symbol</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Quote Token Address" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the address of the quote token</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the address of the quote token"
+                placeholder="Quote Token Address"
               />
             </FormStep>
           </FormMultiStep>

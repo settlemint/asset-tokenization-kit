@@ -1,8 +1,8 @@
 'use client';
 
 import { NumericInput } from '@/components/blocks/form/form-input-numeric';
-import { FormMultiStep } from '@/components/blocks/form/form-multistep';
-import { FormStep } from '@/components/blocks/form/form-step';
+import { FormMultiStep } from '@/components/forms/form-multistep';
+import { FormStep } from '@/components/forms/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';

@@ -1,10 +1,9 @@
 'use client';
-
-import { Input } from '@/components/blocks/form/form-input';
 import { DictionaryInput } from '@/components/blocks/form/form-input-dictionary';
 import { NumericInput } from '@/components/blocks/form/form-input-numeric';
-import { FormMultiStep } from '@/components/blocks/form/form-multistep';
-import { FormStep } from '@/components/blocks/form/form-step';
+import { TextInput } from '@/components/forms/controls/text-input';
+import { FormMultiStep } from '@/components/forms/form-multistep';
+import { FormStep } from '@/components/forms/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -138,19 +137,12 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                 )}
               />
               {/* Mint to wallet */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Wallet address"
                 name="to"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Wallet address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="To address" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the wallet address of the token holder</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the wallet address of the token holder"
+                placeholder="To address"
               />
               {/* Mint to wallet */}
               <FormField
