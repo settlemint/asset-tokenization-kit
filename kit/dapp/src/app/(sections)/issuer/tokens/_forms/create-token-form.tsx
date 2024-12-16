@@ -149,7 +149,16 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               />
 
               {/* Token Logo */}
-              <FileInput control={form.control} name="tokenLogo" label="Click, or drop your logo here" />
+              <FileInput
+                control={form.control}
+                name="tokenLogo"
+                label="Click, or drop your logo here"
+                multiple={false}
+                accept={{
+                  'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+                  'text/*': [],
+                }}
+              />
             </FormStep>
           </FormMultiStep>
         </CardContent>

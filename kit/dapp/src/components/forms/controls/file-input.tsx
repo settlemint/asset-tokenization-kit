@@ -28,13 +28,14 @@ import { useMultiFormStep } from '../form-multistep';
  * Dropzone component for the file input
  */
 
+interface Accept {
+  [key: string]: readonly string[];
+}
+
 interface DropzoneProps {
   label: string;
   name: string;
-  accept?: {
-    images: Array<'.jpg' | '.jpeg' | '.png' | '.webp'>;
-    text: Array<'.pdf' | '.docx' | '.doc' | '.txt' | '.md' | '.csv' | '.xls' | '.xlsx'>;
-  };
+  accept?: Accept;
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
@@ -85,7 +86,7 @@ function truncateFileName(fileName: string): string {
   return fileName.trim();
 }
 
-function fileToIcon(fileType: string): React.ReactNode {
+function fileToIcon(fileType: string): ReactNode {
   if (fileType.includes('application')) {
     return <FileTextIcon />;
   }
@@ -97,11 +98,16 @@ function fileToIcon(fileType: string): React.ReactNode {
   }
   return <FileIcon />;
 }
-
-export function Dropzone({
+/**
+ * Dropzone component
+ */
+function Dropzone({
   label,
   name,
-  accept = { images: ['.jpg', '.jpeg', '.png', '.webp'], text: ['.pdf'] },
+  accept = {
+    'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+    'text/*': [],
+  },
   maxSize,
   maxFiles,
   multiple = true,
@@ -376,10 +382,7 @@ export function Dropzone({
           onDrop={handleUpload}
           onDragEnter={handleHover}
           onDragLeave={handleExitHover}
-          accept={{
-            'image/*': accept.images,
-            'text/*': accept.text,
-          }}
+          accept={accept}
           maxSize={maxSize}
           maxFiles={maxFiles}
           multiple={_multiple}
@@ -455,7 +458,14 @@ type FileInputProps<T extends FieldValues> = {
   label: string;
   description?: string;
   icon?: ReactNode;
-} & Omit<InputProps, 'name'> &
+  accept: Accept;
+  server?: {
+    bucket: string;
+    storage: 'minio' | 's3' | 'local';
+  };
+  multiple?: boolean;
+  maxSize?: number;
+} & Omit<InputProps, 'name' | 'accept'> &
   VariantProps<typeof inputVariants> & {
     name: Path<T>;
     control: Control<T>;
@@ -466,6 +476,13 @@ type FileInputProps<T extends FieldValues> = {
 export function FileInput<T extends FieldValues>({
   variant,
   label,
+  multiple = false,
+  maxSize = 1024 * 1024 * 10, // 10MB
+  accept = {
+    'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+    'text/*': [],
+  },
+  server,
   description,
   icon,
   name,
@@ -483,18 +500,12 @@ export function FileInput<T extends FieldValues>({
             <FormLabel>Token Logo</FormLabel>
             <FormControl>
               <Dropzone
-                label="Click, or drop your logo here"
+                label={label}
                 name={field.name}
-                accept={{
-                  images: ['.jpg', '.jpeg', '.png', '.webp'],
-                  text: [],
-                }}
-                maxSize={1024 * 1024 * 10} // 10MB
-                multiple={false}
-                server={{
-                  bucket: 'default-bucket',
-                  storage: 'minio',
-                }}
+                accept={accept}
+                maxSize={maxSize}
+                multiple={multiple}
+                server={server}
                 {...omit(props, 'accept')}
               />
             </FormControl>
