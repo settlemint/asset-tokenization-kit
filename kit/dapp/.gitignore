@@ -42,3 +42,5 @@ next-env.d.ts
 
 # codegen
 *-cache.d.ts
+
+drizzle
