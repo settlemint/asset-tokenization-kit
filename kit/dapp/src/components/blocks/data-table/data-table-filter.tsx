@@ -1,4 +1,4 @@
-import { Input } from '@/components/blocks/form/form-input';
+import { Input } from '@/components/blocks/form/controls/input';
 import type { Table } from '@tanstack/react-table';
 
 /**

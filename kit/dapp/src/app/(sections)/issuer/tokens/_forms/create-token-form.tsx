@@ -1,8 +1,8 @@
 'use client';
-import { FileInput } from '@/components/blocks/forms/controls/file-input';
-import { TextInput } from '@/components/blocks/forms/controls/text-input';
-import { FormMultiStep } from '@/components/blocks/forms/form-multistep';
-import { FormStep } from '@/components/blocks/forms/form-step';
+import { FileInput } from '@/components/blocks/form/controls/file-input';
+import { TextInput } from '@/components/blocks/form/controls/text-input';
+import { FormMultiStep } from '@/components/blocks/form/form-multistep';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {} from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';

@@ -1,13 +1,13 @@
 'use client';
 
-import { useMultiFormStep } from '@/components/blocks/forms/form-multistep';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import type { ArrayPath, Control, FieldArray, FieldValues, Path } from 'react-hook-form';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
-import { Input } from './form-input';
+import { useMultiFormStep } from '../form-multistep';
 import { NumericInput } from './form-input-numeric';
+import { Input } from './input';
 
 interface RepeatableFormProps<T extends FieldValues> {
   control: Control<T>;
