@@ -1,8 +1,8 @@
 'use client';
-import { FileInput } from '@/components/forms/controls/file-input';
-import { TextInput } from '@/components/forms/controls/text-input';
-import { FormMultiStep } from '@/components/forms/form-multistep';
-import { FormStep } from '@/components/forms/form-step';
+import { FileInput } from '@/components/blocks/forms/controls/file-input';
+import { TextInput } from '@/components/blocks/forms/controls/text-input';
+import { FormMultiStep } from '@/components/blocks/forms/form-multistep';
+import { FormStep } from '@/components/blocks/forms/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {} from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -154,9 +154,14 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                 name="tokenLogo"
                 label="Click, or drop your logo here"
                 multiple={false}
+                maxSize={1024 * 1024 * 10} // 10MB
                 accept={{
                   'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
                   'text/*': [],
+                }}
+                server={{
+                  bucket: 'default-bucket',
+                  storage: 'minio',
                 }}
               />
             </FormStep>

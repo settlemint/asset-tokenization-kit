@@ -1,8 +1,8 @@
 'use client';
 
-import { TextInput } from '@/components/forms/controls/text-input';
-import { FormMultiStep } from '@/components/forms/form-multistep';
-import { FormStep } from '@/components/forms/form-step';
+import { TextInput } from '@/components/blocks/forms/controls/text-input';
+import { FormMultiStep } from '@/components/blocks/forms/form-multistep';
+import { FormStep } from '@/components/blocks/forms/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {} from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';

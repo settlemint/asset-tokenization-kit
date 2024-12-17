@@ -1,6 +1,6 @@
 'use client';
 
-import { useMultiFormStep } from '@/components/forms/form-multistep';
+import { useMultiFormStep } from '@/components/blocks/forms/form-multistep';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import type { ArrayPath, Control, FieldArray, FieldValues, Path } from 'react-hook-form';

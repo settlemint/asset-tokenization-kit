@@ -2,7 +2,6 @@
 
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { InputProps } from '@/components/ui/input';
-import { type VariantProps, cva } from 'class-variance-authority';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
@@ -98,9 +97,7 @@ function fileToIcon(fileType: string): ReactNode {
   }
   return <FileIcon />;
 }
-/**
- * Dropzone component
- */
+
 function Dropzone({
   label,
   name,
@@ -430,30 +427,6 @@ function Dropzone({
  * FileInput component
  */
 
-const inputVariants = cva('', {
-  variants: {
-    variant: {
-      default: '',
-      icon: 'pl-8',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
-
-const iconVariants = cva('absolute', {
-  variants: {
-    variant: {
-      default: 'hidden',
-      icon: 'top-8 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
-    },
-  },
-  defaultVariants: {
-    variant: 'default',
-  },
-});
-
 type FileInputProps<T extends FieldValues> = {
   label: string;
   description?: string;
@@ -465,8 +438,7 @@ type FileInputProps<T extends FieldValues> = {
   };
   multiple?: boolean;
   maxSize?: number;
-} & Omit<InputProps, 'name' | 'accept'> &
-  VariantProps<typeof inputVariants> & {
+} & Omit<InputProps, 'name' | 'accept'> & {
     name: Path<T>;
     control: Control<T>;
     shouldUnregister?: boolean;
@@ -474,7 +446,6 @@ type FileInputProps<T extends FieldValues> = {
   };
 
 export function FileInput<T extends FieldValues>({
-  variant,
   label,
   multiple = false,
   maxSize = 1024 * 1024 * 10, // 10MB
