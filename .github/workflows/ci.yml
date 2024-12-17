@@ -128,6 +128,11 @@ jobs:
           severity: "HIGH,CRITICAL"
           scanners: 'secret'
 
+      - name: Run Drizzle migrations
+        if: ${{ env.TAG != 'pr' }}
+        run: bunx drizzle-kit push
+        working-directory: kit/dapp
+
       - name: Connect to SettleMint
         if: ${{ env.TAG != 'pr' }}
         uses: settlemint/settlemint-action@main

@@ -14,7 +14,7 @@ export const { client: hasuraClient, graphql: hasuraGraphql } = createHasuraClie
     Timestamp: string;
   };
 }>({
-  instance: process.env.SETTLEMINT_HASURA_ENDPOINT!,
-  accessToken: process.env.SETTLEMINT_ACCESS_TOKEN!, // undefined in browser, by design to not leak the secrets
-  adminSecret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!, // undefined in browser, by design to not leak the secrets
+  instance: process.env.SETTLEMINT_HASURA_ENDPOINT ?? "",
+  accessToken: process.env.SETTLEMINT_ACCESS_TOKEN ?? "", // undefined in browser, by design to not leak the secrets
+  adminSecret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET ?? "", // undefined in browser, by design to not leak the secrets
 });
