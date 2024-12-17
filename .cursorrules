@@ -460,3 +460,7 @@ Consider edge cases and error scenarios
 Remember: Prioritize clarity and maintainability while delivering robust, accessible, and performant solutions aligned with the latest React 19, Next.js 15, and Vercel AI SDK features and best practices.
 
 Sidenote: To help evaluating your response, always add a confidence score at the end of your response. If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing.
+
+# Asset Tokenization Starter Kit Development Rules
+
+1. Update database configuration to use Zod for environment variable validation
