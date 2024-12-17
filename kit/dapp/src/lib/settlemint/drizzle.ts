@@ -1,6 +1,5 @@
 import { createDrizzleClient } from '@settlemint/sdk-hasura';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 export const db: NodePgDatabase = createDrizzleClient({
   databaseUrl: process.env.SETTLEMINT_HASURA_DATABASE_URL ?? '',
@@ -9,8 +8,4 @@ export const db: NodePgDatabase = createDrizzleClient({
   connectionTimeoutMillis: Number(process.env.SETTLEMINT_HASURA_DATABASE_CONNECTION_TIMEOUT),
   maxRetries: Number(process.env.SETTLEMINT_HASURA_DATABASE_MAX_RETRIES),
   retryDelayMs: Number(process.env.SETTLEMINT_HASURA_DATABASE_RETRY_DELAY),
-});
-
-await migrate(db, {
-  migrationsFolder: '../../../drizzle',
 });

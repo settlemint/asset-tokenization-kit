@@ -24,7 +24,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=build --chmod=0777  /app/public public
 COPY --from=build --chmod=0777  /app/.next/standalone ./
 COPY --from=build --chmod=0777  /app/.next/static ./.next/static
-COPY --from=build --chmod=0777  /app/drizzle ./drizzle
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
