@@ -38,7 +38,6 @@
     "@radix-ui/react-slot": "1.1.1",
     "@radix-ui/react-tabs": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.5",
-<<<<<<< HEAD
     "@settlemint/sdk-blockscout": "0.6.46",
     "@settlemint/sdk-hasura": "0.6.46",
     "@settlemint/sdk-ipfs": "0.6.46",
@@ -46,15 +45,6 @@
     "@settlemint/sdk-next": "0.6.46",
     "@settlemint/sdk-portal": "0.6.46",
     "@settlemint/sdk-thegraph": "0.6.46",
-=======
-    "@settlemint/sdk-blockscout": "0.6.44",
-    "@settlemint/sdk-hasura": "0.6.44",
-    "@settlemint/sdk-ipfs": "0.6.44",
-    "@settlemint/sdk-minio": "0.6.44",
-    "@settlemint/sdk-next": "0.6.44",
-    "@settlemint/sdk-portal": "0.6.44",
-    "@settlemint/sdk-thegraph": "0.6.44",
->>>>>>> origin
     "@tanstack/query-sync-storage-persister": "5.62.7",
     "@tanstack/react-query": "5.62.7",
     "@tanstack/react-query-devtools": "5.62.7",
