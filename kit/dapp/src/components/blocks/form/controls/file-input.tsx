@@ -429,6 +429,7 @@ function Dropzone({
 
 type FileInputProps<T extends FieldValues> = {
   label: string;
+  text: string;
   description?: string;
   icon?: ReactNode;
   accept: Accept;
@@ -447,6 +448,7 @@ type FileInputProps<T extends FieldValues> = {
 
 export function FileInput<T extends FieldValues>({
   label,
+  text,
   multiple = false,
   maxSize = 1024 * 1024 * 10, // 10MB
   accept = {
@@ -455,10 +457,8 @@ export function FileInput<T extends FieldValues>({
   },
   server,
   description,
-  icon,
   name,
   control,
-  className,
   ...props
 }: FileInputProps<T>) {
   return (
@@ -468,10 +468,10 @@ export function FileInput<T extends FieldValues>({
       render={({ field }) => {
         return (
           <FormItem>
-            <FormLabel>Token Logo</FormLabel>
+            <FormLabel>{label}</FormLabel>
             <FormControl>
               <Dropzone
-                label={label}
+                label={text}
                 name={field.name}
                 accept={accept}
                 maxSize={maxSize}
@@ -480,7 +480,7 @@ export function FileInput<T extends FieldValues>({
                 {...omit(props, 'accept')}
               />
             </FormControl>
-            <FormDescription>This is the logo of the token</FormDescription>
+            <FormDescription>{description}</FormDescription>
             <FormMessage />
           </FormItem>
         );

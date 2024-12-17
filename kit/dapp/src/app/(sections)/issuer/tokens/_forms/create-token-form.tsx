@@ -152,7 +152,9 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               <FileInput
                 control={form.control}
                 name="tokenLogo"
-                label="Click, or drop your logo here"
+                description="This is the logo of the token"
+                label="Token Logo"
+                text="Click, or drop your logo here"
                 multiple={false}
                 maxSize={1024 * 1024 * 10} // 10MB
                 accept={{
