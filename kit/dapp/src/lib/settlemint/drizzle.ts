@@ -1,7 +1,7 @@
-import { createDrizzleClient } from "@settlemint/sdk-hasura";
+import { createDrizzleClient } from "@settlemint/sdk-hasura/drizzle";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-export const drizzleClient: NodePgDatabase = createDrizzleClient({
+export const db: NodePgDatabase = createDrizzleClient({
   databaseUrl: process.env.SETTLEMINT_HASURA_DATABASE_URL ?? "",
   maxPoolSize: Number(process.env.SETTLEMINT_HASURA_DATABASE_MAX_POOL_SIZE),
   idleTimeoutMillis: Number(process.env.SETTLEMINT_HASURA_DATABASE_IDLE_TIMEOUT),

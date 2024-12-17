@@ -42,13 +42,13 @@
     "@radix-ui/react-slot": "1.1.1",
     "@radix-ui/react-tabs": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.6",
-    "@settlemint/sdk-blockscout": "0.6.46",
-    "@settlemint/sdk-hasura": "0.6.46",
-    "@settlemint/sdk-ipfs": "0.6.46",
-    "@settlemint/sdk-minio": "0.6.46",
-    "@settlemint/sdk-next": "0.6.46",
-    "@settlemint/sdk-portal": "0.6.46",
-    "@settlemint/sdk-thegraph": "0.6.46",
+    "@settlemint/sdk-blockscout": "0.6.47",
+    "@settlemint/sdk-hasura": "0.6.47",
+    "@settlemint/sdk-ipfs": "0.6.47",
+    "@settlemint/sdk-minio": "0.6.47",
+    "@settlemint/sdk-next": "0.6.47",
+    "@settlemint/sdk-portal": "0.6.47",
+    "@settlemint/sdk-thegraph": "0.6.47",
     "@tanstack/query-sync-storage-persister": "5.62.7",
     "@tanstack/react-query": "5.62.7",
     "@tanstack/react-query-devtools": "5.62.7",
@@ -96,7 +96,9 @@
     "tailwindcss": "3.4.16",
     "typescript": "5.7.2"
   },
-  "trustedDependencies": ["sharp"],
+  "trustedDependencies": [
+    "sharp"
+  ],
   "overrides": {
     "react-is": "19.0.0"
   }
