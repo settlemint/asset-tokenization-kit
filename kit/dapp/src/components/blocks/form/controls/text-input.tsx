@@ -4,12 +4,13 @@ import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import type { ReactNode } from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
+import './text-input.css';
 
 const inputVariants = cva('', {
   variants: {
     variant: {
-      default: '',
-      icon: 'pl-8',
+      default: 'FormInput',
+      icon: 'FormInput pl-8',
     },
   },
   defaultVariants: {
@@ -20,8 +21,8 @@ const inputVariants = cva('', {
 const iconVariants = cva('absolute', {
   variants: {
     variant: {
-      default: 'hidden',
-      icon: 'top-8 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
+      default: 'InputIcon hidden',
+      icon: 'InputIcon top-8 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
     },
   },
   defaultVariants: {
@@ -56,8 +57,8 @@ export function TextInput<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="relative">
-          {label && <FormLabel>{label}</FormLabel>}
+        <FormItem className="FormItem relative">
+          {label && <FormLabel className="FormLabel">{label}</FormLabel>}
           {icon && <FormLabel className={iconVariants({ variant })}>{icon}</FormLabel>}
           <FormControl>
             <Input {...field} {...props} className={cn(inputVariants({ variant }), className)} />

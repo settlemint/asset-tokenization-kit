@@ -1,10 +1,10 @@
 'use client';
 
-import { Input } from '@/components/blocks/form/form-input';
+import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {} from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { toast } from 'sonner';
@@ -88,34 +88,21 @@ export function CreateAddressBookEntryForm({ defaultValues }: CreateAddressBookE
               }}
             >
               {/* Wallet address */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Wallet address"
                 name="walletAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Wallet address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Address" {...field} disabled />
-                    </FormControl>
-                    <FormDescription>This is the wallet address you want to save to your addressbook</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the wallet address you want to save to your addressbook"
+                placeholder="Address"
+                disabled
               />
               {/* Alias name */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Alias name"
                 name="walletName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Alias name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Alias name" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the alias name for this address in your addressbook</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the alias name for this address in your addressbook"
+                placeholder="Address"
               />
             </FormStep>
           </FormMultiStep>

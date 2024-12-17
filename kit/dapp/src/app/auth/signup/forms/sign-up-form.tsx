@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from '@/components/blocks/form/form-input';
+import { Input } from '@/components/blocks/form/controls/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';

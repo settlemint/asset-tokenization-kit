@@ -1,6 +1,6 @@
 import { type InputHTMLAttributes, forwardRef } from 'react';
 import { Controller } from 'react-hook-form';
-import { Input } from './form-input';
+import { Input } from './input';
 
 const NumericInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, name = '', placeholder = '', ...props }, ref) => {
