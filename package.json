@@ -51,7 +51,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "0.6.56",
+    "@settlemint/sdk-cli": "0.6.58",
     "@biomejs/biome": "1.9.4",
     "turbo": "2.3.3",
     "typescript": "5.7.2",
