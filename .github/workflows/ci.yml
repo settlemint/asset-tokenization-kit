@@ -58,7 +58,7 @@ jobs:
           version: nightly
 
       - name: Install Bun dependencies
-        run: bun install
+        run: bun install --save-text-lockfile
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5

@@ -3,7 +3,6 @@ import { QueryClientProvider } from '@/components/blocks/query-client/query-clie
 import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
-import { SessionProvider } from 'next-auth/react';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from 'sonner';
 import './globals.css';
@@ -26,13 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('theme min-h-screen font-sans antialiased', fontSans.variable)}>
-        <SessionProvider>
           <NuqsAdapter>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
               <QueryClientProvider>{children}</QueryClientProvider>
             </ThemeProvider>
           </NuqsAdapter>
-        </SessionProvider>
         <Toaster />
       </body>
     </html>

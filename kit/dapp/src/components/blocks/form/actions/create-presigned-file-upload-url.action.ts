@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { client } from '@/lib/settlemint/minio';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 
 const CreatePresignedUrlSchema = z.object({
@@ -24,9 +25,10 @@ export const createPresignedUrlAction = actionClient
   .schema(CreatePresignedUrlSchema)
   .action(async ({ parsedInput }) => {
     const { bucketName, objectName, expirySeconds } = parsedInput;
-    const session = await auth();
-
-    if (!session?.user) {
+    const userSession = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!userSession?.user) {
       throw new Error('User not authenticated');
     }
 

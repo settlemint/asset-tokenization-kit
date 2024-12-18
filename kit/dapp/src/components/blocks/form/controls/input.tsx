@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, value, ...props }, ref) => {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
   return (
     <input
       type={type}
@@ -14,7 +14,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
       )}
       ref={ref}
       {...props}
-      value={value ?? ''}
     />
   );
 });

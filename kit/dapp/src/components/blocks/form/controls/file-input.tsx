@@ -6,6 +6,7 @@ import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
 import { Badge } from '@/components/ui/badge';
+import { betterFetch } from '@better-fetch/fetch';
 import { omit } from 'lodash';
 import {
   CheckIcon,
@@ -285,10 +286,10 @@ function Dropzone({
     try {
       const fileName = action.file_name.split('.').slice(0, -1).join('.');
       const extension = action.file_name.split('.').pop();
-      const response = await fetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
+      const { error } = await betterFetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
         method: 'DELETE',
       });
-      if (!response.ok) {
+      if (error) {
         throw new Error('Failed to delete file');
       }
 

@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { headers } from 'next/headers';
 import { parseEther } from 'viem';
 import { StakeTokenSchema } from './stake-token-form-schema';
 
@@ -21,15 +22,17 @@ mutation AddLiquidity($address: String!, $from: String!, $baseAmount: String!, $
 
 export const stakeTokenAction = actionClient.schema(StakeTokenSchema).action(async ({ parsedInput }) => {
   const { quoteAmount, baseAmount, tokenAddress } = parsedInput;
-  const session = await auth();
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!session?.user) {
+  if (!userSession?.user) {
     throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(AddLiquidityMutation, {
     address: tokenAddress,
-    from: session.user.wallet,
+    from: userSession.user.wallet,
     baseAmount: parseEther(baseAmount.toString()).toString(),
     quoteAmount: parseEther(quoteAmount.toString()).toString(),
   });

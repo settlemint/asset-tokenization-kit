@@ -1,6 +1,5 @@
 'use client';
 
-import { signOutAction } from '@/app/auth/signout/actions/sign-out';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -13,14 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { Skeleton } from '@/components/ui/skeleton';
+import { signOut, useSession } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
 import { BringToFront, ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import type { Address } from 'viem';
 
@@ -32,29 +31,14 @@ const GetPendingTransactions = portalGraphql(`
   }
 `);
 
-function SkeletonNavUser() {
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton size="lg">
-          <Skeleton className="h-8 w-8 rounded-lg" />
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-          <Skeleton className="ml-auto h-4 w-4" />
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
-
 export function NavUser() {
-  const { status, data: session } = useSession();
+  const { data: userSession } = useSession();
   const { isMobile } = useSidebar();
-  const wallet = session?.user.wallet as Address | undefined;
-  const email = session?.user.email;
+  const wallet = userSession?.user.wallet as Address | undefined;
+  const email = userSession?.user.email;
+  const name = userSession?.user.name;
   const { setTheme, resolvedTheme } = useTheme();
+  const router = useRouter();
 
   const { data: pendingCount } = useQuery({
     queryKey: ['pendingtx', email, wallet],
@@ -71,12 +55,14 @@ export function NavUser() {
   });
 
   const handleSignOut = useCallback(async () => {
-    await signOutAction({});
-  }, []);
-
-  if (status === 'loading') {
-    return <SkeletonNavUser />;
-  }
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push('/'); // redirect to login page
+        },
+      },
+    });
+  }, [router]);
 
   return (
     <SidebarMenu>
@@ -94,7 +80,7 @@ export function NavUser() {
                 indicator={(pendingCount ?? 0) > 0}
               />
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{email}</span>
+                <span className="truncate font-semibold">{name ?? email}</span>
                 <span className="truncate text-xs">{shortHex(wallet, 12, 8)}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -108,9 +94,10 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <AddressAvatar address={wallet} email={email} className="h-8 w-8 rounded-lg" indicator={false} />
+                <AddressAvatar address={wallet} email={email} className="h-12 w-12 rounded-lg" indicator={false} />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{email}</span>
+                  <span className="truncate font-semibold">{name}</span>
+                  <span className="truncate text-xs">{email}</span>
                   <span className="truncate text-xs">{shortHex(wallet, 12, 8)}</span>
                 </div>
               </div>

@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { headers } from 'next/headers';
 import { parseEther } from 'viem';
 import { TransferTokenSchema } from './transfer-token-form-schema';
 
@@ -20,15 +21,17 @@ mutation TransferTokenMutation($address: String!, $from: String!, $to: String!, 
 
 export const transferTokenAction = actionClient.schema(TransferTokenSchema).action(async ({ parsedInput }) => {
   const { to, amount, tokenAddress } = parsedInput;
-  const session = await auth();
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!session?.user) {
+  if (!userSession?.user) {
     throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(TransferTokenMutation, {
     address: tokenAddress,
-    from: session.user.wallet,
+    from: userSession.user.wallet,
     to: to,
     amount: parseEther(amount.toString()).toString(),
   });

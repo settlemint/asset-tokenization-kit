@@ -1,10 +1,14 @@
 import { auth } from '@/lib/auth/auth';
+import { headers } from 'next/headers';
 import type { Address } from 'viem';
 import { Swap } from './_components/swap';
 
 export default async function UserSwap() {
-  const session = await auth();
-  const address = session?.user.wallet;
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const address = userSession?.user.wallet;
 
   return (
     <>

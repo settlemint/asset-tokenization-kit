@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { type HTMLAttributes, forwardRef, useState } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
-import { http, type Address, createPublicClient } from 'viem';
+import { type Address, createPublicClient, http } from 'viem';
 import { mainnet } from 'viem/chains';
 
 /**

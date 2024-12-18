@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { headers } from 'next/headers';
 import { parseEther } from 'viem';
 import { ApproveTokenSchema } from './approve-token-schema';
 
@@ -20,15 +21,17 @@ mutation ApproveToken($address: String!, $from: String!, $spender: String!, $val
 
 export const approveTokenAction = actionClient.schema(ApproveTokenSchema).action(async ({ parsedInput }) => {
   const { spender, approveAmount, tokenAddress } = parsedInput;
-  const session = await auth();
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!session?.user) {
+  if (!userSession?.user) {
     throw new Error('User not authenticated');
   }
 
   const result = await portalClient.request(ApproveTokenMutation, {
     address: tokenAddress,
-    from: session.user.wallet,
+    from: userSession.user.wallet,
     spender,
     value: parseEther(approveAmount.toString()).toString(),
   });
