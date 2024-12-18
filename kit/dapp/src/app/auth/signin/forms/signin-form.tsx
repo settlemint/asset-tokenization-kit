@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from '@/components/blocks/form/form-input';
+import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -70,7 +70,7 @@ export function SignInForm({
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input
+          <TextInput
             id="email"
             type="email"
             placeholder="m@example.com"
@@ -83,7 +83,7 @@ export function SignInForm({
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
           </div>
-          <Input
+          <TextInput
             id="password"
             type="password"
             autoComplete="password"
