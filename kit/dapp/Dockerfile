@@ -1,6 +1,6 @@
 # BUILD DEPENDENCIES
 FROM node:22.12.0 AS deps
-COPY --from=oven/bun:1.1.39-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+COPY --from=oven/bun:1.1.40-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 
 RUN mkdir -p /app
 WORKDIR /app
