@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/blocks/button/button';
 import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';
@@ -140,7 +140,12 @@ export const FormStep = <
       {title && <h3>{title}</h3>}
       {children}
       <div className="!mt-16 flex justify-end gap-x-4">
-        <Button type="button" className={cn({ hidden: currentStep === 1 })} onClick={() => prevStep()}>
+        <Button
+          type="button"
+          variant="outline"
+          className={cn({ hidden: currentStep === 1 })}
+          onClick={() => prevStep()}
+        >
           {controls?.prev?.buttonText}
         </Button>
         <Button

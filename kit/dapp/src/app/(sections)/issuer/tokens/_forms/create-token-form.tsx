@@ -137,6 +137,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                 description="This is the name of the token"
                 placeholder="Token Name"
               />
+
               {/* Token Symbol */}
               <TextInput
                 control={form.control}
