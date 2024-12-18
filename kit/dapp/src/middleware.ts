@@ -23,7 +23,7 @@ function buildRedirectUrl(request: NextRequest): URL {
   return redirectUrl;
 }
 
-export default async (request: NextRequest) => {
+export default async function middleware(request: NextRequest) {
   const proxyResponse = proxyMiddleware(request);
   if (proxyResponse) {
     return proxyResponse;
@@ -46,7 +46,7 @@ export default async (request: NextRequest) => {
   }
 
   return NextResponse.next();
-};
+}
 
 export const config = {
   matcher: [
