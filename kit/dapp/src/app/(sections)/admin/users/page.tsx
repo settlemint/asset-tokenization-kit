@@ -1,6 +1,6 @@
 import { UsersTable } from './_components/user-table';
 
-export default function IssuerTokens() {
+export default function Users() {
   return (
     <>
       <div className="flex items-center justify-between space-y-2">

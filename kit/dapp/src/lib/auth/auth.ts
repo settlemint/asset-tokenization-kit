@@ -18,6 +18,7 @@ const createUserWallet = portalGraphql(`
 
 export const auth = betterAuth({
   secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!,
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: authSchema,
