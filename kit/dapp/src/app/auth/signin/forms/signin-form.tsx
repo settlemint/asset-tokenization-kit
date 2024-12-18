@@ -28,6 +28,8 @@ export function SignInForm({
   redirectUrl = '/',
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
+  const decodedRedirectUrl = decodeURIComponent(redirectUrl);
+
   const router = useRouter();
   const {
     register,
@@ -46,7 +48,7 @@ export function SignInForm({
   const onSubmit = async (data: SignInFormData) => {
     try {
       await signIn.email(data);
-      router.push(redirectUrl);
+      router.push(decodedRedirectUrl);
     } catch (err) {
       setFormError('root', {
         message: err instanceof Error ? err.message : 'Failed to sign in. Please check your credentials and try again.',
@@ -102,7 +104,7 @@ export function SignInForm({
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{' '}
-        <Link href="/auth/signup" className="underline underline-offset-4">
+        <Link href={`/auth/signup?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
           Sign up
         </Link>
       </div>

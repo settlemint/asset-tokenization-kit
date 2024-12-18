@@ -27,6 +27,7 @@ export function SignUpForm({
   redirectUrl = '/',
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
+  const decodedRedirectUrl = decodeURIComponent(redirectUrl);
   const router = useRouter();
   const {
     register,
@@ -48,10 +49,11 @@ export function SignUpForm({
         email: data.email,
         password: data.password,
         name: data.name,
+        wallet: '', // will be filled in by the hook
       },
       {
         onSuccess: () => {
-          router.push(redirectUrl);
+          router.push(decodedRedirectUrl);
         },
         onError: (ctx) => {
           setFormError('root', {
@@ -122,7 +124,7 @@ export function SignUpForm({
       </div>
       <div className="text-center text-sm">
         Already have an account?{' '}
-        <Link href="/auth/signin" className="underline underline-offset-4">
+        <Link href={`/auth/signin?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
           Sign in
         </Link>
       </div>
