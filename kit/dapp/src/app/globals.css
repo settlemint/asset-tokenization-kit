@@ -79,4 +79,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .theme {
+    font-family: theme('fontFamily.theme-sans') !important;
 }
+
+}
+
+
