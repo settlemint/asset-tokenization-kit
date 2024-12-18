@@ -1,7 +1,7 @@
 {
   "extends": ["ultracite"],
   "files": {
-    "ignore": [".vscode/", "kit/dapp/src/components/ui/**/*", "*-env.d.ts"]
+    "ignore": [".vscode/", "kit/dapp/src/components/ui/**/*", "kit/contracts/ignition/deployments/**/*", "*-env.d.ts"]
   },
   "linter": {
     "ignore": ["kit/subgraph/src/**/*"],
