@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from '@/components/blocks/form/form-input';
+import { Input } from '@/components/blocks/form/controls/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
