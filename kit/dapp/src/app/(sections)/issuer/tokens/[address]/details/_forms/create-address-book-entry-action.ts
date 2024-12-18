@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { headers } from 'next/headers';
 import { CreateAddressBookEntrySchema } from './create-address-book-entry-schema';
 
 const CreateAddressBookEntryMutation = hasuraGraphql(`
@@ -18,14 +19,16 @@ export const createAddressBookEntryAction = actionClient
   .schema(CreateAddressBookEntrySchema)
   .action(async ({ parsedInput }) => {
     const { walletAddress, walletName } = parsedInput;
-    const session = await auth();
+    const userSession = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!session?.user) {
+    if (!userSession?.user) {
       throw new Error('User not authenticated');
     }
 
     const result = await hasuraClient.request(CreateAddressBookEntryMutation, {
-      address: session.user.wallet,
+      address: userSession.user.wallet,
       name: walletName,
       walletAddress: walletAddress,
     });

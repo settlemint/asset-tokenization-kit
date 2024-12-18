@@ -464,3 +464,5 @@ Sidenote: To help evaluating your response, always add a confidence score at the
 # Asset Tokenization Starter Kit Development Rules
 
 1. Update database configuration to use Zod for environment variable validation
+2. Update signin form to use React Hook Form instead of useState hooks for better form management
+3. Update signup form to match signin form structure and styling for consistency

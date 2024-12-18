@@ -1,6 +1,6 @@
-import { authConfig } from '@/lib/auth/config';
+import { betterFetch } from '@better-fetch/fetch';
 import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
-import NextAuth from 'next-auth';
+import type { Session, User } from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
 import { match } from 'path-to-regexp';
 
@@ -8,16 +8,11 @@ const isUserAuthenticatedRoute = match(['/user', '/user/*path']);
 const isIssuerAuthenticatedRoute = match(['/issuer', '/issuer/*path']);
 const isAdminAuthenticatedRoute = match(['/admin', '/admin/*path']);
 
-const { auth } = NextAuth({
-  ...authConfig,
-  providers: [], // we don't want to import bcryptjs in the middleware
-});
-
 const routeRoleMap = [
-  { checker: isUserAuthenticatedRoute, role: 'user' },
-  { checker: isIssuerAuthenticatedRoute, role: 'issuer' },
-  { checker: isAdminAuthenticatedRoute, role: 'admin' },
-] as const;
+  { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },
+  { checker: isIssuerAuthenticatedRoute, roles: ['issuer', 'admin'] },
+  { checker: isAdminAuthenticatedRoute, roles: ['admin'] },
+];
 
 function buildRedirectUrl(request: NextRequest): URL {
   const redirectUrl = new URL('/auth/signin', request.url);
@@ -28,25 +23,30 @@ function buildRedirectUrl(request: NextRequest): URL {
   return redirectUrl;
 }
 
-export default auth((request) => {
+export default async (request: NextRequest) => {
   const proxyResponse = proxyMiddleware(request);
   if (proxyResponse) {
     return proxyResponse;
   }
 
-  const userRoles = request.auth?.user?.roles ?? [];
-  if (userRoles.includes('admin')) {
-    return NextResponse.next();
-  }
+  const { data } = await betterFetch<{ session: Session; user: User & { role: 'user' | 'issuer' | 'admin' } }>(
+    '/api/auth/get-session',
+    {
+      baseURL: request.nextUrl.origin,
+      headers: {
+        cookie: request.headers.get('cookie') || '',
+      },
+    }
+  );
 
-  for (const { checker, role } of routeRoleMap) {
-    if (checker(request.nextUrl.pathname) && !userRoles.includes(role)) {
+  for (const { checker, roles } of routeRoleMap) {
+    if (checker(request.nextUrl.pathname) && (!data || !roles.includes(data.user.role))) {
       return NextResponse.redirect(buildRedirectUrl(request));
     }
   }
 
   return NextResponse.next();
-});
+};
 
 export const config = {
   matcher: [

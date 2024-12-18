@@ -1,6 +1,6 @@
 'use client';
 
-import { signOutAction } from '@/app/auth/signout/actions/sign-out';
+// import { signOutAction } from '@/app/auth/signout/actions/sign-out';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -14,11 +14,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSession } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
 import { BringToFront, ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useCallback } from 'react';
@@ -50,10 +50,10 @@ function SkeletonNavUser() {
 }
 
 export function NavUser() {
-  const { status, data: session } = useSession();
+  const { data: userSession } = useSession();
   const { isMobile } = useSidebar();
-  const wallet = session?.user.wallet as Address | undefined;
-  const email = session?.user.email;
+  const wallet = userSession?.user.wallet as Address | undefined;
+  const email = userSession?.user.email;
   const { setTheme, resolvedTheme } = useTheme();
 
   const { data: pendingCount } = useQuery({
@@ -71,7 +71,7 @@ export function NavUser() {
   });
 
   const handleSignOut = useCallback(async () => {
-    await signOutAction({});
+    // await signOutAction({});
   }, []);
 
   if (status === 'loading') {

@@ -1,5 +1,6 @@
+import Image from 'next/image';
 import type { PropsWithChildren } from 'react';
-import { AuthPlaceholder } from './placeholder';
+import AuthPlaceholder from './placeholder.jpg';
 
 export default function AuthLayout({ children }: PropsWithChildren) {
   return (
@@ -8,7 +9,11 @@ export default function AuthLayout({ children }: PropsWithChildren) {
         <div className="mx-auto grid w-[350px] gap-6">{children}</div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        <AuthPlaceholder className="absolute inset-0 h-full w-full object-cover object-center dark:brightness-[0.2] dark:grayscale" />
+        <Image
+          src={AuthPlaceholder}
+          alt="Auth"
+          className="absolute inset-0 h-full w-full object-cover object-center dark:brightness-[0.5]"
+        />
       </div>
     </div>
   );

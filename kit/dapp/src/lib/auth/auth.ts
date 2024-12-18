@@ -1,30 +1,27 @@
-/**
- * This module configures and exports NextAuth functionality for authentication.
- * It combines the auth configuration and providers to set up NextAuth.
- * It also extends the NextAuth Session type to include a wallet property.
- */
+import * as authSchema from '@/lib/db/schema-auth';
+import { betterAuth } from 'better-auth';
+import { emailHarmony } from 'better-auth-harmony';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { nextCookies } from 'better-auth/next-js';
+import { admin, openAPI } from 'better-auth/plugins';
+import { db } from '../db';
 
-import NextAuth, { type DefaultSession } from 'next-auth';
-import { authConfig } from './config';
-import { providers } from './providers';
-
-/**
- * Configures and initializes NextAuth with the provided configuration and providers.
- * @returns An object containing NextAuth handlers, signIn, signOut, and auth functions.
- */
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
-  providers: providers,
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    schema: authSchema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  user: {
+    additionalFields: {
+      wallet: {
+        type: 'string',
+        required: true,
+        input: false,
+      },
+    },
+  },
+  plugins: [nextCookies(), admin(), openAPI(), emailHarmony({ allowNormalizedSignin: true })],
 });
-
-declare module 'next-auth' {
-  /**
-   * Extends the Session interface to include a wallet property in the user object.
-   */
-  interface Session {
-    user: {
-      wallet: string;
-      roles: string[];
-    } & DefaultSession['user'];
-  }
-}

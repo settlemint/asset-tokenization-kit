@@ -1,4 +1,5 @@
 import { auth } from '@/lib/auth/auth';
+import { headers } from 'next/headers';
 import type { Address } from 'viem';
 import { PortfolioTable } from './_components/portfolio-table';
 
@@ -6,8 +7,11 @@ import { PortfolioTable } from './_components/portfolio-table';
 // Challenge is how that we do not have a base currency token, so how do we unify the graph y axis?
 
 export default async function UserPortfolio() {
-  const session = await auth();
-  const address = session?.user.wallet;
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const address = userSession?.user.wallet;
 
   return (
     <>

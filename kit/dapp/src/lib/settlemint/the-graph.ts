@@ -1,8 +1,8 @@
 import { createTheGraphClient } from "@settlemint/sdk-thegraph";
-import type { introspection } from "@schemas/the-graph-env";
+import type { introspection as starterkitsIntrospection } from "@schemas/the-graph-env-starterkits"
 
 export const { client: theGraphClient, graphql: theGraphGraphql } = createTheGraphClient<{
-  introspection: introspection;
+  introspection: starterkitsIntrospection;
   disableMasking: true;
   scalars: {
     DateTime: Date;
@@ -13,7 +13,8 @@ export const { client: theGraphClient, graphql: theGraphGraphql } = createTheGra
     BigDecimal: string;
     Timestamp: string;
   };
-}>({
-  instance: process.env.SETTLEMINT_THEGRAPH_SUBGRAPH_ENDPOINT!,
+  }>({
+  instances: process.env.SETTLEMINT_THEGRAPH_SUBGRAPHS_ENDPOINTS!,
   accessToken: process.env.SETTLEMINT_ACCESS_TOKEN!, // undefined in browser, by design to not leak the secrets
+  subgraphName: "starterkits",
 });

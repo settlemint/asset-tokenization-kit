@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { betterFetch } from '@better-fetch/fetch';
 import {
   CheckIcon,
   CloudUploadIcon,
@@ -272,10 +273,10 @@ export function Dropzone({
     try {
       const fileName = action.file_name.split('.').slice(0, -1).join('.');
       const extension = action.file_name.split('.').pop();
-      const response = await fetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
+      const { error } = await betterFetch(`/api/upload?fileName=${fileName}_id_${action.id}.${extension}`, {
         method: 'DELETE',
       });
-      if (!response.ok) {
+      if (error) {
         throw new Error('Failed to delete file');
       }
 

@@ -83,7 +83,7 @@ export type introspection_types = {
  * instead save to a .ts instead of a .d.ts file.
  */
 export type introspection = {
-  name: 'thegraph';
+  name: 'thegraph-starterkits';
   query: 'Query';
   mutation: never;
   subscription: 'Subscription';

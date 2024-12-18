@@ -3,6 +3,7 @@
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient } from '@/lib/settlemint/portal';
+import { headers } from 'next/headers';
 import { isAddress } from 'viem';
 import { z } from 'zod';
 import { SwapBaseToQuote, SwapQuoteToBase } from '../_graphql/mutations';
@@ -23,9 +24,11 @@ export type SwapParams = z.infer<typeof SwapParamsSchema>;
 
 export const executeSwapAction = actionClient.schema(SwapParamsSchema).action(async ({ parsedInput }) => {
   const { isBaseToQuote, amount, pairAddress, from, minAmount, deadline } = parsedInput;
-  const session = await auth();
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!session?.user) {
+  if (!userSession?.user) {
     throw new Error('User not authenticated');
   }
 

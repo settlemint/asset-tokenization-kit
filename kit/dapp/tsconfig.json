@@ -1,24 +1,22 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowJs": true,
-    "jsx": "preserve",
-    "noEmit": true,
-    "esModuleInterop": true,
-    "incremental": false,
-    "isolatedModules": true,
+    "target": "ES2017",
     "lib": [
-      "es2022",
-      "DOM",
-      "DOM.Iterable"
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
-    "moduleDetection": "force",
-    "noUncheckedIndexedAccess": false,
-    "resolveJsonModule": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2022",
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -34,10 +32,10 @@
             "trackFieldUsage": false
           },
           {
-            "name": "thegraph",
-            "schema": "the-graph-schema.graphql",
-            "tadaOutputLocation": "the-graph-env.d.ts",
-            "tadaTurboLocation": "the-graph-cache.d.ts",
+            "name": "thegraph-starterkits",
+            "schema": "the-graph-schema-starterkits.graphql",
+            "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
+            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts",
             "trackFieldUsage": false
           },
           {
