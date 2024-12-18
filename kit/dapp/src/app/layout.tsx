@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('min-h-screen font-sans antialiased', fontSans.variable)}>
+      <body className={cn('theme min-h-screen font-sans antialiased', fontSans.variable)}>
           <NuqsAdapter>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
               <QueryClientProvider>{children}</QueryClientProvider>

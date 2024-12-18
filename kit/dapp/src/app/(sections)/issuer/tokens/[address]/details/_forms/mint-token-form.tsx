@@ -1,8 +1,7 @@
 'use client';
-
-import { Input } from '@/components/blocks/form/form-input';
-import { DictionaryInput } from '@/components/blocks/form/form-input-dictionary';
-import { NumericInput } from '@/components/blocks/form/form-input-numeric';
+import { DictionaryInput } from '@/components/blocks/form/controls/form-input-dictionary';
+import { NumericInput } from '@/components/blocks/form/controls/form-input-numeric';
+import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -138,19 +137,12 @@ export function MintTokenForm({ defaultValues }: MintTokenFormProps) {
                 )}
               />
               {/* Mint to wallet */}
-              <FormField
+              <TextInput
                 control={form.control}
+                label="Wallet address"
                 name="to"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Wallet address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="To address" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the wallet address of the token holder</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                description="This is the wallet address of the token holder"
+                placeholder="To address"
               />
               {/* Mint to wallet */}
               <FormField

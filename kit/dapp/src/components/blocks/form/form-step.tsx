@@ -3,8 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
 import { useMultiFormStep } from './form-multistep';
@@ -23,7 +22,7 @@ export const FormStep = <
   title?: string;
   form: UseFormReturn<TFieldValues>;
   fields?: TName[];
-  children: React.ReactNode;
+  children: ReactNode;
   withSheetClose?: boolean;
   controls?: {
     prev?: { buttonText: string };
@@ -32,9 +31,7 @@ export const FormStep = <
   };
 }) => {
   const { currentStep, nextStep, prevStep, totalSteps, registerFormStep, config } = useMultiFormStep();
-  const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose
-    ? [SheetClose, { asChild: true }]
-    : [React.Fragment, {}];
+  const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose ? [SheetClose, { asChild: true }] : [Fragment, {}];
 
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const [isNavigate, setIsNavigate] = useState(true);

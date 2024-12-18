@@ -1,10 +1,10 @@
 'use client';
+import { FileInput } from '@/components/blocks/form/controls/file-input';
+import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
-import { Dropzone } from '@/components/blocks/form/form-upload-dropzone';
-import { TextInput } from '@/components/forms/controls/text-input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {} from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -149,33 +149,21 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               />
 
               {/* Token Logo */}
-              <FormField
+              <FileInput
                 control={form.control}
                 name="tokenLogo"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Token Logo</FormLabel>
-                      <FormControl>
-                        <Dropzone
-                          label="Click, or drop your logo here"
-                          name={field.name}
-                          accept={{
-                            images: ['.jpg', '.jpeg', '.png', '.webp'],
-                            text: [],
-                          }}
-                          maxSize={1024 * 1024 * 10} // 10MB
-                          multiple={false}
-                          server={{
-                            bucket: 'default-bucket',
-                            storage: 'minio',
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>This is the logo of the token</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  );
+                description="This is the logo of the token"
+                label="Token Logo"
+                text="Click, or drop your logo here"
+                multiple={false}
+                maxSize={1024 * 1024 * 10} // 10MB
+                accept={{
+                  'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+                  'text/*': [],
+                }}
+                server={{
+                  bucket: 'default-bucket',
+                  storage: 'minio',
                 }}
               />
             </FormStep>

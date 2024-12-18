@@ -1,7 +1,13 @@
 'use client';
 
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import type { InputProps } from '@/components/ui/input';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
+
 import { Badge } from '@/components/ui/badge';
 import { betterFetch } from '@better-fetch/fetch';
+import { omit } from 'lodash';
 import {
   CheckIcon,
   CloudUploadIcon,
@@ -12,20 +18,24 @@ import {
   TriangleAlertIcon,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
 import ReactDropzone from 'react-dropzone';
 import { toast } from 'sonner';
 import { useLocalStorage } from 'usehooks-ts';
-import { useMultiFormStep } from './form-multistep';
-import { createPresignedUrlAction } from './form-upload-create-presigned-url.action';
+import { createPresignedUrlAction } from '../actions/create-presigned-file-upload-url.action';
+import { useMultiFormStep } from '../form-multistep';
+
+/**
+ * Dropzone component for the file input
+ */
+
+interface Accept {
+  [key: string]: readonly string[];
+}
 
 interface DropzoneProps {
   label: string;
   name: string;
-  accept?: {
-    images: Array<'.jpg' | '.jpeg' | '.png' | '.webp'>;
-    text: Array<'.pdf' | '.docx' | '.doc' | '.txt' | '.md' | '.csv' | '.xls' | '.xlsx'>;
-  };
+  accept?: Accept;
   maxSize?: number;
   maxFiles?: number;
   multiple?: boolean;
@@ -76,7 +86,7 @@ function truncateFileName(fileName: string): string {
   return fileName.trim();
 }
 
-function fileToIcon(fileType: string): React.ReactNode {
+function fileToIcon(fileType: string): ReactNode {
   if (fileType.includes('application')) {
     return <FileTextIcon />;
   }
@@ -89,10 +99,13 @@ function fileToIcon(fileType: string): React.ReactNode {
   return <FileIcon />;
 }
 
-export function Dropzone({
+function Dropzone({
   label,
   name,
-  accept = { images: ['.jpg', '.jpeg', '.png', '.webp'], text: ['.pdf'] },
+  accept = {
+    'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+    'text/*': [],
+  },
   maxSize,
   maxFiles,
   multiple = true,
@@ -367,10 +380,7 @@ export function Dropzone({
           onDrop={handleUpload}
           onDragEnter={handleHover}
           onDragLeave={handleExitHover}
-          accept={{
-            'image/*': accept.images,
-            'text/*': accept.text,
-          }}
+          accept={accept}
           maxSize={maxSize}
           maxFiles={maxFiles}
           multiple={_multiple}
@@ -413,3 +423,71 @@ export function Dropzone({
     </div>
   );
 }
+
+/**
+ * FileInput component
+ */
+
+type FileInputProps<T extends FieldValues> = {
+  label: string;
+  text: string;
+  description?: string;
+  icon?: ReactNode;
+  accept: Accept;
+  server?: {
+    bucket: string;
+    storage: 'minio' | 's3' | 'local';
+  };
+  multiple?: boolean;
+  maxSize?: number;
+} & Omit<InputProps, 'name' | 'accept'> & {
+    name: Path<T>;
+    control: Control<T>;
+    shouldUnregister?: boolean;
+    rules?: Pick<RegisterOptions<T, Path<T>>, 'required' | 'minLength' | 'maxLength' | 'pattern'>;
+  };
+
+export function FileInput<T extends FieldValues>({
+  label,
+  text,
+  multiple = false,
+  maxSize = 1024 * 1024 * 10, // 10MB
+  accept = {
+    'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
+    'text/*': [],
+  },
+  server,
+  description,
+  name,
+  control,
+  ...props
+}: FileInputProps<T>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <Dropzone
+                label={text}
+                name={field.name}
+                accept={accept}
+                maxSize={maxSize}
+                multiple={multiple}
+                server={server}
+                {...omit(props, 'accept')}
+              />
+            </FormControl>
+            <FormDescription>{description}</FormDescription>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
+    />
+  );
+}
+
+FileInput.displayName = 'FileInput';

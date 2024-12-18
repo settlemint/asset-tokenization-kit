@@ -4,7 +4,13 @@ import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { client } from '@/lib/settlemint/minio';
 import { headers } from 'next/headers';
-import { CreatePresignedUrlSchema } from './form-upload-create-presigned-url.schema';
+import { z } from 'zod';
+
+const CreatePresignedUrlSchema = z.object({
+  bucketName: z.string(),
+  objectName: z.string(),
+  expirySeconds: z.number(),
+});
 
 type MinioClient = typeof client & {
   presignedPutObject: (
