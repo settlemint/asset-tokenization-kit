@@ -12,7 +12,7 @@
       "dependsOn": ["codegen", "^lint", "//#format:biome"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types", "codegen"]
     },
     "dev": {
       "cache": false,
