@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const signInSchema = z.object({
@@ -31,12 +31,7 @@ export function SignInForm({
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
 
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError: setFormError,
-  } = useForm<SignInFormData>({
+  const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
@@ -44,6 +39,14 @@ export function SignInForm({
       rememberMe: false,
     },
   });
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError: setFormError,
+  } = form;
 
   const onSubmit = async (data: SignInFormData) => {
     try {
@@ -57,57 +60,59 @@ export function SignInForm({
   };
 
   return (
-    <form className={cn('flex flex-col gap-6', className)} onSubmit={handleSubmit(onSubmit)} {...props}>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="font-bold text-2xl">Login to your account</h1>
-        <p className="text-balance text-muted-foreground text-sm">Enter your email below to login to your account</p>
-      </div>
-      {errors.root && (
-        <Alert variant="destructive">
-          <AlertDescription>{errors.root.message}</AlertDescription>
-        </Alert>
-      )}
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <TextInput
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            {...register('email')}
-            aria-invalid={!!errors.email}
-          />
-          {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
+    <FormProvider {...form}>
+      <form className={cn('flex flex-col gap-6', className)} onSubmit={handleSubmit(onSubmit)} {...props}>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="font-bold text-2xl">Login to your account</h1>
+          <p className="text-balance text-muted-foreground text-sm">Enter your email below to login to your account</p>
         </div>
-        <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
+        {errors.root && (
+          <Alert variant="destructive">
+            <AlertDescription>{errors.root.message}</AlertDescription>
+          </Alert>
+        )}
+        <div className="grid gap-6">
+          <div className="grid gap-2">
+            <TextInput
+              label="Email"
+              control={control}
+              name="email"
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              aria-invalid={!!errors.email}
+            />
+            {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
           </div>
-          <TextInput
-            id="password"
-            type="password"
-            autoComplete="password"
-            {...register('password')}
-            aria-invalid={!!errors.password}
-          />
-          {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
-        </div>
-        <div className="grid gap-2">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="rememberMe" {...register('rememberMe')} />
-            <Label htmlFor="rememberMe">Remember me</Label>
+          <div className="grid gap-2">
+            <TextInput
+              label="Password"
+              control={control}
+              name="password"
+              id="password"
+              type="password"
+              autoComplete="password"
+              aria-invalid={!!errors.password}
+            />
+            {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
           </div>
+          <div className="grid gap-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="rememberMe" {...register('rememberMe')} />
+              <Label htmlFor="rememberMe">Remember me</Label>
+            </div>
+          </div>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : 'Login'}
+          </Button>
         </div>
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : 'Login'}
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{' '}
-        <Link href={`/auth/signup?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
-          Sign up
-        </Link>
-      </div>
-    </form>
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{' '}
+          <Link href={`/auth/signup?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
+            Sign up
+          </Link>
+        </div>
+      </form>
+    </FormProvider>
   );
 }
