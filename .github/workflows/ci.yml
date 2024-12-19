@@ -14,13 +14,41 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  deployments: write
+  id-token: write
+  issues: write
+  discussions: write
+  packages: write
+  pages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
 jobs:
   test:
     name: Test
     runs-on: namespace-profile-starterkit
     steps:
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        env:
+          NPM_TOKEN: op://platform/npmjs/credential
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
+        with:
+          token: ${{ env.PAT_TOKEN }}
 
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.29.0
@@ -100,7 +128,7 @@ jobs:
       - name: Login to npm
         if: ${{ env.TAG != 'pr' }}
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" >> ~/.npmrc
 
       - name: Publish
         if: ${{ env.TAG != 'pr' }}
@@ -118,6 +146,14 @@ jobs:
         env:
           PUBLISH_NPM: true
           PUBLISH_DOCKER: true
+
+      - name: Auto-commit updated package versions
+        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5
+        if: ${{ env.TAG == 'latest' }}
+        with:
+          commit_message: "chore: update package versions [skip ci]"
+          branch: main
+          file_pattern: 'package.json **/package.json'
 
       - name: Run Trivy vulnerability scanner on the docker image
         if: ${{ env.TAG != 'pr' }}
@@ -146,11 +182,3 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
           command: platform update custom-deployment ${{ env.VERSION }} --wait
-
-      - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5
-        if: ${{ env.TAG == 'latest' }}
-        with:
-          commit_message: "chore: update package versions [skip ci]"
-          branch: main
-          file_pattern: 'package.json **/package.json'
