@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "matchstick-as": "0.6.0",
-    "contracts": "workspace:*"
+    "contracts": "0.0.8"
   },
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "version": "0.0.8"
 }
