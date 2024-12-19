@@ -11,8 +11,8 @@ contract EquityFactoryTest is Test {
     address public owner;
 
     function setUp() public {
+        owner = makeAddr("owner");
         factory = new EquityFactory();
-        owner = address(this);
     }
 
     function test_CreateToken() public {
@@ -21,6 +21,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
+        vm.prank(owner);
         address tokenAddress = factory.create(name, symbol, class, category);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -29,7 +30,9 @@ contract EquityFactoryTest is Test {
         Equity token = Equity(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
-        assertEq(token.owner(), owner, "Token owner should match");
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
+        assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
+        assertTrue(token.hasRole(token.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
         assertEq(token.equityClass(), class, "Token class should match");
         assertEq(token.equityCategory(), category, "Token category should match");
     }
@@ -100,29 +103,50 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
+        vm.startPrank(owner);
         address tokenAddress = factory.create(name, symbol, class, category);
         Equity token = Equity(tokenAddress);
 
-        // Test minting
+        // Test minting with supply management role
         uint256 amount = 1000 ether;
-        vm.prank(owner);
+        address user = makeAddr("user");
         token.mint(owner, amount);
         assertEq(token.balanceOf(owner), amount, "Balance should match minted amount");
 
         // Delegate voting power to self
-        vm.prank(owner);
         token.delegate(owner);
         assertEq(token.getVotes(owner), amount, "Voting power should match balance after delegation");
 
-        // Test pausing
-        vm.prank(owner);
+        // Test pausing with admin role
         token.pause();
         assertTrue(token.paused(), "Token should be paused");
+        vm.stopPrank();
 
-        // Test unpausing
-        vm.prank(owner);
+        // Test minting without supply management role
+        vm.startPrank(user);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        token.mint(user, amount);
+        vm.stopPrank();
+
+        // Test pausing without admin role
+        vm.startPrank(user);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        token.pause();
+        vm.stopPrank();
+
+        // Test unpausing with admin role
+        vm.startPrank(owner);
         token.unpause();
         assertFalse(token.paused(), "Token should be unpaused");
+        vm.stopPrank();
     }
 
     function test_EventEmission() public {
@@ -135,22 +159,48 @@ contract EquityFactoryTest is Test {
         address tokenAddress = factory.create(name, symbol, class, category);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 2, "Should emit 2 events: OwnershipTransferred and EquityCreated");
+        assertEq(
+            entries.length,
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and EquityCreated"
+        );
 
-        // The last event should be EquityCreated
-        VmSafe.Log memory lastEntry = entries[1];
+        // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
+        VmSafe.Log memory firstEntry = entries[0];
+        assertEq(
+            firstEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for first RoleGranted"
+        );
+        assertEq(
+            firstEntry.topics[1],
+            bytes32(0), // DEFAULT_ADMIN_ROLE is bytes32(0)
+            "Wrong role in first RoleGranted"
+        );
 
-        // Topic 0 is the event signature
+        // Second event should be RoleGranted for SUPPLY_MANAGEMENT_ROLE
+        VmSafe.Log memory secondEntry = entries[1];
+        assertEq(
+            secondEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for second RoleGranted"
+        );
+
+        // Third event should be RoleGranted for USER_MANAGEMENT_ROLE
+        VmSafe.Log memory thirdEntry = entries[2];
+        assertEq(
+            thirdEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for third RoleGranted"
+        );
+
+        // Fourth event should be EquityCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
             keccak256("EquityCreated(address,string,string,address,uint256)"),
-            "Wrong event signature"
+            "Wrong event signature for EquityCreated"
         );
-
-        // Topic 1 is the first indexed parameter (token address)
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
-
-        // Topic 2 is the second indexed parameter (owner address)
-        assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Wrong owner address in event");
     }
 }

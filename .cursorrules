@@ -272,6 +272,7 @@ export async function GET(request: Request) {
   - User defined value types
   - Push0 opcode support
   - Typed immutables
+- Use forge-std for testing
 
 ### Code Style and Structure
 
@@ -281,6 +282,13 @@ export async function GET(request: Request) {
 - Order functions: constructor, receive, fallback, external, public, internal, private
 - Use custom errors instead of require/revert strings
 - Favor immutable over constant for gas optimization
+
+### Testing
+
+- Use forge-std for testing
+- Use anvil for local testing
+- Use foundry for testing
+- Prefer start and stopPrank for testing over prank to ensure that the right user is used.
 
 ### Security Best Practices
 

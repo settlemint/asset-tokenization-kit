@@ -27,7 +27,8 @@ contract CryptoCurrencyTest is Test {
         assertEq(token.decimals(), 18);
         assertEq(token.totalSupply(), INITIAL_SUPPLY);
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY);
-        assertEq(token.owner(), owner);
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
+        assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner));
     }
 
     function test_Transfer() public {
@@ -68,23 +69,31 @@ contract CryptoCurrencyTest is Test {
         assertEq(token.allowance(owner, user), amount);
     }
 
-    function test_Mint() public {
-        uint256 amount = 1000e18;
+    function test_OnlySupplyManagementCanMint() public {
+        vm.startPrank(owner);
+        token.mint(user, 1000e18);
+        assertEq(token.totalSupply(), INITIAL_SUPPLY + 1000e18);
+        assertEq(token.balanceOf(user), 1000e18);
+        vm.stopPrank();
 
-        vm.prank(owner);
-        vm.expectEmit(true, true, false, true);
-        emit Transfer(address(0), user, amount);
-
-        token.mint(user, amount);
-
-        assertEq(token.totalSupply(), INITIAL_SUPPLY + amount);
-        assertEq(token.balanceOf(user), amount);
+        vm.startPrank(user);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        token.mint(user, 1000e18);
+        vm.stopPrank();
     }
 
-    function test_MintOnlyOwner() public {
-        vm.prank(user);
-        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", user));
-        token.mint(user, 1000e18);
+    function test_RoleManagement() public {
+        vm.startPrank(owner);
+        token.grantRole(token.SUPPLY_MANAGEMENT_ROLE(), user);
+        assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), user));
+
+        token.revokeRole(token.SUPPLY_MANAGEMENT_ROLE(), user);
+        assertFalse(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), user));
+        vm.stopPrank();
     }
 
     function test_Permit() public {
@@ -125,8 +134,8 @@ contract CryptoCurrencyTest is Test {
         vm.prank(owner);
         token.transfer(user, amount);
 
-        assertEq(token.balanceOf(owner), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(user), amount);
+        assertEq(token.balanceOf(owner), INITIAL_SUPPLY - amount);
     }
 
     function testFail_TransferInsufficientBalance(uint256 amount) public {

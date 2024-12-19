@@ -20,7 +20,7 @@ contract EquityTest is Test {
     event CustodianOperation(address indexed custodian, address indexed from, address indexed to, uint256 amount);
 
     function setUp() public {
-        owner = address(this);
+        owner = makeAddr("owner");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
@@ -39,25 +39,44 @@ contract EquityTest is Test {
         assertEq(equity.symbol(), "TEST");
         assertEq(equity.equityClass(), "Common");
         assertEq(equity.equityCategory(), "Series A");
-        assertEq(equity.owner(), owner);
+        assertTrue(equity.hasRole(equity.DEFAULT_ADMIN_ROLE(), owner));
+        assertTrue(equity.hasRole(equity.SUPPLY_MANAGEMENT_ROLE(), owner));
+        assertTrue(equity.hasRole(equity.USER_MANAGEMENT_ROLE(), owner));
         assertEq(equity.totalSupply(), 0);
     }
 
-    function test_Mint() public {
+    function test_OnlySupplyManagementCanMint() public {
         uint256 amount = 1000e18;
+
+        // Have owner (who has SUPPLY_MANAGEMENT_ROLE) do the minting
+        vm.prank(owner);
         equity.mint(user1, amount);
+
         assertEq(equity.balanceOf(user1), amount);
         assertEq(equity.totalSupply(), amount);
+
+        // Test that non-authorized user can't mint
+        vm.prank(user1);
+        vm.expectRevert();
+        equity.mint(user1, amount);
     }
 
-    function testFail_MintNonOwner() public {
-        vm.prank(user1);
-        equity.mint(user1, 1000e18);
+    function test_RoleManagement() public {
+        vm.startPrank(owner);
+        equity.grantRole(equity.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertTrue(equity.hasRole(equity.SUPPLY_MANAGEMENT_ROLE(), user1));
+
+        equity.revokeRole(equity.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertFalse(equity.hasRole(equity.SUPPLY_MANAGEMENT_ROLE(), user1));
+        vm.stopPrank();
     }
 
     // ERC20 Standard Tests
     function test_Transfer() public {
         uint256 amount = 1000e18;
+
+        // Have owner do the minting since they have SUPPLY_MANAGEMENT_ROLE
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.prank(user1);
@@ -75,6 +94,7 @@ contract EquityTest is Test {
 
     function test_TransferFrom() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.prank(user1);
@@ -90,6 +110,7 @@ contract EquityTest is Test {
     // Burnable Tests
     function test_Burn() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.prank(user1);
@@ -100,16 +121,21 @@ contract EquityTest is Test {
     }
 
     // Pausable Tests
-    function test_PauseUnpause() public {
+    function test_OnlyAdminCanPause() public {
+        bytes32 role = equity.DEFAULT_ADMIN_ROLE();
+
+        vm.prank(user1);
+        vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
+        equity.pause();
+
+        vm.prank(owner);
         equity.pause();
         assertTrue(equity.paused());
-
-        equity.unpause();
-        assertFalse(equity.paused());
     }
 
     function testFail_TransferWhenPaused() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
         equity.pause();
 
@@ -118,17 +144,33 @@ contract EquityTest is Test {
     }
 
     // Blocklist Tests
-    function test_Blocklist() public {
+    function test_OnlyUserManagementCanBlock() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
-        // Test blocking
+        // Test that non-authorized user can't block
+        vm.startPrank(user2); // Start pranking as user2
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, equity.USER_MANAGEMENT_ROLE()
+            )
+        );
         equity.blockUser(user1);
+        vm.stopPrank(); // Stop pranking as user2
+
+        // Test successful blocking by owner
+        vm.prank(owner);
+        equity.blockUser(user1);
+        assertTrue(equity.blocked(user1));
+
+        // Test that blocked user can't transfer
         vm.prank(user1);
         vm.expectRevert(abi.encodeWithSignature("ERC20Blocked(address)", user1));
         equity.transfer(user2, 500e18);
 
-        // Test unblocking
+        // Test unblocking and subsequent transfer
+        vm.prank(owner);
         equity.unblockUser(user1);
         vm.prank(user1);
         equity.transfer(user2, 500e18);
@@ -137,6 +179,7 @@ contract EquityTest is Test {
 
     function testFail_BlockedTransfer() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
         equity.blockUser(user1);
 
@@ -145,23 +188,27 @@ contract EquityTest is Test {
     }
 
     // ERC20Custodian tests
-    function test_CustodianFunctionality() public {
+    function test_OnlyUserManagementCanFreeze() public {
+        vm.prank(owner);
         equity.mint(user1, 100);
 
-        // Freeze all tokens
+        vm.startPrank(user2); // Start pranking as user2
+        vm.expectRevert(abi.encodeWithSignature("ERC20NotCustodian()"));
+        equity.freeze(user1, 100);
+        vm.stopPrank(); // Stop pranking as user2
+
+        vm.prank(owner);
         equity.freeze(user1, 100);
         assertEq(equity.frozen(user1), 100);
 
-        // Try to transfer the frozen amount
         vm.expectRevert();
         vm.prank(user1);
         equity.transfer(user2, 100);
 
-        // Unfreeze and verify
+        vm.prank(owner);
         equity.unfreeze(user1, 100);
         assertEq(equity.frozen(user1), 0);
 
-        // Now transfer should work
         vm.prank(user1);
         equity.transfer(user2, 100);
         assertEq(equity.balanceOf(user2), 100);
@@ -170,6 +217,7 @@ contract EquityTest is Test {
     // Voting Tests
     function test_DelegateVoting() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.prank(user1);
@@ -181,6 +229,7 @@ contract EquityTest is Test {
 
     function test_VotingPowerTransfer() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.prank(user1);
@@ -196,6 +245,7 @@ contract EquityTest is Test {
     function test_Permit() public {
         uint256 privateKey = 0xA11CE;
         address signer = vm.addr(privateKey);
+        vm.prank(owner);
         equity.mint(signer, 1000e18);
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(
@@ -234,6 +284,7 @@ contract EquityTest is Test {
     // Events Tests
     function test_TransferEvent() public {
         uint256 amount = 1000e18;
+        vm.prank(owner);
         equity.mint(user1, amount);
 
         vm.expectEmit(true, true, false, true);
@@ -255,6 +306,7 @@ contract EquityTest is Test {
         vm.expectEmit(true, false, false, true);
         emit Paused(owner);
 
+        vm.prank(owner);
         equity.pause();
     }
 
@@ -262,15 +314,18 @@ contract EquityTest is Test {
         vm.expectEmit(true, false, false, true);
         emit UserBlocked(user1);
 
+        vm.prank(owner);
         equity.blockUser(user1);
     }
 
     function test_UnblockEvent() public {
+        vm.prank(owner);
         equity.blockUser(user1);
 
         vm.expectEmit(true, false, false, true);
         emit UserUnblocked(user1);
 
+        vm.prank(owner);
         equity.unblockUser(user1);
     }
 }

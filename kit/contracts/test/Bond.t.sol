@@ -9,6 +9,7 @@ contract BondTest is Test {
     address public owner;
     address public user1;
     address public user2;
+    address public spender;
     uint256 public constant INITIAL_SUPPLY = 1000e18;
     uint256 public maturityDate;
 
@@ -19,9 +20,10 @@ contract BondTest is Test {
     event BondMatured(uint256 timestamp);
 
     function setUp() public {
-        owner = address(this);
+        owner = makeAddr("owner");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
+        spender = makeAddr("spender");
         maturityDate = block.timestamp + 365 days;
 
         vm.startPrank(owner);
@@ -39,6 +41,9 @@ contract BondTest is Test {
         assertEq(bond.balanceOf(owner), INITIAL_SUPPLY);
         assertEq(bond.maturityDate(), maturityDate);
         assertFalse(bond.isMatured());
+        assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
+        assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
+        assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner));
     }
 
     function test_Transfer() public {
@@ -52,6 +57,11 @@ contract BondTest is Test {
 
     function test_TransferFrom() public {
         uint256 amount = 100e18;
+
+        // Check initial state
+        assertEq(bond.balanceOf(owner), INITIAL_SUPPLY, "Initial balance incorrect");
+        assertEq(bond.frozen(owner), 0, "Should not have frozen tokens");
+
         vm.startPrank(owner);
         bond.approve(user1, amount);
         vm.stopPrank();
@@ -63,21 +73,30 @@ contract BondTest is Test {
         assertEq(bond.balanceOf(owner), INITIAL_SUPPLY - amount);
     }
 
-    // Ownable functionality tests
-    function test_OnlyOwnerCanMint() public {
+    // Role-based access control tests
+    function test_OnlySupplyManagementCanMint() public {
         vm.prank(owner);
         bond.mint(user1, 100e18);
         assertEq(bond.balanceOf(user1), 100e18);
 
-        vm.prank(user1);
-        vm.expectRevert();
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, bond.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
         bond.mint(user1, 100e18);
+        vm.stopPrank();
     }
 
-    function test_OwnershipTransfer() public {
-        vm.prank(owner);
-        bond.transferOwnership(user1);
-        assertEq(bond.owner(), user1);
+    function test_RoleManagement() public {
+        vm.startPrank(owner);
+        bond.grantRole(bond.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), user1));
+
+        bond.revokeRole(bond.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertFalse(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), user1));
+        vm.stopPrank();
     }
 
     // Pausable functionality tests
@@ -97,11 +116,15 @@ contract BondTest is Test {
         vm.stopPrank();
     }
 
-    function test_OnlyOwnerCanPause() public {
-        vm.prank(user1);
-        vm.expectRevert();
+    function test_OnlyAdminCanPause() public {
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, bond.DEFAULT_ADMIN_ROLE()
+            )
+        );
         bond.pause();
-
+        vm.stopPrank();
         vm.prank(owner);
         bond.pause();
         assertTrue(bond.paused());
@@ -130,7 +153,7 @@ contract BondTest is Test {
     }
 
     // Blocklist functionality tests
-    function test_Blocklist() public {
+    function test_OnlyUserManagementCanBlock() public {
         vm.startPrank(owner);
         bond.blockUser(user1);
         assertTrue(bond.blocked(user1));
@@ -144,10 +167,20 @@ contract BondTest is Test {
         bond.transfer(user1, 100e18);
         assertEq(bond.balanceOf(user1), 100e18);
         vm.stopPrank();
+
+        vm.startPrank(user2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, bond.USER_MANAGEMENT_ROLE()
+            )
+        );
+        bond.blockUser(user1);
+        vm.stopPrank();
     }
 
     // ERC20Custodian tests
     function test_CustodianFunctionality() public {
+        vm.startPrank(owner);
         bond.mint(user1, 100);
 
         // Freeze all tokens
@@ -170,9 +203,17 @@ contract BondTest is Test {
     }
 
     // Maturity functionality tests
-    function test_Mature() public {
+    function test_OnlySupplyManagementCanMature() public {
         vm.warp(maturityDate + 1);
 
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, bond.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        bond.mature();
+        vm.stopPrank();
         vm.prank(owner);
         bond.mature();
         assertTrue(bond.isMatured());
