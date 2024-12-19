@@ -106,7 +106,6 @@ templates:
         - Event_Approval
         - Event_BondMatured
         - Event_EIP712DomainChanged
-        - Event_OwnershipTransferred
         - Event_Paused
         - Event_TokensFrozen
         - Event_TokensUnfrozen
@@ -114,6 +113,9 @@ templates:
         - Event_Unpaused
         - Event_UserBlocked
         - Event_UserUnblocked
+        - Event_RoleGranted
+        - Event_RoleRevoked
+        - Event_RoleAdminChanged
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
@@ -124,8 +126,6 @@ templates:
           handler: handleBondMatured
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -140,6 +140,12 @@ templates:
           handler: handleUserBlocked
         - event: UserUnblocked(indexed address)
           handler: handleUserUnblocked
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
       file: ./src/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency
@@ -153,8 +159,10 @@ templates:
       entities:
         - Event_Approval
         - Event_EIP712DomainChanged
-        - Event_OwnershipTransferred
         - Event_Transfer
+        - Event_RoleGranted
+        - Event_RoleRevoked
+        - Event_RoleAdminChanged
       abis:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
@@ -163,10 +171,14 @@ templates:
           handler: handleApproval
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
       file: ./src/crypto-currency.ts
   - kind: ethereum/contract
     name: Equity
@@ -182,7 +194,6 @@ templates:
         - Event_DelegateChanged
         - Event_DelegateVotesChanged
         - Event_EIP712DomainChanged
-        - Event_OwnershipTransferred
         - Event_Paused
         - Event_TokensFrozen
         - Event_TokensUnfrozen
@@ -190,6 +201,9 @@ templates:
         - Event_Unpaused
         - Event_UserBlocked
         - Event_UserUnblocked
+        - Event_RoleGranted
+        - Event_RoleRevoked
+        - Event_RoleAdminChanged
       abis:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
@@ -202,8 +216,6 @@ templates:
           handler: handleDelegateVotesChanged
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -218,6 +230,12 @@ templates:
           handler: handleUserBlocked
         - event: UserUnblocked(indexed address)
           handler: handleUserUnblocked
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
       file: ./src/equity.ts
   - kind: ethereum/contract
     name: StableCoin
@@ -231,7 +249,6 @@ templates:
       entities:
         - Event_Approval
         - Event_EIP712DomainChanged
-        - Event_OwnershipTransferred
         - Event_Paused
         - Event_TokensFrozen
         - Event_TokensUnfrozen
@@ -239,6 +256,9 @@ templates:
         - Event_Unpaused
         - Event_UserBlocked
         - Event_UserUnblocked
+        - Event_RoleGranted
+        - Event_RoleRevoked
+        - Event_RoleAdminChanged
       abis:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
@@ -247,8 +267,6 @@ templates:
           handler: handleApproval
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -263,4 +281,10 @@ templates:
           handler: handleUserBlocked
         - event: UserUnblocked(indexed address)
           handler: handleUserUnblocked
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
       file: ./src/stable-coin.ts

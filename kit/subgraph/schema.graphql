@@ -8,12 +8,29 @@ type Account @entity {
   transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "from")
   transferToEvent: [Event_Transfer!]! @derivedFrom(field: "to")
   blockedAssets: [BlockedAccount!]! @derivedFrom(field: "account")
+  roleGranted: [Event_RoleGranted!]! @derivedFrom(field: "account")
+  roleRevoked: [Event_RoleRevoked!]! @derivedFrom(field: "account")
 }
 
 type BlockedAccount @entity {
   id: Bytes!
   account: Account!
   asset: Asset!
+}
+
+type Role @entity(immutable: true) {
+  id: Bytes!
+  name: String!
+  assets: [AssetRole!]! @derivedFrom(field: "role")
+}
+
+type AssetRole @entity {
+  id: ID!
+  asset: Asset!
+  role: Role!
+  members: [Account!]!
+  roleGranted: [Event_RoleGranted!]! @derivedFrom(field: "assetRole")
+  roleRevoked: [Event_RoleRevoked!]! @derivedFrom(field: "assetRole")
 }
 
 interface Asset {
@@ -26,7 +43,7 @@ interface Asset {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  owner: Account!
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
 }
 
 type Bond implements Asset @entity {
@@ -39,10 +56,10 @@ type Bond implements Asset @entity {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
-  owner: Account!
 }
 
 type Equity implements Asset @entity {
@@ -55,10 +72,10 @@ type Equity implements Asset @entity {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
   equityClass: String!
   equityCategory: String!
   paused: Boolean!
-  owner: Account!
 }
 
 type StableCoin implements Asset @entity {
@@ -71,10 +88,10 @@ type StableCoin implements Asset @entity {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
   collateral: BigDecimal!
   collateralExact: BigInt!
   paused: Boolean!
-  owner: Account!
 }
 
 type CryptoCurrency implements Asset @entity {
@@ -87,7 +104,7 @@ type CryptoCurrency implements Asset @entity {
   totalSupplyExact: BigInt!
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  owner: Account!
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
 }
 
 type Balance @entity {
@@ -117,4 +134,31 @@ type Event_Transfer implements Event @entity(immutable: true) {
   toBalance: Balance
   value: BigDecimal!
   valueExact: BigInt!
+}
+
+type Event_RoleAdminChanged implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  role: AssetRole!
+  newAdminRole: AssetRole!
+  previousAdminRole: AssetRole!
+}
+
+type Event_RoleGranted implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  assetRole: AssetRole!
+  account: Account!
+  sender: Account!
+}
+
+type Event_RoleRevoked implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  assetRole: AssetRole!
+  account: Account!
+  sender: Account!
 }

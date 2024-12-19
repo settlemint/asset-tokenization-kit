@@ -4,8 +4,10 @@ import {
   Approval as ApprovalEvent,
   BondMatured as BondMaturedEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
-  OwnershipTransferred as OwnershipTransferredEvent,
   Paused as PausedEvent,
+  RoleAdminChanged as RoleAdminChangedEvent,
+  RoleGranted as RoleGrantedEvent,
+  RoleRevoked as RoleRevokedEvent,
   TokensFrozen as TokensFrozenEvent,
   TokensUnfrozen as TokensUnfrozenEvent,
   Transfer as TransferEvent,
@@ -19,18 +21,17 @@ import { fetchBond } from './fetch/bond';
 import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
+import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
-export function handleBondMatured(event: BondMaturedEvent): void {}
-
-export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
-
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
+export function handleBondMatured(event: BondMaturedEvent): void {
   let bond = fetchBond(event.address);
-  bond.owner = event.params.newOwner;
+  bond.isMatured = true;
   bond.save();
 }
+
+export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
 
 export function handlePaused(event: PausedEvent): void {
   let bond = fetchBond(event.address);
@@ -113,4 +114,25 @@ export function handleUserUnblocked(event: UserUnblockedEvent): void {
   let bond = fetchBond(event.address);
   let id = bond.id.concat(event.params.user);
   store.remove('BlockedAccount', id.toHexString());
+}
+
+export function handleRoleGranted(event: RoleGrantedEvent): void {
+  let bond = fetchBond(event.address);
+  handleRoleGrantedEvent(event, bond.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleRevoked(event: RoleRevokedEvent): void {
+  let bond = fetchBond(event.address);
+  handleRoleRevokedEvent(event, bond.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
+  let bond = fetchBond(event.address);
+  handleRoleAdminChangedEvent(
+    event,
+    bond.id,
+    event.params.role,
+    event.params.newAdminRole,
+    event.params.previousAdminRole
+  );
 }
