@@ -34,6 +34,11 @@
       "groupName": "SettleMint packages",
       "groupSlug": "settlemint",
       "matchPackageNames": ["/^@settlemint//"]
+    },
+    {
+      "matchFiles": ["package.json"],
+      "matchDepTypes": ["packageManager"],
+      "enabled": true
     }
   ],
   "hostRules": [
