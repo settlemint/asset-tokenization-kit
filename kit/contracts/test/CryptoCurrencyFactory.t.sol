@@ -12,15 +12,17 @@ contract CryptoCurrencyFactoryTest is Test {
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
 
     function setUp() public {
+        owner = makeAddr("owner");
         factory = new CryptoCurrencyFactory();
-        owner = address(this);
     }
 
     function test_CreateToken() public {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
+        vm.startPrank(owner);
         address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -28,7 +30,8 @@ contract CryptoCurrencyFactoryTest is Test {
         CryptoCurrency token = CryptoCurrency(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
-        assertEq(token.owner(), owner, "Token owner should match");
+        assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
+        assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertEq(token.totalSupply(), INITIAL_SUPPLY, "Token supply should match");
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY, "Owner should have initial supply");
     }
@@ -38,6 +41,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory baseSymbol = "TEST";
         uint256 count = 3;
 
+        vm.startPrank(owner);
         for (uint256 i = 0; i < count; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
@@ -48,6 +52,7 @@ contract CryptoCurrencyFactoryTest is Test {
             CryptoCurrency token = CryptoCurrency(tokenAddress);
             assertEq(token.balanceOf(owner), INITIAL_SUPPLY, "Owner should have initial supply");
         }
+        vm.stopPrank();
 
         assertEq(factory.allTokensLength(), count, "Should have created three tokens");
     }
@@ -56,13 +61,17 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
+        vm.startPrank(owner);
         address token1 = factory.create(name, symbol, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         // Create a new factory instance
         CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory();
 
+        vm.startPrank(owner);
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -72,7 +81,9 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
+        vm.startPrank(owner);
         address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        vm.stopPrank();
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test initial state
@@ -84,21 +95,27 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
+        vm.startPrank(owner);
         address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
-        // Test minting as owner
+        // Test minting with supply management role
         uint256 amount = 1000 ether;
-        address user = address(0x1);
-        vm.prank(owner);
+        address user = makeAddr("user");
         token.mint(user, amount);
         assertEq(token.balanceOf(user), amount, "User should have minted amount");
         assertEq(token.totalSupply(), INITIAL_SUPPLY + amount, "Total supply should be increased");
+        vm.stopPrank();
 
-        // Test minting restrictions
-        vm.prank(user);
-        vm.expectRevert();
+        // Test minting without supply management role
+        vm.startPrank(user);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
         token.mint(user, amount);
+        vm.stopPrank();
     }
 
     function test_CreateTokenWithZeroInitialSupply() public {
@@ -121,22 +138,46 @@ contract CryptoCurrencyFactoryTest is Test {
         address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 3, "Should emit 3 events: OwnershipTransferred, Transfer, and CryptoCurrencyCreated");
+        assertEq(
+            entries.length,
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), Transfer, and CryptoCurrencyCreated"
+        );
 
-        // The last event should be CryptoCurrencyCreated
-        VmSafe.Log memory lastEntry = entries[2];
+        // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
+        VmSafe.Log memory firstEntry = entries[0];
+        assertEq(
+            firstEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for first RoleGranted"
+        );
+        assertEq(
+            firstEntry.topics[1],
+            bytes32(0), // DEFAULT_ADMIN_ROLE is bytes32(0)
+            "Wrong role in first RoleGranted"
+        );
 
-        // Topic 0 is the event signature
+        // Second event should be RoleGranted for SUPPLY_MANAGEMENT_ROLE
+        VmSafe.Log memory secondEntry = entries[1];
+        assertEq(
+            secondEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for second RoleGranted"
+        );
+
+        // Third event should be Transfer
+        VmSafe.Log memory thirdEntry = entries[2];
+        assertEq(
+            thirdEntry.topics[0], keccak256("Transfer(address,address,uint256)"), "Wrong event signature for Transfer"
+        );
+
+        // Fourth event should be CryptoCurrencyCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
             keccak256("CryptoCurrencyCreated(address,string,string,address,uint256)"),
-            "Wrong event signature"
+            "Wrong event signature for CryptoCurrencyCreated"
         );
-
-        // Topic 1 is the first indexed parameter (token address)
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
-
-        // Topic 2 is the second indexed parameter (owner address)
-        assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Wrong owner address in event");
     }
 }

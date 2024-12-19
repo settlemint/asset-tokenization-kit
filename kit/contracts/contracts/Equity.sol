@@ -5,7 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
@@ -21,12 +21,15 @@ contract Equity is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
-    Ownable,
+    AccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
     ERC20Votes
 {
+    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+    bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
+
     string private _equityClass;
     string private _equityCategory;
 
@@ -36,7 +39,7 @@ contract Equity is
     /// @param symbol The token symbol
     /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
-    /// @param initialOwner The address that will receive ownership and admin rights
+    /// @param initialOwner The address that will receive admin rights
     constructor(
         string memory name,
         string memory symbol,
@@ -45,9 +48,11 @@ contract Equity is
         address initialOwner
     )
         ERC20(name, symbol)
-        Ownable(initialOwner)
         ERC20Permit(name)
     {
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+        _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
+        _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
         _equityClass = equityClass_;
         _equityCategory = equityCategory_;
     }
@@ -65,22 +70,22 @@ contract Equity is
     }
 
     /// @notice Pauses all token transfers
-    /// @dev Only callable by the contract owner. Emits a Paused event from ERC20Pausable
-    function pause() public onlyOwner {
+    /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
+    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
     /// @notice Unpauses token transfers
-    /// @dev Only callable by the contract owner. Emits an Unpaused event from ERC20Pausable
-    function unpause() public onlyOwner {
+    /// @dev Only callable by the admin. Emits an Unpaused event from ERC20Pausable
+    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
     /// @notice Creates new tokens and assigns them to an address
-    /// @dev Only callable by the contract owner. Emits a Transfer event from ERC20
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE role. Emits a Transfer event from ERC20
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _mint(to, amount);
     }
 
@@ -108,31 +113,31 @@ contract Equity is
     }
 
     /// @notice Checks if an address is a custodian
-    /// @dev Only the contract owner is considered a custodian for custodial operations
+    /// @dev Only addresses with admin role are considered custodians for custodial operations
     /// @param user The address to check
-    /// @return True if the address is the contract owner, false otherwise
+    /// @return True if the address has the admin role, false otherwise
     function _isCustodian(address user) internal view override returns (bool) {
-        return user == owner();
+        return hasRole(USER_MANAGEMENT_ROLE, user);
     }
 
     /// @dev Blocks a user from token operations
     /// @param user Address to block
     /// @return True if user was not previously blocked
-    function blockUser(address user) public onlyOwner returns (bool) {
+    function blockUser(address user) public onlyRole(USER_MANAGEMENT_ROLE) returns (bool) {
         return super._blockUser(user);
     }
 
     /// @dev Unblocks a user from token operations
     /// @param user Address to unblock
     /// @return True if user was previously blocked
-    function unblockUser(address user) public onlyOwner returns (bool) {
+    function unblockUser(address user) public onlyRole(USER_MANAGEMENT_ROLE) returns (bool) {
         return super._unblockUser(user);
     }
 
     /// @dev Unfreezes all tokens for a user
     /// @param user Address to unfreeze tokens for
     /// @param amount Amount of tokens to unfreeze
-    function unfreeze(address user, uint256 amount) public onlyOwner {
+    function unfreeze(address user, uint256 amount) public onlyRole(USER_MANAGEMENT_ROLE) {
         _frozen[user] = _frozen[user] - amount;
         emit TokensUnfrozen(user, amount);
     }

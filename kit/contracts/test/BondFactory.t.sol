@@ -22,6 +22,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
+        vm.prank(owner);
         address bondAddress = factory.create(name, symbol, futureDate);
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
@@ -30,7 +31,9 @@ contract BondFactoryTest is Test {
         Bond bond = Bond(bondAddress);
         assertEq(bond.name(), name, "Bond name should match");
         assertEq(bond.symbol(), symbol, "Bond symbol should match");
-        assertEq(bond.owner(), owner, "Bond owner should match");
+        assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
+        assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
+        assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
     }
 
@@ -98,23 +101,49 @@ contract BondFactoryTest is Test {
         address bondAddress = factory.create(name, symbol, futureDate);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
-        assertEq(entries.length, 2, "Should emit 2 events: OwnershipTransferred and BondCreated");
+        assertEq(
+            entries.length,
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and BondCreated"
+        );
 
-        // The last event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[1];
+        // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
+        VmSafe.Log memory firstEntry = entries[0];
+        assertEq(
+            firstEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for first RoleGranted"
+        );
+        assertEq(
+            firstEntry.topics[1],
+            bytes32(0), // DEFAULT_ADMIN_ROLE is bytes32(0)
+            "Wrong role in first RoleGranted"
+        );
 
-        // Topic 0 is the event signature
+        // Second event should be RoleGranted for SUPPLY_MANAGEMENT_ROLE
+        VmSafe.Log memory secondEntry = entries[1];
+        assertEq(
+            secondEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for second RoleGranted"
+        );
+
+        // Third event should be RoleGranted for USER_MANAGEMENT_ROLE
+        VmSafe.Log memory thirdEntry = entries[2];
+        assertEq(
+            thirdEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for third RoleGranted"
+        );
+
+        // Fourth event should be BondCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
             keccak256("BondCreated(address,string,string,address,uint256)"),
-            "Wrong event signature"
+            "Wrong event signature for BondCreated"
         );
-
-        // Topic 1 is the first indexed parameter (bond address)
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
-
-        // Topic 2 is the second indexed parameter (owner address)
-        assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Wrong owner address in event");
     }
 
     function test_BondMaturity() public {

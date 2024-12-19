@@ -3,8 +3,10 @@ import { BlockedAccount, Event_Transfer } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
-  OwnershipTransferred as OwnershipTransferredEvent,
   Paused as PausedEvent,
+  RoleAdminChanged as RoleAdminChangedEvent,
+  RoleGranted as RoleGrantedEvent,
+  RoleRevoked as RoleRevokedEvent,
   TokensFrozen as TokensFrozenEvent,
   TokensUnfrozen as TokensUnfrozenEvent,
   Transfer as TransferEvent,
@@ -18,16 +20,11 @@ import { fetchStableCoin } from './fetch/stable-coin';
 import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
+import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
 export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
-
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
-  let stableCoin = fetchStableCoin(event.address);
-  stableCoin.owner = event.params.newOwner;
-  stableCoin.save();
-}
 
 export function handlePaused(event: PausedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
@@ -110,4 +107,25 @@ export function handleUserUnblocked(event: UserUnblockedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   let id = stableCoin.id.concat(event.params.user);
   store.remove('BlockedAccount', id.toHexString());
+}
+
+export function handleRoleGranted(event: RoleGrantedEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  handleRoleGrantedEvent(event, stableCoin.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleRevoked(event: RoleRevokedEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  handleRoleRevokedEvent(event, stableCoin.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  handleRoleAdminChangedEvent(
+    event,
+    stableCoin.id,
+    event.params.role,
+    event.params.newAdminRole,
+    event.params.previousAdminRole
+  );
 }

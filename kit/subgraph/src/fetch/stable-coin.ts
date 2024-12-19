@@ -14,7 +14,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     let totalSupply = endpoint.try_totalSupply();
     let collateral = endpoint.try_collateral();
     let paused = endpoint.try_paused();
-    let owner = endpoint.try_owner();
 
     const account = fetchAccount(address);
 
@@ -27,7 +26,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
     stableCoin.collateral = toDecimals(stableCoin.collateralExact);
     stableCoin.paused = paused.reverted ? false : paused.value;
-    stableCoin.owner = owner.reverted ? Address.zero() : owner.value;
     stableCoin.asAccount = stableCoin.id;
     stableCoin.save();
 

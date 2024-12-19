@@ -3,7 +3,9 @@ import { Event_Transfer } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
-  OwnershipTransferred as OwnershipTransferredEvent,
+  RoleAdminChanged as RoleAdminChangedEvent,
+  RoleGranted as RoleGrantedEvent,
+  RoleRevoked as RoleRevokedEvent,
   Transfer as TransferEvent,
 } from '../generated/templates/CryptoCurrency/CryptoCurrency';
 import { fetchAccount } from './fetch/account';
@@ -12,16 +14,11 @@ import { fetchCryptoCurrency } from './fetch/crypto-currency';
 import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
+import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
 export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
-
-export function handleOwnershipTransferred(event: OwnershipTransferredEvent): void {
-  let cryptoCurrency = fetchCryptoCurrency(event.address);
-  cryptoCurrency.owner = event.params.newOwner;
-  cryptoCurrency.save();
-}
 
 export function handleTransfer(event: TransferEvent): void {
   log.info('Transfer event received: {} {} {} {}', [
@@ -70,4 +67,25 @@ export function handleTransfer(event: TransferEvent): void {
     eventTransfer.toBalance = toBalance.id;
   }
   eventTransfer.save();
+}
+
+export function handleRoleGranted(event: RoleGrantedEvent): void {
+  let cryptoCurrency = fetchCryptoCurrency(event.address);
+  handleRoleGrantedEvent(event, cryptoCurrency.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleRevoked(event: RoleRevokedEvent): void {
+  let cryptoCurrency = fetchCryptoCurrency(event.address);
+  handleRoleRevokedEvent(event, cryptoCurrency.id, event.params.role, event.params.account, event.params.sender);
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
+  let cryptoCurrency = fetchCryptoCurrency(event.address);
+  handleRoleAdminChangedEvent(
+    event,
+    cryptoCurrency.id,
+    event.params.role,
+    event.params.newAdminRole,
+    event.params.previousAdminRole
+  );
 }

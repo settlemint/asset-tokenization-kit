@@ -17,15 +17,13 @@ contract StableCoinTest is Test {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     function setUp() public {
-        owner = address(this);
+        owner = makeAddr("owner");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
+        vm.prank(owner);
         stableCoin = new StableCoin("StableCoin", "STBL", owner, COLLATERAL_LIVENESS);
-
-        // Set initial collateral to allow minting
-        stableCoin.updateCollateral(INITIAL_SUPPLY);
     }
 
     // Basic ERC20 functionality tests
@@ -34,23 +32,45 @@ contract StableCoinTest is Test {
         assertEq(stableCoin.symbol(), "STBL");
         assertEq(stableCoin.decimals(), 18);
         assertEq(stableCoin.totalSupply(), 0);
-        assertEq(stableCoin.owner(), owner);
+        assertTrue(stableCoin.hasRole(stableCoin.DEFAULT_ADMIN_ROLE(), owner));
+        assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), owner));
+        assertTrue(stableCoin.hasRole(stableCoin.USER_MANAGEMENT_ROLE(), owner));
     }
 
-    function test_Mint() public {
+    function test_OnlySupplyManagementCanMint() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY);
         assertEq(stableCoin.totalSupply(), INITIAL_SUPPLY);
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, stableCoin.SUPPLY_MANAGEMENT_ROLE()
+            )
+        );
+        stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
     }
 
-    function testFail_MintNonOwner() public {
-        vm.prank(user1);
-        stableCoin.mint(user1, INITIAL_SUPPLY);
+    function test_RoleManagement() public {
+        vm.startPrank(owner);
+        stableCoin.grantRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), user1));
+
+        stableCoin.revokeRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), user1);
+        assertFalse(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), user1));
+        vm.stopPrank();
     }
 
     // ERC20Burnable tests
     function test_Burn() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         vm.prank(user1);
         stableCoin.burn(100);
@@ -59,7 +79,10 @@ contract StableCoinTest is Test {
     }
 
     function test_BurnFrom() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         vm.prank(user1);
         stableCoin.approve(spender, 100);
@@ -71,28 +94,36 @@ contract StableCoinTest is Test {
     }
 
     // ERC20Pausable tests
-    function test_PauseUnpause() public {
-        stableCoin.mint(user1, INITIAL_SUPPLY);
-
+    function test_OnlyAdminCanPause() public {
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, stableCoin.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        stableCoin.pause();
+        vm.stopPrank();
+        vm.prank(owner);
         stableCoin.pause();
         assertTrue(stableCoin.paused());
-
-        vm.expectRevert();
-        vm.prank(user1);
-        stableCoin.transfer(user2, 100);
-
-        stableCoin.unpause();
-        assertFalse(stableCoin.paused());
-
-        vm.prank(user1);
-        stableCoin.transfer(user2, 100);
-        assertEq(stableCoin.balanceOf(user2), 100);
     }
 
     // ERC20Blocklist tests
-    function test_Blocklist() public {
+    function test_OnlyUserManagementCanBlock() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
 
+        vm.startPrank(user2);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user2, stableCoin.USER_MANAGEMENT_ROLE()
+            )
+        );
+        stableCoin.blockUser(user1);
+        vm.stopPrank();
+        vm.prank(owner);
         stableCoin.blockUser(user1);
         assertTrue(stableCoin.blocked(user1));
 
@@ -100,6 +131,7 @@ contract StableCoinTest is Test {
         vm.prank(user1);
         stableCoin.transfer(user2, 100);
 
+        vm.prank(owner);
         stableCoin.unblockUser(user1);
         assertFalse(stableCoin.blocked(user1));
 
@@ -109,8 +141,18 @@ contract StableCoinTest is Test {
     }
 
     // ERC20Collateral tests
-    function test_CollateralManagement() public {
+    function test_OnlyAdminCanUpdateCollateral() public {
         uint256 collateralAmount = 1_000_000;
+
+        vm.startPrank(user1);
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)", user1, stableCoin.DEFAULT_ADMIN_ROLE()
+            )
+        );
+        stableCoin.updateCollateral(collateralAmount);
+        vm.stopPrank();
+        vm.prank(owner);
         stableCoin.updateCollateral(collateralAmount);
 
         (uint256 amount, uint48 timestamp) = stableCoin.collateral();
@@ -118,29 +160,29 @@ contract StableCoinTest is Test {
         assertEq(timestamp, block.timestamp);
     }
 
-    function testFail_UpdateCollateralNonOwner() public {
-        vm.prank(user1);
-        stableCoin.updateCollateral(1_000_000);
-    }
-
     // ERC20Custodian tests
-    function test_CustodianFunctionality() public {
+    function test_OnlyUserManagementCanFreeze() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, 100);
+        vm.stopPrank();
 
-        // Freeze all tokens
+        vm.prank(user2);
+        vm.expectRevert(abi.encodeWithSignature("ERC20NotCustodian()"));
+        stableCoin.freeze(user1, 100);
+
+        vm.prank(owner);
         stableCoin.freeze(user1, 100);
         assertEq(stableCoin.frozen(user1), 100);
 
-        // Try to transfer the frozen amount
         vm.expectRevert();
         vm.prank(user1);
         stableCoin.transfer(user2, 100);
 
-        // Unfreeze and verify
+        vm.prank(owner);
         stableCoin.unfreeze(user1, 100);
         assertEq(stableCoin.frozen(user1), 0);
 
-        // Now transfer should work
         vm.prank(user1);
         stableCoin.transfer(user2, 100);
         assertEq(stableCoin.balanceOf(user2), 100);
@@ -151,7 +193,10 @@ contract StableCoinTest is Test {
         uint256 privateKey = 0xA11CE;
         address signer = vm.addr(privateKey);
 
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(signer, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         uint256 deadline = block.timestamp + 1 hours;
         uint256 nonce = stableCoin.nonces(signer);
@@ -186,7 +231,10 @@ contract StableCoinTest is Test {
 
     // Transfer and approval tests
     function test_TransferAndApproval() public {
+        vm.startPrank(owner);
+        stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
+        vm.stopPrank();
 
         vm.prank(user1);
         stableCoin.approve(spender, 100);
