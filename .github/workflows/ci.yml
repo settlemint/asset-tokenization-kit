@@ -37,14 +37,16 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
+            ./.turbo
             ~/.bun/install/cache
-            node_modules
 
       - name: Start Docker Compose
         run: docker compose up -d
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -144,3 +146,11 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
           command: platform update custom-deployment ${{ env.VERSION }} --wait
+
+      - name: Auto-commit updated package versions
+        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5
+        if: ${{ env.TAG == 'latest' }}
+        with:
+          commit_message: "chore: update package versions [skip ci]"
+          branch: main
+          file_pattern: 'package.json **/package.json'
