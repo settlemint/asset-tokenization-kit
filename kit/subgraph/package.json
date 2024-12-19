@@ -1,10 +1,15 @@
 {
   "name": "asset-tokenization",
-  "license": "UNLICENSED",
+  "version": "1.0.0",
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
   "scripts": {
     "graph:codegen": "graph codegen",
     "graph:build": "graph build",
-    "graph:deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ asset-tokenization",
     "graph:create-local": "graph create --node http://localhost:8020/ asset-tokenization",
     "graph:remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",
     "graph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization",
@@ -17,8 +22,7 @@
   },
   "devDependencies": {
     "matchstick-as": "0.6.0",
-    "contracts": "0.0.8"
+    "contracts": "workspace:*"
   },
-  "peerDependencies": {},
-  "version": "0.0.8"
+  "peerDependencies": {}
 }
