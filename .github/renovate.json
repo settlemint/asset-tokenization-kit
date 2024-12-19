@@ -18,26 +18,38 @@
     "security:openssf-scorecard",
     "schedule:nonOfficeHours"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "rebaseWhen": "conflicted",
   "customManagers": [
     {
       "customType": "regex",
       "datasourceTemplate": "npm",
       "depNameTemplate": "@biomejs/biome",
-      "fileMatch": ["(^|/)biome.jsonc?$"],
-      "matchStrings": ["\"https://biomejs.dev/schemas/(?<currentValue>[^\"]+)/schema.json\""]
+      "fileMatch": [
+        "(^|/)biome.jsonc?$"
+      ],
+      "matchStrings": [
+        "\"https://biomejs.dev/schemas/(?<currentValue>[^\"]+)/schema.json\""
+      ]
     }
   ],
   "packageRules": [
     {
       "groupName": "SettleMint packages",
       "groupSlug": "settlemint",
-      "matchPackageNames": ["/^@settlemint//"]
+      "matchPackageNames": [
+        "/^@settlemint//"
+      ]
     },
     {
-      "matchFiles": ["package.json"],
-      "matchDepTypes": ["packageManager"],
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchDepTypes": [
+        "packageManager"
+      ],
       "enabled": true
     }
   ],
