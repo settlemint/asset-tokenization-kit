@@ -116,6 +116,16 @@ templates:
         - Event_RoleGranted
         - Event_RoleRevoked
         - Event_RoleAdminChanged
+        - TransferData
+        - TransferStats
+        - AssetSupplyData
+        - AssetSupplyStats
+        - AccountActivityData
+        - AccountActivityStats
+        - RoleActivityData
+        - RoleActivityStats
+        - BondMetricsData
+        - BondMetricsStats
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
@@ -163,6 +173,14 @@ templates:
         - Event_RoleGranted
         - Event_RoleRevoked
         - Event_RoleAdminChanged
+        - TransferData
+        - TransferStats
+        - AssetSupplyData
+        - AssetSupplyStats
+        - AccountActivityData
+        - AccountActivityStats
+        - RoleActivityData
+        - RoleActivityStats
       abis:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
@@ -204,6 +222,16 @@ templates:
         - Event_RoleGranted
         - Event_RoleRevoked
         - Event_RoleAdminChanged
+        - TransferData
+        - TransferStats
+        - AssetSupplyData
+        - AssetSupplyStats
+        - AccountActivityData
+        - AccountActivityStats
+        - RoleActivityData
+        - RoleActivityStats
+        - EquityCategoryData
+        - EquityCategoryStats
       abis:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
@@ -259,6 +287,16 @@ templates:
         - Event_RoleGranted
         - Event_RoleRevoked
         - Event_RoleAdminChanged
+        - TransferData
+        - TransferStats
+        - AssetSupplyData
+        - AssetSupplyStats
+        - AccountActivityData
+        - AccountActivityStats
+        - RoleActivityData
+        - RoleActivityStats
+        - StableCoinMetricsData
+        - StableCoinMetricsStats
       abis:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json

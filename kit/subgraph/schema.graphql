@@ -162,3 +162,161 @@ type Event_RoleRevoked implements Event @entity(immutable: true) {
   account: Account!
   sender: Account!
 }
+
+# Transfer Activity Time Series
+type TransferData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset!
+  value: BigDecimal!
+  from: Account
+  to: Account
+}
+
+# Asset Supply Time Series
+type AssetSupplyData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset!
+  totalSupply: BigDecimal!
+  assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency"
+}
+
+# Transfer Activity Aggregations
+type TransferStats
+  @aggregation(intervals: ["hour", "day"], source: "TransferData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset! # dimension
+  totalTransfers: Int8! @aggregate(fn: "count", cumulative: true)
+  totalVolume: BigDecimal! @aggregate(fn: "sum", arg: "value")
+  minTransferValue: BigDecimal! @aggregate(fn: "min", arg: "value")
+  maxTransferValue: BigDecimal! @aggregate(fn: "max", arg: "value")
+}
+
+# Asset Supply Aggregations
+type AssetSupplyStats
+  @aggregation(intervals: ["hour", "day"], source: "AssetSupplyData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset! # dimension
+  assetType: String! # dimension
+  totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
+  supplyChange: BigDecimal! @aggregate(fn: "sum", arg: "totalSupply")
+}
+
+# Account Activity Time Series
+type AccountActivityData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account!
+  asset: Asset!
+  balance: BigDecimal!
+  isBlocked: Boolean!
+  blockedValue: Int! # Numeric field for aggregation
+}
+
+# Account Activity Aggregations
+type AccountActivityStats
+  @aggregation(intervals: ["hour", "day"], source: "AccountActivityData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  account: Account! # dimension
+  asset: Asset! # dimension
+  minBalance: BigDecimal! @aggregate(fn: "min", arg: "balance")
+  maxBalance: BigDecimal! @aggregate(fn: "max", arg: "balance")
+  lastBalance: BigDecimal! @aggregate(fn: "last", arg: "balance")
+  blockedCount: Int8! @aggregate(fn: "sum", arg: "blockedValue")
+}
+
+# Role Activity Time Series
+type RoleActivityData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset!
+  role: Role!
+  isGranted: Boolean!
+  account: Account!
+  grantValue: Int! # Numeric field for aggregation
+  revokeValue: Int! # Numeric field for aggregation
+  activeValue: Int! # Numeric field for aggregation
+}
+
+# Role Activity Aggregations
+type RoleActivityStats
+  @aggregation(intervals: ["hour", "day"], source: "RoleActivityData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  asset: Asset! # dimension
+  role: Role! # dimension
+  totalGranted: Int8! @aggregate(fn: "sum", arg: "grantValue")
+  totalRevoked: Int8! @aggregate(fn: "sum", arg: "revokeValue")
+  activeRoles: Int8! @aggregate(fn: "sum", arg: "activeValue", cumulative: true)
+}
+
+# Bond Specific Time Series
+type BondMetricsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  bond: Bond!
+  daysToMaturity: Int!
+  isMatured: Boolean!
+  maturedValue: Int! # Numeric field for aggregation
+}
+
+# Bond Metrics Aggregations
+type BondMetricsStats
+  @aggregation(intervals: ["hour", "day"], source: "BondMetricsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  minDaysToMaturity: Int! @aggregate(fn: "min", arg: "daysToMaturity")
+  maxDaysToMaturity: Int! @aggregate(fn: "max", arg: "daysToMaturity")
+  maturedBonds: Int8!
+    @aggregate(fn: "sum", arg: "maturedValue", cumulative: true)
+}
+
+# StableCoin Metrics Time Series
+type StableCoinMetricsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  stableCoin: StableCoin!
+  collateralRatio: BigDecimal!
+}
+
+# StableCoin Metrics Aggregations
+type StableCoinMetricsStats
+  @aggregation(intervals: ["hour", "day"], source: "StableCoinMetricsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  stableCoin: StableCoin! # dimension
+  minCollateralRatio: BigDecimal! @aggregate(fn: "min", arg: "collateralRatio")
+  maxCollateralRatio: BigDecimal! @aggregate(fn: "max", arg: "collateralRatio")
+  lastCollateralRatio: BigDecimal!
+    @aggregate(fn: "last", arg: "collateralRatio")
+}
+
+# Equity Category Time Series
+type EquityCategoryData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  equity: Equity!
+  category: String!
+  equityClass: String!
+}
+
+# Equity Category Aggregations
+type EquityCategoryStats
+  @aggregation(intervals: ["hour", "day"], source: "EquityCategoryData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  category: String! # dimension
+  equityClass: String! # dimension
+  totalEquities: Int8! @aggregate(fn: "count", cumulative: true)
+}

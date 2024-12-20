@@ -1,5 +1,5 @@
 import { Address, log } from '@graphprotocol/graph-ts';
-import { Event_Transfer } from '../generated/schema';
+import { Account, Event_Transfer, Role } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
@@ -15,6 +15,12 @@ import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
 import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
+import {
+  recordAccountActivityData,
+  recordAssetSupplyData,
+  recordRoleActivityData,
+  recordTransferData,
+} from './utils/timeseries';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
@@ -29,6 +35,8 @@ export function handleTransfer(event: TransferEvent): void {
   ]);
 
   let cryptoCurrency = fetchCryptoCurrency(event.address);
+  let from: Account | null = null;
+  let to: Account | null = null;
 
   let eventTransfer = new Event_Transfer(eventId(event));
   eventTransfer.emitter = cryptoCurrency.id;
@@ -43,7 +51,7 @@ export function handleTransfer(event: TransferEvent): void {
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.plus(eventTransfer.valueExact);
     cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact);
   } else {
-    let from = fetchAccount(event.params.from);
+    from = fetchAccount(event.params.from);
     let fromBalance = fetchBalance(balanceId(cryptoCurrency.id, from), cryptoCurrency.id, from.id);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact);
@@ -51,13 +59,16 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
+
+    // Record account activity for sender
+    recordAccountActivityData(from, cryptoCurrency.id, fromBalance.valueExact, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.minus(eventTransfer.valueExact);
     cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact);
   } else {
-    let to = fetchAccount(event.params.to);
+    to = fetchAccount(event.params.to);
     let toBalance = fetchBalance(balanceId(cryptoCurrency.id, to), cryptoCurrency.id, to.id);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact);
@@ -65,18 +76,42 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
+
+    // Record account activity for receiver
+    recordAccountActivityData(to, cryptoCurrency.id, toBalance.valueExact, false);
   }
+
   eventTransfer.save();
+
+  // Record transfer data
+  recordTransferData(cryptoCurrency.id, eventTransfer.valueExact, from, to);
+
+  // Record supply data
+  recordAssetSupplyData(cryptoCurrency.id, cryptoCurrency.totalSupplyExact, 'CryptoCurrency');
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
   let cryptoCurrency = fetchCryptoCurrency(event.address);
   handleRoleGrantedEvent(event, cryptoCurrency.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(cryptoCurrency.id, role, account, true);
+  }
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let cryptoCurrency = fetchCryptoCurrency(event.address);
   handleRoleRevokedEvent(event, cryptoCurrency.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(cryptoCurrency.id, role, account, false);
+  }
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
