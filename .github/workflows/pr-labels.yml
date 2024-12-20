@@ -17,4 +17,4 @@ jobs:
   labels:
     runs-on: namespace-profile-starterkit
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: fuxingloh/multi-labeler@b15a54460c38f54043fa75f7b08a0e2aa5b94b5b # v4
