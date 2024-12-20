@@ -1,5 +1,5 @@
 import { Address, log, store } from '@graphprotocol/graph-ts';
-import { BlockedAccount, Event_Transfer } from '../generated/schema';
+import { Account, BlockedAccount, Event_Transfer, Role } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
@@ -21,6 +21,13 @@ import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
 import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
+import {
+  recordAccountActivityData,
+  recordAssetSupplyData,
+  recordRoleActivityData,
+  recordStableCoinMetricsData,
+  recordTransferData,
+} from './utils/timeseries';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
@@ -30,11 +37,19 @@ export function handlePaused(event: PausedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   stableCoin.paused = true;
   stableCoin.save();
+
+  recordStableCoinMetricsData(stableCoin);
 }
 
-export function handleTokensFrozen(event: TokensFrozenEvent): void {}
+export function handleTokensFrozen(event: TokensFrozenEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  recordStableCoinMetricsData(stableCoin);
+}
 
-export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {}
+export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {
+  let stableCoin = fetchStableCoin(event.address);
+  recordStableCoinMetricsData(stableCoin);
+}
 
 export function handleTransfer(event: TransferEvent): void {
   log.info('Transfer event received: {} {} {} {}', [
@@ -45,6 +60,8 @@ export function handleTransfer(event: TransferEvent): void {
   ]);
 
   let stableCoin = fetchStableCoin(event.address);
+  let from: Account | null = null;
+  let to: Account | null = null;
 
   let eventTransfer = new Event_Transfer(eventId(event));
   eventTransfer.emitter = stableCoin.id;
@@ -59,7 +76,7 @@ export function handleTransfer(event: TransferEvent): void {
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(eventTransfer.valueExact);
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
   } else {
-    let from = fetchAccount(event.params.from);
+    from = fetchAccount(event.params.from);
     let fromBalance = fetchBalance(balanceId(stableCoin.id, from), stableCoin.id, from.id);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact);
@@ -67,13 +84,16 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
+
+    // Record account activity for sender
+    recordAccountActivityData(from, stableCoin.id, fromBalance.valueExact, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.minus(eventTransfer.valueExact);
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
   } else {
-    let to = fetchAccount(event.params.to);
+    to = fetchAccount(event.params.to);
     let toBalance = fetchBalance(balanceId(stableCoin.id, to), stableCoin.id, to.id);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact);
@@ -81,14 +101,29 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
+
+    // Record account activity for receiver
+    recordAccountActivityData(to, stableCoin.id, toBalance.valueExact, false);
   }
+
   eventTransfer.save();
+
+  // Record transfer data
+  recordTransferData(stableCoin.id, eventTransfer.valueExact, from, to);
+
+  // Record supply data
+  recordAssetSupplyData(stableCoin.id, stableCoin.totalSupplyExact, 'StableCoin');
+
+  // Record stablecoin metrics
+  recordStableCoinMetricsData(stableCoin);
 }
 
 export function handleUnpaused(event: UnpausedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   stableCoin.paused = false;
   stableCoin.save();
+
+  recordStableCoinMetricsData(stableCoin);
 }
 
 export function handleUserBlocked(event: UserBlockedEvent): void {
@@ -101,22 +136,54 @@ export function handleUserBlocked(event: UserBlockedEvent): void {
     blockedAccount.asset = stableCoin.id;
     blockedAccount.save();
   }
+
+  let account = fetchAccount(event.params.user);
+  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id);
+
+  // Record account activity with blocked status
+  recordAccountActivityData(account, stableCoin.id, balance.valueExact, true);
+
+  // Record metrics on state change
+  recordStableCoinMetricsData(stableCoin);
 }
 
 export function handleUserUnblocked(event: UserUnblockedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   let id = stableCoin.id.concat(event.params.user);
   store.remove('BlockedAccount', id.toHexString());
+
+  let account = fetchAccount(event.params.user);
+  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id);
+
+  // Record account activity with unblocked status
+  recordAccountActivityData(account, stableCoin.id, balance.valueExact, false);
+
+  // Record metrics on state change
+  recordStableCoinMetricsData(stableCoin);
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   handleRoleGrantedEvent(event, stableCoin.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(stableCoin.id, role, account, true);
+  }
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let stableCoin = fetchStableCoin(event.address);
   handleRoleRevokedEvent(event, stableCoin.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(stableCoin.id, role, account, false);
+  }
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
@@ -128,4 +195,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
     event.params.newAdminRole,
     event.params.previousAdminRole
   );
+
+  // Record metrics on state change
+  recordStableCoinMetricsData(stableCoin);
 }

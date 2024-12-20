@@ -1,16 +1,10 @@
 import { Address, log, store } from '@graphprotocol/graph-ts';
-import { BlockedAccount, Event_Transfer } from '../generated/schema';
+import { Account, BlockedAccount, Event_Transfer, Role } from '../generated/schema';
 import {
-  Approval as ApprovalEvent,
-  DelegateChanged as DelegateChangedEvent,
-  DelegateVotesChanged as DelegateVotesChangedEvent,
-  EIP712DomainChanged as EIP712DomainChangedEvent,
   Paused as PausedEvent,
   RoleAdminChanged as RoleAdminChangedEvent,
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent,
-  TokensFrozen as TokensFrozenEvent,
-  TokensUnfrozen as TokensUnfrozenEvent,
   Transfer as TransferEvent,
   Unpaused as UnpausedEvent,
   UserBlocked as UserBlockedEvent,
@@ -23,24 +17,13 @@ import { balanceId } from './utils/balance';
 import { toDecimals } from './utils/decimals';
 import { eventId } from './utils/events';
 import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
-
-export function handleApproval(event: ApprovalEvent): void {}
-
-export function handleDelegateChanged(event: DelegateChangedEvent): void {}
-
-export function handleDelegateVotesChanged(event: DelegateVotesChangedEvent): void {}
-
-export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
-
-export function handlePaused(event: PausedEvent): void {
-  let equity = fetchEquity(event.address);
-  equity.paused = true;
-  equity.save();
-}
-
-export function handleTokensFrozen(event: TokensFrozenEvent): void {}
-
-export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {}
+import {
+  recordAccountActivityData,
+  recordAssetSupplyData,
+  recordEquityCategoryData,
+  recordRoleActivityData,
+  recordTransferData,
+} from './utils/timeseries';
 
 export function handleTransfer(event: TransferEvent): void {
   log.info('Transfer event received: {} {} {} {}', [
@@ -51,6 +34,8 @@ export function handleTransfer(event: TransferEvent): void {
   ]);
 
   let equity = fetchEquity(event.address);
+  let from: Account | null = null;
+  let to: Account | null = null;
 
   let eventTransfer = new Event_Transfer(eventId(event));
   eventTransfer.emitter = equity.id;
@@ -65,7 +50,7 @@ export function handleTransfer(event: TransferEvent): void {
     equity.totalSupplyExact = equity.totalSupplyExact.plus(eventTransfer.valueExact);
     equity.totalSupply = toDecimals(equity.totalSupplyExact);
   } else {
-    let from = fetchAccount(event.params.from);
+    from = fetchAccount(event.params.from);
     let fromBalance = fetchBalance(balanceId(equity.id, from), equity.id, from.id);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact);
@@ -73,13 +58,16 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
+
+    // Record account activity for sender
+    recordAccountActivityData(from, equity.id, fromBalance.valueExact, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     equity.totalSupplyExact = equity.totalSupplyExact.minus(eventTransfer.valueExact);
     equity.totalSupply = toDecimals(equity.totalSupplyExact);
   } else {
-    let to = fetchAccount(event.params.to);
+    to = fetchAccount(event.params.to);
     let toBalance = fetchBalance(balanceId(equity.id, to), equity.id, to.id);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact);
@@ -87,14 +75,37 @@ export function handleTransfer(event: TransferEvent): void {
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
+
+    // Record account activity for receiver
+    recordAccountActivityData(to, equity.id, toBalance.valueExact, false);
   }
+
   eventTransfer.save();
+
+  // Record transfer data
+  recordTransferData(equity.id, eventTransfer.valueExact, from, to);
+
+  // Record supply data
+  recordAssetSupplyData(equity.id, equity.totalSupplyExact, 'Equity');
+
+  // Record equity category data
+  recordEquityCategoryData(equity);
+}
+
+export function handlePaused(event: PausedEvent): void {
+  let equity = fetchEquity(event.address);
+  equity.paused = true;
+  equity.save();
+
+  recordEquityCategoryData(equity);
 }
 
 export function handleUnpaused(event: UnpausedEvent): void {
   let equity = fetchEquity(event.address);
   equity.paused = false;
   equity.save();
+
+  recordEquityCategoryData(equity);
 }
 
 export function handleUserBlocked(event: UserBlockedEvent): void {
@@ -107,22 +118,60 @@ export function handleUserBlocked(event: UserBlockedEvent): void {
     blockedAccount.asset = equity.id;
     blockedAccount.save();
   }
+
+  let account = fetchAccount(event.params.user);
+  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id);
+
+  // Record account activity with blocked status
+  recordAccountActivityData(account, equity.id, balance.valueExact, true);
+
+  // Record category data on state change
+  recordEquityCategoryData(equity);
 }
 
 export function handleUserUnblocked(event: UserUnblockedEvent): void {
   let equity = fetchEquity(event.address);
   let id = equity.id.concat(event.params.user);
   store.remove('BlockedAccount', id.toHexString());
+
+  let account = fetchAccount(event.params.user);
+  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id);
+
+  // Record account activity with unblocked status
+  recordAccountActivityData(account, equity.id, balance.valueExact, false);
+
+  // Record category data on state change
+  recordEquityCategoryData(equity);
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
   let equity = fetchEquity(event.address);
   handleRoleGrantedEvent(event, equity.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(equity.id, role, account, true);
+  }
+
+  // Record category data on state change
+  recordEquityCategoryData(equity);
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
   let equity = fetchEquity(event.address);
   handleRoleRevokedEvent(event, equity.id, event.params.role, event.params.account, event.params.sender);
+
+  // Record role activity
+  let account = fetchAccount(event.params.account);
+  let role = Role.load(event.params.role);
+  if (role) {
+    recordRoleActivityData(equity.id, role, account, false);
+  }
+
+  // Record category data on state change
+  recordEquityCategoryData(equity);
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
@@ -134,4 +183,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
     event.params.newAdminRole,
     event.params.previousAdminRole
   );
+
+  // Record category data on state change
+  recordEquityCategoryData(equity);
 }
