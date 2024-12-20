@@ -41,8 +41,8 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.emitter = equity.id;
   eventTransfer.timestamp = event.block.timestamp;
   eventTransfer.asset = equity.id;
-  eventTransfer.from = equity.id;
-  eventTransfer.to = equity.id;
+  eventTransfer.from = event.params.from;
+  eventTransfer.to = event.params.to;
   eventTransfer.valueExact = event.params.value;
   eventTransfer.value = toDecimals(eventTransfer.valueExact);
 
