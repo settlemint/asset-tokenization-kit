@@ -111,11 +111,22 @@ jobs:
       - name: Test Deploy
         run: bunx turbo run test:deploy
 
+      - name: Build predeployed subgraph
+        working-directory: kit/subgraph
+        run: |
+         bun graph build | tee subgraph-output.txt
+
       - name: Store genesis output
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
         with:
           name: genesis-output
           path: kit/contracts/genesis-output.json
+
+      - name: Store subgraph output
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
+        with:
+          name: subgraph-output
+          path: kit/subgraph/subgraph-output.txt
 
       - name: Login to GitHub Container Registry
         if: ${{ env.TAG != 'pr' }}
