@@ -33,10 +33,10 @@
             "trackFieldUsage": false
           },
           {
-            "name": "thegraph-starterkits",
-            "schema": "the-graph-schema-starterkits.graphql",
-            "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
-            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts",
+            "name": "thegraph-skrdrk",
+            "schema": "the-graph-schema-skrdrk.graphql",
+            "tadaOutputLocation": "the-graph-env-skrdrk.d.ts",
+            "tadaTurboLocation": "the-graph-cache-skrdrk.d.ts",
             "trackFieldUsage": false
           },
           {

@@ -4,6 +4,7 @@ import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import './globals.css';
 export { metadata } from '@/lib/site-config';
@@ -20,16 +21,16 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('theme min-h-screen font-sans antialiased', fontSans.variable)}>
-          <NuqsAdapter>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              <QueryClientProvider>{children}</QueryClientProvider>
-            </ThemeProvider>
-          </NuqsAdapter>
+        <NuqsAdapter>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <QueryClientProvider>{children}</QueryClientProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
         <Toaster />
       </body>
     </html>

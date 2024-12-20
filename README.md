@@ -26,8 +26,28 @@
 
 ## Getting started
 
-Launch the development server by running:
-
 ```bash
-bun run dev
+bun install
+bun settlemint login
+bun settlemint connect
+cd kit/contracts
+bun run prod:deploy
+
+# TODO: Here i need a way to push the ABI's to the portal
+
+cd ../subgraph
+bun prod:deploy -- 47561  # change this id based on the network id & enter a name for your subgraph
+cd ../../
+bun settlemint connect # updates the list of subgraphs (not fun to do it twice)
+cd kit/dapp
+bun codegen
+bun db:push # updates the db in hasura
+
+# TODO: Instead of doing that first signup is an admin thing, maybe we should have a CLI to create an admin account
+
+bun dev
 ```
+
+Then browse to http://localhost:3000/admin and you should see the sign-in page. Press sign up and create an account.
+If yours is the first account, you will be an admin.
+

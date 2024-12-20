@@ -27,6 +27,10 @@ const menuItems: MenuItem[] = [
 
 const footerLinks = [
   {
+    href: '/admin',
+    label: 'Admin',
+  },
+  {
     href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/',
     label: 'Terms of Service',
   },

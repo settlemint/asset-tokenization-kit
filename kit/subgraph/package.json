@@ -14,7 +14,8 @@
     "graph:remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",
     "graph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization",
     "graph:test": "graph test",
-    "test:deploy": "bash graph-local-deploy.sh"
+    "test:deploy": "bash graph-local-deploy.sh",
+    "prod:deploy": "bash graph-remote-deploy.sh"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.93.1",
