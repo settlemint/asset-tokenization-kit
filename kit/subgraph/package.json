@@ -17,7 +17,7 @@
     "test:deploy": "bash graph-local-deploy.sh"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.93.1",
+    "@graphprotocol/graph-cli": "0.93.3",
     "@graphprotocol/graph-ts": "0.37.0"
   },
   "devDependencies": {
