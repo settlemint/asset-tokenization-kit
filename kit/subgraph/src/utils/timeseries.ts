@@ -13,11 +13,13 @@ import {
   StableCoinMetricsData,
   TransferData,
 } from '../../generated/schema';
+import { toDecimals } from './decimals';
 
 export function recordTransferData(assetId: Bytes, value: BigInt, from: Account | null, to: Account | null): void {
   const transfer = new TransferData('auto');
   transfer.asset = assetId;
-  transfer.value = value.toBigDecimal();
+  transfer.valueExact = value;
+  transfer.value = toDecimals(value);
   transfer.from = from ? from.id : null;
   transfer.to = to ? to.id : null;
   transfer.save();
@@ -26,7 +28,8 @@ export function recordTransferData(assetId: Bytes, value: BigInt, from: Account 
 export function recordAssetSupplyData(assetId: Bytes, totalSupply: BigInt, assetType: string): void {
   const supplyData = new AssetSupplyData('auto');
   supplyData.asset = assetId;
-  supplyData.totalSupply = totalSupply.toBigDecimal();
+  supplyData.totalSupplyExact = totalSupply;
+  supplyData.totalSupply = toDecimals(totalSupply);
   supplyData.assetType = assetType;
   supplyData.save();
 }
@@ -35,7 +38,8 @@ export function recordAccountActivityData(account: Account, assetId: Bytes, bala
   const activityData = new AccountActivityData('auto');
   activityData.account = account.id;
   activityData.asset = assetId;
-  activityData.balance = balance.toBigDecimal();
+  activityData.balanceExact = balance;
+  activityData.balance = toDecimals(balance);
   activityData.isBlocked = isBlocked;
   activityData.blockedValue = isBlocked ? 1 : 0;
   activityData.save();
@@ -67,7 +71,10 @@ export function recordBondMetricsData(bond: Bond, blockTimestamp: BigInt): void 
 export function recordStableCoinMetricsData(stableCoin: StableCoin): void {
   const metricsData = new StableCoinMetricsData('auto');
   metricsData.stableCoin = stableCoin.id;
-  metricsData.collateralRatio = stableCoin.collateral.div(stableCoin.totalSupply);
+  metricsData.collateralRatioExact = stableCoin.collateralExact
+    .times(BigInt.fromI32(10).pow(18))
+    .div(stableCoin.totalSupplyExact);
+  metricsData.collateralRatio = toDecimals(metricsData.collateralRatioExact);
   metricsData.save();
 }
 

@@ -169,6 +169,7 @@ type TransferData @entity(timeseries: true) {
   timestamp: Timestamp!
   asset: Asset!
   value: BigDecimal!
+  valueExact: BigInt!
   from: Account
   to: Account
 }
@@ -179,6 +180,7 @@ type AssetSupplyData @entity(timeseries: true) {
   timestamp: Timestamp!
   asset: Asset!
   totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
   assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency"
 }
 
@@ -191,8 +193,11 @@ type TransferStats
   asset: Asset! # dimension
   totalTransfers: Int8! @aggregate(fn: "count", cumulative: true)
   totalVolume: BigDecimal! @aggregate(fn: "sum", arg: "value")
+  totalVolumeExact: BigInt! @aggregate(fn: "sum", arg: "valueExact")
   minTransferValue: BigDecimal! @aggregate(fn: "min", arg: "value")
+  minTransferValueExact: BigInt! @aggregate(fn: "min", arg: "valueExact")
   maxTransferValue: BigDecimal! @aggregate(fn: "max", arg: "value")
+  maxTransferValueExact: BigInt! @aggregate(fn: "max", arg: "valueExact")
 }
 
 # Asset Supply Aggregations
@@ -204,7 +209,9 @@ type AssetSupplyStats
   asset: Asset! # dimension
   assetType: String! # dimension
   totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
+  totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "totalSupplyExact")
   supplyChange: BigDecimal! @aggregate(fn: "sum", arg: "totalSupply")
+  supplyChangeExact: BigInt! @aggregate(fn: "sum", arg: "totalSupplyExact")
 }
 
 # Account Activity Time Series
@@ -214,6 +221,7 @@ type AccountActivityData @entity(timeseries: true) {
   account: Account!
   asset: Asset!
   balance: BigDecimal!
+  balanceExact: BigInt!
   isBlocked: Boolean!
   blockedValue: Int! # Numeric field for aggregation
 }
@@ -227,8 +235,11 @@ type AccountActivityStats
   account: Account! # dimension
   asset: Asset! # dimension
   minBalance: BigDecimal! @aggregate(fn: "min", arg: "balance")
+  minBalanceExact: BigInt! @aggregate(fn: "min", arg: "balanceExact")
   maxBalance: BigDecimal! @aggregate(fn: "max", arg: "balance")
+  maxBalanceExact: BigInt! @aggregate(fn: "max", arg: "balanceExact")
   lastBalance: BigDecimal! @aggregate(fn: "last", arg: "balance")
+  lastBalanceExact: BigInt! @aggregate(fn: "last", arg: "balanceExact")
   blockedCount: Int8! @aggregate(fn: "sum", arg: "blockedValue")
 }
 
@@ -286,6 +297,7 @@ type StableCoinMetricsData @entity(timeseries: true) {
   timestamp: Timestamp!
   stableCoin: StableCoin!
   collateralRatio: BigDecimal!
+  collateralRatioExact: BigInt!
 }
 
 # StableCoin Metrics Aggregations
@@ -296,9 +308,15 @@ type StableCoinMetricsStats
   timestamp: Timestamp!
   stableCoin: StableCoin! # dimension
   minCollateralRatio: BigDecimal! @aggregate(fn: "min", arg: "collateralRatio")
+  minCollateralRatioExact: BigInt!
+    @aggregate(fn: "min", arg: "collateralRatioExact")
   maxCollateralRatio: BigDecimal! @aggregate(fn: "max", arg: "collateralRatio")
+  maxCollateralRatioExact: BigInt!
+    @aggregate(fn: "max", arg: "collateralRatioExact")
   lastCollateralRatio: BigDecimal!
     @aggregate(fn: "last", arg: "collateralRatio")
+  lastCollateralRatioExact: BigInt!
+    @aggregate(fn: "last", arg: "collateralRatioExact")
 }
 
 # Equity Category Time Series
