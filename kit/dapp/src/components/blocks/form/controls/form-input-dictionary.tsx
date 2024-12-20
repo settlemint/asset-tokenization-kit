@@ -1,6 +1,5 @@
 'use client';
 
-import { CreateAddressBookEntryForm } from '@/app/(sections)/issuer/tokens/[address]/details/_forms/create-address-book-entry-form';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -103,10 +102,10 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                   <DialogHeader>
                     <DialogTitle>Add to Addressbook</DialogTitle>
                   </DialogHeader>
-                  <CreateAddressBookEntryForm
+                  {/* <CreateAddressBookEntryForm
                     defaultValues={{ walletAddress: value as `0x${string}`, walletName: '' }}
                     formId="create-address-book-entry-form"
-                  />
+                  /> */}
                 </DialogContent>
               </Dialog>
             </div>
