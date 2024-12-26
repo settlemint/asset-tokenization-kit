@@ -63,7 +63,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
-    "drizzle-orm": "0.38.2",
+    "drizzle-orm": "0.38.3",
     "find-up": "7.0.0",
     "framer-motion": "11.15.0",
     "lucide-react": "0.469.0",
