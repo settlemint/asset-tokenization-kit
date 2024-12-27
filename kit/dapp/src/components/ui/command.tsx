@@ -1,8 +1,8 @@
 "use client"
 
 import { type DialogProps } from "@radix-ui/react-dialog"
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 import { Command as CommandPrimitive } from "cmdk"
+import { Search } from "lucide-react"
 import * as React from "react"
 
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -23,9 +23,7 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
-interface CommandDialogProps extends DialogProps {}
-
-const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
+const CommandDialog = ({ children, ...props }: DialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0">
@@ -40,10 +38,9 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => {
-  return (
+>(({ className, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-    <MagnifyingGlassIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
@@ -53,7 +50,7 @@ const CommandInput = React.forwardRef<
       {...props}
     />
   </div>
-)})
+))
 
 CommandInput.displayName = CommandPrimitive.Input.displayName
 
@@ -148,4 +145,3 @@ export {
   CommandDialog, CommandEmpty,
   CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut
 }
-

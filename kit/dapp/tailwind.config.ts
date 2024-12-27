@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss';
 import animate from 'tailwindcss-animate';
 import plugin from 'tailwindcss/plugin';
 const config: Config = {
-  darkMode: 'class',
+  darkMode: ['class'],
   content: ['./{,src/}app/**/*.{js,ts,jsx,tsx,mdx}', './{,src/}components/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
@@ -69,7 +69,6 @@ const config: Config = {
           'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
         },
-
         lm: {
           lightBlue: 'rgb(52 110 238 / 100%)',
           lightBlue38: 'rgb(52 110 238 / 38%)',
@@ -163,6 +162,7 @@ const config: Config = {
         });
       }
     ),
+    require('tailwindcss-animate'),
   ],
 };
 export default config;

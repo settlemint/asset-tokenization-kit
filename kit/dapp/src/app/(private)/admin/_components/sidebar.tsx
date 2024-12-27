@@ -2,7 +2,18 @@
 
 import { NavHeader } from '@/app/(private)/_components/nav-header';
 import { NavSecondary } from '@/app/(private)/_components/nav-secondary';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
+} from '@/components/ui/sidebar';
 import {
   AudioWaveform,
   BookOpen,
@@ -11,6 +22,7 @@ import {
   Frame,
   GalleryVerticalEnd,
   PieChart,
+  Plus,
   Settings2,
   SquareTerminal,
 } from 'lucide-react';
@@ -143,14 +155,28 @@ const data = {
 };
 
 export function AdminSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavHeader />
+        <NavHeader admin={true} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain title="Platform" items={data.navMain} />
-        <NavSecondary title="Admin" items={data.navSecondary} />
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="New">
+                <Button className="flex w-full items-center gap-2">
+                  <Plus className="size-4" />
+                  {state === 'expanded' && <span>New</span>}
+                </Button>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <NavMain title="Platform" items={data.navMain} />
+            <NavSecondary title="Admin" items={data.navSecondary} />
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
