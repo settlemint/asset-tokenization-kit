@@ -1,11 +1,13 @@
-import { PrivateSidebar, type SidebarData } from '@/app/(private)/_components/sidebar';
+import Header from '@/app/(private)/_components/header';
+import type { SidebarData } from '@/app/(private)/_components/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
+import {} from 'lucide-react';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
-import Header from '../_components/header';
+import { PrivateSidebar } from '../_components/sidebar';
 
-export default async function AdminLayout({ children }: PropsWithChildren) {
+export default async function PortfolioLayout({ children }: PropsWithChildren) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -18,44 +20,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
         items: [
           {
             title: 'Stable Coins',
-            iconName: 'Coins',
-            open: true,
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-          {
-            title: 'Equity',
-            iconName: 'Eclipse',
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-          {
-            title: 'Bonds',
-            iconName: 'TicketCheck',
+            iconName: 'coins',
             items: [
               {
                 title: 'USDC',
@@ -90,7 +55,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider>
-      <PrivateSidebar role={role} mode="admin" data={sidebarData} />
+      <PrivateSidebar role={role} mode="portfolio" data={sidebarData} />
       <SidebarInset>
         <Header />
         {children}
