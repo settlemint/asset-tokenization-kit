@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth/auth';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 import Header from '../_components/header';
+import { createMainSideBarData } from './_lib/dynamic-navigation';
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
   const session = await auth.api.getSession({
@@ -12,68 +13,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
   const role = (session?.user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
 
   const sidebarData: SidebarData = {
-    main: [
-      {
-        title: 'Token Management',
-        items: [
-          {
-            title: 'Stable Coins',
-            iconName: 'Coins',
-            open: true,
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-          {
-            title: 'Equity',
-            iconName: 'Eclipse',
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-          {
-            title: 'Bonds',
-            iconName: 'TicketCheck',
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-        ],
-      },
-    ],
+    main: await createMainSideBarData(role),
     secondary: [
       {
         title: 'Administration',

@@ -10,13 +10,14 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { ChevronRight, Coins, Eclipse, HelpCircle, type LucideIcon, TicketCheck } from 'lucide-react';
+import { Bitcoin, ChevronRight, Coins, Eclipse, HelpCircle, type LucideIcon, TicketCheck } from 'lucide-react';
 import Link from 'next/link';
 
 const iconMap: Record<string, LucideIcon> = {
   Coins,
   TicketCheck,
   Eclipse,
+  Bitcoin,
 };
 
 export type SidebarLink = {
