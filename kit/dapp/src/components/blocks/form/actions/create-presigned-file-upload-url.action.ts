@@ -21,37 +21,36 @@ const CreatePresignedUrlSchema = z.object({
 //   ) => void;
 // };
 
-export const createPresignedUrlAction = actionClient
-  .schema(CreatePresignedUrlSchema)
-  .action(async ({ parsedInput }) => {
-    const { bucketName, objectName, expirySeconds } = parsedInput;
-    const userSession = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!userSession?.user) {
-      throw new Error('User not authenticated');
-    }
-
-    const uploadUrl = await getPresignedUploadUrl(
-      bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? 'default-bucket',
-      objectName,
-      expirySeconds ?? 3600
-    );
-
-    if (!uploadUrl) {
-      return { success: false, error: 'Failed to generate upload URL' };
-    }
-    return { success: true, data: { uploadUrl } };
+export const createPresignedUrlAction = actionClient.schema(CreatePresignedUrlSchema).action(async () => {
+  // const { bucketName, objectName, expirySeconds } = parsedInput;
+  const userSession = await auth.api.getSession({
+    headers: await headers(),
   });
+  if (!userSession?.user) {
+    throw new Error('User not authenticated');
+  }
 
-async function getPresignedUploadUrl(bucketName: string, objectName: string, expirySeconds: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // (client as MinioClient).presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
-    //   if (err) {
-    //     reject(err);
-    //   } else {
-    //     resolve(presignedUrl);
-    //   }
-    // });
-  });
-}
+  // const uploadUrl = await getPresignedUploadUrl(
+  //   bucketName ?? process.env.SETTLEMINT_MINIO_BUCKET_NAME ?? 'default-bucket',
+  //   objectName,
+  //   expirySeconds ?? 3600
+  // );
+  const uploadUrl = undefined;
+
+  if (!uploadUrl) {
+    return { success: false, error: 'Failed to generate upload URL' };
+  }
+  return { success: true, data: { uploadUrl } };
+});
+
+// async function getPresignedUploadUrl(bucketName: string, objectName: string, expirySeconds: number): Promise<string> {
+//   return new Promise((resolve, reject) => {
+//     // (client as MinioClient).presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
+//     //   if (err) {
+//     //     reject(err);
+//     //   } else {
+//     //     resolve(presignedUrl);
+//     //   }
+//     // });
+//   });
+// }
