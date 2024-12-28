@@ -1,7 +1,6 @@
 import type { SidebarSection } from '@/app/(private)/_components/nav-main';
 import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { unstable_cache } from 'next/cache';
 
 const TokenFragment = theGraphGraphql(`
   fragment TokenFragment on Asset {
@@ -77,14 +76,8 @@ const TOKEN_SECTIONS = [
   },
 ] as const;
 
-const getNavigationData = (role: 'admin' | 'issuer' | 'user') =>
-  unstable_cache(async () => theGraphClient.request(NavigationQuery), ['navigation-data', role], {
-    revalidate: 60, // Revalidate every minute
-    tags: ['navigation'], // Tag for manual revalidation
-  })();
-
 export async function createMainSideBarData(role: 'admin' | 'issuer' | 'user'): Promise<SidebarSection[]> {
-  const navigationData = await getNavigationData(role);
+  const navigationData = await theGraphClient.request(NavigationQuery);
 
   const hasTokens = TOKEN_SECTIONS.some((section) => navigationData[section.key]?.length > 0);
 
