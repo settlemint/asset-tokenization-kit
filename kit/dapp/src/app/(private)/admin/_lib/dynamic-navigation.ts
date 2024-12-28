@@ -1,5 +1,8 @@
 import type { SidebarSection } from '@/app/(private)/_components/nav-main';
-import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import {
+  theGraphClientStarterkits as theGraphClient,
+  theGraphGraphqlStarterkits as theGraphGraphql,
+} from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const TokenFragment = theGraphGraphql(`

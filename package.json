@@ -50,7 +50,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "0.7.3",
+    "@settlemint/sdk-cli": "0.7.4",
     "@biomejs/biome": "1.9.4",
     "turbo": "2.3.3",
     "typescript": "5.7.2",
@@ -68,7 +68,9 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.1.42",
-  "workspaces": ["kit/*"],
+  "workspaces": [
+    "kit/*"
+  ],
   "overrides": {
     "react-is": "19.0.0",
     "elliptic": "6.6.1",
