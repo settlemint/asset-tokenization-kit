@@ -67,7 +67,7 @@
     "protobufjs",
     "secp256k1"
   ],
-  "packageManager": "bun@1.1.40",
+  "packageManager": "bun@1.1.42",
   "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0",

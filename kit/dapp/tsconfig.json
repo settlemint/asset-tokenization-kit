@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "es2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -32,38 +36,33 @@
             "name": "thegraph-starterkits",
             "schema": "the-graph-schema-starterkits.graphql",
             "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
-            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts",
-            "trackFieldUsage": false
-          },
-          {
-            "name": "thegraph-skrdrk",
-            "schema": "the-graph-schema-skrdrk.graphql",
-            "tadaOutputLocation": "the-graph-env-skrdrk.d.ts",
-            "tadaTurboLocation": "the-graph-cache-skrdrk.d.ts",
-            "trackFieldUsage": false
+            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts"
           },
           {
             "name": "portal",
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",
-            "tadaTurboLocation": "portal-cache.d.ts",
-            "trackFieldUsage": false
-          },
-          {
-            "name": "blockscout",
-            "schema": "blockscout-schema.graphql",
-            "tadaOutputLocation": "blockscout-env.d.ts",
-            "tadaTurboLocation": "blockscout-cache.d.ts",
-            "trackFieldUsage": false
+            "tadaTurboLocation": "portal-cache.d.ts"
           }
         ]
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@schemas/*": ["./*.d.ts"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@schemas/*": [
+        "./*.d.ts"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
