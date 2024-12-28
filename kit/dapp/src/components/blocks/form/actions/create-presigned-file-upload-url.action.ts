@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
-import { client } from '@/lib/settlemint/minio';
+// import { client } from '@/lib/settlemint/minio';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 
@@ -12,14 +12,14 @@ const CreatePresignedUrlSchema = z.object({
   expirySeconds: z.number(),
 });
 
-type MinioClient = typeof client & {
-  presignedPutObject: (
-    bucketName: string,
-    objectName: string,
-    expirySeconds: number,
-    callback: (err: Error | null, presignedUrl: string) => void
-  ) => void;
-};
+// type MinioClient = typeof client & {
+//   presignedPutObject: (
+//     bucketName: string,
+//     objectName: string,
+//     expirySeconds: number,
+//     callback: (err: Error | null, presignedUrl: string) => void
+//   ) => void;
+// };
 
 export const createPresignedUrlAction = actionClient
   .schema(CreatePresignedUrlSchema)
@@ -46,12 +46,12 @@ export const createPresignedUrlAction = actionClient
 
 async function getPresignedUploadUrl(bucketName: string, objectName: string, expirySeconds: number): Promise<string> {
   return new Promise((resolve, reject) => {
-    (client as MinioClient).presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(presignedUrl);
-      }
-    });
+    // (client as MinioClient).presignedPutObject(bucketName, objectName, expirySeconds, (err, presignedUrl) => {
+    //   if (err) {
+    //     reject(err);
+    //   } else {
+    //     resolve(presignedUrl);
+    //   }
+    // });
   });
 }
