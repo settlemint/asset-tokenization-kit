@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "es2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,13 +20,13 @@
       },
       {
         "name": "@0no-co/graphqlsp",
+        "trackFieldUsage": false,
         "schemas": [
           {
             "name": "hasura",
             "schema": "hasura-schema.graphql",
             "tadaOutputLocation": "hasura-env.d.ts",
-            "tadaTurboLocation": "hasura-cache.d.ts",
-            "trackFieldUsage": false
+            "tadaTurboLocation": "hasura-cache.d.ts"
           },
           {
             "name": "thegraph-starterkits",
@@ -64,21 +60,10 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@schemas/*": [
-        "./*.d.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@schemas/*": ["./*.d.ts"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
