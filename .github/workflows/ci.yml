@@ -100,6 +100,7 @@ jobs:
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
+          instance: https://console-release.settlemint.com
           personal-access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
           access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
           dotEnvFile: ${{ secrets.ENV_FILE }}
