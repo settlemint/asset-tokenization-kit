@@ -107,7 +107,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Lint & Check Types
-        run: bunx turbo run lint test
+        run: bunx turbo run lint test check-types
 
       - name: Test Deploy
         run: bunx turbo run test:deploy

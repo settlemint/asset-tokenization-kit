@@ -26,6 +26,9 @@
       "dependsOn": ["^deploy"],
       "cache": false
     },
+    "check-types": {
+      "dependsOn": ["^check-types", "codegen"]
+    },
     "codegen": {
       "dependsOn": ["^codegen"],
       "cache": false

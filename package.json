@@ -39,6 +39,7 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "test": "turbo test",
+    "check-types": "turbo check-types",
     "test:deploy": "turbo test:deploy",
     "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",
@@ -68,9 +69,7 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.1.42",
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0",
     "elliptic": "6.6.1",

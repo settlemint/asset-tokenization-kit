@@ -13,6 +13,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check-types": "tsc --noEmit",
     "registry": "bunx shadcn@latest add https://settlemint.github.io/sdk/all.json -o -y",
     "link:all": "for pkg in $(ls ../sdk/sdk/); do bun link @settlemint/sdk-$pkg; done",
     "publish-docker": "docker buildx build . --platform=linux/amd64 -t ghcr.io/settlemint/starterkit-asset-tokenization:${VERSION:-1.0.0-dev.$(date +%s)} -t ghcr.io/settlemint/starterkit-asset-tokenization:${TAG:-dev} --push",
