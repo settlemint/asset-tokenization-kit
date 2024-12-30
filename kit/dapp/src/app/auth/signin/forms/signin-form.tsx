@@ -49,14 +49,16 @@ export function SignInForm({
   } = form;
 
   const onSubmit = async (data: SignInFormData) => {
-    try {
-      await signIn.email(data);
-      router.push(decodedRedirectUrl);
-    } catch (err) {
-      setFormError('root', {
-        message: err instanceof Error ? err.message : 'Failed to sign in. Please check your credentials and try again.',
+      await signIn.email(data,       {
+        onSuccess: () => {
+          router.push(decodedRedirectUrl);
+        },
+        onError: (ctx) => {
+          setFormError('root', {
+            message: ctx.error.message,
+          });
+        },
       });
-    }
   };
 
   return (
