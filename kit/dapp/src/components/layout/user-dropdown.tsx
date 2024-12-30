@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePollingInterval } from '@/hooks/use-polling-interval';
 import { signOut, useSession } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -33,6 +34,7 @@ const GetPendingTransactions = portalGraphql(`
 export function UserDropdown() {
   const { data: userSession } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
+  const interval = usePollingInterval(5000);
   const router = useRouter();
 
   const wallet = userSession?.user.wallet as Address | undefined;
@@ -50,7 +52,7 @@ export function UserDropdown() {
       }
       return response.getPendingTransactions.count;
     },
-    refetchInterval: 1000,
+    refetchInterval: interval,
   });
 
   const handleSignOut = useCallback(async () => {
