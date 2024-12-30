@@ -1,9 +1,9 @@
-import { PrivateSidebar, type SidebarData } from '@/app/(private)/_components/sidebar';
+import { PrivateSidebar, type SidebarData } from '@/components/layout/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
-import Header from '../_components/header';
+import Header from '../../../components/layout/header';
 import { createMainSideBarData } from './_lib/dynamic-navigation';
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
