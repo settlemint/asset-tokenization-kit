@@ -1,11 +1,11 @@
-import Header from '@/app/(private)/_components/header';
-import type { SidebarData } from '@/app/(private)/_components/sidebar';
+import Header from '@/components/layout/header';
+import type { SidebarData } from '@/components/layout/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import {} from 'lucide-react';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
-import { PrivateSidebar } from '../_components/sidebar';
+import { PrivateSidebar } from '../../../components/layout/sidebar';
 
 export default async function PortfolioLayout({ children }: PropsWithChildren) {
   const session = await auth.api.getSession({

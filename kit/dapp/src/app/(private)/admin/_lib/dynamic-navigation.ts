@@ -1,4 +1,4 @@
-import type { SidebarSection } from '@/app/(private)/_components/nav-main';
+import type { SidebarSection } from '@/components/layout/nav-main';
 import {
   theGraphClientStarterkits as theGraphClient,
   theGraphGraphqlStarterkits as theGraphGraphql,
