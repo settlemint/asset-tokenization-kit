@@ -93,7 +93,7 @@
     "@types/bcryptjs": "2.4.6",
     "@types/pg": "8.11.10",
     "@types/lodash": "4.17.13",
-    "@types/node": "22.10.2",
+    "@types/node": "22.10.3",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "babel-plugin-react-compiler": "latest",
