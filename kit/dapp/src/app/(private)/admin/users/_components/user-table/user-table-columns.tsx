@@ -49,7 +49,7 @@ export const columns = [
           variant="small"
         />
         <span>{renderValue()}</span>
-        {row.original.banned && <Badge variant="destructive">Banned for "{row.original.banReason}"</Badge>}
+        {row.original.banned && <Badge variant="destructive">Banned for {row.original.banReason}</Badge>}
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,
