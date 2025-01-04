@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePollingInterval } from '@/hooks/use-polling-interval';
-import { signOut, useSession } from '@/lib/auth/client';
+import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +32,7 @@ const GetPendingTransactions = portalGraphql(`
 `);
 
 export function UserDropdown() {
-  const { data: userSession } = useSession();
+  const { data: userSession } = authClient.useSession();
   const { setTheme, resolvedTheme } = useTheme();
   const interval = usePollingInterval(5000);
   const router = useRouter();
@@ -56,7 +56,7 @@ export function UserDropdown() {
   });
 
   const handleSignOut = useCallback(async () => {
-    await signOut({
+    await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
           router.push('/'); // redirect to login page

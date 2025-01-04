@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'SettleMint Components',
-  description: 'SettleMint Components',
-  keywords: ['components', 'blockchain', 'SettleMint', 'blockchain transformation'],
+  title: 'Asset Tokenization',
+  description: 'SettleMint Asset Tokenization Starter Kit',
+  keywords: ['blockchain', 'SettleMint', 'blockchain transformation', 'asset tokenization'],
   authors: [{ name: 'SettleMint' }],
   other: {
     'darkreader-lock': '',

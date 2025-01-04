@@ -4,7 +4,7 @@ import { Input } from '@/components/blocks/form/controls/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { signUp } from '@/lib/auth/client';
+import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -44,7 +44,7 @@ export function SignUpForm({
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    await signUp.email(
+    await authClient.signUp.email(
       {
         email: data.email,
         password: data.password,

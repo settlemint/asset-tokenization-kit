@@ -1,3 +1,6 @@
+'use client';
+'use no memo';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,7 +13,7 @@ import { cn } from '@/lib/utils';
 import type { Column } from '@tanstack/react-table';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from 'lucide-react';
-import type { PropsWithChildren } from 'react';
+import type { HTMLAttributes, PropsWithChildren } from 'react';
 
 const headerVariants = cva('', {
   variants: {
@@ -24,7 +27,7 @@ const headerVariants = cva('', {
   },
 });
 
-const wrapperVariants = cva('flex items-center space-x-2 px-4 py-0', {
+const wrapperVariants = cva('flex items-center space-x-2', {
   variants: {
     variant: {
       default: '',
@@ -54,7 +57,7 @@ const buttonVariants = cva('-ml-3 h-8 data-[state=open]:bg-accent', {
  * @template TValue The type of value in the column.
  */
 interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof headerVariants> {
   /** The column object from react-table. */
   column: Column<TData, TValue>;
@@ -79,19 +82,23 @@ export function DataTableColumnHeader<TData, TValue>({
     return <div className={cn(headerVariants({ variant, className }))}>{children}</div>;
   }
 
+  const sortIcon = () => {
+    if (column.getIsSorted() === 'desc') {
+      return <SortDesc className="ml-2 h-4 w-4" />;
+    }
+    if (column.getIsSorted() === 'asc') {
+      return <SortAsc className="ml-2 h-4 w-4" />;
+    }
+    return <ArrowDownUp className="ml-2 h-4 w-4" />;
+  };
+
   return (
     <div className={cn(wrapperVariants({ variant, className }))}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className={buttonVariants({ variant })}>
             <span className="capitalize">{children}</span>
-            {column.getIsSorted() === 'desc' ? (
-              <SortDesc className="ml-2 h-4 w-4" />
-            ) : column.getIsSorted() === 'asc' ? (
-              <SortAsc className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowDownUp className="ml-2 h-4 w-4" />
-            )}
+            {sortIcon()}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
