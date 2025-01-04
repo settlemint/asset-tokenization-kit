@@ -15,5 +15,5 @@ export async function UserTable() {
     headers: await headers(),
   });
 
-  return <DataTable columns={columns} data={users as User[]} icons={icons} />;
+  return <DataTable columns={columns} data={users as User[]} icons={icons} name="users" />;
 }

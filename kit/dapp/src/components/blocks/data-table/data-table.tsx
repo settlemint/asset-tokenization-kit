@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type RowData,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -35,8 +36,25 @@ interface DataTableProps<TData> {
   data: TData[];
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
+  name: string;
 }
 
+declare module '@tanstack/table-core' {
+  // biome-ignore lint/correctness/noUnusedVariables: required for table meta
+  interface TableMeta<TData extends RowData> {
+    name: string;
+    icons?: Record<string, ComponentType<{ className?: string }>>;
+  }
+}
+
+declare module '@tanstack/react-table' {
+  // biome-ignore lint/correctness/noUnusedVariables: required for table meta
+  interface ColumnMeta<TData extends RowData, TValue> {
+    enableCsvExport?: boolean;
+  }
+}
+
+/**
 /**
  * A reusable data table component with sorting, filtering, and pagination.
  * @template TData The type of data in the table.
@@ -44,7 +62,7 @@ interface DataTableProps<TData> {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({ columns, data, isLoading, icons }: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, isLoading, icons, name }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -82,6 +100,11 @@ export function DataTable<TData>({ columns, data, isLoading, icons }: DataTableP
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
+
+    meta: {
+      name,
+      icons,
+    },
   });
 
   const renderTableBody = () => {
@@ -118,7 +141,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons }: DataTableP
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} icons={icons} />
+      <DataTableToolbar table={table} />
       <div className="w-full rounded-md border bg-card text-sidebar-foreground shadow-sm">
         <Table>
           <TableHeader>
