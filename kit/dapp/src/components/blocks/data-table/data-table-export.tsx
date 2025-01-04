@@ -68,8 +68,7 @@ function exportTableToCSV<TData>(table: Table<TData>): void {
     link.click();
     document.body.removeChild(link);
     setTimeout(() => URL.revokeObjectURL(url), 100);
-  } catch (error) {
-    console.error('Failed to export CSV:', error);
+  } catch {
     toast.error('Failed to export data');
   }
 }
