@@ -1,8 +1,9 @@
-import { columns, icons } from '@/app/(private)/admin/users/_components/user-table-columns';
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { auth } from '@/lib/auth/auth';
-import type { Session } from '@/lib/auth/types';
+import type { User } from '@/lib/auth/types';
 import { headers } from 'next/headers';
+import { columns } from './user-table-columns';
+import { icons } from './user-table-icons';
 
 export async function UserTable() {
   const { users } = await auth.api.listUsers({
@@ -14,5 +15,5 @@ export async function UserTable() {
     headers: await headers(),
   });
 
-  return <DataTable columns={columns} data={users as Session['user'][]} icons={icons} />;
+  return <DataTable columns={columns} data={users as User[]} icons={icons} />;
 }

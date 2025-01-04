@@ -1,13 +1,4 @@
-'use client';
-
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
-import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
-import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -19,28 +10,13 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { auth } from '@/lib/auth/auth';
 import { authClient } from '@/lib/auth/client';
-import { createColumnHelper } from '@tanstack/react-table';
-import { BadgePlus, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
+import type { User } from '@/lib/auth/types';
 import { useRouter } from 'next/navigation';
-import type { ComponentType, KeyboardEvent, MouseEvent } from 'react';
-import { useState } from 'react';
+import { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-export const icons: Record<string, ComponentType<{ className?: string }>> = {
-  admin: ShieldCheck,
-  issuer: BadgePlus,
-  user: User2,
-  banned: Ban,
-  active: Check,
-};
-
-type User = (typeof auth.$Infer.Session)['user'];
-
-const columnHelper = createColumnHelper<User>();
-
-function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
+export function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
   const [showBanDialog, setShowBanDialog] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [banDuration, setBanDuration] = useState<string>('forever');
@@ -176,77 +152,3 @@ function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => vo
     </>
   );
 }
-
-export const columns = [
-  columnHelper.display({
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px] border-muted"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px] border-muted"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }),
-  columnHelper.accessor('name', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
-    cell: ({ renderValue, row }) => (
-      <DataTableColumnCell>
-        <AddressAvatar
-          email={row.original.email}
-          address={row.original.wallet}
-          imageUrl={row.original.image}
-          variant="small"
-        />
-        <span>{renderValue()}</span>
-        {row.original.banned && <Badge variant="destructive">Banned for "{row.original.banReason}"</Badge>}
-      </DataTableColumnCell>
-    ),
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('email', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('role', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>,
-    cell: ({ renderValue }) => {
-      const role = renderValue();
-      const Icon = role ? icons[role] : null;
-      return (
-        <DataTableColumnCell>
-          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-          <span>{role}</span>
-        </DataTableColumnCell>
-      );
-    },
-  }),
-  columnHelper.accessor('wallet', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
-    cell: ({ getValue }) => (
-      <DataTableColumnCell>{getValue() && <EvmAddress address={getValue()} />}</DataTableColumnCell>
-    ),
-    enableColumnFilter: false,
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: () => '',
-    cell: ({ row }) => (
-      <DataTableRowActions detailUrl={`/admin/users/${row.original.id}`}>
-        <BanUserAction user={row.original} />
-      </DataTableRowActions>
-    ),
-  }),
-];
