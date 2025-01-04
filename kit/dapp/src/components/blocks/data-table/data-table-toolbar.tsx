@@ -5,16 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { DataTableExport } from './data-table-export';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
-  icons?: Record<string, ComponentType<{ className?: string }>>;
 }
 
-export function DataTableToolbar<TData>({ table, icons }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const facetedColumns = table
@@ -26,7 +25,7 @@ export function DataTableToolbar<TData>({ table, icons }: DataTableToolbarProps<
       options: Array.from(column.getFacetedUniqueValues().entries()).map(([value]) => ({
         label: String(value),
         value: String(value),
-        icon: icons?.[value],
+        icon: table.options.meta?.icons?.[value],
       })),
     }));
 
@@ -61,6 +60,7 @@ export function DataTableToolbar<TData>({ table, icons }: DataTableToolbarProps<
         )}
       </div>
       <DataTableViewOptions table={table} />
+      <DataTableExport table={table} />
     </div>
   );
 }

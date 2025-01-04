@@ -37,6 +37,9 @@ export const columns = [
     ),
     enableSorting: false,
     enableHiding: false,
+    meta: {
+      enableCsvExport: false,
+    },
   }),
   columnHelper.accessor('name', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
@@ -94,5 +97,8 @@ export const columns = [
         <ChangeRoleAction user={row.original} />
       </DataTableRowActions>
     ),
+    meta: {
+      enableCsvExport: false,
+    },
   }),
 ];

@@ -9,6 +9,7 @@
         "allowTernary": true,
         "allowTaggedTemplates": true
       }
-    ]
+    ],
+    "@typescript-eslint/no-unused-vars": "warn"
   }
 }
