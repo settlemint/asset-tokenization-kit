@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 import type { HTMLAttributes, PropsWithChildren } from 'react';
 
 const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
@@ -20,12 +21,15 @@ const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
 
 interface DataTableColumnCellProps
   extends HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof dataTableRowActionsVariants> {}
+    VariantProps<typeof dataTableRowActionsVariants> {
+  detailUrl?: string;
+}
 
 export function DataTableRowActions({
   className,
   variant = 'default',
   children,
+  detailUrl,
   ...props
 }: PropsWithChildren<DataTableColumnCellProps>) {
   if (!children) {
@@ -34,6 +38,11 @@ export function DataTableRowActions({
 
   return (
     <div className={cn(dataTableRowActionsVariants({ variant, className }), className)} {...props}>
+      {detailUrl && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={detailUrl}>Details</Link>
+        </Button>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">

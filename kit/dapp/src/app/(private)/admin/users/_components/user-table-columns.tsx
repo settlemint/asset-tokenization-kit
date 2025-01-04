@@ -6,10 +6,26 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import type { auth } from '@/lib/auth/auth';
+import { authClient } from '@/lib/auth/client';
 import { createColumnHelper } from '@tanstack/react-table';
 import { BadgePlus, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { useRouter } from 'next/navigation';
+import type { ComponentType, KeyboardEvent, MouseEvent } from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const icons: Record<string, ComponentType<{ className?: string }>> = {
   admin: ShieldCheck,
@@ -23,7 +39,132 @@ type User = (typeof auth.$Infer.Session)['user'];
 
 const columnHelper = createColumnHelper<User>();
 
+function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
+  const [showBanDialog, setShowBanDialog] = useState(false);
+  const [banReason, setBanReason] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleBanUser = async (e?: MouseEvent | KeyboardEvent) => {
+    e?.preventDefault();
+    if (!banReason.trim()) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await authClient.admin.banUser({
+        userId: user.id,
+        banReason: banReason.trim(),
+      });
+      toast.success('User banned successfully');
+      setShowBanDialog(false);
+      setBanReason('');
+      router.refresh();
+      onComplete?.();
+    } catch (error) {
+      toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUnbanUser = async (e: MouseEvent) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      await authClient.admin.unbanUser({
+        userId: user.id,
+      });
+      toast.success('User unbanned successfully');
+      router.refresh();
+      onComplete?.();
+    } catch (error) {
+      toast.error(`Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBanClick = (e: MouseEvent) => {
+    e.preventDefault();
+    if (user.banned) {
+      handleUnbanUser(e);
+    } else {
+      setShowBanDialog(true);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading}>
+        {user.banned ? (isLoading ? 'Unbanning...' : 'Unban') : 'Ban'}
+      </DropdownMenuItem>
+
+      <Dialog open={showBanDialog} onOpenChange={(open) => !isLoading && setShowBanDialog(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ban User</DialogTitle>
+            <DialogDescription>
+              Enter a reason for banning {user.name}. This will be recorded and visible to administrators.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Input
+            placeholder="Enter ban reason..."
+            value={banReason}
+            onChange={(e) => setBanReason(e.target.value)}
+            disabled={isLoading}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && banReason.trim()) {
+                handleBanUser(e);
+              }
+            }}
+          />
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowBanDialog(false);
+              }}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={(e) => handleBanUser(e)} disabled={!banReason.trim() || isLoading}>
+              {isLoading ? 'Banning...' : 'Ban User'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 export const columns = [
+  columnHelper.display({
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px] border-muted"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px] border-muted"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  }),
   columnHelper.accessor('name', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
     cell: ({ renderValue, row }) => (
@@ -35,7 +176,7 @@ export const columns = [
           variant="small"
         />
         <span>{renderValue()}</span>
-        {row.original.banned && <Badge variant="destructive">Banned</Badge>}
+        {row.original.banned && <Badge variant="destructive">Banned for "{row.original.banReason}"</Badge>}
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,
@@ -68,6 +209,10 @@ export const columns = [
   columnHelper.display({
     id: 'actions',
     header: () => '',
-    cell: () => <DataTableRowActions>xxx</DataTableRowActions>,
+    cell: ({ row }) => (
+      <DataTableRowActions detailUrl={`/admin/users/${row.original.id}`}>
+        <BanUserAction user={row.original} />
+      </DataTableRowActions>
+    ),
   }),
 ];

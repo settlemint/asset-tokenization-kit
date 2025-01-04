@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { signIn } from '@/lib/auth/client';
+import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -49,16 +49,16 @@ export function SignInForm({
   } = form;
 
   const onSubmit = async (data: SignInFormData) => {
-      await signIn.email(data,       {
-        onSuccess: () => {
-          router.push(decodedRedirectUrl);
-        },
-        onError: (ctx) => {
-          setFormError('root', {
-            message: ctx.error.message,
-          });
-        },
-      });
+    await authClient.signIn.email(data, {
+      onSuccess: () => {
+        router.push(decodedRedirectUrl);
+      },
+      onError: (ctx) => {
+        setFormError('root', {
+          message: ctx.error.message,
+        });
+      },
+    });
   };
 
   return (
