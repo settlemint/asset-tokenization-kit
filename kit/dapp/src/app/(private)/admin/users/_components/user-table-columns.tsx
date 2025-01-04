@@ -1,10 +1,11 @@
 'use client';
 
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
+import type { auth } from '@/lib/auth/auth';
 import { createColumnHelper } from '@tanstack/react-table';
-import type { UserWithRole } from 'better-auth/plugins';
 import { BadgePlus, ShieldCheck, User2 } from 'lucide-react';
 import type { ComponentType } from 'react';
 
@@ -14,16 +15,28 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   user: User2,
 };
 
-const columnHelper = createColumnHelper<UserWithRole>();
+type User = (typeof auth.$Infer.Session)['user'];
+
+const columnHelper = createColumnHelper<User>();
 
 export const columns = [
-  columnHelper.accessor('email', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
-    enableColumnFilter: false,
-  }),
   columnHelper.accessor('name', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
+    cell: ({ renderValue, row }) => (
+      <DataTableColumnCell>
+        <AddressAvatar
+          email={row.original.email}
+          address={row.original.wallet}
+          imageUrl={row.original.image}
+          variant="small"
+        />
+        <span>{renderValue()}</span>
+      </DataTableColumnCell>
+    ),
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('email', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>,
     cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),

@@ -19,6 +19,7 @@ import { mainnet } from 'viem/chains';
 interface AddressAvatarProps extends HTMLAttributes<HTMLDivElement> {
   address?: string | null;
   email?: string | null;
+  imageUrl?: string | null;
   indicator?: boolean;
   variant?: 'big' | 'small' | 'tiny';
 }
@@ -32,10 +33,14 @@ interface AddressAvatarProps extends HTMLAttributes<HTMLDivElement> {
  * @returns {JSX.Element} The rendered AddressAvatar component.
  */
 export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  ({ address, email, className, indicator, variant = 'big', ...props }, ref) => {
+  ({ address, email, imageUrl, className, indicator, variant = 'big', ...props }, ref) => {
     const { data: avatar } = useSuspenseQuery({
       queryKey: ['avatar', email, address],
       queryFn: async () => {
+        if (imageUrl) {
+          return { avatar: imageUrl };
+        }
+
         if (address) {
           const publicClient = createPublicClient({
             chain: mainnet,

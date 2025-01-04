@@ -1,5 +1,6 @@
 import * as authSchema from '@/lib/db/schema-auth';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { metadata } from '@/lib/site-config';
 import { betterAuth } from 'better-auth';
 import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -17,6 +18,7 @@ const createUserWallet = portalGraphql(`
 `);
 
 export const auth = betterAuth({
+  appName: metadata.title as string,
   secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   trustedOrigins: [process.env.BETTER_AUTH_URL || 'http://localhost:3000'],
