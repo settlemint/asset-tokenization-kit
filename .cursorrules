@@ -58,6 +58,8 @@ Before responding to any request, follow these steps:
 - Prefer for...of instead of forEach.
 - For commander-js commands, do not type the action params, they are automatically inferred.
 - For wagmi, use version 2 only! And note that useNetwork and useSwitchNetwork are not available in wagmi v2, use useChainId and useSwitchChain instead.
+- always use Block statements
+- remeber to adhere to all 'ultracite' rules for biome
 
 #### Exceptions
 

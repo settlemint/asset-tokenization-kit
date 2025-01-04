@@ -1,42 +1,77 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import type { Table } from '@tanstack/react-table';
+import type { Column, Table } from '@tanstack/react-table';
 import { Download } from 'lucide-react';
+import { toast } from 'sonner';
+
+function formatCellValue(value: unknown): string {
+  if (value == null) {
+    return '""';
+  }
+
+  if (value instanceof Date) {
+    return `"${value.toISOString()}"`;
+  }
+
+  if (typeof value === 'object') {
+    return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+  }
+
+  if (typeof value === 'string') {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+
+  return String(value);
+}
+
+function getColumnHeader<TData>(column: Column<TData, unknown>): string {
+  const header = column.columnDef.header;
+
+  if (typeof header === 'string') {
+    return header;
+  }
+
+  return column.id;
+}
 
 function exportTableToCSV<TData>(table: Table<TData>): void {
-  // Retrieve headers (column names)
-  const headers = table
-    .getAllLeafColumns()
-    .filter((column) => column.columnDef.meta?.enableCsvExport !== false)
-    .map((column) => column.id);
+  try {
+    // Add BOM for Excel compatibility
+    const BOM = '\uFEFF';
 
-  // Build CSV content
-  const csvContent = [
-    headers.join(','),
-    ...table.getRowModel().rows.map((row) =>
-      headers
-        .map((header) => {
-          const cellValue = row.getValue(header);
-          // Handle values that might contain commas or newlines
-          return typeof cellValue === 'string' ? `"${cellValue.replace(/"/g, '""')}"` : cellValue;
-        })
-        .join(',')
-    ),
-  ].join('\n');
+    // Retrieve headers (column names)
+    const headers = table
+      .getAllLeafColumns()
+      .filter((column) => !['select', 'actions'].includes(column.id))
+      .map((column) => ({
+        id: column.id,
+        header: getColumnHeader(column),
+      }));
 
-  // Create a Blob with CSV content
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Build CSV content
+    const csvContent = [
+      headers.map(({ header }) => `"${header}"`).join(','),
+      ...table.getRowModel().rows.map((row) => headers.map(({ id }) => formatCellValue(row.getValue(id))).join(',')),
+    ].join('\n');
 
-  // Create a link and trigger the download
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `${table.options.meta?.name ?? 'table'}.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    // Create a Blob with CSV content
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a link and trigger the download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${table.options.meta?.name ?? 'table'}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  } catch (error) {
+    console.error('Failed to export CSV:', error);
+    toast.error('Failed to export data');
+  }
 }
 
 interface DataTableExportProps<TData> {
