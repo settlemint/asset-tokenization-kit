@@ -1,6 +1,7 @@
 'use client';
 'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   type ColumnDef,
@@ -9,34 +10,31 @@ import {
   type VisibilityState,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
-import { DataTableFilter } from './data-table-filter';
+import { type ComponentType, useMemo, useState } from 'react';
 import { DataTablePagination } from './data-table-pagination';
-import { DataTableVisibility } from './data-table-visibility';
+import { DataTableToolbar } from './data-table-toolbar';
 
 /**
  * Props for the DataTable component.
  * @template TData The type of data in the table.
  * @template TValue The type of values in the table cells.
  */
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData> {
   /** The column definitions for the table. */
-  columns: ColumnDef<TData, TValue>[];
+  columns: {
+    [K in keyof TData]: ColumnDef<TData, TData[K]>;
+  }[keyof TData][];
   /** The data to be displayed in the table. */
   data: TData[];
-  /** The placeholder text for the filter input. */
-  filterPlaceholder: string;
-  /** The column to be used for filtering. */
-  filterColumn: string;
-  /** Whether to show pagination controls. */
-  isPagination?: boolean;
-  /** Whether to show search functionality. */
-  isSearch?: boolean;
+  isLoading?: boolean;
+  icons?: Record<string, ComponentType<{ className?: string }>>;
 }
 
 /**
@@ -46,43 +44,81 @@ interface DataTableProps<TData, TValue> {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-  filterColumn,
-  filterPlaceholder,
-  isPagination = true,
-  isSearch = true,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData>({ columns, data, isLoading, icons }: DataTableProps<TData>) {
+  const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
-    data,
-    columns,
+    data: memoizedData,
+    columns: memoizedColumns,
+    enableRowSelection: true,
+    enableGlobalFilter: true,
+    enableColumnFilters: true,
+
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    globalFilterFn: 'includesString',
+
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      rowSelection,
+      globalFilter,
     },
+
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
+  const renderTableBody = () => {
+    if (isLoading) {
+      return Array.from({ length: 5 }).map((_, index) => (
+        <TableRow key={index}>
+          {columns.map((_column, cellIndex) => (
+            <TableCell key={cellIndex}>
+              <Skeleton className="h-4 w-[80%]" />
+            </TableCell>
+          ))}
+        </TableRow>
+      ));
+    }
+
+    if (table.getRowModel().rows?.length) {
+      return table.getRowModel().rows.map((row) => (
+        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+          ))}
+        </TableRow>
+      ));
+    }
+
+    return (
+      <TableRow>
+        <TableCell colSpan={columns.length} className="h-24 text-center">
+          No results
+        </TableCell>
+      </TableRow>
+    );
+  };
+
   return (
-    <div className="DataTable p-1">
-      <div className="mb-2 flex py-2">
-        {data.length > 0 && isSearch && (
-          <DataTableFilter table={table} placeholder={filterPlaceholder} column={filterColumn} />
-        )}
-        <DataTableVisibility table={table} />
-      </div>
+    <div className="space-y-4">
+      <DataTableToolbar table={table} icons={icons} />
       <div className="w-full rounded-md border bg-card text-sidebar-foreground shadow-sm">
         <Table>
           <TableHeader>
@@ -90,7 +126,7 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -98,26 +134,10 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+          <TableBody>{renderTableBody()}</TableBody>
         </Table>
       </div>
-      {table.getRowModel().rows?.length > 0 && isPagination && <DataTablePagination table={table} />}
+      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} />}
     </div>
   );
 }
