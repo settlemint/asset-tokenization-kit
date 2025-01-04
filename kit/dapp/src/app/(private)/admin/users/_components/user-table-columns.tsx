@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { auth } from '@/lib/auth/auth';
 import { authClient } from '@/lib/auth/client';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -42,8 +43,24 @@ const columnHelper = createColumnHelper<User>();
 function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
   const [showBanDialog, setShowBanDialog] = useState(false);
   const [banReason, setBanReason] = useState('');
+  const [banDuration, setBanDuration] = useState<string>('forever');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const getBanExpiresIn = () => {
+    switch (banDuration) {
+      case '1hour':
+        return 1000 * 60 * 60;
+      case '1day':
+        return 1000 * 60 * 60 * 24;
+      case '1week':
+        return 1000 * 60 * 60 * 24 * 7;
+      case '1month':
+        return 1000 * 60 * 60 * 24 * 30;
+      default:
+        return undefined;
+    }
+  };
 
   const handleBanUser = async (e?: MouseEvent | KeyboardEvent) => {
     e?.preventDefault();
@@ -56,6 +73,7 @@ function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => vo
       await authClient.admin.banUser({
         userId: user.id,
         banReason: banReason.trim(),
+        banExpiresIn: getBanExpiresIn(),
       });
       toast.success('User banned successfully');
       setShowBanDialog(false);
@@ -110,17 +128,33 @@ function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => vo
             </DialogDescription>
           </DialogHeader>
 
-          <Input
-            placeholder="Enter ban reason..."
-            value={banReason}
-            onChange={(e) => setBanReason(e.target.value)}
-            disabled={isLoading}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && banReason.trim()) {
-                handleBanUser(e);
-              }
-            }}
-          />
+          <div className="space-y-4">
+            <Input
+              placeholder="Enter ban reason..."
+              required
+              value={banReason}
+              onChange={(e) => setBanReason(e.target.value)}
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && banReason.trim()) {
+                  handleBanUser(e);
+                }
+              }}
+            />
+
+            <Select value={banDuration} onValueChange={setBanDuration} disabled={isLoading}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select ban duration" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="forever">Forever</SelectItem>
+                <SelectItem value="1hour">1 Hour</SelectItem>
+                <SelectItem value="1day">1 Day</SelectItem>
+                <SelectItem value="1week">1 Week</SelectItem>
+                <SelectItem value="1month">1 Month</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <DialogFooter>
             <Button
