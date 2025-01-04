@@ -5,6 +5,7 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { User } from '@/lib/auth/types';
@@ -74,7 +75,13 @@ export const columns = [
   columnHelper.accessor('wallet', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => (
-      <DataTableColumnCell>{getValue() && <EvmAddress address={getValue()} />}</DataTableColumnCell>
+      <DataTableColumnCell>
+        {getValue() && (
+          <EvmAddress address={getValue()}>
+            <EvmAddressBalances address={getValue()} />
+          </EvmAddress>
+        )}
+      </DataTableColumnCell>
     ),
     enableColumnFilter: false,
   }),
