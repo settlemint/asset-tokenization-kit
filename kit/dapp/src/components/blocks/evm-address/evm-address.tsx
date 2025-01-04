@@ -33,10 +33,10 @@ export function EvmAddress({ address, explorerUrl, children, prefixLength = 6, s
             <AddressAvatar address={address} className="row-span-2" />
             <div className="flex flex-col">
               <span className="font-mono">{shortHex(address, 12, 8)}</span>
-              {explorerUrl && (
+              {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
                 <Link
                   prefetch={false}
-                  href={`${explorerUrl}/${address}`}
+                  href={`${explorerUrl ?? process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}/${address}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="truncate text-primary text-xs hover:underline"
