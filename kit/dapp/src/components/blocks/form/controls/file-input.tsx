@@ -1,13 +1,9 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { InputProps } from '@/components/ui/input';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
-import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
-
-import { Badge } from '@/components/ui/badge';
 import { betterFetch } from '@better-fetch/fetch';
-import { omit } from 'lodash';
 import {
   CheckIcon,
   CloudUploadIcon,
@@ -18,7 +14,9 @@ import {
   TriangleAlertIcon,
   X,
 } from 'lucide-react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactDropzone from 'react-dropzone';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useLocalStorage } from 'usehooks-ts';
 import { createPresignedUrlAction } from '../actions/create-presigned-file-upload-url.action';
@@ -478,7 +476,7 @@ export function FileInput<T extends FieldValues>({
                 maxSize={maxSize}
                 multiple={multiple}
                 server={server}
-                {...omit(props, 'accept')}
+                {...props}
               />
             </FormControl>
             <FormDescription>{description}</FormDescription>
