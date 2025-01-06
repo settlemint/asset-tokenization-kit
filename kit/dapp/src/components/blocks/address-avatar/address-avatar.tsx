@@ -44,7 +44,7 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         if (address) {
           const publicClient = createPublicClient({
             chain: mainnet,
-            transport: http('https://eth.merkle.io'),
+            transport: http('https://ethereum-rpc.publicnode.com'),
           });
 
           const ensName = await publicClient.getEnsName({
