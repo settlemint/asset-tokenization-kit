@@ -6,12 +6,14 @@ interface SidePanelProps {
   description: string;
   trigger: ReactNode;
   children: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function SidePanel({ children, title, description, trigger }: SidePanelProps) {
+export function SidePanel({ children, title, description, trigger, open, onOpenChange }: SidePanelProps) {
   return (
     <div className="SidePanel">
-      <Sheet>
+      <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetTrigger asChild>{trigger}</SheetTrigger>
         <SheetContent className="w-[33%] lg:max-w-[33%]">
           <SheetHeader>
