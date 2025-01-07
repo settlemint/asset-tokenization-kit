@@ -1,7 +1,0 @@
-.theme .Button {
-  @apply h-12 px-5 rounded-theme-md content-center text-theme-sm text-white gradient-button bg-gradient-to-r from-lm-lightBlue to-lm-lightBlue dark:from-dm-mediumBlue dark:to-dm-mediumBlue hover:from-lm-lightBlue hover:to-lm-lightBlue dark:hover:from-dm-lightBlue dark:hover:to-dm-lightBlue hover:shadow-none focus:outline-none focus:border-lm-lightBlue focus:bg-lm-lightBlue focus:bg-opacity-25;
-}
-
-.theme .Button__text {
-  @apply text-center text-theme-sm font-medium;
-}

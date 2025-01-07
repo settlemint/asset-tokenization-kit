@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/blocks/button/button';
+import { Button } from '@/components/ui/button';
 import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';

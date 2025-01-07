@@ -9,3 +9,5 @@ export const metadata: Metadata = {
     'darkreader-lock': '',
   },
 };
+
+export const theme: 'settlemint' | 'shadcn' = 'settlemint';
