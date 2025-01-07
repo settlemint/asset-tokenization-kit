@@ -1,7 +1,8 @@
-import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react"
 
+import { theme } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -26,11 +27,23 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
       },
+      theme: {
+        settlemint: "",
+        shadcn: "",
+      }
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      theme: theme
     },
+    compoundVariants: [
+      {
+        theme: "settlemint",
+        variant: "default",
+        className: "shadow-button hover:!bg-accent",
+      },
+    ],
   }
 )
 

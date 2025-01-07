@@ -89,6 +89,9 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      boxShadow: {
+        button: '0 -3px 3px 0 rgb(0 0 0 / 21%) inset',
+      },
     },
   },
   plugins: [animate],
