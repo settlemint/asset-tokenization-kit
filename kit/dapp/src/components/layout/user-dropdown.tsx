@@ -1,6 +1,7 @@
 'use client';
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { ThemeMenuItem } from '@/components/blocks/theme/theme-menu-item';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -16,8 +17,7 @@ import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
-import { BringToFront, ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { BringToFront, ChevronsUpDown, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
@@ -33,7 +33,6 @@ const GetPendingTransactions = portalGraphql(`
 
 export function UserDropdown() {
   const { data: userSession } = authClient.useSession();
-  const { setTheme, resolvedTheme } = useTheme();
   const interval = usePollingInterval(5000);
   const router = useRouter();
 
@@ -111,17 +110,7 @@ export function UserDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {resolvedTheme === 'dark' ? (
-            <DropdownMenuItem onSelect={() => setTheme('light')}>
-              <Sun />
-              Switch to light mode
-            </DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem onSelect={() => setTheme('dark')}>
-              <Moon />
-              Switch to dark mode
-            </DropdownMenuItem>
-          )}
+          <ThemeMenuItem />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleSignOut}>

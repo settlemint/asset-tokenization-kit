@@ -25,15 +25,6 @@ interface ThemeToggleProps {
 }
 
 /**
- * Array of theme options available for selection.
- */
-const themeOptions = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
-] as const;
-
-/**
  * Mapping of button sizes to skeleton sizes.
  */
 const skeletonSizes = {
@@ -49,7 +40,7 @@ const skeletonSizes = {
  * @returns A dropdown menu for theme selection.
  */
 export function ThemeToggle({ variant = 'outline', size = 'icon', className }: ThemeToggleProps) {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme, themes } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   /**
@@ -82,9 +73,9 @@ export function ThemeToggle({ variant = 'outline', size = 'icon', className }: T
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {themeOptions.map(({ value, label }) => (
-          <DropdownMenuItem key={value} onClick={() => handleSetTheme(value)}>
-            {label}
+        {themes.map((theme) => (
+          <DropdownMenuItem key={theme} onClick={() => handleSetTheme(theme)} className="capitalize">
+            {theme.replace('settlemint-', '')}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

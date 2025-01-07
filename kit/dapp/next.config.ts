@@ -11,13 +11,6 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
-  experimental: {
-    reactCompiler: true,
-    staleTimes: {
-      dynamic: 30,
-      static: 180,
-    },
-  },
   output: 'standalone',
 };
 

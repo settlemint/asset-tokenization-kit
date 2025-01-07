@@ -10,9 +10,6 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        'theme-sans': ['Figtree'],
-      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

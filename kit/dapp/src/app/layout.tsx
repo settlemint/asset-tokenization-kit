@@ -1,6 +1,7 @@
-import { ThemeProvider } from '@/components/blocks/dark-mode/theme-provider';
 import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
+import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { fontSans } from '@/lib/fonts';
+import { theme } from '@/lib/site-config';
 import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -27,7 +28,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn('min-h-screen font-sans antialiased', fontSans.variable)}>
         <NuqsAdapter>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ThemeProvider
+            themes={theme === 'settlemint' ? ['settlemint-light', 'settlemint-dark'] : ['light', 'dark']}
+            attribute="class"
+            defaultTheme={theme === 'settlemint' ? 'settlemint-light' : 'light'}
+            enableColorScheme
+            disableTransitionOnChange
+          >
             <QueryClientProvider>{children}</QueryClientProvider>
           </ThemeProvider>
         </NuqsAdapter>
