@@ -187,7 +187,6 @@ jobs:
         uses: settlemint/settlemint-action@main
         with:
           auto-connect: false
-          auto-login: false
           access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
