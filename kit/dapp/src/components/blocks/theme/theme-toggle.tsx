@@ -75,7 +75,7 @@ export function ThemeToggle({ variant = 'outline', size = 'icon', className }: T
       <DropdownMenuContent align="end">
         {themes.map((theme) => (
           <DropdownMenuItem key={theme} onClick={() => handleSetTheme(theme)} className="capitalize">
-            {theme.replace('settlemint-', '')}
+            {theme}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -15,8 +15,8 @@ export function ThemeMenuItem() {
 
   return (
     <DropdownMenuItem onSelect={() => setTheme(nextTheme)}>
-      {resolvedTheme?.includes('dark') ? <Sun /> : <Moon />}
-      Switch to {nextTheme?.replace('settlemint-', '')} mode
+      {resolvedTheme === 'dark' ? <Sun /> : <Moon />}
+      Switch to {nextTheme} mode
     </DropdownMenuItem>
   );
 }

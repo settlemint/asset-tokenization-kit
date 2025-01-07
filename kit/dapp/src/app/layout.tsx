@@ -29,11 +29,14 @@ export default function RootLayout({
       <body className={cn('min-h-screen font-sans antialiased', fontSans.variable)}>
         <NuqsAdapter>
           <ThemeProvider
-            themes={theme === 'settlemint' ? ['settlemint-light', 'settlemint-dark'] : ['light', 'dark']}
             attribute="class"
-            defaultTheme={theme === 'settlemint' ? 'settlemint-light' : 'light'}
             enableColorScheme
             disableTransitionOnChange
+            enableSystem
+            value={{
+              light: theme === 'settlemint' ? 'settlemint-light' : 'light',
+              dark: theme === 'settlemint' ? 'settlemint-dark' : 'dark',
+            }}
           >
             <QueryClientProvider>{children}</QueryClientProvider>
           </ThemeProvider>
