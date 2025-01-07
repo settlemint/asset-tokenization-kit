@@ -101,8 +101,7 @@ jobs:
         uses: settlemint/settlemint-action@main
         with:
           instance: https://console-release.settlemint.com
-          personal-access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
@@ -183,13 +182,11 @@ jobs:
         run: bunx drizzle-kit push
         working-directory: kit/dapp
 
-      - name: Connect to SettleMint
+      - name: Update Custom Deployment
         if: ${{ env.TAG != 'pr' }}
         uses: settlemint/settlemint-action@main
         with:
           auto-connect: false
-          auto-login: false
-          personal-access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
           access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
