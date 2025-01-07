@@ -26,8 +26,14 @@ contract StableCoin is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
-    /// @dev The amount of proven collateral backing this stablecoin
-    uint256 private provenCollateral;
+    /// @dev Stores the collateral proof details
+    struct CollateralProof {
+        uint256 amount;
+        uint48 timestamp;
+    }
+
+    /// @dev The current collateral proof
+    CollateralProof private _collateralProof;
 
     /// @param name The token name
     /// @param symbol The token symbol
@@ -67,15 +73,15 @@ contract StableCoin is
 
     /// @dev Returns current collateral amount and timestamp
     /// @return amount Current proven collateral amount
-    /// @return timestamp Current block timestamp
+    /// @return timestamp Timestamp when the collateral was last proven
     function collateral() public view virtual override returns (uint256 amount, uint48 timestamp) {
-        return (provenCollateral, uint48(block.timestamp));
+        return (_collateralProof.amount, _collateralProof.timestamp);
     }
 
-    /// @dev Updates the proven collateral amount
+    /// @dev Updates the proven collateral amount with a timestamp
     /// @param amount New collateral amount
     function updateCollateral(uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        provenCollateral = amount;
+        _collateralProof = CollateralProof({ amount: amount, timestamp: uint48(block.timestamp) });
     }
 
     /// @dev Checks if an address is a custodian
