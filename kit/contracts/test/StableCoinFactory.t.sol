@@ -48,9 +48,9 @@ contract StableCoinFactoryTest is Test {
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
-            (uint256 collateral, uint48 timestamp) = token.collateral();
-            assertEq(collateral, 0, "Initial collateral should be zero");
-            assertEq(timestamp, block.timestamp, "Timestamp should be current block");
+            (uint256 collateralAmount, uint48 collateralTimestamp) = token.collateral();
+            assertEq(collateralAmount, 0, "Initial collateral should be zero");
+            assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
         }
 
         assertEq(factory.allTokensLength(), count, "Should have created three tokens");
@@ -89,9 +89,9 @@ contract StableCoinFactoryTest is Test {
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
 
         // Test collateral state
-        (uint256 collateral, uint48 timestamp) = token.collateral();
-        assertEq(collateral, 0, "Initial collateral should be zero");
-        assertEq(timestamp, block.timestamp, "Timestamp should be current block");
+        (uint256 collateralAmount, uint48 collateralTimestamp) = token.collateral();
+        assertEq(collateralAmount, 0, "Initial collateral should be zero");
+        assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
     }
 
     function test_TokenFunctionality() public {
