@@ -152,12 +152,16 @@ contract StableCoinTest is Test {
         );
         stableCoin.updateCollateral(collateralAmount);
         vm.stopPrank();
+
+        // Set block timestamp for deterministic testing
+        vm.warp(1000);
+
         vm.prank(owner);
         stableCoin.updateCollateral(collateralAmount);
 
         (uint256 amount, uint48 timestamp) = stableCoin.collateral();
         assertEq(amount, collateralAmount);
-        assertEq(timestamp, block.timestamp);
+        assertEq(timestamp, uint48(block.timestamp));
     }
 
     // ERC20Custodian tests
