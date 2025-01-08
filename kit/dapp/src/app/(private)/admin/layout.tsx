@@ -30,10 +30,10 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider>
-      <PrivateSidebar role={role} mode="admin" data={sidebarData} />
-      <SidebarInset>
+      <PrivateSidebar role={role} mode="admin" data={sidebarData} className="group-data-[side=left]:border-0" />
+      <SidebarInset className="bg-sidebar">
         <Header />
-        {children}
+        <main className="min-h-screen flex-1 rounded-tl-xl bg-background pt-4">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
