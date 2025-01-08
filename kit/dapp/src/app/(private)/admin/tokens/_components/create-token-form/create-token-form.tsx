@@ -6,7 +6,7 @@ import { FormStep } from '@/components/blocks/form/form-step';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {} from '@/components/ui/form';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { waitForTransactionReceipt } from '@/lib/transactions';
+import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { SunIcon } from 'lucide-react';
@@ -19,6 +19,10 @@ interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
   formId: string;
   className?: string;
+}
+
+interface TokenReceiptResponse {
+  StarterKitERC20FactoryCreateTokenReceipt: TransactionReceiptWithDecodedError | null | undefined;
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
@@ -53,11 +57,10 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
       async () => {
         const transactionHash = await createTokenAction(values);
         return waitForTransactionReceipt({
-          receiptFetcher: async () => {
-            const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+          receiptFetcher: async (): Promise<TransactionReceiptWithDecodedError | null | undefined> => {
+            const txresult = await portalClient.request<TokenReceiptResponse>(CreateTokenReceiptQuery, {
               transactionHash: transactionHash?.data ?? '',
             });
-
             return txresult.StarterKitERC20FactoryCreateTokenReceipt;
           },
         });
