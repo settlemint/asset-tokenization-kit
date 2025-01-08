@@ -1,5 +1,6 @@
 'use client';
 import { FileInput } from '@/components/blocks/form/controls/file-input';
+import { FormStepProgress } from '@/components/blocks/form/controls/form-step-progress';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
@@ -10,6 +11,7 @@ import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } fr
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { SunIcon } from 'lucide-react';
+import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
@@ -36,6 +38,12 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
+  const [step] = useQueryState('currentStep', {
+    defaultValue: 1,
+    parse: (value: string) => Number(value),
+    serialize: (value: number) => String(value),
+  });
+
   const { form, resetFormAndAction } = useHookFormAction(createTokenAction, zodResolver(CreateTokenSchema), {
     actionProps: {
       onSuccess: () => {
@@ -80,6 +88,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
 
   return (
     <div className="TokenizationWizard container mt-8">
+      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Create a new token</CardTitle>
