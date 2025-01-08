@@ -142,7 +142,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      <div className="w-full rounded-md border bg-card text-sidebar-foreground shadow-sm">
+      <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -7,7 +7,6 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import type { User } from '@/lib/auth/types';
 import { createColumnHelper } from '@tanstack/react-table';
 import { BanUserAction } from './actions/ban-user-action';
@@ -17,30 +16,30 @@ import { icons } from './user-table-icons';
 const columnHelper = createColumnHelper<User>();
 
 export const columns = [
-  columnHelper.display({
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px] border-muted"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px] border-muted"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-    meta: {
-      enableCsvExport: false,
-    },
-  }),
+  // columnHelper.display({
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //       className="translate-y-[2px] border-background"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //       className="translate-y-[2px] border-background"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  //   meta: {
+  //     enableCsvExport: false,
+  //   },
+  // }),
   columnHelper.accessor('name', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
     cell: ({ renderValue, row }) => (
