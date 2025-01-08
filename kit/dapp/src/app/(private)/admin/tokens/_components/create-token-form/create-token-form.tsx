@@ -38,7 +38,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
-  const [step, setStep] = useQueryState('step', {
+  const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
     serialize: (value: number) => String(value),
