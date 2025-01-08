@@ -1,5 +1,6 @@
 'use client';
 import { FileInput } from '@/components/blocks/form/controls/file-input';
+import { FormStepProgress } from '@/components/blocks/form/controls/form-step-progress';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
@@ -80,6 +81,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
 
   return (
     <div className="TokenizationWizard container mt-8">
+      <FormStepProgress steps={4} currentStep={2} complete={true} className="" />
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Create a new token</CardTitle>
