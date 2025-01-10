@@ -34,6 +34,7 @@ type TextInputProps<T extends FieldValues> = {
   label: string;
   description?: string;
   icon?: ReactNode;
+  showRequired?: boolean;
 } & Omit<InputProps, 'name'> &
   VariantProps<typeof inputVariants> & {
     name: Path<T>;
@@ -50,6 +51,7 @@ export function TextInput<T extends FieldValues>({
   name,
   control,
   className,
+  showRequired,
   ...props
 }: TextInputProps<T>) {
   return (
@@ -58,7 +60,12 @@ export function TextInput<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="FormItem relative">
-          {label && <FormLabel className="FormLabel">{label}</FormLabel>}
+          {label && (
+            <FormLabel className="FormLabel">
+              <span>{label}</span>
+              {showRequired && <span className="ml-1 text-red-500">*</span>}
+            </FormLabel>
+          )}
           {icon && <FormLabel className={iconVariants({ variant })}>{icon}</FormLabel>}
           <FormControl>
             <Input {...field} {...props} className={cn(inputVariants({ variant }), className)} />
