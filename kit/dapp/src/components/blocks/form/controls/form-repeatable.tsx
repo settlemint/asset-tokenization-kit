@@ -6,8 +6,8 @@ import type { ArrayPath, Control, FieldArray, FieldValues, Path } from 'react-ho
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
 import { useMultiFormStep } from '../form-multistep';
-import { NumericInput } from './form-input-numeric';
 import { Input } from './input';
+import { NumericInput } from './numeric-input';
 
 interface RepeatableFormProps<T extends FieldValues> {
   control: Control<T>;

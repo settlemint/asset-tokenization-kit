@@ -137,9 +137,9 @@ export const FormStep = <
 
   return (
     <div className={`${cn('FormStep space-y-4', { hidden: page !== currentStep })}`}>
-      {title && <h3>{title}</h3>}
+      {title && <h3 className="pt-[1.5rem] font-bold">{title}</h3>}
       {children}
-      <div className="!mt-16 flex justify-end gap-x-4">
+      <div className="!mt-8 flex justify-end gap-x-4">
         <Button
           type="button"
           variant="outline"
