@@ -7,6 +7,7 @@ export const CreateTokenSchema = z.object({
   isin: z.string(),
   admin: z.string(),
   collateralProofValidity: z.number(),
+  tokenPermissions: z.array(z.string()),
   tokenLogo: z
     .instanceof(File)
     .refine((file) => file.type.startsWith('image/'), {
@@ -27,6 +28,7 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   isin: '',
   collateralProofValidity: 3600,
   admin: '',
+  tokenPermissions: [],
 } as const;
 
 export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;
