@@ -1,5 +1,6 @@
 'use client';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { MultiSelectInput } from '@/components/blocks/form/controls/multi-select-input';
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { SelectInput } from '@/components/blocks/form/controls/select-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
@@ -16,6 +17,7 @@ import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { Plus } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
@@ -116,9 +118,15 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
   const testUser = { ...user, wallet: '0x1234567890123456789012345678901234567890' as `0x${string}` };
   const users: AvatarUser[] = user ? [user, testUser] : [];
 
+  const tokenPermissions = [
+    { value: 'ADMIN', label: '  Admin' },
+    { value: 'USER_MANAGER', label: 'User Manager' },
+    { value: 'ISSUER', label: 'Issuer' },
+  ];
+
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
+      <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
       <Card className="w-full">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
@@ -225,30 +233,71 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               <CardTitle>Token permissions</CardTitle>
               <CardDescription>Define administrative roles and permissions for managing this token.</CardDescription>
 
-              {/* Name */}
-              <SelectInput label="Add another admin:" name="admin" control={form.control} placeholder="Select an admin">
-                {users.map((user) => (
-                  <SelectItem
-                    key={user.wallet}
-                    value={user.wallet}
-                    className="h-auto w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
-                  >
-                    <AddressAvatar address={user.wallet} email={user.email} className="h-9 w-9 rounded-full" />
+              {/* Token permissions */}
+              <div className="flex flex-col gap-10">
+                <div className="RepeatItem">
+                  <div className="User flex items-center gap-2">
+                    <AddressAvatar address={user?.wallet} email={user?.email} className="h-9 w-9 rounded-full" />
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      {user.name || user.email ? (
-                        <span className="truncate font-semibold">{user.name ?? user.email}</span>
+                      {user?.name || user?.email ? (
+                        <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
                       ) : (
                         <Skeleton className="h-4 w-24" />
                       )}
-                      {user.wallet ? (
-                        <span className="truncate text-xs">{shortHex(user.wallet, 12, 8)}</span>
+                      {user?.wallet ? (
+                        <span className="truncate text-xs">{shortHex(user?.wallet, 12, 8)}</span>
                       ) : (
                         <Skeleton className="h-3 w-20" />
                       )}
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectInput>
+                  </div>
+                  <MultiSelectInput entries={tokenPermissions} name="tokenPermissions" control={form.control} />
+                </div>
+
+                <div className="flex items-center gap-20">
+                  <SelectInput
+                    label="Add another admin:"
+                    name="admin"
+                    control={form.control}
+                    placeholder="Select an admin"
+                  >
+                    {users.map((user) => (
+                      <SelectItem
+                        key={user.wallet}
+                        value={user.wallet}
+                        className="h-auto w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
+                      >
+                        <AddressAvatar address={user.wallet} email={user.email} className="h-9 w-9 rounded-full" />
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          {user.name || user.email ? (
+                            <span className="truncate font-semibold">{user.name ?? user.email}</span>
+                          ) : (
+                            <Skeleton className="h-4 w-24" />
+                          )}
+                          {user.wallet ? (
+                            <span className="truncate text-xs">{shortHex(user.wallet, 12, 8)}</span>
+                          ) : (
+                            <Skeleton className="h-3 w-20" />
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectInput>
+                  <button type="button" className="mt-6 cursor-pointer rounded-full border border-dotted p-2">
+                    <Plus className="h-4 w-4" color="hsl(var(--foreground))" />
+                  </button>
+                </div>
+              </div>
+            </FormStep>
+            <FormStep
+              form={form}
+              title="Review"
+              controls={{
+                prev: { buttonText: 'Back' },
+                submit: { buttonText: 'Submit' },
+              }}
+            >
+              <div>Review</div>
             </FormStep>
           </FormMultiStep>
         </CardContent>
