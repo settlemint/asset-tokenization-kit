@@ -27,10 +27,6 @@ const menuItems: MenuItem[] = [
 
 const footerLinks = [
   {
-    href: '/admin',
-    label: 'Admin',
-  },
-  {
     href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/',
     label: 'Terms of Service',
   },
@@ -96,9 +92,9 @@ export default function Home() {
         <DesktopNav />
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
-            <NavItem href="/issuer/dashboard" label="Issuer Portal" />
+            <NavItem href="/admin" label="Issuer Portal" />
             <NavigationMenuItem>
-              <Link href="/user/dashboard" passHref legacyBehavior>
+              <Link href="/portfolio" passHref legacyBehavior>
                 <NavigationMenuLink>
                   <Button>My Portfolio</Button>
                 </NavigationMenuLink>
@@ -122,9 +118,7 @@ export default function Home() {
             </div>
             <div className="space-x-4">
               <div className="static flex w-auto justify-center overflow-x-auto rounded-xl border bg-muted p-4 backdrop-blur-2xl">
-                <code className="whitespace-nowrap font-bold font-mono ">
-                  bunx @settlemint/sdk-cli create -t asset-tokenization
-                </code>
+                <code className="whitespace-nowrap font-bold font-mono ">bunx @settlemint/sdk-cli@latest create</code>
               </div>
             </div>
           </div>
