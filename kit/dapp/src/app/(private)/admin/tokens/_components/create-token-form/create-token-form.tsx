@@ -12,6 +12,7 @@ import {} from '@/components/ui/form';
 import { SelectItem } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth/client';
+import type { User } from '@/lib/auth/types';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
@@ -30,6 +31,7 @@ interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
   formId: string;
   className?: string;
+  users: User[];
 }
 
 type AvatarUser = {
@@ -52,7 +54,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
-export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
+export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
@@ -114,9 +116,6 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
         name,
       }
     : undefined;
-
-  const testUser = { ...user, wallet: '0x1234567890123456789012345678901234567890' as `0x${string}` };
-  const users: AvatarUser[] = user ? [user, testUser] : [];
 
   const tokenPermissions = [
     { value: 'ADMIN', label: '  Admin' },
@@ -245,7 +244,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                         <Skeleton className="h-4 w-24" />
                       )}
                       {user?.wallet ? (
-                        <span className="truncate text-xs">{shortHex(user?.wallet, 12, 8)}</span>
+                        <span className="truncate text-muted-foreground text-xs">{shortHex(user?.wallet, 12, 8)}</span>
                       ) : (
                         <Skeleton className="h-3 w-20" />
                       )}
@@ -261,7 +260,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
                     control={form.control}
                     placeholder="Select an admin"
                   >
-                    {users.map((user) => (
+                    {users.map((user: User) => (
                       <SelectItem
                         key={user.wallet}
                         value={user.wallet}

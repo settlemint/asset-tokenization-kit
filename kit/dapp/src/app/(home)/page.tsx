@@ -10,8 +10,10 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Menu } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import type { FC } from 'react';
+import Mockup from './mockup-light.png';
 
 interface MenuItem {
   href: string;
@@ -26,10 +28,6 @@ const menuItems: MenuItem[] = [
 ];
 
 const footerLinks = [
-  {
-    href: '/admin',
-    label: 'Admin',
-  },
   {
     href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/',
     label: 'Terms of Service',
@@ -96,9 +94,9 @@ export default function Home() {
         <DesktopNav />
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
-            <NavItem href="/issuer/dashboard" label="Issuer Portal" />
+            <NavItem href="/admin" label="Issuer Portal" />
             <NavigationMenuItem>
-              <Link href="/user/dashboard" passHref legacyBehavior>
+              <Link href="/portfolio" passHref legacyBehavior>
                 <NavigationMenuLink>
                   <Button>My Portfolio</Button>
                 </NavigationMenuLink>
@@ -122,17 +120,18 @@ export default function Home() {
             </div>
             <div className="space-x-4">
               <div className="static flex w-auto justify-center overflow-x-auto rounded-xl border bg-muted p-4 backdrop-blur-2xl">
-                <code className="whitespace-nowrap font-bold font-mono ">
-                  bunx @settlemint/sdk-cli create -t asset-tokenization
-                </code>
+                <code className="whitespace-nowrap font-bold font-mono ">bunx @settlemint/sdk-cli@latest create</code>
               </div>
             </div>
           </div>
         </div>
+        <div className="relative z-10 flex w-full overflow-hidden border border-border/5 border-t-border/15 px-4 pt-12 shadow-2xl sm:px-6 lg:px-8">
+          <Image src={Mockup} alt="Asset Tokenization" className="rounded-md" />
+        </div>
       </section>
       <footer className="flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">
         <p className="text-xs">
-          &copy; {new Date().getFullYear()}
+          &copy; {new Date().getFullYear()}{' '}
           <Link href="https://settlemint.com" className="hover:underline">
             SettleMint
           </Link>

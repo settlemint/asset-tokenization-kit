@@ -36,14 +36,19 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
     throw new Error('User not authenticated');
   }
 
-  const result = await portalClient.request<CreateTokenMutationResponse>(CreateTokenMutation, {
-    address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
-    from: session.user.wallet,
-    name_: tokenName,
-    symbol_: tokenSymbol,
-  });
+  let result: CreateTokenMutationResponse | null = null;
+  try {
+    result = await portalClient.request<CreateTokenMutationResponse>(CreateTokenMutation, {
+      address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
+      from: session.user.wallet,
+      name_: tokenName,
+      symbol_: tokenSymbol,
+    });
+  } catch (error) {
+    console.error('SUBMIT error', error);
+  }
 
-  const transactionHash = result.StarterKitERC20FactoryCreateToken?.transactionHash;
+  const transactionHash = result?.StarterKitERC20FactoryCreateToken?.transactionHash;
 
   if (!transactionHash) {
     throw new Error('Transaction hash not found');

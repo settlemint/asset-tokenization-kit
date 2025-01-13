@@ -1,5 +1,6 @@
 'use client';
 import { CreateTokenForm } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
+import type { User } from '@/lib/auth/types';
 import { Pencil } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
@@ -31,6 +33,7 @@ import { NavSecondary, type SidebarSecondarySection } from './nav-secondary';
 export type SidebarData = {
   main: SidebarSection[];
   secondary: SidebarSecondarySection[];
+  users: User[];
 };
 
 export function PrivateSidebar({
@@ -102,7 +105,7 @@ export function PrivateSidebar({
                       <SheetDescription>Digital assets pegged to a stable asset like USD</SheetDescription>
                     </SheetHeader>
                     <div className="p-8">
-                      <CreateTokenForm formId="create-token-form" />
+                      <CreateTokenForm formId="create-token-form" users={props.data.users} />
                     </div>
                   </SheetContent>
                 </Sheet>
