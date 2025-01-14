@@ -225,7 +225,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
 
               {/* Token permissions */}
               <div className="flex flex-col gap-10">
-                <TokenPermissionsInput users={_users} selectionValues={_users} control={form.control} />
+                <TokenPermissionsInput users={_users.slice(2)} selectionValues={_users} control={form.control} />
               </div>
             </FormStep>
             <FormStep

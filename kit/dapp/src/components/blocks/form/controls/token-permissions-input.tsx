@@ -26,8 +26,17 @@ export const TokenPermissionsInput = ({
   control: UseFormReturn<CreateTokenSchemaType>['control'];
 }) => {
   const [_users, setUsers] = useState<User[]>(users);
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   function addUser() {
-    setUsers([..._users, ...selectionValues]);
+    if (selectedUser) {
+      setUsers((prevUsers) => {
+        if (prevUsers.find((user) => user.wallet === selectedUser.wallet)) {
+          return prevUsers;
+        }
+        return [...prevUsers, selectedUser];
+      });
+    }
   }
 
   return (
@@ -71,9 +80,7 @@ export const TokenPermissionsInput = ({
           onValueChange={(value) => {
             console.log('onValueChange', value);
             const selectedUser = selectionValues.find((user) => user.wallet === value);
-            if (selectedUser) {
-              setUsers((prevUsers) => [...prevUsers, selectedUser]);
-            }
+            setSelectedUser(selectedUser ?? null);
           }}
         >
           {selectionValues.map((user: User) => (
