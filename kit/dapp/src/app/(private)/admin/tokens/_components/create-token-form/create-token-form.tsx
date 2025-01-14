@@ -18,7 +18,6 @@ import type { Address } from 'viem';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
-import TermsConditions from './terms-conditions';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
@@ -117,7 +116,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
   return (
     <div className="TokenizationWizard container mt-8">
       <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
-      <Card className="w-full">
+      <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
             form={form}
@@ -126,17 +125,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             onSubmit={onSubmit}
           >
             {/* Step 1 */}
-            <FormStep
-              form={form}
-              title="Introduction"
-              controls={{
-                next: { buttonText: 'Confirm' },
-              }}
-            >
-              <TermsConditions />
-            </FormStep>
-
-            {/* Step 2 */}
             <FormStep
               form={form}
               fields={['tokenName', 'tokenSymbol']}
@@ -210,7 +198,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
               />*/}
             </FormStep>
 
-            {/* Step 3 */}
+            {/* Step 2 */}
             <FormStep
               form={form}
               fields={['tokenName', 'tokenSymbol']}
