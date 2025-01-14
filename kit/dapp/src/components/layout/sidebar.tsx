@@ -1,5 +1,6 @@
 'use client';
 import { CreateTokenForm } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -102,7 +103,7 @@ export function PrivateSidebar({
                       <SheetDescription>Digital assets pegged to a stable asset like USD</SheetDescription>
                     </SheetHeader>
                     <div className="p-8">
-                      <CreateTokenForm formId="create-token-form" />
+                      <CreateTokenForm formId="create-token-form" users={[]} />
                     </div>
                   </SheetContent>
                 </Sheet>

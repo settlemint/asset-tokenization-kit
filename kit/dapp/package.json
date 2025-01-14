@@ -98,9 +98,7 @@
     "typescript": "5.7.3"
   },
   "peerDependencies": {},
-  "trustedDependencies": [
-    "sharp"
-  ],
+  "trustedDependencies": ["sharp"],
   "overrides": {
     "react-is": "19.0.0"
   }

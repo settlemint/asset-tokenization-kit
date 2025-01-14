@@ -59,6 +59,7 @@ export function SelectInput<T extends FieldValues>({
   className,
   showRequired,
   children,
+  onValueChange,
 }: SelectInputProps<T>) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -76,7 +77,13 @@ export function SelectInput<T extends FieldValues>({
               </FormLabel>
             )}
 
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select
+              onValueChange={(value) => {
+                field.onChange(value);
+                onValueChange?.(value);
+              }}
+              defaultValue={field.value}
+            >
               <FormControl className="w-full">
                 <SelectTrigger
                   style={{ outlineWidth: '0px' }}
