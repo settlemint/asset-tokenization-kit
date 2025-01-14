@@ -18,7 +18,7 @@
     "prod:deploy": "bash graph-remote-deploy.sh"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.93.3",
+    "@graphprotocol/graph-cli": "0.94.0",
     "@graphprotocol/graph-ts": "0.37.0"
   },
   "devDependencies": {
