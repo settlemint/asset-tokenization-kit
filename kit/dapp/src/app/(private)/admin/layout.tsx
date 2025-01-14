@@ -1,7 +1,6 @@
 import { PrivateSidebar, type SidebarData } from '@/components/layout/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
-import type { User } from '@/lib/auth/types';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 import Header from '../../../components/layout/header';
@@ -12,15 +11,6 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
     headers: await headers(),
   });
   const role = (session?.user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
-
-  const { users } = await auth.api.listUsers({
-    query: {
-      limit: Number.MAX_SAFE_INTEGER,
-      sortBy: 'createdAt',
-      sortDirection: 'desc',
-    },
-    headers: await headers(),
-  });
 
   const sidebarData: SidebarData = {
     main: await createMainSideBarData(role),
@@ -36,7 +26,6 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
         ],
       },
     ],
-    users: users as User[],
   };
 
   return (

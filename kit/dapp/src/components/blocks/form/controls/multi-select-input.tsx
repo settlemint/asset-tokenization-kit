@@ -2,6 +2,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import MultipleSelector from '@/components/ui/multiselect';
 import {} from '@radix-ui/react-select';
 import { type VariantProps, cva } from 'class-variance-authority';
+import { ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
 import type * as React from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
@@ -39,6 +40,7 @@ type MultiSelectInputProps<T extends FieldValues> = {
   label?: string;
   description?: string;
   showRequired?: boolean;
+  zIndex?: number;
   entries: { value: string; label: string; disable?: boolean }[];
 } & Omit<MultiSelectProps, 'name'> &
   VariantProps<typeof inputVariants> & {
@@ -57,6 +59,7 @@ export function MultiSelectInput<T extends FieldValues>({
   className,
   showRequired,
   entries,
+  zIndex,
 }: MultiSelectInputProps<T>) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -66,7 +69,7 @@ export function MultiSelectInput<T extends FieldValues>({
       name={name}
       render={({ field }) => {
         return (
-          <FormItem ref={ref} className="FormItem relative z-20 w-full ">
+          <FormItem ref={ref} className="FormItem relative z-20 w-full" style={{ zIndex }}>
             {label && (
               <FormLabel className="FormLabel mt-1 block text-foreground text-sm">
                 <span>{label}</span>
@@ -93,6 +96,7 @@ export function MultiSelectInput<T extends FieldValues>({
                 }}
               />
             </FormControl>
+            <ChevronDown className="pointer-events-none absolute top-2.5 right-3 h-4 w-4 cursor-pointer" />
 
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
