@@ -78,7 +78,6 @@ export const TokenPermissionsInput = ({
           control={control}
           placeholder="Select an admin"
           onValueChange={(value) => {
-            console.log('onValueChange', value);
             const selectedUser = selectionValues.find((user) => user.wallet === value);
             setSelectedUser(selectedUser ?? null);
           }}
