@@ -16,18 +16,20 @@ const tokenPermissions = [
   { value: 'SUPPLIER', label: 'Supplier' },
 ];
 
+type TokenUser = User & { tokenPermissions: string[] };
+
 export const TokenPermissionsInput = ({
   users,
   selectionValues,
   control,
 }: {
-  users: User[];
-  selectionValues: User[];
+  users: TokenUser[];
+  selectionValues: TokenUser[];
   control: UseFormReturn<CreateTokenSchemaType>['control'];
 }) => {
-  const [_users, setUsers] = useState<User[]>(users);
+  const [_users, setUsers] = useState<TokenUser[]>(users);
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<TokenUser | null>(null);
   function addUser() {
     if (selectedUser) {
       setUsers((prevUsers) => {
@@ -42,33 +44,40 @@ export const TokenPermissionsInput = ({
   return (
     <div>
       <ul>
-        {_users.map((user, index) => (
-          <li className="RepeatItem my-6" key={user.wallet?.toString() + index}>
-            <div className="User flex items-center gap-2">
-              <AddressAvatar address={user?.wallet?.toString()} email={user?.email} className="h-9 w-9 rounded-full" />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                {user?.name || user?.email ? (
-                  <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
-                ) : (
-                  <Skeleton className="h-4 w-24" />
-                )}
-                {user?.wallet ? (
-                  <span className="truncate text-muted-foreground text-xs">
-                    {shortHex(user?.wallet?.toString(), 12, 8)}
-                  </span>
-                ) : (
-                  <Skeleton className="h-3 w-20" />
-                )}
+        {_users.map((user, index) => {
+          console.log(user);
+          return (
+            <li className="RepeatItem my-6" key={user.wallet?.toString() + index}>
+              <div className="User flex items-center gap-2">
+                <AddressAvatar
+                  address={user?.wallet?.toString()}
+                  email={user?.email}
+                  className="h-9 w-9 rounded-full"
+                />
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  {user?.name || user?.email ? (
+                    <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
+                  ) : (
+                    <Skeleton className="h-4 w-24" />
+                  )}
+                  {user?.wallet ? (
+                    <span className="truncate text-muted-foreground text-xs">
+                      {shortHex(user?.wallet?.toString(), 12, 8)}
+                    </span>
+                  ) : (
+                    <Skeleton className="h-3 w-20" />
+                  )}
+                </div>
               </div>
-            </div>
-            <MultiSelectInput
-              entries={tokenPermissions}
-              name="tokenPermissions"
-              control={control}
-              zIndex={100 - index}
-            />
-          </li>
-        ))}
+              <MultiSelectInput
+                entries={tokenPermissions}
+                name={`tokenPermissions.${index}.tokenPermissions`}
+                control={control}
+                zIndex={100 - index}
+              />
+            </li>
+          );
+        })}
       </ul>
 
       <div className="flex items-center gap-20">

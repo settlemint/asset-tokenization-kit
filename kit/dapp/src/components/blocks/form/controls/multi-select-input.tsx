@@ -67,7 +67,9 @@ export function MultiSelectInput<T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => {
+      render={({ field, formState }) => {
+        console.log('field.value', field.value);
+        console.log('formState', formState);
         return (
           <FormItem ref={ref} className="FormItem relative z-20 w-full" style={{ zIndex }}>
             {label && (

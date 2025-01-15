@@ -7,7 +7,15 @@ export const CreateTokenSchema = z.object({
   isin: z.string(),
   admin: z.string(),
   collateralProofValidity: z.number(),
-  tokenPermissions: z.array(z.string()),
+  tokenPermissions: z.array(
+    z.object({
+      userId: z.string(),
+      userWallet: z.string(),
+      userEmail: z.string(),
+      userName: z.string(),
+      tokenPermissions: z.array(z.string()),
+    })
+  ),
   tokenLogo: z
     .instanceof(File)
     .refine((file) => file.type.startsWith('image/'), {
