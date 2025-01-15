@@ -10,14 +10,63 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
+type TokenUser = User & { tokenPermissions: string[] };
+
 const tokenPermissions = [
-  { value: 'ADMIN', label: 'Token Manager' },
+  { value: 'TOKEN_MANAGER', label: 'Token Manager' },
   { value: 'USER_MANAGER', label: 'User Manager' },
   { value: 'SUPPLIER', label: 'Supplier' },
 ];
 
-type TokenUser = User & { tokenPermissions: string[] };
+/**
+ *  SelectOption component
+ */
+const SelectOption = ({ user }: { user: TokenUser }) => {
+  return (
+    <div className="SelectOption flex items-center gap-2">
+      <AddressAvatar address={user.wallet} email={user.email} className="h-9 w-9 rounded-full" />
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        {user.name || user.email ? (
+          <span className="truncate font-semibold">{user.name ?? user.email}</span>
+        ) : (
+          <Skeleton className="h-4 w-24" />
+        )}
+        {user.wallet ? (
+          <span className="truncate text-xs">{shortHex(user.wallet, 12, 8)}</span>
+        ) : (
+          <Skeleton className="h-3 w-20" />
+        )}
+      </div>
+    </div>
+  );
+};
 
+/**
+ *  ListItem component
+ */
+const ListItem = ({ user }: { user: TokenUser }) => {
+  return (
+    <div className="ListItem flex items-center gap-2">
+      <AddressAvatar address={user?.wallet?.toString()} email={user?.email} className="h-9 w-9 rounded-full" />
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        {user?.name || user?.email ? (
+          <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
+        ) : (
+          <Skeleton className="h-4 w-24" />
+        )}
+        {user?.wallet ? (
+          <span className="truncate text-muted-foreground text-xs">{shortHex(user?.wallet?.toString(), 12, 8)}</span>
+        ) : (
+          <Skeleton className="h-3 w-20" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * FormInput component
+ */
 export const TokenPermissionsInput = ({
   users,
   selectionValues,
@@ -27,47 +76,28 @@ export const TokenPermissionsInput = ({
   selectionValues: TokenUser[];
   control: UseFormReturn<CreateTokenSchemaType>['control'];
 }) => {
-  const [_users, setUsers] = useState<TokenUser[]>(users);
+  const [listItems, setListItems] = useState<TokenUser[]>(users);
 
-  const [selectedUser, setSelectedUser] = useState<TokenUser | null>(null);
-  function addUser() {
-    if (selectedUser) {
-      setUsers((prevUsers) => {
-        if (prevUsers.find((user) => user.wallet === selectedUser.wallet)) {
-          return prevUsers;
+  const [selectedValue, setSelectedValue] = useState<TokenUser | null>(null);
+  function addItem() {
+    if (selectedValue) {
+      setListItems((prevItems) => {
+        if (prevItems.find((user) => user.wallet === selectedValue.wallet)) {
+          return prevItems;
         }
-        return [...prevUsers, selectedUser];
+        return [...prevItems, selectedValue];
       });
     }
   }
 
   return (
-    <div>
+    <div className="ListComponent">
+      {/* List component */}
       <ul>
-        {_users.map((user, index) => {
+        {listItems.map((user, index) => {
           return (
-            <li className="RepeatItem my-6" key={user.wallet?.toString() + index}>
-              <div className="User flex items-center gap-2">
-                <AddressAvatar
-                  address={user?.wallet?.toString()}
-                  email={user?.email}
-                  className="h-9 w-9 rounded-full"
-                />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  {user?.name || user?.email ? (
-                    <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
-                  ) : (
-                    <Skeleton className="h-4 w-24" />
-                  )}
-                  {user?.wallet ? (
-                    <span className="truncate text-muted-foreground text-xs">
-                      {shortHex(user?.wallet?.toString(), 12, 8)}
-                    </span>
-                  ) : (
-                    <Skeleton className="h-3 w-20" />
-                  )}
-                </div>
-              </div>
+            <li className="ListItem my-6" key={user.wallet?.toString() + index}>
+              <ListItem user={user as TokenUser} />
               <MultiSelectInput
                 entries={tokenPermissions}
                 name={`tokenPermissions.${index}.tokenPermissions`}
@@ -79,44 +109,35 @@ export const TokenPermissionsInput = ({
         })}
       </ul>
 
-      <div className="flex items-center gap-20">
+      {/* Selection component */}
+      <div className="SelectionComponent flex items-center gap-0">
         <SelectInput
+          control={control}
           label="Add another admin:"
           name="admin"
-          control={control}
           placeholder="Select an admin"
           onValueChange={(value) => {
-            const selectedUser = selectionValues.find((user) => user.wallet === value);
-            setSelectedUser(selectedUser ?? null);
+            const selectedValue = selectionValues.find((user) => user.wallet === value);
+            setSelectedValue(selectedValue ?? null);
           }}
         >
-          {selectionValues.map((user: User) => (
+          {selectionValues.map((user) => (
             <SelectItem
               key={user.wallet}
               value={user.wallet}
               className="h-auto w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
             >
-              <AddressAvatar address={user.wallet} email={user.email} className="h-9 w-9 rounded-full" />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                {user.name || user.email ? (
-                  <span className="truncate font-semibold">{user.name ?? user.email}</span>
-                ) : (
-                  <Skeleton className="h-4 w-24" />
-                )}
-                {user.wallet ? (
-                  <span className="truncate text-xs">{shortHex(user.wallet, 12, 8)}</span>
-                ) : (
-                  <Skeleton className="h-3 w-20" />
-                )}
-              </div>
+              <SelectOption user={user as TokenUser} />
             </SelectItem>
           ))}
         </SelectInput>
         <button
           type="button"
-          className="mt-6 cursor-pointer rounded-full border border-dotted p-2"
+          className={`-ml-0.5 mt-[21px] cursor-pointer rounded-lg border border-[hsl(var(--input))] ${
+            selectedValue ? 'p-[18px]' : 'p-[10px]'
+          }`}
           onClick={() => {
-            addUser();
+            addItem();
           }}
         >
           <Plus className="h-4 w-4" color="hsl(var(--foreground))" />

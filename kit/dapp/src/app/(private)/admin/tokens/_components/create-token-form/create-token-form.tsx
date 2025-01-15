@@ -40,6 +40,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
+  // TODO: replace with admins within betterAuth organization scope
   const _users = [
     {
       id: '1',
@@ -136,7 +137,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
+      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
       <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
