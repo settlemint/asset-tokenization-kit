@@ -1,35 +1,29 @@
 'use client';
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { MultiSelectInput } from '@/components/blocks/form/controls/multi-select-input';
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
-import { SelectInput } from '@/components/blocks/form/controls/select-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
+import { TokenPermissionsInput } from '@/components/blocks/form/controls/token-permissions-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import {} from '@/components/ui/form';
-import { SelectItem } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { authClient } from '@/lib/auth/client';
-import { shortHex } from '@/lib/hex';
+import type { User } from '@/lib/auth/types';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
-import { Plus } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import type { Address } from 'viem';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
-import TermsConditions from './terms-conditions';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
   formId: string;
   className?: string;
+  users: User[];
 }
 
 type AvatarUser = {
@@ -52,7 +46,25 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
-export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
+export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
+  const _users = [
+    {
+      name: 'Roderik van der Veer',
+      email: 'roderik@settlemint.com',
+      wallet: '0xC63572b8eb67c3dA33339489e2804cb2e61e8681',
+    },
+    {
+      name: 'Daan Poron',
+      email: 'daan@settlemint.com',
+      wallet: '0x41800A6d985C736942C098B54dC2a6508F05a1BB',
+    },
+    {
+      name: 'Daan Poron',
+      email: 'daan@poron.be',
+      wallet: '0xb3B8cd0f4cc9c55D518cbbcEE4A836fa0C72e530',
+    },
+  ] as User[];
+
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
@@ -100,34 +112,11 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
     );
     // TODO: update the table
   }
-  const { data: userSession } = authClient.useSession();
-
-  const currentUser = userSession?.user;
-  const wallet = currentUser?.wallet as Address | undefined;
-  const email = currentUser?.email;
-  const name = currentUser?.name;
-
-  const user: AvatarUser | undefined = wallet
-    ? {
-        wallet,
-        email,
-        name,
-      }
-    : undefined;
-
-  const testUser = { ...user, wallet: '0x1234567890123456789012345678901234567890' as `0x${string}` };
-  const users: AvatarUser[] = user ? [user, testUser] : [];
-
-  const tokenPermissions = [
-    { value: 'ADMIN', label: '  Admin' },
-    { value: 'USER_MANAGER', label: 'User Manager' },
-    { value: 'ISSUER', label: 'Issuer' },
-  ];
 
   return (
     <div className="TokenizationWizard container mt-8">
       <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
-      <Card className="w-full">
+      <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
             form={form}
@@ -136,17 +125,6 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
             onSubmit={onSubmit}
           >
             {/* Step 1 */}
-            <FormStep
-              form={form}
-              title="Introduction"
-              controls={{
-                next: { buttonText: 'Confirm' },
-              }}
-            >
-              <TermsConditions />
-            </FormStep>
-
-            {/* Step 2 */}
             <FormStep
               form={form}
               fields={['tokenName', 'tokenSymbol']}
@@ -220,7 +198,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
               />*/}
             </FormStep>
 
-            {/* Step 3 */}
+            {/* Step 2 */}
             <FormStep
               form={form}
               fields={['tokenName', 'tokenSymbol']}
@@ -235,58 +213,7 @@ export function CreateTokenForm({ defaultValues }: CreateTokenFormProps) {
 
               {/* Token permissions */}
               <div className="flex flex-col gap-10">
-                <div className="RepeatItem">
-                  <div className="User flex items-center gap-2">
-                    <AddressAvatar address={user?.wallet} email={user?.email} className="h-9 w-9 rounded-full" />
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      {user?.name || user?.email ? (
-                        <span className="truncate font-semibold">{user?.name ?? user?.email}</span>
-                      ) : (
-                        <Skeleton className="h-4 w-24" />
-                      )}
-                      {user?.wallet ? (
-                        <span className="truncate text-xs">{shortHex(user?.wallet, 12, 8)}</span>
-                      ) : (
-                        <Skeleton className="h-3 w-20" />
-                      )}
-                    </div>
-                  </div>
-                  <MultiSelectInput entries={tokenPermissions} name="tokenPermissions" control={form.control} />
-                </div>
-
-                <div className="flex items-center gap-20">
-                  <SelectInput
-                    label="Add another admin:"
-                    name="admin"
-                    control={form.control}
-                    placeholder="Select an admin"
-                  >
-                    {users.map((user) => (
-                      <SelectItem
-                        key={user.wallet}
-                        value={user.wallet}
-                        className="h-auto w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
-                      >
-                        <AddressAvatar address={user.wallet} email={user.email} className="h-9 w-9 rounded-full" />
-                        <div className="grid flex-1 text-left text-sm leading-tight">
-                          {user.name || user.email ? (
-                            <span className="truncate font-semibold">{user.name ?? user.email}</span>
-                          ) : (
-                            <Skeleton className="h-4 w-24" />
-                          )}
-                          {user.wallet ? (
-                            <span className="truncate text-xs">{shortHex(user.wallet, 12, 8)}</span>
-                          ) : (
-                            <Skeleton className="h-3 w-20" />
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectInput>
-                  <button type="button" className="mt-6 cursor-pointer rounded-full border border-dotted p-2">
-                    <Plus className="h-4 w-4" color="hsl(var(--foreground))" />
-                  </button>
-                </div>
+                <TokenPermissionsInput users={_users.slice(2)} selectionValues={_users} control={form.control} />
               </div>
             </FormStep>
             <FormStep
