@@ -29,8 +29,8 @@
 
 ### Prerequisites
 
-1. Forge v0.3.0 - to manage smart contract dependencies with soldeer, ensure forge is up to date by installing the latest Foundry from https://book.getfoundry.sh/getting-started/installation 
-2. Node.js version >=20.18.1 - we use the graph cli, which requires node.js >=20.18.1. The fastest node package manager is [fnm](https://github.com/Schniz/fnm). You can use it to install node.js >=20.18.1.
+1. Forge v0.3.0 - The smart contract dependencies are managed with soldeer. To use it, ensure forge is up to date by installing the latest Foundry from https://book.getfoundry.sh/getting-started/installation 
+2. Node.js version >=20.18.1 - The Graph CLI is used in deploying the subgraph, which requires node.js >=20.18.1. The fastest node package manager is [fnm](https://github.com/Schniz/fnm). You can use it to install node.js >=20.18.1.
 
 ### Setup
 
