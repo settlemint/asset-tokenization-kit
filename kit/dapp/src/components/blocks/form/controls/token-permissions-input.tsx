@@ -45,7 +45,6 @@ export const TokenPermissionsInput = ({
     <div>
       <ul>
         {_users.map((user, index) => {
-          console.log(user);
           return (
             <li className="RepeatItem my-6" key={user.wallet?.toString() + index}>
               <div className="User flex items-center gap-2">
