@@ -38,7 +38,7 @@ interface TokenReceiptResponse {
 
 const CreateTokenReceiptQuery = portalGraphql(`
 query CreateTokenReceiptQuery($transactionHash: String!) {
-  StarterKitERC20FactoryCreateTokenReceipt(transactionHash: $transactionHash) {
+  StableCoinFactoryCreateReceipt(transactionHash: $transactionHash) {
     contractAddress
     status
     blockNumber
@@ -90,11 +90,18 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
   function onSubmit(values: CreateTokenSchemaType) {
     toast.promise(
       async () => {
-        const transactionHash = await createTokenAction(values);
+        const createTokenResult = await createTokenAction(values);
+        if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
+          throw new Error('Error creating token');
+        }
         return waitForTransactionReceipt({
           receiptFetcher: async (): Promise<TransactionReceiptWithDecodedError | null | undefined> => {
+            const transactionHash = createTokenResult?.data ?? '';
+            if (!transactionHash) {
+              return;
+            }
             const txresult = await portalClient.request<TokenReceiptResponse>(CreateTokenReceiptQuery, {
-              transactionHash: transactionHash?.data ?? '',
+              transactionHash,
             });
             return txresult.StarterKitERC20FactoryCreateTokenReceipt;
           },
