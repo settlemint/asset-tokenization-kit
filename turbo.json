@@ -12,6 +12,7 @@
       "dependsOn": ["codegen", "^lint", "//#format:biome"]
     },
     "dev": {
+      "dependsOn": ["codegen"],
       "cache": false,
       "persistent": true
     },
