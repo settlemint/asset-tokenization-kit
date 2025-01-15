@@ -10,6 +10,7 @@ import {} from '@/components/ui/form';
 import type { User } from '@/lib/auth/types';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useQueryState } from 'nuqs';
@@ -114,9 +115,15 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
   }
 
   return (
-    <div className="TokenizationWizard container mt-8">
+    <div className="TokenizationWizard container mt-8 h-[calc(100vh-100px)] overflow-auto">
       <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
-      <Card className="w-full pt-10">
+      <Card
+        className={cn(
+          'w-full pt-10',
+          'max-h-[calc(100vh-200px)]', // Limit card height
+          'overflow-y-auto' // Enable vertical scrolling
+        )}
+      >
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
             form={form}
