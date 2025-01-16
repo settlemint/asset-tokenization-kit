@@ -14,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
-import type { Address } from 'viem';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
@@ -25,12 +24,6 @@ interface CreateTokenFormProps {
   className?: string;
   users: User[];
 }
-
-type AvatarUser = {
-  wallet: Address;
-  email?: string;
-  name?: string;
-};
 
 interface TokenReceiptResponse {
   StarterKitERC20FactoryCreateTokenReceipt: TransactionReceiptWithDecodedError | null | undefined;
@@ -47,23 +40,45 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
+  // TODO: replace with admins within betterAuth organization scope
   const _users = [
     {
+      id: '1',
       name: 'Roderik van der Veer',
       email: 'roderik@settlemint.com',
       wallet: '0xC63572b8eb67c3dA33339489e2804cb2e61e8681',
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      banned: false,
+      role: 'admin',
+      tokenPermissions: ['SUPPLIER', 'USER_MANAGER', 'TOKEN_MANAGER'],
     },
     {
+      id: '2',
       name: 'Daan Poron',
       email: 'daan@settlemint.com',
       wallet: '0x41800A6d985C736942C098B54dC2a6508F05a1BB',
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      banned: false,
+      role: 'admin',
+      tokenPermissions: ['SUPPLIER', 'USER_MANAGER'],
     },
     {
+      id: '3',
       name: 'Daan Poron',
       email: 'daan@poron.be',
       wallet: '0xb3B8cd0f4cc9c55D518cbbcEE4A836fa0C72e530',
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      banned: false,
+      role: 'admin',
+      tokenPermissions: ['SUPPLIER'],
     },
-  ] as User[];
+  ] as (User & { tokenPermissions: string[] })[];
 
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
@@ -82,6 +97,13 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
       defaultValues: {
         ...createTokenDefaultValues,
         ...defaultValues,
+        tokenPermissions: _users.map((user) => ({
+          userId: user.id,
+          userWallet: user.wallet,
+          userEmail: user.email,
+          userName: user.name,
+          tokenPermissions: user.tokenPermissions,
+        })),
       },
     },
     errorMapProps: {},
@@ -122,7 +144,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={4} currentStep={step} complete={true} className="" />
+      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
       <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
