@@ -1,13 +1,24 @@
 import { z } from 'zod';
 
 export const CreateTokenSchema = z.object({
-  tokenName: z.string(),
-  tokenSymbol: z.string(),
+  tokenName: z.string().min(1, { message: 'Token name is required' }),
+  tokenSymbol: z.string().min(1, { message: 'Token symbol is required' }),
   decimals: z.number(),
   isin: z.string(),
   admin: z.string(),
   collateralProofValidity: z.number(),
-  tokenPermissions: z.array(
+  tokenPermissions: z
+    .array(
+      z.object({
+        userId: z.string(),
+        userWallet: z.string(),
+        userEmail: z.string(),
+        userName: z.string(),
+        tokenPermissions: z.array(z.string()),
+      })
+    )
+    .length(1, { message: 'at least one admin with token permissions is required' }),
+  tokenDistribution: z.array(
     z.object({
       userId: z.string(),
       userWallet: z.string(),
@@ -37,6 +48,7 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   collateralProofValidity: 3600,
   admin: '',
   tokenPermissions: [],
+  tokenDistribution: [],
 } as const;
 
 export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;

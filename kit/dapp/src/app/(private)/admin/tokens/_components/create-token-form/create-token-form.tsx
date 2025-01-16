@@ -1,11 +1,13 @@
 'use client';
-import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
-import { TextInput } from '@/components/blocks/form/controls/text-input';
-import { TokenPermissionsListInput } from '@/components/blocks/form/controls/token-permissions-list-input';
+import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-token-form/steps/1-token-basics';
+import {
+  TokenPermissions,
+  users as _users,
+} from '@/app/(private)/admin/tokens/_components/create-token-form/steps/2-token-permissions';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {} from '@/components/ui/form';
 import type { User } from '@/lib/auth/types';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -17,6 +19,7 @@ import { toast } from 'sonner';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
+import { TokenDistribution } from './steps/3-token-distribution';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
@@ -40,46 +43,6 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
 }`);
 
 export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
-  // TODO: replace with admins within betterAuth organization scope
-  const _users = [
-    {
-      id: '1',
-      name: 'Roderik van der Veer',
-      email: 'roderik@settlemint.com',
-      wallet: '0xC63572b8eb67c3dA33339489e2804cb2e61e8681',
-      emailVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      banned: false,
-      role: 'admin',
-      tokenPermissions: ['SUPPLIER', 'USER_MANAGER', 'TOKEN_MANAGER'],
-    },
-    {
-      id: '2',
-      name: 'Daan Poron',
-      email: 'daan@settlemint.com',
-      wallet: '0x41800A6d985C736942C098B54dC2a6508F05a1BB',
-      emailVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      banned: false,
-      role: 'admin',
-      tokenPermissions: ['SUPPLIER', 'USER_MANAGER'],
-    },
-    {
-      id: '3',
-      name: 'Daan Poron',
-      email: 'daan@poron.be',
-      wallet: '0xb3B8cd0f4cc9c55D518cbbcEE4A836fa0C72e530',
-      emailVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      banned: false,
-      role: 'admin',
-      tokenPermissions: ['SUPPLIER'],
-    },
-  ] as (User & { tokenPermissions: string[] })[];
-
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
@@ -153,7 +116,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             formId="create-token-form"
             onSubmit={onSubmit}
           >
-            {/* Step 1 */}
+            {/* Step 1 : Token basics */}
             <FormStep
               form={form}
               fields={['tokenName', 'tokenSymbol']}
@@ -163,88 +126,36 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 next: { buttonText: 'Confirm' },
               }}
             >
-              <CardTitle>Token basics</CardTitle>
-              <CardDescription>Provide the general information required to define your token.</CardDescription>
-              {/* Name */}
-              <TextInput
-                control={form.control}
-                label="Name"
-                name="tokenName"
-                placeholder="e.g., My Stable Coin"
-                showRequired
-              />
-
-              {/* Symbol */}
-              <TextInput
-                control={form.control}
-                label="Symbol"
-                name="tokenSymbol"
-                placeholder="e.g., MSC"
-                showRequired
-              />
-
-              {/* Decimals */}
-              <NumericInput
-                control={form.control}
-                label="Decimals"
-                name="decimals"
-                placeholder="e.g., MSC"
-                showRequired
-              />
-
-              {/* ISIN */}
-              <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
-
-              <CardTitle className="!mt-16">Stable coin configuration</CardTitle>
-              <CardDescription>Set parameters specific to your stable coin.</CardDescription>
-
-              {/* Collateral Proof Validity (Seconds) */}
-              <NumericInput
-                control={form.control}
-                label="Collateral Proof Validity (Seconds)"
-                name="collateralProofValidity"
-                placeholder="e.g., 3600"
-                showRequired
-              />
-
-              {/* Token Logo */}
-              {/*<FileInput
-                control={form.control}
-                name="tokenLogo"
-                description="This is the logo of the token"
-                label="Token Logo"
-                text="Click, or drop your logo here"
-                multiple={false}
-                maxSize={1024 * 1024 * 10} // 10MB
-                accept={{
-                  'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
-                  'text/*': [],
-                }}
-                server={{
-                  bucket: 'default-bucket',
-                  storage: 'minio',
-                }}
-              />*/}
+              <TokenBasics form={form} />
             </FormStep>
 
-            {/* Step 2 */}
+            {/* Step 2 : Token permissions */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol']}
+              fields={['tokenPermissions']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
             >
-              <CardTitle>Token permissions</CardTitle>
-              <CardDescription>Define administrative roles and permissions for managing this token.</CardDescription>
-
-              {/* Token permissions */}
-              <div className="flex flex-col gap-10">
-                <TokenPermissionsListInput users={_users.slice(2)} selectionValues={_users} control={form.control} />
-              </div>
+              <TokenPermissions form={form} />
             </FormStep>
+
+            {/* Step 3 : Token distribution */}
+            <FormStep
+              form={form}
+              fields={['tokenPermissions']}
+              withSheetClose
+              controls={{
+                prev: { buttonText: 'Back' },
+                next: { buttonText: 'Confirm' },
+              }}
+            >
+              <TokenDistribution form={form} />
+            </FormStep>
+
+            {/* Step 4 : Review */}
             <FormStep
               form={form}
               title="Review"

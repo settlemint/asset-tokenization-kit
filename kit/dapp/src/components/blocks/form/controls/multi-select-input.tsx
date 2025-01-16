@@ -115,7 +115,8 @@ export function MultiSelectInput<T extends FieldValues>({
               </div>
             </FormControl>
             <ChevronDown
-              className={`pointer-events-none absolute top-1 h-4 w-4 cursor-pointer ${buttonIcon ? 'right-12' : 'right-3'}`}
+              color="hsl(var(--muted-foreground))"
+              className={` pointer-events-none absolute top-1 h-4 w-4 cursor-pointer ${buttonIcon ? 'right-12' : 'right-3'}`}
             />
 
             {description && <FormDescription>{description}</FormDescription>}

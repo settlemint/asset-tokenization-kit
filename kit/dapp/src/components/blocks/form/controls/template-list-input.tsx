@@ -117,7 +117,7 @@ export const TemplateListInput = ({
             addItem();
           }}
         >
-          <Plus size={16} strokeWidth={2} aria-hidden="true" color="hsl(var(--foreground))" />
+          <Plus size={16} strokeWidth={2} aria-hidden="true" color="hsl(var(--muted-foreground))" />
         </button>
       </div>
     </div>
