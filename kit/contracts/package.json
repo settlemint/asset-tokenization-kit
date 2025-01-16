@@ -17,7 +17,7 @@
     "test": "forge test -vvv",
     "test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts",
     "genesis": "bash -ex genesis-output.sh",
-    "prod:deploy": "bun dependencies && bun run prebuild && bun run build && settlemint scs hardhat deploy remote"
+    "prod:deploy": "settlemint scs hardhat deploy remote"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.3",

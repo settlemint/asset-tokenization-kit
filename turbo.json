@@ -53,6 +53,11 @@
     "genesis": {
       "dependsOn": ["dependencies", "^genesis"],
       "outputs": ["genesis-output.json"]
+    },
+    "contracts#prod:deploy": {
+      "dependsOn": ["contracts#dependencies", "contracts#build"],
+      "cache": false,
+      "persistent": true
     }
   }
 }
