@@ -69,13 +69,12 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.1.42",
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0",
+    "graphql": "16.10.0",
     "elliptic": "6.6.1",
     "ws": "8.18.0",
-    "graphql": "16.10.0"
+    "adm-zip": "0.5.2"
   }
 }
