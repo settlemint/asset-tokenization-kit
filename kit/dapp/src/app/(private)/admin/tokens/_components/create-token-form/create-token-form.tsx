@@ -1,7 +1,7 @@
 'use client';
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
-import { TokenPermissionsInput } from '@/components/blocks/form/controls/token-permissions-input';
+import { TokenPermissionsListInput } from '@/components/blocks/form/controls/token-permissions-list-input';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
@@ -242,7 +242,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
 
               {/* Token permissions */}
               <div className="flex flex-col gap-10">
-                <TokenPermissionsInput users={_users.slice(2)} selectionValues={_users} control={form.control} />
+                <TokenPermissionsListInput users={_users.slice(2)} selectionValues={_users} control={form.control} />
               </div>
             </FormStep>
             <FormStep
