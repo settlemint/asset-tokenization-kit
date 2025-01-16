@@ -126,7 +126,7 @@
   "overrides": {
     "ws": "8.18.0",
     "elliptic": "6.6.1",
-    "adm-zip": "0.5.2",
+    "adm-zip": "0.5.16",
     "graphql": "16.10.0",
     "react-is": "19.0.0",
   },
@@ -949,7 +949,7 @@
 
     "acorn-walk": ["acorn-walk@8.3.4", "", { "dependencies": { "acorn": "^8.11.0" } }, "sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g=="],
 
-    "adm-zip": ["adm-zip@0.5.2", "", {}, "sha512-lUI3ZSNsfQXNYNzGjt68MdxzCs0eW29lgL74y/Y2h4nARgHmH3poFWuK3LonvFbNHFt4dTb2X/QQ4c1ZUWWsJw=="],
+    "adm-zip": ["adm-zip@0.5.16", "", {}, "sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ=="],
 
     "aes-js": ["aes-js@4.0.0-beta.5", "", {}, "sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q=="],
 
