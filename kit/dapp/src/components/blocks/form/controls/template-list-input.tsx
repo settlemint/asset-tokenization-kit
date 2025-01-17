@@ -112,7 +112,7 @@ export const TemplateListInput = ({
         </SelectInput>
         <button
           type="button"
-          className={`e inline-flex w-10 ${selectedValue ? 'h-[54px]' : 'h-[38px]'} items-center justify-center self-end rounded-e-lg border border-input bg-background text-muted-foreground/80 text-sm outline-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
+          className={`inline-flex w-10 ${selectedValue ? 'h-[54px]' : 'h-[38px]'} items-center justify-center self-end rounded-e-lg border border-input bg-background text-muted-foreground/80 text-sm outline-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
           onClick={() => {
             addItem();
           }}
