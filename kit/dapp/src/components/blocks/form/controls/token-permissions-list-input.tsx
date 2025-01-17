@@ -6,7 +6,7 @@ import { SelectItem } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { shortHex } from '@/lib/hex';
-import { Plus } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
@@ -67,7 +67,7 @@ const ListItem = ({ user }: { user: TokenUser }) => {
 /**
  * FormInput component
  */
-export const TokenPermissionsInput = ({
+export const TokenPermissionsListInput = ({
   users,
   selectionValues,
   control,
@@ -79,6 +79,7 @@ export const TokenPermissionsInput = ({
   const [listItems, setListItems] = useState<TokenUser[]>(users);
 
   const [selectedValue, setSelectedValue] = useState<TokenUser | null>(null);
+
   function addItem() {
     if (selectedValue) {
       setListItems((prevItems) => {
@@ -88,6 +89,10 @@ export const TokenPermissionsInput = ({
         return [...prevItems, selectedValue];
       });
     }
+  }
+
+  function removeItem(walletToRemove: string) {
+    setListItems((prevItems) => prevItems.filter((user) => user.wallet !== walletToRemove));
   }
 
   return (
@@ -103,6 +108,8 @@ export const TokenPermissionsInput = ({
                 name={`tokenPermissions.${index}.tokenPermissions`}
                 control={control}
                 zIndex={100 - index}
+                onButtonClick={() => removeItem(user.wallet?.toString())}
+                buttonIcon={<Minus size={12} strokeWidth={2} aria-hidden="true" color="hsl(var(--foreground))" />}
               />
             </li>
           );
@@ -112,6 +119,7 @@ export const TokenPermissionsInput = ({
       {/* Selection component */}
       <div className="SelectionComponent flex items-center gap-0">
         <SelectInput
+          className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
           control={control}
           label="Add another admin:"
           name="admin"
@@ -133,14 +141,12 @@ export const TokenPermissionsInput = ({
         </SelectInput>
         <button
           type="button"
-          className={`-ml-0.5 mt-[21px] cursor-pointer rounded-lg border border-[hsl(var(--input))] ${
-            selectedValue ? 'p-[18px]' : 'p-[10px]'
-          }`}
+          className={`e inline-flex w-10 ${selectedValue ? 'h-[54px]' : 'h-[38px]'} items-center justify-center self-end rounded-e-lg border border-input bg-background text-muted-foreground/80 text-sm outline-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
           onClick={() => {
             addItem();
           }}
         >
-          <Plus className="h-4 w-4" color="hsl(var(--foreground))" />
+          <Plus size={16} strokeWidth={2} aria-hidden="true" color="hsl(var(--foreground))" />
         </button>
       </div>
     </div>

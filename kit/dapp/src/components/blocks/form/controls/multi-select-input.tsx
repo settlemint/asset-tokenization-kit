@@ -42,6 +42,8 @@ type MultiSelectInputProps<T extends FieldValues> = {
   showRequired?: boolean;
   zIndex?: number;
   entries: { value: string; label: string; disable?: boolean }[];
+  onButtonClick?: () => void;
+  buttonIcon?: React.ReactNode;
 } & Omit<MultiSelectProps, 'name'> &
   VariantProps<typeof inputVariants> & {
     name: Path<T>;
@@ -60,6 +62,8 @@ export function MultiSelectInput<T extends FieldValues>({
   showRequired,
   entries,
   zIndex,
+  onButtonClick,
+  buttonIcon,
 }: MultiSelectInputProps<T>) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -78,25 +82,42 @@ export function MultiSelectInput<T extends FieldValues>({
             )}
 
             <FormControl className={`${label ? '' : 'mt-2'} w-full`}>
-              <MultipleSelector
-                commandProps={{
-                  label,
-                }}
-                value={(field.value || []).map((value) => ({
-                  value,
-                  label: entries.find((entry) => entry.value === value)?.label || value,
-                }))}
-                defaultOptions={entries}
-                placeholder={placeholder}
-                hideClearAllButton
-                hidePlaceholderWhenSelected
-                emptyIndicator={<p className="text-center text-sm">No results found</p>}
-                onChange={(selectedItems) => {
-                  field.onChange(selectedItems.map((item) => item.value));
-                }}
-              />
+              <div className="flex">
+                <MultipleSelector
+                  className={`${buttonIcon ? 'rounded-e-none ' : ''}`}
+                  commandProps={{
+                    label,
+                  }}
+                  value={(field.value || []).map((value) => ({
+                    value,
+                    label: entries.find((entry) => entry.value === value)?.label || value,
+                  }))}
+                  defaultOptions={entries}
+                  placeholder={placeholder}
+                  hideClearAllButton
+                  hidePlaceholderWhenSelected
+                  emptyIndicator={<p className="text-center text-sm">No results found</p>}
+                  onChange={(selectedItems) => {
+                    field.onChange(selectedItems.map((item) => item.value));
+                  }}
+                />
+                {onButtonClick && (
+                  <button
+                    type="button"
+                    className="inline-flex aspect-square w-10 items-center justify-center self-end rounded-e-lg border border-input bg-background text-muted-foreground/80 text-sm outline-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => {
+                      onButtonClick();
+                    }}
+                  >
+                    {buttonIcon}
+                  </button>
+                )}
+              </div>
             </FormControl>
-            <ChevronDown className="pointer-events-none absolute top-2.5 right-3 h-4 w-4 cursor-pointer" />
+            <ChevronDown
+              color="hsl(var(--muted-foreground))"
+              className={` pointer-events-none absolute top-1 h-4 w-4 cursor-pointer ${buttonIcon ? 'right-12' : 'right-3'}`}
+            />
 
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />
