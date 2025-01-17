@@ -6,6 +6,7 @@ import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { ResultOf } from 'gql.tada';
 import { headers } from 'next/headers';
 import { CreateTokenSchema } from './create-token-form-schema';
+import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const CreateTokenMutation = portalGraphql(`
@@ -36,7 +37,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
   let result: CreateTokenMutationResponse | null = null;
   try {
     result = await portalClient.request(CreateTokenMutation, {
-      address: process.env.SETTLEMINT_PREDEPLOYED_CONTRACT_ERC20_FACTORY!,
+      address: STABLE_COIN_FACTORY_ADDRESS,
       from: session.user.wallet,
       name: tokenName,
       symbol: tokenSymbol,
