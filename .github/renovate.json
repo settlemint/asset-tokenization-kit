@@ -16,8 +16,7 @@
     ":widenPeerDependencies",
     ":updateNotScheduled",
     "security:openssf-scorecard",
-    "schedule:nonOfficeHours",
-    "helpers:pinGitHubActionDigests"
+    "schedule:nonOfficeHours"
   ],
   "labels": ["dependencies"],
   "rebaseWhen": "conflicted",
@@ -32,7 +31,7 @@
   ],
   "packageRules": [
     {
-      "groupName": "SettleMint packages",
+      "groupName": "SettleMint SDK",
       "groupSlug": "settlemint",
       "matchPackageNames": ["/^@settlemint//"]
     }
