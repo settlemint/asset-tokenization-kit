@@ -60,13 +60,15 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
       defaultValues: {
         ...createTokenDefaultValues,
         ...defaultValues,
-        tokenPermissions: _users.map((user) => ({
-          userId: user.id,
-          userWallet: user.wallet,
-          userEmail: user.email,
-          userName: user.name,
-          tokenPermissions: user.tokenPermissions,
-        })),
+        tokenPermissions: _users
+          .map((user) => ({
+            id: user.id,
+            wallet: user.wallet,
+            email: user.email,
+            name: user.name,
+            tokenPermissions: user.tokenPermissions,
+          }))
+          .slice(2),
       },
     },
     errorMapProps: {},
@@ -145,7 +147,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             {/* Step 3 : Token distribution */}
             <FormStep
               form={form}
-              fields={['tokenPermissions']}
+              fields={['tokenDistribution']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
