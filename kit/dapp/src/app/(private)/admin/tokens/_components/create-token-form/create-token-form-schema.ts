@@ -10,20 +10,20 @@ export const CreateTokenSchema = z.object({
   tokenPermissions: z
     .array(
       z.object({
-        userId: z.string(),
-        userWallet: z.string(),
-        userEmail: z.string(),
-        userName: z.string(),
+        id: z.string(),
+        wallet: z.string(),
+        email: z.string(),
+        name: z.string(),
         tokenPermissions: z.array(z.string()),
       })
     )
-    .length(1, { message: 'at least one admin with token permissions is required' }),
+    .min(1, { message: 'at least one admin with token permissions is required' }),
   tokenDistribution: z.array(
     z.object({
-      userId: z.string(),
-      userWallet: z.string(),
-      userEmail: z.string(),
-      userName: z.string(),
+      id: z.string(),
+      wallet: z.string(),
+      email: z.string(),
+      name: z.string(),
       tokenPermissions: z.array(z.string()),
     })
   ),

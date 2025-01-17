@@ -57,7 +57,7 @@ export const TokenDistribution = ({ form }: { form: UseFormReturn<CreateTokenSch
 
       {/* Token permissions */}
       <div className="flex flex-col gap-10">
-        <TokenPermissionsListInput users={users.slice(2)} selectionValues={users} control={form.control} />
+        <TokenPermissionsListInput selectionValues={users} control={form.control} />
       </div>
     </div>
   );

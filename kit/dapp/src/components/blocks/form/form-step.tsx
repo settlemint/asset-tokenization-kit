@@ -56,6 +56,7 @@ export const FormStep = <
     fields
       .map((field) => {
         const fieldState = form.getFieldState(field);
+
         return !fieldState.invalid;
       })
       .every((isValid) => isValid);
