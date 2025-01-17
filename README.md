@@ -41,6 +41,7 @@ cd ../../
 bun settlemint connect # updates the list of subgraphs (not fun to do it twice)
 cd kit/dapp
 bun codegen
+bun init-contract-addresses -- 47561 # change this id based on the network id
 bun db:push # updates the db in hasura
 
 # TODO: Instead of doing that first signup is an admin thing, maybe we should have a CLI to create an admin account
