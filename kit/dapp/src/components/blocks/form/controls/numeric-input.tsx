@@ -1,5 +1,6 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import type { Control, FieldValues, Path } from 'react-hook-form';
 
 type NumericInputProps<T extends FieldValues> = {
@@ -29,7 +30,7 @@ export function NumericInput<T extends FieldValues>({
       render={({ field }) => {
         const _value = field.value === '' ? undefined : Number(field.value);
         return (
-          <FormItem className="FormItem relative">
+          <FormItem className={cn('FormItem relative', className)}>
             {label && (
               <FormLabel className="FormLabel">
                 <span>{label}</span>

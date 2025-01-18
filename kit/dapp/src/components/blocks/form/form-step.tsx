@@ -1,11 +1,10 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useRef } from 'react';
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
+import type {} from 'zod';
 import { useMultiFormStep } from './form-multistep';
 
 export const FormStep = <
@@ -18,11 +17,13 @@ export const FormStep = <
   controls,
   withSheetClose,
   children,
+  validatePage,
 }: {
-  title?: string;
   form: UseFormReturn<TFieldValues>;
-  fields?: TName[];
   children: ReactNode;
+  validatePage: (fields: TName[], formValues: TFieldValues) => boolean;
+  title?: string;
+  fields?: TName[];
   withSheetClose?: boolean;
   controls?: {
     prev?: { buttonText: string };
@@ -34,11 +35,8 @@ export const FormStep = <
   const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose ? [SheetClose, { asChild: true }] : [Fragment, {}];
 
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
-  const [isNavigate, setIsNavigate] = useState(true);
   const pageRef = useRef<number | null>(null);
   const page = pageRef.current ?? currentStep ?? 1;
-
-  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     if (pageRef.current === null) {
@@ -51,81 +49,9 @@ export const FormStep = <
     name: fields,
   });
 
-  const isValidPage =
-    page === currentStep &&
-    fields
-      .map((field) => {
-        const fieldState = form.getFieldState(field);
-
-        return !fieldState.invalid;
-      })
-      .every((isValid) => isValid);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    setIsNavigate(false);
-    const navigationEntry = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    const navigationType = navigationEntry?.type;
-    async function triggerFields() {
-      if (page === currentStep) {
-        await form.trigger(fields);
-      }
-      const validFields = fields.map((field) => {
-        const fieldState = form.getFieldState(field);
-        return !fieldState.invalid;
-      });
-      const isValid = validFields.every((isValid) => isValid);
-      return isValid;
-    }
-
-    const anyDirty = fields
-      .map((field) => {
-        const fieldState = form.getFieldState(field);
-        return fieldState.isDirty;
-      })
-      .some((isDirty) => Boolean(isDirty));
-
-    if (navigationType === 'reload' && anyDirty) {
-      triggerFields().then((isValid) => {
-        if (page === currentStep) {
-          setIsValid(isValid);
-        }
-      });
-      const validFields = fields.map((field) => {
-        const fieldState = form.getFieldState(field);
-        return !fieldState.invalid;
-      });
-      const isValid = validFields.every((isValid) => isValid);
-      if (page === currentStep) {
-        setIsValid(isValid);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const navigationEntry = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    const navigationType = navigationEntry?.type;
-
-    if (navigationType === 'navigate') {
-      setIsNavigate(true);
-      const validFields = fields.map((field) => {
-        const fieldState = form.getFieldState(field);
-        return !fieldState.invalid;
-      });
-
-      const dirtyFields = fields.map((field) => {
-        const fieldState = form.getFieldState(field);
-        return fieldState.isDirty;
-      });
-
-      const isValid = validFields.every((isValid) => isValid);
-      const isDirty = dirtyFields.length > 0 ? dirtyFields.every((isDirty) => isDirty) : true;
-      if (page === currentStep) {
-        setIsValid(isValid && isDirty);
-      }
-    }
-  }, [fields, form, page, currentStep]);
+  const getIsValidPage = () => {
+    return page === currentStep && validatePage(fields, form.getValues());
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -159,7 +85,7 @@ export const FormStep = <
         <Button
           type="button"
           className={cn({ hidden: currentStep === totalSteps })}
-          disabled={(!isValid && isNavigate) || (!isValidPage && !isNavigate)}
+          disabled={!getIsValidPage()}
           onClick={() => {
             nextStep();
           }}
