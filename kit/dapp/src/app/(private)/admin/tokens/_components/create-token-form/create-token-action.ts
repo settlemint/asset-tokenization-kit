@@ -1,12 +1,12 @@
 'use server';
 
 import { auth } from '@/lib/auth/auth';
+import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { ResultOf } from 'gql.tada';
 import { headers } from 'next/headers';
 import { CreateTokenSchema } from './create-token-form-schema';
-import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const CreateTokenMutation = portalGraphql(`
@@ -42,8 +42,8 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       name: tokenName,
       symbol: tokenSymbol,
     });
-  } catch (error) {
-    console.error('SUBMIT error', error);
+  } catch {
+    throw new Error('Error creating token');
   }
 
   const transactionHash = result?.StableCoinFactoryCreate?.transactionHash;
