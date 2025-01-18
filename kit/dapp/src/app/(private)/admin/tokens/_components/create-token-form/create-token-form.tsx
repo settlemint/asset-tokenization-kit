@@ -29,7 +29,7 @@ interface CreateTokenFormProps {
 }
 
 interface TokenReceiptResponse {
-  StarterKitERC20FactoryCreateTokenReceipt: TransactionReceiptWithDecodedError | null | undefined;
+  StableCoinFactoryCreateReceipt: TransactionReceiptWithDecodedError | null | undefined;
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
@@ -90,7 +90,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             const txresult = await portalClient.request<TokenReceiptResponse>(CreateTokenReceiptQuery, {
               transactionHash,
             });
-            return txresult.StarterKitERC20FactoryCreateTokenReceipt;
+            return txresult.StableCoinFactoryCreateReceipt;
           },
         });
       },
