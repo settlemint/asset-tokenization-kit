@@ -78,7 +78,14 @@ export const FormStep = <
       return isValid;
     }
 
-    if (navigationType === 'reload') {
+    const anyDirty = fields
+      .map((field) => {
+        const fieldState = form.getFieldState(field);
+        return fieldState.isDirty;
+      })
+      .some((isDirty) => Boolean(isDirty));
+
+    if (navigationType === 'reload' && anyDirty) {
       triggerFields().then((isValid) => {
         if (page === currentStep) {
           setIsValid(isValid);
