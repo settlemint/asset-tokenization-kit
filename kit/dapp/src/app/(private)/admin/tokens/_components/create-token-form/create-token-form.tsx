@@ -28,10 +28,6 @@ interface CreateTokenFormProps {
   users: User[];
 }
 
-interface TokenReceiptResponse {
-  StableCoinFactoryCreateReceipt: TransactionReceiptWithDecodedError | null | undefined;
-}
-
 const CreateTokenReceiptQuery = portalGraphql(`
 query CreateTokenReceiptQuery($transactionHash: String!) {
   StableCoinFactoryCreateReceipt(transactionHash: $transactionHash) {
@@ -87,7 +83,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             if (!transactionHash) {
               return;
             }
-            const txresult = await portalClient.request<TokenReceiptResponse>(CreateTokenReceiptQuery, {
+            const txresult = await portalClient.request(CreateTokenReceiptQuery, {
               transactionHash,
             });
             return txresult.StableCoinFactoryCreateReceipt;
