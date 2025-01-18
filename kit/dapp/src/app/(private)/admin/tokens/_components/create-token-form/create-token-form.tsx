@@ -81,7 +81,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
         if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
           throw new Error('Error creating token');
         }
-        return waitForTransactionReceipt({
+        return await waitForTransactionReceipt({
           receiptFetcher: async (): Promise<TransactionReceiptWithDecodedError | null | undefined> => {
             const transactionHash = createTokenResult?.data ?? '';
             if (!transactionHash) {
@@ -121,7 +121,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             {/* Step 1 : Token basics */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol']}
+              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin', 'collateralProofValidity']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
