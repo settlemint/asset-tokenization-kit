@@ -10,7 +10,7 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
       {/* Step 1 */}
 
       <CardTitle>Token basics</CardTitle>
-      <CardDescription>Provide the general information required to define your token.</CardDescription>
+      <CardDescription className="mt-2">Provide the general information required to define your token.</CardDescription>
       {/* Name */}
       <TextInput control={form.control} label="Name" name="tokenName" placeholder="e.g., My Stable Coin" showRequired />
 
