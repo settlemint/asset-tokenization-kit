@@ -5,7 +5,7 @@
       "name": "@settlemint/starterkit-asset-tokenization",
       "devDependencies": {
         "@biomejs/biome": "1.9.4",
-        "@settlemint/sdk-cli": "1.0.7",
+        "@settlemint/sdk-cli": "1.0.8",
         "turbo": "2.3.3",
         "typescript": "5.7.3",
         "ultracite": "4.1.15",
@@ -45,13 +45,13 @@
         "@radix-ui/react-slot": "1.1.1",
         "@radix-ui/react-tabs": "1.1.2",
         "@radix-ui/react-tooltip": "1.1.6",
-        "@settlemint/sdk-blockscout": "1.0.6",
-        "@settlemint/sdk-hasura": "1.0.6",
-        "@settlemint/sdk-ipfs": "1.0.6",
-        "@settlemint/sdk-minio": "1.0.6",
-        "@settlemint/sdk-next": "1.0.6",
-        "@settlemint/sdk-portal": "1.0.6",
-        "@settlemint/sdk-thegraph": "1.0.6",
+        "@settlemint/sdk-blockscout": "1.0.7",
+        "@settlemint/sdk-hasura": "1.0.7",
+        "@settlemint/sdk-ipfs": "1.0.7",
+        "@settlemint/sdk-minio": "1.0.7",
+        "@settlemint/sdk-next": "1.0.7",
+        "@settlemint/sdk-portal": "1.0.7",
+        "@settlemint/sdk-thegraph": "1.0.7",
         "@tanstack/query-sync-storage-persister": "5.64.1",
         "@tanstack/react-query": "5.64.1",
         "@tanstack/react-query-devtools": "5.64.1",
@@ -782,23 +782,23 @@
 
     "@sentry/utils": ["@sentry/utils@5.30.0", "", { "dependencies": { "@sentry/types": "5.30.0", "tslib": "^1.9.3" } }, "sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww=="],
 
-    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-RBHS3URKsQd+amgwYxnMTUwS37/VXpx6U8q1/FklT6FZAsYoqB3LE8Y333Kiq9jdtv7v3DGR3ffhqguqQnr0Zg=="],
+    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-hU3uRoyzScbP/P80JYD0OYirQTK+z6whT5ocgIT65nzCCDsFVPW+4uZHw/lJvLA+xYf1QRg9RdbuatHipI3cAQ=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.0.7", "", { "dependencies": { "hardhat": "2.22.18", "tinyexec": "0.3.2", "tty-table": "4.2.3" }, "bin": { "settlemint": "dist/cli.js" } }, "sha512-eOLaGYhCKNOFwKwfKtFazrb1suPUp84szDCb+aCZcxEoNXl7lMWBWBAQah3ujHrlLYeshLNWCDbz8hx5mtYw3w=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.0.8", "", { "dependencies": { "hardhat": "2.22.18", "tinyexec": "0.3.2", "tty-table": "4.2.3" }, "bin": { "settlemint": "dist/cli.js" } }, "sha512-+63ZmQ6GQawXtsNufJ2hgmB1Jh/YhJ92doVEPfTppSLxwVzpkeS3c2Ed+j1BWzJhIKsZr1KW4gEIK775BRO3Yg=="],
 
-    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "drizzle-kit": "^0.30", "drizzle-orm": "^0.38", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-4RY03b0CYV9xQrWkxQntKS+CrTfgfAKjClIgEMHG9QcNdO/fUpWS0ep7357c2TgN1hsEcPYEo/ZnlZnpD5qTbg=="],
+    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "drizzle-kit": "^0.30", "drizzle-orm": "^0.38", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-jkfysyTZlVM/HKA60e50GbOVmV3/teVtY0SvyPP9QREg0HHt4B3o7fHQOsLAhMWXlc28SNAatfKaKEXR3hS50w=="],
 
-    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-Si2cH57pR3Q2F6PtmHBiOAP40/FMV+9hevIWBhyXueWEoNdLjZEpSTX76ECer/yAoUsW32wLBJFe1c49d2eoAg=="],
+    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-fhcwHAYLMi4dRoPF0Rx6nqmRn4eOwCpncCFhpQatzZaGxA2wCyZ/s6TG7rN6JASmUToBoQaoE2hxqGc97Zp2lA=="],
 
-    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "minio": "^8", "zod": "^3" } }, "sha512-3R1zdsVNZmajS2sbr2bNHrZ97c2Whq6burR3ppUzTzJX+Ht49/g8Pd5sRQjVRoJDh0OV1QuIoFJvPTIbdTu2ig=="],
+    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "minio": "^8", "zod": "^3" } }, "sha512-Bf7nluihrLDO83EaCiwP/KmuDpNkFcyQeAk4zzk6YXijOe4SAldCU1EJDAJXoIVMHGVeTCAGrWr3K9Nyh6HPHA=="],
 
-    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-kxqh8o8EJ+COWzJfQZcp9ZsipM5HZK92RzXlw3PBkuAALNHqYJiLlyXekqScwUE7wL72XUxo7fy+0x2wGPsflw=="],
+    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-CzCMI5JZqxeTZ3CHy4CP0VNXrPtw70/vS7iTzycFME5twr71uZzmjIAuZSJuSh0Id69dpDlhbKGBRUjVpFJJpw=="],
 
-    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-ND9GxEuKxPZMPnowI2a+VgLzvyF+b1tMaPFN1pDJOMZ1yiix9t4lUX2BAkzYKuWtt68udJivO9ziaPRXbIzpzA=="],
+    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-ABXXGm9BrrJttJPR2cAUXJdawnnD0vKBbvJ1Zi30HtpwZGRPDspm145ZjeFi4W0GBEGymbuOFWSKlT8DJkyymQ=="],
 
-    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.0.6", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.6", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-ku8zmNVSR3BIKQ5ztQg/Af/aIlRKYEyW0z3KkXxrRmsiKz2htJDrEaD7H3lZA9Htuw4f6CYmyQrggKMeXKIaGQ=="],
+    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.0.7", "", { "dependencies": { "@settlemint/sdk-utils": "1.0.7", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-McF7n9+CZ+kOE996HqXGxJNAQJs7WEOfuwnRqIO5B74NCcWEK+pwggHsqy6Ooe52N3IksGaNKHAmwO6P3VfzAQ=="],
 
-    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.0.6", "", { "dependencies": { "@antfu/install-pkg": "^1.0.0", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2.2.3", "@npmcli/package-json": "^6", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "1.0.0", "nano-spawn": "^0.2.0", "package-manager-detector": "^0.2", "yocto-spinner": "^0.1", "yoctocolors": "^2" } }, "sha512-y67yOddKYDaIgMm5ak/QiBJzJYCrmz783QryNCEmLpc2evY/j8yNBNSxFUYuZF7uu6IKjDQ3XN/kTMDJ2wmpOA=="],
+    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.0.7", "", { "dependencies": { "@antfu/install-pkg": "^1.0.0", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2.2.3", "@npmcli/package-json": "^6", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "1.0.0", "nano-spawn": "^0.2.0", "package-manager-detector": "^0.2", "yocto-spinner": "^0.1", "yoctocolors": "^2" } }, "sha512-ZgzOaePuOKWMPZySF7VU1n2T7s1sFUAJPP7HB2trQC9kwA0WsbXz59+YU5jA+0iTMTt1M1S/5sL/ARozihgwVw=="],
 
     "@simplewebauthn/browser": ["@simplewebauthn/browser@13.1.0", "", {}, "sha512-WuHZ/PYvyPJ9nxSzgHtOEjogBhwJfC8xzYkPC+rR/+8chl/ft4ngjiK8kSU5HtRJfczupyOh33b25TjYbvwAcg=="],
 
@@ -1276,7 +1276,7 @@
 
     "damerau-levenshtein": ["damerau-levenshtein@1.0.8", "", {}, "sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA=="],
 
-    "dapp": ["dapp@workspace:kit/dapp", { "dependencies": { "@better-fetch/fetch": "1.1.12", "@hookform/resolvers": "3.10.0", "@next-safe-action/adapter-react-hook-form": "1.0.13", "@nozbe/microfuzz": "1.0.0", "@radix-ui/react-avatar": "1.1.2", "@radix-ui/react-checkbox": "1.1.3", "@radix-ui/react-collapsible": "1.1.2", "@radix-ui/react-dialog": "1.1.4", "@radix-ui/react-dropdown-menu": "2.1.4", "@radix-ui/react-hover-card": "1.1.4", "@radix-ui/react-icons": "1.3.2", "@radix-ui/react-label": "2.1.1", "@radix-ui/react-navigation-menu": "1.2.3", "@radix-ui/react-popover": "1.1.4", "@radix-ui/react-select": "2.1.4", "@radix-ui/react-separator": "1.1.1", "@radix-ui/react-slot": "1.1.1", "@radix-ui/react-tabs": "1.1.2", "@radix-ui/react-tooltip": "1.1.6", "@settlemint/sdk-blockscout": "1.0.6", "@settlemint/sdk-hasura": "1.0.6", "@settlemint/sdk-ipfs": "1.0.6", "@settlemint/sdk-minio": "1.0.6", "@settlemint/sdk-next": "1.0.6", "@settlemint/sdk-portal": "1.0.6", "@settlemint/sdk-thegraph": "1.0.6", "@tanstack/query-sync-storage-persister": "5.64.1", "@tanstack/react-query": "5.64.1", "@tanstack/react-query-devtools": "5.64.1", "@tanstack/react-query-next-experimental": "5.64.1", "@tanstack/react-query-persist-client": "5.64.1", "@tanstack/react-table": "8.20.6", "better-auth": "1.1.14", "better-auth-harmony": "1.1.3", "class-variance-authority": "0.7.1", "clsx": "2.1.1", "cmdk": "1.0.4", "date-fns": "4.1.0", "drizzle-orm": "0.38.4", "lucide-react": "0.473.0", "next": "15.1.5", "next-safe-action": "7.10.2", "next-themes": "0.4.4", "nuqs": "2.3.1", "pg": "8.13.1", "react": "19.0.0", "react-awesome-gravatar": "2.0.3", "react-dom": "19.0.0", "react-dropzone": "14.3.5", "react-hook-form": "7.54.2", "recharts": "2.15.0", "sonner": "1.7.2", "tailwind-merge": "2.6.0", "tailwindcss-animate": "1.0.7", "usehooks-ts": "3.1.0", "viem": "2.22.9", "zod": "3.24.1", "zod-form-data": "2.0.5" }, "devDependencies": { "@better-auth/cli": "1.1.14", "@types/node": "22.10.7", "@types/pg": "8.11.10", "@types/react": "19.0.7", "@types/react-dom": "19.0.3", "drizzle-kit": "0.30.2", "eslint": "9.18.0", "eslint-config-next": "15.1.5", "postcss": "8.5.1", "tailwindcss": "3.4.17", "typescript": "5.7.3" } }],
+    "dapp": ["dapp@workspace:kit/dapp", { "dependencies": { "@better-fetch/fetch": "1.1.12", "@hookform/resolvers": "3.10.0", "@next-safe-action/adapter-react-hook-form": "1.0.13", "@nozbe/microfuzz": "1.0.0", "@radix-ui/react-avatar": "1.1.2", "@radix-ui/react-checkbox": "1.1.3", "@radix-ui/react-collapsible": "1.1.2", "@radix-ui/react-dialog": "1.1.4", "@radix-ui/react-dropdown-menu": "2.1.4", "@radix-ui/react-hover-card": "1.1.4", "@radix-ui/react-icons": "1.3.2", "@radix-ui/react-label": "2.1.1", "@radix-ui/react-navigation-menu": "1.2.3", "@radix-ui/react-popover": "1.1.4", "@radix-ui/react-select": "2.1.4", "@radix-ui/react-separator": "1.1.1", "@radix-ui/react-slot": "1.1.1", "@radix-ui/react-tabs": "1.1.2", "@radix-ui/react-tooltip": "1.1.6", "@settlemint/sdk-blockscout": "1.0.7", "@settlemint/sdk-hasura": "1.0.7", "@settlemint/sdk-ipfs": "1.0.7", "@settlemint/sdk-minio": "1.0.7", "@settlemint/sdk-next": "1.0.7", "@settlemint/sdk-portal": "1.0.7", "@settlemint/sdk-thegraph": "1.0.7", "@tanstack/query-sync-storage-persister": "5.64.1", "@tanstack/react-query": "5.64.1", "@tanstack/react-query-devtools": "5.64.1", "@tanstack/react-query-next-experimental": "5.64.1", "@tanstack/react-query-persist-client": "5.64.1", "@tanstack/react-table": "8.20.6", "better-auth": "1.1.14", "better-auth-harmony": "1.1.3", "class-variance-authority": "0.7.1", "clsx": "2.1.1", "cmdk": "1.0.4", "date-fns": "4.1.0", "drizzle-orm": "0.38.4", "lucide-react": "0.473.0", "next": "15.1.5", "next-safe-action": "7.10.2", "next-themes": "0.4.4", "nuqs": "2.3.1", "pg": "8.13.1", "react": "19.0.0", "react-awesome-gravatar": "2.0.3", "react-dom": "19.0.0", "react-dropzone": "14.3.5", "react-hook-form": "7.54.2", "recharts": "2.15.0", "sonner": "1.7.2", "tailwind-merge": "2.6.0", "tailwindcss-animate": "1.0.7", "usehooks-ts": "3.1.0", "viem": "2.22.9", "zod": "3.24.1", "zod-form-data": "2.0.5" }, "devDependencies": { "@better-auth/cli": "1.1.14", "@types/node": "22.10.7", "@types/pg": "8.11.10", "@types/react": "19.0.7", "@types/react-dom": "19.0.3", "drizzle-kit": "0.30.2", "eslint": "9.18.0", "eslint-config-next": "15.1.5", "postcss": "8.5.1", "tailwindcss": "3.4.17", "typescript": "5.7.3" } }],
 
     "data-view-buffer": ["data-view-buffer@1.0.2", "", { "dependencies": { "call-bound": "^1.0.3", "es-errors": "^1.3.0", "is-data-view": "^1.0.2" } }, "sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ=="],
 
