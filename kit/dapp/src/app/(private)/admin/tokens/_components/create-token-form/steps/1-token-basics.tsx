@@ -10,21 +10,42 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
       {/* Step 1 */}
 
       <CardTitle>Token basics</CardTitle>
-      <CardDescription>Provide the general information required to define your token.</CardDescription>
+      <CardDescription className="my-2">Provide the general information required to define your token.</CardDescription>
       {/* Name */}
-      <TextInput control={form.control} label="Name" name="tokenName" placeholder="e.g., My Stable Coin" showRequired />
+      <TextInput
+        control={form.control}
+        label="Name"
+        name="tokenName"
+        placeholder="e.g., My Stable Coin"
+        showRequired
+        className="mb-2"
+      />
 
       {/* Symbol */}
-      <TextInput control={form.control} label="Symbol" name="tokenSymbol" placeholder="e.g., MSC" showRequired />
+      <TextInput
+        control={form.control}
+        label="Symbol"
+        name="tokenSymbol"
+        placeholder="e.g., MSC"
+        showRequired
+        className="mb-2"
+      />
 
       {/* Decimals */}
-      <NumericInput control={form.control} label="Decimals" name="decimals" placeholder="e.g., MSC" showRequired />
+      <NumericInput
+        control={form.control}
+        label="Decimals"
+        name="decimals"
+        placeholder="e.g., MSC"
+        showRequired
+        className="mb-2"
+      />
 
       {/* ISIN */}
-      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
+      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" className="mb-2" />
 
-      <CardTitle className="!mt-16">Stable coin configuration</CardTitle>
-      <CardDescription>Set parameters specific to your stable coin.</CardDescription>
+      <CardTitle className="!mt-10">Stable coin configuration</CardTitle>
+      <CardDescription className="my-2">Set parameters specific to your stable coin.</CardDescription>
 
       {/* Collateral Proof Validity (Seconds) */}
       <NumericInput

@@ -48,7 +48,9 @@ export const TokenPermissions = ({ form }: { form: UseFormReturn<CreateTokenSche
   return (
     <div>
       <CardTitle>Token permissions</CardTitle>
-      <CardDescription>Define administrative roles and permissions for managing this token.</CardDescription>
+      <CardDescription className="mt-2">
+        Define administrative roles and permissions for managing this token.
+      </CardDescription>
       <div className="flex flex-col gap-10">
         <TokenPermissionsListInput selectionValues={users} control={form.control} />
       </div>

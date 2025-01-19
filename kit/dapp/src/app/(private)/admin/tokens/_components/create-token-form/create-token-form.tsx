@@ -18,7 +18,11 @@ import { useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
-import { CreateTokenSchema, createTokenDefaultValues } from './create-token-form-schema';
+import {
+  CreateTokenSchema,
+  createTokenDefaultValues,
+  validateCreateTokenSchemaFields,
+} from './create-token-form-schema';
 import { TokenDistribution } from './steps/3-token-distribution';
 
 interface CreateTokenFormProps {
@@ -77,7 +81,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
         if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
           throw new Error('Error creating token');
         }
-        return waitForTransactionReceipt({
+        return await waitForTransactionReceipt({
           receiptFetcher: async (): Promise<TransactionReceiptWithDecodedError | null | undefined> => {
             const transactionHash = createTokenResult?.data ?? '';
             if (!transactionHash) {
@@ -117,12 +121,13 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             {/* Step 1 : Token basics */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol']}
+              fields={['tokenName', 'tokenSymbol', 'decimals', 'collateralProofValidity']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
+              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenBasics form={form} />
             </FormStep>
@@ -136,6 +141,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
+              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenPermissions form={form} />
             </FormStep>
@@ -149,6 +155,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
+              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenDistribution form={form} />
             </FormStep>
@@ -159,8 +166,9 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
               title="Review"
               controls={{
                 prev: { buttonText: 'Back' },
-                submit: { buttonText: 'Submit' },
+                submit: { buttonText: 'Create stable coin' },
               }}
+              validatePage={validateCreateTokenSchemaFields}
             >
               <div>Review</div>
             </FormStep>
