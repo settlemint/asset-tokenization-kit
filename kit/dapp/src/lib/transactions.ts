@@ -5,14 +5,21 @@ export interface TransactionReceiptWithDecodedError {
   contractAddress?: string | null;
 }
 
+class TransactionFailedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TransactionFailedError';
+  }
+}
+
 function checkReceipt(receipt: TransactionReceiptWithDecodedError) {
   if (receipt.status === 'Success') {
     return receipt;
   }
   if (receipt.revertReasonDecoded) {
-    throw new Error(`Transaction failed: ${receipt.revertReasonDecoded}`);
+    throw new TransactionFailedError(`Transaction failed: ${receipt.revertReasonDecoded}`);
   }
-  throw new Error('Transaction failed');
+  throw new TransactionFailedError('Transaction failed');
 }
 
 export interface WaitForTransactionReceiptOptions {
@@ -29,7 +36,10 @@ export async function waitForTransactionReceipt(options: WaitForTransactionRecei
       if (receipt) {
         return checkReceipt(receipt);
       }
-    } catch {
+    } catch (error) {
+      if (error instanceof TransactionFailedError) {
+        throw error;
+      }
       // retry
     }
 
