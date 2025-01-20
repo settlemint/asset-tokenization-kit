@@ -117,6 +117,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             config={{ useLocalStorageState: false }}
             formId="create-token-form"
             onSubmit={onSubmit}
+            validatePage={validateCreateTokenSchemaFields}
           >
             {/* Step 1 : Token basics */}
             <FormStep
@@ -127,7 +128,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
-              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenBasics form={form} />
             </FormStep>
@@ -141,7 +141,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
-              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenPermissions form={form} />
             </FormStep>
@@ -155,7 +154,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
-              validatePage={validateCreateTokenSchemaFields}
             >
               <TokenDistribution form={form} />
             </FormStep>
@@ -168,7 +166,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
                 prev: { buttonText: 'Back' },
                 submit: { buttonText: 'Create stable coin' },
               }}
-              validatePage={validateCreateTokenSchemaFields}
             >
               <div>Review</div>
             </FormStep>
