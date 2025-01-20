@@ -19,6 +19,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error BondNotYetMatured();
     error BondInvalidMaturityDate();
     error BondMaturityReached();
+    error InvalidDecimals(uint8 decimals);
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -58,6 +59,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         ERC20Permit(name)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
 
         _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);

@@ -30,6 +30,8 @@ contract Equity is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
+    error InvalidDecimals(uint8 decimals);
+
     string private _equityClass;
     string private _equityCategory;
 
@@ -55,6 +57,8 @@ contract Equity is
         ERC20(name, symbol)
         ERC20Permit(name)
     {
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
+
         _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);

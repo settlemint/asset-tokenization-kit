@@ -26,6 +26,8 @@ contract StableCoin is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
+    error InvalidDecimals(uint8 decimals);
+
     /// @dev Stores the collateral proof details
     struct CollateralProof {
         uint256 amount;
@@ -54,6 +56,8 @@ contract StableCoin is
         ERC20Permit(name)
         ERC20Collateral(collateralLivenessSeconds)
     {
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
+
         _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);

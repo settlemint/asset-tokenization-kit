@@ -39,16 +39,24 @@ contract StableCoinTest is Test {
     }
 
     function test_DifferentDecimals() public {
-        uint8[] memory decimalValues = new uint8[](3);
-        decimalValues[0] = 6;
-        decimalValues[1] = 8;
-        decimalValues[2] = 18;
+        uint8[] memory decimalValues = new uint8[](4);
+        decimalValues[0] = 0; // Test zero decimals
+        decimalValues[1] = 6;
+        decimalValues[2] = 8;
+        decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
             StableCoin newToken = new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS);
             assertEq(newToken.decimals(), decimalValues[i]);
         }
+    }
+
+    function test_RevertOnInvalidDecimals() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
+        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS);
+        vm.stopPrank();
     }
 
     function test_OnlySupplyManagementCanMint() public {

@@ -13,6 +13,8 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     uint8 private immutable _decimals;
 
+    error InvalidDecimals(uint8 decimals);
+
     /// @notice Deploys a new CryptoCurrency token contract
     /// @dev Sets up the token with specified parameters and optionally mints initial supply
     /// @param name The token name (e.g. "My Token")
@@ -30,6 +32,7 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
         ERC20(name, symbol)
         ERC20Permit(name)
     {
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
         _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);

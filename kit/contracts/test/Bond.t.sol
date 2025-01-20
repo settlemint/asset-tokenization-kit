@@ -48,16 +48,24 @@ contract BondTest is Test {
     }
 
     function test_DifferentDecimals() public {
-        uint8[] memory decimalValues = new uint8[](3);
-        decimalValues[0] = 6;
-        decimalValues[1] = 8;
-        decimalValues[2] = 18;
+        uint8[] memory decimalValues = new uint8[](4);
+        decimalValues[0] = 0; // Test zero decimals
+        decimalValues[1] = 6;
+        decimalValues[2] = 8;
+        decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
             Bond newBond = new Bond("Test Bond", "TBOND", decimalValues[i], owner, maturityDate);
             assertEq(newBond.decimals(), decimalValues[i]);
         }
+    }
+
+    function test_RevertOnInvalidDecimals() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
+        new Bond("Test Bond", "TBOND", 19, owner, maturityDate);
+        vm.stopPrank();
     }
 
     function test_Transfer() public {
