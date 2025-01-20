@@ -16,6 +16,7 @@ interface FormMultiStepContextType<T extends FieldValues> {
   totalSteps: number;
   setTotalSteps: React.Dispatch<React.SetStateAction<number>>;
   registerFormStep: () => number;
+  validatePage: (fields: (keyof T)[], formValues: Partial<T>) => boolean;
   config: FormMultiStepConfig;
   form: UseFormReturn<T>;
   formId: string;
@@ -29,11 +30,13 @@ export const FormMultiStep = <T extends FieldValues>({
   form,
   formId,
   onSubmit,
+  validatePage,
 }: React.PropsWithChildren<{
   config: FormMultiStepConfig;
   form: UseFormReturn<T>;
   formId: string;
   onSubmit: (values: T) => void;
+  validatePage: (fields: (keyof T)[], formValues: Partial<T>) => boolean;
 }>) => {
   const [currentStep, setCurrentStep] = useQueryState('currentStep', parseAsInteger.withDefault(1));
   const [_formId] = useQueryState('formId', parseAsString.withDefault(formId));
@@ -66,6 +69,7 @@ export const FormMultiStep = <T extends FieldValues>({
         setTotalSteps,
         registerFormStep,
         config,
+        validatePage: validatePage as (fields: string[], formValues: Partial<FieldValues>) => boolean,
         form: form as UseFormReturn<FieldValues>,
         formId: formId ?? _formId,
       }}

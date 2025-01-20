@@ -16,11 +16,9 @@ export const FormStep = <
   controls,
   withSheetClose,
   children,
-  validatePage,
 }: {
   form: UseFormReturn<TFieldValues>;
   children: ReactNode;
-  validatePage: (fields: TName[], formValues: TFieldValues) => boolean;
   title?: string;
   fields?: TName[];
   withSheetClose?: boolean;
@@ -30,7 +28,7 @@ export const FormStep = <
     submit?: { buttonText: string };
   };
 }) => {
-  const { currentStep, nextStep, prevStep, totalSteps, registerFormStep, config } = useMultiFormStep();
+  const { currentStep, nextStep, prevStep, totalSteps, registerFormStep, config, validatePage } = useMultiFormStep();
   const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose ? [SheetClose, { asChild: true }] : [Fragment, {}];
 
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});

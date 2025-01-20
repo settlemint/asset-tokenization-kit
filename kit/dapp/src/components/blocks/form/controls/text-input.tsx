@@ -59,7 +59,7 @@ export function TextInput<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn('FormItem relative', className)}>
+        <FormItem className={cn('FormItem relative mt-4', className)}>
           {label && (
             <FormLabel className="FormLabel">
               <span>{label}</span>
