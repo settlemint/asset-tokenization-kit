@@ -12,37 +12,16 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
       <CardTitle>Token basics</CardTitle>
       <CardDescription className="my-2">Provide the general information required to define your token.</CardDescription>
       {/* Name */}
-      <TextInput
-        control={form.control}
-        label="Name"
-        name="tokenName"
-        placeholder="e.g., My Stable Coin"
-        showRequired
-        className="mb-2"
-      />
+      <TextInput control={form.control} label="Name" name="tokenName" placeholder="e.g., My Stable Coin" showRequired />
 
       {/* Symbol */}
-      <TextInput
-        control={form.control}
-        label="Symbol"
-        name="tokenSymbol"
-        placeholder="e.g., MSC"
-        showRequired
-        className="mb-2"
-      />
+      <TextInput control={form.control} label="Symbol" name="tokenSymbol" placeholder="e.g., MSC" showRequired />
 
       {/* Decimals */}
-      <NumericInput
-        control={form.control}
-        label="Decimals"
-        name="decimals"
-        placeholder="e.g., MSC"
-        showRequired
-        className="mb-2"
-      />
+      <NumericInput control={form.control} label="Decimals" name="decimals" placeholder="e.g., MSC" showRequired />
 
       {/* ISIN */}
-      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" className="mb-2" />
+      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
 
       <CardTitle className="!mt-10">Stable coin configuration</CardTitle>
       <CardDescription className="my-2">Set parameters specific to your stable coin.</CardDescription>
