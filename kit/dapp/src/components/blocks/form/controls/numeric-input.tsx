@@ -30,7 +30,7 @@ export function NumericInput<T extends FieldValues>({
       render={({ field }) => {
         const _value = field.value === '' ? undefined : Number(field.value);
         return (
-          <FormItem className={cn('FormItem relative', className)}>
+          <FormItem className={cn('FormItem relative mt-4', className)}>
             {label && (
               <FormLabel className="FormLabel">
                 <span>{label}</span>
