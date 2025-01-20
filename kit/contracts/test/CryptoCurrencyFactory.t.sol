@@ -10,6 +10,7 @@ contract CryptoCurrencyFactoryTest is Test {
     CryptoCurrencyFactory public factory;
     address public owner;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
+    uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -21,7 +22,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -30,6 +31,7 @@ contract CryptoCurrencyFactoryTest is Test {
         CryptoCurrency token = CryptoCurrency(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
+        assertEq(token.decimals(), DECIMALS, "Token decimals should match");
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertEq(token.totalSupply(), INITIAL_SUPPLY, "Token supply should match");
@@ -39,22 +41,26 @@ contract CryptoCurrencyFactoryTest is Test {
     function test_CreateMultipleTokens() public {
         string memory baseName = "Test Token ";
         string memory baseSymbol = "TEST";
-        uint256 count = 3;
+        uint8[] memory decimalValues = new uint8[](3);
+        decimalValues[0] = 6;
+        decimalValues[1] = 8;
+        decimalValues[2] = 18;
 
         vm.startPrank(owner);
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], INITIAL_SUPPLY);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             CryptoCurrency token = CryptoCurrency(tokenAddress);
+            assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
             assertEq(token.balanceOf(owner), INITIAL_SUPPLY, "Owner should have initial supply");
         }
         vm.stopPrank();
 
-        assertEq(factory.allTokensLength(), count, "Should have created three tokens");
+        assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
     function test_DeterministicAddresses() public {
@@ -62,7 +68,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address token1 = factory.create(name, symbol, INITIAL_SUPPLY);
+        address token1 = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
         vm.stopPrank();
 
         // Create a new factory instance
@@ -70,7 +76,7 @@ contract CryptoCurrencyFactoryTest is Test {
 
         vm.startPrank(owner);
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, INITIAL_SUPPLY);
+        address token2 = newFactory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
         vm.stopPrank();
 
         // The addresses should be different because the factory addresses are different
@@ -82,11 +88,12 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
         vm.stopPrank();
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test initial state
+        assertEq(token.decimals(), DECIMALS, "Decimals should match");
         assertEq(token.totalSupply(), INITIAL_SUPPLY, "Initial supply should match");
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY, "Owner should have initial supply");
     }
@@ -96,7 +103,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
         // Test minting with supply management role
@@ -123,9 +130,10 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
         uint256 zeroSupply = 0;
 
-        address tokenAddress = factory.create(name, symbol, zeroSupply);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, zeroSupply);
         CryptoCurrency token = CryptoCurrency(tokenAddress);
 
+        assertEq(token.decimals(), DECIMALS, "Decimals should match");
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
         assertEq(token.balanceOf(owner), 0, "Owner should have zero balance");
     }
@@ -135,7 +143,7 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory symbol = "TEST";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, INITIAL_SUPPLY);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -175,7 +183,7 @@ contract CryptoCurrencyFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,address,uint256)"),
+            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for CryptoCurrencyCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

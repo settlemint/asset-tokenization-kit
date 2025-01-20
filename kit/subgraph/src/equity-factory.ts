@@ -4,10 +4,11 @@ import { Equity } from '../generated/templates';
 import { fetchEquity } from './fetch/equity';
 
 export function handleEquityCreated(event: EquityCreatedEvent): void {
-  log.info('EquityCreated event received: {} {} {} {} {}', [
+  log.info('EquityCreated event received: {} {} {} {} {} {}', [
     event.params.token.toHexString(),
     event.params.name,
     event.params.symbol,
+    event.params.decimals.toString(),
     event.params.owner.toHexString(),
     event.params.tokenCount.toString(),
   ]);

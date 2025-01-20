@@ -12,6 +12,7 @@ contract StableCoinTest is Test {
     address public spender;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
+    uint8 public constant DECIMALS = 8;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -23,18 +24,39 @@ contract StableCoinTest is Test {
         spender = makeAddr("spender");
 
         vm.prank(owner);
-        stableCoin = new StableCoin("StableCoin", "STBL", owner, COLLATERAL_LIVENESS);
+        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, COLLATERAL_LIVENESS);
     }
 
     // Basic ERC20 functionality tests
     function test_InitialState() public view {
         assertEq(stableCoin.name(), "StableCoin");
         assertEq(stableCoin.symbol(), "STBL");
-        assertEq(stableCoin.decimals(), 18);
+        assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
         assertTrue(stableCoin.hasRole(stableCoin.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.USER_MANAGEMENT_ROLE(), owner));
+    }
+
+    function test_DifferentDecimals() public {
+        uint8[] memory decimalValues = new uint8[](4);
+        decimalValues[0] = 0; // Test zero decimals
+        decimalValues[1] = 6;
+        decimalValues[2] = 8;
+        decimalValues[3] = 18; // Test max decimals
+
+        for (uint256 i = 0; i < decimalValues.length; i++) {
+            vm.prank(owner);
+            StableCoin newToken = new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS);
+            assertEq(newToken.decimals(), decimalValues[i]);
+        }
+    }
+
+    function test_RevertOnInvalidDecimals() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
+        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS);
+        vm.stopPrank();
     }
 
     function test_OnlySupplyManagementCanMint() public {

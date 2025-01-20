@@ -10,6 +10,7 @@ contract EquityTest is Test {
     address public user1;
     address public user2;
     address public spender;
+    uint8 public constant DECIMALS = 8;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -25,7 +26,7 @@ contract EquityTest is Test {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        equity = new Equity("Test Equity Token", "TEST", "Common", "Series A", owner);
+        equity = new Equity("Test Equity Token", "TEST", DECIMALS, "Common", "Series A", owner);
 
         // Fund test accounts
         vm.deal(user1, 100 ether);
@@ -37,12 +38,34 @@ contract EquityTest is Test {
     function test_InitialState() public view {
         assertEq(equity.name(), "Test Equity Token");
         assertEq(equity.symbol(), "TEST");
+        assertEq(equity.decimals(), DECIMALS);
         assertEq(equity.equityClass(), "Common");
         assertEq(equity.equityCategory(), "Series A");
         assertTrue(equity.hasRole(equity.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(equity.hasRole(equity.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(equity.hasRole(equity.USER_MANAGEMENT_ROLE(), owner));
         assertEq(equity.totalSupply(), 0);
+    }
+
+    function test_DifferentDecimals() public {
+        uint8[] memory decimalValues = new uint8[](4);
+        decimalValues[0] = 0; // Test zero decimals
+        decimalValues[1] = 6;
+        decimalValues[2] = 8;
+        decimalValues[3] = 18; // Test max decimals
+
+        for (uint256 i = 0; i < decimalValues.length; i++) {
+            vm.prank(owner);
+            Equity newEquity = new Equity("Test Equity Token", "TEST", decimalValues[i], "Common", "Series A", owner);
+            assertEq(newEquity.decimals(), decimalValues[i]);
+        }
+    }
+
+    function test_RevertOnInvalidDecimals() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(Equity.InvalidDecimals.selector, 19));
+        new Equity("Test Equity Token", "TEST", 19, "Common", "Series A", owner);
+        vm.stopPrank();
     }
 
     function test_OnlySupplyManagementCanMint() public {

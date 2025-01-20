@@ -12,6 +12,7 @@ contract BondTest is Test {
     address public spender;
     uint256 public constant INITIAL_SUPPLY = 1000e18;
     uint256 public maturityDate;
+    uint8 public constant DECIMALS = 8;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -27,7 +28,7 @@ contract BondTest is Test {
         maturityDate = block.timestamp + 365 days;
 
         vm.startPrank(owner);
-        bond = new Bond("Test Bond", "TBOND", owner, maturityDate);
+        bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate);
         bond.mint(owner, INITIAL_SUPPLY);
         vm.stopPrank();
     }
@@ -36,7 +37,7 @@ contract BondTest is Test {
     function test_InitialState() public view {
         assertEq(bond.name(), "Test Bond");
         assertEq(bond.symbol(), "TBOND");
-        assertEq(bond.decimals(), 18);
+        assertEq(bond.decimals(), DECIMALS);
         assertEq(bond.totalSupply(), INITIAL_SUPPLY);
         assertEq(bond.balanceOf(owner), INITIAL_SUPPLY);
         assertEq(bond.maturityDate(), maturityDate);
@@ -44,6 +45,27 @@ contract BondTest is Test {
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner));
+    }
+
+    function test_DifferentDecimals() public {
+        uint8[] memory decimalValues = new uint8[](4);
+        decimalValues[0] = 0; // Test zero decimals
+        decimalValues[1] = 6;
+        decimalValues[2] = 8;
+        decimalValues[3] = 18; // Test max decimals
+
+        for (uint256 i = 0; i < decimalValues.length; i++) {
+            vm.prank(owner);
+            Bond newBond = new Bond("Test Bond", "TBOND", decimalValues[i], owner, maturityDate);
+            assertEq(newBond.decimals(), decimalValues[i]);
+        }
+    }
+
+    function test_RevertOnInvalidDecimals() public {
+        vm.startPrank(owner);
+        vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
+        new Bond("Test Bond", "TBOND", 19, owner, maturityDate);
+        vm.stopPrank();
     }
 
     function test_Transfer() public {

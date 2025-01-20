@@ -19,6 +19,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error BondNotYetMatured();
     error BondInvalidMaturityDate();
     error BondMaturityReached();
+    error InvalidDecimals(uint8 decimals);
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -32,6 +33,9 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice Tracks whether the bond has matured
     bool public isMatured;
 
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
+
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
         if (isMatured) revert BondMaturityReached();
@@ -41,11 +45,13 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice Deploys a new Bond token contract
     /// @param name The token name
     /// @param symbol The token symbol
+    /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param _maturityDate Timestamp when the bond matures
     constructor(
         string memory name,
         string memory symbol,
+        uint8 decimals_,
         address initialOwner,
         uint256 _maturityDate
     )
@@ -53,11 +59,20 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         ERC20Permit(name)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
 
+        _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
         maturityDate = _maturityDate;
+    }
+
+    /// @notice Returns the number of decimals used to get its user representation
+    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @return The number of decimals
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
 
     /// @notice Pauses all token transfers
