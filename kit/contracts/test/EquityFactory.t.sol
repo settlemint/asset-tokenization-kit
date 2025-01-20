@@ -9,6 +9,7 @@ import { Equity } from "../contracts/Equity.sol";
 contract EquityFactoryTest is Test {
     EquityFactory public factory;
     address public owner;
+    uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -22,7 +23,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.prank(owner);
-        address tokenAddress = factory.create(name, symbol, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -30,6 +31,7 @@ contract EquityFactoryTest is Test {
         Equity token = Equity(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
+        assertEq(token.decimals(), DECIMALS, "Token decimals should match");
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(token.hasRole(token.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -40,6 +42,10 @@ contract EquityFactoryTest is Test {
     function test_CreateMultipleTokens() public {
         string memory baseName = "Test Equity ";
         string memory baseSymbol = "TEQT";
+        uint8[] memory decimalValues = new uint8[](3);
+        decimalValues[0] = 6;
+        decimalValues[1] = 8;
+        decimalValues[2] = 18;
         string[] memory classes = new string[](3);
         classes[0] = "Common";
         classes[1] = "Preferred";
@@ -49,14 +55,15 @@ contract EquityFactoryTest is Test {
         categories[1] = "Series B";
         categories[2] = "Seed";
 
-        for (uint256 i = 0; i < 3; i++) {
+        for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, classes[i], categories[i]);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], classes[i], categories[i]);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Equity token = Equity(tokenAddress);
+            assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
             assertEq(token.equityClass(), classes[i], "Token class should match");
             assertEq(token.equityCategory(), categories[i], "Token category should match");
         }
@@ -70,13 +77,13 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address token1 = factory.create(name, symbol, class, category);
+        address token1 = factory.create(name, symbol, DECIMALS, class, category);
 
         // Create a new factory instance
         EquityFactory newFactory = new EquityFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, class, category);
+        address token2 = newFactory.create(name, symbol, DECIMALS, class, category);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -88,10 +95,11 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.create(name, symbol, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test initial state
+        assertEq(token.decimals(), DECIMALS, "Decimals should match");
         assertFalse(token.paused(), "Token should not be paused initially");
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
         assertEq(token.getVotes(owner), 0, "Initial voting power should be zero");
@@ -104,7 +112,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test minting with supply management role
@@ -156,7 +164,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(

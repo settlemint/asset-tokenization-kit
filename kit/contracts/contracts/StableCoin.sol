@@ -35,13 +35,18 @@ contract StableCoin is
     /// @dev The current collateral proof
     CollateralProof private _collateralProof;
 
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
+
     /// @param name The token name
     /// @param symbol The token symbol
+    /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     constructor(
         string memory name,
         string memory symbol,
+        uint8 decimals_,
         address initialOwner,
         uint48 collateralLivenessSeconds
     )
@@ -49,9 +54,17 @@ contract StableCoin is
         ERC20Permit(name)
         ERC20Collateral(collateralLivenessSeconds)
     {
+        _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+    }
+
+    /// @notice Returns the number of decimals used to get its user representation
+    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @return The number of decimals
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
 
     /// @dev Pauses all token transfers

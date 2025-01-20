@@ -11,28 +11,39 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 /// @custom:security-contact support@settlemint.com
 contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+    uint8 private immutable _decimals;
 
     /// @notice Deploys a new CryptoCurrency token contract
     /// @dev Sets up the token with specified parameters and optionally mints initial supply
     /// @param name The token name (e.g. "My Token")
     /// @param symbol The token symbol (e.g. "MTK")
+    /// @param decimals_ The number of decimals for the token
     /// @param initialSupply The amount of tokens to mint at deployment (in base units)
     /// @param initialOwner The address that will receive admin rights and initial supply
     constructor(
         string memory name,
         string memory symbol,
+        uint8 decimals_,
         uint256 initialSupply,
         address initialOwner
     )
         ERC20(name, symbol)
         ERC20Permit(name)
     {
+        _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
 
         if (initialSupply > 0) {
             _mint(initialOwner, initialSupply);
         }
+    }
+
+    /// @notice Returns the number of decimals used to get its user representation
+    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @return The number of decimals
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
 
     /// @notice Creates new tokens and assigns them to an address

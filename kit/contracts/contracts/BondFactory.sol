@@ -31,14 +31,23 @@ contract BondFactory {
     /// @dev Uses CREATE2 for deterministic addresses and emits a BondCreated event
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
-    /// @param maturityDate The timestamp when the bond matures
+    /// @param decimals The number of decimals for the token
+    /// @param maturityDate Timestamp when the bond matures
     /// @return bond The address of the newly created bond token
-    function create(string memory name, string memory symbol, uint256 maturityDate) external returns (address bond) {
+    function create(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        uint256 maturityDate
+    )
+        external
+        returns (address bond)
+    {
         if (maturityDate <= block.timestamp) revert InvalidMaturityDate();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, msg.sender, maturityDate));
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, msg.sender, maturityDate));
 
-        Bond newBond = new Bond{ salt: salt }(name, symbol, msg.sender, maturityDate);
+        Bond newBond = new Bond{ salt: salt }(name, symbol, decimals, msg.sender, maturityDate);
 
         bond = address(newBond);
         allBonds.push(newBond);

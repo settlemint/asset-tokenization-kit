@@ -31,12 +31,21 @@ contract CryptoCurrencyFactory {
     /// @dev Uses CREATE2 for deterministic addresses and emits a CryptoCurrencyCreated event
     /// @param name The name of the token
     /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
     /// @param initialSupply The initial supply of tokens to mint to the owner
     /// @return token The address of the newly created token
-    function create(string memory name, string memory symbol, uint256 initialSupply) external returns (address token) {
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, initialSupply, msg.sender));
+    function create(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        uint256 initialSupply
+    )
+        external
+        returns (address token)
+    {
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, initialSupply, msg.sender));
 
-        CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(name, symbol, initialSupply, msg.sender);
+        CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(name, symbol, decimals, initialSupply, msg.sender);
 
         token = address(newToken);
         allTokens.push(newToken);

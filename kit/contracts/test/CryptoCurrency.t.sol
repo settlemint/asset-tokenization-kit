@@ -9,6 +9,7 @@ contract CryptoCurrencyTest is Test {
     address public owner;
     address public user;
     uint256 public constant INITIAL_SUPPLY = 1_000_000e18;
+    uint8 public constant DECIMALS = 8;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -18,17 +19,30 @@ contract CryptoCurrencyTest is Test {
         user = makeAddr("user");
 
         vm.prank(owner);
-        token = new CryptoCurrency("Test Token", "TEST", INITIAL_SUPPLY, owner);
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner);
     }
 
     function test_InitialState() public view {
         assertEq(token.name(), "Test Token");
         assertEq(token.symbol(), "TEST");
-        assertEq(token.decimals(), 18);
+        assertEq(token.decimals(), DECIMALS);
         assertEq(token.totalSupply(), INITIAL_SUPPLY);
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY);
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner));
+    }
+
+    function test_DifferentDecimals() public {
+        uint8[] memory decimalValues = new uint8[](3);
+        decimalValues[0] = 6;
+        decimalValues[1] = 8;
+        decimalValues[2] = 18;
+
+        for (uint256 i = 0; i < decimalValues.length; i++) {
+            vm.prank(owner);
+            CryptoCurrency newToken = new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner);
+            assertEq(newToken.decimals(), decimalValues[i]);
+        }
     }
 
     function test_Transfer() public {
@@ -100,7 +114,7 @@ contract CryptoCurrencyTest is Test {
         uint256 privateKey = 0xA11CE;
         address signer = vm.addr(privateKey);
 
-        token = new CryptoCurrency("Test Token", "TEST", INITIAL_SUPPLY, signer);
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, signer);
 
         uint256 value = 1000e18;
         uint256 deadline = block.timestamp + 1 hours;
