@@ -46,7 +46,7 @@ contract EquityFactory {
         external
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, equityClass, equityCategory, msg.sender));
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, msg.sender));
 
         Equity newToken = new Equity{ salt: salt }(name, symbol, decimals, equityClass, equityCategory, msg.sender);
 

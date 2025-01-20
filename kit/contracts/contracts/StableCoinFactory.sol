@@ -48,7 +48,7 @@ contract StableCoinFactory {
     {
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, msg.sender, collateralLivenessSeconds));
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, collateralLivenessSeconds));
 
         StableCoin newToken =
             new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, collateralLivenessSeconds);

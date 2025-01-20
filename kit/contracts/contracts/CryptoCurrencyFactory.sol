@@ -44,7 +44,7 @@ contract CryptoCurrencyFactory {
         external
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, initialSupply, msg.sender));
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, initialSupply, msg.sender));
 
         CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(name, symbol, decimals, initialSupply, msg.sender);
 

@@ -48,7 +48,7 @@ contract BondFactory {
     {
         if (maturityDate <= block.timestamp) revert InvalidMaturityDate();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, msg.sender, maturityDate));
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, maturityDate));
 
         Bond newBond = new Bond{ salt: salt }(name, symbol, decimals, msg.sender, maturityDate);
 
