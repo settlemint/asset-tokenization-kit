@@ -11,14 +11,14 @@ contract BondFactory {
     error InvalidMaturityDate();
 
     /// @notice Emitted when a new bond token is created
-    /// @param bond The address of the newly created bond
+    /// @param token The address of the newly created bond
     /// @param name The name of the bond
     /// @param symbol The symbol of the bond
     /// @param decimals The number of decimals for the bond
     /// @param owner The owner of the bond
     /// @param bondCount The total number of bonds created so far
     event BondCreated(
-        address indexed bond, string name, string symbol, uint8 decimals, address indexed owner, uint256 bondCount
+        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 bondCount
     );
 
     /// @notice Array of all bonds created by this factory
