@@ -16,7 +16,7 @@ contract BondFactory {
     /// @param symbol The symbol of the bond
     /// @param decimals The number of decimals for the bond
     /// @param owner The owner of the bond
-    /// @param bondCount The total number of bonds created so far
+    /// @param tokenCount The total number of bonds created so far
     event BondCreated(
         address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 tokenCount
     );
