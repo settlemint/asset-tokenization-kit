@@ -30,19 +30,26 @@ contract Equity is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
+    error InvalidDecimals(uint8 decimals);
+
     string private _equityClass;
     string private _equityCategory;
+
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
 
     /// @notice Deploys a new Equity token contract
     /// @dev Initializes the token with name, symbol, class, category and sets up voting capabilities
     /// @param name The token name
     /// @param symbol The token symbol
+    /// @param decimals_ The number of decimals for the token
     /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
     /// @param initialOwner The address that will receive admin rights
     constructor(
         string memory name,
         string memory symbol,
+        uint8 decimals_,
         string memory equityClass_,
         string memory equityCategory_,
         address initialOwner
@@ -50,11 +57,21 @@ contract Equity is
         ERC20(name, symbol)
         ERC20Permit(name)
     {
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
+
+        _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
         _equityClass = equityClass_;
         _equityCategory = equityCategory_;
+    }
+
+    /// @notice Returns the number of decimals used to get its user representation
+    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @return The number of decimals
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
 
     /// @notice Returns the class of equity this token represents
