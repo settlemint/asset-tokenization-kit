@@ -26,13 +26,15 @@ export const CreateTokenSchema = z.object({
     .optional(),
   tokenDistribution: z
     .array(
-      z.object({
-        id: z.string(),
-        wallet: z.string(),
-        email: z.string(),
-        name: z.string(),
-        amount: z.number(),
-      })
+      z
+        .object({
+          id: z.string(),
+          wallet: z.string(),
+          email: z.string(),
+          name: z.string(),
+          amount: z.number(),
+        })
+        .optional()
     )
     .optional(),
   searchRecipientText: z.string().optional(),

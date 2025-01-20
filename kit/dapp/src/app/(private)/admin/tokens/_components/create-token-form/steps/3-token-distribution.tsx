@@ -64,27 +64,6 @@ export const users = [
 ] as (User & { tokenPermissions: string[] })[];
 
 /**
- *  ListItem component
- */
-const ListItem = ({ user }: { user: TokenUser }) => (
-  <div className="ListItem flex items-center gap-2">
-    <AddressAvatar address={user.wallet?.toString()} email={user.email} className="h-9 w-9 rounded-full" />
-    <div className="grid flex-1 text-left text-sm leading-tight">
-      {user.name || user.email ? (
-        <span className="truncate font-semibold">{user.name ?? user.email}</span>
-      ) : (
-        <Skeleton className="h-4 w-24" />
-      )}
-      {user.wallet ? (
-        <span className="truncate text-muted-foreground text-xs">{shortHex(user.wallet?.toString(), 12, 8)}</span>
-      ) : (
-        <Skeleton className="h-3 w-20" />
-      )}
-    </div>
-  </div>
-);
-
-/**
  *  DialogListItem component
  */
 const DialogListItem = ({ user }: { user: TokenUser }) => (
