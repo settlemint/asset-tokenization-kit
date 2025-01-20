@@ -4,11 +4,11 @@ import { StableCoin } from '../generated/templates';
 import { fetchStableCoin } from './fetch/stable-coin';
 
 export function handleStableCoinCreated(event: StableCoinCreatedEvent): void {
-  log.info('StableCoinCreated event received: {} {} {} {} {}', [
+  log.info('StableCoinCreated event received: {} {} {} {} {} {}', [
     event.params.token.toHexString(),
     event.params.name,
     event.params.symbol,
-    event.params.decimals,
+    event.params.decimals.toString(),
     event.params.owner.toHexString(),
     event.params.tokenCount.toString(),
   ]);

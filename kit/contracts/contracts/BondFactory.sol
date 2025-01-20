@@ -18,7 +18,7 @@ contract BondFactory {
     /// @param owner The owner of the bond
     /// @param bondCount The total number of bonds created so far
     event BondCreated(
-        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 bondCount
+        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 tokenCount
     );
 
     /// @notice Array of all bonds created by this factory
