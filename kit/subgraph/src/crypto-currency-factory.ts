@@ -8,6 +8,7 @@ export function handleCryptoCurrencyCreated(event: CryptoCurrencyCreatedEvent): 
     event.params.token.toHexString(),
     event.params.name,
     event.params.symbol,
+    event.params.decimals,
     event.params.owner.toHexString(),
     event.params.tokenCount.toString(),
   ]);
