@@ -1,8 +1,8 @@
-import { TokenPermissionsListInput } from '@/components/blocks/form/controls/token-permissions-list-input';
 import { CardDescription, CardTitle } from '@/components/ui/card';
 import type { User } from '@/lib/auth/types';
 import type { UseFormReturn } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
+import { TokenPermissionsListInput } from './token-permissions-list-input';
 
 // TODO: replace with admins within betterAuth organization scope
 export const users = [

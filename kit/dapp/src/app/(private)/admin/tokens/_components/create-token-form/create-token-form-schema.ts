@@ -18,15 +18,24 @@ export const CreateTokenSchema = z.object({
       })
     )
     .min(1, { message: 'at least one admin with token permissions is required' }),
-  tokenDistribution: z.array(
-    z.object({
-      id: z.string(),
-      wallet: z.string(),
-      email: z.string(),
-      name: z.string(),
-      tokenPermissions: z.array(z.string()),
+  uploadRecipients: z
+    .instanceof(File)
+    .refine((file) => file.type.startsWith('text/'), {
+      message: 'Must be a CSV file',
     })
-  ),
+    .optional(),
+  tokenDistribution: z
+    .array(
+      z.object({
+        id: z.string(),
+        wallet: z.string(),
+        email: z.string(),
+        name: z.string(),
+        amount: z.number(),
+      })
+    )
+    .optional(),
+  searchRecipientText: z.string().optional(),
   tokenLogo: z
     .instanceof(File)
     .refine((file) => file.type.startsWith('image/'), {
@@ -44,11 +53,12 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenName: '',
   tokenSymbol: '',
   decimals: 18,
-  isin: undefined,
+  isin: '',
   collateralProofValidity: 3600,
   admin: '',
   tokenPermissions: [],
   tokenDistribution: [],
+  uploadRecipients: undefined,
 } as const;
 
 export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;

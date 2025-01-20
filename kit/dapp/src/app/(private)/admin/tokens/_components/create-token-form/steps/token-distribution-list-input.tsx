@@ -1,14 +1,11 @@
-import type { CreateTokenSchemaType } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form-schema';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { MultiSelectInput } from '@/components/blocks/form/controls/multi-select-input';
-import { SelectInput } from '@/components/blocks/form/controls/select-input';
-import { SelectItem } from '@/components/ui/select';
+import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { shortHex } from '@/lib/hex';
-import { Minus, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { type UseFormReturn, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
 type TokenUser = User & { tokenPermissions: string[] };
 
@@ -63,7 +60,7 @@ const ListItem = ({ user }: { user: TokenUser }) => (
 /**
  * FormInput component
  */
-export const TokenPermissionsListInput = ({
+export const TokenDistributionListInput = ({
   selectionValues,
   control,
 }: {
@@ -88,26 +85,20 @@ export const TokenPermissionsListInput = ({
       return;
     }
 
-    // Get current fields to check for duplicates
     const currentFields = getValues('tokenPermissions') || [];
     const exists = currentFields.some((field) => field.wallet === selectedUser.wallet);
     if (exists) {
       return;
     }
 
-    // Create the new user object
-    const newUser = {
+    append({
       id: selectedUser.id,
       wallet: selectedUser.wallet,
       email: selectedUser.email,
       name: selectedUser.name,
-      tokenPermissions: [],
-    };
+      tokenPermissions: [] as string[],
+    });
 
-    // Update the field array
-    append(newUser);
-
-    // Reset the admin field and force re-render of SelectInput
     setValue('admin', '', {
       shouldDirty: false,
       shouldTouch: false,
@@ -123,47 +114,10 @@ export const TokenPermissionsListInput = ({
         {fields.map((field, index) => (
           <li className="ListItem my-6" key={field.id}>
             <ListItem user={field as unknown as TokenUser} />
-            <MultiSelectInput
-              entries={TOKEN_PERMISSIONS}
-              name={`tokenPermissions.${index}.tokenPermissions`}
-              control={control}
-              zIndex={100 - index}
-              onButtonClick={() => remove(index)}
-              buttonIcon={<Minus size={12} strokeWidth={2} aria-hidden="true" color="hsl(var(--foreground))" />}
-            />
+            <NumericInput name={`tokenDistribution.${index}.amount`} control={control} />
           </li>
         ))}
       </ul>
-
-      {/* Selection component */}
-      <div className="SelectionComponent flex items-center gap-0">
-        <SelectInput
-          key={selectKey}
-          className="-me-px flex-1 rounded-e-none shadow-none focus-visible:z-10"
-          control={control}
-          label="Add another admin:"
-          name="admin"
-          placeholder="Select an admin"
-        >
-          {selectionValues.map((user) => (
-            <SelectItem
-              key={user.wallet}
-              value={user.wallet}
-              className="h-auto w-full ps-2 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_img]:shrink-0"
-            >
-              <SelectOption user={user as TokenUser} />
-            </SelectItem>
-          ))}
-        </SelectInput>
-        <button
-          type="button"
-          className={`inline-flex w-10 ${admin ? 'h-[54px]' : 'h-[38px]'} items-center justify-center self-end rounded-e-lg border border-input bg-background text-muted-foreground/80 text-sm outline-offset-2 transition-colors hover:bg-accent hover:text-accent-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
-          onClick={handleAddUser}
-          disabled={!admin}
-        >
-          <Plus size={16} strokeWidth={2} aria-hidden="true" color="hsl(var(--foreground))" />
-        </button>
-      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import type { Control, FieldValues, Path } from 'react-hook-form';
 
 type NumericInputProps<T extends FieldValues> = {
-  label: string;
+  label?: string;
   description?: string;
   showRequired?: boolean;
   name: Path<T>;
