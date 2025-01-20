@@ -206,7 +206,7 @@ contract EquityFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,address,uint256)"),
+            keccak256("EquityCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for EquityCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

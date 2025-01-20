@@ -149,7 +149,7 @@ contract BondFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,address,uint256)"),
+            keccak256("BondCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for BondCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
