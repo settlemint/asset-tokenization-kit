@@ -22,37 +22,6 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
 
       {/* ISIN */}
       <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
-
-      <CardTitle className="!mt-10">Stable coin configuration</CardTitle>
-      <CardDescription className="my-2">Set parameters specific to your stable coin.</CardDescription>
-
-      {/* Collateral Proof Validity (Seconds) */}
-      <NumericInput
-        control={form.control}
-        label="Collateral Proof Validity (Seconds)"
-        name="collateralProofValidity"
-        placeholder="e.g., 3600"
-        showRequired
-      />
-
-      {/* Token Logo */}
-      {/*<FileInput
-                control={form.control}
-                name="tokenLogo"
-                description="This is the logo of the token"
-                label="Token Logo"
-                text="Click, or drop your logo here"
-                multiple={false}
-                maxSize={1024 * 1024 * 10} // 10MB
-                accept={{
-                  'image/*': ['.jpg', '.jpeg', '.png', '.webp'],
-                  'text/*': [],
-                }}
-                server={{
-                  bucket: 'default-bucket',
-                  storage: 'minio',
-                }}
-              />*/}
     </div>
   );
 };

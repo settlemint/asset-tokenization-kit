@@ -22,7 +22,7 @@ const iconVariants = cva('absolute', {
   variants: {
     variant: {
       default: 'InputIcon hidden',
-      icon: 'InputIcon top-8 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
+      icon: 'InputIcon top-4 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
     },
   },
   defaultVariants: {
@@ -31,7 +31,7 @@ const iconVariants = cva('absolute', {
 });
 
 type TextInputProps<T extends FieldValues> = {
-  label: string;
+  label?: string;
   description?: string;
   icon?: ReactNode;
   showRequired?: boolean;

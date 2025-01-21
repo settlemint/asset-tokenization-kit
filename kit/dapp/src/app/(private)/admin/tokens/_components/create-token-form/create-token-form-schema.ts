@@ -5,37 +5,8 @@ export const CreateTokenSchema = z.object({
   tokenSymbol: z.string().min(1, { message: 'Token symbol is required' }),
   decimals: z.number(),
   isin: z.string().optional(),
-  admin: z.string(),
-  collateralProofValidity: z.number(),
-  tokenPermissions: z
-    .array(
-      z.object({
-        id: z.string(),
-        wallet: z.string(),
-        email: z.string(),
-        name: z.string(),
-        tokenPermissions: z.array(z.string()),
-      })
-    )
-    .min(1, { message: 'at least one admin with token permissions is required' }),
-  tokenDistribution: z.array(
-    z.object({
-      id: z.string(),
-      wallet: z.string(),
-      email: z.string(),
-      name: z.string(),
-      tokenPermissions: z.array(z.string()),
-    })
-  ),
-  tokenLogo: z
-    .instanceof(File)
-    .refine((file) => file.type.startsWith('image/'), {
-      message: 'Must be an image file',
-    })
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: 'File size should be less than 5MB',
-    })
-    .optional(),
+  collateralProofValidityDuration: z.number(),
+  collateralThreshold: z.number(),
 });
 
 export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
@@ -44,11 +15,9 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenName: '',
   tokenSymbol: '',
   decimals: 18,
-  isin: undefined,
-  collateralProofValidity: 3600,
-  admin: '',
-  tokenPermissions: [],
-  tokenDistribution: [],
+  isin: '',
+  collateralProofValidityDuration: 3600,
+  collateralThreshold: 100,
 } as const;
 
 export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;
