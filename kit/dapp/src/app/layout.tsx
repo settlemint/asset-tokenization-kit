@@ -7,7 +7,7 @@ import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
-import './styles/globals.css';
+import './globals.css';
 export { metadata } from '@/lib/site-config';
 
 export const viewport: Viewport = {

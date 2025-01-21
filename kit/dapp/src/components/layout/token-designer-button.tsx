@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
@@ -43,29 +43,27 @@ export function TokenDesignerButton() {
   const [openSheet, setOpenSheet] = useState<TokenType | null>(null);
 
   return (
-    <>
-      <SidebarMenuItem className="SidebarMenuItem w-full">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="flex w-full items-center gap-2">
-              <Pencil className="size-4" />
-              {state === 'expanded' && <span>Token Designer</span>}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? 'bottom' : 'right'}
-            sideOffset={4}
-          >
-            {Object.entries(TOKEN_CONFIGS).map(([type, config]) => (
-              <DropdownMenuItem key={type} onSelect={() => setOpenSheet(type as TokenType)}>
-                {config.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
+    <SidebarGroup>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="flex w-full items-center gap-2 text-sidebar-foreground">
+            <Pencil className="size-4" />
+            {state === 'expanded' && <span>Token Designer</span>}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+          align="start"
+          side={isMobile ? 'bottom' : 'right'}
+          sideOffset={4}
+        >
+          {Object.entries(TOKEN_CONFIGS).map(([type, config]) => (
+            <DropdownMenuItem key={type} onSelect={() => setOpenSheet(type as TokenType)}>
+              {config.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <Sheet open={openSheet !== null} onOpenChange={(open) => !open && setOpenSheet(null)}>
         <SheetContent className="w-[50%] lg:max-w-[50%]">
@@ -82,6 +80,6 @@ export function TokenDesignerButton() {
           )}
         </SheetContent>
       </Sheet>
-    </>
+    </SidebarGroup>
   );
 }
