@@ -1,9 +1,5 @@
 'use client';
 import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-token-form/steps/1-token-basics';
-import {
-  TokenPermissions,
-  users as _users,
-} from '@/app/(private)/admin/tokens/_components/create-token-form/steps/2-token-permissions';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
@@ -22,7 +18,7 @@ import {
   createTokenDefaultValues,
   validateCreateTokenSchemaFields,
 } from './create-token-form-schema';
-import { TokenDistribution } from './steps/3-token-distribution';
+import { TokenConfiguration } from './steps/2-token-configuration';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
@@ -59,15 +55,6 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
       defaultValues: {
         ...createTokenDefaultValues,
         ...defaultValues,
-        tokenPermissions: _users
-          .map((user) => ({
-            id: user.id,
-            wallet: user.wallet,
-            email: user.email,
-            name: user.name,
-            tokenPermissions: user.tokenPermissions,
-          }))
-          .slice(2),
       },
     },
     errorMapProps: {},
@@ -108,7 +95,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
+      <FormStepProgress steps={3} currentStep={step} complete={false} className="" />
       <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
@@ -121,7 +108,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
             {/* Step 1 : Token basics */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol', 'decimals', 'collateralProofValidity']}
+              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
@@ -134,30 +121,17 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
             {/* Step 2 : Token permissions */}
             <FormStep
               form={form}
-              fields={['tokenPermissions']}
+              fields={['collateralProofValidityDuration', 'collateralThreshold']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
             >
-              <TokenPermissions form={form} />
+              <TokenConfiguration form={form} />
             </FormStep>
 
-            {/* Step 3 : Token distribution */}
-            <FormStep
-              form={form}
-              fields={['tokenDistribution']}
-              withSheetClose
-              controls={{
-                prev: { buttonText: 'Back' },
-                next: { buttonText: 'Confirm' },
-              }}
-            >
-              <TokenDistribution form={form} />
-            </FormStep>
-
-            {/* Step 4 : Review */}
+            {/* Step 3 : Review */}
             <FormStep
               form={form}
               title="Review"
