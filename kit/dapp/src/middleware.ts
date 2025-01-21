@@ -40,8 +40,13 @@ export default async function middleware(request: NextRequest) {
   );
 
   for (const { checker, roles } of routeRoleMap) {
-    if (checker(request.nextUrl.pathname) && (!data || !roles.includes(data.user.role))) {
-      return NextResponse.redirect(buildRedirectUrl(request));
+    if (checker(request.nextUrl.pathname)) {
+      if (!data) {
+        return NextResponse.redirect(buildRedirectUrl(request));
+      }
+      if (!roles.includes(data.user.role)) {
+        return NextResponse.redirect('/portfolio');
+      }
     }
   }
 

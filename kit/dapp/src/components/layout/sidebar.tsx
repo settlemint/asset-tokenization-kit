@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {} from '@/components/ui/sheet';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   Sidebar,
@@ -66,21 +65,21 @@ export function PrivateSidebar({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="flex w-[15rem] flex-col gap-2">
                     <DropdownMenuItem
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setOpen(true);
                       }}
                     >
                       Stable coin
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setOpen(true);
                       }}
                     >
                       Equity
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setOpen(true);
                       }}
                     >
@@ -88,7 +87,7 @@ export function PrivateSidebar({
                     </DropdownMenuItem>
                     <hr />
                     <DropdownMenuItem
-                      onSelect={(e) => {
+                      onSelect={() => {
                         setOpen(true);
                       }}
                     >
