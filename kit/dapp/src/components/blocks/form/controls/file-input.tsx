@@ -2,7 +2,6 @@
 
 import { Badge } from '@/components/ui/badge';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import type { InputProps } from '@/components/ui/input';
 import { betterFetch } from '@better-fetch/fetch';
 import {
   CheckIcon,
@@ -14,6 +13,7 @@ import {
   TriangleAlertIcon,
   X,
 } from 'lucide-react';
+import type * as React from 'react';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactDropzone from 'react-dropzone';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
@@ -438,7 +438,7 @@ type FileInputProps<T extends FieldValues> = {
   };
   multiple?: boolean;
   maxSize?: number;
-} & Omit<InputProps, 'name' | 'accept'> & {
+} & Omit<React.ComponentProps<'input'>, 'name' | 'accept'> & {
     name: Path<T>;
     control: Control<T>;
     shouldUnregister?: boolean;

@@ -1,7 +1,8 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input, type InputProps } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
+import type * as React from 'react';
 import type { ReactNode } from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import './text-input.css';
@@ -35,7 +36,7 @@ type TextInputProps<T extends FieldValues> = {
   description?: string;
   icon?: ReactNode;
   showRequired?: boolean;
-} & Omit<InputProps, 'name'> &
+} & Omit<React.ComponentProps<'input'>, 'name'> &
   VariantProps<typeof inputVariants> & {
     name: Path<T>;
     control: Control<T>;
