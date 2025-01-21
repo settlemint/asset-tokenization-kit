@@ -5,10 +5,10 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
-  SidebarMenu,
   SidebarRail,
+  SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import type { ComponentProps } from 'react';
 import { NavFooter } from './nav-footer';
@@ -31,28 +31,30 @@ export function PrivateSidebar({
 }) {
   const role = props.role ?? 'user';
   const mode = props.mode ?? 'portfolio';
+  const { state } = useSidebar();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            {mode === 'admin' && <TokenDesignerButton />}
-            {props.data.main.map((main) => (
-              <NavMain key={main.title} title={main.title} items={main.items} />
-            ))}
-            {props.data.secondary.map((secondary) => (
-              <NavSecondary key={secondary.title} title={secondary.title} items={secondary.items} />
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+      <SidebarContent className="pt-6">
+        {mode === 'admin' && <TokenDesignerButton />}
+        {props.data.main.map((main) => (
+          <NavMain key={main.title} title={main.title} items={main.items} />
+        ))}
+        {state !== 'expanded' && <SidebarSeparator />}
+        {props.data.secondary.map((secondary) => (
+          <NavSecondary key={secondary.title} title={secondary.title} items={secondary.items} />
+        ))}
       </SidebarContent>
       {['admin', 'issuer'].includes(role) && (
-        <SidebarFooter>
-          <NavFooter mode={mode} />
-        </SidebarFooter>
+        <>
+          <SidebarSeparator />
+          <SidebarFooter>
+            <NavFooter mode={mode} />
+          </SidebarFooter>
+        </>
       )}
       <SidebarRail />
     </Sidebar>

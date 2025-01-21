@@ -1,7 +1,8 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input, type InputProps } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
+import type * as React from 'react';
 import type { ReactNode } from 'react';
 import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import './text-input.css';
@@ -22,7 +23,7 @@ const iconVariants = cva('absolute', {
   variants: {
     variant: {
       default: 'InputIcon hidden',
-      icon: 'InputIcon top-8 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
+      icon: 'InputIcon top-4 left-2 flex h-[1.2rem] w-[1.2rem] items-center justify-center',
     },
   },
   defaultVariants: {
@@ -31,11 +32,11 @@ const iconVariants = cva('absolute', {
 });
 
 type TextInputProps<T extends FieldValues> = {
-  label: string;
+  label?: string;
   description?: string;
   icon?: ReactNode;
   showRequired?: boolean;
-} & Omit<InputProps, 'name'> &
+} & Omit<React.ComponentProps<'input'>, 'name'> &
   VariantProps<typeof inputVariants> & {
     name: Path<T>;
     control: Control<T>;
