@@ -39,17 +39,13 @@ const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: stri
     url: `/admin/${type}/${token.id}`,
   }));
 
-  if (tokens.length > 5) {
-    return {
-      items,
-      more: {
-        enabled: true,
-        url: `/admin/${type}`,
-      },
-    };
-  }
-
-  return { items, more: undefined };
+  return {
+    items,
+    more: {
+      enabled: tokens.length > 5,
+      url: `/admin/${type}`,
+    },
+  };
 };
 
 const TOKEN_SECTIONS = [
@@ -82,9 +78,7 @@ const TOKEN_SECTIONS = [
 export async function createMainSideBarData(role: 'admin' | 'issuer' | 'user'): Promise<SidebarSection[]> {
   const navigationData = await theGraphClient.request(NavigationQuery);
 
-  const hasTokens = TOKEN_SECTIONS.some((section) => navigationData[section.key]?.length > 0);
-
-  if (!hasTokens || role === 'user') {
+  if (role === 'user') {
     return [];
   }
 
@@ -95,17 +89,17 @@ export async function createMainSideBarData(role: 'admin' | 'issuer' | 'user'): 
       title: 'Token Management',
       items: TOKEN_SECTIONS.reduce<SidebarSection['items']>((acc, section) => {
         const tokens = navigationData[section.key];
-        if (tokens?.length > 0) {
-          const { items, more } = createTokenItems(tokens, section.type);
-          acc.push({
-            title: section.title,
-            iconName: section.iconName,
-            open: !firstSectionFound,
-            items,
-            more,
-          });
-          firstSectionFound = true;
-        }
+
+        const { items, more } = createTokenItems(tokens, section.type);
+        acc.push({
+          title: section.title,
+          iconName: section.iconName,
+          open: !firstSectionFound,
+          items,
+          more,
+        });
+        firstSectionFound = true;
+
         return acc;
       }, []),
     },
