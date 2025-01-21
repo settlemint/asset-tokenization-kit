@@ -39,7 +39,7 @@ export type SidebarNestedItem = {
   title: string;
   iconName?: string;
   items: SidebarLink[];
-  more?: SidebarItemMore;
+  more: SidebarItemMore;
   open?: boolean;
 };
 
@@ -57,17 +57,31 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.open} className="group/collapsible">
             <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.iconName &&
-                    (() => {
-                      const Icon = iconMap[item.iconName] || HelpCircle;
-                      return <Icon className="size-4" />;
-                    })()}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
+              {(item.items?.length ?? 0) > 0 ? (
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.title}>
+                    {item.iconName &&
+                      (() => {
+                        const Icon = iconMap[item.iconName] || HelpCircle;
+                        return <Icon className="size-4" />;
+                      })()}
+                    <span>{item.title}</span>
+
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+              ) : (
+                <Link href={item.more.url}>
+                  <SidebarMenuButton tooltip={item.title}>
+                    {item.iconName &&
+                      (() => {
+                        const Icon = iconMap[item.iconName] || HelpCircle;
+                        return <Icon className="size-4" />;
+                      })()}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+              )}
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
@@ -79,7 +93,7 @@ export function NavMain({
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
-                  {item.more && (
+                  {item.more?.enabled && (
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
                         <Link href={item.more.url}>

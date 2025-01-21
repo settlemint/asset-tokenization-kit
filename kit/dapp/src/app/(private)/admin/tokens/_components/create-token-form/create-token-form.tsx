@@ -9,7 +9,6 @@ import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import {} from '@/components/ui/form';
-import type { User } from '@/lib/auth/types';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,9 +26,9 @@ import { TokenDistribution } from './steps/3-token-distribution';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
+  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
   formId: string;
   className?: string;
-  users: User[];
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
@@ -42,7 +41,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
-export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
+export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormProps) {
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
