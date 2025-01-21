@@ -46,7 +46,7 @@ export function TokenDesignerButton() {
     <SidebarGroup>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="flex w-full items-center gap-2">
+          <Button className="flex w-full items-center gap-2 text-sidebar-foreground">
             <Pencil className="size-4" />
             {state === 'expanded' && <span>Token Designer</span>}
           </Button>
