@@ -1,6 +1,5 @@
 'use client';
 import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-token-form/steps/1-token-basics';
-import { users as _users } from '@/app/(private)/admin/tokens/_components/create-token-form/steps/2-token-permissions';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
@@ -56,16 +55,6 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
       defaultValues: {
         ...createTokenDefaultValues,
         ...defaultValues,
-        tokenPermissions: _users
-          .map((user) => ({
-            id: user.id,
-            wallet: user.wallet,
-            email: user.email,
-            name: user.name,
-            tokenPermissions: user.tokenPermissions,
-          }))
-          .slice(2),
-        tokenDistribution: [],
       },
     },
     errorMapProps: {},

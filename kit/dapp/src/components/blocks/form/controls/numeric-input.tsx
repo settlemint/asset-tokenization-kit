@@ -1,7 +1,7 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import type { Control, FieldValues, Path } from 'react-hook-form';
+import type { Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 
 type NumericInputProps<T extends FieldValues> = {
   label?: string;
@@ -11,6 +11,7 @@ type NumericInputProps<T extends FieldValues> = {
   control: Control<T>;
   placeholder?: string;
   className?: string;
+  rules?: RegisterOptions;
 };
 
 export function NumericInput<T extends FieldValues>({
