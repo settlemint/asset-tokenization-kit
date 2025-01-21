@@ -18,13 +18,19 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const signUpSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  name: z.string().min(1, 'Name is required'),
-  organizationName: z.string().optional(),
-  walletPincode: z.string().length(6, 'PIN code must be exactly 6 digits'),
-});
+const signUpSchema = z
+  .object({
+    email: z.string().email('Please enter a valid email'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    name: z.string().min(1, 'Name is required'),
+    organizationName: z.string().optional(),
+    walletPincode: z.string().length(6, 'PIN code must be exactly 6 digits'),
+    walletPincodeConfirm: z.string().length(6, 'PIN code must be exactly 6 digits'),
+  })
+  .refine((data) => data.walletPincode === data.walletPincodeConfirm, {
+    message: "PIN codes don't match",
+    path: ['walletPincodeConfirm'],
+  });
 
 const SetPinCode = portalGraphql(`
   mutation SetPinCode($name: String!, $address: String!, $pincode: String!) {
@@ -57,6 +63,7 @@ export function SignUpForm({
       name: '',
       organizationName: '',
       walletPincode: '',
+      walletPincodeConfirm: '',
     },
   });
 
@@ -117,7 +124,7 @@ export function SignUpForm({
         </div>
         {form.formState.errors.root && (
           <Alert variant="destructive">
-            <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+            <AlertDescription>{form.formState.errors.root.message?.toString() || 'An error occurred'}</AlertDescription>
           </Alert>
         )}
         <div className="grid gap-6">
@@ -190,7 +197,29 @@ export function SignUpForm({
             name="walletPincode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Wallet PIN code</FormLabel>
+                <FormLabel>Choose a secure wallet PIN code</FormLabel>
+                <FormControl>
+                  <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
+                    <InputOTPGroup className="w-full">
+                      <InputOTPSlot index={0} className="flex-1" />
+                      <InputOTPSlot index={1} className="flex-1" />
+                      <InputOTPSlot index={2} className="flex-1" />
+                      <InputOTPSlot index={3} className="flex-1" />
+                      <InputOTPSlot index={4} className="flex-1" />
+                      <InputOTPSlot index={5} className="flex-1" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="walletPincodeConfirm"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm wallet PIN code</FormLabel>
                 <FormControl>
                   <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
                     <InputOTPGroup className="w-full">
