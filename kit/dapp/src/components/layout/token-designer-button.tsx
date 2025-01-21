@@ -39,8 +39,7 @@ const TOKEN_CONFIGS = {
 } as const satisfies Record<TokenType, { label: string; title: string; description: string }>;
 
 export function TokenDesignerButton() {
-  const { state } = useSidebar();
-  const { isMobile } = useSidebar();
+  const { state, isMobile } = useSidebar();
   const [openSheet, setOpenSheet] = useState<TokenType | null>(null);
 
   return (
