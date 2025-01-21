@@ -68,6 +68,10 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
+        'caret-blink': {
+          '0%,70%,100%': { opacity: '1' },
+          '20%,50%': { opacity: '0' },
+        },
         'accordion-down': {
           from: {
             height: '0',
@@ -88,6 +92,7 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'caret-blink': 'caret-blink 1.25s ease-out infinite',
       },
       boxShadow: {
         button: '0 -3px 3px 0 rgb(0 0 0 / 21%) inset',

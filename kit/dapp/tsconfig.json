@@ -43,6 +43,12 @@
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",
             "tadaTurboLocation": "portal-cache.d.ts"
+          },
+          {
+            "name": "blockscout",
+            "schema": "blockscout-schema.graphql",
+            "tadaOutputLocation": "blockscout-env.d.ts",
+            "tadaTurboLocation": "blockscout-cache.d.ts"
           }
         ]
       }
