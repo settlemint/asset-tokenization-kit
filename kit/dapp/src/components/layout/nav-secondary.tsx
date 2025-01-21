@@ -28,12 +28,12 @@ export type SidebarItem = {
 
 export function NavSecondary({ items, title }: SidebarSecondarySection) {
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton tooltip={item.title} asChild>
               <Link href={item.url}>
                 {item.iconName &&
                   (() => {

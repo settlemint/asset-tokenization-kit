@@ -57,31 +57,31 @@ export function NavMain({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.open} className="group/collapsible">
             <SidebarMenuItem>
-              {(item.items?.length ?? 0) > 0 ? (
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
-                    {item.iconName &&
-                      (() => {
-                        const Icon = iconMap[item.iconName] || HelpCircle;
-                        return <Icon className="size-4" />;
-                      })()}
-                    <span>{item.title}</span>
-
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-              ) : (
-                <Link href={item.more.url}>
-                  <SidebarMenuButton tooltip={item.title}>
-                    {item.iconName &&
-                      (() => {
-                        const Icon = iconMap[item.iconName] || HelpCircle;
-                        return <Icon className="size-4" />;
-                      })()}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </Link>
-              )}
+              <CollapsibleTrigger asChild>
+                <SidebarMenuButton tooltip={item.title}>
+                  {item.iconName &&
+                    (() => {
+                      const Icon = iconMap[item.iconName] || HelpCircle;
+                      return item.items.length === 0 ? (
+                        <Link href={item.more.url}>
+                          <Icon className="size-4" />
+                        </Link>
+                      ) : (
+                        <Icon className="size-4" />
+                      );
+                    })()}
+                  {item.items.length === 0 ? (
+                    <Link href={item.more.url}>
+                      <span>{item.title}</span>
+                    </Link>
+                  ) : (
+                    <>
+                      <span>{item.title}</span>
+                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
@@ -96,9 +96,7 @@ export function NavMain({
                   {item.more?.enabled && (
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <Link href={item.more.url}>
-                          <span>More&hellip;</span>
-                        </Link>
+                        <Link href={item.more.url}>More&hellip;</Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   )}
