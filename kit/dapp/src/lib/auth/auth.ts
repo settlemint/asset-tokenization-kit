@@ -6,7 +6,8 @@ import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, openAPI } from 'better-auth/plugins';
+import { admin, openAPI, organization } from 'better-auth/plugins';
+import { passkey } from 'better-auth/plugins/passkey';
 import { db } from '../db';
 
 const createUserWallet = portalGraphql(`
@@ -34,6 +35,7 @@ export const auth = betterAuth({
       wallet: {
         type: 'string',
         required: true,
+        unique: true,
       },
     },
   },
@@ -65,5 +67,11 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [nextCookies(), admin(), openAPI(), emailHarmony({ allowNormalizedSignin: true })],
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
+  plugins: [nextCookies(), admin(), organization(), passkey(), openAPI(), emailHarmony()],
 });

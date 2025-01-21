@@ -11,7 +11,7 @@ export default async function SignIn({ searchParams }: SignInPageProps) {
 
   return (
     <div className="w-full max-w-xs">
-      <SignInForm redirectUrl={rd} />
+      <SignInForm redirectUrl={decodeURIComponent(rd || '')} />
     </div>
   );
 }
