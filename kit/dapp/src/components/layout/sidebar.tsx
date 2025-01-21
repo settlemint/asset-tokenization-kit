@@ -38,7 +38,7 @@ export function PrivateSidebar({
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent className="pt-6">
+      <SidebarContent className="pt-4">
         {mode === 'admin' && <TokenDesignerButton />}
         {props.data.main.map((main) => (
           <NavMain key={main.title} title={main.title} items={main.items} />
