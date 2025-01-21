@@ -3,17 +3,32 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { ChartCandlestick, ChevronsUpDown, UserRoundCog } from 'lucide-react';
+import { authClient } from '@/lib/auth/client';
+import { Building2, ChevronsUpDown, Plus, Wallet2 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export function NavFooter({ mode }: { mode: 'admin' | 'portfolio' }) {
   const { isMobile } = useSidebar();
+  const { data: organizations } = authClient.useListOrganizations();
+  const { data: activeOrganization } = authClient.useActiveOrganization();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!activeOrganization) {
+      authClient.organization.setActive({
+        organizationId: organizations?.[0]?.id,
+      });
+    }
+  }, [activeOrganization, organizations]);
 
   return (
     <SidebarMenu>
@@ -24,11 +39,23 @@ export function NavFooter({ mode }: { mode: 'admin' | 'portfolio' }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
-                {mode === 'admin' ? <UserRoundCog /> : <ChartCandlestick />}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                {mode === 'portfolio' && <Wallet2 className="size-4 shrink-0" />}
+                {mode === 'admin' && activeOrganization?.logo && (
+                  <Image
+                    src={activeOrganization.logo}
+                    alt={activeOrganization.name}
+                    width={24}
+                    height={24}
+                    className="size-4 shrink-0"
+                  />
+                )}
+                {mode === 'admin' && !activeOrganization?.logo && <Building2 className="size-4 shrink-0" />}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{mode === 'admin' ? 'Admin Mode' : 'Portfolio Mode'}</span>
+                <span className="truncate font-semibold">
+                  {mode === 'portfolio' ? 'My Portfolio' : activeOrganization?.name}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -39,28 +66,45 @@ export function NavFooter({ mode }: { mode: 'admin' | 'portfolio' }) {
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">Platform modes</DropdownMenuLabel>
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center justify-between p-2"
-              onClick={() => router.push('/admin')}
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex size-6 items-center justify-center rounded-md">
-                  <UserRoundCog className="size-4" />
+            <DropdownMenuLabel className="text-muted-foreground text-xs">Organizations</DropdownMenuLabel>
+            {(organizations ?? []).map((team) => (
+              <DropdownMenuItem
+                key={team.name}
+                onClick={() =>
+                  authClient.organization
+                    .setActive({
+                      organizationId: team.id,
+                    })
+                    .then(() => {
+                      router.push('/admin');
+                    })
+                }
+                className="gap-2 p-2"
+              >
+                <div className="flex size-6 items-center justify-center rounded-sm border">
+                  {team.logo && (
+                    <Image src={team.logo} alt={team.name} width={24} height={24} className="size-4 shrink-0" />
+                  )}
+                  {!team.logo && <Building2 className="size-4 shrink-0" />}
                 </div>
-                <div className="font-medium text-muted-foreground">Admin Mode</div>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center justify-between p-2"
-              onClick={() => router.push('/portfolio')}
-            >
-              <div className="flex items-center gap-2">
-                <div className="flex size-6 items-center justify-center rounded-md">
-                  <ChartCandlestick className="size-4" />
+                {team.name}
+              </DropdownMenuItem>
+            ))}
+            {mode === 'admin' && (
+              <DropdownMenuItem className="gap-2 p-2">
+                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                  <Plus className="size-4" />
                 </div>
-                <div className="font-medium text-muted-foreground">Portfolio Mode</div>
+                <div className="text-muted-foreground hover:text-foreground">Add organization</div>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem className="gap-2 p-2">
+              <div className="flex size-6 items-center justify-center rounded-md border-primary bg-primary">
+                <Wallet2 className="size-4" />
               </div>
+              <Link href="/portfolio">My portfolio</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
