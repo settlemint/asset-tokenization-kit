@@ -6,7 +6,8 @@ export const CreateTokenSchema = z.object({
   decimals: z.number(),
   isin: z.string().optional(),
   admin: z.string(),
-  collateralProofValidity: z.number(),
+  collateralProofValidityDuration: z.number(),
+  collateralThreshold: z.number(),
   tokenPermissions: z
     .array(
       z.object({
@@ -56,7 +57,8 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenSymbol: '',
   decimals: 18,
   isin: '',
-  collateralProofValidity: 3600,
+  collateralProofValidityDuration: 3600,
+  collateralThreshold: 100,
   admin: '',
   tokenPermissions: [],
   tokenDistribution: [],

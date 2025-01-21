@@ -3,7 +3,7 @@ import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { shortHex } from '@/lib/hex';
-import { type UseFormReturn, useFieldArray } from 'react-hook-form';
+import { type UseFormReturn, useFieldArray, useFormContext } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
 type TokenUser = User & { tokenPermissions: string[] };
@@ -39,10 +39,22 @@ export const TokenDistributionListInput = ({
   selectionValues: TokenUser[];
   control: UseFormReturn<CreateTokenSchemaType>['control'];
 }) => {
+  const { getValues, getFieldState } = useFormContext<CreateTokenSchemaType>();
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'tokenPermissions',
+    name: 'tokenDistribution',
   });
+
+  // When initializing the form or adding new users, you need to include all user properties
+  const handleAddUser = (user: TokenUser) => {
+    append({
+      id: user.id,
+      wallet: user.wallet?.toString() ?? '',
+      email: user.email,
+      name: user.name ?? '',
+      amount: 0, // Default amount
+    });
+  };
 
   return (
     <div className="ListComponent">
@@ -52,6 +64,7 @@ export const TokenDistributionListInput = ({
           <li className="ListItem my-6" key={field.id}>
             <ListItem user={field as unknown as TokenUser} />
             <NumericInput name={`tokenDistribution.${index}.amount`} control={control} />
+            {/* Add error handling here */}
           </li>
         ))}
       </ul>
