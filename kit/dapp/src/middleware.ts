@@ -19,7 +19,7 @@ function buildRedirectUrl(request: NextRequest): URL {
   const returnPath = request.nextUrl.search
     ? `${request.nextUrl.pathname}${request.nextUrl.search}`
     : request.nextUrl.pathname;
-  redirectUrl.searchParams.set('rd', encodeURIComponent(returnPath));
+  redirectUrl.searchParams.set('rd', returnPath);
   return redirectUrl;
 }
 

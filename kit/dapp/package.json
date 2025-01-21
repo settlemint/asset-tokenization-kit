@@ -65,6 +65,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.38.4",
+    "input-otp": "1.4.2",
     "lucide-react": "0.473.0",
     "next": "15.1.5",
     "next-safe-action": "7.10.2",
