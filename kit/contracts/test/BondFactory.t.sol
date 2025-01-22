@@ -22,7 +22,7 @@ contract BondFactoryTest is Test {
         futureDate = block.timestamp + 365 days;
 
         // Deploy mock underlying asset
-        underlyingAsset = new ERC20Mock("Mock USD", "MUSD");
+        underlyingAsset = new ERC20Mock("Mock USD", "MUSD", DECIMALS);
     }
 
     function test_CreateBond() public {
