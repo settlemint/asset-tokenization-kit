@@ -221,7 +221,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
 
   // Create event record
   let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.bond = bond.id;
+  eventTransfer.emitter = bond.id;
   eventTransfer.timestamp = event.block.timestamp;
   eventTransfer.account = account.id;
   eventTransfer.amount = event.params.amount; // Positive amount for top-up
@@ -241,7 +241,7 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
 
   // Create event record
   let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.bond = bond.id;
+  eventTransfer.emitter = bond.id;
   eventTransfer.timestamp = event.block.timestamp;
   eventTransfer.account = account.id;
   eventTransfer.amount = event.params.amount.neg(); // Negative amount for withdrawal
@@ -263,7 +263,7 @@ export function handleBondRedeemed(event: BondRedeemedEvent): void {
 
   // Create event record
   let eventRedeemed = new Event_BondRedeemed(eventId(event));
-  eventRedeemed.bond = bond.id;
+  eventRedeemed.emitter = bond.id;
   eventRedeemed.timestamp = event.block.timestamp;
   eventRedeemed.holder = holder.id;
   eventRedeemed.bondAmount = event.params.bondAmount;
