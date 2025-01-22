@@ -1,4 +1,5 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
+import { defaultAssetTableColumns } from '@/components/blocks/asset-table/asset-table-columns';
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
@@ -35,7 +36,7 @@ export default function EquityPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-bold text-3xl tracking-tight">Equities</h2>
       </div>
-      <AssetTable type="equities" dataAction={getEquities} />
+      <AssetTable type="equities" dataAction={getEquities} columns={defaultAssetTableColumns('equities')} />
     </>
   );
 }

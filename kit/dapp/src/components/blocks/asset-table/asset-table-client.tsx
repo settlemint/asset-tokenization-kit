@@ -2,23 +2,23 @@
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { ComponentType, ReactElement } from 'react';
-import { assetTableColumns } from './asset-table-columns';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { ComponentType } from 'react';
 import type { BaseAsset } from './asset-table-types';
 
 export type AssetTableClientProps<Asset extends BaseAsset> = {
   type: string;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
-  rowActions?: ReactElement[];
   icons?: Record<string, ComponentType<{ className?: string }>>;
+  columns: ColumnDef<Asset>[];
 };
 
 export function AssetTableClient<Asset extends BaseAsset>({
   dataAction,
   type,
   refetchInterval,
-  rowActions,
+  columns,
   icons,
 }: AssetTableClientProps<Asset>) {
   const { data } = useSuspenseQuery<Asset[]>({
@@ -27,5 +27,5 @@ export function AssetTableClient<Asset extends BaseAsset>({
     refetchInterval: refetchInterval,
   });
 
-  return <DataTable columns={assetTableColumns<Asset>(type, rowActions)} data={data} icons={icons ?? {}} name={type} />;
+  return <DataTable columns={columns} data={data} icons={icons ?? {}} name={type} />;
 }
