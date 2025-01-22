@@ -25,6 +25,9 @@ export function AssetTableClient<Asset extends BaseAsset>({
     queryKey: [type],
     queryFn: () => dataAction(),
     refetchInterval: refetchInterval,
+    refetchOnWindowFocus: true,
+    refetchIntervalInBackground: false,
+    networkMode: 'online',
   });
 
   return <DataTable columns={columns} data={data} icons={icons ?? {}} name={type} />;
