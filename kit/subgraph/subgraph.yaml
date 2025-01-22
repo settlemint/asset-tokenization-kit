@@ -158,6 +158,10 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
       file: ./src/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency

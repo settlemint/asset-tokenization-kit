@@ -64,6 +64,8 @@ type Bond implements Asset @entity {
   underlyingAsset: Bytes!
   redeemedAmount: BigInt!
   redeemedAmountByHolder: [BondRedemption!]! @derivedFrom(field: "bond")
+  underlyingBalance: BigInt!
+  underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
 }
 
 type BondRedemption @entity {
@@ -82,6 +84,14 @@ type Event_BondRedeemed implements Event @entity(immutable: true) {
   holder: Account!
   bondAmount: BigInt!
   underlyingAmount: BigInt!
+}
+
+type Event_UnderlyingAssetTransfer implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  account: Account!
+  amount: BigInt! # Positive for top-up, negative for withdrawal
 }
 
 type Equity implements Asset @entity {
