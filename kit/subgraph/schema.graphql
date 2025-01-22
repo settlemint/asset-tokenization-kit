@@ -60,6 +60,8 @@ type Bond implements Asset @entity {
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
+  faceValue: BigInt!
+  underlyingAsset: Bytes!
 }
 
 type Equity implements Asset @entity {
