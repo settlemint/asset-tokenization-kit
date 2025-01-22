@@ -8,6 +8,7 @@ import {
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { createColumnHelper } from '@tanstack/react-table';
+import { PauseCircle, PlayCircle } from 'lucide-react';
 import type { EquityAsset } from './data';
 
 const columnHelper = createColumnHelper<EquityAsset>();
@@ -29,3 +30,8 @@ export const columns = [
   createPausedColumn(columnHelper),
   createActionsColumn(columnHelper, 'equities'),
 ];
+
+export const icons = {
+  active: PlayCircle,
+  paused: PauseCircle,
+};
