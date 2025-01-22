@@ -45,6 +45,12 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice The underlying asset contract used for face value denomination
     IERC20 public immutable underlyingAsset;
 
+    /// @notice Tracks whether the bond has matured
+    bool public isMatured;
+
+    /// @notice Tracks how many bonds each holder has redeemed
+    mapping(address => uint256) public bondRedeemed;
+
     /// @notice Event emitted when the bond reaches maturity and is closed
     event BondMatured(uint256 timestamp);
 
@@ -56,12 +62,6 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
 
     /// @notice Event emitted when underlying assets are withdrawn
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice Tracks whether the bond has matured
-    bool public isMatured;
-
-    /// @notice The number of decimals used for token amounts
-    uint8 private immutable _decimals;
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
