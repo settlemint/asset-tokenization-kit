@@ -6,6 +6,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 COPY package.json .
+COPY bun.l* .
 RUN bun install
 
 FROM deps AS build
