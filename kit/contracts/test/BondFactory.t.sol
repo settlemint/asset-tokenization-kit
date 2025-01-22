@@ -10,6 +10,7 @@ contract BondFactoryTest is Test {
     BondFactory public factory;
     address public owner;
     uint256 public futureDate;
+    uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         factory = new BondFactory();
@@ -23,7 +24,7 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.prank(owner);
-        address bondAddress = factory.create(name, symbol, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
         assertEq(factory.allBondsLength(), 1, "Should have created one bond");
@@ -31,6 +32,7 @@ contract BondFactoryTest is Test {
         Bond bond = Bond(bondAddress);
         assertEq(bond.name(), name, "Bond name should match");
         assertEq(bond.symbol(), symbol, "Bond symbol should match");
+        assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -40,17 +42,23 @@ contract BondFactoryTest is Test {
     function test_CreateMultipleBonds() public {
         string memory baseName = "Test Bond ";
         string memory baseSymbol = "TBOND";
-        uint256 count = 3;
+        uint8[] memory decimalValues = new uint8[](3);
+        decimalValues[0] = 6;
+        decimalValues[1] = 8;
+        decimalValues[2] = 18;
 
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress = factory.create(name, symbol, futureDate);
+            address bondAddress = factory.create(name, symbol, decimalValues[i], futureDate);
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
+
+            Bond bond = Bond(bondAddress);
+            assertEq(bond.decimals(), decimalValues[i], "Bond decimals should match");
         }
 
-        assertEq(factory.allBondsLength(), count, "Should have created three bonds");
+        assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
     }
 
     function test_RevertWhenInvalidMaturityDate() public {
@@ -58,24 +66,24 @@ contract BondFactoryTest is Test {
         vm.warp(2 days); // Move time forward to avoid underflow
         uint256 pastDate = block.timestamp - 1 days;
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", pastDate);
+        factory.create("Test Bond", "TBOND", DECIMALS, pastDate);
 
         // Try to create a bond with current timestamp
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", block.timestamp);
+        factory.create("Test Bond", "TBOND", DECIMALS, block.timestamp);
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 = factory.create(name, symbol, futureDate);
+        address bond1 = factory.create(name, symbol, DECIMALS, futureDate);
 
         // Create a new factory instance
         BondFactory newFactory = new BondFactory();
 
         // Create a bond with the same parameters
-        address bond2 = newFactory.create(name, symbol, futureDate);
+        address bond2 = newFactory.create(name, symbol, DECIMALS, futureDate);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(bond1, bond2, "Bonds should have different addresses due to different factory addresses");
@@ -85,10 +93,11 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
         Bond bond = Bond(bondAddress);
 
         // Test initial state
+        assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertFalse(bond.paused(), "Bond should not be paused initially");
         assertFalse(bond.isMatured(), "Bond should not be matured initially");
     }
@@ -98,7 +107,7 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.recordLogs();
-        address bondAddress = factory.create(name, symbol, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -140,7 +149,7 @@ contract BondFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,address,uint256)"),
+            keccak256("BondCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for BondCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
@@ -150,7 +159,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date

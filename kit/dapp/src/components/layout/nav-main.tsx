@@ -39,7 +39,7 @@ export type SidebarNestedItem = {
   title: string;
   iconName?: string;
   items: SidebarLink[];
-  more?: SidebarItemMore;
+  more: SidebarItemMore;
   open?: boolean;
 };
 
@@ -54,45 +54,66 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible key={item.title} asChild defaultOpen={item.open} className="group/collapsible">
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
+        {items.map((item) => {
+          if (item.items.length === 0) {
+            return (
+              <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton tooltip={item.title}>
                   {item.iconName &&
                     (() => {
                       const Icon = iconMap[item.iconName] || HelpCircle;
-                      return <Icon className="size-4" />;
-                    })()}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                  {item.more && (
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton asChild>
+                      return (
                         <Link href={item.more.url}>
-                          <span>More&hellip;</span>
+                          <Icon className="size-4" />
                         </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  )}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+                      );
+                    })()}
+                  <Link href={item.more.url}>
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          }
+
+          return (
+            <Collapsible key={item.title} asChild defaultOpen={item.open} className="group/collapsible">
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.title}>
+                    {item.iconName &&
+                      (() => {
+                        const Icon = iconMap[item.iconName] || HelpCircle;
+                        return <Icon className="size-4" />;
+                      })()}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild>
+                          <Link href={subItem.url}>
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                    {item.more?.enabled && (
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                          <Link href={item.more.url}>More&hellip;</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    )}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

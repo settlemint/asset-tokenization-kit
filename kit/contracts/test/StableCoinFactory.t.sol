@@ -10,6 +10,7 @@ contract StableCoinFactoryTest is Test {
     StableCoinFactory public factory;
     address public owner;
     uint48 public constant LIVENESS = 7 days;
+    uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -21,7 +22,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -30,6 +31,7 @@ contract StableCoinFactoryTest is Test {
         StableCoin token = StableCoin(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
+        assertEq(token.decimals(), DECIMALS, "Token decimals should match");
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(token.hasRole(token.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -38,40 +40,44 @@ contract StableCoinFactoryTest is Test {
     function test_CreateMultipleTokens() public {
         string memory baseName = "Test Stable ";
         string memory baseSymbol = "TSTB";
-        uint256 count = 3;
+        uint8[] memory decimalValues = new uint8[](3);
+        decimalValues[0] = 6;
+        decimalValues[1] = 8;
+        decimalValues[2] = 18;
 
-        for (uint256 i = 0; i < count; i++) {
+        for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, LIVENESS);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
+            assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
             (uint256 collateralAmount, uint48 collateralTimestamp) = token.collateral();
             assertEq(collateralAmount, 0, "Initial collateral should be zero");
             assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
         }
 
-        assertEq(factory.allTokensLength(), count, "Should have created three tokens");
+        assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
     function test_RevertWhenInvalidLiveness() public {
         vm.expectRevert(StableCoinFactory.InvalidLiveness.selector);
-        factory.create("Test Stable", "TSTB", 0);
+        factory.create("Test Stable", "TSTB", DECIMALS, 0);
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address token1 = factory.create(name, symbol, LIVENESS);
+        address token1 = factory.create(name, symbol, DECIMALS, LIVENESS);
 
         // Create a new factory instance
         StableCoinFactory newFactory = new StableCoinFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, LIVENESS);
+        address token2 = newFactory.create(name, symbol, DECIMALS, LIVENESS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -81,10 +87,11 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.create(name, symbol, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
+        assertEq(token.decimals(), DECIMALS, "Decimals should match");
         assertFalse(token.paused(), "Token should not be paused initially");
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
 
@@ -99,7 +106,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test minting with supply management role
@@ -149,7 +156,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -191,7 +198,7 @@ contract StableCoinFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("StableCoinCreated(address,string,string,address,uint256)"),
+            keccak256("StableCoinCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

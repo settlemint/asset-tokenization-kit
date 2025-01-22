@@ -16,6 +16,7 @@ contract BondFactory {
     /// @param token The address of the newly created bond token
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
+    /// @param decimals The number of decimals for the bond
     /// @param owner The owner of the bond token
     /// @param faceValue The face value of the bond in underlying asset base units
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
@@ -24,6 +25,7 @@ contract BondFactory {
         address indexed token,
         string name,
         string symbol,
+        uint8 decimals,
         address indexed owner,
         uint256 faceValue,
         address indexed underlyingAsset,
@@ -43,6 +45,7 @@ contract BondFactory {
     /// @dev Uses CREATE2 for deterministic addresses and emits a BondCreated event
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
+    /// @param decimals The number of decimals for the token
     /// @param maturityDate The timestamp when the bond matures
     /// @param faceValue The face value of the bond in underlying asset base units
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
@@ -50,6 +53,7 @@ contract BondFactory {
     function create(
         string memory name,
         string memory symbol,
+        uint8 decimals,
         uint256 maturityDate,
         uint256 faceValue,
         address underlyingAsset
@@ -61,13 +65,13 @@ contract BondFactory {
         if (faceValue == 0) revert InvalidFaceValue();
         if (underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, msg.sender, maturityDate, faceValue, underlyingAsset));
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, decimals, msg.sender, maturityDate, faceValue, underlyingAsset));
 
-        Bond newBond = new Bond{ salt: salt }(name, symbol, msg.sender, maturityDate, faceValue, underlyingAsset);
+        Bond newBond = new Bond{ salt: salt }(name, symbol, decimals, msg.sender, maturityDate, faceValue, underlyingAsset);
 
         bond = address(newBond);
         allBonds.push(newBond);
 
-        emit BondCreated(bond, name, symbol, msg.sender, faceValue, underlyingAsset, allBonds.length);
+        emit BondCreated(bond, name, symbol, decimals, msg.sender, faceValue, underlyingAsset, allBonds.length);
     }
 }

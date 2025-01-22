@@ -20,6 +20,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error BondAlreadyMatured();
     error BondNotYetMatured();
     error BondInvalidMaturityDate();
+    error InvalidDecimals(uint8 decimals);
     error InvalidUnderlyingAsset();
     error InvalidFaceValue();
     error InsufficientUnderlyingBalance();
@@ -34,6 +35,9 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
+
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
 
     /// @notice The face value of the bond in underlying asset base units
     uint256 public immutable faceValue;
@@ -56,8 +60,8 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice Tracks whether the bond has matured
     bool public isMatured;
 
-    /// @notice Mapping to track how many bonds each holder has redeemed
-    mapping(address => uint256) public bondRedeemed;
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
@@ -74,6 +78,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice Deploys a new Bond token contract
     /// @param name The token name
     /// @param symbol The token symbol
+    /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param _maturityDate Timestamp when the bond matures
     /// @param _faceValue The face value of the bond in underlying asset base units
@@ -81,6 +86,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     constructor(
         string memory name,
         string memory symbol,
+        uint8 decimals_,
         address initialOwner,
         uint256 _maturityDate,
         uint256 _faceValue,
@@ -90,6 +96,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         ERC20Permit(name)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
+        if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (_faceValue == 0) revert InvalidFaceValue();
         if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
 
@@ -100,6 +107,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
             revert InvalidUnderlyingAsset();
         }
 
+        _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
@@ -108,6 +116,13 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         maturityDate = _maturityDate;
         faceValue = _faceValue;
         underlyingAsset = IERC20(_underlyingAsset);
+    }
+
+    /// @notice Returns the number of decimals used to get its user representation
+    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @return The number of decimals
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
 
     /// @notice Pauses all token transfers

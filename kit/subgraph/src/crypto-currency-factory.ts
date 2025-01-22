@@ -4,10 +4,11 @@ import { CryptoCurrency } from '../generated/templates';
 import { fetchCryptoCurrency } from './fetch/crypto-currency';
 
 export function handleCryptoCurrencyCreated(event: CryptoCurrencyCreatedEvent): void {
-  log.info('CryptoCurrencyCreated event received: {} {} {} {} {}', [
+  log.info('CryptoCurrencyCreated event received: {} {} {} {} {} {}', [
     event.params.token.toHexString(),
     event.params.name,
     event.params.symbol,
+    event.params.decimals.toString(),
     event.params.owner.toHexString(),
     event.params.tokenCount.toString(),
   ]);

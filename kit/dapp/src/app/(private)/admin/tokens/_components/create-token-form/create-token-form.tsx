@@ -1,15 +1,10 @@
 'use client';
 import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-token-form/steps/1-token-basics';
-import {
-  TokenPermissions,
-  users as _users,
-} from '@/app/(private)/admin/tokens/_components/create-token-form/steps/2-token-permissions';
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import {} from '@/components/ui/form';
-import type { User } from '@/lib/auth/types';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,13 +18,14 @@ import {
   createTokenDefaultValues,
   validateCreateTokenSchemaFields,
 } from './create-token-form-schema';
-import { TokenDistribution } from './steps/3-token-distribution';
+import { TokenConfiguration } from './steps/2-token-configuration';
+import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
+  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
   formId: string;
   className?: string;
-  users: User[];
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
@@ -42,7 +38,7 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
-export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) {
+export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormProps) {
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
     parse: (value: string) => Number(value),
@@ -60,15 +56,6 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
       defaultValues: {
         ...createTokenDefaultValues,
         ...defaultValues,
-        tokenPermissions: _users
-          .map((user) => ({
-            id: user.id,
-            wallet: user.wallet,
-            email: user.email,
-            name: user.name,
-            tokenPermissions: user.tokenPermissions,
-          }))
-          .slice(2),
       },
     },
     errorMapProps: {},
@@ -109,7 +96,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={4} currentStep={step} complete={false} className="" />
+      <FormStepProgress steps={3} currentStep={step} complete={false} className="" />
       <Card className="w-full pt-10">
         <CardContent>
           <FormMultiStep<CreateTokenSchemaType>
@@ -122,7 +109,7 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             {/* Step 1 : Token basics */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol', 'decimals', 'collateralProofValidity']}
+              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
@@ -135,39 +122,25 @@ export function CreateTokenForm({ defaultValues, users }: CreateTokenFormProps) 
             {/* Step 2 : Token permissions */}
             <FormStep
               form={form}
-              fields={['tokenPermissions']}
+              fields={['collateralProofValidityDuration', 'collateralThreshold']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
             >
-              <TokenPermissions form={form} />
+              <TokenConfiguration form={form} />
             </FormStep>
 
-            {/* Step 3 : Token distribution */}
+            {/* Step 3 : Summary */}
             <FormStep
               form={form}
-              fields={['tokenDistribution']}
-              withSheetClose
-              controls={{
-                prev: { buttonText: 'Back' },
-                next: { buttonText: 'Confirm' },
-              }}
-            >
-              <TokenDistribution form={form} />
-            </FormStep>
-
-            {/* Step 4 : Review */}
-            <FormStep
-              form={form}
-              title="Review"
               controls={{
                 prev: { buttonText: 'Back' },
                 submit: { buttonText: 'Create stable coin' },
               }}
             >
-              <div>Review</div>
+              <Summary form={form} />
             </FormStep>
           </FormMultiStep>
         </CardContent>

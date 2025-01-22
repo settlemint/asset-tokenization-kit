@@ -65,6 +65,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.38.4",
+    "input-otp": "1.4.2",
     "lucide-react": "0.473.0",
     "next": "15.1.5",
     "next-safe-action": "7.10.2",
@@ -81,7 +82,7 @@
     "tailwind-merge": "2.6.0",
     "tailwindcss-animate": "1.0.7",
     "usehooks-ts": "3.1.0",
-    "viem": "2.22.10",
+    "viem": "2.22.11",
     "zod": "3.24.1",
     "zod-form-data": "2.0.5"
   },
