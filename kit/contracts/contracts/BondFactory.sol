@@ -9,14 +9,26 @@ import { Bond } from "./Bond.sol";
 /// @custom:security-contact support@settlemint.com
 contract BondFactory {
     error InvalidMaturityDate();
+    error InvalidFaceValue();
+    error InvalidUnderlyingAsset();
 
     /// @notice Emitted when a new bond token is created
     /// @param token The address of the newly created bond token
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
     /// @param owner The owner of the bond token
+    /// @param faceValue The face value of the bond in underlying asset base units
+    /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
     /// @param tokenCount The total number of bonds created so far
-    event BondCreated(address indexed token, string name, string symbol, address indexed owner, uint256 tokenCount);
+    event BondCreated(
+        address indexed token,
+        string name,
+        string symbol,
+        address indexed owner,
+        uint256 faceValue,
+        address indexed underlyingAsset,
+        uint256 tokenCount
+    );
 
     /// @notice Array of all bonds created by this factory
     Bond[] public allBonds;
@@ -32,17 +44,30 @@ contract BondFactory {
     /// @param name The name of the bond token
     /// @param symbol The symbol of the bond token
     /// @param maturityDate The timestamp when the bond matures
+    /// @param faceValue The face value of the bond in underlying asset base units
+    /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
     /// @return bond The address of the newly created bond token
-    function create(string memory name, string memory symbol, uint256 maturityDate) external returns (address bond) {
+    function create(
+        string memory name,
+        string memory symbol,
+        uint256 maturityDate,
+        uint256 faceValue,
+        address underlyingAsset
+    )
+        external
+        returns (address bond)
+    {
         if (maturityDate <= block.timestamp) revert InvalidMaturityDate();
+        if (faceValue == 0) revert InvalidFaceValue();
+        if (underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
 
-        bytes32 salt = keccak256(abi.encodePacked(name, symbol, msg.sender, maturityDate));
+        bytes32 salt = keccak256(abi.encodePacked(name, symbol, msg.sender, maturityDate, faceValue, underlyingAsset));
 
-        Bond newBond = new Bond{ salt: salt }(name, symbol, msg.sender, maturityDate);
+        Bond newBond = new Bond{ salt: salt }(name, symbol, msg.sender, maturityDate, faceValue, underlyingAsset);
 
         bond = address(newBond);
         allBonds.push(newBond);
 
-        emit BondCreated(bond, name, symbol, msg.sender, allBonds.length);
+        emit BondCreated(bond, name, symbol, msg.sender, faceValue, underlyingAsset, allBonds.length);
     }
 }
