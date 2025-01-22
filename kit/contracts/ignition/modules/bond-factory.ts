@@ -1,7 +1,9 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 
 const BondFactoryModule = buildModule('BondFactoryModule', (m) => {
-  const bondFactory = m.contract('BondFactory');
+  const bondFactory = m.contract('BondFactory', [], {
+    id: 'bondFactory',
+  });
 
   return { bondFactory };
 });
