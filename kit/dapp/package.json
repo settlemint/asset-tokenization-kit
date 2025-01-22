@@ -67,7 +67,7 @@
     "drizzle-orm": "0.38.4",
     "input-otp": "1.4.2",
     "lucide-react": "0.473.0",
-    "next": "15.1.5",
+    "next": "15.1.6",
     "next-safe-action": "7.10.2",
     "next-themes": "0.4.4",
     "nuqs": "2.3.1",
@@ -94,7 +94,7 @@
     "@types/react-dom": "19.0.3",
     "drizzle-kit": "0.30.2",
     "eslint": "9.18.0",
-    "eslint-config-next": "15.1.5",
+    "eslint-config-next": "15.1.6",
     "postcss": "8.5.1",
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3"
