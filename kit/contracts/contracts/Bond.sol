@@ -277,7 +277,8 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @param bondAmount The amount of bonds to calculate for
     /// @return The amount of underlying assets
     function _calculateUnderlyingAmount(uint256 bondAmount) internal view returns (uint256) {
-        return (bondAmount * faceValue) / (10 ** decimals());
+        // Ensure we divide by decimals first to avoid overflow
+        return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
     /// @notice Approves spending of tokens
@@ -310,9 +311,14 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     )
         internal
         override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian)
-        notMatured
     {
-        super._update(from, to, value);
+        // Allow burning during redemption (when to is address(0) and bond is matured)
+        if (to == address(0) && isMatured) {
+            super._update(from, to, value);
+        } else {
+            if (isMatured) revert BondAlreadyMatured();
+            super._update(from, to, value);
+        }
     }
 
     /// @notice Internal function to handle withdrawing underlying assets

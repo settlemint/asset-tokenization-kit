@@ -1,24 +1,30 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { Bond } from "../contracts/Bond.sol";
+import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 
 contract BondTest is Test {
     Bond public bond;
+    ERC20Mock public underlyingAsset;
     address public owner;
     address public user1;
     address public user2;
     address public spender;
-    uint256 public constant INITIAL_SUPPLY = 1000e18;
+    uint256 public constant INITIAL_SUPPLY = 100;
+    uint256 public constant FACE_VALUE = 100;
     uint256 public maturityDate;
-    uint8 public constant DECIMALS = 8;
+    uint8 public constant DECIMALS = 2;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Paused(address account);
     event Unpaused(address account);
     event BondMatured(uint256 timestamp);
+    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -27,24 +33,31 @@ contract BondTest is Test {
         spender = makeAddr("spender");
         maturityDate = block.timestamp + 365 days;
 
+        // Deploy mock underlying asset
+        underlyingAsset = new ERC20Mock("Mock USD", "MUSD");
+        underlyingAsset.mint(owner, INITIAL_SUPPLY * FACE_VALUE); // Mint enough for all bonds
+
         vm.startPrank(owner);
-        bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate);
+        bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate, FACE_VALUE, address(underlyingAsset));
         bond.mint(owner, INITIAL_SUPPLY);
         vm.stopPrank();
     }
 
     // Basic ERC20 functionality tests
-    function test_InitialState() public view {
+    function test_InitialState() public {
         assertEq(bond.name(), "Test Bond");
         assertEq(bond.symbol(), "TBOND");
         assertEq(bond.decimals(), DECIMALS);
         assertEq(bond.totalSupply(), INITIAL_SUPPLY);
         assertEq(bond.balanceOf(owner), INITIAL_SUPPLY);
         assertEq(bond.maturityDate(), maturityDate);
+        assertEq(bond.faceValue(), FACE_VALUE);
+        assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
         assertFalse(bond.isMatured());
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner));
+        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner));
     }
 
     function test_DifferentDecimals() public {
@@ -56,7 +69,9 @@ contract BondTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
-            Bond newBond = new Bond("Test Bond", "TBOND", decimalValues[i], owner, maturityDate);
+            Bond newBond = new Bond(
+                "Test Bond", "TBOND", decimalValues[i], owner, maturityDate, FACE_VALUE, address(underlyingAsset)
+            );
             assertEq(newBond.decimals(), decimalValues[i]);
         }
     }
@@ -64,7 +79,7 @@ contract BondTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
-        new Bond("Test Bond", "TBOND", 19, owner, maturityDate);
+        new Bond("Test Bond", "TBOND", 19, owner, maturityDate, FACE_VALUE, address(underlyingAsset));
         vm.stopPrank();
     }
 
@@ -301,5 +316,168 @@ contract BondTest is Test {
         vm.prank(owner);
         bond.approve(user1, amount);
         assertEq(bond.allowance(owner, user1), amount);
+    }
+
+    // New tests for redemption functionality
+    function test_RedeemBonds() public {
+        uint256 redeemAmount = 10;
+        uint256 underlyingAmount = (redeemAmount / (10 ** DECIMALS)) * FACE_VALUE;
+
+        // Top up underlying assets
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), underlyingAmount);
+        bond.topUpUnderlyingAsset(underlyingAmount);
+        vm.stopPrank();
+
+        // Transfer bonds to user1
+        vm.prank(owner);
+        bond.transfer(user1, redeemAmount);
+
+        // Mature the bond
+        vm.warp(maturityDate + 1);
+        vm.prank(owner);
+        bond.mature();
+
+        // Redeem bonds
+        vm.prank(user1);
+        bond.redeem(redeemAmount);
+
+        // Check state after redemption
+        assertEq(bond.balanceOf(user1), 0);
+        assertEq(bond.bondRedeemed(user1), redeemAmount);
+        assertEq(underlyingAsset.balanceOf(user1), underlyingAmount);
+    }
+
+    function test_RedeemAll() public {
+        uint256 redeemAmount = 10;
+        uint256 underlyingAmount = (redeemAmount / (10 ** DECIMALS)) * FACE_VALUE;
+
+        // Top up underlying assets
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), underlyingAmount);
+        bond.topUpUnderlyingAsset(underlyingAmount);
+        vm.stopPrank();
+
+        // Transfer bonds to user1
+        vm.prank(owner);
+        bond.transfer(user1, redeemAmount);
+
+        // Mature the bond
+        vm.warp(maturityDate + 1);
+        vm.prank(owner);
+        bond.mature();
+
+        // Redeem all bonds
+        vm.prank(user1);
+        bond.redeemAll();
+
+        // Check state after redemption
+        assertEq(bond.balanceOf(user1), 0);
+        assertEq(bond.bondRedeemed(user1), redeemAmount);
+        assertEq(underlyingAsset.balanceOf(user1), underlyingAmount);
+    }
+
+    function test_CannotRedeemBeforeMaturity() public {
+        uint256 redeemAmount = 10;
+
+        // Transfer bonds to user1
+        vm.prank(owner);
+        bond.transfer(user1, redeemAmount);
+
+        // Try to redeem before maturity
+        vm.prank(user1);
+        vm.expectRevert(Bond.BondNotYetMatured.selector);
+        bond.redeem(redeemAmount);
+    }
+
+    function test_CannotRedeemWithoutUnderlyingAssets() public {
+        uint256 redeemAmount = 10;
+
+        // Transfer bonds to user1
+        vm.prank(owner);
+        bond.transfer(user1, redeemAmount);
+
+        // Mature the bond
+        vm.warp(maturityDate + 1);
+        vm.prank(owner);
+        bond.mature();
+
+        // Try to redeem without underlying assets
+        vm.prank(user1);
+        vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
+        bond.redeem(redeemAmount);
+    }
+
+    // Tests for underlying asset management
+    function test_TopUpUnderlyingAsset() public {
+        uint256 topUpAmount = 100;
+
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), topUpAmount);
+        bond.topUpUnderlyingAsset(topUpAmount);
+        vm.stopPrank();
+
+        assertEq(bond.underlyingAssetBalance(), topUpAmount);
+    }
+
+    function test_WithdrawUnderlyingAsset() public {
+        uint256 topUpAmount = 100;
+
+        // Top up first
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), topUpAmount);
+        bond.topUpUnderlyingAsset(topUpAmount);
+
+        // Withdraw half
+        uint256 withdrawAmount = topUpAmount / 2;
+        bond.withdrawUnderlyingAsset(owner, withdrawAmount);
+        vm.stopPrank();
+
+        assertEq(bond.underlyingAssetBalance(), withdrawAmount);
+        assertEq(underlyingAsset.balanceOf(owner), INITIAL_SUPPLY * FACE_VALUE - withdrawAmount);
+    }
+
+    function test_WithdrawAllUnderlyingAssets() public {
+        uint256 topUpAmount = 100;
+
+        // Top up first
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), topUpAmount);
+        bond.topUpUnderlyingAsset(topUpAmount);
+
+        // Withdraw all
+        bond.withdrawAllUnderlyingAssets(owner);
+        vm.stopPrank();
+
+        assertEq(bond.underlyingAssetBalance(), 0);
+        assertEq(underlyingAsset.balanceOf(owner), INITIAL_SUPPLY * FACE_VALUE);
+    }
+
+    function test_TopUpMissingAmount() public {
+        uint256 bondAmount = 10;
+        uint256 underlyingAmount = (bondAmount / (10 ** DECIMALS)) * FACE_VALUE;
+
+        // Debug assertions
+        assertEq(FACE_VALUE, 100, "Face value should be 100");
+        assertEq(DECIMALS, 2, "Decimals should be 2");
+        assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
+        assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
+
+        // Transfer bonds to user1
+        vm.prank(owner);
+        bond.transfer(user1, bondAmount);
+
+        // Check missing amount
+        uint256 missing = bond.missingUnderlyingAmount();
+        assertEq(missing, underlyingAmount, "Missing amount should match underlying amount");
+
+        // Top up missing amount
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), underlyingAmount);
+        bond.topUpMissingAmount();
+        vm.stopPrank();
+
+        // Verify no more missing amount
+        assertEq(bond.missingUnderlyingAmount(), 0);
     }
 }
