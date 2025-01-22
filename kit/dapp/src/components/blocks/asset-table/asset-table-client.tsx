@@ -2,19 +2,18 @@
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { useReactTable } from '@tanstack/react-table';
 import type { ComponentType } from 'react';
-import type { BaseAsset } from './asset-table-types';
 
-export type AssetTableClientProps<Asset extends BaseAsset> = {
+export type AssetTableClientProps<Asset> = {
   type: string;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   icons?: Record<string, ComponentType<{ className?: string }>>;
-  columns: ColumnDef<Asset>[];
+  columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
 };
 
-export function AssetTableClient<Asset extends BaseAsset>({
+export function AssetTableClient<Asset>({
   dataAction,
   type,
   refetchInterval,
