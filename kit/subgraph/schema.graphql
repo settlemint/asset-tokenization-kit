@@ -65,7 +65,7 @@ type Bond implements Asset @entity {
   redeemedAmount: BigInt!
   redeemedAmountByHolder: [Event_BondRedeemed!]! @derivedFrom(field: "bond")
   underlyingBalance: BigInt!
-  underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
+  underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "bond")
 }
 
 type Event_BondRedeemed implements Event @entity(immutable: true) {
