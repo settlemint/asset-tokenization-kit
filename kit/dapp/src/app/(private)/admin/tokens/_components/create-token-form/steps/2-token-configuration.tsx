@@ -5,8 +5,9 @@ import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
 export const TokenConfiguration = ({ form }: { form: UseFormReturn<CreateTokenSchemaType> }) => {
   return (
-    <div>
-      <CardTitle className="!mt-10">Stable coin configuration</CardTitle>
+    <div className="-mt-4">
+      <CardTitle>Stable coin configuration</CardTitle>
+
       <CardDescription className="my-2">Set parameters specific to your stable coin.</CardDescription>
 
       {/* Collateral threshold */}

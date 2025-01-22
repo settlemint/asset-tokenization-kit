@@ -19,6 +19,7 @@ import {
   validateCreateTokenSchemaFields,
 } from './create-token-form-schema';
 import { TokenConfiguration } from './steps/2-token-configuration';
+import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
@@ -131,16 +132,15 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
               <TokenConfiguration form={form} />
             </FormStep>
 
-            {/* Step 3 : Review */}
+            {/* Step 3 : Summary */}
             <FormStep
               form={form}
-              title="Review"
               controls={{
                 prev: { buttonText: 'Back' },
                 submit: { buttonText: 'Create stable coin' },
               }}
             >
-              <div>Review</div>
+              <Summary form={form} />
             </FormStep>
           </FormMultiStep>
         </CardContent>
