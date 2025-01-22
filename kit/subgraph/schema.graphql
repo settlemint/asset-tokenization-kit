@@ -62,6 +62,26 @@ type Bond implements Asset @entity {
   paused: Boolean!
   faceValue: BigInt!
   underlyingAsset: Bytes!
+  redeemedAmount: BigInt!
+  redeemedAmountByHolder: [BondRedemption!]! @derivedFrom(field: "bond")
+}
+
+type BondRedemption @entity {
+  id: Bytes!
+  bond: Bond!
+  holder: Account!
+  amount: BigInt!
+  underlyingAmount: BigInt!
+  timestamp: BigInt!
+}
+
+type Event_BondRedeemed implements Event @entity(immutable: true) {
+  id: Bytes!
+  emitter: Asset!
+  timestamp: BigInt!
+  holder: Account!
+  bondAmount: BigInt!
+  underlyingAmount: BigInt!
 }
 
 type Equity implements Asset @entity {

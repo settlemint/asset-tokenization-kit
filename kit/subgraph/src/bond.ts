@@ -1,8 +1,9 @@
 import { Address, log, store } from '@graphprotocol/graph-ts';
-import { Account, BlockedAccount, Event_Transfer, Role } from '../generated/schema';
+import { Account, BlockedAccount, BondRedemption, Event_BondRedeemed, Event_Transfer, Role } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
   BondMatured as BondMaturedEvent,
+  BondRedeemed as BondRedeemedEvent,
   EIP712DomainChanged as EIP712DomainChangedEvent,
   Paused as PausedEvent,
   RoleAdminChanged as RoleAdminChangedEvent,
@@ -198,5 +199,35 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
     event.params.newAdminRole,
     event.params.previousAdminRole
   );
+  recordBondMetricsData(bond, event.block.timestamp);
+}
+
+export function handleBondRedeemed(event: BondRedeemedEvent): void {
+  let bond = fetchBond(event.address);
+  let holder = fetchAccount(event.params.holder);
+
+  // Update total redeemed amount
+  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
+  bond.save();
+
+  // Create redemption record
+  let redemption = new BondRedemption(eventId(event));
+  redemption.bond = bond.id;
+  redemption.holder = holder.id;
+  redemption.amount = event.params.bondAmount;
+  redemption.underlyingAmount = event.params.underlyingAmount;
+  redemption.timestamp = event.block.timestamp;
+  redemption.save();
+
+  // Create event record
+  let eventRedeemed = new Event_BondRedeemed(eventId(event));
+  eventRedeemed.emitter = bond.id;
+  eventRedeemed.timestamp = event.block.timestamp;
+  eventRedeemed.holder = holder.id;
+  eventRedeemed.bondAmount = event.params.bondAmount;
+  eventRedeemed.underlyingAmount = event.params.underlyingAmount;
+  eventRedeemed.save();
+
+  // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
 }

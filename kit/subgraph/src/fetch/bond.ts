@@ -31,6 +31,7 @@ export function fetchBond(address: Address): Bond {
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
     bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+    bond.redeemedAmount = BigInt.zero();
     bond.asAccount = bond.id;
     bond.save();
 

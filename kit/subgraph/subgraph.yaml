@@ -134,6 +134,8 @@ templates:
           handler: handleApproval
         - event: BondMatured(uint256)
           handler: handleBondMatured
+        - event: BondRedeemed(indexed address,uint256,uint256)
+          handler: handleBondRedeemed
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
         - event: Paused(address)
