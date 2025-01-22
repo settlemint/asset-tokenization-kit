@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { Fragment, type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import { type FieldPath, type FieldValues, type UseFormReturn, useWatch } from 'react-hook-form';
 import { useLocalStorage } from 'usehooks-ts';
 import { useMultiFormStep } from './form-multistep';
@@ -14,7 +13,6 @@ export const FormStep = <
   form,
   fields = [],
   controls,
-  withSheetClose,
   children,
 }: {
   form: UseFormReturn<TFieldValues>;
@@ -29,7 +27,6 @@ export const FormStep = <
   };
 }) => {
   const { currentStep, nextStep, prevStep, totalSteps, registerFormStep, config, validatePage } = useMultiFormStep();
-  const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose ? [SheetClose, { asChild: true }] : [Fragment, {}];
 
   const [, setStorageState] = useLocalStorage<Record<string, unknown>>('state', {});
   const pageRef = useRef<number | null>(null);
@@ -90,15 +87,9 @@ export const FormStep = <
           {controls?.next?.buttonText}
         </Button>
 
-        <SheetCloseWrapper {...sheetCloseWrapperProps}>
-          <Button
-            type="submit"
-            className={cn({ hidden: currentStep !== totalSteps })}
-            disabled={!form.formState.isValid}
-          >
-            {controls?.submit?.buttonText}
-          </Button>
-        </SheetCloseWrapper>
+        <Button type="submit" className={cn({ hidden: currentStep !== totalSteps })} disabled={!form.formState.isValid}>
+          {controls?.submit?.buttonText}
+        </Button>
       </div>
     </div>
   );
