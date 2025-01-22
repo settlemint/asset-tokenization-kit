@@ -19,13 +19,11 @@ export const columns = [
     id: 'equityCategory',
     header: ({ column }) => <DataTableColumnHeader column={column}>Category</DataTableColumnHeader>,
     cell: ({ row }) => <DataTableColumnCell>{row.getValue('equityCategory')}</DataTableColumnCell>,
-    enableColumnFilter: false,
   }),
   columnHelper.accessor((row) => row.equityClass, {
     id: 'equityClass',
     header: ({ column }) => <DataTableColumnHeader column={column}>Class</DataTableColumnHeader>,
     cell: ({ row }) => <DataTableColumnCell>{row.getValue('equityClass')}</DataTableColumnCell>,
-    enableColumnFilter: false,
   }),
   createPausedColumn(columnHelper),
   createActionsColumn(columnHelper, 'equities'),
