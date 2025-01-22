@@ -2,7 +2,6 @@ import { Address, log, store } from '@graphprotocol/graph-ts';
 import {
   Account,
   BlockedAccount,
-  BondRedemption,
   Event_BondRedeemed,
   Event_Transfer,
   Event_UnderlyingAssetTransfer,
