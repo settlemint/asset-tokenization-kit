@@ -1,13 +1,10 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 import BondFactoryModule from './bond-factory';
+import StableCoinFactoryModule from './stable-coin-factory';
 
 const BondsModule = buildModule('BondsModule', (m) => {
   const { bondFactory } = m.useModule(BondFactoryModule);
-
-  // Deploy StableCoinFactory first
-  const stableCoinFactory = m.contract('StableCoinFactory', [], {
-    id: 'stableCoinFactory',
-  });
+  const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
 
   // Create StableCoin using the factory
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
