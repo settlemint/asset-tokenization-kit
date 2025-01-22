@@ -68,7 +68,7 @@ type Bond implements Asset @entity {
   underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
 }
 
-type Event_BondRedeemed implements Event @entity(immutable: true) {
+type Event_BondRedeemed implements BondEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Bond!
   timestamp: BigInt!
@@ -77,7 +77,7 @@ type Event_BondRedeemed implements Event @entity(immutable: true) {
   underlyingAmount: BigInt!
 }
 
-type Event_UnderlyingAssetTransfer implements Event @entity(immutable: true) {
+type Event_UnderlyingAssetTransfer implements BondEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Bond!
   timestamp: BigInt!
@@ -140,13 +140,19 @@ type Balance @entity {
   transferToEvent: [Event_Transfer!]! @derivedFrom(field: "toBalance")
 }
 
-interface Event {
+interface AssetEvent {
   id: Bytes!
-  emitter: Asset!
   timestamp: BigInt!
+  emitter: Asset!
 }
 
-type Event_Transfer implements Event @entity(immutable: true) {
+interface BondEvent implements AssetEvent {
+  id: Bytes!
+  timestamp: BigInt!
+  emitter: Bond!   # Further narrow to Bond type
+}
+
+type Event_Transfer implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Asset!
   timestamp: BigInt!
@@ -159,7 +165,7 @@ type Event_Transfer implements Event @entity(immutable: true) {
   valueExact: BigInt!
 }
 
-type Event_RoleAdminChanged implements Event @entity(immutable: true) {
+type Event_RoleAdminChanged implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Asset!
   timestamp: BigInt!
@@ -168,7 +174,7 @@ type Event_RoleAdminChanged implements Event @entity(immutable: true) {
   previousAdminRole: AssetRole!
 }
 
-type Event_RoleGranted implements Event @entity(immutable: true) {
+type Event_RoleGranted implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Asset!
   timestamp: BigInt!
@@ -177,7 +183,7 @@ type Event_RoleGranted implements Event @entity(immutable: true) {
   sender: Account!
 }
 
-type Event_RoleRevoked implements Event @entity(immutable: true) {
+type Event_RoleRevoked implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Asset!
   timestamp: BigInt!
