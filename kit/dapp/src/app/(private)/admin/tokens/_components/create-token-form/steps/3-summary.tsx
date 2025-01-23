@@ -3,17 +3,19 @@
 import { CardDescription, CardTitle } from '@/components/ui/card';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { format } from 'date-fns';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import type { UseFormReturn } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
 interface SummaryProps {
   form: UseFormReturn<CreateTokenSchemaType>;
+  tokenType: string;
 }
 
-export function Summary({ form }: SummaryProps) {
+export function Summary({ form, tokenType }: SummaryProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
       <div className="-mt-4">
         {/* Step 3 : Summary */}
 
@@ -47,14 +49,46 @@ export function Summary({ form }: SummaryProps) {
       <div className="mt-6 rounded-lg border p-4">
         <h3 className="mb-4 font-semibold">Token Configuration</h3>
         <dl className="space-y-2">
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral proof validity duration:</dt>
-            <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral threshold:</dt>
-            <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
-          </div>
+          {tokenType === 'stablecoin' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
+                <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Collateral Threshold:</dt>
+                <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
+              </div>
+            </>
+          )}
+          {tokenType === 'equity' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Equity Class:</dt>
+                <dd className="font-medium">{form.getValues('equityClass')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Equity Category:</dt>
+                <dd className="font-medium">{form.getValues('equityCategory')}</dd>
+              </div>
+            </>
+          )}
+          {tokenType === 'bond' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Face value currency:</dt>
+                <dd className="font-medium">{form.getValues('faceValueCurrency')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Face value:</dt>
+                <dd className="font-medium">{form.getValues('faceValue')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Maturity date:</dt>
+                <dd className="font-medium">{format(form.getValues('maturityDate'), 'PPP')}</dd>
+              </div>
+            </>
+          )}
         </dl>
       </div>
 
@@ -69,10 +103,10 @@ export function Summary({ form }: SummaryProps) {
           control={form.control}
           name="pincode"
           render={({ field }) => (
-            <FormItem className="mt-6">
+            <FormItem className="!max-w-full mt-6">
               <FormLabel>Pin code</FormLabel>
               <FormControl>
-                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
+                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field} className="!w-full">
                   <InputOTPGroup className="rounded-md">
                     <InputOTPSlot index={0} className="flex-1" />
                     <InputOTPSlot index={1} className="flex-1" />

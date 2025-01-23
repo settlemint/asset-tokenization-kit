@@ -73,7 +73,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...createTokenDefaultValues,
+        ...createTokenDefaultValues[tokenType],
         ...defaultValues,
       },
     },
@@ -96,7 +96,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <Card className="max-h-[calc(100vh-200px)] w-full overflow-scroll pt-10">
+      <Card className="w-full pt-10">
         <CardContent>
           {transactionState.status ? (
             <TransactionStatusDisplay
@@ -125,7 +125,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                 {/* Step 1 : Token basics */}
                 <FormStep
                   form={form}
-                  fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
+                  fields={['tokenName', 'tokenSymbol', 'decimals', 'isin', 'private']}
                   withSheetClose
                   controls={{
                     prev: { buttonText: 'Back' },
@@ -135,17 +135,25 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                   <TokenBasics form={form} />
                 </FormStep>
 
-                {/* Step 2 : Token permissions */}
+                {/* Step 2 : Token Configuration */}
                 <FormStep
                   form={form}
-                  fields={['collateralProofValidityDuration', 'collateralThreshold']}
+                  fields={
+                    tokenType === 'stablecoin'
+                      ? ['collateralProofValidityDuration', 'collateralThreshold']
+                      : tokenType === 'equity'
+                        ? ['equityClass', 'equityCategory']
+                        : tokenType === 'bond'
+                          ? ['faceValueCurrency', 'faceValue', 'maturityDate']
+                          : []
+                  }
                   withSheetClose
                   controls={{
                     prev: { buttonText: 'Back' },
                     next: { buttonText: 'Confirm' },
                   }}
                 >
-                  <TokenConfiguration form={form} />
+                  <TokenConfiguration form={form} tokenType={tokenType} />
                 </FormStep>
 
                 {/* Step 3 : Summary */}
@@ -156,7 +164,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                     submit: { buttonText: 'Create stable coin' },
                   }}
                 >
-                  <Summary form={form} />
+                  <Summary form={form} tokenType={tokenType} />
                 </FormStep>
               </FormMultiStep>
             </>

@@ -43,9 +43,26 @@ function generateChallengeResponse(pincode: string, salt: string, challenge: str
   return createHash('sha256').update(`${hashedPincode}_${challenge}`).digest('hex');
 }
 
+interface Challenge {
+  challenge: Record<string, unknown> | null;
+  id: string | null;
+  name: string | null;
+  verificationType: 'OTP' | 'PINCODE' | null;
+}
+
+interface VerificationChallenges {
+  createWalletVerificationChallenges: Challenge[] | null;
+}
+
 export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
   try {
-    const { tokenName, tokenSymbol, pincode, decimals, collateralProofValidityDuration } = parsedInput;
+    const { tokenName, tokenSymbol, pincode, decimals } = parsedInput;
+
+    if (parsedInput.tokenType !== 'stablecoin') {
+      throw new Error('Only stablecoin creation is supported');
+    }
+
+    const { collateralProofValidityDuration } = parsedInput;
 
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -55,20 +72,22 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       throw new Error('User not authenticated');
     }
 
-    const verificationChallenges = await portalClient.request(CreateWalletVerificationChallengesMutation, {
+    const verificationChallenges = (await portalClient.request(CreateWalletVerificationChallengesMutation, {
       userWalletAddress: session.user.wallet,
-    });
+    })) as VerificationChallenges;
 
-    // Get the first challenge
-    const firstChallenge = verificationChallenges?.createWalletVerificationChallenges?.[0]?.challenge as {
-      secret: string;
-      salt: string;
-    };
-    if (!firstChallenge) {
-      throw new Error('Could not authenticate pin code, no verification challenge received');
+    if (!verificationChallenges.createWalletVerificationChallenges?.length) {
+      throw new Error('No verification challenges received');
     }
 
-    const challengeResponse = generateChallengeResponse(pincode, firstChallenge.salt, firstChallenge.secret);
+    const firstChallenge = verificationChallenges.createWalletVerificationChallenges[0];
+    const challenge = firstChallenge?.challenge as { secret: string; salt: string } | null;
+    if (!challenge?.secret || !challenge?.salt) {
+      throw new Error('Could not authenticate pin code, invalid challenge format');
+    }
+
+    const { secret, salt } = challenge;
+    const challengeResponse = generateChallengeResponse(pincode, salt, secret);
 
     const variables: VariablesOf<typeof CreateTokenMutation> = {
       address: STABLE_COIN_FACTORY_ADDRESS,

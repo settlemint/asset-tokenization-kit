@@ -13,7 +13,7 @@ import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
-type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
+export type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
 
 const TOKEN_CONFIGS = {
   stablecoin: {
@@ -66,7 +66,7 @@ export function TokenDesignerButton() {
       </DropdownMenu>
 
       <Sheet open={tokenType !== null} onOpenChange={(open) => !open && setTokenType(null)}>
-        <SheetContent className="w-[50%] lg:max-w-[50%]">
+        <SheetContent className="max-h-full w-[50%] overflow-y-auto lg:max-w-[50%]">
           {tokenType && (
             <>
               <SheetHeader>
