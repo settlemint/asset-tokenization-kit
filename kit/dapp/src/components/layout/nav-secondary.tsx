@@ -34,7 +34,7 @@ export function NavSecondary({ items, title }: SidebarSecondarySection) {
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton tooltip={item.title} asChild>
-              <Link href={item.url}>
+              <Link href={item.url} prefetch>
                 {item.iconName &&
                   (() => {
                     const Icon = iconMap[item.iconName] || HelpCircle;

@@ -121,6 +121,7 @@ export function HeaderSearch() {
                     className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => setOpen(false)}
+                    prefetch
                   >
                     {result.main} <span className="ml-auto text-muted-foreground text-xs">{result.sub}</span>
                   </Link>
@@ -137,6 +138,7 @@ export function HeaderSearch() {
                     className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => setOpen(false)}
+                    prefetch
                   >
                     {result.main} <span className="ml-auto text-muted-foreground text-xs">{result.sub}</span>
                   </Link>

@@ -99,7 +99,9 @@ export function NavFooterAdmin() {
               <div className="flex size-6 items-center justify-center rounded-md border-primary bg-primary">
                 <Wallet2 className="size-4" />
               </div>
-              <Link href="/portfolio">My portfolio</Link>
+              <Link href="/portfolio" prefetch>
+                My portfolio
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

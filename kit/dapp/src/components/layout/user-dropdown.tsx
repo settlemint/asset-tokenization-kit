@@ -98,7 +98,7 @@ export function UserDropdown() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <BringToFront />
-            <Link href="/issuer/pending-transactions">
+            <Link href="/issuer/pending-transactions" prefetch>
               Pending Transactions
               {(pendingCount ?? 0) > 0 && (
                 <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
