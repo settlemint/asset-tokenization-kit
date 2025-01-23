@@ -343,6 +343,13 @@ contract BondTest is Test {
         // Withdraw should work because it's not matured yet
         bond.withdrawUnderlyingAsset(owner, 1);
 
+        assertEq(bond.underlyingAssetBalance(), requiredAmount - 1);
+
+        // Top up again so that we have enough to mature
+        underlyingAsset.mint(owner, 1);
+        underlyingAsset.approve(address(bond), 1);
+        bond.topUpUnderlyingAsset(1);
+
         // Mature the bond
         vm.warp(maturityDate + 2);
         bond.mature();
