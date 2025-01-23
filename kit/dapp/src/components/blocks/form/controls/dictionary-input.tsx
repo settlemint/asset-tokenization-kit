@@ -6,9 +6,10 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import React, { type InputHTMLAttributes, forwardRef } from 'react';
+import React, { type InputHTMLAttributes, Suspense, forwardRef } from 'react';
 import { Controller } from 'react-hook-form';
 
 interface Option {
@@ -45,7 +46,12 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                 <PopoverTrigger asChild>
                   <Button variant="outline" aria-expanded={open} className="w-full justify-between">
                     <div className="flex items-center gap-2">
-                      <AddressAvatar address={options.find((option) => option.label === value)?.value} variant="tiny" />
+                      <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
+                        <AddressAvatar
+                          address={options.find((option) => option.label === value)?.value}
+                          variant="tiny"
+                        />
+                      </Suspense>
                       {value
                         ? `${options.find((option) => option.label === value)?.value} (${value})`
                         : 'Select option...'}
@@ -88,7 +94,9 @@ const DictionaryInput = forwardRef<HTMLInputElement, DictionaryInputProps>(
                               className={cn('mr-2 h-4 w-4', value === option.label ? 'opacity-100' : 'opacity-0')}
                             />
                             {option.label}
-                            <AddressAvatar address={option.value} variant="tiny" />
+                            <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
+                              <AddressAvatar address={option.value} variant="tiny" />
+                            </Suspense>
                             <span>{option.value}</span>
                           </CommandItem>
                         ))}

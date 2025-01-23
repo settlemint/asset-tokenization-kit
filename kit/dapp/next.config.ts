@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  experimental: {
+    inlineCss: true,
+    reactCompiler: true,
+  },
   output: 'standalone',
 };
 
