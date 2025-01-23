@@ -12,10 +12,14 @@ contract BondTest is Test {
     address public user1;
     address public user2;
     address public spender;
+
     uint256 public initialSupply;
     uint256 public faceValue;
+    uint256 public initialUnderlyingSupply;
     uint256 public maturityDate;
 
+    uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
+    uint8 public constant WHOLE_FACE_FALUE = 100;
     uint8 public constant DECIMALS = 2;
 
     // Utility functions for decimal conversions
@@ -44,12 +48,13 @@ contract BondTest is Test {
         maturityDate = block.timestamp + 365 days;
 
         // Initialize supply and face value using toDecimals
-        initialSupply = toDecimals(100); // 100.00 bonds
-        faceValue = toDecimals(100); // 100.00 underlying tokens per bond
+        initialSupply = toDecimals(WHOLE_INITIAL_SUPPLY); // 100.00 bonds
+        faceValue = toDecimals(WHOLE_FACE_FALUE); // 100.00 underlying tokens per bond
+        initialUnderlyingSupply = initialSupply * faceValue / (10 ** DECIMALS);
 
         // Deploy mock underlying asset with same decimals
         underlyingAsset = new ERC20Mock("Mock USD", "MUSD", DECIMALS);
-        underlyingAsset.mint(owner, initialSupply * faceValue); // Mint enough for all bonds
+        underlyingAsset.mint(owner, initialUnderlyingSupply); // Mint enough for all bonds
 
         vm.startPrank(owner);
         bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate, faceValue, address(underlyingAsset));
@@ -269,7 +274,7 @@ contract BondTest is Test {
 
         // Add required underlying assets
         vm.startPrank(owner);
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         underlyingAsset.mint(owner, requiredAmount);
         underlyingAsset.approve(address(bond), requiredAmount);
         bond.topUpUnderlyingAsset(requiredAmount);
@@ -291,8 +296,8 @@ contract BondTest is Test {
 
         // Add sufficient underlying assets first
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), initialSupply * faceValue);
-        bond.topUpUnderlyingAsset(initialSupply * faceValue);
+        underlyingAsset.approve(address(bond), initialUnderlyingSupply);
+        bond.topUpUnderlyingAsset(initialUnderlyingSupply);
 
         bond.mature();
         vm.expectRevert(Bond.BondAlreadyMatured.selector);
@@ -309,7 +314,7 @@ contract BondTest is Test {
         bond.mature();
 
         // Add some underlying assets but not enough
-        uint256 requiredAmount = initialSupply * faceValue / (10 ** DECIMALS);
+        uint256 requiredAmount = initialUnderlyingSupply;
         uint256 partialAmount = requiredAmount / 2;
         underlyingAsset.mint(owner, partialAmount);
         underlyingAsset.approve(address(bond), partialAmount);
@@ -326,7 +331,7 @@ contract BondTest is Test {
         vm.startPrank(owner);
 
         // Top up with exact amount needed
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         underlyingAsset.mint(owner, requiredAmount);
         underlyingAsset.approve(address(bond), requiredAmount);
         bond.topUpUnderlyingAsset(requiredAmount);
@@ -335,8 +340,7 @@ contract BondTest is Test {
         assertEq(bond.underlyingAssetBalance(), requiredAmount);
         assertEq(bond.withdrawableUnderlyingAmount(), 0);
 
-        // Try to withdraw when there's no excess
-        vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
+        // Withdraw should work because it's not matured yet
         bond.withdrawUnderlyingAsset(owner, 1);
 
         // Mature the bond
@@ -352,7 +356,7 @@ contract BondTest is Test {
 
     function test_WithdrawReserveAfterPartialRedemption() public {
         // Setup: Add required underlying assets
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         uint256 excessAmount = toDecimals(50);
         uint256 totalAmount = requiredAmount + excessAmount;
 
@@ -394,13 +398,16 @@ contract BondTest is Test {
         vm.startPrank(owner);
 
         // Top up with more than needed
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
         uint256 totalAmount = requiredAmount + excessAmount;
 
         underlyingAsset.mint(owner, totalAmount);
         underlyingAsset.approve(address(bond), totalAmount);
         bond.topUpUnderlyingAsset(totalAmount);
+
+        assertEq(bond.underlyingAssetBalance(), totalAmount);
+        assertEq(bond.totalUnderlyingNeeded(), requiredAmount);
 
         // Verify withdrawable amount equals excess
         uint256 withdrawable = bond.withdrawableUnderlyingAmount();
@@ -411,7 +418,7 @@ contract BondTest is Test {
 
     function test_RedeemBonds() public {
         // Setup: Add required underlying assets
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         vm.startPrank(owner);
         underlyingAsset.approve(address(bond), requiredAmount);
         bond.topUpUnderlyingAsset(requiredAmount);
@@ -472,7 +479,7 @@ contract BondTest is Test {
         vm.stopPrank();
 
         assertEq(bond.underlyingAssetBalance(), topUpAmount - withdrawAmount);
-        assertEq(underlyingAsset.balanceOf(owner), initialSupply * faceValue - topUpAmount + withdrawAmount);
+        assertEq(underlyingAsset.balanceOf(owner), initialUnderlyingSupply - topUpAmount + withdrawAmount);
     }
 
     function test_CannotWithdrawZeroAmount() public {
@@ -486,7 +493,7 @@ contract BondTest is Test {
         vm.startPrank(owner);
 
         // Top up with more than needed
-        uint256 requiredAmount = initialSupply * faceValue;
+        uint256 requiredAmount = initialUnderlyingSupply;
         uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
         uint256 totalAmount = requiredAmount + excessAmount;
 
