@@ -3,6 +3,7 @@
 import { CardDescription, CardTitle } from '@/components/ui/card';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { format } from 'date-fns';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import type { UseFormReturn } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
@@ -84,7 +85,7 @@ export function Summary({ form, tokenType }: SummaryProps) {
               </div>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Maturity date:</dt>
-                <dd className="font-medium">{form.getValues('maturityDate')}</dd>
+                <dd className="font-medium">{format(form.getValues('maturityDate'), 'PPP')}</dd>
               </div>
             </>
           )}

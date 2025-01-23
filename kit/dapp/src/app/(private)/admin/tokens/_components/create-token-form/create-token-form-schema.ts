@@ -36,7 +36,7 @@ export const CreateBondSchema = BaseTokenFields.extend({
   tokenType: z.literal('bond'),
   faceValueCurrency: z.string(),
   faceValue: z.number(),
-  maturityDate: z.string(),
+  maturityDate: z.date(),
   couponRate: z.number(),
   paymentFrequency: z.enum([
     PaymentFrequency.Monthly,
@@ -44,7 +44,7 @@ export const CreateBondSchema = BaseTokenFields.extend({
     PaymentFrequency.SemiAnnually,
     PaymentFrequency.Annually,
   ]),
-  firstCouponDate: z.string(),
+  firstCouponDate: z.date(),
 });
 export type CreateBondSchemaType = z.infer<typeof CreateBondSchema>;
 
@@ -95,10 +95,10 @@ export const createTokenDefaultValues = {
     pincode: '',
     faceValueCurrency: '',
     faceValue: 0,
-    maturityDate: '',
+    maturityDate: new Date(),
     paymentFrequency: PaymentFrequency.Annually,
     couponRate: 0,
-    firstCouponDate: '',
+    firstCouponDate: new Date(),
   },
   cryptocurrency: {
     tokenType: 'cryptocurrency',

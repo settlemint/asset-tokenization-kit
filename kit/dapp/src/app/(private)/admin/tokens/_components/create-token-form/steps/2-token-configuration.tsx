@@ -1,3 +1,4 @@
+import { CalendarInput } from '@/components/blocks/form/controls/calendar-input';
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { SelectInput } from '@/components/blocks/form/controls/select-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
@@ -86,12 +87,12 @@ export const TokenConfiguration = ({
           />
 
           {/* Maturity date */}
-          <TextInput
+          <CalendarInput
             control={form.control}
             label="Maturity date"
             name="maturityDate"
-            placeholder="e.g., Series A"
             showRequired
+            className="w-full"
           />
 
           <CardTitle className="mt-8">Yield configuration</CardTitle>
@@ -103,6 +104,7 @@ export const TokenConfiguration = ({
             label="Coupon rate"
             name="couponRate"
             placeholder="e.g., 1000"
+            addonRight="%"
             showRequired
           />
 
@@ -122,13 +124,7 @@ export const TokenConfiguration = ({
           </SelectInput>
 
           {/* First coupon date */}
-          <TextInput
-            control={form.control}
-            label="First payment date"
-            name="firstCouponDate"
-            placeholder=""
-            showRequired
-          />
+          <CalendarInput control={form.control} label="First payment date" name="firstCouponDate" showRequired />
         </div>
       )}
     </>
