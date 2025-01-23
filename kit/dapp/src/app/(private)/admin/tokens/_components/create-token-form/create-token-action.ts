@@ -44,14 +44,14 @@ function generateChallengeResponse(pincode: string, salt: string, challenge: str
 }
 
 interface Challenge {
-  challenge: {
-    secret: string;
-    salt: string;
-  };
+  challenge: Record<string, unknown> | null;
+  id: string | null;
+  name: string | null;
+  verificationType: 'OTP' | 'PINCODE' | null;
 }
 
 interface VerificationChallenges {
-  createWalletVerificationChallenges: Array<Challenge>;
+  createWalletVerificationChallenges: Challenge[] | null;
 }
 
 export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
@@ -76,12 +76,17 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       userWalletAddress: session.user.wallet,
     })) as VerificationChallenges;
 
+    if (!verificationChallenges.createWalletVerificationChallenges?.length) {
+      throw new Error('No verification challenges received');
+    }
+
     const firstChallenge = verificationChallenges.createWalletVerificationChallenges[0];
-    if (!firstChallenge?.challenge?.secret || !firstChallenge?.challenge?.salt) {
+    const challenge = firstChallenge?.challenge as { secret: string; salt: string } | null;
+    if (!challenge?.secret || !challenge?.salt) {
       throw new Error('Could not authenticate pin code, invalid challenge format');
     }
 
-    const { secret, salt } = firstChallenge.challenge;
+    const { secret, salt } = challenge;
     const challengeResponse = generateChallengeResponse(pincode, salt, secret);
 
     const variables: VariablesOf<typeof CreateTokenMutation> = {
