@@ -3,14 +3,14 @@ import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-tok
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
-import { TransactionStatus } from '@/components/blocks/transaction-status';
+import { TransactionStatusDisplay } from '@/components/blocks/transaction-status/transaction-status';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTransactionStatus } from '@/hooks/use-transaction-status';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
+import { handleTransaction } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useQueryState } from 'nuqs';
-import { useState } from 'react';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import {
@@ -38,6 +38,25 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
   }
 }`);
 
+/**
+ * Handles a token creation transaction
+ */
+export function handleTokenCreation(transactionState: ReturnType<typeof useTransactionStatus>, hash?: string) {
+  return handleTransaction({
+    transactionState,
+    hash,
+    receiptFetcher: async () => {
+      if (!hash) {
+        return;
+      }
+      const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+        transactionHash: hash,
+      });
+      return txresult.StableCoinFactoryCreateReceipt;
+    },
+  });
+}
+
 export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormProps) {
   const [step] = useQueryState('currentStep', {
     defaultValue: 1,
@@ -61,44 +80,18 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     errorMapProps: {},
   });
 
-  const [transactionStatus, setTransactionStatus] = useState<'pending' | 'success' | 'error' | null>(null);
-  const [transactionHash, setTransactionHash] = useState<string | undefined>(undefined);
-  const [transactionReceipt, setTransactionReceipt] = useState<TransactionReceiptWithDecodedError | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const transactionState = useTransactionStatus();
 
   async function handleSubmit(values: CreateTokenSchemaType) {
-    setTransactionStatus('pending');
+    const createTokenResult = await createTokenAction({
+      ...values,
+    });
 
-    try {
-      const createTokenResult = await createTokenAction({
-        ...values,
-      });
-
-      if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
-        throw new Error('Error creating token');
-      }
-
-      const transactionHash = createTokenResult?.data;
-      setTransactionHash(transactionHash);
-
-      const receipt = await waitForTransactionReceipt({
-        receiptFetcher: async () => {
-          if (!transactionHash) {
-            return;
-          }
-          const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-            transactionHash,
-          });
-          return txresult.StableCoinFactoryCreateReceipt;
-        },
-      });
-
-      setTransactionReceipt(receipt);
-      setTransactionStatus('success');
-    } catch (error) {
-      setTransactionStatus('error');
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
+      throw new Error('Error creating token');
     }
+
+    await handleTokenCreation(transactionState, createTokenResult?.data);
   }
 
   return (
@@ -106,18 +99,18 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
       <FormStepProgress steps={3} currentStep={step} complete={false} className="" />
       <Card className="max-h-[calc(100vh-200px)] w-full overflow-scroll pt-10">
         <CardContent>
-          {transactionStatus ? (
-            <TransactionStatus
-              status={transactionStatus}
+          {transactionState.status ? (
+            <TransactionStatusDisplay
+              status={transactionState.status}
               tokenName={form.getValues('tokenName')}
-              transactionHash={transactionHash ?? undefined}
-              receipt={transactionReceipt ?? undefined}
-              error={error ?? undefined}
+              transactionHash={transactionState.transactionHash}
+              receipt={transactionState.transactionReceipt}
+              error={transactionState.error}
               onClose={() => {
-                setTransactionStatus(null);
+                transactionState.reset();
                 resetFormAndAction();
               }}
-              onCheckout={() => {
+              onConfirm={() => {
                 // TODO: Implement checkout navigation
               }}
             />
