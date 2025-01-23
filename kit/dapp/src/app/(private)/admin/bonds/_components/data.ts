@@ -2,6 +2,8 @@
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
+import { unstable_cache } from 'next/cache';
+
 const BondFragment = theGraphGraphqlStarterkits(`
   fragment BondFields on Bond {
     id
@@ -31,7 +33,16 @@ const Bonds = theGraphGraphqlStarterkits(
 
 export type BondAsset = FragmentOf<typeof BondFragment>;
 
-export async function getBonds() {
-  const data = await theGraphClientStarterkits.request(Bonds);
-  return data.bonds;
+export function getBonds() {
+  return unstable_cache(
+    async () => {
+      const data = await theGraphClientStarterkits.request(Bonds);
+      return data.bonds;
+    },
+    ['bonds'],
+    {
+      revalidate: 10,
+      tags: ['bonds'],
+    }
+  )();
 }
