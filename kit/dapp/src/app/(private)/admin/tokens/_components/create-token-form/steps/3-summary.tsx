@@ -3,7 +3,7 @@ import { CardDescription, CardTitle } from '@/components/ui/card';
 import type { UseFormReturn } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
-export const Summary = ({ form }: { form: UseFormReturn<CreateTokenSchemaType> }) => {
+export const Summary = ({ form, tokenType }: { form: UseFormReturn<CreateTokenSchemaType>; tokenType: string }) => {
   return (
     <div className="-mt-4">
       {/* Step 3 : Summary */}
@@ -37,14 +37,46 @@ export const Summary = ({ form }: { form: UseFormReturn<CreateTokenSchemaType> }
       <div className="mt-6 rounded-lg border p-4">
         <h3 className="mb-4 font-semibold">Token Configuration</h3>
         <dl className="space-y-2">
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-            <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral Threshold:</dt>
-            <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
-          </div>
+          {tokenType === 'stablecoin' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
+                <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Collateral Threshold:</dt>
+                <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
+              </div>
+            </>
+          )}
+          {tokenType === 'equity' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Equity Class:</dt>
+                <dd className="font-medium">{form.getValues('equityClass')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Equity Category:</dt>
+                <dd className="font-medium">{form.getValues('equityCategory')}</dd>
+              </div>
+            </>
+          )}
+          {tokenType === 'bond' && (
+            <>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Face value currency:</dt>
+                <dd className="font-medium">{form.getValues('faceValueCurrency')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Face value:</dt>
+                <dd className="font-medium">{form.getValues('faceValue')}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-muted-foreground">Maturity date:</dt>
+                <dd className="font-medium">{form.getValues('maturityDate')}</dd>
+              </div>
+            </>
+          )}
         </dl>
       </div>
     </div>

@@ -23,7 +23,7 @@ import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
-  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
+  tokenType: 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
   formId: string;
   className?: string;
 }
@@ -54,7 +54,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     formProps: {
       mode: 'all',
       defaultValues: {
-        ...createTokenDefaultValues,
+        ...createTokenDefaultValues[tokenType],
         ...defaultValues,
       },
     },
@@ -109,7 +109,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
             {/* Step 1 : Token basics */}
             <FormStep
               form={form}
-              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
+              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin', 'private']}
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
@@ -119,17 +119,25 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
               <TokenBasics form={form} />
             </FormStep>
 
-            {/* Step 2 : Token permissions */}
+            {/* Step 2 : Token Configuration */}
             <FormStep
               form={form}
-              fields={['collateralProofValidityDuration', 'collateralThreshold']}
+              fields={
+                tokenType === 'stablecoin'
+                  ? ['collateralProofValidityDuration', 'collateralThreshold']
+                  : tokenType === 'equity'
+                    ? ['equityClass', 'equityCategory']
+                    : tokenType === 'bond'
+                      ? ['faceValueCurrency', 'faceValue', 'maturityDate']
+                      : []
+              }
               withSheetClose
               controls={{
                 prev: { buttonText: 'Back' },
                 next: { buttonText: 'Confirm' },
               }}
             >
-              <TokenConfiguration form={form} />
+              <TokenConfiguration form={form} tokenType={tokenType} />
             </FormStep>
 
             {/* Step 3 : Summary */}
@@ -140,7 +148,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                 submit: { buttonText: 'Create stable coin' },
               }}
             >
-              <Summary form={form} />
+              <Summary form={form} tokenType={tokenType} />
             </FormStep>
           </FormMultiStep>
         </CardContent>

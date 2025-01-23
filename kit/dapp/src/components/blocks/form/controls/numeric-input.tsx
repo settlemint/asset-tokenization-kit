@@ -12,6 +12,7 @@ type NumericInputProps<T extends FieldValues> = {
   placeholder?: string;
   className?: string;
   rules?: RegisterOptions;
+  addonRight?: string;
 };
 
 export function NumericInput<T extends FieldValues>({
@@ -22,6 +23,7 @@ export function NumericInput<T extends FieldValues>({
   className,
   showRequired,
   placeholder,
+  addonRight,
   ...props
 }: NumericInputProps<T>) {
   return (
@@ -39,18 +41,25 @@ export function NumericInput<T extends FieldValues>({
               </FormLabel>
             )}
             <FormControl>
-              <Input
-                {...field}
-                {...props}
-                type="number"
-                placeholder={placeholder}
-                onChange={(e) => {
-                  const value = e.target.value === '' ? '' : Number(e.target.value);
-                  field.onChange(value);
-                }}
-                value={Number.isNaN(_value) ? 0 : _value}
-                className={className}
-              />
+              <div className="flex rounded-lg shadow-black/5 shadow-sm">
+                <Input
+                  {...field}
+                  {...props}
+                  type="number"
+                  placeholder={placeholder}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? '' : Number(e.target.value);
+                    field.onChange(value);
+                  }}
+                  value={Number.isNaN(_value) ? 0 : _value}
+                  className={cn(className, `${addonRight ? '-me-px rounded-e-none shadow-none focus:mr-[1px]' : ''} `)}
+                />
+                {addonRight && (
+                  <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm ">
+                    {addonRight}
+                  </span>
+                )}
+              </div>
             </FormControl>
             {description && <FormDescription>{description}</FormDescription>}
             <FormMessage />

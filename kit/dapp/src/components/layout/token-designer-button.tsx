@@ -13,7 +13,7 @@ import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
-type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
+export type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
 
 const TOKEN_CONFIGS = {
   stablecoin: {
