@@ -106,7 +106,7 @@ export function SignUpForm({
         },
         onError: (ctx) => {
           form.setError('root', {
-            message: ctx.error.toString(),
+            message: ctx.error.message,
           });
         },
       }

@@ -7,6 +7,7 @@ export const CreateTokenSchema = z.object({
   isin: z.string().optional(),
   collateralProofValidityDuration: z.number(),
   collateralThreshold: z.number(),
+  pincode: z.string().length(6).regex(/^\d+$/, 'PIN code must contain only numbers'),
 });
 
 export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
@@ -16,8 +17,9 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenSymbol: '',
   decimals: 18,
   isin: '',
-  collateralProofValidityDuration: 3600,
+  collateralProofValidityDuration: 30 * 24 * 60 * 60, // 1 month in seconds
   collateralThreshold: 100,
+  pincode: '',
 } as const;
 
 export type CreateTokenFormStepFields = keyof typeof createTokenDefaultValues;
