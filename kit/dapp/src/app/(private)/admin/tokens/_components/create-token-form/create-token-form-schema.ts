@@ -17,7 +17,7 @@ export const createTokenDefaultValues: CreateTokenSchemaType = {
   tokenSymbol: '',
   decimals: 18,
   isin: '',
-  collateralProofValidityDuration: 3600,
+  collateralProofValidityDuration: 30 * 24 * 60 * 60, // 1 month in seconds
   collateralThreshold: 100,
   pincode: '',
 } as const;
