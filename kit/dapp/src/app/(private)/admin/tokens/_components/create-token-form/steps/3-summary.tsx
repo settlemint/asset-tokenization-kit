@@ -18,7 +18,7 @@ export function Summary({ form }: SummaryProps) {
         {/* Step 3 : Summary */}
 
         <CardTitle>Summary</CardTitle>
-        <CardDescription className="my-2">Please review all the details you've entered</CardDescription>
+        <CardDescription className="my-2">Please review all the details you&apos;ve entered</CardDescription>
       </div>
 
       {/* Summary Section */}
@@ -26,11 +26,11 @@ export function Summary({ form }: SummaryProps) {
         <h3 className="mb-4 font-semibold">Token Basics</h3>
         <dl className="space-y-2">
           <div className="flex gap-2">
-            <dt className="text-muted-foreground">Token Name:</dt>
+            <dt className="text-muted-foreground">Token name:</dt>
             <dd className="font-medium">{form.getValues('tokenName')}</dd>
           </div>
           <div className="flex gap-2">
-            <dt className="text-muted-foreground">Token Symbol:</dt>
+            <dt className="text-muted-foreground">Token symbol:</dt>
             <dd className="font-medium">{form.getValues('tokenSymbol')}</dd>
           </div>
           <div className="flex gap-2">
@@ -48,11 +48,11 @@ export function Summary({ form }: SummaryProps) {
         <h3 className="mb-4 font-semibold">Token Configuration</h3>
         <dl className="space-y-2">
           <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
+            <dt className="text-muted-foreground">Collateral proof validity duration:</dt>
             <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
           </div>
           <div className="flex gap-2">
-            <dt className="text-muted-foreground">Collateral Threshold:</dt>
+            <dt className="text-muted-foreground">Collateral threshold:</dt>
             <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
           </div>
         </dl>
