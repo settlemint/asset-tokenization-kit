@@ -7,8 +7,10 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Suspense } from 'react';
 import { BanUserAction } from './actions/ban-user-action';
 import { ChangeRoleAction } from './actions/change-role-action';
 import { icons } from './user-table-icons';
@@ -44,12 +46,14 @@ export const columns = [
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
     cell: ({ renderValue, row }) => (
       <DataTableColumnCell>
-        <AddressAvatar
-          email={row.original.email}
-          address={row.original.wallet}
-          imageUrl={row.original.image}
-          variant="small"
-        />
+        <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+          <AddressAvatar
+            email={row.original.email}
+            address={row.original.wallet}
+            imageUrl={row.original.image}
+            variant="small"
+          />
+        </Suspense>
         <span>{renderValue()}</span>
         {row.original.banned && <Badge variant="destructive">Banned for {row.original.banReason}</Badge>}
       </DataTableColumnCell>

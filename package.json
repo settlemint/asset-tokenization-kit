@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -76,6 +76,6 @@
     "elliptic": "6.6.1",
     "ws": "8.18.0",
     "adm-zip": "0.5.16",
-    "undici": "7.2.3"
+    "undici": "7.3.0"
   }
 }

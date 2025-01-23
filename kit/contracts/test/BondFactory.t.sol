@@ -5,18 +5,24 @@ import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
 import { BondFactory } from "../contracts/BondFactory.sol";
 import { Bond } from "../contracts/Bond.sol";
+import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 
 contract BondFactoryTest is Test {
     BondFactory public factory;
+    ERC20Mock public underlyingAsset;
     address public owner;
     uint256 public futureDate;
     uint8 public constant DECIMALS = 8;
+    uint256 public constant FACE_VALUE = 100e18; // 100 underlying tokens per bond
 
     function setUp() public {
         factory = new BondFactory();
         owner = address(this);
         // Set maturity date to 1 year from now
         futureDate = block.timestamp + 365 days;
+
+        // Deploy mock underlying asset
+        underlyingAsset = new ERC20Mock("Mock USD", "MUSD", DECIMALS);
     }
 
     function test_CreateBond() public {
@@ -24,7 +30,7 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.prank(owner);
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
         assertEq(factory.allBondsLength(), 1, "Should have created one bond");
@@ -33,9 +39,12 @@ contract BondFactoryTest is Test {
         assertEq(bond.name(), name, "Bond name should match");
         assertEq(bond.symbol(), symbol, "Bond symbol should match");
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
+        assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
+        assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
+        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner), "Owner should have financial management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
     }
 
@@ -51,11 +60,14 @@ contract BondFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress = factory.create(name, symbol, decimalValues[i], futureDate);
+            address bondAddress =
+                factory.create(name, symbol, decimalValues[i], futureDate, FACE_VALUE, address(underlyingAsset));
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
             Bond bond = Bond(bondAddress);
             assertEq(bond.decimals(), decimalValues[i], "Bond decimals should match");
+            assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
+            assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
         }
 
         assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
@@ -66,24 +78,34 @@ contract BondFactoryTest is Test {
         vm.warp(2 days); // Move time forward to avoid underflow
         uint256 pastDate = block.timestamp - 1 days;
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, pastDate);
+        factory.create("Test Bond", "TBOND", DECIMALS, pastDate, FACE_VALUE, address(underlyingAsset));
 
         // Try to create a bond with current timestamp
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, block.timestamp);
+        factory.create("Test Bond", "TBOND", DECIMALS, block.timestamp, FACE_VALUE, address(underlyingAsset));
+    }
+
+    function test_RevertWhenInvalidFaceValue() public {
+        vm.expectRevert(BondFactory.InvalidFaceValue.selector);
+        factory.create("Test Bond", "TBOND", DECIMALS, futureDate, 0, address(underlyingAsset));
+    }
+
+    function test_RevertWhenInvalidUnderlyingAsset() public {
+        vm.expectRevert(BondFactory.InvalidUnderlyingAsset.selector);
+        factory.create("Test Bond", "TBOND", DECIMALS, futureDate, FACE_VALUE, address(0));
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 = factory.create(name, symbol, DECIMALS, futureDate);
+        address bond1 = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // Create a new factory instance
         BondFactory newFactory = new BondFactory();
 
         // Create a bond with the same parameters
-        address bond2 = newFactory.create(name, symbol, DECIMALS, futureDate);
+        address bond2 = newFactory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(bond1, bond2, "Bonds should have different addresses due to different factory addresses");
@@ -93,11 +115,13 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Test initial state
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
+        assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
+        assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
         assertFalse(bond.paused(), "Bond should not be paused initially");
         assertFalse(bond.isMatured(), "Bond should not be matured initially");
     }
@@ -107,13 +131,13 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.recordLogs();
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            4,
-            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and BondCreated"
+            5,
+            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (financial), and BondCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -145,11 +169,19 @@ contract BondFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[3];
+        // Fourth event should be RoleGranted for FINANCIAL_MANAGEMENT_ROLE
+        VmSafe.Log memory fourthEntry = entries[3];
+        assertEq(
+            fourthEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for fourth RoleGranted"
+        );
+
+        // Fifth event should be BondCreated
+        VmSafe.Log memory lastEntry = entries[4];
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,uint8,address,uint256)"),
+            keccak256("BondCreated(address,string,string,uint8,address,uint256,address,uint256)"),
             "Wrong event signature for BondCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
@@ -159,7 +191,7 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate);
+        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date

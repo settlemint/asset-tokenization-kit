@@ -20,7 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BringToFront, ChevronsUpDown, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { Suspense, useCallback } from 'react';
 import type { Address } from 'viem';
 
 const GetPendingTransactions = portalGraphql(`
@@ -68,12 +68,14 @@ export function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-          <AddressAvatar
-            address={wallet}
-            email={email}
-            className="h-8 w-8 rounded-lg"
-            indicator={(pendingCount ?? 0) > 0}
-          />
+          <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+            <AddressAvatar
+              address={wallet}
+              email={email}
+              className="h-8 w-8 rounded-lg"
+              indicator={(pendingCount ?? 0) > 0}
+            />
+          </Suspense>
           <div className="grid flex-1 text-left text-sm leading-tight">
             {name || email ? (
               <span className="truncate font-semibold">{name ?? email}</span>
@@ -98,7 +100,7 @@ export function UserDropdown() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <BringToFront />
-            <Link href="/issuer/pending-transactions">
+            <Link href="/issuer/pending-transactions" prefetch>
               Pending Transactions
               {(pendingCount ?? 0) > 0 && (
                 <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
