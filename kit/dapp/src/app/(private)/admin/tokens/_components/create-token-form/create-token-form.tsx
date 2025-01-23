@@ -3,14 +3,14 @@ import { TokenBasics } from '@/app/(private)/admin/tokens/_components/create-tok
 import { FormMultiStep } from '@/components/blocks/form/form-multistep';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormStepProgress } from '@/components/blocks/form/form-step-progress';
+import { TransactionStatusDisplay } from '@/components/blocks/transaction-status/transaction-status';
 import { Card, CardContent } from '@/components/ui/card';
-import {} from '@/components/ui/form';
+import { useTransactionStatus } from '@/hooks/use-transaction-status';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { type TransactionReceiptWithDecodedError, waitForTransactionReceipt } from '@/lib/transactions';
+import { handleTransaction } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useQueryState } from 'nuqs';
-import { toast } from 'sonner';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
 import {
@@ -23,7 +23,7 @@ import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
-  tokenType: 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
+  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
   formId: string;
   className?: string;
 }
@@ -37,6 +37,25 @@ query CreateTokenReceiptQuery($transactionHash: String!) {
     revertReasonDecoded
   }
 }`);
+
+/**
+ * Handles a token creation transaction
+ */
+export function handleTokenCreation(transactionState: ReturnType<typeof useTransactionStatus>, hash?: string) {
+  return handleTransaction({
+    transactionState,
+    hash,
+    receiptFetcher: async () => {
+      if (!hash) {
+        return;
+      }
+      const txresult = await portalClient.request(CreateTokenReceiptQuery, {
+        transactionHash: hash,
+      });
+      return txresult.StableCoinFactoryCreateReceipt;
+    },
+  });
+}
 
 export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormProps) {
   const [step] = useQueryState('currentStep', {
@@ -61,96 +80,95 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     errorMapProps: {},
   });
 
-  function onSubmit(values: CreateTokenSchemaType) {
-    toast.promise(
-      async () => {
-        const createTokenResult = await createTokenAction(values);
-        if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
-          throw new Error('Error creating token');
-        }
-        return await waitForTransactionReceipt({
-          receiptFetcher: async (): Promise<TransactionReceiptWithDecodedError | null | undefined> => {
-            const transactionHash = createTokenResult?.data ?? '';
-            if (!transactionHash) {
-              return;
-            }
-            const txresult = await portalClient.request(CreateTokenReceiptQuery, {
-              transactionHash,
-            });
-            return txresult.StableCoinFactoryCreateReceipt;
-          },
-        });
-      },
-      {
-        loading: 'Creating token...',
-        success: (data) => {
-          return `${values.tokenName} (${values.tokenSymbol}) created in block ${data.blockNumber} on ${data.contractAddress}`;
-        },
-        error: (error) => {
-          return `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`;
-        },
-      }
-    );
-    // TODO: update the table
+  const transactionState = useTransactionStatus();
+
+  async function handleSubmit(values: CreateTokenSchemaType) {
+    const createTokenResult = await createTokenAction({
+      ...values,
+    });
+
+    if (createTokenResult?.serverError || createTokenResult?.validationErrors) {
+      throw new Error('Error creating token');
+    }
+
+    await handleTokenCreation(transactionState, createTokenResult?.data);
   }
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={3} currentStep={step} complete={false} className="" />
       <Card className="w-full pt-10">
         <CardContent>
-          <FormMultiStep<CreateTokenSchemaType>
-            form={form}
-            config={{ useLocalStorageState: false }}
-            formId="create-token-form"
-            onSubmit={onSubmit}
-            validatePage={validateCreateTokenSchemaFields}
-          >
-            {/* Step 1 : Token basics */}
-            <FormStep
-              form={form}
-              fields={['tokenName', 'tokenSymbol', 'decimals', 'isin', 'private']}
-              withSheetClose
-              controls={{
-                prev: { buttonText: 'Back' },
-                next: { buttonText: 'Confirm' },
+          {transactionState.status ? (
+            <TransactionStatusDisplay
+              status={transactionState.status}
+              tokenName={form.getValues('tokenName')}
+              transactionHash={transactionState.transactionHash}
+              error={transactionState.error}
+              onClose={() => {
+                transactionState.reset();
+                resetFormAndAction();
               }}
-            >
-              <TokenBasics form={form} />
-            </FormStep>
+              onConfirm={() => {
+                // Navigate to the token details page
+              }}
+            />
+          ) : (
+            <>
+              <FormStepProgress steps={3} currentStep={step} complete={false} />
+              <FormMultiStep<CreateTokenSchemaType>
+                form={form}
+                config={{ useLocalStorageState: false }}
+                formId="create-token-form"
+                onSubmit={handleSubmit}
+                validatePage={validateCreateTokenSchemaFields}
+              >
+                {/* Step 1 : Token basics */}
+                <FormStep
+                  form={form}
+                  fields={['tokenName', 'tokenSymbol', 'decimals', 'isin', 'private']}
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Confirm' },
+                  }}
+                >
+                  <TokenBasics form={form} />
+                </FormStep>
 
-            {/* Step 2 : Token Configuration */}
-            <FormStep
-              form={form}
-              fields={
-                tokenType === 'stablecoin'
-                  ? ['collateralProofValidityDuration', 'collateralThreshold']
-                  : tokenType === 'equity'
-                    ? ['equityClass', 'equityCategory']
-                    : tokenType === 'bond'
-                      ? ['faceValueCurrency', 'faceValue', 'maturityDate']
-                      : []
-              }
-              withSheetClose
-              controls={{
-                prev: { buttonText: 'Back' },
-                next: { buttonText: 'Confirm' },
-              }}
-            >
-              <TokenConfiguration form={form} tokenType={tokenType} />
-            </FormStep>
+                {/* Step 2 : Token Configuration */}
+                <FormStep
+                  form={form}
+                  fields={
+                    tokenType === 'stablecoin'
+                      ? ['collateralProofValidityDuration', 'collateralThreshold']
+                      : tokenType === 'equity'
+                        ? ['equityClass', 'equityCategory']
+                        : tokenType === 'bond'
+                          ? ['faceValueCurrency', 'faceValue', 'maturityDate']
+                          : []
+                  }
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Confirm' },
+                  }}
+                >
+                  <TokenConfiguration form={form} tokenType={tokenType} />
+                </FormStep>
 
-            {/* Step 3 : Summary */}
-            <FormStep
-              form={form}
-              controls={{
-                prev: { buttonText: 'Back' },
-                submit: { buttonText: 'Create stable coin' },
-              }}
-            >
-              <Summary form={form} tokenType={tokenType} />
-            </FormStep>
-          </FormMultiStep>
+                {/* Step 3 : Summary */}
+                <FormStep
+                  form={form}
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    submit: { buttonText: 'Create stable coin' },
+                  }}
+                >
+                  <Summary form={form} tokenType={tokenType} />
+                </FormStep>
+              </FormMultiStep>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

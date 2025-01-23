@@ -2,6 +2,7 @@
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
+import { unstable_cache } from 'next/cache';
 
 const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
   fragment CryptoCurrencyFields on CryptoCurrency {
@@ -27,6 +28,15 @@ const CryptoCurrencies = theGraphGraphqlStarterkits(
 export type CryptoCurrencyAsset = FragmentOf<typeof CryptoCurrencyFragment>;
 
 export async function getCryptocurrencies() {
-  const data = await theGraphClientStarterkits.request(CryptoCurrencies);
-  return data.cryptoCurrencies;
+  return await unstable_cache(
+    async () => {
+      const data = await theGraphClientStarterkits.request(CryptoCurrencies);
+      return data.cryptoCurrencies;
+    },
+    ['cryptocurrencies'],
+    {
+      revalidate: 10,
+      tags: ['cryptocurrencies'],
+    }
+  )();
 }

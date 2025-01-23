@@ -1,8 +1,9 @@
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { shortHex } from '@/lib/hex';
 import Link from 'next/link';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 
 interface EvmAddressProps extends PropsWithChildren {
   /** The EVM address to display. */
@@ -23,14 +24,18 @@ export function EvmAddress({ address, explorerUrl, children, prefixLength = 6, s
     <HoverCard>
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
-          <AddressAvatar address={address} variant="tiny" />
+          <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
+            <AddressAvatar address={address} variant="tiny" />
+          </Suspense>
           <span className="font-mono">{shortHex(address, prefixLength, suffixLength)}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
-            <AddressAvatar address={address} className="row-span-2" />
+            <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+              <AddressAvatar address={address} className="row-span-2" />
+            </Suspense>
             <div className="flex flex-col">
               <span className="font-mono">{shortHex(address, 12, 8)}</span>
               {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
