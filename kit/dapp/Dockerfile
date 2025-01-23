@@ -1,5 +1,5 @@
 # BUILD DEPENDENCIES
-FROM node:22.13.0 AS deps
+FROM node:22.13.1 AS deps
 COPY --from=oven/bun:1.2.0-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 
 RUN mkdir -p /app
@@ -15,7 +15,7 @@ COPY --chmod=0777 . .
 RUN bun run build
 
 # RUN
-FROM node:22.13.0-slim
+FROM node:22.13.1-slim
 
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
