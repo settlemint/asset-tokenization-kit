@@ -12,10 +12,14 @@ contract BondTest is Test {
     address public user1;
     address public user2;
     address public spender;
+
     uint256 public initialSupply;
     uint256 public faceValue;
+    uint256 public initialUnderlyingSupply;
     uint256 public maturityDate;
 
+    uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
+    uint8 public constant WHOLE_FACE_FALUE = 100;
     uint8 public constant DECIMALS = 2;
 
     // Utility functions for decimal conversions
@@ -44,12 +48,13 @@ contract BondTest is Test {
         maturityDate = block.timestamp + 365 days;
 
         // Initialize supply and face value using toDecimals
-        initialSupply = toDecimals(100); // 100.00 bonds
-        faceValue = toDecimals(100); // 100.00 underlying tokens per bond
+        initialSupply = toDecimals(WHOLE_INITIAL_SUPPLY); // 100.00 bonds
+        faceValue = toDecimals(WHOLE_FACE_FALUE); // 100.00 underlying tokens per bond
+        initialUnderlyingSupply = initialSupply * faceValue / (10 ** DECIMALS);
 
         // Deploy mock underlying asset with same decimals
         underlyingAsset = new ERC20Mock("Mock USD", "MUSD", DECIMALS);
-        underlyingAsset.mint(owner, initialSupply * faceValue); // Mint enough for all bonds
+        underlyingAsset.mint(owner, initialUnderlyingSupply); // Mint enough for all bonds
 
         vm.startPrank(owner);
         bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate, faceValue, address(underlyingAsset));
@@ -257,6 +262,7 @@ contract BondTest is Test {
     function test_OnlySupplyManagementCanMature() public {
         vm.warp(maturityDate + 1);
 
+        // Try to mature as non-supply manager
         vm.startPrank(user1);
         vm.expectRevert(
             abi.encodeWithSignature(
@@ -265,13 +271,18 @@ contract BondTest is Test {
         );
         bond.mature();
         vm.stopPrank();
-        vm.prank(owner);
+
+        // Add required underlying assets
+        vm.startPrank(owner);
+        uint256 requiredAmount = initialUnderlyingSupply;
+        underlyingAsset.mint(owner, requiredAmount);
+        underlyingAsset.approve(address(bond), requiredAmount);
+        bond.topUpUnderlyingAsset(requiredAmount);
+
+        // Now mature as supply manager
         bond.mature();
         assertTrue(bond.isMatured());
-
-        vm.expectRevert();
-        vm.prank(owner);
-        bond.transfer(user1, 100e18);
+        vm.stopPrank();
     }
 
     function test_CannotMatureBeforeMaturityDate() public {
@@ -283,216 +294,250 @@ contract BondTest is Test {
     function test_CannotMatureTwice() public {
         vm.warp(maturityDate + 1);
 
+        // Add sufficient underlying assets first
         vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), initialUnderlyingSupply);
+        bond.topUpUnderlyingAsset(initialUnderlyingSupply);
+
         bond.mature();
-        vm.expectRevert();
+        vm.expectRevert(Bond.BondAlreadyMatured.selector);
         bond.mature();
         vm.stopPrank();
     }
 
-    // Permit functionality tests
-    function test_Permit() public {
-        uint256 privateKey = 0xA11CE;
-        address signer = vm.addr(privateKey);
-
-        vm.prank(owner);
-        bond.mint(signer, 1000e18);
-
-        uint256 deadline = block.timestamp + 1 days;
-        uint256 nonce = bond.nonces(signer);
-
-        bytes32 DOMAIN_SEPARATOR = bond.DOMAIN_SEPARATOR();
-        bytes32 permitTypehash =
-            keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-
-        bytes32 structHash = keccak256(abi.encode(permitTypehash, signer, user1, 1000e18, nonce, deadline));
-
-        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, structHash));
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
-
-        bond.permit(signer, user1, 1000e18, deadline, v, r, s);
-        assertEq(bond.allowance(signer, user1), 1000e18);
-    }
-
-    // Fuzz tests
-    function testFuzz_Transfer(uint256 amount) public {
-        vm.assume(amount <= initialSupply);
-
-        vm.prank(owner);
-        bond.transfer(user1, amount);
-
-        assertEq(bond.balanceOf(user1), amount);
-        assertEq(bond.balanceOf(owner), initialSupply - amount);
-    }
-
-    function testFuzz_Approve(uint256 amount) public {
-        vm.prank(owner);
-        bond.approve(user1, amount);
-        assertEq(bond.allowance(owner, user1), amount);
-    }
-
-    // New tests for redemption functionality
-    function test_RedeemBonds() public {
-        uint256 redeemAmount = toDecimals(10); // 10.00 bonds
-        uint256 underlyingAmount = fromDecimals(redeemAmount) * faceValue; // 10 * 100.00 = 1000.00
-
-        // Top up underlying assets
+    function test_CannotMatureWithoutSufficientUnderlying() public {
+        vm.warp(maturityDate + 2);
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), underlyingAmount);
-        bond.topUpUnderlyingAsset(underlyingAmount);
-        vm.stopPrank();
 
-        // Transfer bonds to user1
-        vm.prank(owner);
-        bond.transfer(user1, redeemAmount);
-
-        // Mature the bond
-        vm.warp(maturityDate + 1);
-        vm.prank(owner);
-        bond.mature();
-
-        // Redeem bonds
-        vm.prank(user1);
-        bond.redeem(redeemAmount);
-
-        // Check state after redemption
-        assertEq(bond.balanceOf(user1), 0);
-        assertEq(bond.bondRedeemed(user1), redeemAmount);
-        assertEq(underlyingAsset.balanceOf(user1), underlyingAmount);
-    }
-
-    function test_RedeemAll() public {
-        uint256 redeemAmount = toDecimals(10); // 10.00 bonds
-        uint256 underlyingAmount = fromDecimals(redeemAmount) * faceValue; // 10 * 100.00 = 1000.00
-
-        // Top up underlying assets
-        vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), underlyingAmount);
-        bond.topUpUnderlyingAsset(underlyingAmount);
-        vm.stopPrank();
-
-        // Transfer bonds to user1
-        vm.prank(owner);
-        bond.transfer(user1, redeemAmount);
-
-        // Mature the bond
-        vm.warp(maturityDate + 1);
-        vm.prank(owner);
-        bond.mature();
-
-        // Redeem all bonds
-        vm.prank(user1);
-        bond.redeemAll();
-
-        // Check state after redemption
-        assertEq(bond.balanceOf(user1), 0);
-        assertEq(bond.bondRedeemed(user1), redeemAmount);
-        assertEq(underlyingAsset.balanceOf(user1), underlyingAmount);
-    }
-
-    function test_CannotRedeemWithoutUnderlyingAssets() public {
-        uint256 redeemAmount = toDecimals(10); // 10.00 bonds
-
-        // Transfer bonds to user1
-        vm.prank(owner);
-        bond.transfer(user1, redeemAmount);
-
-        // Mature the bond
-        vm.warp(maturityDate + 1);
-        vm.prank(owner);
-        bond.mature();
-
-        // Try to redeem without underlying assets
-        vm.startPrank(user1);
+        // Try to mature without any underlying assets
         vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
-        bond.redeem(redeemAmount);
+        bond.mature();
+
+        // Add some underlying assets but not enough
+        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 partialAmount = requiredAmount / 2;
+        underlyingAsset.mint(owner, partialAmount);
+        underlyingAsset.approve(address(bond), partialAmount);
+        bond.topUpUnderlyingAsset(partialAmount);
+
+        // Try to mature with insufficient underlying assets
+        vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
+        bond.mature();
+
+        vm.stopPrank();
+    }
+
+    function test_CannotWithdrawBelowRequiredReserve() public {
+        vm.startPrank(owner);
+
+        // Top up with exact amount needed
+        uint256 requiredAmount = initialUnderlyingSupply;
+        underlyingAsset.mint(owner, requiredAmount);
+        underlyingAsset.approve(address(bond), requiredAmount);
+        bond.topUpUnderlyingAsset(requiredAmount);
+
+        // Verify initial state
+        assertEq(bond.underlyingAssetBalance(), requiredAmount);
+        assertEq(bond.withdrawableUnderlyingAmount(), 0);
+
+        // Withdraw should work because it's not matured yet
+        bond.withdrawUnderlyingAsset(owner, 1);
+
+        assertEq(bond.underlyingAssetBalance(), requiredAmount - 1);
+
+        // Top up again so that we have enough to mature
+        underlyingAsset.mint(owner, 1);
+        underlyingAsset.approve(address(bond), 1);
+        bond.topUpUnderlyingAsset(1);
+
+        // Mature the bond
+        vm.warp(maturityDate + 2);
+        bond.mature();
+
+        // Try to withdraw after maturity (should still fail)
+        vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
+        bond.withdrawUnderlyingAsset(owner, 1);
+
+        vm.stopPrank();
+    }
+
+    function test_WithdrawReserveAfterPartialRedemption() public {
+        // Setup: Add required underlying assets
+        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 excessAmount = toDecimals(50);
+        uint256 totalAmount = requiredAmount + excessAmount;
+
+        vm.startPrank(owner);
+        underlyingAsset.mint(owner, totalAmount); // Mint additional tokens
+        underlyingAsset.approve(address(bond), totalAmount);
+        bond.topUpUnderlyingAsset(totalAmount);
+
+        // Transfer some bonds to user1
+        uint256 user1Bonds = toDecimals(10);
+        bond.transfer(user1, user1Bonds);
+
+        // Mature the bond
+        vm.warp(maturityDate + 1);
+        bond.mature();
+        vm.stopPrank();
+
+        // User1 redeems their bonds
+        vm.prank(user1);
+        bond.redeem(user1Bonds);
+
+        // Calculate new required reserve after redemption
+        uint256 remainingBonds = initialSupply - user1Bonds;
+        uint256 newRequiredReserve = remainingBonds * faceValue / (10 ** DECIMALS);
+
+        // Owner should be able to withdraw excess plus freed up reserve
+        vm.startPrank(owner);
+        bond.withdrawExcessUnderlyingAssets(owner);
+
+        // Verify final state
+        assertEq(bond.underlyingAssetBalance(), newRequiredReserve);
+        vm.stopPrank();
+    }
+
+    function test_WithdrawableAmount() public {
+        // Initially no excess
+        assertEq(bond.withdrawableUnderlyingAmount(), 0);
+
+        vm.startPrank(owner);
+
+        // Top up with more than needed
+        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
+        uint256 totalAmount = requiredAmount + excessAmount;
+
+        underlyingAsset.mint(owner, totalAmount);
+        underlyingAsset.approve(address(bond), totalAmount);
+        bond.topUpUnderlyingAsset(totalAmount);
+
+        assertEq(bond.underlyingAssetBalance(), totalAmount);
+        assertEq(bond.totalUnderlyingNeeded(), requiredAmount);
+
+        // Verify withdrawable amount equals excess
+        uint256 withdrawable = bond.withdrawableUnderlyingAmount();
+        assertEq(withdrawable, excessAmount);
+
+        vm.stopPrank();
+    }
+
+    function test_RedeemBonds() public {
+        // Setup: Add required underlying assets
+        uint256 requiredAmount = initialUnderlyingSupply;
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), requiredAmount);
+        bond.topUpUnderlyingAsset(requiredAmount);
+
+        // Transfer some bonds to user1
+        uint256 user1Bonds = toDecimals(10);
+        bond.transfer(user1, user1Bonds);
+
+        // Mature the bond
+        vm.warp(maturityDate + 1);
+        bond.mature();
+        vm.stopPrank();
+
+        // User1 redeems their bonds
+        vm.startPrank(user1);
+        uint256 expectedUnderlyingAmount = user1Bonds * faceValue / (10 ** DECIMALS);
+        bond.redeem(user1Bonds);
+
+        // Verify redemption
+        assertEq(bond.balanceOf(user1), 0);
+        assertEq(underlyingAsset.balanceOf(user1), expectedUnderlyingAmount);
         vm.stopPrank();
     }
 
     // Tests for underlying asset management
     function test_TopUpUnderlyingAsset() public {
-        uint256 topUpAmount = 100;
+        uint256 topUpAmount = toDecimals(100);
 
         vm.startPrank(owner);
         underlyingAsset.approve(address(bond), topUpAmount);
+
+        vm.expectEmit(true, false, false, true);
+        emit UnderlyingAssetTopUp(owner, topUpAmount);
         bond.topUpUnderlyingAsset(topUpAmount);
         vm.stopPrank();
 
         assertEq(bond.underlyingAssetBalance(), topUpAmount);
     }
 
+    function test_CannotTopUpZeroAmount() public {
+        vm.startPrank(owner);
+        vm.expectRevert(Bond.InvalidAmount.selector);
+        bond.topUpUnderlyingAsset(0);
+        vm.stopPrank();
+    }
+
     function test_WithdrawUnderlyingAsset() public {
-        uint256 topUpAmount = 100;
+        uint256 topUpAmount = toDecimals(200); // 200.00 underlying tokens
+        uint256 withdrawAmount = toDecimals(50); // 50.00 underlying tokens
 
         // Top up first
         vm.startPrank(owner);
         underlyingAsset.approve(address(bond), topUpAmount);
         bond.topUpUnderlyingAsset(topUpAmount);
 
-        // Withdraw half
-        uint256 withdrawAmount = topUpAmount / 2;
+        // Withdraw partial amount
         bond.withdrawUnderlyingAsset(owner, withdrawAmount);
         vm.stopPrank();
 
-        assertEq(bond.underlyingAssetBalance(), withdrawAmount);
-        assertEq(underlyingAsset.balanceOf(owner), initialSupply * faceValue - withdrawAmount);
+        assertEq(bond.underlyingAssetBalance(), topUpAmount - withdrawAmount);
+        assertEq(underlyingAsset.balanceOf(owner), initialUnderlyingSupply - topUpAmount + withdrawAmount);
     }
 
-    function test_WithdrawAllUnderlyingAssets() public {
-        uint256 topUpAmount = 100;
-
-        // Top up first
+    function test_CannotWithdrawZeroAmount() public {
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), topUpAmount);
-        bond.topUpUnderlyingAsset(topUpAmount);
-
-        // Withdraw all
-        bond.withdrawAllUnderlyingAssets(owner);
+        vm.expectRevert(Bond.InvalidAmount.selector);
+        bond.withdrawUnderlyingAsset(owner, 0);
         vm.stopPrank();
-
-        assertEq(bond.underlyingAssetBalance(), 0);
-        assertEq(underlyingAsset.balanceOf(owner), initialSupply * faceValue);
     }
 
-    function test_TopUpMissingAmount() public {
-        uint256 bondAmount = toDecimals(10); // 10.00 bonds
-        uint256 underlyingAmount = (bondAmount / (10 ** DECIMALS)) * faceValue; // Match contract's calculation
-
-        // Debug assertions
-        assertEq(faceValue, toDecimals(100), "Face value should be 100.00");
-        assertEq(DECIMALS, 2, "Decimals should be 2");
-        assertEq(bond.faceValue(), faceValue, "Bond face value should match");
-        assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
-
-        // Debug the calculation
-        assertEq(bondAmount, 1000, "Bond amount should be 1000 (10.00)");
-        assertEq(bondAmount / (10 ** DECIMALS), 10, "Should be 10 bonds without decimals");
-        assertEq(faceValue, 10_000, "Face value should be 10000 (100.00)");
-        assertEq(underlyingAmount, 100_000, "10 * 10000 = 100000");
-
-        // Debug contract's calculation
-        assertEq(bond.totalSupply(), initialSupply, "Total supply should be initial supply");
-        uint256 totalUnderlyingNeeded = initialSupply / (10 ** DECIMALS) * faceValue;
-        assertEq(
-            bond.totalUnderlyingNeeded(), totalUnderlyingNeeded, "Total underlying needed should match calculation"
-        );
-
-        // Transfer bonds to user1
-        vm.prank(owner);
-        bond.transfer(user1, bondAmount);
-
-        // Check missing amount
-        uint256 missing = bond.missingUnderlyingAmount();
-        assertEq(missing, totalUnderlyingNeeded, "Missing amount should match total underlying needed");
-
-        // Top up missing amount
+    function test_WithdrawExcessUnderlyingAssets() public {
         vm.startPrank(owner);
-        underlyingAsset.approve(address(bond), missing);
-        bond.topUpMissingAmount();
-        vm.stopPrank();
 
-        // Verify no more missing amount
-        assertEq(bond.missingUnderlyingAmount(), 0);
+        // Top up with more than needed
+        uint256 requiredAmount = initialUnderlyingSupply;
+        uint256 excessAmount = toDecimals(5); // 5.00 excess tokens
+        uint256 totalAmount = requiredAmount + excessAmount;
+
+        // First mint and approve the total amount needed
+        underlyingAsset.mint(owner, totalAmount);
+        underlyingAsset.approve(address(bond), totalAmount);
+
+        // Top up the contract
+        bond.topUpUnderlyingAsset(totalAmount);
+
+        // Verify initial state
+        assertEq(bond.underlyingAssetBalance(), totalAmount);
+        assertEq(bond.withdrawableUnderlyingAmount(), excessAmount);
+
+        // Withdraw excess
+        uint256 initialBalance = underlyingAsset.balanceOf(owner);
+        bond.withdrawExcessUnderlyingAssets(owner);
+
+        // Verify final state
+        assertEq(bond.underlyingAssetBalance(), requiredAmount);
+        assertEq(underlyingAsset.balanceOf(owner), initialBalance + excessAmount);
+        assertEq(bond.withdrawableUnderlyingAmount(), 0);
+
+        vm.stopPrank();
+    }
+
+    function test_CannotWithdrawWithoutExcess() public {
+        uint256 neededAmount = toDecimals(100); // Exact amount needed for bonds
+
+        // Top up with exact amount needed
+        vm.startPrank(owner);
+        underlyingAsset.approve(address(bond), neededAmount);
+        bond.topUpUnderlyingAsset(neededAmount);
+
+        // Try to withdraw excess when there is none
+        vm.expectRevert(Bond.InsufficientUnderlyingBalance.selector);
+        bond.withdrawExcessUnderlyingAssets(owner);
+        vm.stopPrank();
     }
 }

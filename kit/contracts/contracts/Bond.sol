@@ -26,8 +26,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error InsufficientUnderlyingBalance();
     error InvalidRedemptionAmount();
     error InsufficientRedeemableBalance();
-    error InvalidTopUpAmount();
-    error InvalidWithdrawAmount();
+    error InvalidAmount();
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -181,6 +180,10 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         if (block.timestamp < maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();
 
+        // Check if there are enough underlying assets for all potential redemptions
+        uint256 needed = totalUnderlyingNeeded();
+        if (underlyingAssetBalance() < needed) revert InsufficientUnderlyingBalance();
+
         isMatured = true;
         emit BondMatured(block.timestamp);
     }
@@ -189,7 +192,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @dev Anyone can top up the contract with underlying assets
     /// @param amount The amount of underlying assets to top up
     function topUpUnderlyingAsset(uint256 amount) external {
-        if (amount == 0) revert InvalidTopUpAmount();
+        if (amount == 0) revert InvalidAmount();
 
         // Transfer the underlying assets from the sender to this contract
         bool success = underlyingAsset.transferFrom(msg.sender, address(this), amount);
@@ -206,14 +209,14 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         _withdrawUnderlyingAsset(to, amount);
     }
 
-    /// @notice Allows withdrawing all underlying assets
+    /// @notice Allows withdrawing excess underlying assets
     /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawAllUnderlyingAssets(address to) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
-        uint256 balance = underlyingAssetBalance();
-        if (balance == 0) revert InsufficientUnderlyingBalance();
+    function withdrawExcessUnderlyingAssets(address to) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+        uint256 withdrawable = withdrawableUnderlyingAmount();
+        if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 
-        _withdrawUnderlyingAsset(to, balance);
+        _withdrawUnderlyingAsset(to, withdrawable);
     }
 
     /// @notice Allows redeeming bonds for underlying assets after maturity
@@ -226,17 +229,10 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @notice Allows redeeming all available bonds for underlying assets after maturity
     /// @dev Can only be called after the bond has matured
     function redeemAll() external onlyMatured {
-        uint256 redeemableAmount = redeemableBalance(msg.sender);
+        uint256 redeemableAmount = balanceOf(msg.sender); // already redeemed amount is burned
         if (redeemableAmount == 0) revert InvalidRedemptionAmount();
 
         _redeem(msg.sender, redeemableAmount);
-    }
-
-    /// @notice Returns the amount of bonds that can still be redeemed by an address
-    /// @param holder The address to check
-    /// @return The amount of bonds that can still be redeemed
-    function redeemableBalance(address holder) public view returns (uint256) {
-        return balanceOf(holder) - bondRedeemed[holder];
     }
 
     /// @notice Returns the amount of underlying assets held by the contract
@@ -259,11 +255,19 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         return needed > current ? needed - current : 0;
     }
 
+    /// @notice Returns the amount of excess underlying assets that can be withdrawn
+    /// @return The amount of excess underlying assets
+    function withdrawableUnderlyingAmount() public view returns (uint256) {
+        uint256 needed = totalUnderlyingNeeded();
+        uint256 current = underlyingAssetBalance();
+        return current > needed ? current - needed : 0;
+    }
+
     /// @notice Tops up the contract with exactly the amount needed for all redemptions
     /// @dev Will revert if no assets are missing or if the transfer fails
     function topUpMissingAmount() external {
         uint256 missing = missingUnderlyingAmount();
-        if (missing == 0) revert InvalidTopUpAmount();
+        if (missing == 0) revert InvalidAmount();
 
         bool success = underlyingAsset.transferFrom(msg.sender, address(this), missing);
         if (!success) revert InsufficientUnderlyingBalance();
@@ -277,7 +281,8 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @param bondAmount The amount of bonds to calculate for
     /// @return The amount of underlying assets
     function _calculateUnderlyingAmount(uint256 bondAmount) internal view returns (uint256) {
-        // Ensure we divide by decimals first to avoid overflow
+        // Divide by decimals first to prevent overflow when multiplying large numbers
+        // Note: This may lose some precision but prevents overflow
         return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
@@ -325,7 +330,14 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
     function _withdrawUnderlyingAsset(address to, uint256 amount) internal {
-        if (amount == 0) revert InvalidWithdrawAmount();
+        if (amount == 0) revert InvalidAmount();
+
+        // If matured, ensure we maintain enough assets for remaining redemptions
+        if (isMatured) {
+            uint256 needed = totalUnderlyingNeeded();
+            uint256 currentBalance = underlyingAssetBalance();
+            if (currentBalance - amount < needed) revert InsufficientUnderlyingBalance();
+        }
 
         bool success = underlyingAsset.transfer(to, amount);
         if (!success) revert InsufficientUnderlyingBalance();
