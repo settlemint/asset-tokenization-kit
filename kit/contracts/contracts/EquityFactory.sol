@@ -14,10 +14,23 @@ contract EquityFactory {
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param owner The owner of the token
+    /// @param isin The ISIN (International Securities Identification Number) of the equity
+    /// @param equityClass The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @param tokenCount The total number of tokens created so far
     event EquityCreated(
-        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 tokenCount
+        address indexed token,
+        string name,
+        string symbol,
+        uint8 decimals,
+        address indexed owner,
+        string isin,
+        string equityClass,
+        string equityCategory,
+        uint256 tokenCount
     );
+
+    error InvalidISIN();
 
     /// @notice Array of all tokens created by this factory
     Equity[] public allTokens;
@@ -33,6 +46,7 @@ contract EquityFactory {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
+    /// @param isin The ISIN (International Securities Identification Number) of the equity
     /// @param equityClass The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @return token The address of the newly created token
@@ -40,19 +54,25 @@ contract EquityFactory {
         string memory name,
         string memory symbol,
         uint8 decimals,
+        string memory isin,
         string memory equityClass,
         string memory equityCategory
     )
         external
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, msg.sender));
+        if (bytes(isin).length != 12) revert InvalidISIN();
 
-        Equity newToken = new Equity{ salt: salt }(name, symbol, decimals, equityClass, equityCategory, msg.sender);
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, msg.sender, isin));
+
+        Equity newToken =
+            new Equity{ salt: salt }(name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
 
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit EquityCreated(token, name, symbol, decimals, msg.sender, allTokens.length);
+        emit EquityCreated(
+            token, name, symbol, decimals, msg.sender, isin, equityClass, equityCategory, allTokens.length
+        );
     }
 }

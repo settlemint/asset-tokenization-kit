@@ -9,6 +9,7 @@ import { StableCoin } from "./StableCoin.sol";
 /// @custom:security-contact support@settlemint.com
 contract StableCoinFactory {
     error InvalidLiveness();
+    error InvalidISIN();
 
     /// @notice Emitted when a new stablecoin token is created
     /// @param token The address of the newly created token
@@ -16,9 +17,16 @@ contract StableCoinFactory {
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param owner The owner of the token
+    /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @param tokenCount The total number of tokens created so far
     event StableCoinCreated(
-        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 tokenCount
+        address indexed token,
+        string name,
+        string symbol,
+        uint8 decimals,
+        address indexed owner,
+        string isin,
+        uint256 tokenCount
     );
 
     /// @notice Array of all tokens created by this factory
@@ -36,26 +44,29 @@ contract StableCoinFactory {
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
+    /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint48 collateralLivenessSeconds
+        uint48 collateralLivenessSeconds,
+        string memory isin
     )
         external
         returns (address token)
     {
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
+        if (bytes(isin).length != 0 && bytes(isin).length != 12) revert InvalidISIN();
 
-        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, collateralLivenessSeconds));
+        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds));
 
         StableCoin newToken =
-            new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, collateralLivenessSeconds);
+            new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds);
 
         token = address(newToken);
         allTokens.push(newToken);
 
-        emit StableCoinCreated(token, name, symbol, decimals, msg.sender, allTokens.length);
+        emit StableCoinCreated(token, name, symbol, decimals, msg.sender, isin, allTokens.length);
     }
 }
