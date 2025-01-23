@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { CopyToClipboard } from '@/components/ui/copy';
 import type { TransactionStatus } from '@/hooks/use-transaction-status';
-import { CheckIcon, Loader2, XIcon } from 'lucide-react';
+import { Check, Loader2, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { SheetClose } from '../../ui/sheet';
 
@@ -33,7 +33,7 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
   Success: {
     icon: (
       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500">
-        <CheckIcon className="h-5 w-5 text-white" />
+        <Check className="h-5 w-5 text-white" />
       </div>
     ),
     title: 'Success',
@@ -44,7 +44,7 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
   Reverted: {
     icon: (
       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500">
-        <XIcon className="h-5 w-5 text-white" />
+        <X className="h-5 w-5 text-white" />
       </div>
     ),
     title: 'Transaction reverted',
@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
   Failed: {
     icon: (
       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500">
-        <XIcon className="h-5 w-5 text-white" />
+        <X className="h-5 w-5 text-white" />
       </div>
     ),
     title: 'Transaction failed',
