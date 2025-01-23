@@ -63,12 +63,12 @@ export function NavMain({
                     (() => {
                       const Icon = iconMap[item.iconName] || HelpCircle;
                       return (
-                        <Link href={item.more.url}>
+                        <Link href={item.more.url} prefetch>
                           <Icon className="size-4" />
                         </Link>
                       );
                     })()}
-                  <Link href={item.more.url}>
+                  <Link href={item.more.url} prefetch>
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -95,7 +95,7 @@ export function NavMain({
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton asChild>
-                          <Link href={subItem.url}>
+                          <Link href={subItem.url} prefetch>
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -104,7 +104,9 @@ export function NavMain({
                     {item.more?.enabled && (
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                          <Link href={item.more.url}>More&hellip;</Link>
+                          <Link href={item.more.url} prefetch>
+                            More&hellip;
+                          </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     )}

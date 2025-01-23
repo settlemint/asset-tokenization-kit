@@ -40,7 +40,9 @@ export function DataTableRowActions({
     <div className={cn(dataTableRowActionsVariants({ variant, className }), className)} {...props}>
       {detailUrl && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={detailUrl}>Details</Link>
+          <Link href={detailUrl} prefetch>
+            Details
+          </Link>
         </Button>
       )}
       <DropdownMenu>
