@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { CopyToClipboard } from '@/components/ui/copy';
 import type { TransactionStatus } from '@/hooks/use-transaction-status';
-import type { TransactionReceiptWithDecodedError } from '@/lib/transactions';
 import { CheckIcon, Loader2, XIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { SheetClose } from '../../ui/sheet';
@@ -10,7 +9,6 @@ interface TransactionStatusProps {
   status: NonNullable<TransactionStatus>;
   tokenName: string;
   transactionHash?: string;
-  receipt?: TransactionReceiptWithDecodedError;
   error?: string;
   onClose: () => void;
   onConfirm?: () => void;
@@ -39,7 +37,8 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
       </div>
     ),
     title: 'Success',
-    description: (name) => `"${name}" was created successfully on the blockchain.`,
+    description: (name) =>
+      `"${name}" was created successfully on the blockchain. You can now proceed with using your new asset.`,
     buttonText: (name) => `Check out "${name}"`,
   },
   Reverted: {
@@ -70,7 +69,6 @@ export function TransactionStatusDisplay({
   status,
   tokenName,
   transactionHash,
-  receipt,
   error,
   onClose,
   onConfirm,
@@ -79,28 +77,18 @@ export function TransactionStatusDisplay({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center justify-center space-y-4">
-        {config.icon}
+      <div className="flex flex-col items-start justify-center space-y-4">
+        <div className="flex w-full items-center justify-center">{config.icon}</div>
         <h3 className="font-medium text-lg">{config.title}</h3>
-        <p className="text-muted-foreground text-sm">{config.description(tokenName, error)}</p>
+        <p className="text-sm">{config.description(tokenName, error)}</p>
       </div>
 
+      {/* TODO: Replace with a link to view the transaction on the blockchain */}
       {transactionHash && (
-        <Card className="p-4">
-          <p className="font-medium text-sm">Transaction Hash</p>
-          <p className="break-all text-muted-foreground text-xs">{transactionHash}</p>
-        </Card>
-      )}
-
-      {receipt && (
-        <Card className="p-4">
-          <p className="font-medium text-sm">Transaction Receipt</p>
-          <div className="text-muted-foreground text-xs">
-            <p>Block Number: {receipt.blockNumber}</p>
-            <p>Contract Address: {receipt.contractAddress}</p>
-            <p>Status: {receipt.status ? 'Success' : 'Failed'}</p>
-          </div>
-        </Card>
+        <div className="text-sm">
+          <p>Transaction hash</p>
+          <CopyToClipboard value={transactionHash} className="text-muted-foreground" />
+        </div>
       )}
 
       <div className="flex justify-end gap-2">

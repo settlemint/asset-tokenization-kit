@@ -104,14 +104,13 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
               status={transactionState.status}
               tokenName={form.getValues('tokenName')}
               transactionHash={transactionState.transactionHash}
-              receipt={transactionState.transactionReceipt}
               error={transactionState.error}
               onClose={() => {
                 transactionState.reset();
                 resetFormAndAction();
               }}
               onConfirm={() => {
-                // TODO: Implement checkout navigation
+                // Navigate to the token details page
               }}
             />
           ) : (
