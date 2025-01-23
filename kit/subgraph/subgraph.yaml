@@ -26,7 +26,7 @@ dataSources:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,uint8,indexed address,uint256)
+        - event: BondCreated(indexed address,string,string,uint8,indexed address,uint256,indexed address,uint256)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
   - kind: ethereum/contract
@@ -134,6 +134,8 @@ templates:
           handler: handleApproval
         - event: BondMatured(uint256)
           handler: handleBondMatured
+        - event: BondRedeemed(indexed address,uint256,uint256)
+          handler: handleBondRedeemed
         - event: EIP712DomainChanged()
           handler: handleEIP712DomainChanged
         - event: Paused(address)
@@ -156,6 +158,10 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: UnderlyingAssetTopUp(indexed address,uint256)
+          handler: handleUnderlyingAssetTopUp
+        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+          handler: handleUnderlyingAssetWithdrawn
       file: ./src/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency

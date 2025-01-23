@@ -12,6 +12,9 @@ const BondFragment = theGraphGraphqlStarterkits(`
     isMatured
     maturityDate
     paused
+    faceValue
+    underlyingAsset
+    redeemedAmount
   }
 `);
 

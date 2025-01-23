@@ -8,9 +8,11 @@ import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC2
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/// @title Bond - A standard bond token implementation
-/// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics
+/// @title Bond - A standard bond token implementation with face value in underlying asset
+/// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
+/// face value in an underlying ERC20 asset
 /// @dev Inherits from multiple OpenZeppelin contracts and implements bond-specific features
 /// @custom:security-contact support@settlemint.com
 contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit, ERC20Blocklist, ERC20Custodian {
@@ -18,27 +20,58 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error BondAlreadyMatured();
     error BondNotYetMatured();
     error BondInvalidMaturityDate();
-    error BondMaturityReached();
     error InvalidDecimals(uint8 decimals);
+    error InvalidUnderlyingAsset();
+    error InvalidFaceValue();
+    error InsufficientUnderlyingBalance();
+    error InvalidRedemptionAmount();
+    error InsufficientRedeemableBalance();
+    error InvalidTopUpAmount();
+    error InvalidWithdrawAmount();
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
+    bytes32 public constant FINANCIAL_MANAGEMENT_ROLE = keccak256("FINANCIAL_MANAGEMENT_ROLE");
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
 
-    /// @notice Event emitted when the bond reaches maturity and is closed
-    event BondMatured(uint256 timestamp);
+    /// @notice The number of decimals used for token amounts
+    uint8 private immutable _decimals;
+
+    /// @notice The face value of the bond in underlying asset base units
+    uint256 public immutable faceValue;
+
+    /// @notice The underlying asset contract used for face value denomination
+    IERC20 public immutable underlyingAsset;
 
     /// @notice Tracks whether the bond has matured
     bool public isMatured;
 
-    /// @notice The number of decimals used for token amounts
-    uint8 private immutable _decimals;
+    /// @notice Tracks how many bonds each holder has redeemed
+    mapping(address => uint256) public bondRedeemed;
+
+    /// @notice Event emitted when the bond reaches maturity and is closed
+    event BondMatured(uint256 timestamp);
+
+    /// @notice Event emitted when underlying assets are topped up
+    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+
+    /// @notice Event emitted when a bond is redeemed for underlying assets
+    event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+
+    /// @notice Event emitted when underlying assets are withdrawn
+    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
-        if (isMatured) revert BondMaturityReached();
+        if (isMatured) revert BondAlreadyMatured();
+        _;
+    }
+
+    /// @notice Modifier to ensure the bond has matured
+    modifier onlyMatured() {
+        if (!isMatured) revert BondNotYetMatured();
         _;
     }
 
@@ -48,24 +81,41 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param _maturityDate Timestamp when the bond matures
+    /// @param _faceValue The face value of the bond in underlying asset base units
+    /// @param _underlyingAsset The address of the underlying asset contract used for face value denomination
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
-        uint256 _maturityDate
+        uint256 _maturityDate,
+        uint256 _faceValue,
+        address _underlyingAsset
     )
         ERC20(name, symbol)
         ERC20Permit(name)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
+        if (_faceValue == 0) revert InvalidFaceValue();
+        if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
+
+        // Verify the underlying asset contract exists by attempting to call a view function
+        try IERC20(_underlyingAsset).totalSupply() returns (uint256) {
+            // Contract exists and implements IERC20
+        } catch {
+            revert InvalidUnderlyingAsset();
+        }
 
         _decimals = decimals_;
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+        _grantRole(FINANCIAL_MANAGEMENT_ROLE, initialOwner);
+
         maturityDate = _maturityDate;
+        faceValue = _faceValue;
+        underlyingAsset = IERC20(_underlyingAsset);
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -125,6 +175,112 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
         emit TokensUnfrozen(user, amount);
     }
 
+    /// @notice Closes off the bond at maturity
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE role after maturity date
+    function mature() external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (block.timestamp < maturityDate) revert BondNotYetMatured();
+        if (isMatured) revert BondAlreadyMatured();
+
+        isMatured = true;
+        emit BondMatured(block.timestamp);
+    }
+
+    /// @notice Allows topping up the contract with underlying assets
+    /// @dev Anyone can top up the contract with underlying assets
+    /// @param amount The amount of underlying assets to top up
+    function topUpUnderlyingAsset(uint256 amount) external {
+        if (amount == 0) revert InvalidTopUpAmount();
+
+        // Transfer the underlying assets from the sender to this contract
+        bool success = underlyingAsset.transferFrom(msg.sender, address(this), amount);
+        if (!success) revert InsufficientUnderlyingBalance();
+
+        emit UnderlyingAssetTopUp(msg.sender, amount);
+    }
+
+    /// @notice Allows withdrawing excess underlying assets
+    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @param to The address to send the underlying assets to
+    /// @param amount The amount of underlying assets to withdraw
+    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+        _withdrawUnderlyingAsset(to, amount);
+    }
+
+    /// @notice Allows withdrawing all underlying assets
+    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @param to The address to send the underlying assets to
+    function withdrawAllUnderlyingAssets(address to) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+        uint256 balance = underlyingAssetBalance();
+        if (balance == 0) revert InsufficientUnderlyingBalance();
+
+        _withdrawUnderlyingAsset(to, balance);
+    }
+
+    /// @notice Allows redeeming bonds for underlying assets after maturity
+    /// @dev Can be called multiple times until all bonds are redeemed
+    /// @param amount The amount of bonds to redeem
+    function redeem(uint256 amount) external onlyMatured {
+        _redeem(msg.sender, amount);
+    }
+
+    /// @notice Allows redeeming all available bonds for underlying assets after maturity
+    /// @dev Can only be called after the bond has matured
+    function redeemAll() external onlyMatured {
+        uint256 redeemableAmount = redeemableBalance(msg.sender);
+        if (redeemableAmount == 0) revert InvalidRedemptionAmount();
+
+        _redeem(msg.sender, redeemableAmount);
+    }
+
+    /// @notice Returns the amount of bonds that can still be redeemed by an address
+    /// @param holder The address to check
+    /// @return The amount of bonds that can still be redeemed
+    function redeemableBalance(address holder) public view returns (uint256) {
+        return balanceOf(holder) - bondRedeemed[holder];
+    }
+
+    /// @notice Returns the amount of underlying assets held by the contract
+    /// @return The balance of underlying assets
+    function underlyingAssetBalance() public view returns (uint256) {
+        return underlyingAsset.balanceOf(address(this));
+    }
+
+    /// @notice Returns the total amount of underlying assets needed for all potential redemptions
+    /// @return The total amount of underlying assets needed
+    function totalUnderlyingNeeded() public view returns (uint256) {
+        return _calculateUnderlyingAmount(totalSupply());
+    }
+
+    /// @notice Returns the amount of underlying assets missing for all potential redemptions
+    /// @return The amount of underlying assets missing (0 if there's enough or excess)
+    function missingUnderlyingAmount() public view returns (uint256) {
+        uint256 needed = totalUnderlyingNeeded();
+        uint256 current = underlyingAssetBalance();
+        return needed > current ? needed - current : 0;
+    }
+
+    /// @notice Tops up the contract with exactly the amount needed for all redemptions
+    /// @dev Will revert if no assets are missing or if the transfer fails
+    function topUpMissingAmount() external {
+        uint256 missing = missingUnderlyingAmount();
+        if (missing == 0) revert InvalidTopUpAmount();
+
+        bool success = underlyingAsset.transferFrom(msg.sender, address(this), missing);
+        if (!success) revert InsufficientUnderlyingBalance();
+
+        emit UnderlyingAssetTopUp(msg.sender, missing);
+    }
+
+    // Internal functions
+
+    /// @notice Calculates the underlying asset amount for a given bond amount
+    /// @param bondAmount The amount of bonds to calculate for
+    /// @return The amount of underlying assets
+    function _calculateUnderlyingAmount(uint256 bondAmount) internal view returns (uint256) {
+        // Ensure we divide by decimals first to avoid overflow
+        return (bondAmount / (10 ** decimals())) * faceValue;
+    }
+
     /// @notice Approves spending of tokens
     /// @dev Internal function that handles allowance updates across inherited features
     /// @param owner The token owner
@@ -155,18 +311,60 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     )
         internal
         override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian)
-        notMatured
     {
-        super._update(from, to, value);
+        // Allow burning during redemption (when to is address(0) and bond is matured)
+        if (to == address(0) && isMatured) {
+            super._update(from, to, value);
+        } else {
+            if (isMatured) revert BondAlreadyMatured();
+            super._update(from, to, value);
+        }
     }
 
-    /// @notice Closes off the bond at maturity
-    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE role after maturity date
-    function mature() external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
-        if (block.timestamp < maturityDate) revert BondNotYetMatured();
-        if (isMatured) revert BondAlreadyMatured();
+    /// @notice Internal function to handle withdrawing underlying assets
+    /// @param to The address to send the underlying assets to
+    /// @param amount The amount of underlying assets to withdraw
+    function _withdrawUnderlyingAsset(address to, uint256 amount) internal {
+        if (amount == 0) revert InvalidWithdrawAmount();
 
-        isMatured = true;
-        emit BondMatured(block.timestamp);
+        bool success = underlyingAsset.transfer(to, amount);
+        if (!success) revert InsufficientUnderlyingBalance();
+
+        emit UnderlyingAssetWithdrawn(to, amount);
+    }
+
+    /// @notice Internal function to handle redeeming bonds
+    /// @param holder The address redeeming the bonds
+    /// @param amount The amount of bonds to redeem
+    function _redeem(address holder, uint256 amount) internal {
+        if (amount == 0) revert InvalidRedemptionAmount();
+
+        // Cache state reads
+        uint256 currentBalance = balanceOf(holder);
+        uint256 currentRedeemed = bondRedeemed[holder];
+        uint256 redeemable = currentBalance - currentRedeemed;
+
+        if (amount > redeemable) revert InsufficientRedeemableBalance();
+
+        // Calculate the amount of underlying assets to transfer
+        uint256 underlyingAmount = _calculateUnderlyingAmount(amount);
+
+        // Check if the contract has enough underlying assets
+        uint256 contractBalance = underlyingAssetBalance();
+        if (contractBalance < underlyingAmount) {
+            revert InsufficientUnderlyingBalance();
+        }
+
+        // Update redemption tracking before transfers to prevent reentrancy
+        bondRedeemed[holder] = currentRedeemed + amount;
+
+        // Burn the bonds
+        _burn(holder, amount);
+
+        // Transfer the underlying assets
+        bool success = underlyingAsset.transfer(holder, underlyingAmount);
+        if (!success) revert InsufficientUnderlyingBalance();
+
+        emit BondRedeemed(holder, amount, underlyingAmount);
     }
 }

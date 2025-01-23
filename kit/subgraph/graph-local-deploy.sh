@@ -30,6 +30,14 @@ yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.addre
 yq -i "(.dataSources[] | select(.name == \"EquityFactory\").source.address) = \"$EQUITY_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"StableCoinFactory\").source.address) = \"$STABLE_COIN_FACTORY_ADDRESS\"" subgraph.yaml
 
+# Print addresses for debugging
+echo "Addresses being used:"
+echo "BondFactory: $BOND_FACTORY_ADDRESS"
+echo "CryptoCurrencyFactory: $CRYPTO_CURRENCY_FACTORY_ADDRESS"
+echo "EquityFactory: $EQUITY_FACTORY_ADDRESS"
+echo "StableCoinFactory: $STABLE_COIN_FACTORY_ADDRESS"
+echo "---"
+
 bun graph codegen
 bun graph create --node http://localhost:8020 starterkit
 bun graph deploy --version-label v1.0.$(date +%s) --node http://localhost:8020 --ipfs https://ipfs.network.thegraph.com starterkit subgraph.yaml
