@@ -21,6 +21,7 @@ contract BondTest is Test {
     uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
     uint8 public constant WHOLE_FACE_FALUE = 100;
     uint8 public constant DECIMALS = 2;
+    string public constant VALID_ISIN = "US0378331005";
 
     // Utility functions for decimal conversions
     function toDecimals(uint256 amount) internal pure returns (uint256) {
@@ -57,13 +58,15 @@ contract BondTest is Test {
         underlyingAsset.mint(owner, initialUnderlyingSupply); // Mint enough for all bonds
 
         vm.startPrank(owner);
-        bond = new Bond("Test Bond", "TBOND", DECIMALS, owner, maturityDate, faceValue, address(underlyingAsset));
+        bond = new Bond(
+            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, maturityDate, faceValue, address(underlyingAsset)
+        );
         bond.mint(owner, initialSupply);
         vm.stopPrank();
     }
 
     // Basic ERC20 functionality tests
-    function test_InitialState() public {
+    function test_InitialState() public view {
         assertEq(bond.name(), "Test Bond");
         assertEq(bond.symbol(), "TBOND");
         assertEq(bond.decimals(), DECIMALS);
@@ -72,6 +75,7 @@ contract BondTest is Test {
         assertEq(bond.maturityDate(), maturityDate);
         assertEq(bond.faceValue(), faceValue);
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
+        assertEq(bond.isin(), VALID_ISIN);
         assertFalse(bond.isMatured());
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
@@ -89,7 +93,14 @@ contract BondTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
             Bond newBond = new Bond(
-                "Test Bond", "TBOND", decimalValues[i], owner, maturityDate, faceValue, address(underlyingAsset)
+                "Test Bond",
+                "TBOND",
+                decimalValues[i],
+                owner,
+                VALID_ISIN,
+                maturityDate,
+                faceValue,
+                address(underlyingAsset)
             );
             assertEq(newBond.decimals(), decimalValues[i]);
         }
@@ -98,7 +109,27 @@ contract BondTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
-        new Bond("Test Bond", "TBOND", 19, owner, maturityDate, faceValue, address(underlyingAsset));
+        new Bond("Test Bond", "TBOND", 19, owner, VALID_ISIN, maturityDate, faceValue, address(underlyingAsset));
+        vm.stopPrank();
+    }
+
+    function test_RevertOnInvalidISIN() public {
+        vm.startPrank(owner);
+
+        // Test with empty ISIN
+        vm.expectRevert(Bond.InvalidISIN.selector);
+        new Bond("Test Bond", "TBOND", DECIMALS, owner, "", maturityDate, faceValue, address(underlyingAsset));
+
+        // Test with ISIN that's too short
+        vm.expectRevert(Bond.InvalidISIN.selector);
+        new Bond("Test Bond", "TBOND", DECIMALS, owner, "US03783310", maturityDate, faceValue, address(underlyingAsset));
+
+        // Test with ISIN that's too long
+        vm.expectRevert(Bond.InvalidISIN.selector);
+        new Bond(
+            "Test Bond", "TBOND", DECIMALS, owner, "US0378331005XX", maturityDate, faceValue, address(underlyingAsset)
+        );
+
         vm.stopPrank();
     }
 

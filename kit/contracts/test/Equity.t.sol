@@ -11,6 +11,7 @@ contract EquityTest is Test {
     address public user2;
     address public spender;
     uint8 public constant DECIMALS = 8;
+    string public constant VALID_ISIN = "US0378331005";
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -26,7 +27,8 @@ contract EquityTest is Test {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        equity = new Equity("Test Equity Token", "TEST", DECIMALS, "Common", "Series A", owner);
+        vm.prank(owner);
+        equity = new Equity("Test Equity Token", "TEST", DECIMALS, owner, VALID_ISIN, "Common", "Series A");
 
         // Fund test accounts
         vm.deal(user1, 100 ether);
@@ -41,6 +43,7 @@ contract EquityTest is Test {
         assertEq(equity.decimals(), DECIMALS);
         assertEq(equity.equityClass(), "Common");
         assertEq(equity.equityCategory(), "Series A");
+        assertEq(equity.isin(), VALID_ISIN);
         assertTrue(equity.hasRole(equity.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(equity.hasRole(equity.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(equity.hasRole(equity.USER_MANAGEMENT_ROLE(), owner));
@@ -56,7 +59,8 @@ contract EquityTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
-            Equity newEquity = new Equity("Test Equity Token", "TEST", decimalValues[i], "Common", "Series A", owner);
+            Equity newEquity =
+                new Equity("Test Equity Token", "TEST", decimalValues[i], owner, VALID_ISIN, "Common", "Series A");
             assertEq(newEquity.decimals(), decimalValues[i]);
         }
     }
@@ -64,7 +68,25 @@ contract EquityTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Equity.InvalidDecimals.selector, 19));
-        new Equity("Test Equity Token", "TEST", 19, "Common", "Series A", owner);
+        new Equity("Test Equity Token", "TEST", 19, owner, VALID_ISIN, "Common", "Series A");
+        vm.stopPrank();
+    }
+
+    function test_RevertOnInvalidISIN() public {
+        vm.startPrank(owner);
+
+        // Test with empty ISIN
+        vm.expectRevert(Equity.InvalidISIN.selector);
+        new Equity("Test Equity Token", "TEST", DECIMALS, owner, "", "Common", "Series A");
+
+        // Test with ISIN that's too short
+        vm.expectRevert(Equity.InvalidISIN.selector);
+        new Equity("Test Equity Token", "TEST", DECIMALS, owner, "US03783310", "Common", "Series A");
+
+        // Test with ISIN that's too long
+        vm.expectRevert(Equity.InvalidISIN.selector);
+        new Equity("Test Equity Token", "TEST", DECIMALS, owner, "US0378331005XX", "Common", "Series A");
+
         vm.stopPrank();
     }
 

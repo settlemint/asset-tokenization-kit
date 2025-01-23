@@ -13,6 +13,7 @@ contract StableCoinTest is Test {
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
+    string public constant VALID_ISIN = "US0378331005";
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -24,7 +25,7 @@ contract StableCoinTest is Test {
         spender = makeAddr("spender");
 
         vm.prank(owner);
-        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, COLLATERAL_LIVENESS);
+        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
     }
 
     // Basic ERC20 functionality tests
@@ -33,6 +34,7 @@ contract StableCoinTest is Test {
         assertEq(stableCoin.symbol(), "STBL");
         assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
+        assertEq(stableCoin.isin(), VALID_ISIN);
         assertTrue(stableCoin.hasRole(stableCoin.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.USER_MANAGEMENT_ROLE(), owner));
@@ -47,7 +49,8 @@ contract StableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.prank(owner);
-            StableCoin newToken = new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS);
+            StableCoin newToken =
+                new StableCoin("StableCoin", "STBL", decimalValues[i], owner, VALID_ISIN, COLLATERAL_LIVENESS);
             assertEq(newToken.decimals(), decimalValues[i]);
         }
     }
@@ -55,7 +58,43 @@ contract StableCoinTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
-        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS);
+        new StableCoin("StableCoin", "STBL", 19, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        vm.stopPrank();
+    }
+
+    function test_OptionalISIN() public {
+        vm.startPrank(owner);
+
+        // Test with empty ISIN (should be valid for StableCoin)
+        StableCoin emptyIsinToken = new StableCoin("StableCoin", "STBL", DECIMALS, owner, "", COLLATERAL_LIVENESS);
+        assertEq(emptyIsinToken.isin(), "");
+
+        // Test with valid ISIN
+        StableCoin validIsinToken =
+            new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        assertEq(validIsinToken.isin(), VALID_ISIN);
+
+        // Test with invalid ISIN length
+        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        new StableCoin(
+            "StableCoin",
+            "STBL",
+            DECIMALS,
+            owner,
+            "US03783310", // too short
+            COLLATERAL_LIVENESS
+        );
+
+        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        new StableCoin(
+            "StableCoin",
+            "STBL",
+            DECIMALS,
+            owner,
+            "US0378331005XX", // too long
+            COLLATERAL_LIVENESS
+        );
+
         vm.stopPrank();
     }
 

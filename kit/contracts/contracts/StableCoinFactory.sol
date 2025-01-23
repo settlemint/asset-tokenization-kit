@@ -43,15 +43,15 @@ contract StableCoinFactory {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
+    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint48 collateralLivenessSeconds,
-        string memory isin
+        string memory isin,
+        uint48 collateralLivenessSeconds
     )
         external
         returns (address token)
