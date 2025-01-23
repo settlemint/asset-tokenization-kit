@@ -281,7 +281,8 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @param bondAmount The amount of bonds to calculate for
     /// @return The amount of underlying assets
     function _calculateUnderlyingAmount(uint256 bondAmount) internal view returns (uint256) {
-        // Ensure we divide by decimals first to avoid overflow
+        // Divide by decimals first to prevent overflow when multiplying large numbers
+        // Note: This may lose some precision but prevents overflow
         return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
