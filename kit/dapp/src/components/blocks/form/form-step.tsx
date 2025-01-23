@@ -87,7 +87,11 @@ export const FormStep = <
           {controls?.next?.buttonText}
         </Button>
 
-        <Button type="submit" className={cn({ hidden: currentStep !== totalSteps })} disabled={!form.formState.isValid}>
+        <Button
+          type="submit"
+          className={cn({ hidden: currentStep !== totalSteps })}
+          disabled={!form.formState.isValid || form.formState.isSubmitting}
+        >
           {controls?.submit?.buttonText}
         </Button>
       </div>

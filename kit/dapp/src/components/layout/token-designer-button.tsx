@@ -73,9 +73,7 @@ export function TokenDesignerButton() {
                 <SheetTitle>{TOKEN_CONFIGS[tokenType].title}</SheetTitle>
                 <SheetDescription>{TOKEN_CONFIGS[tokenType].description}</SheetDescription>
               </SheetHeader>
-              <div className="p-8">
-                <CreateTokenForm formId="create-token-form" tokenType={tokenType} />
-              </div>
+              <CreateTokenForm formId="create-token-form" tokenType={tokenType} />
             </>
           )}
         </SheetContent>

@@ -12,8 +12,6 @@ interface SummaryProps {
 }
 
 export function Summary({ form }: SummaryProps) {
-  const values = form.getValues();
-
   return (
     <div className="space-y-8">
       <div className="-mt-4">
@@ -29,19 +27,19 @@ export function Summary({ form }: SummaryProps) {
         <dl className="space-y-2">
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Token Name:</dt>
-            <dd className="font-medium">{values.tokenName}</dd>
+            <dd className="font-medium">{form.getValues('tokenName')}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Token Symbol:</dt>
-            <dd className="font-medium">{values.tokenSymbol}</dd>
+            <dd className="font-medium">{form.getValues('tokenSymbol')}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Decimals:</dt>
-            <dd className="font-medium">{values.decimals}</dd>
+            <dd className="font-medium">{form.getValues('decimals')}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">ISIN:</dt>
-            <dd className="font-medium">{values.isin}</dd>
+            <dd className="font-medium">{form.getValues('isin') === '' ? '-' : form.getValues('isin')}</dd>
           </div>
         </dl>
       </div>
@@ -51,11 +49,11 @@ export function Summary({ form }: SummaryProps) {
         <dl className="space-y-2">
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-            <dd className="font-medium">{values.collateralProofValidityDuration} seconds</dd>
+            <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Collateral Threshold:</dt>
-            <dd className="font-medium">{values.collateralThreshold}%</dd>
+            <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
           </div>
         </dl>
       </div>

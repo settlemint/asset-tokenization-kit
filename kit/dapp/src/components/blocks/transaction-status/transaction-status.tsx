@@ -25,9 +25,9 @@ type StatusConfig = {
 const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
   Pending: {
     icon: <Loader2 className="h-8 w-8 animate-spin" />,
-    title: 'Transaction Pending',
+    title: 'Transaction pending',
     description: () => 'Please wait while we create your token...',
-    buttonText: (name) => `Creating "${name}"`,
+    buttonText: (name) => `Creating '${name}'`,
     buttonDisabled: true,
   },
   Success: {
@@ -38,8 +38,8 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
     ),
     title: 'Success',
     description: (name) =>
-      `"${name}" was created successfully on the blockchain. You can now proceed with using your new asset.`,
-    buttonText: (name) => `Check out "${name}"`,
+      `'${name}' was created successfully on the blockchain. You can now proceed with using your new asset.`,
+    buttonText: (name) => `Check out '${name}'`,
   },
   Reverted: {
     icon: (
@@ -47,9 +47,9 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
         <XIcon className="h-5 w-5 text-white" />
       </div>
     ),
-    title: 'Reverted',
-    description: (_, error) => error ?? 'Transaction reverted',
-    buttonText: (name) => `Error creating "${name}"`,
+    title: 'Transaction reverted',
+    description: (name, _error) => `An error occurred while creating '${name}'. Please try again.`,
+    buttonText: (name) => `Error creating '${name}'`,
     buttonDisabled: true,
   },
   Failed: {
@@ -58,9 +58,9 @@ const STATUS_CONFIG: Record<NonNullable<TransactionStatus>, StatusConfig> = {
         <XIcon className="h-5 w-5 text-white" />
       </div>
     ),
-    title: 'Failed',
-    description: (_, error) => error ?? 'Transaction failed',
-    buttonText: (name) => `Error creating "${name}"`,
+    title: 'Transaction failed',
+    description: (name, _error) => `An error occurred while creating '${name}'. Please try again.`,
+    buttonText: (name) => `Error creating '${name}'`,
     buttonDisabled: true,
   },
 };

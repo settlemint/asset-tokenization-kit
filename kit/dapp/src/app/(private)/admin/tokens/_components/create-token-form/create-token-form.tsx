@@ -96,7 +96,6 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
 
   return (
     <div className="TokenizationWizard container mt-8">
-      <FormStepProgress steps={3} currentStep={step} complete={false} className="" />
       <Card className="max-h-[calc(100vh-200px)] w-full overflow-scroll pt-10">
         <CardContent>
           {transactionState.status ? (
@@ -114,50 +113,53 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
               }}
             />
           ) : (
-            <FormMultiStep<CreateTokenSchemaType>
-              form={form}
-              config={{ useLocalStorageState: false }}
-              formId="create-token-form"
-              onSubmit={handleSubmit}
-              validatePage={validateCreateTokenSchemaFields}
-            >
-              {/* Step 1 : Token basics */}
-              <FormStep
+            <>
+              <FormStepProgress steps={3} currentStep={step} complete={false} />
+              <FormMultiStep<CreateTokenSchemaType>
                 form={form}
-                fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
-                withSheetClose
-                controls={{
-                  prev: { buttonText: 'Back' },
-                  next: { buttonText: 'Confirm' },
-                }}
+                config={{ useLocalStorageState: false }}
+                formId="create-token-form"
+                onSubmit={handleSubmit}
+                validatePage={validateCreateTokenSchemaFields}
               >
-                <TokenBasics form={form} />
-              </FormStep>
+                {/* Step 1 : Token basics */}
+                <FormStep
+                  form={form}
+                  fields={['tokenName', 'tokenSymbol', 'decimals', 'isin']}
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Confirm' },
+                  }}
+                >
+                  <TokenBasics form={form} />
+                </FormStep>
 
-              {/* Step 2 : Token permissions */}
-              <FormStep
-                form={form}
-                fields={['collateralProofValidityDuration', 'collateralThreshold']}
-                withSheetClose
-                controls={{
-                  prev: { buttonText: 'Back' },
-                  next: { buttonText: 'Confirm' },
-                }}
-              >
-                <TokenConfiguration form={form} />
-              </FormStep>
+                {/* Step 2 : Token permissions */}
+                <FormStep
+                  form={form}
+                  fields={['collateralProofValidityDuration', 'collateralThreshold']}
+                  withSheetClose
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    next: { buttonText: 'Confirm' },
+                  }}
+                >
+                  <TokenConfiguration form={form} />
+                </FormStep>
 
-              {/* Step 3 : Summary */}
-              <FormStep
-                form={form}
-                controls={{
-                  prev: { buttonText: 'Back' },
-                  submit: { buttonText: 'Create stable coin' },
-                }}
-              >
-                <Summary form={form} />
-              </FormStep>
-            </FormMultiStep>
+                {/* Step 3 : Summary */}
+                <FormStep
+                  form={form}
+                  controls={{
+                    prev: { buttonText: 'Back' },
+                    submit: { buttonText: 'Create stable coin' },
+                  }}
+                >
+                  <Summary form={form} />
+                </FormStep>
+              </FormMultiStep>
+            </>
           )}
         </CardContent>
       </Card>
