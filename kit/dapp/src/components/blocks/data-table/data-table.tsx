@@ -139,23 +139,25 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>{renderTableBody()}</TableBody>
-        </Table>
+      <div className="overflow-x-auto">
+        <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>{renderTableBody()}</TableBody>
+          </Table>
+        </div>
       </div>
       {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} />}
     </div>
