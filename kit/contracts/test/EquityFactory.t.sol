@@ -60,16 +60,15 @@ contract EquityFactoryTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
-            string memory isin = string(abi.encodePacked("US03783310", vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], isin, classes[i], categories[i]);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, classes[i], categories[i]);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Equity token = Equity(tokenAddress);
             assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
             assertEq(token.equityClass(), classes[i], "Token class should match");
             assertEq(token.equityCategory(), categories[i], "Token category should match");
-            assertEq(token.isin(), isin, "Token ISIN should match");
+            assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         }
 
         assertEq(factory.allTokensLength(), 3, "Should have created three tokens");

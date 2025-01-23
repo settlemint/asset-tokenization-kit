@@ -62,17 +62,17 @@ contract BondFactoryTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
-            string memory isin = string(abi.encodePacked("US03783310", vm.toString(i + 1)));
 
-            address bondAddress =
-                factory.create(name, symbol, decimalValues[i], isin, futureDate, FACE_VALUE, address(underlyingAsset));
+            address bondAddress = factory.create(
+                name, symbol, decimalValues[i], VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset)
+            );
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
             Bond bond = Bond(bondAddress);
             assertEq(bond.decimals(), decimalValues[i], "Bond decimals should match");
             assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
-            assertEq(bond.isin(), isin, "Bond ISIN should match");
+            assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         }
 
         assertEq(factory.allBondsLength(), 3, "Should have created three bonds");

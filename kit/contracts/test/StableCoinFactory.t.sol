@@ -50,14 +50,13 @@ contract StableCoinFactoryTest is Test {
         for (uint256 i = 0; i < decimalValues.length; i++) {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
-            string memory isin = string(abi.encodePacked("US03783310", vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], isin, LIVENESS);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
             assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
-            assertEq(token.isin(), isin, "Token ISIN should match");
+            assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
             (uint256 collateralAmount, uint48 collateralTimestamp) = token.collateral();
             assertEq(collateralAmount, 0, "Initial collateral should be zero");
             assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
