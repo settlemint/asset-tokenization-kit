@@ -1,22 +1,18 @@
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import type { useReactTable } from '@tanstack/react-table';
 import type { ComponentType } from 'react';
 import { AssetTableClient } from './asset-table-client';
-import type { BaseAsset } from './asset-table-types';
 
-export type AssetTableProps<Asset extends BaseAsset = BaseAsset> = {
+export type AssetTableProps<Asset> = {
   type: string;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   icons?: Record<string, ComponentType<{ className?: string }>>;
+  columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
 };
 
-export async function AssetTable<Asset extends BaseAsset>({
-  dataAction,
-  type,
-  refetchInterval,
-  icons,
-}: AssetTableProps<Asset>) {
+export async function AssetTable<Asset>({ dataAction, type, refetchInterval, icons, columns }: AssetTableProps<Asset>) {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
@@ -26,7 +22,13 @@ export async function AssetTable<Asset extends BaseAsset>({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AssetTableClient refetchInterval={refetchInterval} type={type} dataAction={dataAction} icons={icons} />
+      <AssetTableClient
+        refetchInterval={refetchInterval}
+        type={type}
+        dataAction={dataAction}
+        icons={icons}
+        columns={columns}
+      />
     </HydrationBoundary>
   );
 }

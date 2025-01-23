@@ -88,7 +88,7 @@ jobs:
           version: nightly
 
       - name: Install Bun dependencies
-        run: bun install --save-text-lockfile
+        run: bun install
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -179,7 +179,7 @@ jobs:
 
       - name: Run Drizzle migrations
         if: ${{ env.TAG != 'pr' }}
-        run: bunx drizzle-kit push
+        run: bunx drizzle-kit push --force
         working-directory: kit/dapp
 
       - name: Update Custom Deployment

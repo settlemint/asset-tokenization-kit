@@ -4,7 +4,6 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   type RowData,
   type SortingState,
@@ -29,9 +28,7 @@ import { DataTableToolbar } from './data-table-toolbar';
  */
 interface DataTableProps<TData> {
   /** The column definitions for the table. */
-  columns: {
-    [K in keyof TData]: ColumnDef<TData, TData[K]>;
-  }[keyof TData][];
+  columns: Parameters<typeof useReactTable<TData>>[0]['columns'];
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;

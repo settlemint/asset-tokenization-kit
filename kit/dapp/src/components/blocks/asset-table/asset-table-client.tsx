@@ -2,30 +2,32 @@
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { ComponentType, ReactElement } from 'react';
-import { assetTableColumns } from './asset-table-columns';
-import type { BaseAsset } from './asset-table-types';
+import type { useReactTable } from '@tanstack/react-table';
+import type { ComponentType } from 'react';
 
-export type AssetTableClientProps<Asset extends BaseAsset> = {
+export type AssetTableClientProps<Asset> = {
   type: string;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
-  rowActions?: ReactElement[];
   icons?: Record<string, ComponentType<{ className?: string }>>;
+  columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
 };
 
-export function AssetTableClient<Asset extends BaseAsset>({
+export function AssetTableClient<Asset>({
   dataAction,
   type,
   refetchInterval,
-  rowActions,
+  columns,
   icons,
 }: AssetTableClientProps<Asset>) {
   const { data } = useSuspenseQuery<Asset[]>({
     queryKey: [type],
     queryFn: () => dataAction(),
     refetchInterval: refetchInterval,
+    refetchOnWindowFocus: true,
+    refetchIntervalInBackground: false,
+    networkMode: 'online',
   });
 
-  return <DataTable columns={assetTableColumns<Asset>(type, rowActions)} data={data} icons={icons ?? {}} name={type} />;
+  return <DataTable columns={columns} data={data} icons={icons ?? {}} name={type} />;
 }

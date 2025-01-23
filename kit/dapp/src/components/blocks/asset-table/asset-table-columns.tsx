@@ -5,18 +5,28 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/evm-address-balances';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnHelper } from '@tanstack/react-table';
+import { Pause, Play } from 'lucide-react';
 import type { ReactElement } from 'react';
-import type { BaseAsset } from './asset-table-types';
 
-export function assetTableColumns<Asset extends BaseAsset>(
-  type: string,
-  rowActions?: ReactElement[]
-): ColumnDef<Asset>[] {
+export const icons = {
+  paused: Pause,
+  active: Play,
+} as const;
+
+export type BaseAsset = {
+  id: string;
+  name: string | null;
+  symbol: string | null;
+  decimals: number;
+  totalSupply: string;
+  paused?: boolean;
+};
+
+export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelper<T>) {
   return [
-    {
+    columnHelper.accessor((row) => row.id, {
       id: 'id',
-      accessorKey: 'id',
       header: ({ column }) => <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>,
       cell: ({ row }) => (
         <DataTableColumnCell>
@@ -26,35 +36,31 @@ export function assetTableColumns<Asset extends BaseAsset>(
         </DataTableColumnCell>
       ),
       enableColumnFilter: false,
-    },
-    {
+    }),
+    columnHelper.accessor((row) => row.name ?? row.id, {
       id: 'name',
-      accessorKey: 'name',
       header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
       cell: ({ row }) => <DataTableColumnCell>{row.getValue('name')}</DataTableColumnCell>,
       enableColumnFilter: false,
-    },
-    {
+    }),
+    columnHelper.accessor((row) => row.symbol ?? row.id, {
       id: 'symbol',
-      accessorKey: 'symbol',
       header: ({ column }) => <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>,
       cell: ({ row }) => <DataTableColumnCell>{row.getValue('symbol')}</DataTableColumnCell>,
       enableColumnFilter: false,
-    },
-    {
+    }),
+    columnHelper.accessor((row) => row.decimals, {
       id: 'decimals',
-      accessorKey: 'decimals',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} variant="numeric">
           Decimals
         </DataTableColumnHeader>
       ),
       cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('decimals')}</DataTableColumnCell>,
-      enableColumnFilter: true,
-    },
-    {
+      enableColumnFilter: false,
+    }),
+    columnHelper.accessor((row) => row.totalSupply, {
       id: 'totalSupply',
-      accessorKey: 'totalSupply',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} variant="numeric">
           Total Supply
@@ -62,16 +68,42 @@ export function assetTableColumns<Asset extends BaseAsset>(
       ),
       cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('totalSupply')}</DataTableColumnCell>,
       enableColumnFilter: false,
-    },
-    {
-      id: 'actions',
-      header: () => '',
-      cell: ({ row }) => (
-        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>{rowActions}</DataTableRowActions>
-      ),
-      meta: {
-        enableCsvExport: false,
-      },
-    },
+    }),
   ];
+}
+
+export function createPausedColumn<T extends BaseAsset>(columnHelper: ColumnHelper<T>) {
+  return columnHelper.accessor((row) => row.paused, {
+    id: 'paused',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
+    cell: ({ getValue }) => {
+      const paused = getValue();
+      const Icon = paused ? icons[paused ? 'paused' : 'active'] : null;
+      return (
+        <DataTableColumnCell>
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{paused ? 'Paused' : 'Active'}</span>
+        </DataTableColumnCell>
+      );
+    },
+  });
+}
+
+export function createActionsColumn<T extends BaseAsset>(
+  columnHelper: ColumnHelper<T>,
+  type: 'bonds' | 'equities' | 'stablecoins' | 'cryptocurrencies',
+  rowActions?: (row: T) => ReactElement[]
+) {
+  return columnHelper.display({
+    id: 'actions',
+    header: () => '',
+    cell: ({ row }) => (
+      <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>
+        {rowActions?.(row.original)}
+      </DataTableRowActions>
+    ),
+    meta: {
+      enableCsvExport: false,
+    },
+  });
 }

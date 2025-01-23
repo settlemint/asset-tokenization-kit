@@ -1,32 +1,6 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-
-const StableCoinFragment = theGraphGraphqlStarterkits(`
-  fragment StableCoinFields on StableCoin {
-    id
-    name
-    symbol
-    decimals
-    totalSupply
-  }
-`);
-
-const StableCoins = theGraphGraphqlStarterkits(
-  `
-  query StableCoins {
-    stableCoins {
-      ...StableCoinFields
-    }
-  }
-`,
-  [StableCoinFragment]
-);
-
-async function getStableCoins() {
-  'use server';
-  const data = await theGraphClientStarterkits.request(StableCoins);
-  return data.stableCoins;
-}
+import { columns, icons } from './_components/columns';
+import { getStableCoins } from './_components/data';
 
 export default function StableCoinsPage() {
   return (
@@ -34,7 +8,7 @@ export default function StableCoinsPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-bold text-3xl tracking-tight">Stable Coins</h2>
       </div>
-      <AssetTable type="stablecoins" dataAction={getStableCoins} />
+      <AssetTable type="stablecoins" dataAction={getStableCoins} columns={columns} icons={icons} />
     </>
   );
 }
