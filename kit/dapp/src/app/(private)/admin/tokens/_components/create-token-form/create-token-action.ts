@@ -45,7 +45,7 @@ function generateChallengeResponse(pincode: string, salt: string, challenge: str
 
 export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
   try {
-    const { tokenName, tokenSymbol, pincode, decimals } = parsedInput;
+    const { tokenName, tokenSymbol, pincode, decimals, collateralProofValidityDuration } = parsedInput;
 
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -78,7 +78,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       decimals,
       challengeResponse,
       gasLimit: '5000000',
-      collateralLivenessSeconds: 3600,
+      collateralLivenessSeconds: collateralProofValidityDuration,
     };
 
     const result = await portalClient.request(CreateTokenMutation, variables);
