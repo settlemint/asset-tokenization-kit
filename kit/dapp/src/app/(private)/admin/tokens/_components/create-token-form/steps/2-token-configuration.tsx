@@ -1,8 +1,10 @@
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
+import { SelectInput } from '@/components/blocks/form/controls/select-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { CardDescription, CardTitle } from '@/components/ui/card';
+import { SelectItem } from '@/components/ui/select';
 import type { UseFormReturn } from 'react-hook-form';
-import type { CreateTokenSchemaType } from '../create-token-form-schema';
+import { type CreateTokenSchemaType, PaymentFrequency } from '../create-token-form-schema';
 
 export const TokenConfiguration = ({
   form,
@@ -89,6 +91,42 @@ export const TokenConfiguration = ({
             label="Maturity date"
             name="maturityDate"
             placeholder="e.g., Series A"
+            showRequired
+          />
+
+          <CardTitle className="mt-8">Yield configuration</CardTitle>
+          <CardDescription className="my-2">Set parameters specific to the yield of your bond.</CardDescription>
+
+          {/* Coupon rate */}
+          <NumericInput
+            control={form.control}
+            label="Coupon rate"
+            name="couponRate"
+            placeholder="e.g., 1000"
+            showRequired
+          />
+
+          {/* Payment frequency */}
+          <SelectInput
+            control={form.control}
+            label="Payment frequency"
+            name="paymentFrequency"
+            placeholder="Select payment frequency"
+            showRequired
+          >
+            {Object.entries(PaymentFrequency).map(([key, value]) => (
+              <SelectItem key={key} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectInput>
+
+          {/* First coupon date */}
+          <TextInput
+            control={form.control}
+            label="First payment date"
+            name="firstCouponDate"
+            placeholder=""
             showRequired
           />
         </div>

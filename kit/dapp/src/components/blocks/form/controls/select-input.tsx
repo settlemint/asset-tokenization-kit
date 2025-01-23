@@ -69,7 +69,7 @@ export function SelectInput<T extends FieldValues>({
       name={name}
       render={({ field }) => {
         return (
-          <FormItem ref={ref} className="FormItem relative z-10 w-full">
+          <FormItem ref={ref} className="FormItem relative z-10 mt-5 w-full">
             {label && (
               <FormLabel className="FormLabel block">
                 <span>{label}</span>
