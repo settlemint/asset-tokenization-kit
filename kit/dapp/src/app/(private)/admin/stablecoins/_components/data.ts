@@ -30,8 +30,8 @@ const StableCoins = theGraphGraphqlStarterkits(
 
 export type StableCoinAsset = FragmentOf<typeof StableCoinFragment> & BaseAsset;
 
-export function getStableCoins() {
-  return unstable_cache(
+export async function getStableCoins() {
+  return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(StableCoins);
       return data.stableCoins;

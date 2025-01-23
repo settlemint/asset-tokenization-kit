@@ -27,8 +27,8 @@ const CryptoCurrencies = theGraphGraphqlStarterkits(
 
 export type CryptoCurrencyAsset = FragmentOf<typeof CryptoCurrencyFragment>;
 
-export function getCryptocurrencies() {
-  return unstable_cache(
+export async function getCryptocurrencies() {
+  return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(CryptoCurrencies);
       return data.cryptoCurrencies;
