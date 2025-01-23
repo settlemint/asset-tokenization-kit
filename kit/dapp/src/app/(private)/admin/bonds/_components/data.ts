@@ -33,8 +33,8 @@ const Bonds = theGraphGraphqlStarterkits(
 
 export type BondAsset = FragmentOf<typeof BondFragment>;
 
-export function getBonds() {
-  return unstable_cache(
+export async function getBonds() {
+  return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(Bonds);
       return data.bonds;

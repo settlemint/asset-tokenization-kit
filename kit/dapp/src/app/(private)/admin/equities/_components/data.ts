@@ -31,8 +31,8 @@ const Equities = theGraphGraphqlStarterkits(
 
 export type EquityAsset = FragmentOf<typeof EquityFragment> & BaseAsset;
 
-export function getEquities() {
-  return unstable_cache(
+export async function getEquities() {
+  return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(Equities);
       return data.equities;
