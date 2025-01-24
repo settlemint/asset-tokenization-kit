@@ -34,7 +34,18 @@ export async function getStableCoins() {
   return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(StableCoins);
-      return data.stableCoins;
+      // return data.stableCoins;
+      return [
+        {
+          id: '0x43576e1a3f1C01D205E9D802Ad5573f6C5624E88',
+          name: 'USDC',
+          symbol: 'USDC',
+          decimals: 6,
+          totalSupply: 1000000,
+          collateral: 'USD',
+          paused: true,
+        },
+      ];
     },
     ['stablecoins'],
     {

@@ -32,7 +32,7 @@ export function DataTableRowActions({
   detailUrl,
   ...props
 }: PropsWithChildren<DataTableColumnCellProps>) {
-  if (!children) {
+  if (!children && !detailUrl) {
     return null;
   }
 
@@ -45,17 +45,19 @@ export function DataTableRowActions({
           </Link>
         </Button>
       )}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-            <MoreHorizontal />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[160px]">
-          {children}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {children && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+              <MoreHorizontal />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[160px]">
+            {children}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }
