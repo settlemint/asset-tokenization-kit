@@ -16,6 +16,7 @@ contract FixedYieldFactory {
     error InvalidInterval();
     error TokenNotYieldEnabled();
     error ScheduleSetupFailed();
+    error NotAuthorized();
 
     /// @notice Emitted when a new fixed yield schedule is created
     /// @param schedule The address of the newly created fixed yield schedule
@@ -46,50 +47,46 @@ contract FixedYieldFactory {
         return allSchedules.length;
     }
 
-    /// @notice Creates a new fixed yield schedule with the specified parameters
-    /// @dev Uses CREATE2 for deterministic addresses and emits a FixedYieldCreated event
-    /// @param token The token address this schedule is for
-    /// @param startDate The timestamp when the schedule starts
-    /// @param endDate The timestamp when the schedule ends
-    /// @param rate The yield rate in basis points
+    /// @notice Creates a new fixed yield schedule for a token
+    /// @param token The token to create the yield schedule for
+    /// @param startTime The start time of the yield schedule
+    /// @param endTime The end time of the yield schedule
+    /// @param rate The yield rate in basis points (1/10000)
     /// @param interval The interval between distributions in seconds
-    /// @return schedule The address of the newly created fixed yield schedule
+    /// @return The address of the created yield schedule
     function create(
-        address token,
-        uint256 startDate,
-        uint256 endDate,
+        ERC20Yield token,
+        uint256 startTime,
+        uint256 endTime,
         uint256 rate,
         uint256 interval
     )
         external
-        returns (address schedule)
+        returns (address)
     {
-        if (token == address(0)) revert InvalidToken();
-        if (startDate <= block.timestamp) revert InvalidStartDate();
-        if (endDate <= startDate) revert InvalidEndDate();
-        if (rate == 0) revert InvalidRate();
-        if (interval == 0) revert InvalidInterval();
+        if (address(token) == address(0)) revert InvalidToken();
 
-        // Verify the token implements ERC20Yield
-        try ERC20Yield(token).yieldBasis(address(0)) returns (uint256) {
+        // Verify the token implements ERC20Yield by trying to call yieldBasis
+        try token.yieldBasis(address(0)) returns (uint256) {
             // Token implements ERC20Yield
         } catch {
             revert TokenNotYieldEnabled();
         }
 
-        bytes32 salt = keccak256(abi.encodePacked(token, msg.sender, startDate, endDate, rate, interval));
+        if (!token.canManageYield(msg.sender)) revert NotAuthorized();
+        if (startTime <= block.timestamp) revert InvalidStartDate();
+        if (endTime <= startTime) revert InvalidEndDate();
+        if (rate == 0) revert InvalidRate();
+        if (interval == 0) revert InvalidInterval();
 
-        FixedYield newSchedule = new FixedYield{ salt: salt }(token, msg.sender, startDate, endDate, rate, interval);
-        schedule = address(newSchedule);
-        allSchedules.push(newSchedule);
+        bytes32 salt = keccak256(abi.encodePacked(address(token), startTime, endTime, rate, interval));
+        address schedule =
+            address(new FixedYield{ salt: salt }(address(token), msg.sender, startTime, endTime, rate, interval));
 
-        // Set the schedule on the token
-        try ERC20Yield(token).setYieldSchedule(schedule) {
-            // Schedule set successfully
-        } catch {
-            revert ScheduleSetupFailed();
-        }
-
-        emit FixedYieldCreated(schedule, token, msg.sender, startDate, endDate, rate, interval, allSchedules.length);
+        emit FixedYieldCreated(
+            schedule, address(token), msg.sender, startTime, endTime, rate, interval, allSchedules.length + 1
+        );
+        allSchedules.push(FixedYield(schedule));
+        return schedule;
     }
 }

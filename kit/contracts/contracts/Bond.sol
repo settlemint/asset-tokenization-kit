@@ -44,6 +44,7 @@ contract Bond is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
     bytes32 public constant FINANCIAL_MANAGEMENT_ROLE = keccak256("FINANCIAL_MANAGEMENT_ROLE");
+    bytes32 public constant FINANCE_MANAGER_ROLE = keccak256("FINANCE_MANAGER_ROLE");
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
@@ -320,6 +321,11 @@ contract Bond is
     /// @return The face value as the basis for yield calculations
     function yieldBasis(address holder) public view virtual override returns (uint256) {
         return faceValue;
+    }
+
+    /// @inheritdoc ERC20Yield
+    function canManageYield(address manager) public view override returns (bool) {
+        return hasRole(FINANCIAL_MANAGEMENT_ROLE, manager);
     }
 
     // Internal functions

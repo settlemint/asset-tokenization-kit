@@ -12,6 +12,7 @@ abstract contract ERC20Yield is Context {
     /// @notice Custom errors for the ERC20Yield contract
     error InvalidYieldSchedule();
     error YieldScheduleAlreadySet();
+    error NotAuthorized();
 
     /// @notice The yield schedule contract for this token
     address public yieldSchedule;
@@ -26,10 +27,19 @@ abstract contract ERC20Yield is Context {
     /// @return The basis amount for yield calculations
     function yieldBasis(address holder) public view virtual returns (uint256);
 
+    /// @notice Checks if an address can manage yield on this token
+    /// @dev Override this function to implement permission checks
+    /// @param manager The address to check
+    /// @return True if the address can manage yield
+    function canManageYield(address manager) public view virtual returns (bool) {
+        return true;
+    }
+
     /// @notice Sets the yield schedule for this token
     /// @dev Can be overridden by implementing contract to add access control
     /// @param schedule The address of the yield schedule contract
     function setYield(address schedule) public virtual {
+        if (!canManageYield(msg.sender)) revert NotAuthorized();
         if (schedule == address(0)) revert InvalidYieldSchedule();
         if (yieldSchedule != address(0)) revert YieldScheduleAlreadySet();
 
