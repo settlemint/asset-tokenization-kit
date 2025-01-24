@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -9,7 +9,6 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IYieldSchedule } from "./interfaces/IYieldSchedule.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
