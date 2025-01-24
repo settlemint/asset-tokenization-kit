@@ -27,8 +27,6 @@ contract FixedYield is AccessControl {
     error InvalidAmount();
     error YieldTransferFailed();
 
-    bytes32 public constant YIELD_MANAGER_ROLE = keccak256("YIELD_MANAGER_ROLE");
-
     /// @notice The token this schedule is for
     ERC20Yield private immutable _token;
 
@@ -104,7 +102,6 @@ contract FixedYield is AccessControl {
         _interval = interval_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
-        _grantRole(YIELD_MANAGER_ROLE, initialOwner);
     }
 
     /// @notice Returns the current ongoing period number
@@ -254,9 +251,8 @@ contract FixedYield is AccessControl {
         _lastClaimedPeriod[msg.sender] = lastPeriod;
         _totalClaimed += amount;
 
-        // Transfer the yield
-        IERC20 yieldToken = ERC20Yield(_token).yieldToken();
-        bool success = yieldToken.transfer(msg.sender, amount);
+        // Transfer the yield using immutable _underlyingAsset
+        bool success = _underlyingAsset.transfer(msg.sender, amount);
         if (!success) revert YieldTransferFailed();
 
         emit YieldClaimed(msg.sender, amount, fromPeriod, lastPeriod);
