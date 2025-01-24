@@ -90,7 +90,7 @@
   "devDependencies": {
     "@better-auth/cli": "1.1.14",
     "@types/node": "22.10.10",
-    "@types/pg": "8.11.10",
+    "@types/pg": "8.11.11",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
     "babel-plugin-react-compiler": "19.0.0-beta-decd7b8-20250118",
