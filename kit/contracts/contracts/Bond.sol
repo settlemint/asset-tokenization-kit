@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.24;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -9,13 +9,24 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IYieldSchedule } from "./interfaces/IYieldSchedule.sol";
+import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
 /// face value in an underlying ERC20 asset
 /// @dev Inherits from multiple OpenZeppelin contracts and implements bond-specific features
 /// @custom:security-contact support@settlemint.com
-contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit, ERC20Blocklist, ERC20Custodian {
+contract Bond is
+    ERC20,
+    ERC20Burnable,
+    ERC20Pausable,
+    AccessControl,
+    ERC20Permit,
+    ERC20Blocklist,
+    ERC20Custodian,
+    ERC20Yield
+{
     /// @notice Custom errors for the Bond contract
     error BondAlreadyMatured();
     error BondNotYetMatured();
@@ -28,6 +39,7 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     error InsufficientRedeemableBalance();
     error InvalidAmount();
     error InvalidISIN();
+    error InvalidFactory();
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -65,6 +77,12 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
 
     /// @notice The ISIN (International Securities Identification Number) of the bond
     string private _isin;
+
+    /// @notice The authorized factory that can set yield schedules
+    address private _yieldFactory;
+
+    /// @notice Event emitted when the yield factory is updated
+    event YieldFactoryUpdated(address indexed factory);
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
@@ -287,6 +305,21 @@ contract Bond is ERC20, ERC20Burnable, ERC20Pausable, AccessControl, ERC20Permit
     /// @return The ISIN of the bond
     function isin() public view returns (string memory) {
         return _isin;
+    }
+
+    /// @notice Sets the yield schedule for this bond
+    /// @dev Can only be called once by an address with FINANCIAL_MANAGEMENT_ROLE
+    /// @param schedule The address of the yield schedule contract
+    function setYield(address schedule) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+        _setYieldSchedule(schedule);
+    }
+
+    /// @notice Returns the basis for yield calculation
+    /// @dev For bonds, the yield basis is the face value
+    /// @param holder The address to get the yield basis for (unused in bonds)
+    /// @return The face value as the basis for yield calculations
+    function yieldBasis(address holder) public view virtual override returns (uint256) {
+        return faceValue;
     }
 
     // Internal functions
