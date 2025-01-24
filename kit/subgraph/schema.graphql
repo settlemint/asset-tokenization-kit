@@ -57,6 +57,7 @@ type Bond implements Asset @entity {
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   roles: [AssetRole!]! @derivedFrom(field: "asset")
+  isin: String!
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
@@ -96,6 +97,7 @@ type Equity implements Asset @entity {
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   roles: [AssetRole!]! @derivedFrom(field: "asset")
+  isin: String!
   equityClass: String!
   equityCategory: String!
   paused: Boolean!
@@ -112,6 +114,7 @@ type StableCoin implements Asset @entity {
   balances: [Balance!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
   roles: [AssetRole!]! @derivedFrom(field: "asset")
+  isin: String
   collateral: BigDecimal!
   collateralExact: BigInt!
   paused: Boolean!

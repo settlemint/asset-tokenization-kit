@@ -11,6 +11,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
+    let isin = endpoint.try_isin();
     let totalSupply = endpoint.try_totalSupply();
     let collateral = endpoint.try_collateral();
     let paused = endpoint.try_paused();
@@ -21,6 +22,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.name = name.reverted ? '' : name.value;
     stableCoin.symbol = symbol.reverted ? '' : symbol.value;
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
+    stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
     stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
