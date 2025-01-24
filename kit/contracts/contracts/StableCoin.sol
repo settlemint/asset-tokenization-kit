@@ -27,6 +27,7 @@ contract StableCoin is
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
     error InvalidDecimals(uint8 decimals);
+    error InvalidISIN();
 
     /// @dev Stores the collateral proof details
     struct CollateralProof {
@@ -40,16 +41,21 @@ contract StableCoin is
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
 
+    /// @notice The optional ISIN (International Securities Identification Number) of the stablecoin
+    string private _isin;
+
     /// @param name The token name
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
+    /// @param isin_ The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
+        string memory isin_,
         uint48 collateralLivenessSeconds
     )
         ERC20(name, symbol)
@@ -57,8 +63,11 @@ contract StableCoin is
         ERC20Collateral(collateralLivenessSeconds)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
+        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
+        _isin = isin_;
+
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
@@ -69,6 +78,12 @@ contract StableCoin is
     /// @return The number of decimals
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
+    }
+
+    /// @notice Returns the optional ISIN (International Securities Identification Number) of the stablecoin
+    /// @return The ISIN of the stablecoin, or empty string if not set
+    function isin() public view returns (string memory) {
+        return _isin;
     }
 
     /// @dev Pauses all token transfers

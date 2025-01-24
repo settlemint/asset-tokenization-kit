@@ -31,9 +31,11 @@ contract Equity is
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
     error InvalidDecimals(uint8 decimals);
+    error InvalidISIN();
 
     string private _equityClass;
     string private _equityCategory;
+    string private _isin;
 
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
@@ -43,28 +45,33 @@ contract Equity is
     /// @param name The token name
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token
+    /// @param initialOwner The address that will receive admin rights
+    /// @param isin_ The ISIN (International Securities Identification Number) of the equity
     /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
-    /// @param initialOwner The address that will receive admin rights
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals_,
+        address initialOwner,
+        string memory isin_,
         string memory equityClass_,
-        string memory equityCategory_,
-        address initialOwner
+        string memory equityCategory_
     )
         ERC20(name, symbol)
         ERC20Permit(name)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
+        if (bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
+        _isin = isin_;
+        _equityClass = equityClass_;
+        _equityCategory = equityCategory_;
+
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
-        _equityClass = equityClass_;
-        _equityCategory = equityCategory_;
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -84,6 +91,12 @@ contract Equity is
     /// @return The equity category as a string
     function equityCategory() public view returns (string memory) {
         return _equityCategory;
+    }
+
+    /// @notice Returns the ISIN (International Securities Identification Number) of the equity
+    /// @return The ISIN of the equity
+    function isin() public view returns (string memory) {
+        return _isin;
     }
 
     /// @notice Pauses all token transfers

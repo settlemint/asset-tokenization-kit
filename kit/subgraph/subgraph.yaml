@@ -26,7 +26,7 @@ dataSources:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,uint8,indexed address,uint256,indexed address,uint256)
+        - event: BondCreated(indexed address,string,string,uint8,indexed address,string,uint256,indexed address,uint256)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
   - kind: ethereum/contract
@@ -68,7 +68,7 @@ dataSources:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
-        - event: EquityCreated(indexed address,string,string,uint8,indexed address,uint256)
+        - event: EquityCreated(indexed address,string,string,uint8,indexed address,string,string,string,uint256)
           handler: handleEquityCreated
       file: ./src/equity-factory.ts
   - kind: ethereum/contract
@@ -89,7 +89,7 @@ dataSources:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address,string,string,uint8,indexed address,uint256)
+        - event: StableCoinCreated(indexed address,string,string,uint8,indexed address,string,uint256)
           handler: handleStableCoinCreated
       file: ./src/stable-coin-factory.ts
 templates:

@@ -11,6 +11,7 @@ contract StableCoinFactoryTest is Test {
     address public owner;
     uint48 public constant LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
+    string public constant VALID_ISIN = "US0378331005";
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -22,7 +23,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -32,6 +33,7 @@ contract StableCoinFactoryTest is Test {
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
         assertEq(token.decimals(), DECIMALS, "Token decimals should match");
+        assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(token.hasRole(token.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -49,11 +51,12 @@ contract StableCoinFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], LIVENESS);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
             assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
+            assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
             (uint256 collateralAmount, uint48 collateralTimestamp) = token.collateral();
             assertEq(collateralAmount, 0, "Initial collateral should be zero");
             assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
@@ -64,20 +67,20 @@ contract StableCoinFactoryTest is Test {
 
     function test_RevertWhenInvalidLiveness() public {
         vm.expectRevert(StableCoinFactory.InvalidLiveness.selector);
-        factory.create("Test Stable", "TSTB", DECIMALS, 0);
+        factory.create("Test Stable", "TSTB", DECIMALS, VALID_ISIN, 0);
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address token1 = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         // Create a new factory instance
         StableCoinFactory newFactory = new StableCoinFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, LIVENESS);
+        address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -87,11 +90,12 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
         assertEq(token.decimals(), DECIMALS, "Decimals should match");
+        assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         assertFalse(token.paused(), "Token should not be paused initially");
         assertEq(token.totalSupply(), 0, "Initial supply should be zero");
 
@@ -106,7 +110,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test minting with supply management role
@@ -156,7 +160,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, DECIMALS, LIVENESS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -198,9 +202,31 @@ contract StableCoinFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("StableCoinCreated(address,string,string,uint8,address,uint256)"),
+            keccak256("StableCoinCreated(address,string,string,uint8,address,string,uint256)"),
             "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
+    }
+
+    function test_OptionalISIN() public {
+        string memory name = "Test Stable";
+        string memory symbol = "TSTB";
+
+        // Test with empty ISIN (should be valid for StableCoin)
+        address emptyIsinAddress = factory.create(name, symbol, DECIMALS, "", LIVENESS);
+        StableCoin emptyIsinToken = StableCoin(emptyIsinAddress);
+        assertEq(emptyIsinToken.isin(), "", "Empty ISIN should be allowed");
+
+        // Test with valid ISIN
+        address validIsinAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        StableCoin validIsinToken = StableCoin(validIsinAddress);
+        assertEq(validIsinToken.isin(), VALID_ISIN, "Valid ISIN should be stored correctly");
+
+        // Test with invalid ISIN length
+        vm.expectRevert(StableCoinFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US03783310", LIVENESS); // too short
+
+        vm.expectRevert(StableCoinFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US0378331005XX", LIVENESS); // too long
     }
 }

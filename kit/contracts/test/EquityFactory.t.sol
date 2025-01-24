@@ -10,6 +10,7 @@ contract EquityFactoryTest is Test {
     EquityFactory public factory;
     address public owner;
     uint8 public constant DECIMALS = 8;
+    string public constant VALID_ISIN = "US0378331005";
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -23,7 +24,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.prank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
         assertEq(factory.allTokensLength(), 1, "Should have created one token");
@@ -32,6 +33,7 @@ contract EquityFactoryTest is Test {
         assertEq(token.name(), name, "Token name should match");
         assertEq(token.symbol(), symbol, "Token symbol should match");
         assertEq(token.decimals(), DECIMALS, "Token decimals should match");
+        assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(token.hasRole(token.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(token.hasRole(token.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -59,13 +61,14 @@ contract EquityFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], classes[i], categories[i]);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, classes[i], categories[i]);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             Equity token = Equity(tokenAddress);
             assertEq(token.decimals(), decimalValues[i], "Token decimals should match");
             assertEq(token.equityClass(), classes[i], "Token class should match");
             assertEq(token.equityCategory(), categories[i], "Token category should match");
+            assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         }
 
         assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
@@ -77,13 +80,13 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address token1 = factory.create(name, symbol, DECIMALS, class, category);
+        address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         // Create a new factory instance
         EquityFactory newFactory = new EquityFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, class, category);
+        address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -95,7 +98,7 @@ contract EquityFactoryTest is Test {
         string memory class = "Common";
         string memory category = "Series A";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test initial state
@@ -112,7 +115,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
         Equity token = Equity(tokenAddress);
 
         // Test minting with supply management role
@@ -164,7 +167,7 @@ contract EquityFactoryTest is Test {
         string memory category = "Series A";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, DECIMALS, class, category);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -206,9 +209,28 @@ contract EquityFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,uint8,address,uint256)"),
+            keccak256("EquityCreated(address,string,string,uint8,address,string,string,string,uint256)"),
             "Wrong event signature for EquityCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
+    }
+
+    function test_RevertWhenInvalidISIN() public {
+        string memory name = "Test Equity";
+        string memory symbol = "TEQT";
+        string memory class = "Common";
+        string memory category = "Series A";
+
+        // Test with empty ISIN
+        vm.expectRevert(EquityFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "", class, category);
+
+        // Test with ISIN that's too short
+        vm.expectRevert(EquityFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US03783310", class, category);
+
+        // Test with ISIN that's too long
+        vm.expectRevert(EquityFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US0378331005XX", class, category);
     }
 }

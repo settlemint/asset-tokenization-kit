@@ -14,6 +14,7 @@ contract BondFactoryTest is Test {
     uint256 public futureDate;
     uint8 public constant DECIMALS = 8;
     uint256 public constant FACE_VALUE = 100e18; // 100 underlying tokens per bond
+    string public constant VALID_ISIN = "US0378331005";
 
     function setUp() public {
         factory = new BondFactory();
@@ -30,7 +31,8 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.prank(owner);
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
         assertEq(factory.allBondsLength(), 1, "Should have created one bond");
@@ -41,6 +43,7 @@ contract BondFactoryTest is Test {
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
+        assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
@@ -60,14 +63,16 @@ contract BondFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress =
-                factory.create(name, symbol, decimalValues[i], futureDate, FACE_VALUE, address(underlyingAsset));
+            address bondAddress = factory.create(
+                name, symbol, decimalValues[i], VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset)
+            );
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
             Bond bond = Bond(bondAddress);
             assertEq(bond.decimals(), decimalValues[i], "Bond decimals should match");
             assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
+            assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         }
 
         assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
@@ -78,34 +83,55 @@ contract BondFactoryTest is Test {
         vm.warp(2 days); // Move time forward to avoid underflow
         uint256 pastDate = block.timestamp - 1 days;
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, pastDate, FACE_VALUE, address(underlyingAsset));
+        factory.create("Test Bond", "TBOND", DECIMALS, VALID_ISIN, pastDate, FACE_VALUE, address(underlyingAsset));
 
         // Try to create a bond with current timestamp
         vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, block.timestamp, FACE_VALUE, address(underlyingAsset));
+        factory.create(
+            "Test Bond", "TBOND", DECIMALS, VALID_ISIN, block.timestamp, FACE_VALUE, address(underlyingAsset)
+        );
     }
 
     function test_RevertWhenInvalidFaceValue() public {
         vm.expectRevert(BondFactory.InvalidFaceValue.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, futureDate, 0, address(underlyingAsset));
+        factory.create("Test Bond", "TBOND", DECIMALS, VALID_ISIN, futureDate, 0, address(underlyingAsset));
     }
 
     function test_RevertWhenInvalidUnderlyingAsset() public {
         vm.expectRevert(BondFactory.InvalidUnderlyingAsset.selector);
-        factory.create("Test Bond", "TBOND", DECIMALS, futureDate, FACE_VALUE, address(0));
+        factory.create("Test Bond", "TBOND", DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(0));
+    }
+
+    function test_RevertWhenInvalidISIN() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        // Test with empty ISIN
+        vm.expectRevert(BondFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "", futureDate, FACE_VALUE, address(underlyingAsset));
+
+        // Test with ISIN that's too short
+        vm.expectRevert(BondFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US03783310", futureDate, FACE_VALUE, address(underlyingAsset));
+
+        // Test with ISIN that's too long
+        vm.expectRevert(BondFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, "US0378331005XX", futureDate, FACE_VALUE, address(underlyingAsset));
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bond1 =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // Create a new factory instance
         BondFactory newFactory = new BondFactory();
 
         // Create a bond with the same parameters
-        address bond2 = newFactory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bond2 =
+            newFactory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(bond1, bond2, "Bonds should have different addresses due to different factory addresses");
@@ -115,13 +141,15 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Test initial state
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
+        assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         assertFalse(bond.paused(), "Bond should not be paused initially");
         assertFalse(bond.isMatured(), "Bond should not be matured initially");
     }
@@ -131,7 +159,8 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.recordLogs();
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -181,7 +210,7 @@ contract BondFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[4];
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,uint8,address,uint256,address,uint256)"),
+            keccak256("BondCreated(address,string,string,uint8,address,string,uint256,address,uint256)"),
             "Wrong event signature for BondCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
@@ -191,7 +220,8 @@ contract BondFactoryTest is Test {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bondAddress = factory.create(name, symbol, DECIMALS, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date
