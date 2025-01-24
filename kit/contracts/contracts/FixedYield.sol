@@ -194,62 +194,38 @@ contract FixedYield is AccessControl {
 
     /// @notice Calculates the total accrued yield including pro-rated current period
     /// @param holder The address to calculate yield for
-    /// @return completePeriodAmount The amount of yield from complete unclaimed periods
-    /// @return currentPeriodAmount The pro-rated amount from the current period
-    /// @return progressPercentage The percentage of the current period that has elapsed (0-100)
-    /// @return fromPeriod The first period included in calculation
-    /// @return currentPeriod_ The current ongoing period number
-    function calculateAccruedYield(address holder)
-        public
-        view
-        returns (
-            uint256 completePeriodAmount,
-            uint256 currentPeriodAmount,
-            uint256 progressPercentage,
-            uint256 fromPeriod,
-            uint256 currentPeriod_
-        )
-    {
-        currentPeriod_ = currentPeriod();
+    /// @return The total accrued yield amount
+    function calculateAccruedYield(address holder) public view returns (uint256) {
+        uint256 currentPeriod_ = currentPeriod();
         if (currentPeriod_ == 0) revert ScheduleNotActive();
         if (block.timestamp > _endDate) revert ScheduleExpired();
 
-        uint256 basis = _token.yieldBasis(holder);
-        if (basis == 0) revert NoYieldAvailable();
+        // Get user's token balance
+        uint256 tokenBalance = IERC20(address(_token)).balanceOf(holder);
+        if (tokenBalance == 0) revert NoYieldAvailable();
 
-        fromPeriod = _lastClaimedPeriod[holder] + 1;
+        uint256 basis = _token.yieldBasis(holder);
+        uint256 fromPeriod = _lastClaimedPeriod[holder] + 1;
         uint256 lastCompleted = lastCompletedPeriod();
 
         // Calculate yield for complete unclaimed periods
+        uint256 completePeriodAmount = 0;
         if (fromPeriod <= lastCompleted) {
             uint256 completePeriods = lastCompleted - fromPeriod + 1;
-            completePeriodAmount = (basis * _rate * completePeriods) / 10_000;
+            completePeriodAmount = (tokenBalance * basis * _rate * completePeriods) / 10_000;
         }
 
         // Calculate pro-rated yield for current period
         uint256 periodStart = _startDate + ((currentPeriod_ - 1) * _interval);
         uint256 timeInPeriod = block.timestamp - periodStart;
-        progressPercentage = (timeInPeriod * 100) / _interval;
-        currentPeriodAmount = (basis * _rate * timeInPeriod) / (_interval * 10_000);
+        uint256 currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * 10_000);
+
+        return completePeriodAmount + currentPeriodAmount;
     }
 
     /// @notice Calculates the total accrued yield for the caller including pro-rated current period
-    /// @return completePeriodAmount The amount of yield from complete unclaimed periods
-    /// @return currentPeriodAmount The pro-rated amount from the current period
-    /// @return progressPercentage The percentage of the current period that has elapsed (0-100)
-    /// @return fromPeriod The first period included in calculation
-    /// @return currentPeriod_ The current ongoing period number
-    function calculateAccruedYield()
-        public
-        view
-        returns (
-            uint256 completePeriodAmount,
-            uint256 currentPeriodAmount,
-            uint256 progressPercentage,
-            uint256 fromPeriod,
-            uint256 currentPeriod_
-        )
-    {
+    /// @return The total accrued yield amount
+    function calculateAccruedYield() public view returns (uint256) {
         return calculateAccruedYield(msg.sender);
     }
 
