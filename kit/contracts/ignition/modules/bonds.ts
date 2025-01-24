@@ -8,7 +8,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
 
   // Create StableCoin using the factory
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
-  const createStableCoin = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, collateralLivenessSeconds], {
+  const createStableCoin = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, '', collateralLivenessSeconds], {
     id: 'createStableCoin',
   });
 
@@ -25,7 +25,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const createBondUSTB = m.call(
     bondFactory,
     'create',
-    ['US Treasury Bond', 'USTB', 2, oneYearFromNow, faceValue, stableCoin],
+    ['US Treasury Bond', 'USTB', 2, oneYearFromNow, 'US0378331005', faceValue, stableCoin],
     {
       id: 'createBondUSTB',
     }

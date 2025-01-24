@@ -5,7 +5,7 @@ const StableCoinsModule = buildModule('StableCoinsModule', (m) => {
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
 
   const collateralLivenessSeconds = '3600'; // 1 hour
-  const createUSDC = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, collateralLivenessSeconds], {
+  const createUSDC = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, '', collateralLivenessSeconds], {
     id: 'createUSDC',
   });
   const readUSDCAddress = m.readEventArgument(createUSDC, 'StableCoinCreated', 'token', { id: 'readUSDCAddress' });
