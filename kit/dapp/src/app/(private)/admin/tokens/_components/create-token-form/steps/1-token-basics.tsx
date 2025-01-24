@@ -1,3 +1,4 @@
+import { CheckboxInput } from '@/components/blocks/form/controls/checkbox-input';
 import { NumericInput } from '@/components/blocks/form/controls/numeric-input';
 import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { CardDescription, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,14 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
 
       {/* ISIN */}
       <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
+
+      {/* Private */}
+      <CheckboxInput
+        control={form.control}
+        label="Private"
+        name="private"
+        description="Mark your token as private, this means other organisations won’t see it."
+      />
     </div>
   );
 };

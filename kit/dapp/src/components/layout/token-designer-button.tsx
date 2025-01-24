@@ -13,7 +13,7 @@ import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
-type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
+export type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
 
 const TOKEN_CONFIGS = {
   stablecoin: {
@@ -40,7 +40,7 @@ const TOKEN_CONFIGS = {
 
 export function TokenDesignerButton() {
   const { state, isMobile } = useSidebar();
-  const [openSheet, setOpenSheet] = useState<TokenType | null>(null);
+  const [tokenType, setTokenType] = useState<TokenType | null>(null);
 
   return (
     <SidebarGroup>
@@ -58,24 +58,22 @@ export function TokenDesignerButton() {
           sideOffset={4}
         >
           {Object.entries(TOKEN_CONFIGS).map(([type, config]) => (
-            <DropdownMenuItem key={type} onSelect={() => setOpenSheet(type as TokenType)}>
+            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as TokenType)}>
               {config.label}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet open={openSheet !== null} onOpenChange={(open) => !open && setOpenSheet(null)}>
-        <SheetContent className="w-[50%] lg:max-w-[50%]">
-          {openSheet && (
+      <Sheet open={tokenType !== null} onOpenChange={(open) => !open && setTokenType(null)}>
+        <SheetContent className="max-h-full w-[50%] overflow-y-auto lg:max-w-[50%]">
+          {tokenType && (
             <>
               <SheetHeader>
-                <SheetTitle>{TOKEN_CONFIGS[openSheet].title}</SheetTitle>
-                <SheetDescription>{TOKEN_CONFIGS[openSheet].description}</SheetDescription>
+                <SheetTitle>{TOKEN_CONFIGS[tokenType].title}</SheetTitle>
+                <SheetDescription>{TOKEN_CONFIGS[tokenType].description}</SheetDescription>
               </SheetHeader>
-              <div className="p-8">
-                <CreateTokenForm formId="create-token-form" tokenType={openSheet} />
-              </div>
+              <CreateTokenForm formId="create-token-form" tokenType={tokenType} />
             </>
           )}
         </SheetContent>
