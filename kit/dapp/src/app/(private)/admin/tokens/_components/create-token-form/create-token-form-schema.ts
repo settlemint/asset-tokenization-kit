@@ -71,7 +71,7 @@ export const createTokenDefaultValues = {
     isin: '',
     private: false,
     pincode: '',
-    collateralProofValidityDuration: 30 * 24 * 60 * 60, // 1 month in seconds
+    collateralProofValidityDuration: 30 * 24 * 60 * 60,
     collateralThreshold: 100,
   },
   equity: {
