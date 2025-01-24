@@ -25,6 +25,7 @@ contract FixedYield is AccessControl {
     error InvalidUnderlyingAsset();
     error PeriodAlreadyClaimed();
     error InvalidAmount();
+    error YieldTransferFailed();
 
     bytes32 public constant YIELD_MANAGER_ROLE = keccak256("YIELD_MANAGER_ROLE");
 
@@ -53,6 +54,9 @@ contract FixedYield is AccessControl {
     /// @notice Mapping of holder address to last claimed period
     mapping(address => uint256) private _lastClaimedPeriod;
 
+    /// @notice The total amount of yield claimed across all holders
+    uint256 private _totalClaimed;
+
     /// @notice Event emitted when a yield payment is distributed
     /// @param token The token address this yield is for
     /// @param holder The address receiving the yield
@@ -65,6 +69,9 @@ contract FixedYield is AccessControl {
 
     /// @notice Event emitted when underlying assets are withdrawn by admin
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+
+    /// @notice Event emitted when yield is claimed
+    event YieldClaimed(address indexed holder, uint256 amount, uint256 fromPeriod, uint256 toPeriod);
 
     /// @notice Deploys a new FixedYield contract
     /// @param tokenAddress The address of the token this schedule is for
@@ -150,29 +157,39 @@ contract FixedYield is AccessControl {
         return lastClaimedPeriod(msg.sender);
     }
 
-    /// @notice Calculates the total unclaimed yield for a holder across completed periods
-    /// @param holder The address to calculate yield for
-    /// @return totalAmount The total amount of yield available
-    /// @return fromPeriod The first period included in calculation
-    /// @return toPeriod The last period included in calculation
-    function calculateUnclaimedYield(address holder)
-        public
-        view
-        returns (uint256 totalAmount, uint256 fromPeriod, uint256 toPeriod)
-    {
-        toPeriod = lastCompletedPeriod();
-        if (toPeriod == 0) revert ScheduleNotActive();
-        if (block.timestamp > _endDate) revert ScheduleExpired();
+    /// @notice Calculates the total unclaimed yield across all holders
+    /// @dev This includes all completed periods that haven't been claimed yet
+    /// @return The total amount of unclaimed yield
+    function totalUnclaimedYield() public view returns (uint256) {
+        uint256 lastPeriod = lastCompletedPeriod();
+        if (lastPeriod == 0) return 0;
 
-        fromPeriod = _lastClaimedPeriod[holder] + 1;
-        if (fromPeriod > toPeriod) revert NoYieldAvailable();
+        // Get total supply and basis for yield calculation
+        uint256 totalSupply = IERC20(address(_token)).totalSupply();
+        uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
 
-        uint256 basis = _token.yieldBasis(holder);
-        if (basis == 0) revert NoYieldAvailable();
+        // Calculate yield for all completed periods
+        uint256 periodYield = (totalSupply * basis * _rate) / 10_000; // Convert basis points to percentage
+        uint256 total = periodYield * lastPeriod;
 
-        // Calculate yield for all unclaimed completed periods
-        uint256 periodCount = toPeriod - fromPeriod + 1;
-        totalAmount = (basis * _rate * periodCount) / 10_000;
+        // Subtract claimed amounts
+        total -= _totalClaimed;
+
+        return total;
+    }
+
+    /// @notice Calculates the total yield that will be needed for the next period
+    /// @dev This is useful for ensuring sufficient funds are available for the next distribution
+    /// @return The total amount of yield needed for the next period
+    function totalYieldForNextPeriod() public view returns (uint256) {
+        if (block.timestamp >= _endDate) return 0; // No more periods
+
+        // Get total supply and basis for yield calculation
+        uint256 totalSupply = IERC20(address(_token)).totalSupply();
+        uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
+
+        // Calculate yield for one period
+        return (totalSupply * basis * _rate) / 10_000; // Convert basis points to percentage
     }
 
     /// @notice Calculates the total accrued yield including pro-rated current period
@@ -216,23 +233,57 @@ contract FixedYield is AccessControl {
         currentPeriodAmount = (basis * _rate * timeInPeriod) / (_interval * 10_000);
     }
 
+    /// @notice Calculates the total accrued yield for the caller including pro-rated current period
+    /// @return completePeriodAmount The amount of yield from complete unclaimed periods
+    /// @return currentPeriodAmount The pro-rated amount from the current period
+    /// @return progressPercentage The percentage of the current period that has elapsed (0-100)
+    /// @return fromPeriod The first period included in calculation
+    /// @return currentPeriod_ The current ongoing period number
+    function calculateAccruedYield()
+        public
+        view
+        returns (
+            uint256 completePeriodAmount,
+            uint256 currentPeriodAmount,
+            uint256 progressPercentage,
+            uint256 fromPeriod,
+            uint256 currentPeriod_
+        )
+    {
+        return calculateAccruedYield(msg.sender);
+    }
+
     /// @notice Claims all available yield for the caller
+    /// @dev Calculates and transfers all unclaimed yield for completed periods
     function claimYield() external {
-        (uint256 amount, uint256 fromPeriod, uint256 toPeriod) = calculateUnclaimedYield(msg.sender);
+        uint256 lastPeriod = lastCompletedPeriod();
+        if (lastPeriod == 0) revert NoYieldAvailable();
 
-        // Check if we have enough underlying assets
-        if (_underlyingAsset.balanceOf(address(this)) < amount) {
-            revert InsufficientUnderlyingBalance();
-        }
+        uint256 fromPeriod = _lastClaimedPeriod[msg.sender] + 1;
+        if (fromPeriod > lastPeriod) revert NoYieldAvailable();
 
-        // Update the last claimed period before transfer to prevent reentrancy
-        _lastClaimedPeriod[msg.sender] = toPeriod;
+        // Get user's token balance
+        uint256 tokenBalance = IERC20(address(_token)).balanceOf(msg.sender);
+        if (tokenBalance == 0) revert NoYieldAvailable();
 
-        // Transfer the yield in underlying asset to the holder
-        bool success = _underlyingAsset.transfer(msg.sender, amount);
-        if (!success) revert YieldDistributionFailed();
+        // Calculate yield
+        uint256 basis = ERC20Yield(_token).yieldBasis(msg.sender);
+        uint256 periodYield = (tokenBalance * basis * _rate) / 10_000; // Convert basis points to percentage
+        uint256 periods = lastPeriod - fromPeriod + 1; // Include both start and end periods
+        uint256 amount = periodYield * periods;
 
-        emit YieldDistributed(address(_token), msg.sender, amount, toPeriod);
+        if (amount == 0) revert NoYieldAvailable();
+
+        // Update claimed periods before transfer
+        _lastClaimedPeriod[msg.sender] = lastPeriod;
+        _totalClaimed += amount;
+
+        // Transfer the yield
+        IERC20 yieldToken = ERC20Yield(_token).yieldToken();
+        bool success = yieldToken.transfer(msg.sender, amount);
+        if (!success) revert YieldTransferFailed();
+
+        emit YieldClaimed(msg.sender, amount, fromPeriod, lastPeriod);
     }
 
     /// @notice Allows topping up the contract with underlying assets for yield payments
