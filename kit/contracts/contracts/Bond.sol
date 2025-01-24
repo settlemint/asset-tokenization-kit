@@ -39,9 +39,6 @@ contract Bond is
     error InsufficientRedeemableBalance();
     error InvalidAmount();
     error InvalidISIN();
-    error InvalidFactory();
-    error InvalidYieldSchedule();
-    error YieldScheduleAlreadySet();
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -83,12 +80,6 @@ contract Bond is
 
     /// @notice The authorized factory that can set yield schedules
     address private _yieldFactory;
-
-    /// @notice Event emitted when the yield factory is updated
-    event YieldFactoryUpdated(address indexed factory);
-
-    /// @notice Event emitted when the yield schedule is set
-    event YieldScheduleSet(address indexed schedule);
 
     /// @notice The yield schedule for this bond
     address public yieldSchedule;
