@@ -5,7 +5,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { format } from 'date-fns';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import type { UseFormReturn } from 'react-hook-form';
+import { type UseFormReturn, useWatch } from 'react-hook-form';
 import type { CreateTokenSchemaType } from '../create-token-form-schema';
 
 interface SummaryProps {
@@ -14,6 +14,10 @@ interface SummaryProps {
 }
 
 export function Summary({ form, tokenType }: SummaryProps) {
+  const values = useWatch({
+    control: form.control,
+  }) as CreateTokenSchemaType;
+
   return (
     <div className="space-y-8 ">
       <div className="-mt-4">
@@ -29,19 +33,19 @@ export function Summary({ form, tokenType }: SummaryProps) {
         <dl className="space-y-2">
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Token name:</dt>
-            <dd className="font-medium">{form.getValues('tokenName')}</dd>
+            <dd className="font-medium">{values.tokenName}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Token symbol:</dt>
-            <dd className="font-medium">{form.getValues('tokenSymbol')}</dd>
+            <dd className="font-medium">{values.tokenSymbol}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">Decimals:</dt>
-            <dd className="font-medium">{form.getValues('decimals')}</dd>
+            <dd className="font-medium">{values.decimals}</dd>
           </div>
           <div className="flex gap-2">
             <dt className="text-muted-foreground">ISIN:</dt>
-            <dd className="font-medium">{form.getValues('isin') === '' ? '-' : form.getValues('isin')}</dd>
+            <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
           </div>
         </dl>
       </div>
@@ -49,43 +53,43 @@ export function Summary({ form, tokenType }: SummaryProps) {
       <div className="mt-6 rounded-lg border p-4">
         <h3 className="mb-4 font-semibold">Token Configuration</h3>
         <dl className="space-y-2">
-          {tokenType === 'stablecoin' && (
+          {tokenType === 'stablecoin' && values.tokenType === 'stablecoin' && (
             <>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-                <dd className="font-medium">{form.getValues('collateralProofValidityDuration')} seconds</dd>
+                <dd className="font-medium">{values.collateralProofValidityDuration} seconds</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Collateral Threshold:</dt>
-                <dd className="font-medium">{form.getValues('collateralThreshold')}%</dd>
+                <dd className="font-medium">{values.collateralThreshold}%</dd>
               </div>
             </>
           )}
-          {tokenType === 'equity' && (
+          {tokenType === 'equity' && values.tokenType === 'equity' && (
             <>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Equity Class:</dt>
-                <dd className="font-medium">{form.getValues('equityClass')}</dd>
+                <dd className="font-medium">{values.equityClass}</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Equity Category:</dt>
-                <dd className="font-medium">{form.getValues('equityCategory')}</dd>
+                <dd className="font-medium">{values.equityCategory}</dd>
               </div>
             </>
           )}
-          {tokenType === 'bond' && (
+          {tokenType === 'bond' && values.tokenType === 'bond' && (
             <>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Face value currency:</dt>
-                <dd className="font-medium">{form.getValues('faceValueCurrency')}</dd>
+                <dd className="font-medium">{values.faceValueCurrency}</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Face value:</dt>
-                <dd className="font-medium">{form.getValues('faceValue')}</dd>
+                <dd className="font-medium">{values.faceValue}</dd>
               </div>
               <div className="flex gap-2">
                 <dt className="text-muted-foreground">Maturity date:</dt>
-                <dd className="font-medium">{format(form.getValues('maturityDate'), 'PPP')}</dd>
+                <dd className="font-medium">{format(values.maturityDate, 'PPP')}</dd>
               </div>
             </>
           )}
