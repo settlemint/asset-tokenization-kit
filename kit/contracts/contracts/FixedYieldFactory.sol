@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import { FixedYield } from "./FixedYield.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @title FixedYieldFactory - A factory contract for creating fixed yield schedules
 /// @notice This contract allows the creation of new fixed yield schedules with deterministic addresses
@@ -17,10 +18,12 @@ contract FixedYieldFactory {
     error TokenNotYieldEnabled();
     error ScheduleSetupFailed();
     error NotAuthorized();
+    error InvalidUnderlyingAsset();
 
     /// @notice Emitted when a new fixed yield schedule is created
     /// @param schedule The address of the newly created fixed yield schedule
     /// @param token The token the schedule is for
+    /// @param underlyingAsset The token used for yield payments
     /// @param owner The owner of the fixed yield schedule
     /// @param startDate The start date of the schedule
     /// @param endDate The end date of the schedule
@@ -30,7 +33,8 @@ contract FixedYieldFactory {
     event FixedYieldCreated(
         address indexed schedule,
         address indexed token,
-        address indexed owner,
+        address indexed underlyingAsset,
+        address owner,
         uint256 startDate,
         uint256 endDate,
         uint256 rate,
@@ -51,7 +55,7 @@ contract FixedYieldFactory {
     /// @param token The token to create the yield schedule for
     /// @param startTime The start time of the yield schedule
     /// @param endTime The end time of the yield schedule
-    /// @param rate The yield rate in basis points (1/10000)
+    /// @param rate The yield rate in basis points (1 basis point = 0.01%, e.g., 500 = 5%)
     /// @param interval The interval between distributions in seconds
     /// @return The address of the created yield schedule
     function create(
@@ -65,14 +69,6 @@ contract FixedYieldFactory {
         returns (address)
     {
         if (address(token) == address(0)) revert InvalidToken();
-
-        // Verify the token implements ERC20Yield by trying to call yieldBasis
-        try token.yieldBasis(address(0)) returns (uint256) {
-            // Token implements ERC20Yield
-        } catch {
-            revert TokenNotYieldEnabled();
-        }
-
         if (!token.canManageYield(msg.sender)) revert NotAuthorized();
         if (startTime <= block.timestamp) revert InvalidStartDate();
         if (endTime <= startTime) revert InvalidEndDate();
@@ -83,8 +79,22 @@ contract FixedYieldFactory {
         address schedule =
             address(new FixedYield{ salt: salt }(address(token), msg.sender, startTime, endTime, rate, interval));
 
+        // Get the underlying asset for the event
+        IERC20 underlyingAsset = token.yieldToken();
+
+        // Set the yield schedule on the token
+        token.setYieldSchedule(schedule);
+
         emit FixedYieldCreated(
-            schedule, address(token), msg.sender, startTime, endTime, rate, interval, allSchedules.length + 1
+            schedule,
+            address(token),
+            address(underlyingAsset),
+            msg.sender,
+            startTime,
+            endTime,
+            rate,
+            interval,
+            allSchedules.length + 1
         );
         allSchedules.push(FixedYield(schedule));
         return schedule;

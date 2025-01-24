@@ -40,6 +40,8 @@ contract Bond is
     error InvalidAmount();
     error InvalidISIN();
     error InvalidFactory();
+    error InvalidYieldSchedule();
+    error YieldScheduleAlreadySet();
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -84,6 +86,12 @@ contract Bond is
 
     /// @notice Event emitted when the yield factory is updated
     event YieldFactoryUpdated(address indexed factory);
+
+    /// @notice Event emitted when the yield schedule is set
+    event YieldScheduleSet(address indexed schedule);
+
+    /// @notice The yield schedule for this bond
+    address public yieldSchedule;
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
@@ -309,21 +317,31 @@ contract Bond is
     }
 
     /// @notice Sets the yield schedule for this bond
-    /// @dev Can only be called once by an address with FINANCIAL_MANAGEMENT_ROLE
+    /// @dev Can only be called by an address with FINANCIAL_MANAGEMENT_ROLE
     /// @param schedule The address of the yield schedule contract
-    function setYield(address schedule) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
-        _setYieldSchedule(schedule);
+    function setYieldSchedule(address schedule) public override onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+        super.setYieldSchedule(schedule);
     }
 
     /// @notice Returns the basis for yield calculation
     /// @dev For bonds, the yield basis is the face value
     /// @param holder The address to get the yield basis for (unused in bonds)
     /// @return The face value as the basis for yield calculations
-    function yieldBasis(address holder) public view virtual override returns (uint256) {
+    function yieldBasis(address holder) public view override returns (uint256) {
         return faceValue;
     }
 
-    /// @inheritdoc ERC20Yield
+    /// @notice Returns the token used for yield payments
+    /// @dev For bonds, this is the underlying asset
+    /// @return The underlying asset token
+    function yieldToken() public view override returns (IERC20) {
+        return underlyingAsset;
+    }
+
+    /// @notice Checks if an address can manage yield on this token
+    /// @dev Only addresses with FINANCIAL_MANAGEMENT_ROLE can manage yield
+    /// @param manager The address to check
+    /// @return True if the address has FINANCIAL_MANAGEMENT_ROLE
     function canManageYield(address manager) public view override returns (bool) {
         return hasRole(FINANCIAL_MANAGEMENT_ROLE, manager);
     }
