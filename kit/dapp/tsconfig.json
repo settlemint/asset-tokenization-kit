@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2017",
     "lib": [
       "es2022",
       "DOM",
@@ -60,7 +60,20 @@
       "@schemas/*": [
         "./*.d.ts"
       ]
-    }
+    },
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "strictBuiltinIteratorReturn": true,
+    "alwaysStrict": true,
+    "useUnknownInCatchVariables": true,
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+    "allowSyntheticDefaultImports": true,
+    "preserveConstEnums": true
   },
   "include": [
     "next-env.d.ts",
