@@ -22,7 +22,7 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
       <NumericInput control={form.control} label="Decimals" name="decimals" placeholder="e.g., MSC" showRequired />
 
       {/* ISIN */}
-      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" showRequired />
+      <TextInput control={form.control} label="ISIN" name="isin" placeholder="e.g., US1234567890" />
 
       {/* Private */}
       <CheckboxInput
