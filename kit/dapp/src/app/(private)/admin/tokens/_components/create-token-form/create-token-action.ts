@@ -1,21 +1,21 @@
 'use server';
 
-import { createHash } from 'node:crypto';
 import { auth } from '@/lib/auth/auth';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { VariablesOf } from 'gql.tada';
 import { headers } from 'next/headers';
+import { createHash } from 'node:crypto';
 import { CreateTokenSchema } from './create-token-form-schema';
 
 // TODO: figure out why the portal cannot estimate the gas, i have to set it myself or it defaults to 90k
 const CreateTokenMutation = portalGraphql(`
-mutation CreateTokenMutation($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Int!) {
+mutation CreateTokenMutation($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Int!, $isin: String!) {
   StableCoinFactoryCreate(
     address: $address
     from: $from
-    input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals}
+    input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals, isin: $isin}
     gasLimit: $gasLimit
     challengeResponse: $challengeResponse
   ) {
@@ -56,7 +56,7 @@ interface VerificationChallenges {
 
 export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
   try {
-    const { tokenName, tokenSymbol, pincode, decimals } = parsedInput;
+    const { tokenName, tokenSymbol, pincode, decimals, isin } = parsedInput;
 
     if (parsedInput.tokenType !== 'stablecoin') {
       throw new Error('Only stablecoin creation is supported');
@@ -95,6 +95,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       name: tokenName,
       symbol: tokenSymbol,
       decimals,
+      isin,
       challengeResponse,
       gasLimit: '5000000',
       collateralLivenessSeconds: collateralProofValidityDuration,
