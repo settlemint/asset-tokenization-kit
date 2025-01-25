@@ -1,6 +1,6 @@
 services:
   anvil:
-    image: ghcr.io/settlemint/btp-anvil-test-node:v7.6.9
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.6.10
     restart: always
     ports:
       - '8545:8545'
