@@ -95,7 +95,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
       name: tokenName,
       symbol: tokenSymbol,
       decimals,
-      isin,
+      isin: isin || '',
       challengeResponse,
       gasLimit: '5000000',
       collateralLivenessSeconds: collateralProofValidityDuration,

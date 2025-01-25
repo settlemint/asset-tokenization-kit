@@ -4,7 +4,7 @@ export const BaseTokenFields = z.object({
   tokenName: z.string().min(1, { message: 'Token name is required' }),
   tokenSymbol: z.string().min(1, { message: 'Token symbol is required' }),
   decimals: z.number(),
-  isin: z.string(),
+  isin: z.string().optional(),
   private: z.boolean().optional(),
   pincode: z.string().length(6).regex(/^\d+$/, 'PIN code must contain only numbers'),
 });
