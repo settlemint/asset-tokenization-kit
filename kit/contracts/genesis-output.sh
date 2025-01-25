@@ -48,7 +48,7 @@ process_sol_file() {
     fi
 
     # Get storage layout
-    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force)
+    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force --json)
     if [[ -z "$STORAGE_LAYOUT" ]]; then
         echo "Error: Unable to get storage layout for $contract_name"
         return
