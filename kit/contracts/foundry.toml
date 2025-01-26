@@ -34,7 +34,8 @@ openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.co
   fuzz = { runs = 1_000 }
   auto_detect_solc = false
   extra_output_files = [ "metadata" ]
-  viaIR = true
+  viaIR = false
+  evm_version = "paris"
 
 [soldeer]
 remappings_version = false
