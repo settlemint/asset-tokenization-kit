@@ -35,7 +35,7 @@ export async function getCryptocurrencies() {
     },
     ['cryptocurrencies'],
     {
-      revalidate: 10,
+      revalidate: 60,
       tags: ['cryptocurrencies'],
     }
   )();
