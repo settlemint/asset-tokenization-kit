@@ -4,6 +4,7 @@ import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-colu
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
+import { TokenType } from '../../tokens/_components/create-token-form/lib/token-types';
 
 const StableCoinFragment = theGraphGraphqlStarterkits(`
   fragment StableCoinFields on StableCoin {
@@ -36,10 +37,10 @@ export async function getStableCoins() {
       const data = await theGraphClientStarterkits.request(StableCoins);
       return data.stableCoins;
     },
-    ['stablecoins'],
+    [TokenType.Stablecoin],
     {
       revalidate: 60,
-      tags: ['stablecoins'],
+      tags: [TokenType.Stablecoin],
     }
   )();
 }

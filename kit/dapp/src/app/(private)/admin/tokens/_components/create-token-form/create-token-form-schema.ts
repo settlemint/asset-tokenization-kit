@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TokenType } from './lib/token-types';
 
 export const BaseTokenFields = z.object({
   tokenName: z.string().min(1, { message: 'Token name is required' }),
@@ -11,7 +12,7 @@ export const BaseTokenFields = z.object({
 export type BaseTokenFieldsType = z.infer<typeof BaseTokenFields>;
 
 export const CreateStablecoinSchema = BaseTokenFields.extend({
-  tokenType: z.literal('stablecoin'),
+  tokenType: z.literal(TokenType.Stablecoin),
   collateralProofValidityDuration: z.number(),
   collateralThreshold: z.number(),
 });
@@ -19,7 +20,7 @@ export const CreateStablecoinSchema = BaseTokenFields.extend({
 export type CreateStablecoinSchemaType = z.infer<typeof CreateStablecoinSchema>;
 
 export const CreateEquitySchema = BaseTokenFields.extend({
-  tokenType: z.literal('equity'),
+  tokenType: z.literal(TokenType.Equity),
   equityClass: z.string().min(1, { message: 'Equity class is required' }),
   equityCategory: z.string().min(1, { message: 'Equity category is required' }),
 });
@@ -33,7 +34,7 @@ export const PaymentFrequency = {
 } as const;
 
 export const CreateBondSchema = BaseTokenFields.extend({
-  tokenType: z.literal('bond'),
+  tokenType: z.literal(TokenType.Bond),
   faceValueCurrency: z.string(),
   faceValue: z.number(),
   maturityDate: z.date(),
@@ -49,7 +50,7 @@ export const CreateBondSchema = BaseTokenFields.extend({
 export type CreateBondSchemaType = z.infer<typeof CreateBondSchema>;
 
 export const CreateCryptocurrencySchema = BaseTokenFields.extend({
-  tokenType: z.literal('cryptocurrency'),
+  tokenType: z.literal(TokenType.Cryptocurrency),
 });
 export type CreateCryptocurrencySchemaType = z.infer<typeof CreateCryptocurrencySchema>;
 
@@ -64,7 +65,7 @@ export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
 
 export const createTokenDefaultValues = {
   stablecoin: {
-    tokenType: 'stablecoin',
+    tokenType: TokenType.Stablecoin,
     tokenName: '',
     tokenSymbol: '',
     decimals: 18,
@@ -75,7 +76,7 @@ export const createTokenDefaultValues = {
     collateralThreshold: 100,
   },
   equity: {
-    tokenType: 'equity',
+    tokenType: TokenType.Equity,
     tokenName: '',
     tokenSymbol: '',
     decimals: 18,
@@ -86,7 +87,7 @@ export const createTokenDefaultValues = {
     equityCategory: '',
   },
   bond: {
-    tokenType: 'bond',
+    tokenType: TokenType.Bond,
     tokenName: '',
     tokenSymbol: '',
     decimals: 18,
@@ -101,7 +102,7 @@ export const createTokenDefaultValues = {
     firstCouponDate: new Date(),
   },
   cryptocurrency: {
-    tokenType: 'cryptocurrency',
+    tokenType: TokenType.Cryptocurrency,
     tokenName: '',
     tokenSymbol: '',
     decimals: 18,
@@ -141,9 +142,9 @@ export function validateCreateTokenSchemaFields(
       | typeof CreateEquitySchema
       | typeof CreateBondSchema
       | typeof CreateCryptocurrencySchema;
-    if (data.tokenType === 'stablecoin') {
+    if (data.tokenType === TokenType.Stablecoin) {
       schema = CreateStablecoinSchema;
-    } else if (data.tokenType === 'equity') {
+    } else if (data.tokenType === TokenType.Equity) {
       schema = CreateEquitySchema;
     } else {
       schema = CreateBondSchema;
