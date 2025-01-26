@@ -8,7 +8,12 @@ export default function CryptoCurrenciesPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-bold text-3xl tracking-tight">Cryptocurrencies</h2>
       </div>
-      <AssetTable type="cryptocurrencies" dataAction={getCryptocurrencies} columns={columns} />
+      <AssetTable
+        type="cryptocurrencies"
+        dataAction={getCryptocurrencies}
+        columns={columns}
+        refetchInterval={10 * 1000}
+      />
     </>
   );
 }
