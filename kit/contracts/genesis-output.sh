@@ -29,6 +29,16 @@ process_sol_file() {
     local args_file="${sol_file%.*}.args"
     local forge_args=("${sol_file}:${contract_name}" --broadcast --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
 
+    if [[ -f "$args_file" ]]; then
+        # Read constructor args
+        local CONSTRUCTOR_ARGS=$(cat "$args_file")
+        forge_args+=(--constructor-args "$CONSTRUCTOR_ARGS")
+
+        # Debug constructor args
+        echo "Constructor args for $contract_name:"
+        echo "$CONSTRUCTOR_ARGS"
+    fi
+
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then
         echo "Skipping $contract_name: Not in CONTRACT_ADDRESSES list"
@@ -48,7 +58,7 @@ process_sol_file() {
     fi
 
     # Get storage layout
-    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force)
+    local STORAGE_LAYOUT=$(forge inspect "${sol_file}:${contract_name}" storageLayout --force --json)
     if [[ -z "$STORAGE_LAYOUT" ]]; then
         echo "Error: Unable to get storage layout for $contract_name"
         return
@@ -60,7 +70,13 @@ process_sol_file() {
 
     for slot in "${slots[@]}"; do
         local SLOT_VALUE=$(cast storage --rpc-url "http://localhost:8545" "$DEPLOYED_ADDRESS" "$slot")
-        local padded_slot=$(printf "0x%064d" "$slot")
+        # Validate and pad if needed
+        if [[ "$SLOT_VALUE" =~ ^0x ]]; then
+            SLOT_VALUE="${SLOT_VALUE#0x}"  # Remove 0x prefix
+            SLOT_VALUE=$(printf "%064s" "$SLOT_VALUE" | tr ' ' '0')  # Pad to 32 bytes
+            SLOT_VALUE="0x$SLOT_VALUE"
+        fi
+        local padded_slot=$(printf "0x%064x" "$slot")
         STORAGE_JSON=$(echo "$STORAGE_JSON" | jq --arg slot "$padded_slot" --arg value "$SLOT_VALUE" '. + {($slot): $value}')
     done
 
