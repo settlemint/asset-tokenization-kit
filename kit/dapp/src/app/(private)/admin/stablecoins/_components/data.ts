@@ -38,7 +38,7 @@ export async function getStableCoins() {
     },
     ['stablecoins'],
     {
-      revalidate: 10,
+      revalidate: 60,
       tags: ['stablecoins'],
     }
   )();

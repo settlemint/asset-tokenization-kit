@@ -13,7 +13,7 @@ export default function StableCoinsPage() {
         dataAction={getStableCoins}
         columns={columns}
         icons={icons}
-        refetchInterval={10 * 1000}
+        refetchInterval={5000}
       />
     </>
   );

@@ -8,6 +8,7 @@ import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { admin, openAPI, organization } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
+import { headers } from 'next/headers';
 import { db } from '../db';
 
 const createUserWallet = portalGraphql(`
@@ -75,3 +76,15 @@ export const auth = betterAuth({
   },
   plugins: [nextCookies(), admin(), organization(), passkey(), openAPI(), emailHarmony()],
 });
+
+export async function getAuthenticatedUser() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    throw new Error('User not authenticated');
+  }
+
+  return session.user;
+}
