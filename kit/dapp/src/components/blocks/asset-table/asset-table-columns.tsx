@@ -78,7 +78,7 @@ export function createPausedColumn<T extends BaseAsset>(columnHelper: ColumnHelp
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
     cell: ({ getValue }) => {
       const paused = getValue();
-      const Icon = paused ? icons[paused ? 'paused' : 'active'] : null;
+      const Icon = icons[paused ? 'paused' : 'active'];
       return (
         <DataTableColumnCell>
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
