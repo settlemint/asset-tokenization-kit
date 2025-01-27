@@ -35,14 +35,12 @@ const NavigationQuery = theGraphGraphql(
 
 const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string): NavItem[] => {
   const items = tokens.slice(0, 5).map<NavItem>((token) => ({
-    type: 'Item',
     label: token.symbol ?? token.name ?? token.id,
     path: `/admin/${type}/${token.id}`,
   }));
 
   if (tokens.length > 5) {
     items.push({
-      type: 'Item',
       label: 'More...',
       path: `/admin/${type}`,
     });
@@ -86,14 +84,12 @@ export async function createTokenManagementNavGroup(role: 'admin' | 'issuer' | '
   }
 
   return {
-    type: 'Group',
     groupTitle: 'Token management',
     items: TOKEN_SECTIONS.reduce<NavItem[]>((acc, section) => {
       const tokens = navigationData[section.key];
 
       const items = createTokenItems(tokens, section.type);
       acc.push({
-        type: 'Item',
         label: section.title,
         path: `/admin/${section.type}`,
         badge: tokens.length.toString(),

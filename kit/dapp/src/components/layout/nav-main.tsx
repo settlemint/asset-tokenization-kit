@@ -15,7 +15,6 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 export type NavItem = {
-  type: 'Item';
   label: string;
   path: string;
   icon?: ReactNode;
@@ -24,9 +23,12 @@ export type NavItem = {
 };
 
 export type NavGroup = {
-  type: 'Group';
   groupTitle: string;
   items: NavItem[];
+};
+
+const isGroup = (item: NavElement): item is NavGroup => {
+  return 'groupTitle' in item;
 };
 
 export type NavElement = NavItem | NavGroup;
@@ -97,7 +99,7 @@ export function NavMain({ items }: { items: NavElement[] }) {
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-          if (item.type === 'Group') {
+          if (isGroup(item)) {
             return <NavGroupComponent key={item.groupTitle} group={item} />;
           }
           return <NavItemComponent key={item.label} item={item} />;

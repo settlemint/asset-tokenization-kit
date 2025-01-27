@@ -15,19 +15,16 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
 
   const sidebarData: NavElement[] = [
     {
-      type: 'Item',
       label: 'Portfolio',
       icon: <LayoutDashboard />,
       path: '/portfolio',
     },
     {
-      type: 'Item',
       label: 'Transactions',
       icon: <ArrowLeftRight />,
       path: '/portfolio/transactions',
     },
     {
-      type: 'Item',
       label: 'My Contacts',
       icon: <Users />,
       path: '/portfolio/contacts',

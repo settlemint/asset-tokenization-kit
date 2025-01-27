@@ -16,13 +16,11 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
   const tokenManagementNavGroup = await createTokenManagementNavGroup(role);
   const defaultNavItems: NavElement[] = [
     {
-      type: 'Item',
       label: 'Dashboard',
       icon: <LayoutDashboard />,
       path: '/dashboard',
     },
     {
-      type: 'Item',
       label: 'Actions',
       icon: <AlertTriangle />,
       path: '/actions',
@@ -30,19 +28,16 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
     },
     ...(tokenManagementNavGroup ? [tokenManagementNavGroup] : []),
     {
-      type: 'Item',
       label: 'User management',
       icon: <Users />,
       path: '/users',
     },
     {
-      type: 'Item',
       label: 'Transactions',
       icon: <ArrowRightLeft />,
       path: '/transactions',
     },
     {
-      type: 'Item',
       label: 'Settings',
       icon: <Settings />,
       path: '/settings',
