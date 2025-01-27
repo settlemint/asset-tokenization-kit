@@ -10,111 +10,92 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { Bitcoin, ChevronRight, Coins, Eclipse, HelpCircle, type LucideIcon, TicketCheck } from 'lucide-react';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
-const iconMap: Record<string, LucideIcon> = {
-  Coins,
-  TicketCheck,
-  Eclipse,
-  Bitcoin,
+type NavItem = {
+  type: 'Item';
+  label: string;
+  path: string;
+  icon?: LucideIcon;
+  badge?: number;
+  subItems?: { label: string; path: string }[];
 };
 
-export type SidebarLink = {
-  title: string;
-  url: string;
+type NavGroup = {
+  type: 'Group';
+  groupTitle: string;
+  items: NavItem[];
 };
 
-export type SidebarSection = {
-  title: string;
-  items: SidebarNestedItem[];
-};
+export type NavElement = NavItem | NavGroup;
 
-export type SidebarItemMore = {
-  enabled: boolean;
-  url: string;
-};
+function NavItemComponent({ item }: { item: NavItem }) {
+  const Icon = item.icon ?? undefined;
 
-export type SidebarNestedItem = {
-  title: string;
-  iconName?: string;
-  items: SidebarLink[];
-  more: SidebarItemMore;
-  open?: boolean;
-};
+  // Regular menu item without subitems
+  if (!item.subItems?.length) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild>
+          <Link href={item.path}>
+            {Icon && <Icon className="size-4" />}
+            <span>{item.label}</span>
+            {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
-export function NavMain({
-  title,
-  items,
-}: {
-  title: string;
-  items: SidebarNestedItem[];
-}) {
+  // Collapsible menu item with subitems
+  return (
+    <Collapsible asChild className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton>
+            {Icon && <Icon className="size-4" />}
+            <span>{item.label}</span>
+            {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
+            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {item.subItems.map((subItem) => (
+              <SidebarMenuSubItem key={subItem.label}>
+                <SidebarMenuSubButton asChild>
+                  <Link href={subItem.path}>{subItem.label}</Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
+function NavGroupComponent({ group }: { group: NavGroup }) {
+  return (
+    <div className="my-4">
+      <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
+      {group.items.map((item) => (
+        <NavItemComponent key={item.label} item={item} />
+      ))}
+    </div>
+  );
+}
+
+export function NavMain({ items }: { items: NavElement[] }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          if (item.items.length === 0) {
-            return (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.iconName &&
-                    (() => {
-                      const Icon = iconMap[item.iconName] || HelpCircle;
-                      return (
-                        <Link href={item.more.url} prefetch>
-                          <Icon className="size-4" />
-                        </Link>
-                      );
-                    })()}
-                  <Link href={item.more.url} prefetch>
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
+          if (item.type === 'Group') {
+            return <NavGroupComponent key={item.groupTitle} group={item} />;
           }
-
-          return (
-            <Collapsible key={item.title} asChild defaultOpen={item.open} className="group/collapsible">
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
-                    {item.iconName &&
-                      (() => {
-                        const Icon = iconMap[item.iconName] || HelpCircle;
-                        return <Icon className="size-4" />;
-                      })()}
-                    <span>{item.title}</span>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items?.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={subItem.url} prefetch>
-                            <span>{subItem.title}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                    {item.more?.enabled && (
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href={item.more.url} prefetch>
-                            More&hellip;
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    )}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          );
+          return <NavItemComponent key={item.label} item={item} />;
         })}
       </SidebarMenu>
     </SidebarGroup>
