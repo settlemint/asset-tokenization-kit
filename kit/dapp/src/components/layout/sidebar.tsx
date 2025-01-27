@@ -1,6 +1,5 @@
 'use client';
-import {} from '@/components/ui/dropdown-menu';
-import {} from '@/components/ui/sheet';
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,45 +7,27 @@ import {
   SidebarHeader,
   SidebarRail,
   SidebarSeparator,
-  useSidebar,
 } from '@/components/ui/sidebar';
-import type { ComponentProps } from 'react';
 import { NavFooter } from './nav-footer';
 import { NavHeader } from './nav-header';
-import { NavMain, type SidebarSection } from './nav-main';
-import { NavSecondary, type SidebarSecondarySection } from './nav-secondary';
+import { type NavElement, NavMain } from './nav-main';
 import { TokenDesignerButton } from './token-designer-button';
 
-export type SidebarData = {
-  main: SidebarSection[];
-  secondary: SidebarSecondarySection[];
-};
+interface PrivateSidebarProps {
+  role: 'admin' | 'issuer' | 'user';
+  mode: 'portfolio' | 'admin';
+  items: NavElement[];
+}
 
-export function PrivateSidebar({
-  ...props
-}: ComponentProps<typeof Sidebar> & {
-  role?: 'admin' | 'issuer' | 'user';
-  mode?: 'admin' | 'portfolio';
-  data: SidebarData;
-}) {
-  const role = props.role ?? 'user';
-  const mode = props.mode ?? 'portfolio';
-  const { state } = useSidebar();
-
+export function PrivateSidebar({ role, mode, items }: PrivateSidebarProps) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
       <SidebarContent className="pt-4">
         {mode === 'admin' && <TokenDesignerButton />}
-        {props.data.main.map((main) => (
-          <NavMain key={main.title} title={main.title} items={main.items} />
-        ))}
-        {state !== 'expanded' && <SidebarSeparator />}
-        {props.data.secondary.map((secondary) => (
-          <NavSecondary key={secondary.title} title={secondary.title} items={secondary.items} />
-        ))}
+        <NavMain items={items} />
       </SidebarContent>
       {['admin', 'issuer'].includes(role) && (
         <>
