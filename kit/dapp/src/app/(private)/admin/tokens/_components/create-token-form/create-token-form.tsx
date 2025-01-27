@@ -23,7 +23,7 @@ import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
-  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
+  tokenType: TokenTypeKey;
   formId: string;
   className?: string;
 }
@@ -140,11 +140,11 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                   form={form}
                   fields={(() => {
                     switch (tokenType) {
-                      case 'stablecoin':
+                      case 'Stablecoin':
                         return ['collateralProofValidityDuration', 'collateralThreshold'];
-                      case 'equity':
+                      case 'Equity':
                         return ['equityClass', 'equityCategory'];
-                      case 'bond':
+                      case 'Bond':
                         return ['faceValueCurrency', 'faceValue', 'maturityDate'];
                       default:
                         return [];

@@ -9,7 +9,9 @@ import {
 } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { TokenTypeValue } from '@/types/token-types';
 import type { VariablesOf } from 'gql.tada';
+import { revalidateTag } from 'next/cache';
 import type { Address } from 'viem';
 import { CreateTokenSchema } from './create-token-form-schema';
 import { handleChallenge } from './lib/challenge';
@@ -74,10 +76,11 @@ const EquityFactoryCreate = portalGraphql(`
 /**
  * Helper function to handle the common pattern of getting transaction hash and revalidating
  */
-const handleFactoryResponse = (response: { transactionHash: string | null } | null, tokenType: string) => {
+const handleFactoryResponse = (response: { transactionHash: string | null } | null, tokenType: TokenTypeValue) => {
   if (!response?.transactionHash) {
     throw new Error('Transaction hash not found');
   }
+  revalidateTag(tokenType);
   return response.transactionHash;
 };
 

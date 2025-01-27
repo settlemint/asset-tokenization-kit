@@ -2,9 +2,9 @@
 
 import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-columns';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { TokenType } from '@/types/token-types';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
-import { TokenType } from '../../tokens/_components/create-token-form/lib/token-types';
 
 const StableCoinFragment = theGraphGraphqlStarterkits(`
   fragment StableCoinFields on StableCoin {

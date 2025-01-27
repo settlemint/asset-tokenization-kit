@@ -9,7 +9,7 @@ export default function StableCoinsPage() {
         <h2 className="font-bold text-3xl tracking-tight">Stable Coins</h2>
       </div>
       <AssetTable
-        type="stablecoins"
+        type="Stablecoin"
         dataAction={getStableCoins}
         columns={columns}
         icons={icons}
