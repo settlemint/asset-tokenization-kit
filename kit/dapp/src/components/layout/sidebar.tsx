@@ -8,26 +8,20 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import {} from 'lucide-react';
-import type { ComponentProps } from 'react';
 import { NavFooter } from './nav-footer';
 import { NavHeader } from './nav-header';
 import { type NavElement, NavMain } from './nav-main';
 import { TokenDesignerButton } from './token-designer-button';
 
-export function PrivateSidebar({
-  items,
-  ...props
-}: ComponentProps<typeof Sidebar> & {
-  role?: 'admin' | 'issuer' | 'user';
-  mode?: 'admin' | 'portfolio';
+interface PrivateSidebarProps {
+  role: 'admin' | 'issuer' | 'user';
+  mode: 'portfolio' | 'admin';
   items: NavElement[];
-}) {
-  const role = props.role ?? 'user';
-  const mode = props.mode ?? 'portfolio';
+}
 
+export function PrivateSidebar({ role, mode, items }: PrivateSidebarProps) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>

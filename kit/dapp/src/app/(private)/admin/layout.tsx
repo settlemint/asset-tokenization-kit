@@ -51,7 +51,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider>
-      <PrivateSidebar role={role} mode="admin" className="group-data-[side=left]:border-0" items={defaultNavItems} />
+      <PrivateSidebar role={role} mode="admin" items={defaultNavItems} />
       <SidebarInset className="bg-sidebar">
         <Header />
         <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-6">{children}</main>
