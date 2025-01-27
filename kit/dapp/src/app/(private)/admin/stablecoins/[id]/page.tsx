@@ -11,7 +11,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-export default function StableCoinDetailPage({ params }: { params: { id: string } }) {
+export default async function StableCoinDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
   return (
     <>
       <div className="flex items-center space-x-1">

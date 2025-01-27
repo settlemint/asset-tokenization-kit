@@ -25,7 +25,32 @@
       {
         "name": "@0no-co/graphqlsp",
         "trackFieldUsage": false,
-        "schemas": []
+        "schemas": [
+          {
+            "name": "hasura",
+            "schema": "hasura-schema.graphql",
+            "tadaOutputLocation": "hasura-env.d.ts",
+            "tadaTurboLocation": "hasura-cache.d.ts"
+          },
+          {
+            "name": "thegraph-starterkits",
+            "schema": "the-graph-schema-starterkits.graphql",
+            "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
+            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts"
+          },
+          {
+            "name": "portal",
+            "schema": "portal-schema.graphql",
+            "tadaOutputLocation": "portal-env.d.ts",
+            "tadaTurboLocation": "portal-cache.d.ts"
+          },
+          {
+            "name": "blockscout",
+            "schema": "blockscout-schema.graphql",
+            "tadaOutputLocation": "blockscout-env.d.ts",
+            "tadaTurboLocation": "blockscout-cache.d.ts"
+          }
+        ]
       }
     ],
     "paths": {
