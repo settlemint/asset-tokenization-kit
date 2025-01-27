@@ -85,7 +85,7 @@ function NavItemComponent({ item }: { item: NavItem }) {
 
 function NavGroupComponent({ group }: { group: NavGroup }) {
   return (
-    <div className="my-4">
+    <div className="my-2">
       <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
       {group.items.map((item) => (
         <NavItemComponent key={item.label} item={item} />
