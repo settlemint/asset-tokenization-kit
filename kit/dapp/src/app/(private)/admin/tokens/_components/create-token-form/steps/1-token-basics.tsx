@@ -29,7 +29,7 @@ export const TokenBasics = ({ form }: { form: UseFormReturn<CreateTokenSchemaTyp
         control={form.control}
         label="Private"
         name="private"
-        description="Mark your token as private, this means other organisations won’t see it."
+        description="Mark your token as private, this means other organisations won't see it."
       />
     </div>
   );

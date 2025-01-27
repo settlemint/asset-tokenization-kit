@@ -29,14 +29,19 @@ interface CreateTokenFormProps {
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
-query CreateTokenReceiptQuery($transactionHash: String!) {
-  StableCoinFactoryCreateReceipt(transactionHash: $transactionHash) {
-    contractAddress
-    status
-    blockNumber
-    revertReasonDecoded
+  query CreateTokenReceiptQuery($transactionHash: String!) {
+    getTransaction(transactionHash: $transactionHash) {
+      metadata
+      receipt {
+        status
+        revertReasonDecoded
+        contractAddress
+        blockNumber
+        logs
+      }
+    }
   }
-}`);
+`);
 
 /**
  * Handles a token creation transaction
@@ -52,7 +57,7 @@ export function handleTokenCreation(transactionState: ReturnType<typeof useTrans
       const txresult = await portalClient.request(CreateTokenReceiptQuery, {
         transactionHash: hash,
       });
-      return txresult.StableCoinFactoryCreateReceipt;
+      return txresult.getTransaction?.receipt;
     },
   });
 }
