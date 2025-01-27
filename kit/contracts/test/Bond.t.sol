@@ -571,4 +571,120 @@ contract BondTest is Test {
         bond.withdrawExcessUnderlyingAssets(owner);
         vm.stopPrank();
     }
+
+    function test_HistoricalBalances() public {
+        uint256 amount = toDecimals(10); // 10.00 bonds
+
+        // Record initial timestamp and balances
+        uint256 initialTimestamp = block.timestamp;
+        assertEq(bond.balanceAt(owner, initialTimestamp), initialSupply);
+        assertEq(bond.balanceAt(user1, initialTimestamp), 0);
+
+        // Transfer some tokens and move time forward
+        vm.prank(owner);
+        bond.transfer(user1, amount);
+        uint256 transferTimestamp = block.timestamp;
+
+        // Check balances at transfer time
+        assertEq(bond.balanceAt(owner, transferTimestamp), initialSupply - amount);
+        assertEq(bond.balanceAt(user1, transferTimestamp), amount);
+
+        // Move time forward and transfer more
+        vm.warp(block.timestamp + 1 days);
+        vm.prank(user1);
+        bond.transfer(user2, amount / 2);
+        uint256 secondTransferTimestamp = block.timestamp;
+
+        // Verify all historical balances
+        // At initial timestamp
+        assertEq(bond.balanceAt(owner, initialTimestamp), initialSupply);
+        assertEq(bond.balanceAt(user1, initialTimestamp), 0);
+        assertEq(bond.balanceAt(user2, initialTimestamp), 0);
+
+        // At first transfer timestamp
+        assertEq(bond.balanceAt(owner, transferTimestamp), initialSupply - amount);
+        assertEq(bond.balanceAt(user1, transferTimestamp), amount);
+        assertEq(bond.balanceAt(user2, transferTimestamp), 0);
+
+        // At second transfer timestamp
+        assertEq(bond.balanceAt(owner, secondTransferTimestamp), initialSupply - amount);
+        assertEq(bond.balanceAt(user1, secondTransferTimestamp), amount / 2);
+        assertEq(bond.balanceAt(user2, secondTransferTimestamp), amount / 2);
+
+        // Check future timestamp returns current balance
+        assertEq(bond.balanceAt(owner, block.timestamp + 1 days), initialSupply - amount);
+        assertEq(bond.balanceAt(user1, block.timestamp + 1 days), amount / 2);
+        assertEq(bond.balanceAt(user2, block.timestamp + 1 days), amount / 2);
+    }
+
+    function test_HistoricalBalancesWithMultipleTransfers() public {
+        uint256 amount = toDecimals(10); // 10.00 bonds
+        uint256[] memory timestamps = new uint256[](5);
+
+        // Initial state
+        timestamps[0] = block.timestamp;
+
+        // First transfer: owner -> user1
+        vm.prank(owner);
+        bond.transfer(user1, amount);
+        timestamps[1] = block.timestamp;
+
+        // Move time and transfer: user1 -> user2 (partial)
+        vm.warp(block.timestamp + 1 hours);
+        vm.prank(user1);
+        bond.transfer(user2, amount / 2);
+        timestamps[2] = block.timestamp;
+
+        // Move time and transfer: owner -> user2
+        vm.warp(block.timestamp + 1 hours);
+        vm.prank(owner);
+        bond.transfer(user2, amount);
+        timestamps[3] = block.timestamp;
+
+        // Move time and transfer: user2 -> user1
+        vm.warp(block.timestamp + 1 hours);
+        vm.prank(user2);
+        bond.transfer(user1, amount / 4);
+        timestamps[4] = block.timestamp;
+
+        // Verify balances at each timestamp
+        for (uint256 i = 0; i < timestamps.length; i++) {
+            uint256 expectedOwner;
+            uint256 expectedUser1;
+            uint256 expectedUser2;
+
+            if (i == 0) {
+                expectedOwner = initialSupply;
+                expectedUser1 = 0;
+                expectedUser2 = 0;
+            } else if (i == 1) {
+                expectedOwner = initialSupply - amount;
+                expectedUser1 = amount;
+                expectedUser2 = 0;
+            } else if (i == 2) {
+                expectedOwner = initialSupply - amount;
+                expectedUser1 = amount / 2;
+                expectedUser2 = amount / 2;
+            } else if (i == 3) {
+                expectedOwner = initialSupply - amount * 2;
+                expectedUser1 = amount / 2;
+                expectedUser2 = amount + (amount / 2);
+            } else if (i == 4) {
+                expectedOwner = initialSupply - amount * 2;
+                expectedUser1 = amount / 2 + amount / 4;
+                expectedUser2 = amount + (amount / 2) - amount / 4;
+            }
+
+            assertEq(bond.balanceAt(owner, timestamps[i]), expectedOwner, "Wrong owner balance at timestamp");
+            assertEq(bond.balanceAt(user1, timestamps[i]), expectedUser1, "Wrong user1 balance at timestamp");
+            assertEq(bond.balanceAt(user2, timestamps[i]), expectedUser2, "Wrong user2 balance at timestamp");
+        }
+    }
+
+    function test_HistoricalBalancesBeforeFirstTransfer() public {
+        // Check balance at a timestamp before any transfers
+        uint256 pastTimestamp = block.timestamp - 1 days;
+        assertEq(bond.balanceAt(owner, pastTimestamp), 0, "Should return 0 for timestamp before first transfer");
+        assertEq(bond.balanceAt(user1, pastTimestamp), 0, "Should return 0 for timestamp before first transfer");
+    }
 }
