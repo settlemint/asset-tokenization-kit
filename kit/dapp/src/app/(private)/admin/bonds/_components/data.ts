@@ -3,6 +3,7 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
+import { TokenType } from '../../tokens/_components/create-token-form/lib/token-types';
 
 const BondFragment = theGraphGraphqlStarterkits(`
   fragment BondFields on Bond {
@@ -39,10 +40,10 @@ export async function getBonds() {
       const data = await theGraphClientStarterkits.request(Bonds);
       return data.bonds;
     },
-    ['bonds'],
+    [TokenType.Bond],
     {
-      revalidate: 10,
-      tags: ['bonds'],
+      revalidate: 60,
+      tags: [TokenType.Bond],
     }
   )();
 }
