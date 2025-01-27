@@ -34,6 +34,10 @@ contract ERC20YieldMock is ERC20, ERC20Yield {
         return _yieldToken;
     }
 
+    function canManageYield(address) public pure override returns (bool) {
+        return true;
+    }
+
     function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
         if (timestamp >= block.timestamp) return balanceOf(holder);
 
