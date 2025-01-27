@@ -10,7 +10,6 @@ import {
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { VariablesOf } from 'gql.tada';
-import { revalidateTag } from 'next/cache';
 import type { Address } from 'viem';
 import { CreateTokenSchema } from './create-token-form-schema';
 import { handleChallenge } from './lib/challenge';
@@ -79,7 +78,6 @@ const handleFactoryResponse = (response: { transactionHash: string | null } | nu
   if (!response?.transactionHash) {
     throw new Error('Transaction hash not found');
   }
-  revalidateTag(tokenType);
   return response.transactionHash;
 };
 
