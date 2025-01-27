@@ -6,6 +6,7 @@ import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
 import { TokenType } from '../../tokens/_components/create-token-form/lib/token-types';
 
+/** List */
 const StableCoinFragment = theGraphGraphqlStarterkits(`
   fragment StableCoinFields on StableCoin {
     id
@@ -36,6 +37,35 @@ export async function getStableCoins() {
     async () => {
       const data = await theGraphClientStarterkits.request(StableCoins);
       return data.stableCoins;
+    },
+    [TokenType.Stablecoin],
+    {
+      revalidate: 60,
+      tags: [TokenType.Stablecoin],
+    }
+  )();
+}
+
+/** Detail */
+
+const StableCoin = theGraphGraphqlStarterkits(
+  `
+  query StableCoin($id: Bytes!) {
+  stableCoins(
+    where: {id: $id }
+  ) {
+    ...StableCoinFields
+  }
+  }
+`,
+  [StableCoinFragment]
+);
+
+export async function getStableCoin(id: string) {
+  return await unstable_cache(
+    async () => {
+      const data = await theGraphClientStarterkits.request(StableCoin, { id });
+      return data.stableCoins[0];
     },
     [TokenType.Stablecoin],
     {

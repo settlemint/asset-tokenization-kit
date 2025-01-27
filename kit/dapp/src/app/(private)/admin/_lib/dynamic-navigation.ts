@@ -36,7 +36,7 @@ const NavigationQuery = theGraphGraphql(
 const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string) => {
   const items = tokens.slice(0, 5).map((token) => ({
     title: token.symbol ?? token.name ?? token.id,
-    url: `/admin/${type}/${token.id}`,
+    url: `/admin/${type}/${token.id}/details`,
   }));
 
   return {
