@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { Bond } from "../contracts/Bond.sol";

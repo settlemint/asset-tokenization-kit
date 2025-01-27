@@ -17,8 +17,12 @@ export const columns = [
   ...createBaseColumns(columnHelper),
   columnHelper.accessor((row) => row.collateral, {
     id: 'collateral',
-    header: ({ column }) => <DataTableColumnHeader column={column}>Collateral</DataTableColumnHeader>,
-    cell: ({ row }) => <DataTableColumnCell>{row.getValue('collateral')}</DataTableColumnCell>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} variant="numeric">
+        Collateral
+      </DataTableColumnHeader>
+    ),
+    cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('collateral')}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   createPausedColumn(columnHelper),
