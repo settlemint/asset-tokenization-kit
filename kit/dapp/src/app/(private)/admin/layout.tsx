@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
     {
       label: 'Dashboard',
       icon: <LayoutDashboard />,
-      path: '/dashboard',
+      path: '/admin',
     },
     {
       label: 'Actions',
