@@ -340,43 +340,42 @@ contract Bond is
     /// @param timestamp The timestamp to check the balance at
     /// @return The balance the holder had at the specified timestamp
     function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
-        if (timestamp > block.timestamp) return 0;
-        if (timestamp == block.timestamp) return balanceOf(holder);
+        // For current or future timestamps, return current balance
+        if (timestamp >= block.timestamp) return balanceOf(holder);
+
+        // Check for exact match first (optimization)
+        uint256 exactBalance = _historicalBalances[holder][timestamp];
+        if (exactBalance != 0) {
+            return exactBalance;
+        }
 
         uint256[] storage timestamps = _addressTimestamps[holder];
         if (timestamps.length == 0) return 0;
 
-        // Binary search to find the closest timestamp
-        uint256 left = 0;
-        uint256 right = timestamps.length - 1;
-
-        // If target is less than the first timestamp
+        // If timestamp is before first recorded timestamp, return 0
         if (timestamp < timestamps[0]) return 0;
 
-        // If target is greater than or equal to the last timestamp
-        if (timestamp >= timestamps[right]) {
-            return _historicalBalances[holder][timestamps[right]];
+        // If timestamp is after or equal to the last recorded timestamp
+        uint256 lastIndex = timestamps.length - 1;
+        if (timestamp >= timestamps[lastIndex]) {
+            return _historicalBalances[holder][timestamps[lastIndex]];
         }
 
-        while (left <= right) {
-            uint256 mid = (left + right) / 2;
-            uint256 midTimestamp = timestamps[mid];
+        // Binary search for the closest timestamp
+        uint256 left = 0;
+        uint256 right = lastIndex;
 
-            if (midTimestamp == timestamp) {
-                return _historicalBalances[holder][midTimestamp];
-            }
-
-            if (midTimestamp < timestamp) {
-                if (mid < timestamps.length - 1 && timestamps[mid + 1] > timestamp) {
-                    return _historicalBalances[holder][midTimestamp];
-                }
-                left = mid + 1;
+        while (left < right) {
+            // Safe way to calculate midpoint without overflow
+            uint256 mid = left + (right - left + 1) / 2;
+            if (timestamps[mid] <= timestamp) {
+                left = mid;
             } else {
                 right = mid - 1;
             }
         }
 
-        return _historicalBalances[holder][timestamps[right]];
+        return _historicalBalances[holder][timestamps[left]];
     }
 
     // Internal functions
@@ -431,18 +430,22 @@ contract Bond is
 
         // Store historical balances for affected addresses
         if (from != address(0)) {
-            uint256[] storage fromTimestamps = _addressTimestamps[from];
-            if (fromTimestamps.length == 0 || fromTimestamps[fromTimestamps.length - 1] != block.timestamp) {
-                fromTimestamps.push(block.timestamp);
-                _historicalBalances[from][block.timestamp] = balanceOf(from);
-            }
+            _updateHistoricalBalance(from);
         }
         if (to != address(0)) {
-            uint256[] storage toTimestamps = _addressTimestamps[to];
-            if (toTimestamps.length == 0 || toTimestamps[toTimestamps.length - 1] != block.timestamp) {
-                toTimestamps.push(block.timestamp);
-                _historicalBalances[to][block.timestamp] = balanceOf(to);
-            }
+            _updateHistoricalBalance(to);
+        }
+    }
+
+    /// @dev Updates historical balance for an address, avoiding duplicate timestamps
+    function _updateHistoricalBalance(address account) private {
+        uint256[] storage timestamps = _addressTimestamps[account];
+        if (timestamps.length == 0 || timestamps[timestamps.length - 1] < block.timestamp) {
+            timestamps.push(block.timestamp);
+            _historicalBalances[account][block.timestamp] = balanceOf(account);
+        } else if (timestamps[timestamps.length - 1] == block.timestamp) {
+            // Update the balance for the current timestamp if it already exists
+            _historicalBalances[account][block.timestamp] = balanceOf(account);
         }
     }
 
