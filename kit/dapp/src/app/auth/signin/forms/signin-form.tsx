@@ -1,10 +1,10 @@
 'use client';
 
-import { TextInput } from '@/components/blocks/form/controls/text-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const signInSchema = z.object({
@@ -29,7 +29,6 @@ export function SignInForm({
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-
   const router = useRouter();
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -40,21 +39,13 @@ export function SignInForm({
     },
   });
 
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError: setFormError,
-  } = form;
-
   const onSubmit = async (data: SignInFormData) => {
     await authClient.signIn.email(data, {
       onSuccess: () => {
         router.push(decodedRedirectUrl);
       },
       onError: (ctx) => {
-        setFormError('root', {
+        form.setError('root', {
           message: ctx.error.message,
         });
       },
@@ -62,50 +53,65 @@ export function SignInForm({
   };
 
   return (
-    <FormProvider {...form}>
-      <form className={cn('flex flex-col gap-6', className)} onSubmit={handleSubmit(onSubmit)} {...props}>
+    <Form {...form}>
+      <form className={cn('flex flex-col gap-6', className)} onSubmit={form.handleSubmit(onSubmit)} {...props}>
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-bold text-2xl">Login to your account</h1>
           <p className="text-balance text-muted-foreground text-sm">Enter your email below to login to your account</p>
         </div>
-        {errors.root && (
+        {form.formState.errors.root && (
           <Alert variant="destructive">
-            <AlertDescription>{errors.root.message}</AlertDescription>
+            <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
           </Alert>
         )}
         <div className="grid gap-6">
-          <div className="grid gap-2">
-            <TextInput
-              label="Email"
-              control={control}
-              name="email"
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              aria-invalid={!!errors.email}
-            />
-            {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-          </div>
-          <div className="grid gap-2">
-            <TextInput
-              label="Password"
-              control={control}
-              name="password"
-              id="password"
-              type="password"
-              autoComplete="password"
-              aria-invalid={!!errors.password}
-            />
-            {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
-          </div>
-          <div className="grid gap-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="rememberMe" {...register('rememberMe')} />
-              <Label htmlFor="rememberMe">Remember me</Label>
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : 'Login'}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="m@example.com" autoComplete="email" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" autoComplete="current-password" required {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <FormLabel className="font-normal text-sm">Remember me</FormLabel>
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 size={16} className="mr-2 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </Button>
         </div>
         <div className="text-center text-sm">
@@ -115,6 +121,6 @@ export function SignInForm({
           </Link>
         </div>
       </form>
-    </FormProvider>
+    </Form>
   );
 }
