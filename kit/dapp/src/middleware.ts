@@ -45,7 +45,7 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.redirect(buildRedirectUrl(request));
       }
       if (!roles.includes(data.user.role)) {
-        return NextResponse.redirect('/portfolio');
+        return NextResponse.redirect(new URL('/portfolio', request.url));
       }
     }
   }
