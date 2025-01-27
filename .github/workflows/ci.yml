@@ -97,6 +97,10 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Build docker image
+        if: ${{ env.TAG != 'pr' }}
+        run: bun run docker
+
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
@@ -161,7 +165,6 @@ jobs:
           fi
           if [[ -n "$PUBLISH_TASKS" ]]; then
             bunx turbo run $PUBLISH_TASKS
-            bun run docker
           fi
         env:
           PUBLISH_NPM: true
