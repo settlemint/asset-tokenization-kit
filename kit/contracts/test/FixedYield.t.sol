@@ -214,7 +214,7 @@ contract FixedYieldTest is Test {
         }
 
         // Claim remaining periods
-        uint256 remainingPeriods = periodEnds.length - 5; // Subtract the 5 periods we've already accounted for
+        uint256 remainingPeriods = periodEnds.length - 3; // Subtract the 3 periods we've already claimed
         uint256 expectedYield2 =
             (toDecimals(10) * YIELD_BASIS * YIELD_RATE * remainingPeriods) / yieldSchedule.RATE_BASIS_POINTS();
 

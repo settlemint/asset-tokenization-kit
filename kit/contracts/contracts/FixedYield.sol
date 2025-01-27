@@ -148,17 +148,17 @@ contract FixedYield is AccessControl {
     function lastCompletedPeriod() public view returns (uint256) {
         if (block.timestamp <= _startDate) return 0;
 
+        // If we're past the end date, return the total number of periods
+        if (block.timestamp >= _endDate) {
+            return _periodEndTimestamps.length;
+        }
+
         // Calculate how many complete intervals have passed
         uint256 elapsedTime = block.timestamp - _startDate;
         uint256 completeIntervals = elapsedTime / _interval;
 
-        // If we're exactly at an interval boundary, we need to subtract 1
-        // because the current period is just starting
-        if (elapsedTime % _interval == 0) {
-            return completeIntervals;
-        }
-
-        return completeIntervals;
+        // Cap at total number of periods
+        return completeIntervals < _periodEndTimestamps.length ? completeIntervals : _periodEndTimestamps.length;
     }
 
     /// @notice Returns time until next period starts in seconds
