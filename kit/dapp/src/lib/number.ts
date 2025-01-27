@@ -35,7 +35,7 @@ export const formatPercentage = (amount: number | bigint | string, locale?: Intl
 
     return new Intl.NumberFormat(locale, {
       style: 'percent',
-      minimumFractionDigits: 1,
+      minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(dividedValue);
   } catch {

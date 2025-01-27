@@ -9,13 +9,7 @@ export default function EquitiesPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="font-bold text-3xl tracking-tight">Equities</h2>
       </div>
-      <AssetTable
-        type="equities"
-        dataAction={getEquities}
-        columns={columns}
-        icons={icons}
-        refetchInterval={10 * 1000}
-      />
+      <AssetTable type="equities" dataAction={getEquities} columns={columns} icons={icons} refetchInterval={5000} />
     </>
   );
 }

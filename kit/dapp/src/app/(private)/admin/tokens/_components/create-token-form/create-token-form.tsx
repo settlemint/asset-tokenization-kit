@@ -10,6 +10,7 @@ import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { handleTransaction } from '@/lib/transactions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { revalidateTag } from 'next/cache';
 import { useQueryState } from 'nuqs';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
@@ -92,6 +93,7 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     }
 
     await handleTokenCreation(transactionState, createTokenResult?.data);
+    revalidateTag(values.tokenType);
   }
 
   return (
@@ -138,15 +140,18 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                 {/* Step 2 : Token Configuration */}
                 <FormStep
                   form={form}
-                  fields={
-                    tokenType === 'stablecoin'
-                      ? ['collateralProofValidityDuration', 'collateralThreshold']
-                      : tokenType === 'equity'
-                        ? ['equityClass', 'equityCategory']
-                        : tokenType === 'bond'
-                          ? ['faceValueCurrency', 'faceValue', 'maturityDate']
-                          : []
-                  }
+                  fields={(() => {
+                    switch (tokenType) {
+                      case 'stablecoin':
+                        return ['collateralProofValidityDuration', 'collateralThreshold'];
+                      case 'equity':
+                        return ['equityClass', 'equityCategory'];
+                      case 'bond':
+                        return ['faceValueCurrency', 'faceValue', 'maturityDate'];
+                      default:
+                        return [];
+                    }
+                  })()}
                   withSheetClose
                   controls={{
                     prev: { buttonText: 'Back' },

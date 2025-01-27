@@ -4,6 +4,7 @@ import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-colu
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
+import { TokenType } from '../../tokens/_components/create-token-form/lib/token-types';
 
 const EquityFragment = theGraphGraphqlStarterkits(`
   fragment EquityFields on Equity {
@@ -37,10 +38,10 @@ export async function getEquities() {
       const data = await theGraphClientStarterkits.request(Equities);
       return data.equities;
     },
-    ['equities'],
+    [TokenType.Equity],
     {
-      revalidate: 10,
-      tags: ['equities'],
+      revalidate: 60,
+      tags: [TokenType.Equity],
     }
   )();
 }

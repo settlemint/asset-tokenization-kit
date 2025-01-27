@@ -97,6 +97,18 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Login to GitHub Container Registry
+        if: ${{ env.TAG != 'pr' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build docker image
+        if: ${{ env.TAG != 'pr' }}
+        run: bun run docker
+
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
@@ -136,14 +148,6 @@ jobs:
             kit/contracts/artifacts/contracts/**/*.json
             !kit/contracts/artifacts/contracts/**/*.dbg.json
 
-      - name: Login to GitHub Container Registry
-        if: ${{ env.TAG != 'pr' }}
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Login to npm
         if: ${{ env.TAG != 'pr' }}
         run: |
@@ -174,11 +178,22 @@ jobs:
           branch: main
           file_pattern: 'package.json'
 
-      - name: Run Trivy vulnerability scanner on the docker image
+      - name: Run Trivy vulnerability scanner on the custom deployment docker image
         if: ${{ env.TAG != 'pr' }}
         uses: aquasecurity/trivy-action@0.29.0
         with:
           image-ref: 'ghcr.io/settlemint/starterkit-asset-tokenization:${{ env.VERSION }}'
+          format: 'table'
+          exit-code: '1'
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          scanners: 'secret'
+
+      - name: Run Trivy vulnerability scanner on the codestudio docker image
+        if: ${{ env.TAG != 'pr' }}
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: 'ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${{ env.VERSION }}'
           format: 'table'
           exit-code: '1'
           trivy-config: trivy-secret.yaml
