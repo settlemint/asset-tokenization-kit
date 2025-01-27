@@ -1,7 +1,10 @@
 'use client';
 
+import type { TokenSupplyData } from '@/app/(private)/admin/(dashboard)/_components/dashboard-metrics/token-supply/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import type { ProcessedTransactionsData } from './transactions/data';
+import type { UsersData } from './users/data';
 
 interface MetricItemProps {
   label: string;
@@ -23,21 +26,9 @@ function MetricItem({ label, value, subtext, valueClassName }: MetricItemProps) 
 }
 
 interface DashboardMetricsProps {
-  tokens: {
-    totalSupply: number;
-    breakdown: {
-      type: string;
-      supply: number;
-    }[];
-  };
-  users: {
-    totalUsers: number;
-    usersInLast24Hours: number;
-  };
-  transactions: {
-    totalTransactions: number;
-    transactionsInLast24Hours: number;
-  };
+  tokens: TokenSupplyData;
+  users: UsersData;
+  transactions: ProcessedTransactionsData;
   network: {
     status: string;
     message: string;
