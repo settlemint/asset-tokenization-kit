@@ -27,7 +27,7 @@ openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.co
   libs = ["dependencies"]
   test = 'test'
   cache_path  = 'cache_forge'
-  solc = "0.8.28"
+  solc = "0.8.27"
   optimizer = true
   optimizer_runs = 10_000
   gas_reports = ["*"]

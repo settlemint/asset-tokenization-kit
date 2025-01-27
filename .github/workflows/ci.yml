@@ -161,6 +161,7 @@ jobs:
           fi
           if [[ -n "$PUBLISH_TASKS" ]]; then
             bunx turbo run $PUBLISH_TASKS
+            bun run docker
           fi
         env:
           PUBLISH_NPM: true
