@@ -42,7 +42,6 @@ contract Bond is
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
     bytes32 public constant FINANCIAL_MANAGEMENT_ROLE = keccak256("FINANCIAL_MANAGEMENT_ROLE");
-    bytes32 public constant FINANCE_MANAGER_ROLE = keccak256("FINANCE_MANAGER_ROLE");
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
@@ -62,26 +61,20 @@ contract Bond is
     /// @notice Tracks how many bonds each holder has redeemed
     mapping(address => uint256) public bondRedeemed;
 
+    /// @notice The ISIN (International Securities Identification Number) of the bond
+    string private _isin;
+
     /// @notice Event emitted when the bond reaches maturity and is closed
     event BondMatured(uint256 timestamp);
-
-    /// @notice Event emitted when underlying assets are topped up
-    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
 
     /// @notice Event emitted when a bond is redeemed for underlying assets
     event BondRedeemed(address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
 
+    /// @notice Event emitted when underlying assets are topped up
+    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+
     /// @notice Event emitted when underlying assets are withdrawn
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice The ISIN (International Securities Identification Number) of the bond
-    string private _isin;
-
-    /// @notice The authorized factory that can set yield schedules
-    address private _yieldFactory;
-
-    /// @notice The yield schedule for this bond
-    address public yieldSchedule;
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {

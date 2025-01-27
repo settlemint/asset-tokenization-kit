@@ -27,6 +27,8 @@ contract FixedYield is AccessControl {
     error InvalidAmount();
     error YieldTransferFailed();
 
+    uint256 public constant RATE_BASIS_POINTS = 10_000;
+
     /// @notice The token this schedule is for
     ERC20Yield private immutable _token;
 
@@ -166,7 +168,7 @@ contract FixedYield is AccessControl {
         uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
 
         // Calculate yield for all completed periods
-        uint256 periodYield = (totalSupply * basis * _rate) / 10_000; // Convert basis points to percentage
+        uint256 periodYield = (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
         uint256 total = periodYield * lastPeriod;
 
         // Subtract claimed amounts
@@ -186,7 +188,7 @@ contract FixedYield is AccessControl {
         uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
 
         // Calculate yield for one period
-        return (totalSupply * basis * _rate) / 10_000; // Convert basis points to percentage
+        return (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
     }
 
     /// @notice Calculates the total accrued yield including pro-rated current period
@@ -209,13 +211,13 @@ contract FixedYield is AccessControl {
         uint256 completePeriodAmount = 0;
         if (fromPeriod <= lastCompleted) {
             uint256 completePeriods = lastCompleted - fromPeriod + 1;
-            completePeriodAmount = (tokenBalance * basis * _rate * completePeriods) / 10_000;
+            completePeriodAmount = (tokenBalance * basis * _rate * completePeriods) / RATE_BASIS_POINTS;
         }
 
         // Calculate pro-rated yield for current period
         uint256 periodStart = _startDate + ((currentPeriod_ - 1) * _interval);
         uint256 timeInPeriod = block.timestamp - periodStart;
-        uint256 currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * 10_000);
+        uint256 currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * RATE_BASIS_POINTS);
 
         return completePeriodAmount + currentPeriodAmount;
     }
@@ -241,8 +243,8 @@ contract FixedYield is AccessControl {
 
         // Calculate yield
         uint256 basis = ERC20Yield(_token).yieldBasis(msg.sender);
-        uint256 periodYield = (tokenBalance * basis * _rate) / 10_000; // Convert basis points to percentage
-        uint256 periods = lastPeriod - fromPeriod + 1; // Include both start and end periods
+        uint256 periodYield = (tokenBalance * basis * _rate) / RATE_BASIS_POINTS;
+        uint256 periods = lastPeriod - fromPeriod + 1;
         uint256 amount = periodYield * periods;
 
         if (amount == 0) revert NoYieldAvailable();
