@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import { AssetTableClient } from './asset-table-client';
 
 export type AssetTableProps<Asset> = {
-  type: string;
+  type: 'stablecoins' | 'equities' | 'bonds' | 'cryptocurrencies';
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   icons?: Record<string, ComponentType<{ className?: string }>>;
