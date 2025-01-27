@@ -96,12 +96,14 @@ export function createActionsColumn<T extends BaseAsset>(
 ) {
   return columnHelper.display({
     id: 'actions',
-    header: () => '',
-    cell: ({ row }) => (
-      <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>
-        {rowActions?.(row.original)}
-      </DataTableRowActions>
-    ),
+    header: () => 'Action',
+    cell: ({ row }) => {
+      return (
+        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}/details`}>
+          {rowActions?.(row.original)}
+        </DataTableRowActions>
+      );
+    },
     meta: {
       enableCsvExport: false,
     },
