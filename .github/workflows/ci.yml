@@ -97,6 +97,14 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Login to GitHub Container Registry
+        if: ${{ env.TAG != 'pr' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build docker image
         if: ${{ env.TAG != 'pr' }}
         run: bun run docker
@@ -139,14 +147,6 @@ jobs:
           path: |
             kit/contracts/artifacts/contracts/**/*.json
             !kit/contracts/artifacts/contracts/**/*.dbg.json
-
-      - name: Login to GitHub Container Registry
-        if: ${{ env.TAG != 'pr' }}
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to npm
         if: ${{ env.TAG != 'pr' }}
