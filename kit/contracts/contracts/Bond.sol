@@ -76,6 +76,12 @@ contract Bond is
     /// @notice Event emitted when underlying assets are withdrawn
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
 
+    /// @notice Mapping of holder to their balance history (timestamp => balance)
+    mapping(address => mapping(uint256 => uint256)) private _historicalBalances;
+
+    /// @notice Mapping of holder to their balance update timestamps
+    mapping(address => uint256[]) private _addressTimestamps;
+
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
         if (isMatured) revert BondAlreadyMatured();
@@ -329,6 +335,50 @@ contract Bond is
         return hasRole(FINANCIAL_MANAGEMENT_ROLE, manager);
     }
 
+    /// @notice Returns the balance of tokens a holder had at a specific timestamp
+    /// @param holder The address to check the balance for
+    /// @param timestamp The timestamp to check the balance at
+    /// @return The balance the holder had at the specified timestamp
+    function balanceAt(address holder, uint256 timestamp) public view returns (uint256) {
+        if (timestamp > block.timestamp) return 0;
+        if (timestamp == block.timestamp) return balanceOf(holder);
+
+        uint256[] storage timestamps = _addressTimestamps[holder];
+        if (timestamps.length == 0) return 0;
+
+        // Binary search to find the closest timestamp
+        uint256 left = 0;
+        uint256 right = timestamps.length - 1;
+
+        // If target is less than the first timestamp
+        if (timestamp < timestamps[0]) return 0;
+
+        // If target is greater than or equal to the last timestamp
+        if (timestamp >= timestamps[right]) {
+            return _historicalBalances[holder][timestamps[right]];
+        }
+
+        while (left <= right) {
+            uint256 mid = (left + right) / 2;
+            uint256 midTimestamp = timestamps[mid];
+
+            if (midTimestamp == timestamp) {
+                return _historicalBalances[holder][midTimestamp];
+            }
+
+            if (midTimestamp < timestamp) {
+                if (mid < timestamps.length - 1 && timestamps[mid + 1] > timestamp) {
+                    return _historicalBalances[holder][midTimestamp];
+                }
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return _historicalBalances[holder][timestamps[right]];
+    }
+
     // Internal functions
 
     /// @notice Calculates the underlying asset amount for a given bond amount
@@ -377,6 +427,22 @@ contract Bond is
         } else {
             if (isMatured) revert BondAlreadyMatured();
             super._update(from, to, value);
+        }
+
+        // Store historical balances for affected addresses
+        if (from != address(0)) {
+            uint256[] storage fromTimestamps = _addressTimestamps[from];
+            if (fromTimestamps.length == 0 || fromTimestamps[fromTimestamps.length - 1] != block.timestamp) {
+                fromTimestamps.push(block.timestamp);
+                _historicalBalances[from][block.timestamp] = balanceOf(from);
+            }
+        }
+        if (to != address(0)) {
+            uint256[] storage toTimestamps = _addressTimestamps[to];
+            if (toTimestamps.length == 0 || toTimestamps[toTimestamps.length - 1] != block.timestamp) {
+                toTimestamps.push(block.timestamp);
+                _historicalBalances[to][block.timestamp] = balanceOf(to);
+            }
         }
     }
 
