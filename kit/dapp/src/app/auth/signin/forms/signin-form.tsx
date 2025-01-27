@@ -110,7 +110,7 @@ export function SignInForm({
         </div>
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href={`/auth/signup?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
+          <Link href={`/auth/signup?rd=${decodedRedirectUrl}`} className="underline underline-offset-4">
             Sign up
           </Link>
         </div>
