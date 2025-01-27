@@ -43,7 +43,7 @@
     "test:deploy": "turbo test:deploy",
     "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
     "publish-docker": "turbo publish-docker",
-    "docker": "docker buildx build . --file .github/codestudio.Dockerfile --platform=linux/amd64,linux/arm64 -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${VERSION:-1.0.0-dev.$(date +%s)} -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${TAG:-dev} --push",
+    "docker": "docker buildx build . --platform=linux/amd64,linux/arm64 -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${VERSION:-1.0.0-dev.$(date +%s)} -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${TAG:-dev} --push",
     "deploy": "turbo deploy",
     "codegen": "turbo codegen",
     "lint:biome": "biome lint --write --unsafe .",
