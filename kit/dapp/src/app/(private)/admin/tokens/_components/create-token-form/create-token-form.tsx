@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useTransactionStatus } from '@/hooks/use-transaction-status';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { handleTransaction } from '@/lib/transactions';
+import type { TokenTypeKey } from '@/types/token-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useQueryState } from 'nuqs';
