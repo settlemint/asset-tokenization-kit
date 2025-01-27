@@ -26,7 +26,9 @@ contract FixedYield is AccessControl {
     error PeriodAlreadyClaimed();
     error InvalidAmount();
     error YieldTransferFailed();
+    error InvalidPeriod();
 
+    /// @notice The basis points denominator used for rate calculations (10,000 = 100%)
     uint256 public constant RATE_BASIS_POINTS = 10_000;
 
     /// @notice The token this schedule is for
@@ -50,6 +52,9 @@ contract FixedYield is AccessControl {
 
     /// @notice The interval between distributions in seconds
     uint256 private immutable _interval;
+
+    /// @notice Array of timestamps when each period ends
+    uint256[] private _periodEndTimestamps;
 
     /// @notice Mapping of holder address to last claimed period
     mapping(address => uint256) private _lastClaimedPeriod;
@@ -103,7 +108,32 @@ contract FixedYield is AccessControl {
         _rate = rate_;
         _interval = interval_;
 
+        // Calculate and cache period end timestamps
+        uint256 totalPeriods = ((endDate_ - startDate_) / interval_) + 1;
+        for (uint256 i = 0; i < totalPeriods; i++) {
+            uint256 timestamp = startDate_ + ((i + 1) * interval_);
+            // If this period would end after schedule end date, cap it
+            if (timestamp > endDate_) {
+                timestamp = endDate_;
+            }
+            _periodEndTimestamps.push(timestamp);
+        }
+
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+    }
+
+    /// @notice Returns all period end timestamps for this yield schedule
+    /// @return Array of timestamps when each period ends
+    function allPeriods() public view returns (uint256[] memory) {
+        return _periodEndTimestamps;
+    }
+
+    /// @notice Returns the period end timestamp for a specific period
+    /// @param period The period number (1-based)
+    /// @return The timestamp when the period ends
+    function periodEnd(uint256 period) public view returns (uint256) {
+        if (period == 0 || period > _periodEndTimestamps.length) revert InvalidPeriod();
+        return _periodEndTimestamps[period - 1];
     }
 
     /// @notice Returns the current ongoing period number
@@ -206,8 +236,7 @@ contract FixedYield is AccessControl {
         // Calculate yield for complete unclaimed periods
         uint256 completePeriodAmount = 0;
         for (uint256 period = fromPeriod; period <= lastCompleted; period++) {
-            uint256 periodEndTimestamp = _startDate + (period * _interval);
-            uint256 balance = _token.balanceAt(holder, periodEndTimestamp);
+            uint256 balance = _token.balanceAt(holder, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 completePeriodAmount += (balance * basis * _rate) / RATE_BASIS_POINTS;
             }
@@ -246,8 +275,7 @@ contract FixedYield is AccessControl {
 
         // Calculate yield for each unclaimed period using historical balances
         for (uint256 period = fromPeriod; period <= lastPeriod; period++) {
-            uint256 periodEndTimestamp = _startDate + (period * _interval);
-            uint256 balance = _token.balanceAt(msg.sender, periodEndTimestamp);
+            uint256 balance = _token.balanceAt(msg.sender, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmount += periodYield;
