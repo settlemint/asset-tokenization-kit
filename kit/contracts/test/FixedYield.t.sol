@@ -161,6 +161,70 @@ contract FixedYieldTest is Test {
         assertEq(yieldSchedule.lastClaimedPeriod(user1), totalPeriods, "Last claimed period should be final period");
     }
 
+    function test_ProRataAccruedAndPartlyClaimed() public {
+        // Setup: Transfer tokens to user1
+        vm.prank(owner);
+        token.transfer(user1, toDecimals(10)); // 10.00 tokens
+
+        // Move to start and set initial balance
+        vm.warp(startDate);
+        uint256[] memory periodEnds = yieldSchedule.allPeriods();
+
+        // First phase: Complete 3 periods and claim
+        vm.warp(startDate + (INTERVAL * 3));
+
+        // Set historical balances for first 3 periods
+        for (uint256 i = 0; i < 3; i++) {
+            token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
+        }
+
+        // Claim first 3 periods
+        uint256 expectedYield1 = (toDecimals(10) * YIELD_BASIS * YIELD_RATE * 3) / yieldSchedule.RATE_BASIS_POINTS();
+        vm.prank(user1);
+        yieldSchedule.claimYield();
+        assertEq(underlyingAsset.balanceOf(user1), expectedYield1, "First claim yield mismatch");
+
+        // Second phase: Move 2 more periods + half interval and check accrued
+        vm.warp(startDate + (INTERVAL * 5) + (INTERVAL / 2));
+
+        // Set historical balances for periods 4-5
+        for (uint256 i = 3; i < 5; i++) {
+            token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
+        }
+
+        // Calculate expected yield: 2 complete periods + pro-rated current period
+        uint256 expectedCompleteYield =
+            (toDecimals(10) * YIELD_BASIS * YIELD_RATE * 2) / yieldSchedule.RATE_BASIS_POINTS();
+        uint256 expectedProRatedYield = (toDecimals(10) * YIELD_BASIS * YIELD_RATE * (INTERVAL / 2))
+            / (INTERVAL * yieldSchedule.RATE_BASIS_POINTS());
+        uint256 expectedAccruedYield = expectedCompleteYield + expectedProRatedYield;
+
+        assertEq(
+            yieldSchedule.calculateAccruedYield(user1),
+            expectedAccruedYield,
+            "Accrued yield mismatch (complete + pro-rated)"
+        );
+
+        // Final phase: Move to end and claim remaining periods
+        vm.warp(endDate);
+
+        // Set historical balances for remaining periods
+        for (uint256 i = 5; i < periodEnds.length; i++) {
+            token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
+        }
+
+        // Claim remaining periods
+        uint256 remainingPeriods = periodEnds.length - 5; // Subtract the 5 periods we've already accounted for
+        uint256 expectedYield2 =
+            (toDecimals(10) * YIELD_BASIS * YIELD_RATE * remainingPeriods) / yieldSchedule.RATE_BASIS_POINTS();
+
+        vm.prank(user1);
+        yieldSchedule.claimYield();
+
+        // Verify final balance includes both claims
+        assertEq(underlyingAsset.balanceOf(user1), expectedYield1 + expectedYield2, "Total claimed yield mismatch");
+    }
+
     // Edge Cases and Validation Tests //
 
     function test_RevertBeforeStart() public {
