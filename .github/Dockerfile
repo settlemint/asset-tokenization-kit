@@ -32,5 +32,3 @@ FROM busybox:1.37.0
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 COPY --from=build /usecase /usecase
-COPY --from=build /root/.svm /usecase-svm
-COPY --from=build /root/.cache /usecase-cache
