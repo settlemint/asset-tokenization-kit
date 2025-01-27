@@ -26,6 +26,8 @@ declare module 'gql.tada' {
       TadaDocumentNode<{ id: string; name: string | null; symbol: string | null; decimals: number; totalSupply: string; collateral: string; paused: boolean; }, {}, { fragment: "StableCoinFields"; on: "StableCoin"; masked: false; }>;
     "\n  query StableCoins {\n    stableCoins {\n      ...StableCoinFields\n    }\n  }\n":
       TadaDocumentNode<{ stableCoins: { id: string; name: string | null; symbol: string | null; decimals: number; totalSupply: string; collateral: string; paused: boolean; }[]; }, {}, void>;
+    "\n  query StableCoin($id: Bytes!) {\n  stableCoins(\n    where: {id: $id }\n  ) {\n    ...StableCoinFields\n  }\n  }\n":
+      TadaDocumentNode<{ stableCoins: { id: string; name: string | null; symbol: string | null; decimals: number; totalSupply: string; collateral: string; paused: boolean; }[]; }, { id: string; }, void>;
     "\n  query SearchAssets {\n    assets {\n      id\n      name\n      symbol\n    }\n  }\n":
       TadaDocumentNode<{ assets: ({ __typename?: "Bond" | undefined; id: string; name: string | null; symbol: string | null; } | { __typename?: "CryptoCurrency" | undefined; id: string; name: string | null; symbol: string | null; } | { __typename?: "Equity" | undefined; id: string; name: string | null; symbol: string | null; } | { __typename?: "StableCoin" | undefined; id: string; name: string | null; symbol: string | null; })[]; }, {}, void>;
   }

@@ -14,9 +14,15 @@ interface BreadcrumbsProps {
   maxVisibleItems?: number;
   className?: string;
   routeSegments: string[];
+  hideRoot?: boolean;
 }
 
-export default function CollapsedBreadcrumbs({ maxVisibleItems = 3, className, routeSegments }: BreadcrumbsProps) {
+export default function CollapsedBreadcrumbs({
+  maxVisibleItems = 3,
+  hideRoot = false,
+  className,
+  routeSegments,
+}: BreadcrumbsProps) {
   if (!routeSegments.length) {
     return null;
   }
@@ -37,22 +43,29 @@ export default function CollapsedBreadcrumbs({ maxVisibleItems = 3, className, r
   return (
     <Breadcrumb className={className}>
       <BreadcrumbList>
-        {visibleItems.map((item, index) => (
-          <Fragment key={item.label}>
-            {index > 0 && <BreadcrumbSeparator />}
-            <BreadcrumbItem>
-              {'items' in item ? (
-                <EllipsisDropdown items={item.items} />
-              ) : item.href ? (
-                <BreadcrumbLink asChild>
-                  <Link href={item.href}>{item.label}</Link>
-                </BreadcrumbLink>
-              ) : (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
-              )}
-            </BreadcrumbItem>
-          </Fragment>
-        ))}
+        {visibleItems
+          .filter((item) => {
+            if (hideRoot) {
+              return item !== items[0];
+            }
+            return true;
+          })
+          .map((item, index) => (
+            <Fragment key={item.label}>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem>
+                {'items' in item ? (
+                  <EllipsisDropdown items={item.items} />
+                ) : item.href ? (
+                  <BreadcrumbLink asChild>
+                    <Link href={item.href}>{item.label}</Link>
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
+            </Fragment>
+          ))}
       </BreadcrumbList>
     </Breadcrumb>
   );
