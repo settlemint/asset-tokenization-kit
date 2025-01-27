@@ -249,7 +249,7 @@ export function SignUpForm({
         </div>
         <div className="text-center text-sm">
           Already have an account?{' '}
-          <Link href={`/auth/signin?redirectUrl=${decodedRedirectUrl}`} className="underline underline-offset-4">
+          <Link href={`/auth/signin?rd=${decodedRedirectUrl}`} className="underline underline-offset-4">
             Sign in
           </Link>
         </div>
