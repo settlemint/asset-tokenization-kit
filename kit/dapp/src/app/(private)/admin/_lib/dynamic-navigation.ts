@@ -1,4 +1,4 @@
-import type { SidebarSection } from '@/components/layout/nav-main';
+import type { NavGroup, NavItem } from '@/components/layout/nav-main';
 import {
   theGraphClientStarterkits as theGraphClient,
   theGraphGraphqlStarterkits as theGraphGraphql,
@@ -33,19 +33,22 @@ const NavigationQuery = theGraphGraphql(
   [TokenFragment]
 );
 
-const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string) => {
-  const items = tokens.slice(0, 5).map((token) => ({
-    title: token.symbol ?? token.name ?? token.id,
-    url: `/admin/${type}/${token.id}`,
+const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string): NavItem[] => {
+  const items = tokens.slice(0, 5).map<NavItem>((token) => ({
+    type: 'Item',
+    label: token.symbol ?? token.name ?? token.id,
+    path: `/admin/${type}/${token.id}`,
   }));
 
-  return {
-    items,
-    more: {
-      enabled: tokens.length > 5,
-      url: `/admin/${type}`,
-    },
-  };
+  if (tokens.length > 5) {
+    items.push({
+      type: 'Item',
+      label: 'More...',
+      path: `/admin/${type}`,
+    });
+  }
+
+  return items;
 };
 
 const TOKEN_SECTIONS = [
@@ -75,33 +78,28 @@ const TOKEN_SECTIONS = [
   },
 ] as const;
 
-export async function createMainSideBarData(role: 'admin' | 'issuer' | 'user'): Promise<SidebarSection[]> {
+export async function createTokenManagementNavGroup(role: 'admin' | 'issuer' | 'user'): Promise<NavGroup | null> {
   const navigationData = await theGraphClient.request(NavigationQuery);
 
   if (role === 'user') {
-    return [];
+    return null;
   }
 
-  let firstSectionFound = false;
+  return {
+    type: 'Group',
+    groupTitle: 'Token management',
+    items: TOKEN_SECTIONS.reduce<NavItem[]>((acc, section) => {
+      const tokens = navigationData[section.key];
 
-  return [
-    {
-      title: 'Token Management',
-      items: TOKEN_SECTIONS.reduce<SidebarSection['items']>((acc, section) => {
-        const tokens = navigationData[section.key];
-
-        const { items, more } = createTokenItems(tokens, section.type);
-        acc.push({
-          title: section.title,
-          iconName: section.iconName,
-          open: !firstSectionFound,
-          items,
-          more,
-        });
-        firstSectionFound = true;
-
-        return acc;
-      }, []),
-    },
-  ];
+      const items = createTokenItems(tokens, section.type);
+      acc.push({
+        type: 'Item',
+        label: section.title,
+        path: `/admin/${section.type}`,
+        badge: tokens.length.toString(),
+        subItems: items,
+      });
+      return acc;
+    }, []),
+  };
 }

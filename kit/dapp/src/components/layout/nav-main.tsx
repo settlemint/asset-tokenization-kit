@@ -10,19 +10,20 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
-type NavItem = {
+export type NavItem = {
   type: 'Item';
   label: string;
   path: string;
-  icon?: LucideIcon;
-  badge?: number;
+  icon?: ReactNode;
+  badge?: string;
   subItems?: { label: string; path: string }[];
 };
 
-type NavGroup = {
+export type NavGroup = {
   type: 'Group';
   groupTitle: string;
   items: NavItem[];
@@ -39,7 +40,7 @@ function NavItemComponent({ item }: { item: NavItem }) {
       <SidebarMenuItem>
         <SidebarMenuButton asChild>
           <Link href={item.path}>
-            {Icon && <Icon className="size-4" />}
+            {Icon ?? null}
             <span>{item.label}</span>
             {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
           </Link>
@@ -54,10 +55,14 @@ function NavItemComponent({ item }: { item: NavItem }) {
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
-            {Icon && <Icon className="size-4" />}
-            <span>{item.label}</span>
-            {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
-            <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+            <div className="flex items-center gap-2">
+              {Icon ?? null}
+              <span>{item.label}</span>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
+              <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+            </div>
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
