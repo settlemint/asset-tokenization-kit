@@ -170,13 +170,6 @@ contract FixedYieldTest is Test {
         yieldSchedule.claimYield();
     }
 
-    function test_RevertAfterEnd() public {
-        vm.warp(endDate + 1);
-        vm.expectRevert(FixedYield.ScheduleExpired.selector);
-        vm.prank(user1);
-        yieldSchedule.calculateAccruedYield();
-    }
-
     function test_ZeroBalanceNoYield() public {
         vm.warp(startDate + INTERVAL);
         vm.expectRevert(FixedYield.NoYieldAvailable.selector);

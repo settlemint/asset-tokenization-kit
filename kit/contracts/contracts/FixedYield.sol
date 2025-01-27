@@ -227,7 +227,6 @@ contract FixedYield is AccessControl {
     function calculateAccruedYield(address holder) public view returns (uint256) {
         uint256 currentPeriod_ = currentPeriod();
         if (currentPeriod_ == 0) revert ScheduleNotActive();
-        if (block.timestamp > _endDate) revert ScheduleExpired();
 
         uint256 basis = _token.yieldBasis(holder);
         uint256 fromPeriod = _lastClaimedPeriod[holder] + 1;
