@@ -65,7 +65,12 @@ export async function getStableCoin(id: string) {
   return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(StableCoin, { id });
-      return data.stableCoins[0];
+      const stableCoin = data.stableCoins[0];
+
+      if (!stableCoin) {
+        throw new Error(`Stablecoin with id ${id} not found`);
+      }
+      return stableCoin;
     },
     [`stablecoin-${id}`],
     {

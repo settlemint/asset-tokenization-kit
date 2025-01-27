@@ -35,14 +35,10 @@ export default function CollapsedBreadcrumbs({
     href: index < routeSegments.length - 1 ? `/${routeSegments.slice(0, index + 1).join('/')}` : undefined,
   }));
 
-  console.log('items', items);
-
   const visibleItems =
     items.length <= maxVisibleItems
       ? items
       : [items[0], { label: '...', items: items.slice(1, -maxVisibleItems + 1) }, ...items.slice(-maxVisibleItems + 1)];
-
-  console.log('visibleItems', visibleItems);
 
   return (
     <Breadcrumb className={className}>
