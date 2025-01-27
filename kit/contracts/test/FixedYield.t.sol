@@ -7,8 +7,13 @@ import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
 
 contract FixedYieldTest is Test {
+    // Events we're testing against
+    event UnderlyingAssetTopUp(address indexed from, uint256 amount);
+    event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
+    event YieldClaimed(address indexed holder, uint256 amount, uint256 fromPeriod, uint256 toPeriod);
+
     // Constants for test configuration
-    uint256 private constant INITIAL_SUPPLY = 100; // 100.00 tokens
+    uint256 private constant INITIAL_SUPPLY = 30; // 30.00 tokens (10 for user1, 20 for user2)
     uint256 private constant YIELD_RATE = 500; // 5% yield rate in basis points
     uint256 private constant INTERVAL = 30 days;
     uint256 private constant YIELD_BASIS = 100;
@@ -337,5 +342,172 @@ contract FixedYieldTest is Test {
 
         // Verify last timestamp doesn't exceed end date
         assertLe(timestamps[timestamps.length - 1], endDate, "Last period exceeds end date");
+    }
+
+    function test_ConstructorValidation() public {
+        vm.warp(1 days);
+        uint256 newStartDate = block.timestamp + 1 days;
+        uint256 newEndDate = newStartDate + 365 days;
+
+        // Test zero address token
+        vm.expectRevert(FixedYield.InvalidToken.selector);
+        new FixedYield(address(0), owner, newStartDate, newEndDate, YIELD_RATE, INTERVAL);
+
+        // Test invalid start date
+        vm.expectRevert(FixedYield.InvalidStartDate.selector);
+        new FixedYield(address(token), owner, block.timestamp, newEndDate, YIELD_RATE, INTERVAL);
+
+        // Test invalid end date
+        vm.expectRevert(FixedYield.InvalidEndDate.selector);
+        new FixedYield(address(token), owner, newStartDate, newStartDate, YIELD_RATE, INTERVAL);
+
+        // Test zero rate
+        vm.expectRevert(FixedYield.InvalidRate.selector);
+        new FixedYield(address(token), owner, newStartDate, newEndDate, 0, INTERVAL);
+
+        // Test zero interval
+        vm.expectRevert(FixedYield.InvalidInterval.selector);
+        new FixedYield(address(token), owner, newStartDate, newEndDate, YIELD_RATE, 0);
+    }
+
+    function test_AccessControl() public {
+        vm.startPrank(user1);
+
+        // Test withdrawUnderlyingAsset fails for non-admin
+        vm.expectRevert();
+        yieldSchedule.withdrawUnderlyingAsset(user1, 100);
+
+        // Test withdrawAllUnderlyingAsset fails for non-admin
+        vm.expectRevert();
+        yieldSchedule.withdrawAllUnderlyingAsset(user1);
+
+        vm.stopPrank();
+
+        // Test withdrawAllUnderlyingAsset works for admin
+        vm.startPrank(owner);
+        yieldSchedule.withdrawAllUnderlyingAsset(owner);
+        assertEq(underlyingAsset.balanceOf(address(yieldSchedule)), 0);
+        vm.stopPrank();
+    }
+
+    function test_TotalClaimedUpdates() public {
+        // Setup: Transfer tokens to users
+        vm.startPrank(owner);
+        token.transfer(user1, toDecimals(10)); // 10.00 tokens
+        token.transfer(user2, toDecimals(20)); // 20.00 tokens
+        vm.stopPrank();
+
+        // Move to first period end
+        vm.warp(startDate);
+        vm.warp(block.timestamp + INTERVAL);
+
+        // Set historical balances
+        uint256[] memory periodEnds = yieldSchedule.allPeriods();
+        token.setHistoricalBalance(user1, periodEnds[0], toDecimals(10));
+        token.setHistoricalBalance(user2, periodEnds[0], toDecimals(20));
+
+        // Calculate expected initial unclaimed yield
+        uint256 expectedInitialYield = (toDecimals(30) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        assertEq(yieldSchedule.totalUnclaimedYield(), expectedInitialYield, "Initial unclaimed yield mismatch");
+
+        // User1 claims their yield
+        vm.prank(user1);
+        yieldSchedule.claimYield();
+
+        // Calculate remaining unclaimed yield (only user2's yield should remain)
+        uint256 expectedRemainingYield = (toDecimals(20) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        assertEq(yieldSchedule.totalUnclaimedYield(), expectedRemainingYield, "Remaining unclaimed yield mismatch");
+    }
+
+    function test_TotalUnclaimedYield() public {
+        // Setup: Transfer tokens to users
+        vm.startPrank(owner);
+        token.transfer(user1, toDecimals(10)); // 10.00 tokens
+        token.transfer(user2, toDecimals(20)); // 20.00 tokens
+        vm.stopPrank();
+
+        // Move through 3 periods
+        vm.warp(startDate);
+        vm.warp(block.timestamp + INTERVAL * 3);
+
+        // Set historical balances for all periods
+        uint256[] memory periodEnds = yieldSchedule.allPeriods();
+        for (uint256 i = 0; i < 3; i++) {
+            token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
+            token.setHistoricalBalance(user2, periodEnds[i], toDecimals(20));
+        }
+
+        // Calculate expected total unclaimed yield
+        uint256 expectedYield = (toDecimals(30) * YIELD_BASIS * YIELD_RATE * 3) / yieldSchedule.RATE_BASIS_POINTS();
+        assertEq(yieldSchedule.totalUnclaimedYield(), expectedYield, "Total unclaimed yield mismatch");
+    }
+
+    function test_ExpiredSchedule() public {
+        // Setup
+        vm.startPrank(owner);
+        token.transfer(user1, toDecimals(10));
+        vm.stopPrank();
+
+        // Move past end date
+        vm.warp(endDate + 1 days);
+
+        // Set historical balances for all periods
+        uint256[] memory periodEnds = yieldSchedule.allPeriods();
+        for (uint256 i = 0; i < periodEnds.length; i++) {
+            token.setHistoricalBalance(user1, periodEnds[i], toDecimals(10));
+        }
+
+        // Verify behavior
+        assertEq(yieldSchedule.currentPeriod(), periodEnds.length, "Current period should be the last period");
+        assertEq(yieldSchedule.lastCompletedPeriod(), periodEnds.length, "Last completed period should be final period");
+        assertEq(yieldSchedule.timeUntilNextPeriod(), 0, "No time until next period when expired");
+    }
+
+    function test_PeriodEndValidation() public {
+        // Test invalid period (0)
+        vm.expectRevert(FixedYield.InvalidPeriod.selector);
+        yieldSchedule.periodEnd(0);
+
+        // Test invalid period (too high)
+        uint256 totalPeriods = yieldSchedule.allPeriods().length;
+        vm.expectRevert(FixedYield.InvalidPeriod.selector);
+        yieldSchedule.periodEnd(totalPeriods + 1);
+    }
+
+    function test_EventEmission() public {
+        // Setup
+        vm.startPrank(owner);
+        token.transfer(user1, toDecimals(10));
+
+        // Test UnderlyingAssetTopUp event
+        uint256 topUpAmount = toDecimals(100);
+        underlyingAsset.mint(owner, topUpAmount);
+        underlyingAsset.approve(address(yieldSchedule), topUpAmount);
+
+        vm.expectEmit(true, true, false, true);
+        emit UnderlyingAssetTopUp(owner, topUpAmount);
+        yieldSchedule.topUpUnderlyingAsset(topUpAmount);
+
+        // Test UnderlyingAssetWithdrawn event
+        vm.expectEmit(true, true, false, true);
+        emit UnderlyingAssetWithdrawn(owner, topUpAmount);
+        yieldSchedule.withdrawUnderlyingAsset(owner, topUpAmount);
+        vm.stopPrank();
+
+        // Test YieldClaimed event
+        vm.warp(startDate + INTERVAL);
+        token.setHistoricalBalance(user1, startDate + INTERVAL, toDecimals(10));
+
+        vm.startPrank(owner);
+        underlyingAsset.mint(owner, topUpAmount);
+        underlyingAsset.approve(address(yieldSchedule), topUpAmount);
+        yieldSchedule.topUpUnderlyingAsset(topUpAmount);
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+        vm.expectEmit(true, true, false, true);
+        emit YieldClaimed(user1, (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS(), 1, 1);
+        yieldSchedule.claimYield();
+        vm.stopPrank();
     }
 }

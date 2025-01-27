@@ -140,6 +140,7 @@ contract FixedYield is AccessControl {
     /// @return The current period number (0 if schedule hasn't started)
     function currentPeriod() public view returns (uint256) {
         if (block.timestamp < _startDate) return 0;
+        if (block.timestamp >= _endDate) return _periodEndTimestamps.length;
         return ((block.timestamp - _startDate) / _interval) + 1;
     }
 
@@ -166,6 +167,10 @@ contract FixedYield is AccessControl {
     function timeUntilNextPeriod() public view returns (uint256) {
         if (block.timestamp < _startDate) {
             return _startDate - block.timestamp;
+        }
+
+        if (block.timestamp >= _endDate) {
+            return 0;
         }
 
         uint256 elapsedTime = block.timestamp - _startDate;
