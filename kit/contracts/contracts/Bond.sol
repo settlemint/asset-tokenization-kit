@@ -339,7 +339,7 @@ contract Bond is
     /// @param holder The address to check the balance for
     /// @param timestamp The timestamp to check the balance at
     /// @return The balance the holder had at the specified timestamp
-    function balanceAt(address holder, uint256 timestamp) public view returns (uint256) {
+    function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
         if (timestamp > block.timestamp) return 0;
         if (timestamp == block.timestamp) return balanceOf(holder);
 
