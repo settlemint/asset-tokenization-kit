@@ -5,7 +5,7 @@ import type { HardhatUserConfig } from 'hardhat/config';
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.28',
+    version: '0.8.27',
     settings: {
       evmVersion: 'paris',
       viaIR: false,

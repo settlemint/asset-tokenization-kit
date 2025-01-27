@@ -161,39 +161,11 @@ jobs:
           fi
           if [[ -n "$PUBLISH_TASKS" ]]; then
             bunx turbo run $PUBLISH_TASKS
+            bun run docker
           fi
         env:
           PUBLISH_NPM: true
           PUBLISH_DOCKER: true
-
-      - name: Docker meta
-        id: docker_meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ghcr.io/settlemint/codestudio-starterkit-asset-tokenization
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        id: build-and-push
-        with:
-          platforms: linux/amd64,linux/arm64
-          context: .
-          file: .github/Dockerfile
-          provenance: true
-          sbom: true
-          push: true
-          load: false
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Auto-commit updated package versions
         uses: stefanzweifel/git-auto-commit-action@v5

@@ -24,7 +24,8 @@ WORKDIR /usecase
 USER root
 
 RUN bun install --save-text-lockfile
-RUN cd kit/contracts && \
+RUN mkdir -p /root/.svm && \
+  cd kit/contracts && \
   bun dependencies && \
   bun run build
 
@@ -32,3 +33,5 @@ FROM busybox:1.37.0
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 COPY --from=build /usecase /usecase
+COPY --from=build /root/.svm /usecase-svm
+COPY --from=build /root/.cache /usecase-cache
