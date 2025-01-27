@@ -44,6 +44,13 @@ abstract contract ERC20Yield is Context {
     /// @return The token used for yield payments
     function yieldToken() public view virtual returns (IERC20);
 
+    /// @notice Returns the balance of tokens a holder had at a specific timestamp
+    /// @dev Override this function to implement historical balance tracking
+    /// @param holder The address to check the balance for
+    /// @param timestamp The timestamp to check the balance at
+    /// @return The balance the holder had at the specified timestamp
+    function balanceAt(address holder, uint256 timestamp) public view virtual returns (uint256);
+
     /// @notice Checks if an address can manage yield on this token
     /// @dev Override this function to implement permission checks
     /// @param manager The address to check

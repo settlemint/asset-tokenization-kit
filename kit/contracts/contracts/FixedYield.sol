@@ -199,25 +199,29 @@ contract FixedYield is AccessControl {
         if (currentPeriod_ == 0) revert ScheduleNotActive();
         if (block.timestamp > _endDate) revert ScheduleExpired();
 
-        // Get user's token balance
-        uint256 tokenBalance = IERC20(address(_token)).balanceOf(holder);
-        if (tokenBalance == 0) revert NoYieldAvailable();
-
         uint256 basis = _token.yieldBasis(holder);
         uint256 fromPeriod = _lastClaimedPeriod[holder] + 1;
         uint256 lastCompleted = lastCompletedPeriod();
 
         // Calculate yield for complete unclaimed periods
         uint256 completePeriodAmount = 0;
-        if (fromPeriod <= lastCompleted) {
-            uint256 completePeriods = lastCompleted - fromPeriod + 1;
-            completePeriodAmount = (tokenBalance * basis * _rate * completePeriods) / RATE_BASIS_POINTS;
+        for (uint256 period = fromPeriod; period <= lastCompleted; period++) {
+            uint256 periodEndTimestamp = _startDate + (period * _interval);
+            uint256 balance = _token.balanceAt(holder, periodEndTimestamp);
+            if (balance > 0) {
+                completePeriodAmount += (balance * basis * _rate) / RATE_BASIS_POINTS;
+            }
         }
 
-        // Calculate pro-rated yield for current period
-        uint256 periodStart = _startDate + ((currentPeriod_ - 1) * _interval);
-        uint256 timeInPeriod = block.timestamp - periodStart;
-        uint256 currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * RATE_BASIS_POINTS);
+        // Calculate pro-rated yield for current period if we're in one
+        uint256 tokenBalance = IERC20(address(_token)).balanceOf(holder);
+        uint256 currentPeriodAmount = 0;
+
+        if (tokenBalance > 0) {
+            uint256 periodStart = _startDate + ((currentPeriod_ - 1) * _interval);
+            uint256 timeInPeriod = block.timestamp - periodStart;
+            currentPeriodAmount = (tokenBalance * basis * _rate * timeInPeriod) / (_interval * RATE_BASIS_POINTS);
+        }
 
         return completePeriodAmount + currentPeriodAmount;
     }
@@ -237,27 +241,30 @@ contract FixedYield is AccessControl {
         uint256 fromPeriod = _lastClaimedPeriod[msg.sender] + 1;
         if (fromPeriod > lastPeriod) revert NoYieldAvailable();
 
-        // Get user's token balance
-        uint256 tokenBalance = IERC20(address(_token)).balanceOf(msg.sender);
-        if (tokenBalance == 0) revert NoYieldAvailable();
+        uint256 basis = _token.yieldBasis(msg.sender);
+        uint256 totalAmount = 0;
 
-        // Calculate yield
-        uint256 basis = ERC20Yield(_token).yieldBasis(msg.sender);
-        uint256 periodYield = (tokenBalance * basis * _rate) / RATE_BASIS_POINTS;
-        uint256 periods = lastPeriod - fromPeriod + 1;
-        uint256 amount = periodYield * periods;
+        // Calculate yield for each unclaimed period using historical balances
+        for (uint256 period = fromPeriod; period <= lastPeriod; period++) {
+            uint256 periodEndTimestamp = _startDate + (period * _interval);
+            uint256 balance = _token.balanceAt(msg.sender, periodEndTimestamp);
+            if (balance > 0) {
+                uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
+                totalAmount += periodYield;
+            }
+        }
 
-        if (amount == 0) revert NoYieldAvailable();
+        if (totalAmount == 0) revert NoYieldAvailable();
 
         // Update claimed periods before transfer
         _lastClaimedPeriod[msg.sender] = lastPeriod;
-        _totalClaimed += amount;
+        _totalClaimed += totalAmount;
 
-        // Transfer the yield using immutable _underlyingAsset
-        bool success = _underlyingAsset.transfer(msg.sender, amount);
+        // Transfer the yield
+        bool success = _underlyingAsset.transfer(msg.sender, totalAmount);
         if (!success) revert YieldTransferFailed();
 
-        emit YieldClaimed(msg.sender, amount, fromPeriod, lastPeriod);
+        emit YieldClaimed(msg.sender, totalAmount, fromPeriod, lastPeriod);
     }
 
     /// @notice Allows topping up the contract with underlying assets for yield payments
