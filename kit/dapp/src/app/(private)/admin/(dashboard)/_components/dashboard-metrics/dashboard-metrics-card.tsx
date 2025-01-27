@@ -32,7 +32,7 @@ interface DashboardMetricsProps {
   };
   users: {
     totalUsers: number;
-    newUsers: number;
+    usersInLast24Hours: number;
   };
   transactions: {
     totalTransactions: number;
@@ -54,7 +54,11 @@ export function DashboardMetricsCard({ tokens, users, transactions, network }: D
             value={tokens.totalSupply}
             subtext={tokens.breakdown.map((item) => `${item.supply.toLocaleString()} ${item.type}`).join(' | ')}
           />
-          <MetricItem label="Users" value={users.totalUsers} subtext={`${users.newUsers.toLocaleString()} new users`} />
+          <MetricItem
+            label="Users"
+            value={users.totalUsers}
+            subtext={`${users.usersInLast24Hours.toLocaleString()} new users`}
+          />
           <MetricItem
             label="Transactions"
             value={transactions.totalTransactions}

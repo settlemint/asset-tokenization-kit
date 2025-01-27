@@ -1,21 +1,16 @@
 import { DashboardMetricsCard } from './_components/dashboard-metrics/dashboard-metrics-card';
-import { getTokenSupplyData } from './_components/dashboard-metrics/data';
+import { getTokenSupplyData } from './_components/dashboard-metrics/token-supply/data';
+import { getUsersData } from './_components/dashboard-metrics/users/data';
 
 export default async function AdminDashboard() {
-  const tokenSupplyData = await getTokenSupplyData();
+  const [tokenSupplyData, usersData] = await Promise.all([getTokenSupplyData(), getUsersData()]);
 
   return (
     <div>
       <div>
         <DashboardMetricsCard
-          tokens={{
-            totalSupply: tokenSupplyData.totalSupply,
-            breakdown: tokenSupplyData.breakdown,
-          }}
-          users={{
-            totalUsers: 0,
-            newUsers: 0,
-          }}
+          tokens={tokenSupplyData}
+          users={usersData}
           transactions={{
             totalTransactions: 0,
             transactionsInLast24Hours: 0,
