@@ -1,6 +1,26 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+interface MetricItemProps {
+  label: string;
+  value: string | number;
+  subtext: string;
+  valueClassName?: string;
+}
+
+function MetricItem({ label, value, subtext, valueClassName }: MetricItemProps) {
+  return (
+    <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">
+      <p className="text-sm">{label}</p>
+      <p className={cn('my-2 font-bold text-2xl', valueClassName)}>
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </p>
+      <p className="text-muted-foreground text-xs">{subtext}</p>
+    </div>
+  );
+}
 
 interface DashboardMetricsProps {
   tokens: {
@@ -29,30 +49,23 @@ export function DashboardMetricsCard({ tokens, users, transactions, network }: D
     <Card>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 divide-y md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4">
-          <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">
-            <p className="text-sm">Total supply</p>
-            <p className="my-2 font-bold text-2xl">{tokens.totalSupply.toLocaleString()}</p>
-            <p className="text-muted-foreground text-xs">
-              {tokens.breakdown.map((item) => `${item.supply.toLocaleString()} ${item.type}`).join(' | ')}
-            </p>
-          </div>
-          <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">
-            <p className="text-sm">Users</p>
-            <p className="my-2 font-bold text-2xl">{users.totalUsers.toLocaleString()}</p>
-            <p className="text-muted-foreground text-xs">{users.newUsers.toLocaleString()} new users</p>
-          </div>
-          <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">
-            <p className="text-sm">Transactions</p>
-            <p className="my-2 font-bold text-2xl">{transactions.totalTransactions.toLocaleString()}</p>
-            <p className="text-muted-foreground text-xs">
-              {transactions.transactionsInLast24Hours.toLocaleString()} in last 24 hours
-            </p>
-          </div>
-          <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">
-            <p className="text-sm">Network</p>
-            <p className="my-2 font-bold text-2xl text-green-500">{network.status}</p>
-            <p className="text-muted-foreground text-xs">{network.message}</p>
-          </div>
+          <MetricItem
+            label="Token supply"
+            value={tokens.totalSupply}
+            subtext={tokens.breakdown.map((item) => `${item.supply.toLocaleString()} ${item.type}`).join(' | ')}
+          />
+          <MetricItem label="Users" value={users.totalUsers} subtext={`${users.newUsers.toLocaleString()} new users`} />
+          <MetricItem
+            label="Transactions"
+            value={transactions.totalTransactions}
+            subtext={`${transactions.transactionsInLast24Hours.toLocaleString()} in last 24 hours`}
+          />
+          <MetricItem
+            label="Network"
+            value={network.status}
+            subtext={network.message}
+            valueClassName="text-green-500"
+          />
         </div>
       </CardContent>
     </Card>
