@@ -67,10 +67,10 @@ export async function getStableCoin(id: string) {
       const data = await theGraphClientStarterkits.request(StableCoin, { id });
       return data.stableCoins[0];
     },
-    [TokenType.Stablecoin],
+    [`stablecoin-${id}`],
     {
       revalidate: 60,
-      tags: [TokenType.Stablecoin],
+      tags: [`stablecoin-${id}`],
     }
   )();
 }

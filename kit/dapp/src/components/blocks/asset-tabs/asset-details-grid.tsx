@@ -6,7 +6,7 @@ export function AssetDetailsGrid<Asset>({
   name,
   cells,
 }: {
-  data: Asset[];
+  data: Asset;
   icons: Record<string, ComponentType<{ className?: string }>>;
   name: string;
   cells: unknown;
