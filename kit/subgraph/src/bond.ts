@@ -2,9 +2,9 @@ import { Address, log, store } from '@graphprotocol/graph-ts';
 import {
   Account,
   BlockedAccount,
-  Event_BondRedeemed,
+  Event_BondRedemption,
   Event_Transfer,
-  Event_UnderlyingAssetTransfer,
+  Event_UnderlyingAssetMovement,
   Role,
 } from '../generated/schema';
 import {
@@ -220,12 +220,13 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
   bond.save();
 
   // Create event record
-  let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.emitter = bond.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.account = account.id;
-  eventTransfer.amount = event.params.amount; // Positive amount for top-up
-  eventTransfer.save();
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'TOP_UP';
+  eventMovement.account = account.id;
+  eventMovement.amount = event.params.amount; // Positive amount for top-up
+  eventMovement.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
@@ -240,12 +241,13 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
   bond.save();
 
   // Create event record
-  let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.emitter = bond.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.account = account.id;
-  eventTransfer.amount = event.params.amount.neg(); // Negative amount for withdrawal
-  eventTransfer.save();
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'WITHDRAW';
+  eventMovement.account = account.id;
+  eventMovement.amount = event.params.amount.neg(); // Negative amount for withdrawal
+  eventMovement.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
@@ -255,20 +257,29 @@ export function handleBondRedeemed(event: BondRedeemedEvent): void {
   let bond = fetchBond(event.address);
   let holder = fetchAccount(event.params.holder);
 
-  // Update total redeemed amount
-  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
-  // Update underlying balance
-  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
-  bond.save();
-
   // Create event record
-  let eventRedeemed = new Event_BondRedeemed(eventId(event));
+  let eventRedeemed = new Event_BondRedemption(eventId(event));
   eventRedeemed.emitter = bond.id;
   eventRedeemed.timestamp = event.block.timestamp;
   eventRedeemed.holder = holder.id;
   eventRedeemed.bondAmount = event.params.bondAmount;
   eventRedeemed.underlyingAmount = event.params.underlyingAmount;
   eventRedeemed.save();
+
+  // Create movement record
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'REDEEM';
+  eventMovement.account = holder.id;
+  eventMovement.amount = event.params.underlyingAmount.neg(); // Negative amount for redeem
+  eventMovement.save();
+
+  // Update total redeemed amount
+  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
+  // Update underlying balance
+  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
+  bond.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);

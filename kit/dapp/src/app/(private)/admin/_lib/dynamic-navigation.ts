@@ -14,7 +14,7 @@ const TokenFragment = theGraphGraphql(`
 `);
 
 const NavigationQuery = theGraphGraphql(
-    `
+  `
   query NavigationQuery {
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc) {
       ...TokenFragment
@@ -30,13 +30,13 @@ const NavigationQuery = theGraphGraphql(
     }
   }
 `,
-    [TokenFragment]
+  [TokenFragment]
 );
 
 const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string): NavItem[] => {
   const items = tokens.slice(0, 5).map<NavItem>((token) => ({
     label: token.symbol ?? token.name ?? token.id,
-    path: `/admin/${type}/${token.id}/details`,
+    path: `/admin/${type}/${token.id}`,
   }));
 
   if (tokens.length > 5) {

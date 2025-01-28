@@ -19,6 +19,7 @@ export function fetchBond(address: Address): Bond {
     let faceValue = endpoint.try_faceValue();
     let underlyingAsset = endpoint.try_underlyingAsset();
     let underlyingBalance = endpoint.try_underlyingAssetBalance();
+    let yieldSchedule = endpoint.try_yieldSchedule();
 
     const account = fetchAccount(address);
 
@@ -37,6 +38,7 @@ export function fetchBond(address: Address): Bond {
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalance = underlyingBalance.reverted ? BigInt.zero() : underlyingBalance.value;
     bond.asAccount = bond.id;
+    bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
     bond.save();
 
     account.asAsset = bond.id;
