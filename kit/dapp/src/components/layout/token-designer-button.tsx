@@ -10,37 +10,36 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
+import type { TokenTypeKey } from '@/types/token-types';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
-export type TokenType = 'stablecoin' | 'equity' | 'bond' | 'cryptocurrency';
-
 const TOKEN_CONFIGS = {
-  stablecoin: {
+  Stablecoin: {
     label: 'Stable coin',
     title: 'Design a new stable coin token',
     description: 'Digital assets pegged to a stable asset like USD',
   },
-  equity: {
+  Equity: {
     label: 'Equity',
     title: 'Design a new equity token',
     description: 'Digital assets representing ownership in a company',
   },
-  bond: {
+  Bond: {
     label: 'Bond',
     title: 'Design a new bond token',
     description: 'Digital assets representing a debt obligation',
   },
-  cryptocurrency: {
+  Cryptocurrency: {
     label: 'Cryptocurrency',
     title: 'Design a new cryptocurrency token',
     description: 'Digital assets representing a fully decentralized currency',
   },
-} as const satisfies Record<TokenType, { label: string; title: string; description: string }>;
+} as const satisfies Record<TokenTypeKey, { label: string; title: string; description: string }>;
 
 export function TokenDesignerButton() {
   const { state, isMobile } = useSidebar();
-  const [tokenType, setTokenType] = useState<TokenType | null>(null);
+  const [tokenType, setTokenType] = useState<TokenTypeKey | null>(null);
 
   return (
     <SidebarGroup>
@@ -58,7 +57,7 @@ export function TokenDesignerButton() {
           sideOffset={4}
         >
           {Object.entries(TOKEN_CONFIGS).map(([type, config]) => (
-            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as TokenType)}>
+            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as TokenTypeKey)}>
               {config.label}
             </DropdownMenuItem>
           ))}

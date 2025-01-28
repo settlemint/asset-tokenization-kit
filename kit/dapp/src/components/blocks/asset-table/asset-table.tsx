@@ -1,4 +1,5 @@
 import { getQueryClient } from '@/lib/react-query';
+import type { TokenTypeValue } from '@/types/token-types';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
 import type { ComponentType } from 'react';
@@ -6,7 +7,7 @@ import { Suspense } from 'react';
 import { AssetTableClient } from './asset-table-client';
 
 export type AssetTableProps<Asset> = {
-  type: string;
+  type: TokenTypeValue;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   icons?: Record<string, ComponentType<{ className?: string }>>;
