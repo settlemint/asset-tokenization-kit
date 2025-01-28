@@ -27,6 +27,7 @@ export type AssetFormProps<
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
   defaultValues?: DefaultValues<Infer<S>>;
+  onClose?: () => void;
 };
 
 export function AssetForm<
@@ -42,6 +43,7 @@ export function AssetForm<
   storeAction,
   resolverAction,
   defaultValues,
+  onClose,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -51,7 +53,7 @@ export function AssetForm<
     setMounted(true);
   }, []);
 
-  const { form, handleSubmitWithAction } = useHookFormAction(storeAction, resolverAction, {
+  const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
       onSuccess: (data) => {
         if (data.data) {
@@ -61,8 +63,12 @@ export function AssetForm<
             error: (error) => `Creation of ${data.input.name} (${data.input.symbol}) failed: ${error.message}`,
           });
         }
+        resetFormAndAction();
+        onClose?.();
       },
       onError: (data) => {
+        console.log(data);
+
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           if (data.error.serverError instanceof Error) {
@@ -70,7 +76,6 @@ export function AssetForm<
           } else if (typeof data.error.serverError === 'string') {
             errorMessage = data.error.serverError;
           }
-
           toast.error(`Server error: ${errorMessage}. Please try again or contact support if the issue persists.`);
         }
 
@@ -80,6 +85,8 @@ export function AssetForm<
             .join('\n');
           toast.error(`Validation errors:\n${errors}`);
         }
+        resetFormAndAction();
+        onClose?.();
       },
     },
     formProps: {

@@ -76,7 +76,7 @@ export function TokenDesignerButton() {
               {(() => {
                 switch (tokenType) {
                   case 'Cryptocurrency':
-                    return <CreateCryptocurrencyForm />;
+                    return <CreateCryptocurrencyForm onClose={() => setTokenType(null)} />;
                   default:
                     return <CreateTokenForm formId="create-token-form" tokenType={tokenType} />;
                 }
