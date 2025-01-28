@@ -67,8 +67,6 @@ export function AssetForm<
         onClose?.();
       },
       onError: (data) => {
-        console.log(data);
-
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           if (data.error.serverError instanceof Error) {
@@ -91,9 +89,8 @@ export function AssetForm<
     },
     formProps: {
       defaultValues,
-      mode: 'all',
+      mode: 'onSubmit',
       criteriaMode: 'all',
-      shouldFocusError: true,
     },
     errorMapProps: {
       joinBy: '\n',
@@ -137,7 +134,6 @@ export function AssetForm<
 
   return (
     <div className="space-y-6">
-      <h2 className="font-bold text-2xl">{title}</h2>
       <div className="container mt-8">
         <Card className="w-full pt-10">
           <CardContent>
