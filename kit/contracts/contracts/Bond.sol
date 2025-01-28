@@ -305,13 +305,6 @@ contract Bond is
         return _isin;
     }
 
-    /// @notice Sets the yield schedule for this bond
-    /// @dev Can only be called by an address with FINANCIAL_MANAGEMENT_ROLE
-    /// @param schedule The address of the yield schedule contract
-    function setYieldSchedule(address schedule) public override onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
-        super.setYieldSchedule(schedule);
-    }
-
     /// @notice Returns the basis for yield calculation
     /// @dev For bonds, the yield basis is the face value
     /// @return The face value as the basis for yield calculations

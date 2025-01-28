@@ -25,7 +25,6 @@ abstract contract ERC20Yield is Context {
     /// @dev Override this function to add additional access control if needed
     /// @param schedule The address of the yield schedule contract
     function setYieldSchedule(address schedule) public virtual {
-        if (!canManageYield(msg.sender)) revert NotAuthorized();
         if (schedule == address(0)) revert InvalidYieldSchedule();
         if (yieldSchedule != address(0)) revert YieldScheduleAlreadySet();
 

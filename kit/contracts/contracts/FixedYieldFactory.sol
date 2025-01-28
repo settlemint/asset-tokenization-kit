@@ -85,6 +85,7 @@ contract FixedYieldFactory {
         IERC20 underlyingAsset = token.yieldToken();
 
         // Set the yield schedule on the token
+        // is it the responsibility of the factory to set the yield schedule?
         token.setYieldSchedule(schedule);
 
         // Get period end timestamps from the newly created schedule

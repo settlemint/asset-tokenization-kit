@@ -4,6 +4,9 @@ import FixedYieldFactoryModule from './fixed-yield-factory';
 import StableCoinFactoryModule from './stable-coin-factory';
 
 const BondsModule = buildModule('BondsModule', (m) => {
+  // Get the deployer address which will be the owner
+  const deployer = m.getAccount(0);
+
   const { bondFactory } = m.useModule(BondFactoryModule);
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
   const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
@@ -12,6 +15,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
   const createStableCoin = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, '', collateralLivenessSeconds], {
     id: 'createStableCoin',
+    from: deployer,
   });
 
   // Get the StableCoin address from the creation event
@@ -30,6 +34,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
     ['US Treasury Bond', 'USTB', 2, 'US0378331005', oneYearFromNow, faceValue, stableCoin],
     {
       id: 'createBondUSTB',
+      from: deployer,
     }
   );
 
@@ -43,12 +48,14 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const yieldRate = 500; // 5% annual yield (in basis points)
   const yieldInterval = 30 * 24 * 60 * 60; // 30 days in seconds
 
+  // Create the yield schedule after granting the role
   const createYieldSchedule = m.call(
     fixedYieldFactory,
     'create',
     [ustb, startDate, oneYearFromNow, yieldRate, yieldInterval],
     {
       id: 'createYieldSchedule',
+      from: deployer,
     }
   );
 
