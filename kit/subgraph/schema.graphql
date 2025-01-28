@@ -53,12 +53,6 @@ enum UnderlyingAssetMovementAction {
   REDEEM
 }
 
-interface UnderlyingAssetHolder {
-  id: Bytes!
-  underlyingAsset: Bytes!
-  underlyingBalance: BigInt!
-}
-
 type Event_UnderlyingAssetMovement @entity(immutable: true) {
   id: Bytes!
   emitter: UnderlyingAssetHolder!
@@ -66,6 +60,13 @@ type Event_UnderlyingAssetMovement @entity(immutable: true) {
   action: UnderlyingAssetMovementAction!
   account: Account!
   amount: BigInt!
+}
+
+interface UnderlyingAssetHolder {
+  id: Bytes!
+  underlyingAsset: Bytes!
+  underlyingBalance: BigInt!
+  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
 }
 
 type Bond implements Asset & UnderlyingAssetHolder @entity {
