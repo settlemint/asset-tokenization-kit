@@ -99,7 +99,7 @@ export function createActionsColumn<T extends BaseAsset>(
     header: () => 'Action',
     cell: ({ row }) => {
       return (
-        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}/details`}>
+        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>
           {rowActions?.(row.original)}
         </DataTableRowActions>
       );

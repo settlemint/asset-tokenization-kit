@@ -23,6 +23,8 @@ export default function CollapsedBreadcrumbs({
   className,
   routeSegments,
 }: BreadcrumbsProps) {
+  const _maxVisibleItems = maxVisibleItems + (hideRoot ? 1 : 0);
+
   if (!routeSegments.length) {
     return null;
   }
@@ -36,9 +38,13 @@ export default function CollapsedBreadcrumbs({
   }));
 
   const visibleItems =
-    items.length <= maxVisibleItems
+    items.length <= _maxVisibleItems
       ? items
-      : [items[0], { label: '...', items: items.slice(1, -maxVisibleItems + 1) }, ...items.slice(-maxVisibleItems + 1)];
+      : [
+          items[0],
+          { label: '...', items: items.slice(1, -_maxVisibleItems + 1) },
+          ...items.slice(-_maxVisibleItems + 1),
+        ];
 
   return (
     <Breadcrumb className={className}>
