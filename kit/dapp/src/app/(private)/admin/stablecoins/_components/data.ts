@@ -1,6 +1,4 @@
 'use server';
-
-import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-columns';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { TokenType } from '@/types/token-types';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
@@ -30,7 +28,11 @@ const StableCoins = theGraphGraphqlStarterkits(
   [StableCoinFragment]
 );
 
-export type StableCoinAsset = FragmentOf<typeof StableCoinFragment> & BaseAsset;
+export type StableCoinAsset = FragmentOf<typeof StableCoinFragment> & {
+  isin?: string | null;
+  totalSupplyExact?: string;
+  collateralExact?: string;
+};
 
 export async function getStableCoins() {
   return await unstable_cache(

@@ -1,38 +1,17 @@
 import { getQueryClient } from '@/lib/react-query';
+import type { TokenTypeValue } from '@/types/token-types';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import type { ComponentType } from 'react';
-import { Suspense } from 'react';
-import { AssetDetailsClient } from './asset-details-client';
+import { type ReactNode, Suspense } from 'react';
+import { AssetDetailsTabs } from './asset-details-tab';
 
-export type AssetDetailsProps<
-  Asset extends {
-    id: string;
-    name: string | null;
-    symbol: string | null;
-    decimals: number;
-    totalSupply: string;
-    collateral: string;
-    paused: boolean;
-  },
-> = {
+export type AssetDetailsProps<Asset> = {
   id: string;
+  children?: ReactNode;
+  type: TokenTypeValue;
   dataAction: (id: string) => Promise<Asset>;
-  type: string;
-  refetchInterval?: number;
-  icons?: Record<string, ComponentType<{ className?: string }>>;
 };
 
-export async function AssetDetails<
-  Asset extends {
-    id: string;
-    name: string | null;
-    symbol: string | null;
-    decimals: number;
-    totalSupply: string;
-    collateral: string;
-    paused: boolean;
-  },
->({ id, dataAction, type, refetchInterval, icons }: AssetDetailsProps<Asset>) {
+export async function AssetDetails<Asset>({ id, dataAction, type, children }: AssetDetailsProps<Asset>) {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
@@ -42,19 +21,11 @@ export async function AssetDetails<
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
-        <AssetDetailsClient
-          id={id}
-          refetchInterval={refetchInterval}
-          type={type}
-          dataAction={
-            dataAction as (
-              id: string
-            ) => Promise<Asset & { totalSupplyExact: string; collateralExact: string; isin: string | null }>
-          }
-          icons={icons}
-        />
-      </Suspense>
+      <AssetDetailsTabs type={type} id={id}>
+        <Suspense>
+          <div className="AssetDetails">{children}</div>
+        </Suspense>
+      </AssetDetailsTabs>
     </HydrationBoundary>
   );
 }

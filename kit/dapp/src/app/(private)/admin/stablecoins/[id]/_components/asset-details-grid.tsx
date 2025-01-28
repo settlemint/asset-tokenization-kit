@@ -1,24 +1,11 @@
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { shortHex } from '@/lib/hex';
 import type { ComponentType } from 'react';
-import { AddressAvatar } from '../address-avatar/address-avatar';
+import type { StableCoinAsset } from '../../_components/data';
 
-export function AssetDetailsGrid<
-  Asset extends {
-    id: string;
-    name: string | null;
-    symbol: string | null;
-    isin: string | null;
-    totalSupply: string;
-    totalSupplyExact: string;
-    collateral: string;
-    collateralExact: string;
-  },
->({
+export function AssetDetailsGrid<Asset extends StableCoinAsset>({
   data,
-  icons,
-  name,
-  cells,
 }: {
   data: Asset;
   icons: Record<string, ComponentType<{ className?: string }>>;
