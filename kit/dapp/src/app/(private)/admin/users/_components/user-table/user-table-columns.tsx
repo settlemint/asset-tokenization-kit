@@ -7,6 +7,7 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
+import { CopyToClipboard } from '@/components/ui/copy';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -83,9 +84,12 @@ export const columns = [
     cell: ({ getValue }) => (
       <DataTableColumnCell>
         {getValue() && (
-          <EvmAddress address={getValue()}>
-            <EvmAddressBalances address={getValue()} />
-          </EvmAddress>
+          <div className="flex items-center">
+            <EvmAddress address={getValue()}>
+              <EvmAddressBalances address={getValue()} />
+            </EvmAddress>
+            <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
+          </div>
         )}
       </DataTableColumnCell>
     ),
