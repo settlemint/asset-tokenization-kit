@@ -77,14 +77,34 @@ export const auth = betterAuth({
   plugins: [nextCookies(), admin(), organization(), passkey(), openAPI(), emailHarmony()],
 });
 
-export async function getAuthenticatedUser() {
+async function getSession() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  if (!session) {
+    throw new Error('User does not have a session');
+  }
+
+  return session;
+}
+
+export async function getAuthenticatedUser() {
+  const session = await getSession();
 
   if (!session?.user) {
     throw new Error('User not authenticated');
   }
 
   return session.user;
+}
+
+export async function getActiveOrganizationId() {
+  const session = await getSession();
+
+  if (!session?.session?.activeOrganizationId) {
+    throw new Error('User does not have an active organization');
+  }
+
+  return session.session.activeOrganizationId;
 }
