@@ -45,49 +45,54 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.from = cryptoCurrency.id;
   eventTransfer.to = cryptoCurrency.id;
   eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+  eventTransfer.value = toDecimals(eventTransfer.valueExact, cryptoCurrency.decimals);
 
   if (event.params.from.equals(Address.zero())) {
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.plus(eventTransfer.valueExact);
-    cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact);
+    cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact, cryptoCurrency.decimals);
   } else {
     from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(cryptoCurrency.id, from), cryptoCurrency.id, from.id);
+    let fromBalance = fetchBalance(
+      balanceId(cryptoCurrency.id, from),
+      cryptoCurrency.id,
+      from.id,
+      cryptoCurrency.decimals
+    );
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact);
+    fromBalance.value = toDecimals(fromBalance.valueExact, cryptoCurrency.decimals);
     fromBalance.save();
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
 
     // Record account activity for sender
-    recordAccountActivityData(from, cryptoCurrency.id, fromBalance.valueExact, false);
+    recordAccountActivityData(from, cryptoCurrency.id, fromBalance.valueExact, cryptoCurrency.decimals, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     cryptoCurrency.totalSupplyExact = cryptoCurrency.totalSupplyExact.minus(eventTransfer.valueExact);
-    cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact);
+    cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact, cryptoCurrency.decimals);
   } else {
     to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(cryptoCurrency.id, to), cryptoCurrency.id, to.id);
+    let toBalance = fetchBalance(balanceId(cryptoCurrency.id, to), cryptoCurrency.id, to.id, cryptoCurrency.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact);
+    toBalance.value = toDecimals(toBalance.valueExact, cryptoCurrency.decimals);
     toBalance.save();
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
 
     // Record account activity for receiver
-    recordAccountActivityData(to, cryptoCurrency.id, toBalance.valueExact, false);
+    recordAccountActivityData(to, cryptoCurrency.id, toBalance.valueExact, cryptoCurrency.decimals, false);
   }
 
   eventTransfer.save();
 
   // Record transfer data
-  recordTransferData(cryptoCurrency.id, eventTransfer.valueExact, from, to);
+  recordTransferData(cryptoCurrency.id, eventTransfer.valueExact, cryptoCurrency.decimals, from, to);
 
   // Record supply data
-  recordAssetSupplyData(cryptoCurrency.id, cryptoCurrency.totalSupplyExact, 'CryptoCurrency');
+  recordAssetSupplyData(cryptoCurrency.id, cryptoCurrency.totalSupplyExact, cryptoCurrency.decimals, 'CryptoCurrency');
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {

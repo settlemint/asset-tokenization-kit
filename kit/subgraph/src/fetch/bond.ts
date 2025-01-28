@@ -27,7 +27,7 @@ export function fetchBond(address: Address): Bond {
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
     bond.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
     bond.maturityDate = maturityDate.reverted ? BigInt.zero() : maturityDate.value;
     bond.isMatured = maturityDate.reverted ? false : isMatured.value;
     bond.paused = paused.reverted ? false : paused.value;

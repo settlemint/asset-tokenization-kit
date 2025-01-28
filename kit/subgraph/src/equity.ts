@@ -44,49 +44,49 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.from = event.params.from;
   eventTransfer.to = event.params.to;
   eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+  eventTransfer.value = toDecimals(eventTransfer.valueExact, equity.decimals);
 
   if (event.params.from.equals(Address.zero())) {
     equity.totalSupplyExact = equity.totalSupplyExact.plus(eventTransfer.valueExact);
-    equity.totalSupply = toDecimals(equity.totalSupplyExact);
+    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
   } else {
     from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(equity.id, from), equity.id, from.id);
+    let fromBalance = fetchBalance(balanceId(equity.id, from), equity.id, from.id, equity.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact);
+    fromBalance.value = toDecimals(fromBalance.valueExact, equity.decimals);
     fromBalance.save();
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
 
     // Record account activity for sender
-    recordAccountActivityData(from, equity.id, fromBalance.valueExact, false);
+    recordAccountActivityData(from, equity.id, fromBalance.valueExact, equity.decimals, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     equity.totalSupplyExact = equity.totalSupplyExact.minus(eventTransfer.valueExact);
-    equity.totalSupply = toDecimals(equity.totalSupplyExact);
+    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
   } else {
     to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(equity.id, to), equity.id, to.id);
+    let toBalance = fetchBalance(balanceId(equity.id, to), equity.id, to.id, equity.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact);
+    toBalance.value = toDecimals(toBalance.valueExact, equity.decimals);
     toBalance.save();
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
 
     // Record account activity for receiver
-    recordAccountActivityData(to, equity.id, toBalance.valueExact, false);
+    recordAccountActivityData(to, equity.id, toBalance.valueExact, equity.decimals, false);
   }
 
   eventTransfer.save();
 
   // Record transfer data
-  recordTransferData(equity.id, eventTransfer.valueExact, from, to);
+  recordTransferData(equity.id, eventTransfer.valueExact, equity.decimals, from, to);
 
   // Record supply data
-  recordAssetSupplyData(equity.id, equity.totalSupplyExact, 'Equity');
+  recordAssetSupplyData(equity.id, equity.totalSupplyExact, equity.decimals, 'Equity');
 
   // Record equity category data
   recordEquityCategoryData(equity);
@@ -120,10 +120,10 @@ export function handleUserBlocked(event: UserBlockedEvent): void {
   }
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id);
+  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id, equity.decimals);
 
   // Record account activity with blocked status
-  recordAccountActivityData(account, equity.id, balance.valueExact, true);
+  recordAccountActivityData(account, equity.id, balance.valueExact, equity.decimals, true);
 
   // Record category data on state change
   recordEquityCategoryData(equity);
@@ -135,10 +135,10 @@ export function handleUserUnblocked(event: UserUnblockedEvent): void {
   store.remove('BlockedAccount', id.toHexString());
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id);
+  let balance = fetchBalance(balanceId(equity.id, account), equity.id, account.id, equity.decimals);
 
   // Record account activity with unblocked status
-  recordAccountActivityData(account, equity.id, balance.valueExact, false);
+  recordAccountActivityData(account, equity.id, balance.valueExact, equity.decimals, false);
 
   // Record category data on state change
   recordEquityCategoryData(equity);
