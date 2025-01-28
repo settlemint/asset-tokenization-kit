@@ -1,13 +1,13 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ReactNode } from 'react';
 import { type DefaultValues, FormProvider, type Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
-import { waitForTransactionMining } from './wait-for-tranaction';
 
 export type AssetFormProps<
   ServerError,
