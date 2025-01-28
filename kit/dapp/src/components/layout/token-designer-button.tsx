@@ -1,5 +1,6 @@
 'use client';
 
+import { CreateCryptocurrencyForm } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/form';
 import { CreateTokenForm } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -72,7 +73,14 @@ export function TokenDesignerButton() {
                 <SheetTitle>{TOKEN_CONFIGS[tokenType].title}</SheetTitle>
                 <SheetDescription>{TOKEN_CONFIGS[tokenType].description}</SheetDescription>
               </SheetHeader>
-              <CreateTokenForm formId="create-token-form" tokenType={tokenType} />
+              {(() => {
+                switch (tokenType) {
+                  case 'Cryptocurrency':
+                    return <CreateCryptocurrencyForm />;
+                  default:
+                    return <CreateTokenForm formId="create-token-form" tokenType={tokenType} />;
+                }
+              })()}
             </>
           )}
         </SheetContent>

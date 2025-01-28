@@ -12,3 +12,5 @@ export function AssetFormStep({ children, title }: PropsWithChildren<AssetFormSt
     </div>
   );
 }
+
+AssetFormStep.displayName = 'AssetFormStep';

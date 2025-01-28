@@ -29,14 +29,14 @@ const CreateCryptocurrency = portalGraphql(`
 export const createCryptocurrency = actionClient
   .schema(CreateCryptoCurrencyFormSchema)
   .outputSchema(CreateCryptoCurrencyOutputSchema)
-  .action(async ({ parsedInput: { name, symbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
+  .action(async ({ parsedInput: { assetName, symbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
     const data = await theGraphClientStarterkits.request(CreateCryptocurrency, {
       address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
       from: user.wallet,
-      name,
+      name: assetName,
       symbol,
       decimals,
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),

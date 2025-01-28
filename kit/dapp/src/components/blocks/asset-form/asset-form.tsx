@@ -2,14 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, type FormField } from '@/components/ui/form';
+import { Form, FormField } from '@/components/ui/form';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
-import type { ComponentProps, JSXElementConstructor, ReactElement, ReactNode } from 'react';
-import { Children, isValidElement, useState } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import { Children, isValidElement, useEffect, useState } from 'react';
 import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -20,12 +21,12 @@ function extractFieldNames(children: ReactNode): Path<ComponentProps<typeof Form
   Children.forEach(children, (child: ReactNode) => {
     if (isValidElement(child)) {
       const element = child as ReactElement<{ name?: string; children?: ReactNode }>;
-      // Check if it's a FormField component
-      if ((element.type as JSXElementConstructor<unknown>)?.name === 'FormField' && element.props.name) {
+
+      // Check if it's a FormField component by checking its render output
+      if (element.type === FormField && element.props.name) {
         fields.push(element.props.name);
-      }
-      // Recursively check children
-      if (element.props.children) {
+      } else if (element.props.children) {
+        // If not a FormField, check its children
         fields.push(...extractFieldNames(element.props.children));
       }
     }
@@ -46,7 +47,7 @@ export type AssetFormProps<
   title: string;
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  defaultValues: DefaultValues<Infer<S>>;
+  defaultValues?: DefaultValues<Infer<S>>;
 };
 
 export function AssetForm<
@@ -63,21 +64,25 @@ export function AssetForm<
   resolverAction,
   defaultValues,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
+  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = children.length;
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Extract field names for each step
   const stepFields = children.map((step) => extractFieldNames(step)) as Path<Infer<S>>[][];
-
+  console.log(stepFields);
   const { form, handleSubmitWithAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
       onSuccess: (data) => {
         if (data.data) {
           toast.promise(waitForTransactionMining(data.data), {
-            loading: `Transaction to create ${data.input.tokenName} (${data.input.tokenSymbol}) waiting to be mined`,
-            success: `${data.input.tokenName} (${data.input.tokenSymbol}) created successfully on chain`,
-            error: (error) =>
-              `Creation of ${data.input.tokenName} (${data.input.tokenSymbol}) failed: ${error.message}`,
+            loading: `Transaction to create ${data.input.name} (${data.input.symbol}) waiting to be mined`,
+            success: `${data.input.name} (${data.input.symbol}) created successfully on chain`,
+            error: (error) => `Creation of ${data.input.name} (${data.input.symbol}) failed: ${error.message}`,
           });
         }
       },
@@ -102,9 +107,10 @@ export function AssetForm<
       },
     },
     formProps: {
-      defaultValues: defaultValues,
+      defaultValues,
+      mode: 'all',
+      criteriaMode: 'all',
       shouldFocusError: true,
-      shouldUseNativeValidation: true,
     },
     errorMapProps: {
       joinBy: '\n',
@@ -113,8 +119,20 @@ export function AssetForm<
 
   const handleNext = async () => {
     const currentStepFields = stepFields[currentStep];
-    const isValid = await form.trigger(currentStepFields as Path<Infer<S>>[]);
-    if (isValid) {
+    if (!currentStepFields?.length) {
+      return;
+    }
+
+    // Mark all fields as touched to show validation messages
+    for (const field of currentStepFields) {
+      const value = form.getValues(field);
+      form.setValue(field, value, { shouldValidate: true, shouldTouch: true });
+    }
+
+    // Trigger validation for all fields in the current step
+    const results = await Promise.all(currentStepFields.map((field) => form.trigger(field, { shouldFocus: true })));
+    // Only proceed if all validations pass
+    if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
   };
@@ -124,6 +142,30 @@ export function AssetForm<
   };
 
   const isLastStep = currentStep === totalSteps - 1;
+
+  if (!mounted) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-48" />
+        <div className="container mt-8">
+          <Card className="w-full pt-10">
+            <CardContent>
+              <div className="space-y-6">
+                <div className="mb-8 flex gap-2">
+                  {Array.from({ length: totalSteps }).map((_, index) => (
+                    <div key={index} className="h-1.5 flex-1 rounded-full bg-muted" />
+                  ))}
+                </div>
+                <div className="min-h-[400px]">
+                  <Skeleton className="h-[400px]" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

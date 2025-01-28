@@ -14,9 +14,6 @@ export function CreateCryptocurrencyForm() {
       title="Create Cryptocurrency"
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
-      defaultValues={{
-        decimals: 18,
-      }}
     >
       <Basics />
       <Configuration />
