@@ -1,4 +1,3 @@
-import { AssetFormStep } from '@/components/blocks/asset-form/asset-form-step';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -9,24 +8,16 @@ export function Basics() {
   const { control } = useFormContext<CreateCryptoCurrencyFormType>();
 
   return (
-    <AssetFormStep title="Basics">
+    <div>
       <FormField
         control={control}
         name="assetName"
         defaultValue=""
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="after:ml-0.5 after:text-red-500 after:content-['\*']">Name</FormLabel>
+            <FormLabel>Name</FormLabel>
             <FormControl>
-              <Input
-                placeholder="Bitcoin"
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                data-form-type="other"
-                {...field}
-              />
+              <Input placeholder="Bitcoin" {...field} />
             </FormControl>
             <FormDescription>This is the name of the asset.</FormDescription>
             <FormMessage />
@@ -39,17 +30,9 @@ export function Basics() {
         defaultValue=""
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="after:ml-0.5 after:text-red-500 after:content-['\*']">Symbol</FormLabel>
+            <FormLabel>Symbol</FormLabel>
             <FormControl>
-              <Input
-                placeholder="BTC"
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-                spellCheck="false"
-                data-form-type="other"
-                {...field}
-              />
+              <Input placeholder="BTC" {...field} />
             </FormControl>
             <FormDescription>This is the symbol of the asset.</FormDescription>
             <FormMessage />
@@ -62,7 +45,7 @@ export function Basics() {
         defaultValue={18}
         render={({ field: { value, onChange, ...field } }) => (
           <FormItem>
-            <FormLabel className="after:ml-0.5 after:text-red-500 after:content-['\*']">Decimals</FormLabel>
+            <FormLabel>Decimals</FormLabel>
             <FormControl>
               <Input
                 placeholder="18"
@@ -97,6 +80,8 @@ export function Basics() {
           </FormItem>
         )}
       />
-    </AssetFormStep>
+    </div>
   );
 }
+
+Basics.validatedFields = ['assetName', 'symbol', 'decimals', 'private'] as const;

@@ -1,39 +1,18 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormField } from '@/components/ui/form';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import { Form } from '@/components/ui/form';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import { Children, isValidElement, useEffect, useState } from 'react';
+import type { ComponentType, ReactElement } from 'react';
+import { useEffect, useState } from 'react';
 import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
-
-// Helper to extract field names from FormField components
-function extractFieldNames(children: ReactNode): Path<ComponentProps<typeof FormField>['name']>[] {
-  const fields: Path<ComponentProps<typeof FormField>['name']>[] = [];
-
-  Children.forEach(children, (child: ReactNode) => {
-    if (isValidElement(child)) {
-      const element = child as ReactElement<{ name?: string; children?: ReactNode }>;
-
-      // Check if it's a FormField component by checking its render output
-      if (element.type === FormField && element.props.name) {
-        fields.push(element.props.name);
-      } else if (element.props.children) {
-        // If not a FormField, check its children
-        fields.push(...extractFieldNames(element.props.children));
-      }
-    }
-  });
-
-  return fields;
-}
+import { AssetFormButton } from './asset-form-button';
+import { AssetFormSkeleton } from './asset-form-skeleton';
 
 export type AssetFormProps<
   ServerError,
@@ -43,7 +22,7 @@ export type AssetFormProps<
   CBAVE,
   FormContext = unknown,
 > = {
-  children: ReactElement[];
+  children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   title: string;
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
@@ -72,9 +51,6 @@ export function AssetForm<
     setMounted(true);
   }, []);
 
-  // Extract field names for each step
-  const stepFields = children.map((step) => extractFieldNames(step)) as Path<Infer<S>>[][];
-  console.log(stepFields);
   const { form, handleSubmitWithAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
       onSuccess: (data) => {
@@ -118,20 +94,25 @@ export function AssetForm<
   });
 
   const handleNext = async () => {
-    const currentStepFields = stepFields[currentStep];
-    if (!currentStepFields?.length) {
+    const CurrentStep = children[currentStep].type as (typeof children)[number]['type'];
+    const fieldsToValidate = CurrentStep.validatedFields;
+
+    if (!fieldsToValidate?.length) {
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       return;
     }
 
-    // Mark all fields as touched to show validation messages
-    for (const field of currentStepFields) {
-      const value = form.getValues(field);
-      form.setValue(field, value, { shouldValidate: true, shouldTouch: true });
+    // Mark fields as touched
+    for (const field of fieldsToValidate) {
+      const value = form.getValues(field as Path<Infer<S>>);
+      form.setValue(field as Path<Infer<S>>, value, { shouldValidate: true, shouldTouch: true });
     }
 
-    // Trigger validation for all fields in the current step
-    const results = await Promise.all(currentStepFields.map((field) => form.trigger(field, { shouldFocus: true })));
-    // Only proceed if all validations pass
+    // Validate fields
+    const results = await Promise.all(
+      fieldsToValidate.map((field) => form.trigger(field as Path<Infer<S>>, { shouldFocus: true }))
+    );
+
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
@@ -144,27 +125,7 @@ export function AssetForm<
   const isLastStep = currentStep === totalSteps - 1;
 
   if (!mounted) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="container mt-8">
-          <Card className="w-full pt-10">
-            <CardContent>
-              <div className="space-y-6">
-                <div className="mb-8 flex gap-2">
-                  {Array.from({ length: totalSteps }).map((_, index) => (
-                    <div key={index} className="h-1.5 flex-1 rounded-full bg-muted" />
-                  ))}
-                </div>
-                <div className="min-h-[400px]">
-                  <Skeleton className="h-[400px]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return <AssetFormSkeleton totalSteps={totalSteps} />;
   }
 
   return (
@@ -184,39 +145,18 @@ export function AssetForm<
                 }}
               >
                 {/* Step indicator */}
-                <div className="mb-8 flex gap-2">
-                  {children.map((_, index) => (
-                    <div
-                      key={index}
-                      className={cn(
-                        'h-1.5 flex-1 rounded-full transition-colors duration-200',
-                        index <= currentStep ? 'bg-primary' : 'bg-muted'
-                      )}
-                    />
-                  ))}
-                </div>
+                <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
 
                 {/* Current step content */}
                 <div className="min-h-[400px]">{children[currentStep]}</div>
 
                 {/* Navigation buttons */}
-                <div className="mt-8 flex justify-between">
-                  {currentStep > 0 && (
-                    <Button type="button" variant="outline" onClick={handlePrev}>
-                      Previous
-                    </Button>
-                  )}
-
-                  <div className="ml-auto">
-                    {isLastStep ? (
-                      <Button type="submit">Create Asset</Button>
-                    ) : (
-                      <Button type="button" onClick={handleNext}>
-                        Next
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <AssetFormButton
+                  currentStep={currentStep}
+                  handlePrev={handlePrev}
+                  isLastStep={isLastStep}
+                  handleNext={handleNext}
+                />
               </form>
             </Form>
           </CardContent>

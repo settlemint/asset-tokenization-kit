@@ -1,4 +1,3 @@
-import { AssetFormStep } from '@/components/blocks/asset-form/asset-form-step';
 import { CardDescription, CardTitle } from '@/components/ui/card';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
@@ -13,7 +12,7 @@ export function Summary() {
   });
 
   return (
-    <AssetFormStep title="Summary">
+    <div>
       <div className="mt-6 rounded-lg border p-4">
         <h3 className="mb-4 font-semibold">Token Basics</h3>
         <dl className="space-y-2">
@@ -75,6 +74,8 @@ export function Summary() {
           )}
         />
       </div>
-    </AssetFormStep>
+    </div>
   );
 }
+
+Summary.validatedFields = ['pincode'] as const;

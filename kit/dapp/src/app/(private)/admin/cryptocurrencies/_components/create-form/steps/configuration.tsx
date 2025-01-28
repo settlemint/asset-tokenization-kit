@@ -1,4 +1,3 @@
-import { AssetFormStep } from '@/components/blocks/asset-form/asset-form-step';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useFormContext } from 'react-hook-form';
@@ -8,7 +7,7 @@ export function Configuration() {
   const { control } = useFormContext<CreateCryptoCurrencyFormType>();
 
   return (
-    <AssetFormStep title="Configuration">
+    <div>
       <FormField
         control={control}
         name="initialSupply"
@@ -17,13 +16,21 @@ export function Configuration() {
           <FormItem>
             <FormLabel className="after:ml-0.5 after:text-red-500 after:content-['\*']">Initial supply</FormLabel>
             <FormControl>
-              <Input placeholder="18" type="number" {...field} />
+              <Input
+                placeholder="18"
+                type="number"
+                {...field}
+                onChange={(e) => field.onChange(Number(e.target.value))}
+                value={field.value}
+              />
             </FormControl>
             <FormDescription>This is the initial supply of the asset allocated to the issuer.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
-    </AssetFormStep>
+    </div>
   );
 }
+
+Configuration.validatedFields = ['initialSupply'] as const;
