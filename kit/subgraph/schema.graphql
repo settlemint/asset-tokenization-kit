@@ -70,8 +70,8 @@ type Event_UnderlyingAssetMovement @entity(immutable: true) {
 
 type Bond implements Asset & UnderlyingAssetHolder @entity {
   id: Bytes!
-  name: String!
-  symbol: String!
+  name: String
+  symbol: String
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
