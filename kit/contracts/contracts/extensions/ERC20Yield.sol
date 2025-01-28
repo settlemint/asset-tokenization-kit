@@ -32,11 +32,12 @@ abstract contract ERC20Yield is Context {
         emit YieldScheduleSet(schedule);
     }
 
-    /// @notice Returns the basis for yield calculation
-    /// @dev Override this function to specify how yield should be calculated
-    /// @param holder The address to get the yield basis for
-    /// @return The basis amount for yield calculations
-    function yieldBasis(address holder) public view virtual returns (uint256);
+    /// @notice Returns the basis amount used to calculate yield per token unit
+    /// @dev Override this function to define the yield calculation basis. For example, face value for bonds or token
+    /// value for shares
+    /// @param holder The address to get the yield basis for, allowing for holder-specific basis amounts
+    /// @return The basis amount per token unit used in yield calculations
+    function yieldBasisPerUnit(address holder) public view virtual returns (uint256);
 
     /// @notice Returns the token used for yield payments
     /// @dev Override this function to specify which token is used for yield payments

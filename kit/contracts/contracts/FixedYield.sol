@@ -206,7 +206,7 @@ contract FixedYield is AccessControl {
 
         // Get total supply and basis for yield calculation
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
-        uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
+        uint256 basis = ERC20Yield(_token).yieldBasisPerUnit(address(0));
 
         // Calculate yield for all completed periods
         uint256 periodYield = (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
@@ -226,7 +226,7 @@ contract FixedYield is AccessControl {
 
         // Get total supply and basis for yield calculation
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
-        uint256 basis = ERC20Yield(_token).yieldBasis(address(0));
+        uint256 basis = ERC20Yield(_token).yieldBasisPerUnit(address(0));
 
         // Calculate yield for one period
         return (totalSupply * basis * _rate) / RATE_BASIS_POINTS;
@@ -239,7 +239,7 @@ contract FixedYield is AccessControl {
         uint256 currentPeriod_ = currentPeriod();
         if (currentPeriod_ == 0) revert ScheduleNotActive();
 
-        uint256 basis = _token.yieldBasis(holder);
+        uint256 basis = _token.yieldBasisPerUnit(holder);
         uint256 fromPeriod = _lastClaimedPeriod[holder] + 1;
         uint256 lastCompleted = lastCompletedPeriod();
 
@@ -280,7 +280,7 @@ contract FixedYield is AccessControl {
         uint256 fromPeriod = _lastClaimedPeriod[msg.sender] + 1;
         if (fromPeriod > lastPeriod) revert NoYieldAvailable();
 
-        uint256 basis = _token.yieldBasis(msg.sender);
+        uint256 basis = _token.yieldBasisPerUnit(msg.sender);
         uint256 totalAmount = 0;
 
         // Create array for all periods in range (including zero amounts)

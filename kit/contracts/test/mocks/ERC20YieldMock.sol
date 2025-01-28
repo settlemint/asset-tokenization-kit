@@ -7,7 +7,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
-    uint256 private immutable _yieldBasis;
+    uint256 private immutable _yieldBasisPerUnit;
     IERC20 private immutable _yieldToken;
 
     // Mapping: holder => timestamp => balance
@@ -20,18 +20,18 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         string memory symbol,
         uint256 initialSupply,
         address yieldToken_,
-        uint256 yieldBasis_
+        uint256 yieldBasisPerUnit_
     )
         ERC20(name, symbol)
         Ownable(msg.sender)
     {
         _mint(msg.sender, initialSupply);
-        _yieldBasis = yieldBasis_;
+        _yieldBasisPerUnit = yieldBasisPerUnit_;
         _yieldToken = IERC20(yieldToken_);
     }
 
-    function yieldBasis(address) public view override returns (uint256) {
-        return _yieldBasis;
+    function yieldBasisPerUnit(address) public view override returns (uint256) {
+        return _yieldBasisPerUnit;
     }
 
     function yieldToken() public view override returns (IERC20) {
