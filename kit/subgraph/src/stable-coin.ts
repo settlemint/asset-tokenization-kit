@@ -70,7 +70,7 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.from = stableCoin.id;
   eventTransfer.to = stableCoin.id;
   eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+  eventTransfer.value = toDecimals(eventTransfer.valueExact, stableCoin.decimals);
 
   if (event.params.from.equals(Address.zero())) {
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(eventTransfer.valueExact);
