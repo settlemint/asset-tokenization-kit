@@ -21,7 +21,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin = new StableCoin(address);
     stableCoin.name = name.reverted ? '' : name.value;
     stableCoin.symbol = symbol.reverted ? '' : symbol.value;
-    stableCoin.decimals = decimals.reverted ? -1 : decimals.value;
+    stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
     stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
