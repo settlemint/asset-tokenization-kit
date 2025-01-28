@@ -1,13 +1,38 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Form, type FormField } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
-import type { ReactNode } from 'react';
-import { type DefaultValues, FormProvider, type Resolver } from 'react-hook-form';
+import type { ComponentProps, JSXElementConstructor, ReactElement, ReactNode } from 'react';
+import { Children, isValidElement, useState } from 'react';
+import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
+
+// Helper to extract field names from FormField components
+function extractFieldNames(children: ReactNode): Path<ComponentProps<typeof FormField>['name']>[] {
+  const fields: Path<ComponentProps<typeof FormField>['name']>[] = [];
+
+  Children.forEach(children, (child: ReactNode) => {
+    if (isValidElement(child)) {
+      const element = child as ReactElement<{ name?: string; children?: ReactNode }>;
+      // Check if it's a FormField component
+      if ((element.type as JSXElementConstructor<unknown>)?.name === 'FormField' && element.props.name) {
+        fields.push(element.props.name);
+      }
+      // Recursively check children
+      if (element.props.children) {
+        fields.push(...extractFieldNames(element.props.children));
+      }
+    }
+  });
+
+  return fields;
+}
 
 export type AssetFormProps<
   ServerError,
@@ -15,10 +40,9 @@ export type AssetFormProps<
   BAS extends readonly Schema[],
   CVE,
   CBAVE,
-  // biome-ignore lint/suspicious/noExplicitAny: type coming from react-hook-form
-  FormContext = any,
+  FormContext = unknown,
 > = {
-  children: ReactNode[];
+  children: ReactElement[];
   title: string;
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
@@ -31,8 +55,7 @@ export function AssetForm<
   BAS extends readonly Schema[],
   CVE,
   CBAVE,
-  // biome-ignore lint/suspicious/noExplicitAny: type coming from react-hook-form
-  FormContext = any,
+  FormContext = unknown,
 >({
   children,
   title,
@@ -40,7 +63,13 @@ export function AssetForm<
   resolverAction,
   defaultValues,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
-  const { form } = useHookFormAction(storeAction, resolverAction, {
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = children.length;
+
+  // Extract field names for each step
+  const stepFields = children.map((step) => extractFieldNames(step)) as Path<Infer<S>>[][];
+
+  const { form, handleSubmitWithAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
       onSuccess: (data) => {
         if (data.data) {
@@ -75,11 +104,26 @@ export function AssetForm<
     formProps: {
       defaultValues: defaultValues,
       shouldFocusError: true,
+      shouldUseNativeValidation: true,
     },
     errorMapProps: {
       joinBy: '\n',
     },
   });
+
+  const handleNext = async () => {
+    const currentStepFields = stepFields[currentStep];
+    const isValid = await form.trigger(currentStepFields as Path<Infer<S>>[]);
+    if (isValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+    }
+  };
+
+  const handlePrev = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const isLastStep = currentStep === totalSteps - 1;
 
   return (
     <div className="space-y-6">
@@ -87,7 +131,52 @@ export function AssetForm<
       <div className="container mt-8">
         <Card className="w-full pt-10">
           <CardContent>
-            <FormProvider {...form}>{children}</FormProvider>
+            <Form {...form}>
+              <form
+                onSubmit={(e) => {
+                  if (!isLastStep) {
+                    e.preventDefault();
+                    return;
+                  }
+                  handleSubmitWithAction(e);
+                }}
+              >
+                {/* Step indicator */}
+                <div className="mb-8 flex gap-2">
+                  {children.map((_, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        'h-1.5 flex-1 rounded-full transition-colors duration-200',
+                        index <= currentStep ? 'bg-primary' : 'bg-muted'
+                      )}
+                    />
+                  ))}
+                </div>
+
+                {/* Current step content */}
+                <div className="min-h-[400px]">{children[currentStep]}</div>
+
+                {/* Navigation buttons */}
+                <div className="mt-8 flex justify-between">
+                  {currentStep > 0 && (
+                    <Button type="button" variant="outline" onClick={handlePrev}>
+                      Previous
+                    </Button>
+                  )}
+
+                  <div className="ml-auto">
+                    {isLastStep ? (
+                      <Button type="submit">Create Asset</Button>
+                    ) : (
+                      <Button type="button" onClick={handleNext}>
+                        Next
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>

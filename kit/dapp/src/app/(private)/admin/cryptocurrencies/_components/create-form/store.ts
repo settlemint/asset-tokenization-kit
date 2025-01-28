@@ -8,6 +8,7 @@ import { actionClient } from '@/lib/safe-action';
 import { portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits } from '@/lib/settlemint/the-graph';
 import type { Address } from 'viem';
+import { parseUnits } from 'viem';
 import { CreateCryptoCurrencyFormSchema } from './schema';
 
 const CreateCryptocurrency = portalGraphql(`
@@ -28,19 +29,19 @@ const CreateCryptocurrency = portalGraphql(`
 export const createCryptocurrency = actionClient
   .schema(CreateCryptoCurrencyFormSchema)
   .outputSchema(CreateCryptoCurrencyOutputSchema)
-  .action(async ({ parsedInput: { tokenName, tokenSymbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
+  .action(async ({ parsedInput: { name, symbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
     const data = await theGraphClientStarterkits.request(CreateCryptocurrency, {
       address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
       from: user.wallet,
-      name: tokenName,
-      symbol: tokenSymbol,
+      name,
+      symbol,
       decimals,
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
       gasLimit: '5000000',
-      initialSupply,
+      initialSupply: parseUnits(initialSupply.toString(), decimals).toString(),
       metadata: {
         private: isPrivate,
         organization: organizationId,
