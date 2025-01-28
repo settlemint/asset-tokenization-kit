@@ -46,44 +46,61 @@ interface Asset {
   roles: [AssetRole!]! @derivedFrom(field: "asset")
 }
 
-type Bond implements Asset @entity {
+enum UnderlyingAssetMovementAction {
+  TOP_UP
+  WITHDRAW
+  CLAIM
+  REDEEM
+}
+
+type Event_UnderlyingAssetMovement @entity(immutable: true) {
   id: Bytes!
-  asAccount: Account!
+  emitter: UnderlyingAssetHolder!
+  timestamp: BigInt!
+  action: UnderlyingAssetMovementAction!
+  account: Account!
+  amount: BigInt!
+}
+
+interface UnderlyingAssetHolder {
+  id: Bytes!
+  underlyingAsset: Bytes!
+  underlyingBalance: BigInt!
+  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+}
+
+type Bond implements Asset & UnderlyingAssetHolder @entity {
+  id: Bytes!
   name: String
   symbol: String
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
-  isin: String!
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
   faceValue: BigInt!
+  isin: String!
   underlyingAsset: Bytes!
   redeemedAmount: BigInt!
-  redeemedAmountByHolder: [Event_BondRedeemed!]! @derivedFrom(field: "emitter")
   underlyingBalance: BigInt!
-  underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
+  asAccount: Account!
+  yieldSchedule: FixedYield
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "asset")
+  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+  redemptions: [Event_BondRedemption!]! @derivedFrom(field: "emitter")
+  metrics: [BondMetricsData!]! @derivedFrom(field: "bond")
 }
 
-type Event_BondRedeemed implements BondEvent @entity(immutable: true) {
+type Event_BondRedemption implements BondEvent @entity(immutable: true) {
   id: Bytes!
   emitter: Bond!
   timestamp: BigInt!
   holder: Account!
   bondAmount: BigInt!
   underlyingAmount: BigInt!
-}
-
-type Event_UnderlyingAssetTransfer implements BondEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Bond!
-  timestamp: BigInt!
-  account: Account!
-  amount: BigInt! # Positive for top-up, negative for withdrawal
 }
 
 type Equity implements Asset @entity {
@@ -118,6 +135,7 @@ type StableCoin implements Asset @entity {
   collateral: BigDecimal!
   collateralExact: BigInt!
   paused: Boolean!
+  metrics: [StableCoinMetricsData!]! @derivedFrom(field: "stableCoin")
 }
 
 type CryptoCurrency implements Asset @entity {
@@ -369,4 +387,51 @@ type EquityCategoryStats
   category: String! # dimension
   equityClass: String! # dimension
   totalEquities: Int8! @aggregate(fn: "count", cumulative: true)
+}
+
+type FixedYield implements UnderlyingAssetHolder @entity {
+  id: Bytes!
+  token: Bytes!
+  underlyingAsset: Bytes!
+  startDate: BigInt!
+  endDate: BigInt!
+  rate: BigInt!
+  interval: BigInt!
+  totalClaimed: BigInt!
+  unclaimedYield: BigInt!
+  underlyingBalance: BigInt!
+  periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
+  yieldClaims: [Event_YieldClaimed!]! @derivedFrom(field: "emitter")
+  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+  metrics: [YieldMetricsData!]! @derivedFrom(field: "schedule")
+}
+
+type YieldPeriod @entity {
+  id: String!
+  schedule: FixedYield!
+  periodId: BigInt!
+  startDate: BigInt!
+  endDate: BigInt!
+  rate: BigInt!
+  totalClaimed: BigInt!
+}
+
+type Event_YieldClaimed @entity {
+  id: Bytes!
+  emitter: FixedYield!
+  timestamp: BigInt!
+  holder: Account!
+  amount: BigInt!
+  fromPeriodId: BigInt!
+  toPeriodId: BigInt!
+}
+
+type YieldMetricsData @entity {
+  id: String!
+  schedule: FixedYield!
+  timestamp: BigInt!
+  currentPeriodId: BigInt!
+  totalClaimed: BigInt!
+  unclaimedYield: BigInt!
+  underlyingBalance: BigInt!
 }
