@@ -86,7 +86,6 @@ type Bond implements Asset & UnderlyingAssetHolder @entity {
   asAccount: Account!
   yieldSchedule: FixedYield
   balances: [Balance!]! @derivedFrom(field: "asset")
-  blockedAccounts: [BlockedAccount!]! @derivedFrom(field: "asset")
   roles: [AssetRole!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "asset")
   underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
