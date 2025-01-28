@@ -10,7 +10,14 @@ contract FixedYieldTest is Test {
     // Events we're testing against
     event UnderlyingAssetTopUp(address indexed from, uint256 amount);
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-    event YieldClaimed(address indexed holder, uint256 amount, uint256 fromPeriod, uint256 toPeriod);
+    event YieldClaimed(
+        address indexed holder,
+        uint256 totalAmount,
+        uint256 fromPeriod,
+        uint256 toPeriod,
+        uint256[] periodAmounts,
+        uint256 unclaimedYield
+    );
 
     // Constants for test configuration
     uint256 private constant INITIAL_SUPPLY = 30; // 30.00 tokens (10 for user1, 20 for user2)
@@ -498,15 +505,22 @@ contract FixedYieldTest is Test {
         vm.warp(startDate + INTERVAL);
         token.setHistoricalBalance(user1, startDate + INTERVAL, toDecimals(10));
 
-        vm.startPrank(owner);
-        underlyingAsset.mint(owner, topUpAmount);
-        underlyingAsset.approve(address(yieldSchedule), topUpAmount);
-        yieldSchedule.topUpUnderlyingAsset(topUpAmount);
-        vm.stopPrank();
+        // Calculate expected yield
+        uint256 expectedYield = (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS();
+        uint256[] memory periodAmounts = new uint256[](1);
+        periodAmounts[0] = expectedYield;
 
         vm.startPrank(user1);
         vm.expectEmit(true, true, false, true);
-        emit YieldClaimed(user1, (toDecimals(10) * YIELD_BASIS * YIELD_RATE) / yieldSchedule.RATE_BASIS_POINTS(), 1, 1);
+        emit YieldClaimed(
+            user1,
+            expectedYield,
+            1, // fromPeriod
+            1, // toPeriod
+            periodAmounts,
+            yieldSchedule.totalUnclaimedYield() - expectedYield // totalUnclaimedYield is before the claim and since we
+                // just claimed 1 period, it should be the total minus the claimed period
+        );
         yieldSchedule.claimYield();
         vm.stopPrank();
     }

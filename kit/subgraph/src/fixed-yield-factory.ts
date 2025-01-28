@@ -14,8 +14,8 @@ export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
     event.params.endDate.toString(),
     event.params.rate.toString(),
     event.params.interval.toString(),
-    event.params.scheduleCount.toString(),
     event.params.periods.length.toString(),
+    event.params.scheduleCount.toString(),
   ]);
 
   // Create the schedule entity

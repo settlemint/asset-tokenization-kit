@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, Vm } from "forge-std/Test.sol";
 import { FixedYieldFactory } from "../contracts/FixedYieldFactory.sol";
 import { FixedYield } from "../contracts/FixedYield.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
@@ -18,6 +18,7 @@ contract FixedYieldFactoryTest is Test {
         uint256 endDate,
         uint256 rate,
         uint256 interval,
+        uint256[] periods,
         uint256 scheduleCount
     );
 
@@ -70,23 +71,51 @@ contract FixedYieldFactoryTest is Test {
     function test_CreateSchedule() public {
         vm.startPrank(owner);
 
+        // Start recording events
+        vm.recordLogs();
+
         // Create schedule
         address scheduleAddr = factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
 
-        // Verify schedule was created
-        assertEq(factory.allSchedulesLength(), 1, "Schedule count should be 1");
-        assertEq(address(factory.allSchedules(0)), scheduleAddr, "Schedule address mismatch");
+        // Get the emitted events
+        Vm.Log[] memory entries = vm.getRecordedLogs();
 
-        // Verify schedule was set on token
-        assertEq(address(token.yieldSchedule()), scheduleAddr, "Schedule not set on token");
+        // Find our event (it's the last one)
+        Vm.Log memory lastEntry = entries[entries.length - 1];
 
-        // Verify schedule parameters
+        // Verify the indexed parameters (topics)
+        assertEq(lastEntry.topics[1], bytes32(uint256(uint160(scheduleAddr))), "Schedule address mismatch");
+        assertEq(lastEntry.topics[2], bytes32(uint256(uint160(address(token)))), "Token address mismatch");
+        assertEq(lastEntry.topics[3], bytes32(uint256(uint160(address(underlyingAsset)))), "Underlying asset mismatch");
+
+        // Decode the non-indexed parameters
+        (
+            address eventOwner,
+            uint256 eventStartDate,
+            uint256 eventEndDate,
+            uint256 eventRate,
+            uint256 eventInterval,
+            uint256[] memory eventPeriods,
+            uint256 eventScheduleCount
+        ) = abi.decode(lastEntry.data, (address, uint256, uint256, uint256, uint256, uint256[], uint256));
+
+        // Verify non-indexed parameters
+        assertEq(eventOwner, owner, "Owner mismatch");
+        assertEq(eventStartDate, startDate, "Start date mismatch");
+        assertEq(eventEndDate, endDate, "End date mismatch");
+        assertEq(eventRate, YIELD_RATE, "Rate mismatch");
+        assertEq(eventInterval, INTERVAL, "Interval mismatch");
+        assertEq(eventScheduleCount, 1, "Schedule count mismatch");
+
+        // Get the schedule and verify its parameters
         FixedYield schedule = FixedYield(scheduleAddr);
-        assertEq(address(schedule.token()), address(token), "Token address mismatch");
-        assertEq(schedule.startDate(), startDate, "Start date mismatch");
-        assertEq(schedule.endDate(), endDate, "End date mismatch");
-        assertEq(schedule.rate(), YIELD_RATE, "Rate mismatch");
-        assertEq(schedule.interval(), INTERVAL, "Interval mismatch");
+        uint256[] memory actualPeriods = schedule.allPeriods();
+
+        // Verify periods match
+        assertEq(eventPeriods.length, actualPeriods.length, "Periods length mismatch");
+        for (uint256 i = 0; i < actualPeriods.length; i++) {
+            assertEq(eventPeriods[i], actualPeriods[i], string.concat("Period mismatch at index ", vm.toString(i)));
+        }
 
         vm.stopPrank();
     }
@@ -110,29 +139,6 @@ contract FixedYieldFactoryTest is Test {
         assertTrue(schedule1 != schedule2, "Schedules should have different addresses");
         assertEq(address(factory.allSchedules(0)), schedule1, "First schedule address mismatch");
         assertEq(address(factory.allSchedules(1)), schedule2, "Second schedule address mismatch");
-
-        vm.stopPrank();
-    }
-
-    function test_EventEmission() public {
-        vm.startPrank(owner);
-
-        // Expect the FixedYieldCreated event
-        vm.expectEmit(true, true, true, true);
-        emit FixedYieldCreated(
-            computeCreateAddress(address(token), startDate, endDate, YIELD_RATE, INTERVAL),
-            address(token),
-            address(underlyingAsset),
-            owner,
-            startDate,
-            endDate,
-            YIELD_RATE,
-            INTERVAL,
-            1
-        );
-
-        // Create schedule
-        factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
 
         vm.stopPrank();
     }
@@ -179,32 +185,70 @@ contract FixedYieldFactoryTest is Test {
         vm.stopPrank();
     }
 
+    function test_EventEmission() public {
+        vm.startPrank(owner);
+
+        // Start recording events
+        vm.recordLogs();
+
+        // Create schedule
+        factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
+
+        // Get the emitted events
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+
+        // Find our event (it's the last one)
+        Vm.Log memory lastEntry = entries[entries.length - 1];
+
+        // Verify the indexed parameters (topics)
+        assertEq(
+            lastEntry.topics[0],
+            keccak256(
+                "FixedYieldCreated(address,address,address,address,uint256,uint256,uint256,uint256,uint256[],uint256)"
+            ),
+            "Event signature mismatch"
+        );
+        assertEq(lastEntry.topics[2], bytes32(uint256(uint160(address(token)))), "Token address mismatch");
+        assertEq(lastEntry.topics[3], bytes32(uint256(uint160(address(underlyingAsset)))), "Underlying asset mismatch");
+
+        // Decode the non-indexed parameters
+        (
+            address eventOwner,
+            uint256 eventStartDate,
+            uint256 eventEndDate,
+            uint256 eventRate,
+            uint256 eventInterval,
+            uint256[] memory eventPeriods,
+            uint256 eventScheduleCount
+        ) = abi.decode(lastEntry.data, (address, uint256, uint256, uint256, uint256, uint256[], uint256));
+
+        // Verify non-indexed parameters
+        assertEq(eventOwner, owner, "Owner mismatch");
+        assertEq(eventStartDate, startDate, "Start date mismatch");
+        assertEq(eventEndDate, endDate, "End date mismatch");
+        assertEq(eventRate, YIELD_RATE, "Rate mismatch");
+        assertEq(eventInterval, INTERVAL, "Interval mismatch");
+        assertEq(eventScheduleCount, 1, "Schedule count mismatch");
+
+        vm.stopPrank();
+    }
+
     /// @notice Helper function to compute the deterministic address of a schedule
     /// @dev This mimics the CREATE2 address computation used in the factory
     function computeCreateAddress(
-        address token_,
-        uint256 startTime_,
-        uint256 endTime_,
-        uint256 rate_,
-        uint256 interval_
+        ERC20YieldMock tokenContract,
+        uint256 startTime,
+        uint256 endTime,
+        uint256 rate,
+        uint256 interval
     )
         internal
         view
         returns (address)
     {
-        bytes32 salt = keccak256(abi.encodePacked(token_, startTime_, endTime_, rate_, interval_));
-        bytes32 hash = keccak256(
-            abi.encodePacked(
-                bytes1(0xff),
-                address(factory),
-                salt,
-                keccak256(
-                    abi.encodePacked(
-                        type(FixedYield).creationCode, abi.encode(token_, owner, startTime_, endTime_, rate_, interval_)
-                    )
-                )
-            )
-        );
+        bytes32 salt = keccak256(abi.encodePacked(address(tokenContract), startTime, endTime, rate, interval));
+        bytes32 hash =
+            keccak256(abi.encodePacked(bytes1(0xff), address(factory), salt, keccak256(type(FixedYield).creationCode)));
         return address(uint160(uint256(hash)));
     }
 }

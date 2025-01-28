@@ -29,8 +29,8 @@ contract FixedYieldFactory {
     /// @param endDate The end date of the schedule
     /// @param rate The yield rate in basis points
     /// @param interval The interval between distributions
-    /// @param scheduleCount The total number of schedules created so far
     /// @param periods Array of timestamps when each period ends
+    /// @param scheduleCount The total number of schedules created so far
     event FixedYieldCreated(
         address indexed schedule,
         address indexed token,
@@ -40,8 +40,8 @@ contract FixedYieldFactory {
         uint256 endDate,
         uint256 rate,
         uint256 interval,
-        uint256 scheduleCount,
-        uint256[] periods
+        uint256[] periods,
+        uint256 scheduleCount
     );
 
     /// @notice Array of all fixed yield schedules created by this factory
@@ -88,7 +88,7 @@ contract FixedYieldFactory {
         token.setYieldSchedule(schedule);
 
         // Get period end timestamps from the newly created schedule
-        uint256[] memory periodEndTimestamps = FixedYield(schedule).allPeriods();
+        uint256[] memory allPeriods = FixedYield(schedule).allPeriods();
 
         emit FixedYieldCreated(
             schedule,
@@ -99,8 +99,8 @@ contract FixedYieldFactory {
             endTime,
             rate,
             interval,
-            allSchedules.length + 1,
-            periodEndTimestamps
+            allPeriods,
+            allSchedules.length + 1
         );
         allSchedules.push(FixedYield(schedule));
         return schedule;
