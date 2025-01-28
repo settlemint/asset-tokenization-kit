@@ -48,25 +48,28 @@ interface Asset {
 
 type Bond implements Asset @entity {
   id: Bytes!
-  asAccount: Account!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
-  isin: String!
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
   faceValue: BigInt!
+  isin: String!
   underlyingAsset: Bytes!
   redeemedAmount: BigInt!
-  redeemedAmountByHolder: [Event_BondRedeemed!]! @derivedFrom(field: "emitter")
   underlyingBalance: BigInt!
-  underlyingTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
+  asAccount: Account!
+  yieldSchedule: FixedYield
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  blockedAccounts: [BlockedAccount!]! @derivedFrom(field: "asset")
+  roles: [Role!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "asset")
+  underlyingAssetTransfers: [Event_UnderlyingAssetTransfer!]! @derivedFrom(field: "emitter")
+  redemptions: [Event_BondRedeemed!]! @derivedFrom(field: "emitter")
+  metrics: [BondMetricsData!]! @derivedFrom(field: "bond")
 }
 
 type Event_BondRedeemed implements BondEvent @entity(immutable: true) {
@@ -118,6 +121,7 @@ type StableCoin implements Asset @entity {
   collateral: BigDecimal!
   collateralExact: BigInt!
   paused: Boolean!
+  metrics: [StableCoinMetricsData!]! @derivedFrom(field: "stableCoin")
 }
 
 type CryptoCurrency implements Asset @entity {
@@ -369,4 +373,54 @@ type EquityCategoryStats
   category: String! # dimension
   equityClass: String! # dimension
   totalEquities: Int8! @aggregate(fn: "count", cumulative: true)
+}
+
+type FixedYield @entity {
+  id: Bytes!
+  token: Bytes!
+  underlyingAsset: Bytes!
+  startDate: BigInt!
+  endDate: BigInt!
+  rate: BigInt!
+  interval: BigInt!
+  currentPeriodId: BigInt!
+  periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
+  yieldClaims: [Event_YieldClaimed!]! @derivedFrom(field: "emitter")
+  metrics: [YieldMetricsData!]! @derivedFrom(field: "schedule")
+}
+
+type YieldPeriod @entity {
+  id: String!
+  schedule: FixedYield!
+  periodId: BigInt!
+  startDate: BigInt!
+  endDate: BigInt!
+  rate: BigInt!
+  totalClaimed: BigInt!
+}
+
+type Event_YieldClaimed @entity {
+  id: String!
+  emitter: FixedYield!
+  timestamp: BigInt!
+  holder: Account!
+  amount: BigInt!
+  fromPeriodId: BigInt!
+  toPeriodId: BigInt!
+}
+
+
+type YieldMetricsData @entity {
+  id: String!
+  schedule: FixedYield!
+  timestamp: BigInt!
+  currentPeriodId: BigInt!
+  totalClaimed: BigInt!
+}
+
+type YieldMetricsStats @entity {
+  id: String!
+  schedule: FixedYield!
+  totalClaimed: BigInt!
+  lastUpdated: BigInt!
 }

@@ -12,6 +12,9 @@ import {
   StableCoin,
   StableCoinMetricsData,
   TransferData,
+  YieldMetricsData,
+  YieldMetricsStats,
+  YieldPeriod,
 } from '../../generated/schema';
 import { toDecimals } from './decimals';
 
@@ -84,4 +87,35 @@ export function recordEquityCategoryData(equity: Equity): void {
   categoryData.category = equity.equityCategory;
   categoryData.equityClass = equity.equityClass;
   categoryData.save();
+}
+
+export function recordYieldMetricsData(schedule: FixedYield, timestamp: BigInt): void {
+  let id = schedule.id.concat(timestamp.toString());
+  let data = new YieldMetricsData(id);
+  data.schedule = schedule.id;
+  data.timestamp = timestamp;
+  data.currentPeriodId = schedule.currentPeriodId;
+
+  // Calculate total claimed yield across all periods
+  let totalClaimed = BigInt.zero();
+  for (let i = 0; i <= schedule.currentPeriodId.toI32(); i++) {
+    let periodId = schedule.id.concat(i.toString());
+    let period = YieldPeriod.load(periodId);
+    if (period) {
+      totalClaimed = totalClaimed.plus(period.totalClaimed);
+    }
+  }
+  data.totalClaimed = totalClaimed;
+  data.save();
+
+  // Update stats
+  let stats = YieldMetricsStats.load(schedule.id);
+  if (!stats) {
+    stats = new YieldMetricsStats(schedule.id);
+    stats.schedule = schedule.id;
+    stats.totalClaimed = BigInt.zero();
+  }
+  stats.totalClaimed = totalClaimed;
+  stats.lastUpdated = timestamp;
+  stats.save();
 }

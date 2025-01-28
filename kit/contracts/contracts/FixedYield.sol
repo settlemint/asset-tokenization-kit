@@ -62,13 +62,6 @@ contract FixedYield is AccessControl {
     /// @notice The total amount of yield claimed across all holders
     uint256 private _totalClaimed;
 
-    /// @notice Event emitted when a yield payment is distributed
-    /// @param token The token address this yield is for
-    /// @param holder The address receiving the yield
-    /// @param amount The amount of yield distributed
-    /// @param period The period number that was claimed
-    event YieldDistributed(address indexed token, address indexed holder, uint256 amount, uint256 period);
-
     /// @notice Event emitted when underlying assets are topped up
     event UnderlyingAssetTopUp(address indexed from, uint256 amount);
 
