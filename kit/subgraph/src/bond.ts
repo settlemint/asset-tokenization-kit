@@ -2,7 +2,7 @@ import { Address, log, store } from '@graphprotocol/graph-ts';
 import {
   Account,
   BlockedAccount,
-  Event_BondRedeemed,
+  Event_BondRedemption,
   Event_Transfer,
   Event_UnderlyingAssetMovement,
   Role,
@@ -258,7 +258,7 @@ export function handleBondRedeemed(event: BondRedeemedEvent): void {
   let holder = fetchAccount(event.params.holder);
 
   // Create event record
-  let eventRedeemed = new Event_BondRedeemed(eventId(event));
+  let eventRedeemed = new Event_BondRedemption(eventId(event));
   eventRedeemed.emitter = bond.id;
   eventRedeemed.timestamp = event.block.timestamp;
   eventRedeemed.holder = holder.id;

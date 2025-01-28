@@ -12,7 +12,6 @@ export function fetchFixedYield(address: Address): FixedYield {
     let endDate = endpoint.try_endDate();
     let rate = endpoint.try_rate();
     let interval = endpoint.try_interval();
-    let currentPeriodId = endpoint.try_currentPeriodId();
 
     schedule = new FixedYield(address);
     schedule.token = token.reverted ? Address.zero() : token.value;
@@ -21,7 +20,6 @@ export function fetchFixedYield(address: Address): FixedYield {
     schedule.endDate = endDate.reverted ? BigInt.zero() : endDate.value;
     schedule.rate = rate.reverted ? BigInt.zero() : rate.value;
     schedule.interval = interval.reverted ? BigInt.zero() : interval.value;
-    schedule.currentPeriodId = currentPeriodId.reverted ? BigInt.zero() : currentPeriodId.value;
     schedule.save();
   }
   return schedule;

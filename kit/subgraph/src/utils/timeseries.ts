@@ -7,14 +7,13 @@ import {
   BondMetricsData,
   Equity,
   EquityCategoryData,
+  FixedYield,
   Role,
   RoleActivityData,
   StableCoin,
   StableCoinMetricsData,
   TransferData,
   YieldMetricsData,
-  YieldMetricsStats,
-  YieldPeriod,
 } from '../../generated/schema';
 import { toDecimals } from './decimals';
 
@@ -90,11 +89,9 @@ export function recordEquityCategoryData(equity: Equity): void {
 }
 
 export function recordYieldMetricsData(schedule: FixedYield, timestamp: BigInt): void {
-  let id = schedule.id.concat(timestamp.toString());
-  let data = new YieldMetricsData(id);
+  let data = new YieldMetricsData('auto');
   data.schedule = schedule.id;
   data.timestamp = timestamp;
-  data.currentPeriodId = schedule.currentPeriodId;
   data.totalClaimed = schedule.totalClaimed;
   data.unclaimedYield = schedule.unclaimedYield;
   data.underlyingBalance = schedule.underlyingBalance;

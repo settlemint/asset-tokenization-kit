@@ -1,13 +1,11 @@
-import { log } from '@graphprotocol/graph-ts';
+import { BigInt, log } from '@graphprotocol/graph-ts';
 import { FixedYieldCreated as FixedYieldCreatedEvent } from '../generated/FixedYieldFactory/FixedYieldFactory';
-import { Event_FixedYieldCreated, YieldPeriod } from '../generated/schema';
+import { YieldPeriod } from '../generated/schema';
 import { FixedYield } from '../generated/templates';
-import { fetchAccount } from './fetch/account';
 import { fetchFixedYield } from './fetch/fixed-yield';
-import { eventId } from './utils/events';
 
 export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
-  log.info('FixedYieldCreated event received: {} {} {} {} {} {} {} {} {} {}', [
+  log.info('FixedYieldCreated event received: {} {} {} {} {} {} {} {} {} {} {}', [
     event.params.schedule.toHexString(),
     event.params.token.toHexString(),
     event.params.underlyingAsset.toHexString(),
@@ -17,26 +15,11 @@ export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
     event.params.rate.toString(),
     event.params.interval.toString(),
     event.params.scheduleCount.toString(),
-    event.params.periodEndTimestamps.length.toString(),
+    event.params.periods.length.toString(),
   ]);
 
   // Create the schedule entity
   let schedule = fetchFixedYield(event.params.schedule);
-  let owner = fetchAccount(event.params.owner);
-
-  // Create event record
-  let eventCreated = new Event_FixedYieldCreated(eventId(event));
-  eventCreated.schedule = schedule.id;
-  eventCreated.token = event.params.token;
-  eventCreated.underlyingAsset = event.params.underlyingAsset;
-  eventCreated.owner = owner.id;
-  eventCreated.startDate = event.params.startDate;
-  eventCreated.endDate = event.params.endDate;
-  eventCreated.rate = event.params.rate;
-  eventCreated.interval = event.params.interval;
-  eventCreated.scheduleCount = event.params.scheduleCount;
-  eventCreated.timestamp = event.block.timestamp;
-  eventCreated.save();
 
   // Create period entities using timestamps from event
   let periodStartDate = event.params.startDate;

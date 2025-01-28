@@ -110,7 +110,7 @@ dataSources:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: FixedYieldCreated(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,uint256,uint256)
+        - event: FixedYieldCreated(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,uint256,uint256,uint256[])
           handler: handleFixedYieldCreated
       file: ./src/fixed-yield-factory.ts
 templates:
@@ -371,7 +371,7 @@ templates:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: YieldClaimed(indexed address,uint256,uint256,uint256)
+        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield.ts
 

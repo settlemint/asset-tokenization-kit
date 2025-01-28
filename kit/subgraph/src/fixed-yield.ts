@@ -1,11 +1,5 @@
-import { Address, BigInt, log } from '@graphprotocol/graph-ts';
-import {
-  Event_UnderlyingAssetMovement,
-  Event_UnderlyingAssetTopUp,
-  Event_UnderlyingAssetWithdrawn,
-  Event_YieldClaimed,
-  YieldPeriod,
-} from '../generated/schema';
+import { BigInt } from '@graphprotocol/graph-ts';
+import { Event_UnderlyingAssetMovement, Event_YieldClaimed, YieldPeriod } from '../generated/schema';
 import {
   UnderlyingAssetTopUp as UnderlyingAssetTopUpEvent,
   UnderlyingAssetWithdrawn as UnderlyingAssetWithdrawnEvent,

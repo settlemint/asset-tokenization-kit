@@ -60,7 +60,7 @@ interface UnderlyingAssetHolder {
 }
 
 type Event_UnderlyingAssetMovement @entity(immutable: true) {
-  id: String!
+  id: Bytes!
   emitter: UnderlyingAssetHolder!
   timestamp: BigInt!
   action: UnderlyingAssetMovementAction!
@@ -94,8 +94,8 @@ type Bond implements Asset & UnderlyingAssetHolder @entity {
   metrics: [BondMetricsData!]! @derivedFrom(field: "bond")
 }
 
-type Event_BondRedemption implements BondEvent  @entity(immutable: true) {
-  id: String!
+type Event_BondRedemption implements BondEvent @entity(immutable: true) {
+  id: Bytes!
   emitter: Bond!
   timestamp: BigInt!
   holder: Account!
@@ -397,7 +397,6 @@ type FixedYield implements UnderlyingAssetHolder @entity {
   endDate: BigInt!
   rate: BigInt!
   interval: BigInt!
-  currentPeriodId: BigInt!
   totalClaimed: BigInt!
   unclaimedYield: BigInt!
   underlyingBalance: BigInt!
@@ -418,7 +417,7 @@ type YieldPeriod @entity {
 }
 
 type Event_YieldClaimed @entity {
-  id: String!
+  id: Bytes!
   emitter: FixedYield!
   timestamp: BigInt!
   holder: Account!
