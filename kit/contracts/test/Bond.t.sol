@@ -275,16 +275,22 @@ contract BondTest is Test {
         assertEq(bond.frozen(user1), 100);
 
         // Try to transfer the frozen amount
+        vm.stopPrank();
+
         vm.expectRevert();
-        vm.prank(user1);
+        vm.startPrank(user1);
         bond.transfer(user2, 100);
 
         // Unfreeze and verify
+        vm.stopPrank();
+
+        vm.startPrank(owner);
         bond.unfreeze(user1, 100);
         assertEq(bond.frozen(user1), 0);
 
         // Now transfer should work
-        vm.prank(user1);
+        vm.stopPrank();
+        vm.startPrank(user1);
         bond.transfer(user2, 100);
         assertEq(bond.balanceOf(user2), 100);
     }

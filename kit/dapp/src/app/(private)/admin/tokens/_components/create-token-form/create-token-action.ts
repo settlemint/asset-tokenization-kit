@@ -9,7 +9,9 @@ import {
 } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { TokenTypeValue } from '@/types/token-types';
 import type { VariablesOf } from 'gql.tada';
+import { revalidateTag } from 'next/cache';
 import type { Address } from 'viem';
 import { CreateTokenSchema } from './create-token-form-schema';
 import { handleChallenge } from './lib/challenge';
@@ -71,6 +73,17 @@ const EquityFactoryCreate = portalGraphql(`
   }
 `);
 
+/**
+ * Helper function to handle the common pattern of getting transaction hash and revalidating
+ */
+const handleFactoryResponse = (response: { transactionHash: string | null } | null, tokenType: TokenTypeValue) => {
+  if (!response?.transactionHash) {
+    throw new Error('Transaction hash not found');
+  }
+  revalidateTag(tokenType);
+  return response.transactionHash;
+};
+
 export const createTokenAction = actionClient.schema(CreateTokenSchema).action(async ({ parsedInput }) => {
   try {
     const { tokenType, tokenName, tokenSymbol, pincode, decimals, isin } = parsedInput;
@@ -94,10 +107,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
           collateralLivenessSeconds: parsedInput.collateralProofValidityDuration,
         };
         const response = await portalClient.request(StableCoinFactoryCreate, variables);
-        if (!response?.StableCoinFactoryCreate?.transactionHash) {
-          throw new Error('Transaction hash not found');
-        }
-        return response.StableCoinFactoryCreate.transactionHash;
+        return handleFactoryResponse(response?.StableCoinFactoryCreate, tokenType);
       }
       case 'bond': {
         const variables: VariablesOf<typeof BondFactoryCreate> = {
@@ -108,10 +118,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
           underlyingAsset: parsedInput.faceValueCurrency,
         };
         const response = await portalClient.request(BondFactoryCreate, variables);
-        if (!response?.BondFactoryCreate?.transactionHash) {
-          throw new Error('Transaction hash not found');
-        }
-        return response.BondFactoryCreate.transactionHash;
+        return handleFactoryResponse(response?.BondFactoryCreate, tokenType);
       }
       case 'cryptocurrency': {
         const variables: VariablesOf<typeof CryptoCurrencyFactoryCreate> = {
@@ -120,10 +127,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
           initialSupply: '0', // Initial supply is always 0 for now
         };
         const response = await portalClient.request(CryptoCurrencyFactoryCreate, variables);
-        if (!response?.CryptoCurrencyFactoryCreate?.transactionHash) {
-          throw new Error('Transaction hash not found');
-        }
-        return response.CryptoCurrencyFactoryCreate.transactionHash;
+        return handleFactoryResponse(response?.CryptoCurrencyFactoryCreate, tokenType);
       }
       case 'equity': {
         const variables: VariablesOf<typeof EquityFactoryCreate> = {
@@ -133,10 +137,7 @@ export const createTokenAction = actionClient.schema(CreateTokenSchema).action(a
           equityClass: parsedInput.equityClass,
         };
         const response = await portalClient.request(EquityFactoryCreate, variables);
-        if (!response?.EquityFactoryCreate?.transactionHash) {
-          throw new Error('Transaction hash not found');
-        }
-        return response.EquityFactoryCreate.transactionHash;
+        return handleFactoryResponse(response?.EquityFactoryCreate, tokenType);
       }
       default: {
         throw new Error('Invalid token type');

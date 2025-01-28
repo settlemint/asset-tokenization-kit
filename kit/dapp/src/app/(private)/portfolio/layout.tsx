@@ -1,11 +1,11 @@
 import Header from '@/components/layout/header';
-import type { SidebarData } from '@/components/layout/sidebar';
+import type { NavElement } from '@/components/layout/nav-main';
+import { PrivateSidebar } from '@/components/layout/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
-import {} from 'lucide-react';
+import { ArrowLeftRight, LayoutDashboard, Users } from 'lucide-react';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
-import { PrivateSidebar } from '../../../components/layout/sidebar';
 
 export default async function PortfolioLayout({ children }: PropsWithChildren) {
   const session = await auth.api.getSession({
@@ -13,49 +13,27 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
   });
   const role = (session?.user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
 
-  const sidebarData: SidebarData = {
-    main: [
-      {
-        title: 'Token Management',
-        items: [
-          {
-            title: 'Stable Coins',
-            iconName: 'coins',
-            items: [
-              {
-                title: 'USDC',
-                url: '/admin/stable-coins/usdc',
-              },
-              {
-                title: 'EURC',
-                url: '/admin/stable-coins/eurc',
-              },
-            ],
-            more: {
-              enabled: true,
-              url: '/admin/stable-coins',
-            },
-          },
-        ],
-      },
-    ],
-    secondary: [
-      {
-        title: 'Administration',
-        items: [
-          {
-            title: 'User Management',
-            iconName: 'Users',
-            url: '/admin/users',
-          },
-        ],
-      },
-    ],
-  };
+  const sidebarData: NavElement[] = [
+    {
+      label: 'Portfolio',
+      icon: <LayoutDashboard />,
+      path: '/portfolio',
+    },
+    {
+      label: 'Transactions',
+      icon: <ArrowLeftRight />,
+      path: '/portfolio/transactions',
+    },
+    {
+      label: 'My Contacts',
+      icon: <Users />,
+      path: '/portfolio/contacts',
+    },
+  ];
 
   return (
     <SidebarProvider>
-      <PrivateSidebar role={role} mode="portfolio" data={sidebarData} />
+      <PrivateSidebar role={role} mode="portfolio" items={sidebarData} />
       <SidebarInset>
         <Header />
         {children}

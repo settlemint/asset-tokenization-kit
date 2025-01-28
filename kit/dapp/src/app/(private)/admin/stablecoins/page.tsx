@@ -1,4 +1,5 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
+import { TokenType } from '@/types/token-types';
 import { columns, icons } from './_components/columns';
 import { getStableCoins } from './_components/data';
 
@@ -9,7 +10,7 @@ export default function StableCoinsPage() {
         <h2 className="font-bold text-3xl tracking-tight">Stable Coins</h2>
       </div>
       <AssetTable
-        type="stablecoins"
+        type={TokenType.Stablecoin}
         dataAction={getStableCoins}
         columns={columns}
         icons={icons}

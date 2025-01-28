@@ -71,9 +71,7 @@ contract BondFactory {
         if (underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
         if (bytes(isin).length != 12) revert InvalidISIN();
 
-        bytes32 salt = keccak256(
-            abi.encodePacked(name, symbol, decimals, msg.sender, isin, maturityDate, faceValue, underlyingAsset)
-        );
+        bytes32 salt = keccak256(abi.encode(name, symbol, msg.sender, isin, maturityDate, faceValue, underlyingAsset));
 
         Bond newBond =
             new Bond{ salt: salt }(name, symbol, decimals, msg.sender, isin, maturityDate, faceValue, underlyingAsset);

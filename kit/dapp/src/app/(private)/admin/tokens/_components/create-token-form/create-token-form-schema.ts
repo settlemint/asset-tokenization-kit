@@ -1,5 +1,5 @@
+import { TokenType, type TokenTypeKey } from '@/types/token-types';
 import { z } from 'zod';
-import { TokenType } from './lib/token-types';
 
 export const BaseTokenFields = z.object({
   tokenName: z.string().min(1, { message: 'Token name is required' }),
@@ -64,33 +64,33 @@ export const CreateTokenSchema = z.discriminatedUnion('tokenType', [
 export type CreateTokenSchemaType = z.infer<typeof CreateTokenSchema>;
 
 export const createTokenDefaultValues = {
-  stablecoin: {
+  Stablecoin: {
     tokenType: TokenType.Stablecoin,
     tokenName: '',
     tokenSymbol: '',
-    decimals: 18,
+    decimals: 6,
     isin: '',
     private: false,
     pincode: '',
     collateralProofValidityDuration: 30 * 24 * 60 * 60,
     collateralThreshold: 100,
   },
-  equity: {
+  Equity: {
     tokenType: TokenType.Equity,
     tokenName: '',
     tokenSymbol: '',
-    decimals: 18,
+    decimals: 0,
     isin: '',
     private: false,
     pincode: '',
     equityClass: '',
     equityCategory: '',
   },
-  bond: {
+  Bond: {
     tokenType: TokenType.Bond,
     tokenName: '',
     tokenSymbol: '',
-    decimals: 18,
+    decimals: 2,
     isin: '',
     private: false,
     pincode: '',
@@ -101,7 +101,7 @@ export const createTokenDefaultValues = {
     couponRate: 0,
     firstCouponDate: new Date(),
   },
-  cryptocurrency: {
+  Cryptocurrency: {
     tokenType: TokenType.Cryptocurrency,
     tokenName: '',
     tokenSymbol: '',
@@ -110,21 +110,21 @@ export const createTokenDefaultValues = {
     private: false,
     pincode: '',
   },
-} as const satisfies Record<string, CreateTokenSchemaType>;
+} as const satisfies Record<TokenTypeKey, CreateTokenSchemaType>;
 
 export type CreateTokenFormStepFields = keyof (
-  | typeof createTokenDefaultValues.stablecoin
-  | typeof createTokenDefaultValues.equity
-  | typeof createTokenDefaultValues.bond
-  | typeof createTokenDefaultValues.cryptocurrency
+  | typeof createTokenDefaultValues.Stablecoin
+  | typeof createTokenDefaultValues.Equity
+  | typeof createTokenDefaultValues.Bond
+  | typeof createTokenDefaultValues.Cryptocurrency
 );
 
 export const createTokenFormStepFields: CreateTokenFormStepFields[] = [
   ...new Set([
-    ...Object.keys(createTokenDefaultValues.stablecoin),
-    ...Object.keys(createTokenDefaultValues.equity),
-    ...Object.keys(createTokenDefaultValues.bond),
-    ...Object.keys(createTokenDefaultValues.cryptocurrency),
+    ...Object.keys(createTokenDefaultValues.Stablecoin),
+    ...Object.keys(createTokenDefaultValues.Equity),
+    ...Object.keys(createTokenDefaultValues.Bond),
+    ...Object.keys(createTokenDefaultValues.Cryptocurrency),
   ]),
 ] as CreateTokenFormStepFields[];
 

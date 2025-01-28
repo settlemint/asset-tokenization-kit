@@ -8,9 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useTransactionStatus } from '@/hooks/use-transaction-status';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { handleTransaction } from '@/lib/transactions';
+import type { TokenTypeKey } from '@/types/token-types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
-import { revalidateTag } from 'next/cache';
 import { useQueryState } from 'nuqs';
 import { createTokenAction } from './create-token-action';
 import type { CreateTokenSchemaType } from './create-token-form-schema';
@@ -24,20 +24,25 @@ import { Summary } from './steps/3-summary';
 
 interface CreateTokenFormProps {
   defaultValues?: Partial<CreateTokenSchemaType>;
-  tokenType: 'cryptocurrency' | 'stablecoin' | 'equity' | 'bond';
+  tokenType: TokenTypeKey;
   formId: string;
   className?: string;
 }
 
 const CreateTokenReceiptQuery = portalGraphql(`
-query CreateTokenReceiptQuery($transactionHash: String!) {
-  StableCoinFactoryCreateReceipt(transactionHash: $transactionHash) {
-    contractAddress
-    status
-    blockNumber
-    revertReasonDecoded
+  query CreateTokenReceiptQuery($transactionHash: String!) {
+    getTransaction(transactionHash: $transactionHash) {
+      metadata
+      receipt {
+        status
+        revertReasonDecoded
+        contractAddress
+        blockNumber
+        logs
+      }
+    }
   }
-}`);
+`);
 
 /**
  * Handles a token creation transaction
@@ -53,7 +58,7 @@ export function handleTokenCreation(transactionState: ReturnType<typeof useTrans
       const txresult = await portalClient.request(CreateTokenReceiptQuery, {
         transactionHash: hash,
       });
-      return txresult.StableCoinFactoryCreateReceipt;
+      return txresult.getTransaction?.receipt;
     },
   });
 }
@@ -93,7 +98,6 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
     }
 
     await handleTokenCreation(transactionState, createTokenResult?.data);
-    revalidateTag(values.tokenType);
   }
 
   return (
@@ -142,11 +146,11 @@ export function CreateTokenForm({ defaultValues, tokenType }: CreateTokenFormPro
                   form={form}
                   fields={(() => {
                     switch (tokenType) {
-                      case 'stablecoin':
+                      case 'Stablecoin':
                         return ['collateralProofValidityDuration', 'collateralThreshold'];
-                      case 'equity':
+                      case 'Equity':
                         return ['equityClass', 'equityCategory'];
-                      case 'bond':
+                      case 'Bond':
                         return ['faceValueCurrency', 'faceValue', 'maturityDate'];
                       default:
                         return [];

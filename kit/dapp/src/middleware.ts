@@ -23,6 +23,11 @@ function buildRedirectUrl(request: NextRequest): URL {
   return redirectUrl;
 }
 
+function buildWrongRoleRedirectUrl(request: NextRequest): URL {
+  const redirectUrl = new URL('/auth/wrong-role', request.url);
+  return redirectUrl;
+}
+
 export default async function middleware(request: NextRequest) {
   const proxyResponse = proxyMiddleware(request);
   if (proxyResponse) {
@@ -45,7 +50,7 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.redirect(buildRedirectUrl(request));
       }
       if (!roles.includes(data.user.role)) {
-        return NextResponse.redirect('/portfolio');
+        return NextResponse.redirect(buildWrongRoleRedirectUrl(request));
       }
     }
   }
