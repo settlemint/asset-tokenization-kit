@@ -107,6 +107,7 @@ export function handleTransfer(event: TransferEvent): void {
   }
 
   eventTransfer.save();
+  stableCoin.save();
 
   // Record transfer data
   recordTransferData(stableCoin.id, eventTransfer.valueExact, from, to);
