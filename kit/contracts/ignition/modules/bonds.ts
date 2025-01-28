@@ -1,10 +1,12 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 import BondFactoryModule from './bond-factory';
+import FixedYieldFactoryModule from './fixed-yield-factory';
 import StableCoinFactoryModule from './stable-coin-factory';
 
 const BondsModule = buildModule('BondsModule', (m) => {
   const { bondFactory } = m.useModule(BondFactoryModule);
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
+  const { fixedYieldFactory } = m.useModule(FixedYieldFactoryModule);
 
   // Create StableCoin using the factory
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
@@ -36,7 +38,26 @@ const BondsModule = buildModule('BondsModule', (m) => {
   });
   const ustb = m.contractAt('Bond', readBondUSTBAddress, { id: 'bondUSTB' });
 
-  return { ustb, stableCoin };
+  // Create fixed yield schedule for the bond
+  const startDate = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // Start tomorrow
+  const yieldRate = 500; // 5% annual yield (in basis points)
+  const yieldInterval = 30 * 24 * 60 * 60; // 30 days in seconds
+
+  const createYieldSchedule = m.call(
+    fixedYieldFactory,
+    'create',
+    [ustb, startDate, oneYearFromNow, yieldRate, yieldInterval],
+    {
+      id: 'createYieldSchedule',
+    }
+  );
+
+  const readYieldScheduleAddress = m.readEventArgument(createYieldSchedule, 'FixedYieldCreated', 'schedule', {
+    id: 'readYieldScheduleAddress',
+  });
+  const yieldSchedule = m.contractAt('FixedYield', readYieldScheduleAddress, { id: 'yieldSchedule' });
+
+  return { ustb, stableCoin, yieldSchedule };
 });
 
 export default BondsModule;
