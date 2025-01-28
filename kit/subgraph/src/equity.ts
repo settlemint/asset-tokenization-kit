@@ -81,7 +81,7 @@ export function handleTransfer(event: TransferEvent): void {
   }
 
   eventTransfer.save();
-
+  equity.save();
   // Record transfer data
   recordTransferData(equity.id, eventTransfer.valueExact, equity.decimals, from, to);
 

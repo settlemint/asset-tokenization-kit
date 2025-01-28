@@ -87,6 +87,7 @@ export function handleTransfer(event: TransferEvent): void {
   }
 
   eventTransfer.save();
+  cryptoCurrency.save();
 
   // Record transfer data
   recordTransferData(cryptoCurrency.id, eventTransfer.valueExact, cryptoCurrency.decimals, from, to);

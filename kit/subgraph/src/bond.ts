@@ -126,6 +126,7 @@ export function handleTransfer(event: TransferEvent): void {
   }
 
   eventTransfer.save();
+  bond.save();
 
   // Record transfer data
   recordTransferData(bond.id, eventTransfer.valueExact, bond.decimals, from, to);
