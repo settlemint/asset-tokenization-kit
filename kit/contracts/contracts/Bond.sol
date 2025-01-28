@@ -314,9 +314,8 @@ contract Bond is
 
     /// @notice Returns the basis for yield calculation
     /// @dev For bonds, the yield basis is the face value
-    /// @param holder The address to get the yield basis for (unused in bonds)
     /// @return The face value as the basis for yield calculations
-    function yieldBasis(address holder) public view override returns (uint256) {
+    function yieldBasis(address) public view override returns (uint256) {
         return faceValue;
     }
 
