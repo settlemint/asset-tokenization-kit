@@ -1,11 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { TokenTypeValue } from '@/types/token-types';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 interface AssetDetailsTabProps {
   id: string;
   type: TokenTypeValue;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export function AssetDetailsTabs({ id, type, children }: AssetDetailsTabProps) {

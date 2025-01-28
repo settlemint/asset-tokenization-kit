@@ -15,10 +15,9 @@ interface AssetDetailsTabProps {
     name: string | null;
     paused: boolean;
   };
-  children?: React.ReactNode;
 }
 
-export function AssetDetailsHeader({ data, children }: AssetDetailsTabProps) {
+export function AssetDetailsHeader({ data }: AssetDetailsTabProps) {
   return (
     <div className="AssetDetailsHeader absolute top-0 right-0 left-0 flex flex-col">
       <CollapsedBreadcrumbs routeSegments={['admin', 'stablecoins', data.id, 'details']} hideRoot={true} />
