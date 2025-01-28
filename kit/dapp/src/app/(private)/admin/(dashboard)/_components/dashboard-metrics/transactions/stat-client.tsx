@@ -13,6 +13,8 @@ export function ProcessedTransactionsStatClient({
     queryKey: [queryKey],
     queryFn: () => dataAction(),
     refetchInterval,
+    staleTime: 0,
+    gcTime: 1000,
     refetchOnWindowFocus: true,
     refetchIntervalInBackground: false,
     networkMode: 'online',

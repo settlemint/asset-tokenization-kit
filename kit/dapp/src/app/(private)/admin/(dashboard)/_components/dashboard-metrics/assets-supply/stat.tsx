@@ -1,11 +1,10 @@
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { ASSETS_SUPPLY_QUERY_KEY } from './consts';
 import { getAssetsSupplyData } from './data';
 import { AssetTotalSupplyStatClient } from './stat-client';
-
-export async function AssetTotalSupplyStat({ refetchInterval }: { refetchInterval?: number }) {
+export const ASSETS_SUPPLY_QUERY_KEY = 'assets-supply';
+export async function AssetTotalSupplyStat({ refetchInterval }: { refetchInterval: number }) {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({

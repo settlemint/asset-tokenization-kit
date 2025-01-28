@@ -1,11 +1,10 @@
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { TRANSACTIONS_QUERY_KEY } from './consts';
 import { getProcessedTransactions } from './data';
 import { ProcessedTransactionsStatClient } from './stat-client';
-
-export async function ProcessedTransactionsStat({ refetchInterval }: { refetchInterval?: number }) {
+export const TRANSACTIONS_QUERY_KEY = 'transactions';
+export async function ProcessedTransactionsStat({ refetchInterval }: { refetchInterval: number }) {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({

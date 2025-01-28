@@ -7,14 +7,12 @@ import {
   EQUITY_FACTORY_ADDRESS,
   STABLE_COIN_FACTORY_ADDRESS,
 } from '@/lib/contracts';
-import { revalidateTags } from '@/lib/revalidateTags';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { TokenTypeValue } from '@/types/token-types';
 import type { VariablesOf } from 'gql.tada';
+import { revalidateTag } from 'next/cache';
 import type { Address } from 'viem';
-import { ASSETS_SUPPLY_QUERY_KEY } from '../../../(dashboard)/_components/dashboard-metrics/assets-supply/consts';
-import { TRANSACTIONS_QUERY_KEY } from '../../../(dashboard)/_components/dashboard-metrics/transactions/consts';
 import { CreateTokenSchema } from './create-token-form-schema';
 import { handleChallenge } from './lib/challenge';
 
@@ -82,7 +80,7 @@ const handleFactoryResponse = (response: { transactionHash: string | null } | nu
   if (!response?.transactionHash) {
     throw new Error('Transaction hash not found');
   }
-  revalidateTags([tokenType, ASSETS_SUPPLY_QUERY_KEY, TRANSACTIONS_QUERY_KEY]);
+  revalidateTag(tokenType);
   return response.transactionHash;
 };
 

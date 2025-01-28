@@ -1,8 +1,6 @@
 'use server';
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { unstable_cache } from 'next/cache';
-import { ASSETS_SUPPLY_QUERY_KEY } from './consts';
 
 const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   query AssetsSupply {
@@ -42,16 +40,7 @@ const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
 };
 
 export async function getAssetsSupplyData(): Promise<AssetsSupplyData> {
-  const data = await unstable_cache(
-    async () => {
-      return await theGraphClientStarterkits.request(AssetsSupplyQuery);
-    },
-    [ASSETS_SUPPLY_QUERY_KEY],
-    {
-      revalidate: 60,
-      tags: [ASSETS_SUPPLY_QUERY_KEY],
-    }
-  )();
+  const data = await theGraphClientStarterkits.request(AssetsSupplyQuery);
 
   const breakdown = [
     {

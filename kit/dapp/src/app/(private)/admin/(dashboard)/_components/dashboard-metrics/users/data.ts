@@ -1,8 +1,6 @@
 'use server';
 
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { unstable_cache } from 'next/cache';
-import { USERS_QUERY_KEY } from './consts';
 
 const UsersQuery = hasuraGraphql(`
 query UsersQuery {
@@ -27,16 +25,7 @@ export type UsersData = {
 };
 
 export async function getUsersData(): Promise<UsersData> {
-  const data = await unstable_cache(
-    async () => {
-      return await hasuraClient.request(UsersQuery);
-    },
-    [USERS_QUERY_KEY],
-    {
-      revalidate: 60,
-      tags: [USERS_QUERY_KEY],
-    }
-  )();
+  const data = await hasuraClient.request(UsersQuery);
 
   return {
     totalUsers: data.user_aggregate.nodes.length,
