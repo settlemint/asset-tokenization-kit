@@ -5,7 +5,7 @@ import { UsersStat } from './_components/dashboard-metrics/users/stat';
 export default function AdminDashboard() {
   return (
     <div>
-      <div className="grid grid-cols-1 divide-x-0 md:grid-cols-2 md:divide-x lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-3">
         <AssetTotalSupplyStat />
         <UsersStat />
         <ProcessedTransactionsStat />

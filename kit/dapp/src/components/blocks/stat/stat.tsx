@@ -14,5 +14,5 @@ export function StatLabel({ children, className }: { children: ReactNode; classN
 }
 
 export function Stat({ children }: { children: ReactNode }) {
-  return <div className="space-y-1 px-6 text-center first:pl-0 last:pr-0">{children}</div>;
+  return <div className="flex flex-col items-center justify-center py-4">{children}</div>;
 }
