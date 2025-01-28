@@ -284,7 +284,7 @@ contract BondTest is Test {
         assertEq(bond.frozen(user1), 0);
 
         // Now transfer should work
-        vm.prank(user1);
+        vm.startPrank(user1);
         bond.transfer(user2, 100);
         assertEq(bond.balanceOf(user2), 100);
     }
