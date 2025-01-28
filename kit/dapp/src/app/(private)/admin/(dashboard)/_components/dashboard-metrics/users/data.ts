@@ -2,15 +2,23 @@
 
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { unstable_cache } from 'next/cache';
+import { USERS_QUERY_KEY } from './consts';
 
 const UsersQuery = hasuraGraphql(`
-  query Users {
-    user_aggregate {
-      nodes {
-        created_at
-      }
+query UsersQuery {
+  user_aggregate {
+    nodes {
+      id
     }
   }
+  recent_users_aggregate: user_aggregate(
+    where: { created_at: { _gt: "${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
 `);
 
 export type UsersData = {
@@ -23,17 +31,15 @@ export async function getUsersData(): Promise<UsersData> {
     async () => {
       return await hasuraClient.request(UsersQuery);
     },
-    ['users'],
+    [USERS_QUERY_KEY],
     {
       revalidate: 60,
-      tags: ['users'],
+      tags: [USERS_QUERY_KEY],
     }
   )();
 
   return {
     totalUsers: data.user_aggregate.nodes.length,
-    usersInLast24Hours: data.user_aggregate.nodes.filter((user) => {
-      return new Date(user.created_at as string).getTime() > Date.now() - 24 * 60 * 60 * 1000;
-    }).length,
+    usersInLast24Hours: data.recent_users_aggregate.aggregate?.count ?? 0,
   };
 }

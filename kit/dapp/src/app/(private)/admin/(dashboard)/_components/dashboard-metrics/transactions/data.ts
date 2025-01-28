@@ -1,3 +1,6 @@
+'use server';
+
+import { TRANSACTIONS_QUERY_KEY } from '@/app/(private)/admin/(dashboard)/_components/dashboard-metrics/transactions/consts';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { unstable_cache } from 'next/cache';
 const ProcessedTransactions = portalGraphql(`
@@ -23,10 +26,10 @@ export async function getProcessedTransactions(): Promise<ProcessedTransactionsD
         processedAfter: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       });
     },
-    ['processed-transactions'],
+    [TRANSACTIONS_QUERY_KEY],
     {
       revalidate: 60,
-      tags: ['processed-transactions'],
+      tags: [TRANSACTIONS_QUERY_KEY],
     }
   )();
 
