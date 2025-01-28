@@ -91,7 +91,7 @@ export function Basics() {
             <FormControl>
               <div className="flex items-center space-x-2">
                 <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
-                <span className="text-muted-foreground text-sm">Other organisations won't see this asset</span>
+                <span className="text-muted-foreground text-sm">Other organisations won&apos;t see this asset</span>
               </div>
             </FormControl>
             <FormMessage />
