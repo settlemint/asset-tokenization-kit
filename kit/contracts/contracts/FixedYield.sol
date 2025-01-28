@@ -69,7 +69,20 @@ contract FixedYield is AccessControl {
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
 
     /// @notice Event emitted when yield is claimed
-    event YieldClaimed(address indexed holder, uint256 amount, uint256 fromPeriod, uint256 toPeriod);
+    /// @param holder The address claiming the yield
+    /// @param totalAmount The total amount of yield claimed
+    /// @param fromPeriod The first period being claimed
+    /// @param toPeriod The last period being claimed
+    /// @param periodAmounts Array of amounts claimed for each period
+    /// @param unclaimedYield Total amount of unclaimed yield after this claim
+    event YieldClaimed(
+        address indexed holder,
+        uint256 totalAmount,
+        uint256 fromPeriod,
+        uint256 toPeriod,
+        uint256[] periodAmounts,
+        uint256 unclaimedYield
+    );
 
     /// @notice Deploys a new FixedYield contract
     /// @param tokenAddress The address of the token this schedule is for
@@ -270,13 +283,18 @@ contract FixedYield is AccessControl {
         uint256 basis = _token.yieldBasis(msg.sender);
         uint256 totalAmount = 0;
 
+        // Create array for all periods in range (including zero amounts)
+        uint256[] memory periodAmounts = new uint256[](lastPeriod - fromPeriod + 1);
+
         // Calculate yield for each unclaimed period using historical balances
         for (uint256 period = fromPeriod; period <= lastPeriod; period++) {
             uint256 balance = _token.balanceAt(msg.sender, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmount += periodYield;
+                periodAmounts[period - fromPeriod] = periodYield;
             }
+            // If balance is 0, the array element remains 0
         }
 
         if (totalAmount == 0) revert NoYieldAvailable();
@@ -289,7 +307,10 @@ contract FixedYield is AccessControl {
         bool success = _underlyingAsset.transfer(msg.sender, totalAmount);
         if (!success) revert YieldTransferFailed();
 
-        emit YieldClaimed(msg.sender, totalAmount, fromPeriod, lastPeriod);
+        // Calculate remaining unclaimed yield across all holders
+        uint256 remainingUnclaimed = totalUnclaimedYield();
+
+        emit YieldClaimed(msg.sender, totalAmount, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
     }
 
     /// @notice Allows topping up the contract with underlying assets for yield payments

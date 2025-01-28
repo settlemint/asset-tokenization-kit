@@ -95,27 +95,8 @@ export function recordYieldMetricsData(schedule: FixedYield, timestamp: BigInt):
   data.schedule = schedule.id;
   data.timestamp = timestamp;
   data.currentPeriodId = schedule.currentPeriodId;
-
-  // Calculate total claimed yield across all periods
-  let totalClaimed = BigInt.zero();
-  for (let i = 0; i <= schedule.currentPeriodId.toI32(); i++) {
-    let periodId = schedule.id.concat(i.toString());
-    let period = YieldPeriod.load(periodId);
-    if (period) {
-      totalClaimed = totalClaimed.plus(period.totalClaimed);
-    }
-  }
-  data.totalClaimed = totalClaimed;
+  data.totalClaimed = schedule.totalClaimed;
+  data.unclaimedYield = schedule.unclaimedYield;
+  data.underlyingBalance = schedule.underlyingBalance;
   data.save();
-
-  // Update stats
-  let stats = YieldMetricsStats.load(schedule.id);
-  if (!stats) {
-    stats = new YieldMetricsStats(schedule.id);
-    stats.schedule = schedule.id;
-    stats.totalClaimed = BigInt.zero();
-  }
-  stats.totalClaimed = totalClaimed;
-  stats.lastUpdated = timestamp;
-  stats.save();
 }
