@@ -7,14 +7,14 @@ import { unstable_cache } from 'next/cache';
 import { DASHBOARD_STATS_QUERY_KEY } from './consts';
 
 const UsersQuery = hasuraGraphql(`
-query UsersQuery {
+query UsersQuery($createdAfter: timestamp!) {
   user_aggregate {
     nodes {
       id
     }
   }
   recent_users_aggregate: user_aggregate(
-    where: { created_at: { _gt: "${new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()}" } }
+    where: { created_at: { _gt: $createdAfter } }
   ) {
     aggregate {
       count
@@ -35,32 +35,71 @@ const ProcessedTransactions = portalGraphql(`
 `);
 
 const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
-  query AssetsSupply {
+  query AssetsSupply($timestamp: BigInt) {
     stableCoins {
       id
       totalSupply
+      transfers(where: {timestamp_gt: $timestamp}) {
+        from {
+          id
+        }
+        to {
+          id
+        }
+        value
+      }
     }
     bonds {
       id
       totalSupply
+      transfers(where: {timestamp_gt: $timestamp}) {
+        from {
+          id
+        }
+        to {
+          id
+        } 
+        value
+      }
     }
     equities {
       id
       totalSupply
+      transfers(where: {timestamp_gt: $timestamp}) {
+        from {
+          id
+        }
+        to {
+          id
+        }
+        value
+      }
     }
     cryptoCurrencies {
       id
       totalSupply
+      transfers(where: {timestamp_gt: $timestamp}) {
+        from {
+          id
+        }
+        to {
+          id
+        }
+        value
+      }
     }
   }
 `);
 
 async function getUsersData() {
-  const data = await hasuraClient.request(UsersQuery);
+  const data = await hasuraClient.request(UsersQuery, {
+    createdAfter: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  });
 
   return {
     totalUsers: data.user_aggregate.nodes.length,
-    usersInLast24Hours: data.recent_users_aggregate.aggregate?.count ?? 0,
+    last24Hours: data.recent_users_aggregate.aggregate?.count ?? 0,
+    difference24Hours: data.recent_users_aggregate.aggregate?.count ?? 0,
   };
 }
 
@@ -71,7 +110,8 @@ async function getProcessedTransactions() {
 
   return {
     totalTransactions: data.total?.count ?? 0,
-    transactionsInLast24Hours: data.last24Hours?.count ?? 0,
+    last24Hours: data.last24Hours?.count ?? 0,
+    difference24Hours: data.last24Hours?.count ?? 0,
   };
 }
 
@@ -81,7 +121,11 @@ const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
 };
 
 async function getAssetsSupplyData() {
-  const data = await theGraphClientStarterkits.request(AssetsSupplyQuery);
+  const timestamp = Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000).toString();
+
+  const data = await theGraphClientStarterkits.request(AssetsSupplyQuery, {
+    timestamp,
+  });
 
   const breakdown = [
     {
@@ -102,11 +146,33 @@ async function getAssetsSupplyData() {
     },
   ];
 
-  const totalSupply = breakdown.reduce((sum, item) => sum + BigInt(item.supply), BigInt(0)).toString();
+  const totalSupply = breakdown.reduce((sum, item) => sum + BigInt(item.supply), BigInt(0));
+
+  const tokensMinted = data.stableCoins.map((token) => {
+    const minted = token.transfers
+      .filter((transfer) => transfer.from === null)
+      .reduce((sum, transfer) => sum + BigInt(transfer.value), BigInt(0));
+
+    return minted;
+  });
+  const allTokensMinted = tokensMinted.reduce((sum, item) => sum + item, BigInt(0));
+
+  const tokensBurned = data.stableCoins.map((token) => {
+    const burned = token.transfers
+      .filter((transfer) => transfer.to === null)
+      .reduce((sum, transfer) => sum + BigInt(transfer.value), BigInt(0));
+
+    return burned;
+  });
+  const allTokensBurned = tokensBurned.reduce((sum, item) => sum + item, BigInt(0));
+
+  const totalSupply24hrAgo = BigInt(totalSupply) - allTokensMinted + allTokensBurned;
 
   return {
-    totalSupply,
+    totalSupply: totalSupply.toString(),
     breakdown,
+    difference24Hours: (totalSupply - totalSupply24hrAgo).toString(),
+    sign: totalSupply - totalSupply24hrAgo >= 0 ? '+' : '-',
   };
 }
 
