@@ -10,10 +10,9 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Menu } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { FC } from 'react';
-import Mockup from './mockup-light.png';
+import { Platform } from './_components/platform';
 
 interface MenuItem {
   href: string;
@@ -125,8 +124,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="relative z-10 flex w-full overflow-hidden border border-border/5 border-t-border/15 px-4 pt-12 shadow-2xl sm:px-6 lg:px-8">
-          <Image src={Mockup} alt="Asset Tokenization" className="rounded-md" />
+        <div className="mx-auto mt-24 max-w-6xl">
+          <Platform />
         </div>
       </section>
       <footer className="flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">

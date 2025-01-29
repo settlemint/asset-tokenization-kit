@@ -41,7 +41,7 @@ export default function RootLayout({
             <QueryClientProvider>{children}</QueryClientProvider>
           </ThemeProvider>
         </NuqsAdapter>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );

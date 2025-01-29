@@ -1,5 +1,6 @@
 'use client';
 
+import { CreateCryptocurrencyForm } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/form';
 import { CreateTokenForm } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,7 +48,7 @@ export function TokenDesignerButton() {
         <DropdownMenuTrigger asChild>
           <Button className="flex w-full items-center gap-2 text-sidebar-foreground">
             <Pencil className="size-4" />
-            {state === 'expanded' && <span>Token Designer</span>}
+            {state === 'expanded' && <span>Asset Designer</span>}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -72,7 +73,14 @@ export function TokenDesignerButton() {
                 <SheetTitle>{TOKEN_CONFIGS[tokenType].title}</SheetTitle>
                 <SheetDescription>{TOKEN_CONFIGS[tokenType].description}</SheetDescription>
               </SheetHeader>
-              <CreateTokenForm formId="create-token-form" tokenType={tokenType} />
+              {(() => {
+                switch (tokenType) {
+                  case 'Cryptocurrency':
+                    return <CreateCryptocurrencyForm onClose={() => setTokenType(null)} />;
+                  default:
+                    return <CreateTokenForm formId="create-token-form" tokenType={tokenType} />;
+                }
+              })()}
             </>
           )}
         </SheetContent>
