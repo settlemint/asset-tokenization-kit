@@ -67,52 +67,53 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.emitter = stableCoin.id;
   eventTransfer.timestamp = event.block.timestamp;
   eventTransfer.asset = stableCoin.id;
-  eventTransfer.from = stableCoin.id;
-  eventTransfer.to = stableCoin.id;
+  eventTransfer.from = event.params.from;
+  eventTransfer.to = event.params.to;
   eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+  eventTransfer.value = toDecimals(eventTransfer.valueExact, stableCoin.decimals);
 
   if (event.params.from.equals(Address.zero())) {
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(eventTransfer.valueExact);
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
+    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
   } else {
     from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(stableCoin.id, from), stableCoin.id, from.id);
+    let fromBalance = fetchBalance(balanceId(stableCoin.id, from), stableCoin.id, from.id, stableCoin.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact);
+    fromBalance.value = toDecimals(fromBalance.valueExact, stableCoin.decimals);
     fromBalance.save();
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
 
     // Record account activity for sender
-    recordAccountActivityData(from, stableCoin.id, fromBalance.valueExact, false);
+    recordAccountActivityData(from, stableCoin.id, fromBalance.valueExact, stableCoin.decimals, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.minus(eventTransfer.valueExact);
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
+    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
   } else {
     to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(stableCoin.id, to), stableCoin.id, to.id);
+    let toBalance = fetchBalance(balanceId(stableCoin.id, to), stableCoin.id, to.id, stableCoin.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact);
+    toBalance.value = toDecimals(toBalance.valueExact, stableCoin.decimals);
     toBalance.save();
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
 
     // Record account activity for receiver
-    recordAccountActivityData(to, stableCoin.id, toBalance.valueExact, false);
+    recordAccountActivityData(to, stableCoin.id, toBalance.valueExact, stableCoin.decimals, false);
   }
 
   eventTransfer.save();
+  stableCoin.save();
 
   // Record transfer data
-  recordTransferData(stableCoin.id, eventTransfer.valueExact, from, to);
+  recordTransferData(stableCoin.id, eventTransfer.valueExact, stableCoin.decimals, from, to);
 
   // Record supply data
-  recordAssetSupplyData(stableCoin.id, stableCoin.totalSupplyExact, 'StableCoin');
+  recordAssetSupplyData(stableCoin.id, stableCoin.totalSupplyExact, stableCoin.decimals, 'StableCoin');
 
   // Record stablecoin metrics
   recordStableCoinMetricsData(stableCoin);
@@ -138,10 +139,10 @@ export function handleUserBlocked(event: UserBlockedEvent): void {
   }
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id);
+  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id, stableCoin.decimals);
 
   // Record account activity with blocked status
-  recordAccountActivityData(account, stableCoin.id, balance.valueExact, true);
+  recordAccountActivityData(account, stableCoin.id, balance.valueExact, stableCoin.decimals, true);
 
   // Record metrics on state change
   recordStableCoinMetricsData(stableCoin);
@@ -153,10 +154,10 @@ export function handleUserUnblocked(event: UserUnblockedEvent): void {
   store.remove('BlockedAccount', id.toHexString());
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id);
+  let balance = fetchBalance(balanceId(stableCoin.id, account), stableCoin.id, account.id, stableCoin.decimals);
 
   // Record account activity with unblocked status
-  recordAccountActivityData(account, stableCoin.id, balance.valueExact, false);
+  recordAccountActivityData(account, stableCoin.id, balance.valueExact, stableCoin.decimals, false);
 
   // Record metrics on state change
   recordStableCoinMetricsData(stableCoin);

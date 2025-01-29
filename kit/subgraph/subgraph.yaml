@@ -26,7 +26,8 @@ dataSources:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,uint8,indexed address,string,uint256,indexed address,uint256)
+        - event: BondCreated(indexed address,string,string,uint8,indexed
+            address,string,uint256,indexed address,uint256)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
   - kind: ethereum/contract
@@ -47,7 +48,8 @@ dataSources:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
       eventHandlers:
-        - event: CryptoCurrencyCreated(indexed address,string,string,uint8,indexed address,uint256)
+        - event: CryptoCurrencyCreated(indexed address,string,string,uint8,indexed
+            address,uint256)
           handler: handleCryptoCurrencyCreated
       file: ./src/crypto-currency-factory.ts
   - kind: ethereum/contract
@@ -68,7 +70,8 @@ dataSources:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
-        - event: EquityCreated(indexed address,string,string,uint8,indexed address,string,string,string,uint256)
+        - event: EquityCreated(indexed address,string,string,uint8,indexed
+            address,string,string,string,uint256)
           handler: handleEquityCreated
       file: ./src/equity-factory.ts
   - kind: ethereum/contract
@@ -89,9 +92,32 @@ dataSources:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address,string,string,uint8,indexed address,string,uint256)
+        - event: StableCoinCreated(indexed address,string,string,uint8,indexed
+            address,string,uint256)
           handler: handleStableCoinCreated
       file: ./src/stable-coin-factory.ts
+  - kind: ethereum/contract
+    name: FixedYieldFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000005"
+      abi: FixedYieldFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_FixedYieldCreated
+      abis:
+        - name: FixedYieldFactory
+          file: ../contracts/artifacts/contracts/FixedYieldFactory.sol/FixedYieldFactory.json
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
+      eventHandlers:
+        - event: FixedYieldCreated(indexed address,indexed address,indexed
+            address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
+          handler: handleFixedYieldCreated
+      file: ./src/fixed-yield-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -332,3 +358,24 @@ templates:
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
       file: ./src/stable-coin.ts
+  - kind: ethereum/contract
+    name: FixedYield
+    network: settlemint
+    source:
+      abi: FixedYield
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_YieldClaimed
+        - YieldPeriod
+        - YieldMetricsData
+        - YieldMetricsStats
+      abis:
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
+      eventHandlers:
+        - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
+          handler: handleYieldClaimed
+      file: ./src/fixed-yield.ts

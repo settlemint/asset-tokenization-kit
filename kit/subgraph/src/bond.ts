@@ -2,9 +2,9 @@ import { Address, log, store } from '@graphprotocol/graph-ts';
 import {
   Account,
   BlockedAccount,
-  Event_BondRedeemed,
+  Event_BondRedemption,
   Event_Transfer,
-  Event_UnderlyingAssetTransfer,
+  Event_UnderlyingAssetMovement,
   Role,
 } from '../generated/schema';
 import {
@@ -89,49 +89,50 @@ export function handleTransfer(event: TransferEvent): void {
   eventTransfer.from = bond.id;
   eventTransfer.to = bond.id;
   eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact);
+  eventTransfer.value = toDecimals(eventTransfer.valueExact, bond.decimals);
 
   if (event.params.from.equals(Address.zero())) {
     bond.totalSupplyExact = bond.totalSupplyExact.plus(eventTransfer.valueExact);
-    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
   } else {
     from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(bond.id, from), bond.id, from.id);
+    let fromBalance = fetchBalance(balanceId(bond.id, from), bond.id, from.id, bond.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact);
+    fromBalance.value = toDecimals(fromBalance.valueExact, bond.decimals);
     fromBalance.save();
 
     eventTransfer.from = from.id;
     eventTransfer.fromBalance = fromBalance.id;
 
     // Record account activity for sender
-    recordAccountActivityData(from, bond.id, fromBalance.valueExact, false);
+    recordAccountActivityData(from, bond.id, fromBalance.valueExact, bond.decimals, false);
   }
 
   if (event.params.to.equals(Address.zero())) {
     bond.totalSupplyExact = bond.totalSupplyExact.minus(eventTransfer.valueExact);
-    bond.totalSupply = toDecimals(bond.totalSupplyExact);
+    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
   } else {
     to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(bond.id, to), bond.id, to.id);
+    let toBalance = fetchBalance(balanceId(bond.id, to), bond.id, to.id, bond.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact);
+    toBalance.value = toDecimals(toBalance.valueExact, bond.decimals);
     toBalance.save();
 
     eventTransfer.to = to.id;
     eventTransfer.toBalance = toBalance.id;
 
     // Record account activity for receiver
-    recordAccountActivityData(to, bond.id, toBalance.valueExact, false);
+    recordAccountActivityData(to, bond.id, toBalance.valueExact, bond.decimals, false);
   }
 
   eventTransfer.save();
+  bond.save();
 
   // Record transfer data
-  recordTransferData(bond.id, eventTransfer.valueExact, from, to);
+  recordTransferData(bond.id, eventTransfer.valueExact, bond.decimals, from, to);
 
   // Record supply data
-  recordAssetSupplyData(bond.id, bond.totalSupplyExact, 'Bond');
+  recordAssetSupplyData(bond.id, bond.totalSupplyExact, bond.decimals, 'Bond');
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
@@ -157,10 +158,10 @@ export function handleUserBlocked(event: UserBlockedEvent): void {
   }
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(bond.id, account), bond.id, account.id);
+  let balance = fetchBalance(balanceId(bond.id, account), bond.id, account.id, bond.decimals);
 
   // Record account activity with blocked status
-  recordAccountActivityData(account, bond.id, balance.valueExact, true);
+  recordAccountActivityData(account, bond.id, balance.valueExact, bond.decimals, true);
 }
 
 export function handleUserUnblocked(event: UserUnblockedEvent): void {
@@ -169,10 +170,10 @@ export function handleUserUnblocked(event: UserUnblockedEvent): void {
   store.remove('BlockedAccount', id.toHexString());
 
   let account = fetchAccount(event.params.user);
-  let balance = fetchBalance(balanceId(bond.id, account), bond.id, account.id);
+  let balance = fetchBalance(balanceId(bond.id, account), bond.id, account.id, bond.decimals);
 
   // Record account activity with unblocked status
-  recordAccountActivityData(account, bond.id, balance.valueExact, false);
+  recordAccountActivityData(account, bond.id, balance.valueExact, bond.decimals, false);
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
@@ -220,12 +221,13 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
   bond.save();
 
   // Create event record
-  let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.emitter = bond.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.account = account.id;
-  eventTransfer.amount = event.params.amount; // Positive amount for top-up
-  eventTransfer.save();
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'TOP_UP';
+  eventMovement.account = account.id;
+  eventMovement.amount = event.params.amount; // Positive amount for top-up
+  eventMovement.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
@@ -240,12 +242,13 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
   bond.save();
 
   // Create event record
-  let eventTransfer = new Event_UnderlyingAssetTransfer(eventId(event));
-  eventTransfer.emitter = bond.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.account = account.id;
-  eventTransfer.amount = event.params.amount.neg(); // Negative amount for withdrawal
-  eventTransfer.save();
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'WITHDRAW';
+  eventMovement.account = account.id;
+  eventMovement.amount = event.params.amount.neg(); // Negative amount for withdrawal
+  eventMovement.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);
@@ -255,20 +258,29 @@ export function handleBondRedeemed(event: BondRedeemedEvent): void {
   let bond = fetchBond(event.address);
   let holder = fetchAccount(event.params.holder);
 
-  // Update total redeemed amount
-  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
-  // Update underlying balance
-  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
-  bond.save();
-
   // Create event record
-  let eventRedeemed = new Event_BondRedeemed(eventId(event));
+  let eventRedeemed = new Event_BondRedemption(eventId(event));
   eventRedeemed.emitter = bond.id;
   eventRedeemed.timestamp = event.block.timestamp;
   eventRedeemed.holder = holder.id;
   eventRedeemed.bondAmount = event.params.bondAmount;
   eventRedeemed.underlyingAmount = event.params.underlyingAmount;
   eventRedeemed.save();
+
+  // Create movement record
+  let eventMovement = new Event_UnderlyingAssetMovement(eventId(event));
+  eventMovement.emitter = bond.id;
+  eventMovement.timestamp = event.block.timestamp;
+  eventMovement.action = 'REDEEM';
+  eventMovement.account = holder.id;
+  eventMovement.amount = event.params.underlyingAmount.neg(); // Negative amount for redeem
+  eventMovement.save();
+
+  // Update total redeemed amount
+  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
+  // Update underlying balance
+  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
+  bond.save();
 
   // Record bond metrics
   recordBondMetricsData(bond, event.block.timestamp);

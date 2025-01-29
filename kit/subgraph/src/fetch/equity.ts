@@ -24,7 +24,7 @@ export function fetchEquity(address: Address): Equity {
     equity.symbol = symbol.reverted ? '' : symbol.value;
     equity.decimals = decimals.reverted ? 18 : decimals.value;
     equity.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    equity.totalSupply = toDecimals(equity.totalSupplyExact);
+    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
     equity.isin = isin.reverted ? '' : isin.value;
     equity.equityClass = equityClass.reverted ? '' : equityClass.value;
     equity.equityCategory = equityCategory.reverted ? '' : equityCategory.value;

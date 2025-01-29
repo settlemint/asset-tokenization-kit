@@ -14,7 +14,7 @@ export function fetchAccount(address: Address): Account {
   }
 
   account.nativeBalanceExact = ethereum.getBalance(address);
-  account.nativeBalance = toDecimals(account.nativeBalanceExact);
+  account.nativeBalance = toDecimals(account.nativeBalanceExact, 18);
   account.save();
 
   return account;

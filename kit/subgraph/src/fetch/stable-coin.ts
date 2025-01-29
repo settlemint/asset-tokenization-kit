@@ -24,9 +24,9 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
     stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact);
+    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
     stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
-    stableCoin.collateral = toDecimals(stableCoin.collateralExact);
+    stableCoin.collateral = toDecimals(stableCoin.collateralExact, stableCoin.decimals);
     stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.asAccount = stableCoin.id;
     stableCoin.save();

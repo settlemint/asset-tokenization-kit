@@ -25,7 +25,7 @@ export async function AssetTable<Asset>({ dataAction, type, refetchInterval, ico
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <AssetTableClient
+        <AssetTableClient<Asset>
           refetchInterval={refetchInterval}
           type={type}
           dataAction={dataAction}
