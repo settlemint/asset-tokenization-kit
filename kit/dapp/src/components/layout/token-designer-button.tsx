@@ -1,7 +1,9 @@
 'use client';
 
+import { CreateBondForm } from '@/app/(private)/admin/bonds/_components/create-form/form';
 import { CreateCryptocurrencyForm } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/form';
-import { CreateTokenForm } from '@/app/(private)/admin/tokens/_components/create-token-form/create-token-form';
+import { CreateEquityForm } from '@/app/(private)/admin/equities/_components/create-form/form';
+import { CreateStablecoinForm } from '@/app/(private)/admin/stablecoins/_components/create-form/form';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -77,8 +79,14 @@ export function TokenDesignerButton() {
                 switch (tokenType) {
                   case 'Cryptocurrency':
                     return <CreateCryptocurrencyForm onClose={() => setTokenType(null)} />;
+                  case 'Stablecoin':
+                    return <CreateStablecoinForm onClose={() => setTokenType(null)} />;
+                  case 'Equity':
+                    return <CreateEquityForm onClose={() => setTokenType(null)} />;
+                  case 'Bond':
+                    return <CreateBondForm onClose={() => setTokenType(null)} />;
                   default:
-                    return <CreateTokenForm formId="create-token-form" tokenType={tokenType} />;
+                    return null;
                 }
               })()}
             </>
