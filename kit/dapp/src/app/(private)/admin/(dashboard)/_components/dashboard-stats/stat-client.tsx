@@ -1,9 +1,9 @@
 'use client';
+
 import { Stat, StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { DASHBOARD_STATS_QUERY_KEY } from './consts';
 import { getDashboardMetrics } from './data';
-
-export const DASHBOARD_STATS_QUERY_KEY = 'dashboard-stats';
 
 export function DashboardStatsClient() {
   const { data } = useSuspenseQuery({

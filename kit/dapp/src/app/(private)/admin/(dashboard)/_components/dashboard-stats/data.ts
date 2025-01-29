@@ -1,7 +1,10 @@
 'use server';
+
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { unstable_cache } from 'next/cache';
+import { DASHBOARD_STATS_QUERY_KEY } from './consts';
 
 const UsersQuery = hasuraGraphql(`
 query UsersQuery {
@@ -52,25 +55,7 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   }
 `);
 
-export type UsersData = {
-  totalUsers: number;
-  usersInLast24Hours: number;
-};
-
-export type ProcessedTransactionsData = {
-  totalTransactions: number;
-  transactionsInLast24Hours: number;
-};
-
-export type AssetsSupplyData = {
-  totalSupply: string;
-  breakdown: {
-    type: string;
-    supply: string;
-  }[];
-};
-
-export async function getUsersData(): Promise<UsersData> {
+async function getUsersData() {
   const data = await hasuraClient.request(UsersQuery);
 
   return {
@@ -79,7 +64,7 @@ export async function getUsersData(): Promise<UsersData> {
   };
 }
 
-export async function getProcessedTransactions(): Promise<ProcessedTransactionsData> {
+async function getProcessedTransactions() {
   const data = await portalClient.request(ProcessedTransactions, {
     processedAfter: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   });
@@ -95,7 +80,7 @@ const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
   return total.toString();
 };
 
-export async function getAssetsSupplyData(): Promise<AssetsSupplyData> {
+async function getAssetsSupplyData() {
   const data = await theGraphClientStarterkits.request(AssetsSupplyQuery);
 
   const breakdown = [
@@ -125,22 +110,33 @@ export async function getAssetsSupplyData(): Promise<AssetsSupplyData> {
   };
 }
 
-export type DashboardMetrics = {
-  usersData: UsersData;
-  processedTransactions: ProcessedTransactionsData;
-  assetsSupplyData: AssetsSupplyData;
-};
+export async function getDashboardMetrics() {
+  return await unstable_cache(
+    async () => {
+      console.log('[Revalidation]', 'Fetching dashboard metrics:', new Date().toISOString());
 
-export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-  const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
-    getUsersData(),
-    getProcessedTransactions(),
-    getAssetsSupplyData(),
-  ]);
+      const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
+        getUsersData(),
+        getProcessedTransactions(),
+        getAssetsSupplyData(),
+      ]);
+      console.log('[Revalidation]', 'Fetched dashboard metrics:', new Date().toISOString());
+      console.log('[Revalidation]', 'Dashboard metrics:', {
+        usersData,
+        processedTransactions,
+        assetsSupplyData,
+      });
 
-  return {
-    usersData,
-    processedTransactions,
-    assetsSupplyData,
-  };
+      return {
+        usersData,
+        processedTransactions,
+        assetsSupplyData,
+      };
+    },
+    [DASHBOARD_STATS_QUERY_KEY],
+    {
+      revalidate: 60,
+      tags: [DASHBOARD_STATS_QUERY_KEY],
+    }
+  )();
 }

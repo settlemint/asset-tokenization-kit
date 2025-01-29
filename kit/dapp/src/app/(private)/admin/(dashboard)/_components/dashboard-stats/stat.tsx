@@ -1,8 +1,9 @@
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import { DASHBOARD_STATS_QUERY_KEY } from './consts';
 import { getDashboardMetrics } from './data';
-import { DASHBOARD_STATS_QUERY_KEY, DashboardStatsClient } from './stat-client';
+import { DashboardStatsClient } from './stat-client';
 
 export async function DashboardStats() {
   const queryClient = getQueryClient();
