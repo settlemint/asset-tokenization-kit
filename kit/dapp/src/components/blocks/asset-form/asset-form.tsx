@@ -13,6 +13,7 @@ import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
+import { revalidateTags } from './revalidate-tags';
 
 export type AssetFormProps<
   ServerError,
@@ -25,6 +26,7 @@ export type AssetFormProps<
   children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
+  revalidateTags: string[];
   onClose?: () => void;
 };
 
@@ -35,7 +37,13 @@ export function AssetForm<
   CVE,
   CBAVE,
   FormContext = unknown,
->({ children, storeAction, resolverAction, onClose }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
+>({
+  children,
+  storeAction,
+  resolverAction,
+  onClose,
+  revalidateTags: tagsToRevalidate,
+}: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = children.length;
@@ -46,11 +54,14 @@ export function AssetForm<
 
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         if (data.data) {
           toast.promise(waitForTransactionMining(data.data), {
             loading: `Transaction to create ${data.input.name} (${data.input.symbol}) waiting to be mined`,
-            success: `${data.input.name} (${data.input.symbol}) created successfully on chain`,
+            success: async () => {
+              await revalidateTags(tagsToRevalidate);
+              return `${data.input.assetName} (${data.input.symbol}) created successfully on chain`;
+            },
             error: (error) => `Creation of ${data.input.name} (${data.input.symbol}) failed: ${error.message}`,
           });
         }
