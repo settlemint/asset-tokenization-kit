@@ -13,7 +13,7 @@ export function CreateStablecoinForm({
 }) {
   return (
     <AssetForm
-      title="Create Stablecoin"
+      revalidateTags={['stablecoins']}
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}

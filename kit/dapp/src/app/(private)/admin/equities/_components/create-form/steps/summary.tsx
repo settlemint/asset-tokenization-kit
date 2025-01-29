@@ -43,7 +43,7 @@ export function Summary() {
               <dt className="text-muted-foreground text-sm">Decimals</dt>
               <dd className="font-medium text-sm">{values.decimals}</dd>
             </div>
-            <div className="flex gap-2">
+            <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground">ISIN:</dt>
               <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
             </div>

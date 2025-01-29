@@ -13,7 +13,7 @@ export function CreateEquityForm({
 }) {
   return (
     <AssetForm
-      title="Create Equity"
+      revalidateTags={['equities']}
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onClose}

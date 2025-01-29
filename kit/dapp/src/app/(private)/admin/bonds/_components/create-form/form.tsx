@@ -13,10 +13,10 @@ export function CreateBondForm({
 }) {
   return (
     <AssetForm
-      title="Create Bond"
       storeAction={createBond}
       resolverAction={zodResolver(CreateBondFormSchema)}
       onClose={onClose}
+      revalidateTags={['bonds']}
     >
       <Basics />
       <Configuration />
