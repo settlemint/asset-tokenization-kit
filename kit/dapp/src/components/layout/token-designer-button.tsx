@@ -50,7 +50,7 @@ export function TokenDesignerButton() {
         <DropdownMenuTrigger asChild>
           <Button className="flex w-full items-center gap-2 text-sidebar-foreground">
             <Pencil className="size-4" />
-            {state === 'expanded' && <span>Token Designer</span>}
+            {state === 'expanded' && <span>Asset Designer</span>}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent

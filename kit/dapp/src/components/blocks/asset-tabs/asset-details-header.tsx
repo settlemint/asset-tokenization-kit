@@ -31,19 +31,19 @@ export function AssetDetailsHeader({ data }: AssetDetailsTabProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="default" className="flex items-center gap-2">
-                <span>Mint Tokens</span>
+                <span>Mint Assets</span>
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="px-4">
-              <DropdownMenuItem>Mint Tokens</DropdownMenuItem>
-              <DropdownMenuItem>Burn Tokens</DropdownMenuItem>
+              <DropdownMenuItem>Mint Assets</DropdownMenuItem>
+              <DropdownMenuItem>Burn Assets</DropdownMenuItem>
               <DropdownMenuItem>Update proven collateral</DropdownMenuItem>
               <DropdownMenuItem>Pause contract</DropdownMenuItem>
               <hr />
               <DropdownMenuItem>Add token admin</DropdownMenuItem>
               <DropdownMenuItem>Block user</DropdownMenuItem>
-              <DropdownMenuItem>Freeze user tokens</DropdownMenuItem>
+              <DropdownMenuItem>Freeze user Assets</DropdownMenuItem>
               <hr />
               <DropdownMenuItem>View transactions</DropdownMenuItem>
               <DropdownMenuItem className="text-muted-foreground">Create sale</DropdownMenuItem>

@@ -9,10 +9,11 @@ import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import type { DefaultValues, Path, Resolver } from 'react-hook-form';
+import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
+import { revalidateTags } from './revalidate-tags';
 
 export type AssetFormProps<
   ServerError,
@@ -23,10 +24,9 @@ export type AssetFormProps<
   FormContext = unknown,
 > = {
   children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
-  title: string;
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  defaultValues?: DefaultValues<Infer<S>>;
+  revalidateTags: string[];
   onClose?: () => void;
 };
 
@@ -39,11 +39,10 @@ export function AssetForm<
   FormContext = unknown,
 >({
   children,
-  title,
   storeAction,
   resolverAction,
-  defaultValues,
   onClose,
+  revalidateTags: tagsToRevalidate,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -55,11 +54,14 @@ export function AssetForm<
 
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         if (data.data) {
           toast.promise(waitForTransactionMining(data.data), {
             loading: `Transaction to create ${data.input.name} (${data.input.symbol}) waiting to be mined`,
-            success: `${data.input.name} (${data.input.symbol}) created successfully on chain`,
+            success: async () => {
+              await revalidateTags(tagsToRevalidate);
+              return `${data.input.assetName} (${data.input.symbol}) created successfully on chain`;
+            },
             error: (error) => `Creation of ${data.input.name} (${data.input.symbol}) failed: ${error.message}`,
           });
         }
@@ -88,7 +90,6 @@ export function AssetForm<
       },
     },
     formProps: {
-      defaultValues,
       mode: 'onSubmit',
       criteriaMode: 'all',
     },

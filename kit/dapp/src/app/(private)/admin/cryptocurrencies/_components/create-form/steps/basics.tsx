@@ -62,8 +62,6 @@ export function Basics() {
                 <Input
                   placeholder="18"
                   type="number"
-                  autoComplete="off"
-                  data-form-type="other"
                   value={value ?? ''}
                   onChange={(e) => {
                     const val = e.target.value === '' ? '' : Number(e.target.value);

@@ -9,7 +9,7 @@ export function NavHeader() {
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <a href="http://somewhere.com">
+          <a href="/admin">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
