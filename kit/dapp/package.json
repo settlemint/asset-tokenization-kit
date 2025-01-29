@@ -59,7 +59,7 @@
     "@tanstack/react-query-next-experimental": "5.65.1",
     "@tanstack/react-query-persist-client": "5.65.1",
     "@tanstack/react-table": "8.20.6",
-    "better-auth": "1.1.14",
+    "better-auth": "1.1.15",
     "better-auth-harmony": "1.2.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
