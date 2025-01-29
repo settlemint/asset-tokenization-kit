@@ -9,7 +9,7 @@ import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import type { DefaultValues, Path, Resolver } from 'react-hook-form';
+import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
@@ -23,10 +23,8 @@ export type AssetFormProps<
   FormContext = unknown,
 > = {
   children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
-  title: string;
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  defaultValues?: DefaultValues<Infer<S>>;
   onClose?: () => void;
 };
 
@@ -37,14 +35,7 @@ export function AssetForm<
   CVE,
   CBAVE,
   FormContext = unknown,
->({
-  children,
-  title,
-  storeAction,
-  resolverAction,
-  defaultValues,
-  onClose,
-}: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
+>({ children, storeAction, resolverAction, onClose }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = children.length;
@@ -88,7 +79,6 @@ export function AssetForm<
       },
     },
     formProps: {
-      defaultValues,
       mode: 'onSubmit',
       criteriaMode: 'all',
     },
