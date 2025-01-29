@@ -113,19 +113,11 @@ async function getAssetsSupplyData() {
 export async function getDashboardMetrics() {
   return await unstable_cache(
     async () => {
-      console.log('[Revalidation]', 'Fetching dashboard metrics:', new Date().toISOString());
-
       const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
         getUsersData(),
         getProcessedTransactions(),
         getAssetsSupplyData(),
       ]);
-      console.log('[Revalidation]', 'Fetched dashboard metrics:', new Date().toISOString());
-      console.log('[Revalidation]', 'Dashboard metrics:', {
-        usersData,
-        processedTransactions,
-        assetsSupplyData,
-      });
 
       return {
         usersData,
