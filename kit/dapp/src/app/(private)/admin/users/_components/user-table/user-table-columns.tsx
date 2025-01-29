@@ -5,9 +5,9 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
+import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User } from '@/lib/auth/types';
 import { createColumnHelper } from '@tanstack/react-table';
