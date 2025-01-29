@@ -13,7 +13,6 @@ export function CreateCryptocurrencyForm({
 }) {
   return (
     <AssetForm
-      title="Create Cryptocurrency"
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onClose}
