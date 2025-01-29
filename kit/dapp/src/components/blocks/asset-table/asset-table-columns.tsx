@@ -4,7 +4,7 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/evm-address-balances';
+import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { ColumnHelper } from '@tanstack/react-table';
 import { Pause, Play } from 'lucide-react';
 import type { ReactElement } from 'react';
