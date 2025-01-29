@@ -30,7 +30,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
     {
       label: 'User management',
       icon: <Users />,
-      path: '/users',
+      path: '/admin/users',
     },
     {
       label: 'Transactions',
