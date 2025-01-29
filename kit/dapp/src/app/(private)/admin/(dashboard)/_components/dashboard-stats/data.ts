@@ -34,62 +34,56 @@ const ProcessedTransactions = portalGraphql(`
   }
 `);
 
-const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
+const TransferFragment = theGraphGraphqlStarterkits(`
+  fragment TransferFragment on Event_Transfer {
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+  }
+`);
+
+const AssetFragment = theGraphGraphqlStarterkits(`
+  fragment AssetFragment on Asset {
+    id
+    totalSupply
+  }
+`);
+
+const AssetsSupplyQuery = theGraphGraphqlStarterkits(
+  `
   query AssetsSupply($timestamp: BigInt) {
     stableCoins {
-      id
-      totalSupply
+      ...AssetFragment
       transfers(where: {timestamp_gt: $timestamp}) {
-        from {
-          id
-        }
-        to {
-          id
-        }
-        value
+        ...TransferFragment
       }
     }
     bonds {
-      id
-      totalSupply
+      ...AssetFragment
       transfers(where: {timestamp_gt: $timestamp}) {
-        from {
-          id
-        }
-        to {
-          id
-        } 
-        value
+        ...TransferFragment
       }
     }
     equities {
-      id
-      totalSupply
+      ...AssetFragment
       transfers(where: {timestamp_gt: $timestamp}) {
-        from {
-          id
-        }
-        to {
-          id
-        }
-        value
+        ...TransferFragment
       }
     }
     cryptoCurrencies {
-      id
-      totalSupply
+      ...AssetFragment
       transfers(where: {timestamp_gt: $timestamp}) {
-        from {
-          id
-        }
-        to {
-          id
-        }
-        value
+        ...TransferFragment
       }
     }
   }
-`);
+`,
+  [TransferFragment, AssetFragment]
+);
 
 async function getUsersData() {
   const data = await hasuraClient.request(UsersQuery, {
