@@ -5,8 +5,7 @@ import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
-import { portalGraphql } from '@/lib/settlemint/portal';
-import { theGraphClientStarterkits } from '@/lib/settlemint/the-graph';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
 import { parseUnits } from 'viem';
 import { CreateCryptoCurrencyFormSchema } from './schema';
@@ -33,7 +32,7 @@ export const createCryptocurrency = actionClient
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
-    const data = await theGraphClientStarterkits.request(CreateCryptocurrency, {
+    const data = await portalClient.request(CreateCryptocurrency, {
       address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
       from: user.wallet,
       name: assetName,
