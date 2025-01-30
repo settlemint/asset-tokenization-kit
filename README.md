@@ -29,7 +29,7 @@
 There are two ways to use this starterkit:
 
 1. **Predeployed Setup** - Using pre-deployed contracts (fastest)
-2. **Customized Setup** - Deploy your own contracts and infrastructure
+2. **Customized Setup** - Deploy your own contracts
 
 ### Predeployed Setup (Fastest)
 
@@ -53,7 +53,7 @@ Browse to http://localhost:3000 to access the application. Create an account by 
 
 ### Customized Setup
 
-If you want to deploy your own contracts and infrastructure, follow these steps:
+If you want to deploy and use your customised contracts, subgraph, and ABIs, follow these steps:
 
 #### Prerequisites
 
@@ -78,7 +78,7 @@ bun run prod:deploy
 cd ../subgraph
 bun prod:deploy -- 47561  # Replace with your chain ID
 cd ../../
-bun settlemint connect # Refresh subgraph list
+bun settlemint connect # Refresh subgraph list to include your newly deployed subgraph
 
 # Setup dapp
 cd kit/dapp
