@@ -8,10 +8,8 @@ import { Bond } from "./Bond.sol";
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created bonds
 /// @custom:security-contact support@settlemint.com
 contract BondFactory {
-    error InvalidMaturityDate();
-    error InvalidFaceValue();
-    error InvalidUnderlyingAsset();
-    error InvalidISIN();
+    /// @notice Array of all bonds created by this factory
+    Bond[] public allBonds;
 
     /// @notice Emitted when a new bond token is created
     /// @param token The address of the newly created bond token
@@ -20,6 +18,8 @@ contract BondFactory {
     /// @param decimals The number of decimals for the bond
     /// @param owner The owner of the bond token
     /// @param isin The ISIN (International Securities Identification Number) of the bond
+    /// @param cap The cap for the token
+    /// @param maturityDate The timestamp when the bond matures
     /// @param faceValue The face value of the bond in underlying asset base units
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
     /// @param tokenCount The total number of bonds created so far
@@ -30,13 +30,12 @@ contract BondFactory {
         uint8 decimals,
         address indexed owner,
         string isin,
+        uint256 cap,
+        uint256 maturityDate,
         uint256 faceValue,
         address indexed underlyingAsset,
         uint256 tokenCount
     );
-
-    /// @notice Array of all bonds created by this factory
-    Bond[] public allBonds;
 
     /// @notice Returns the total number of bonds created by this factory
     /// @return The length of the allBonds array
@@ -50,6 +49,7 @@ contract BondFactory {
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param isin The ISIN (International Securities Identification Number) of the bond
+    /// @param cap The cap for the token
     /// @param maturityDate The timestamp when the bond matures
     /// @param faceValue The face value of the bond in underlying asset base units
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
@@ -59,6 +59,7 @@ contract BondFactory {
         string memory symbol,
         uint8 decimals,
         string memory isin,
+        uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
         address underlyingAsset
@@ -66,19 +67,28 @@ contract BondFactory {
         external
         returns (address bond)
     {
-        if (maturityDate <= block.timestamp) revert InvalidMaturityDate();
-        if (faceValue == 0) revert InvalidFaceValue();
-        if (underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
-        if (bytes(isin).length != 12) revert InvalidISIN();
+        bytes32 salt =
+            keccak256(abi.encode(name, symbol, msg.sender, isin, cap, maturityDate, faceValue, underlyingAsset));
 
-        bytes32 salt = keccak256(abi.encode(name, symbol, msg.sender, isin, maturityDate, faceValue, underlyingAsset));
-
-        Bond newBond =
-            new Bond{ salt: salt }(name, symbol, decimals, msg.sender, isin, maturityDate, faceValue, underlyingAsset);
+        Bond newBond = new Bond{ salt: salt }(
+            name, symbol, decimals, msg.sender, isin, cap, maturityDate, faceValue, underlyingAsset
+        );
 
         bond = address(newBond);
         allBonds.push(newBond);
 
-        emit BondCreated(bond, name, symbol, decimals, msg.sender, isin, faceValue, underlyingAsset, allBonds.length);
+        emit BondCreated(
+            bond,
+            name,
+            symbol,
+            decimals,
+            msg.sender,
+            isin,
+            cap,
+            maturityDate,
+            faceValue,
+            underlyingAsset,
+            allBonds.length
+        );
     }
 }

@@ -16,6 +16,7 @@ export function fetchBond(address: Address): Bond {
     let isMatured = endpoint.try_isMatured();
     let paused = endpoint.try_paused();
     let isin = endpoint.try_isin();
+    let cap = endpoint.try_cap();
     let faceValue = endpoint.try_faceValue();
     let underlyingAsset = endpoint.try_underlyingAsset();
     let underlyingBalance = endpoint.try_underlyingAssetBalance();
@@ -27,6 +28,8 @@ export function fetchBond(address: Address): Bond {
     bond.name = name.reverted ? '' : name.value;
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
+    bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
+    bond.cap = toDecimals(bond.capExact, bond.decimals);
     bond.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
     bond.maturityDate = maturityDate.reverted ? BigInt.zero() : maturityDate.value;

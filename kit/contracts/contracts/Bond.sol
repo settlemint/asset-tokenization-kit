@@ -5,6 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
@@ -18,6 +19,7 @@ import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 /// @custom:security-contact support@settlemint.com
 contract Bond is
     ERC20,
+    ERC20Capped,
     ERC20Burnable,
     ERC20Pausable,
     AccessControl,
@@ -100,6 +102,7 @@ contract Bond is
     /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param isin_ The ISIN (International Securities Identification Number) of the bond
+    /// @param _cap The cap for the token
     /// @param _maturityDate Timestamp when the bond matures
     /// @param _faceValue The face value of the bond in underlying asset base units
     /// @param _underlyingAsset The address of the underlying asset contract used for face value denomination
@@ -109,12 +112,14 @@ contract Bond is
         uint8 decimals_,
         address initialOwner,
         string memory isin_,
+        uint256 _cap,
         uint256 _maturityDate,
         uint256 _faceValue,
         address _underlyingAsset
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC20Capped(_cap)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
@@ -381,6 +386,32 @@ contract Bond is
         return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
+    /// @notice Updates token balances during transfers
+    /// @dev Internal function that handles balance updates and voting power adjustments
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param value The amount being transferred in base units
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    )
+        internal
+        virtual
+        override(ERC20, ERC20Pausable, ERC20Capped, ERC20Blocklist, ERC20Custodian)
+    {
+        // Only allow burning during redemption
+        if (isMatured && (to != address(0))) {
+            revert BondAlreadyMatured();
+        }
+
+        super._update(from, to, value);
+
+        // Update historical balances
+        _updateHistoricalBalance(from, balanceOf(from));
+        _updateHistoricalBalance(to, balanceOf(to));
+    }
+
     /// @notice Approves spending of tokens
     /// @dev Internal function that handles allowance updates across inherited features
     /// @param owner The token owner
@@ -394,50 +425,21 @@ contract Bond is
         bool emitEvent
     )
         internal
+        virtual
         override(ERC20, ERC20Blocklist)
     {
         super._approve(owner, spender, value, emitEvent);
     }
 
-    /// @notice Updates token balances during transfers
-    /// @dev Internal function that handles balance updates and voting power adjustments
-    /// @param from The sender address
-    /// @param to The recipient address
-    /// @param value The amount being transferred in base units
-    function _update(
-        address from,
-        address to,
-        uint256 value
-    )
-        internal
-        override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian)
-    {
-        // Allow burning during redemption (when to is address(0) and bond is matured)
-        if (to == address(0) && isMatured) {
-            super._update(from, to, value);
-        } else {
-            if (isMatured) revert BondAlreadyMatured();
-            super._update(from, to, value);
-        }
-
-        // Store historical balances for affected addresses
-        if (from != address(0)) {
-            _updateHistoricalBalance(from);
-        }
-        if (to != address(0)) {
-            _updateHistoricalBalance(to);
-        }
-    }
-
     /// @dev Updates historical balance for an address, avoiding duplicate timestamps
-    function _updateHistoricalBalance(address account) private {
+    function _updateHistoricalBalance(address account, uint256 balance) private {
         uint256[] storage timestamps = _addressTimestamps[account];
         if (timestamps.length == 0 || timestamps[timestamps.length - 1] < block.timestamp) {
             timestamps.push(block.timestamp);
-            _historicalBalances[account][block.timestamp] = balanceOf(account);
+            _historicalBalances[account][block.timestamp] = balance;
         } else if (timestamps[timestamps.length - 1] == block.timestamp) {
             // Update the balance for the current timestamp if it already exists
-            _historicalBalances[account][block.timestamp] = balanceOf(account);
+            _historicalBalances[account][block.timestamp] = balance;
         }
     }
 

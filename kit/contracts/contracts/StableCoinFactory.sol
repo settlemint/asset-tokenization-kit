@@ -8,9 +8,6 @@ import { StableCoin } from "./StableCoin.sol";
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
 contract StableCoinFactory {
-    error InvalidLiveness();
-    error InvalidISIN();
-
     /// @notice Emitted when a new stablecoin token is created
     /// @param token The address of the newly created token
     /// @param name The name of the token
@@ -56,9 +53,6 @@ contract StableCoinFactory {
         external
         returns (address token)
     {
-        if (collateralLivenessSeconds == 0) revert InvalidLiveness();
-        if (bytes(isin).length != 0 && bytes(isin).length != 12) revert InvalidISIN();
-
         bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds));
 
         StableCoin newToken =
