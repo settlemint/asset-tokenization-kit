@@ -21,7 +21,7 @@ export function StatValue({ className, children }: StatComponentProps) {
   return <div className={cn('my-2 font-bold text-3xl', className)}>{children}</div>;
 }
 
-const statSubtextVariants = cva('font-medium', {
+const statSubtextVariants = cva('', {
   variants: {
     variant: {
       positive: 'font-medium text-emerald-700 dark:text-emerald-500',

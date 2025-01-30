@@ -28,29 +28,39 @@ export function DashboardStatsClient() {
       <Stat>
         <StatLabel>Assets supply</StatLabel>
         <StatValue>{data.assetsSupplyData.totalSupply.toLocaleString()}</StatValue>
-        <StatSubtext variant={getVariantForDifference(data.assetsSupplyData.difference24Hours)}>
-          {data.assetsSupplyData.sign}
-          {data.assetsSupplyData.difference24Hours}
+        <StatSubtext>
+          {data.assetsSupplyData.breakdown
+            .slice(0, 2)
+            .map((item) => `${item.supply.toLocaleString()} ${item.type}`)
+            .join(' | ')}
+          <br />
+          {data.assetsSupplyData.breakdown
+            .slice(2)
+            .map((item) => `${item.supply.toLocaleString()} ${item.type}`)
+            .join(' | ')}
         </StatSubtext>
-        <StatSubtext className="ml-2">Past 24 hours</StatSubtext>
       </Stat>
 
       <Stat>
         <StatLabel>Processed transactions</StatLabel>
         <StatValue>{data.processedTransactions.totalTransactions.toLocaleString()}</StatValue>
-        <StatSubtext variant={getVariantForDifference(data.processedTransactions.difference24Hours.toString())}>
-          +{data.processedTransactions.difference24Hours}
-        </StatSubtext>
-        <StatSubtext className="ml-2">Past 24 hours</StatSubtext>
+        <div className="flex items-center">
+          <StatSubtext variant={getVariantForDifference(data.processedTransactions.difference24Hours.toString())}>
+            +{data.processedTransactions.difference24Hours}
+          </StatSubtext>
+          <StatSubtext className="ml-2">Past 24 hours</StatSubtext>
+        </div>
       </Stat>
 
       <Stat>
         <StatLabel>Users</StatLabel>
         <StatValue>{data.usersData.totalUsers.toLocaleString()}</StatValue>
-        <StatSubtext variant={getVariantForDifference(data.usersData.difference24Hours.toString())}>
-          +{data.usersData.difference24Hours}
-        </StatSubtext>
-        <StatSubtext className="ml-2">Past 24 hours</StatSubtext>
+        <div className="flex items-center">
+          <StatSubtext variant={getVariantForDifference(data.usersData.difference24Hours.toString())}>
+            +{data.usersData.difference24Hours}
+          </StatSubtext>
+          <StatSubtext className="ml-2">Past 24 hours</StatSubtext>
+        </div>
       </Stat>
     </div>
   );
