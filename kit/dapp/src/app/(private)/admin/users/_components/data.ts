@@ -42,7 +42,7 @@ export async function getUser(id: string) {
       if (!user) {
         throw new Error(`User with id ${id} not found`);
       }
-      return user;
+      return user as User;
     },
     [`user-${id}`],
     {

@@ -1,6 +1,6 @@
+import type { User } from '@/lib/auth/types';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import type { User } from 'better-auth';
 import { type ReactNode, Suspense } from 'react';
 import { UserDetailsTabs } from './user-details-tab';
 
