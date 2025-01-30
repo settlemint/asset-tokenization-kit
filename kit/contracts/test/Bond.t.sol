@@ -5,6 +5,8 @@ import { Test } from "forge-std/Test.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 
+import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
+
 contract BondTest is Test {
     Bond public bond;
     ERC20Mock public underlyingAsset;
@@ -175,8 +177,8 @@ contract BondTest is Test {
     // Role-based access control tests
     function test_OnlySupplyManagementCanMint() public {
         vm.prank(owner);
-        bond.mint(user1, 100e18);
-        assertEq(bond.balanceOf(user1), 100e18);
+        bond.mint(user1, toDecimals(100));
+        assertEq(bond.balanceOf(user1), toDecimals(100));
 
         vm.startPrank(user1);
         vm.expectRevert(
@@ -184,7 +186,7 @@ contract BondTest is Test {
                 "AccessControlUnauthorizedAccount(address,bytes32)", user1, bond.SUPPLY_MANAGEMENT_ROLE()
             )
         );
-        bond.mint(user1, 100e18);
+        bond.mint(user1, toDecimals(100));
         vm.stopPrank();
     }
 
@@ -739,7 +741,7 @@ contract BondTest is Test {
         uint256 remainingToCap = CAP - bond.totalSupply();
         uint256 exceedingAmount = remainingToCap + 1;
 
-        vm.expectRevert("ERC20Capped: cap exceeded");
+        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
         bond.mint(owner, exceedingAmount);
 
         // Should be able to mint up to the cap
@@ -747,7 +749,7 @@ contract BondTest is Test {
         assertEq(bond.totalSupply(), CAP, "Total supply should equal cap");
 
         // Verify can't mint even 1 more token
-        vm.expectRevert("ERC20Capped: cap exceeded");
+        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
         bond.mint(owner, 1);
 
         vm.stopPrank();
@@ -764,7 +766,7 @@ contract BondTest is Test {
         bond.mint(owner, burnAmount);
 
         // Try to mint more than the cap
-        vm.expectRevert("ERC20Capped: cap exceeded");
+        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
         bond.mint(owner, 1);
 
         vm.stopPrank();
