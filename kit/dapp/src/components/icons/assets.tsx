@@ -9,6 +9,7 @@ export function AssetIcon({ className, value, ...props }: ComponentPropsWithoutR
       style={{
         width: '26px',
         height: '25px',
+        marginLeft: '-4px',
       }}
       aria-label="Asset Icon"
       {...props}
