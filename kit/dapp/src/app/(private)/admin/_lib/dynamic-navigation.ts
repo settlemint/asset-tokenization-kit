@@ -1,12 +1,13 @@
-import type { NavGroup, NavItem } from '@/components/layout/nav-main';
+import type {} from '@/components/layout/nav-main';
 import {
   theGraphClientStarterkits as theGraphClient,
   theGraphGraphqlStarterkits as theGraphGraphql,
 } from '@/lib/settlemint/the-graph';
-import type { FragmentOf } from '@settlemint/sdk-thegraph';
+import { unstable_cache } from 'next/cache';
+import { ASSETS_SIDEBAR_CACHE_KEY } from './consts';
 
-const TokenFragment = theGraphGraphql(`
-  fragment TokenFragment on Asset {
+const AssetsFragment = theGraphGraphql(`
+  fragment AssetsFragment on Asset {
     symbol
     name
     id
@@ -17,85 +18,25 @@ const NavigationQuery = theGraphGraphql(
   `
   query NavigationQuery {
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc) {
-      ...TokenFragment
+      ...AssetsFragment
     }
     equities(orderBy: totalSupplyExact, orderDirection: desc) {
-      ...TokenFragment
+      ...AssetsFragment
     }
     bonds(orderBy: totalSupplyExact, orderDirection: desc) {
-      ...TokenFragment
+      ...AssetsFragment
     }
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc) {
-      ...TokenFragment
+      ...AssetsFragment
     }
   }
 `,
-  [TokenFragment]
+  [AssetsFragment]
 );
 
-const createTokenItems = (tokens: FragmentOf<typeof TokenFragment>[], type: string): NavItem[] => {
-  const items = tokens.slice(0, 5).map<NavItem>((token) => ({
-    label: token.symbol ?? token.name ?? token.id,
-    path: `/admin/${type}/${token.id}`,
-  }));
-
-  if (tokens.length > 5) {
-    items.push({
-      label: 'More...',
-      path: `/admin/${type}`,
-    });
-  }
-
-  return items;
-};
-
-const TOKEN_SECTIONS = [
-  {
-    key: 'cryptoCurrencies',
-    title: 'Crypto Currencies',
-    type: 'cryptocurrencies',
-    iconName: 'Bitcoin' as const,
-  },
-  {
-    key: 'stableCoins',
-    title: 'Stable Coins',
-    type: 'stablecoins',
-    iconName: 'Coins' as const,
-  },
-  {
-    key: 'equities',
-    title: 'Equities',
-    type: 'equities',
-    iconName: 'Eclipse' as const,
-  },
-  {
-    key: 'bonds',
-    title: 'Bonds',
-    type: 'bonds',
-    iconName: 'TicketCheck' as const,
-  },
-] as const;
-
-export async function createTokenManagementNavGroup(role: 'admin' | 'issuer' | 'user'): Promise<NavGroup | null> {
-  const navigationData = await theGraphClient.request(NavigationQuery);
-
-  if (role === 'user') {
-    return null;
-  }
-
-  return {
-    groupTitle: 'Token management',
-    items: TOKEN_SECTIONS.reduce<NavItem[]>((acc, section) => {
-      const tokens = navigationData[section.key];
-
-      const items = createTokenItems(tokens, section.type);
-      acc.push({
-        label: section.title,
-        path: `/admin/${section.type}`,
-        badge: tokens.length.toString(),
-        subItems: items,
-      });
-      return acc;
-    }, []),
-  };
+export async function getAssets() {
+  return await unstable_cache(() => theGraphClient.request(NavigationQuery), [ASSETS_SIDEBAR_CACHE_KEY], {
+    revalidate: 60,
+    tags: [ASSETS_SIDEBAR_CACHE_KEY],
+  })();
 }
