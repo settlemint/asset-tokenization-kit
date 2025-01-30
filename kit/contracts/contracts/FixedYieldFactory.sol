@@ -10,11 +10,6 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created schedules
 /// @custom:security-contact support@settlemint.com
 contract FixedYieldFactory {
-    error InvalidToken();
-    error InvalidStartDate();
-    error InvalidEndDate();
-    error InvalidRate();
-    error InvalidInterval();
     error TokenNotYieldEnabled();
     error ScheduleSetupFailed();
     error NotAuthorized();
@@ -70,12 +65,7 @@ contract FixedYieldFactory {
         external
         returns (address)
     {
-        if (address(token) == address(0)) revert InvalidToken();
         if (!token.canManageYield(msg.sender)) revert NotAuthorized();
-        if (startTime <= block.timestamp) revert InvalidStartDate();
-        if (endTime <= startTime) revert InvalidEndDate();
-        if (rate == 0) revert InvalidRate();
-        if (interval == 0) revert InvalidInterval();
 
         bytes32 salt = keccak256(abi.encodePacked(address(token), startTime, endTime, rate, interval));
         address schedule =

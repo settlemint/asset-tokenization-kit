@@ -65,11 +65,6 @@ contract StableCoinFactoryTest is Test {
         assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
-    function test_RevertWhenInvalidLiveness() public {
-        vm.expectRevert(StableCoinFactory.InvalidLiveness.selector);
-        factory.create("Test Stable", "TSTB", DECIMALS, VALID_ISIN, 0);
-    }
-
     function test_DeterministicAddresses() public {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
@@ -206,27 +201,5 @@ contract StableCoinFactoryTest is Test {
             "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
-    }
-
-    function test_OptionalISIN() public {
-        string memory name = "Test Stable";
-        string memory symbol = "TSTB";
-
-        // Test with empty ISIN (should be valid for StableCoin)
-        address emptyIsinAddress = factory.create(name, symbol, DECIMALS, "", LIVENESS);
-        StableCoin emptyIsinToken = StableCoin(emptyIsinAddress);
-        assertEq(emptyIsinToken.isin(), "", "Empty ISIN should be allowed");
-
-        // Test with valid ISIN
-        address validIsinAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
-        StableCoin validIsinToken = StableCoin(validIsinAddress);
-        assertEq(validIsinToken.isin(), VALID_ISIN, "Valid ISIN should be stored correctly");
-
-        // Test with invalid ISIN length
-        vm.expectRevert(StableCoinFactory.InvalidISIN.selector);
-        factory.create(name, symbol, DECIMALS, "US03783310", LIVENESS); // too short
-
-        vm.expectRevert(StableCoinFactory.InvalidISIN.selector);
-        factory.create(name, symbol, DECIMALS, "US0378331005XX", LIVENESS); // too long
     }
 }

@@ -61,8 +61,6 @@ contract EquityFactory {
         external
         returns (address token)
     {
-        if (bytes(isin).length != 12) revert InvalidISIN();
-
         bytes32 salt = keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, msg.sender, isin));
 
         Equity newToken =

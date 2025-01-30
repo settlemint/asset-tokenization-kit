@@ -31,7 +31,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const createBondUSTB = m.call(
     bondFactory,
     'create',
-    ['US Treasury Bond', 'USTB', 2, 'US0378331005', oneYearFromNow, faceValue, stableCoin],
+    ['US Treasury Bond', 'USTB', 2, 'US0378331005', 1000 * 10 ** 2, oneYearFromNow, faceValue, stableCoin],
     {
       id: 'createBondUSTB',
       from: deployer,

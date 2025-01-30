@@ -74,6 +74,8 @@ type Bond implements Asset & UnderlyingAssetHolder @entity {
   name: String
   symbol: String
   decimals: Int!
+  cap: BigDecimal!
+  capExact: BigInt!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   maturityDate: BigInt!
