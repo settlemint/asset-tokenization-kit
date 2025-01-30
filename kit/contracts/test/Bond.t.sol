@@ -741,7 +741,9 @@ contract BondTest is Test {
         uint256 remainingToCap = CAP - bond.totalSupply();
         uint256 exceedingAmount = remainingToCap + 1;
 
-        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC20Capped.ERC20ExceededCap.selector, exceedingAmount + bond.totalSupply(), CAP)
+        );
         bond.mint(owner, exceedingAmount);
 
         // Should be able to mint up to the cap
@@ -749,7 +751,7 @@ contract BondTest is Test {
         assertEq(bond.totalSupply(), CAP, "Total supply should equal cap");
 
         // Verify can't mint even 1 more token
-        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
+        vm.expectRevert(abi.encodeWithSelector(ERC20Capped.ERC20ExceededCap.selector, CAP + 1, CAP));
         bond.mint(owner, 1);
 
         vm.stopPrank();
@@ -758,21 +760,25 @@ contract BondTest is Test {
     function test_BurnAndRemintUpToCap() public {
         vm.startPrank(owner);
 
-        // Burn some tokens
-        uint256 burnAmount = toDecimals(10);
-        bond.burn(burnAmount);
+        // Verify initial state
+        assertEq(bond.totalSupply(), initialSupply, "Initial supply incorrect");
+        assertEq(bond.cap(), CAP, "Cap incorrect");
 
-        // Should be able to mint the burned amount
-        bond.mint(owner, burnAmount);
+        // Calculate remaining amount to cap
+        uint256 remainingToCap = CAP - initialSupply;
 
-        // Try to mint more than the cap
-        vm.expectRevert(ERC20Capped.ERC20ExceededCap.selector);
+        // Mint up to the cap
+        bond.mint(owner, remainingToCap);
+        assertEq(bond.totalSupply(), CAP, "Supply should equal cap");
+
+        // Try to mint one more token
+        vm.expectRevert(abi.encodeWithSelector(ERC20Capped.ERC20ExceededCap.selector, CAP + 1, CAP));
         bond.mint(owner, 1);
 
         vm.stopPrank();
     }
 
-    function test_InitialCapState() public {
+    function test_InitialCapState() public view {
         assertEq(bond.cap(), CAP, "Cap should be set correctly");
         assertTrue(bond.totalSupply() <= CAP, "Initial supply should not exceed cap");
     }

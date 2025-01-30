@@ -19,14 +19,14 @@ import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 /// @custom:security-contact support@settlemint.com
 contract Bond is
     ERC20,
+    ERC20Capped,
     ERC20Burnable,
     ERC20Pausable,
     AccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
-    ERC20Yield,
-    ERC20Capped
+    ERC20Yield
 {
     /// @notice Custom errors for the Bond contract
     error BondAlreadyMatured();
@@ -398,23 +398,18 @@ contract Bond is
     )
         internal
         virtual
-        override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian, ERC20Capped)
+        override(ERC20, ERC20Pausable, ERC20Capped, ERC20Blocklist, ERC20Custodian)
     {
-        // Allow burning during redemption (when to is address(0) and bond is matured)
-        if (to == address(0) && isMatured) {
-            super._update(from, to, value);
-        } else {
-            if (isMatured) revert BondAlreadyMatured();
-            super._update(from, to, value);
+        // Only allow burning during redemption
+        if (isMatured && (to != address(0))) {
+            revert BondAlreadyMatured();
         }
 
-        // Store historical balances for affected addresses
-        if (from != address(0)) {
-            _updateHistoricalBalance(from);
-        }
-        if (to != address(0)) {
-            _updateHistoricalBalance(to);
-        }
+        super._update(from, to, value);
+
+        // Update historical balances
+        _updateHistoricalBalance(from, balanceOf(from));
+        _updateHistoricalBalance(to, balanceOf(to));
     }
 
     /// @notice Approves spending of tokens
@@ -437,14 +432,14 @@ contract Bond is
     }
 
     /// @dev Updates historical balance for an address, avoiding duplicate timestamps
-    function _updateHistoricalBalance(address account) private {
+    function _updateHistoricalBalance(address account, uint256 balance) private {
         uint256[] storage timestamps = _addressTimestamps[account];
         if (timestamps.length == 0 || timestamps[timestamps.length - 1] < block.timestamp) {
             timestamps.push(block.timestamp);
-            _historicalBalances[account][block.timestamp] = balanceOf(account);
+            _historicalBalances[account][block.timestamp] = balance;
         } else if (timestamps[timestamps.length - 1] == block.timestamp) {
             // Update the balance for the current timestamp if it already exists
-            _historicalBalances[account][block.timestamp] = balanceOf(account);
+            _historicalBalances[account][block.timestamp] = balance;
         }
     }
 
