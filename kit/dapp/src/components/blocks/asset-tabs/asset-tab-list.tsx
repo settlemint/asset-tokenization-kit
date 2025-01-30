@@ -7,12 +7,13 @@ interface AssetDetailsTabProps {
   id: string;
   type: TokenTypeValue;
   children?: ReactNode;
+  activeTab: string;
 }
 
-export function AssetDetailsTabs({ id, type, children }: AssetDetailsTabProps) {
+export function AssetTabList({ id, type, children, activeTab }: AssetDetailsTabProps) {
   return (
-    <div className="AssetDetailsTabs relative space-y-2">
-      <Tabs defaultValue="details" className="">
+    <div className="AssetTabList relative space-y-2">
+      <Tabs defaultValue={activeTab} className="">
         <TabsList className="mt-24 grid w-fit min-w-fit grid-cols-5 gap-x-5">
           <TabsTrigger value="details">
             <Link href={`/admin/stablecoins/${id}`}>Details</Link>

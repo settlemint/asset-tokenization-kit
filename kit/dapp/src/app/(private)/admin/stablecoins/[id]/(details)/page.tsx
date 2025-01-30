@@ -1,9 +1,8 @@
-import { AssetDetails } from '@/components/blocks/asset-tabs/asset-details';
-import { icons } from '../../_components/columns';
+import { AssetTab } from '@/components/blocks/asset-tabs/asset-tab';
 import { type StableCoinAsset, getStableCoin } from '../../_components/data';
-import { AssetDetailsClient } from '../_components/asset-details-client';
+import { AssetDetails } from '../_components/tabs/details/asset-details';
 
-export default async function StableCoinDetailPage({
+export default async function StableCoinDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -11,14 +10,8 @@ export default async function StableCoinDetailPage({
   const { id } = await params;
 
   return (
-    <AssetDetails<StableCoinAsset> id={id} type="stablecoin" dataAction={getStableCoin}>
-      <AssetDetailsClient<StableCoinAsset>
-        id={id}
-        refetchInterval={5000}
-        type="stablecoin"
-        dataAction={getStableCoin}
-        icons={icons}
-      />
-    </AssetDetails>
+    <AssetTab<StableCoinAsset> id={id} type="stablecoin" dataAction={getStableCoin} activeTab="details">
+      <AssetDetails<StableCoinAsset> id={id} refetchInterval={5000} type="stablecoin" dataAction={getStableCoin} />
+    </AssetTab>
   );
 }

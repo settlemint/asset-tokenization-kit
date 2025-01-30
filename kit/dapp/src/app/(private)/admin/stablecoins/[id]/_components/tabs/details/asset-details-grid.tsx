@@ -2,7 +2,7 @@ import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar
 import { Card, CardContent } from '@/components/ui/card';
 import { shortHex } from '@/lib/hex';
 import type { ComponentType } from 'react';
-import type { StableCoinAsset } from '../../_components/data';
+import type { StableCoinAsset } from '../../../../_components/data';
 
 export function AssetDetailsGrid<Asset extends StableCoinAsset>({
   data,

@@ -17,9 +17,9 @@ interface AssetDetailsTabProps {
   };
 }
 
-export function AssetDetailsHeader({ data }: AssetDetailsTabProps) {
+export function AssetTabHeader({ data }: AssetDetailsTabProps) {
   return (
-    <div className="AssetDetailsHeader absolute top-0 right-0 left-0 flex flex-col">
+    <div className="AssetTabHeader absolute top-0 right-0 left-0 flex flex-col">
       <CollapsedBreadcrumbs routeSegments={['admin', 'stablecoins', data.id, 'details']} hideRoot={true} />
       <div className="flex items-center justify-between gap-4 space-y-2">
         <div className="mt-2 flex items-center gap-4 space-y-2">
