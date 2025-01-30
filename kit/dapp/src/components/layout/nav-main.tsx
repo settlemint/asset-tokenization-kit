@@ -57,13 +57,13 @@ function NavItemComponent({ item }: { item: NavItem }) {
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
-            <div className="flex items-center gap-2">
-              {Icon ?? null}
-              <span>{item.label}</span>
-            </div>
-            <div className="ml-auto flex items-center gap-2">
-              {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
-              <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+            <div>{Icon ?? null}</div>
+            <div className="flex w-full items-center justify-between">
+              <div>{item.label}</div>
+              <div className="flex items-center gap-2">
+                {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
+                <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              </div>
             </div>
           </SidebarMenuButton>
         </CollapsibleTrigger>
