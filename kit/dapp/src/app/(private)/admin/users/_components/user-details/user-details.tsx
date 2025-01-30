@@ -14,7 +14,7 @@ export async function UserDetails({ id, children, dataAction }: UserDetailsProps
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: [id],
+    queryKey: [`user-${id}`],
     queryFn: () => dataAction(id),
   });
 
