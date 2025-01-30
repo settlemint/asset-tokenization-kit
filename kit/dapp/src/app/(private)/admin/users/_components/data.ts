@@ -6,7 +6,7 @@ import { headers } from 'next/headers';
 
 export async function getUsers() {
   const headersToSet = await headers();
-  return await unstable_cache(
+  return unstable_cache(
     async () => {
       const { users } = await auth.api.listUsers({
         query: {
@@ -28,7 +28,7 @@ export async function getUsers() {
 
 export async function getUser(id: string) {
   const headersToSet = await headers();
-  return await unstable_cache(
+  return unstable_cache(
     async () => {
       const { users } = await auth.api.listUsers({
         query: {

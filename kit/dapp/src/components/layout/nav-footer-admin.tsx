@@ -1,5 +1,6 @@
 'use client';
 
+import { NewOrganizationDialog } from '@/components/blocks/new-organization/new-organization';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,13 +15,14 @@ import { Building2, ChevronsUpDown, Plus, Wallet2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function NavFooterAdmin() {
   const { isMobile } = useSidebar();
   const { data: organizations } = authClient.useListOrganizations();
   const { data: activeOrganization } = authClient.useActiveOrganization();
   const router = useRouter();
+  const [isCreateOrganizationOpen, setIsCreateOrganizationOpen] = useState(false);
 
   useEffect(() => {
     if (!activeOrganization) {
@@ -88,7 +90,7 @@ export function NavFooterAdmin() {
                 {team.name}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem className="gap-2 p-2" onClick={() => setIsCreateOrganizationOpen(true)}>
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
@@ -106,6 +108,7 @@ export function NavFooterAdmin() {
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+      <NewOrganizationDialog open={isCreateOrganizationOpen} onOpenChange={setIsCreateOrganizationOpen} />
     </SidebarMenu>
   );
 }
