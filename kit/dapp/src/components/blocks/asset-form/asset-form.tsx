@@ -54,17 +54,22 @@ export function AssetForm<
 
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
-      onSuccess: async (data) => {
-        if (data.data) {
-          toast.promise(waitForTransactionMining(data.data), {
-            loading: `Transaction to create ${data.input.name} (${data.input.symbol}) waiting to be mined`,
-            success: async () => {
-              await revalidateTags(tagsToRevalidate);
-              return `${data.input.assetName} (${data.input.symbol}) created successfully on chain`;
-            },
-            error: (error) => `Creation of ${data.input.name} (${data.input.symbol}) failed: ${error.message}`,
-          });
+      onSuccess: async ({ data, input }) => {
+        if (!data) {
+          toast.error('Server error. Please try again or contact support if the issue persists.');
+          resetFormAndAction();
+          onClose?.();
+          return;
         }
+        toast.promise(waitForTransactionMining(data), {
+          loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
+          success: async () => {
+            await revalidateTags(tagsToRevalidate);
+            return `${input.assetName} (${input.symbol}) created successfully on chain`;
+          },
+          error: (error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+        });
+
         resetFormAndAction();
         onClose?.();
       },
