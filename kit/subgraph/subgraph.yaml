@@ -27,7 +27,7 @@ dataSources:
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
         - event: BondCreated(indexed address,string,string,uint8,indexed
-            address,string,uint256,indexed address,uint256)
+            address,string,uint256,uint256,uint256,indexed address,uint256)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
   - kind: ethereum/contract
