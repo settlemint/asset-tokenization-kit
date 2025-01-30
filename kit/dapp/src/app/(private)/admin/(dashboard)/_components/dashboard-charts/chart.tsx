@@ -1,22 +1,22 @@
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { DASHBOARD_STATS_QUERY_KEY } from '../consts';
-import { getDashboardMetrics } from './data';
-import { DashboardStatsClient } from './stat-client';
+import { DASHBOARD_CHART_QUERY_KEY } from '../consts';
+import { DashboardChartsClient } from './chart-client';
+import { getDashboardCharts } from './data';
 
-export async function DashboardStats() {
+export async function DashboardCharts() {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: [DASHBOARD_STATS_QUERY_KEY],
-    queryFn: () => getDashboardMetrics(),
+    queryKey: [DASHBOARD_CHART_QUERY_KEY],
+    queryFn: () => getDashboardCharts(),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <DashboardStatsClient />
+        <DashboardChartsClient />
       </Suspense>
     </HydrationBoundary>
   );

@@ -4,7 +4,7 @@ import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { unstable_cache } from 'next/cache';
-import { DASHBOARD_STATS_QUERY_KEY } from '../consts';
+import { DASHBOARD_CHART_QUERY_KEY } from '../consts';
 
 const UsersQuery = hasuraGraphql(`
 query UsersQuery($createdAfter: timestamp!) {
@@ -120,27 +120,14 @@ async function getAssetsSupplyData() {
   const data = await theGraphClientStarterkits.request(AssetsSupplyQuery, {
     timestamp,
   });
+  const breakdown = {
+    stableCoins: calculateTotalSupply(data.stableCoins),
+    bonds: calculateTotalSupply(data.bonds),
+    equities: calculateTotalSupply(data.equities),
+    cryptoCurrencies: calculateTotalSupply(data.cryptoCurrencies),
+  };
 
-  const breakdown = [
-    {
-      type: 'Stablecoins',
-      supply: calculateTotalSupply(data.stableCoins),
-    },
-    {
-      type: 'Bonds',
-      supply: calculateTotalSupply(data.bonds),
-    },
-    {
-      type: 'Equities',
-      supply: calculateTotalSupply(data.equities),
-    },
-    {
-      type: 'Cryptocurrencies',
-      supply: calculateTotalSupply(data.cryptoCurrencies),
-    },
-  ];
-
-  const totalSupply = breakdown.reduce((sum, item) => sum + BigInt(item.supply), BigInt(0));
+  const totalSupply = Object.values(breakdown).reduce((sum, item) => sum + BigInt(item), BigInt(0));
 
   const tokensMinted = data.stableCoins.map((token) => {
     const minted = token.transfers
@@ -170,7 +157,7 @@ async function getAssetsSupplyData() {
   };
 }
 
-export async function getDashboardMetrics() {
+export async function getDashboardCharts() {
   return await unstable_cache(
     async () => {
       const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
@@ -185,10 +172,10 @@ export async function getDashboardMetrics() {
         assetsSupplyData,
       };
     },
-    [DASHBOARD_STATS_QUERY_KEY],
+    [DASHBOARD_CHART_QUERY_KEY],
     {
       revalidate: 60,
-      tags: [DASHBOARD_STATS_QUERY_KEY],
+      tags: [DASHBOARD_CHART_QUERY_KEY],
     }
   )();
 }

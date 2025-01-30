@@ -2,7 +2,7 @@
 
 import { Stat, StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { DASHBOARD_STATS_QUERY_KEY } from './consts';
+import { DASHBOARD_STATS_QUERY_KEY } from '../consts';
 import { getDashboardMetrics } from './data';
 
 const getVariantForDifference = (difference: string) => {
