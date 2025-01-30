@@ -24,39 +24,78 @@
   <br />
 </div>
 
-## Getting started
+## Getting Started
 
+There are two ways to use this starterkit:
 
-### Prerequisites
+1. **Predeployed Setup** - Using pre-deployed contracts (fastest)
+2. **Customized Setup** - Deploy your own contracts and infrastructure
 
-1. Forge v0.3.0 - The smart contract dependencies are managed with soldeer. To use it, ensure forge is up to date by installing the latest Foundry from https://book.getfoundry.sh/getting-started/installation 
-2. Node.js version >=20.18.1 - The Graph CLI is used in deploying the subgraph, which requires node.js >=20.18.1. The fastest node package manager is [fnm](https://github.com/Schniz/fnm). You can use it to install node.js >=20.18.1.
+### Predeployed Setup (Fastest)
 
-### Setup
+This is the fastest way to get started with the starterkit. It uses pre-deployed contracts, subgraphs, and ABIs.
 
 ```bash
+# Install dependencies
 bun install
+
+# Login and connect to SettleMint
 bun settlemint login
 bun settlemint connect
-cd kit/contracts
-bun run prod:deploy
 
-# TODO: Here i need a way to push the ABI's to the portal
-
-cd ../subgraph
-bun prod:deploy -- 47561  # change this id based on the network id & enter a name for your subgraph
-cd ../../
-bun settlemint connect # updates the list of subgraphs (not fun to do it twice)
+# Generate types and start development server
 cd kit/dapp
 bun codegen
-bun init-contract-addresses -- 47561 # change this id based on the network id
-bun db:push # updates the db in hasura
-
-# TODO: Instead of doing that first signup is an admin thing, maybe we should have a CLI to create an admin account
-
 bun dev
 ```
 
-Then browse to http://localhost:3000/admin and you should see the sign-in page. Press sign up and create an account.
-If yours is the first account, you will be an admin.
+Browse to http://localhost:3000 to access the application. Create an account by clicking "Sign up" - the first account created will have admin privileges.
 
+### Customized Setup
+
+If you want to deploy your own contracts and infrastructure, follow these steps:
+
+#### Prerequisites
+
+1. Forge v0.3.0 - Install the latest Foundry from https://book.getfoundry.sh/getting-started/installation 
+2. Node.js version >=20.18.1 - Required for The Graph CLI. We recommend using [fnm](https://github.com/Schniz/fnm) for Node.js installation.
+
+#### Deployment Steps
+
+```bash
+# Install dependencies
+bun install
+
+# Login and connect to SettleMint
+bun settlemint login
+bun settlemint connect
+
+# Deploy contracts
+cd kit/contracts
+bun run prod:deploy
+
+# Deploy subgraph
+cd ../subgraph
+bun prod:deploy -- 47561  # Replace with your chain ID
+cd ../../
+bun settlemint connect # Refresh subgraph list
+
+# Setup dapp
+cd kit/dapp
+bun codegen
+bun init-contract-addresses -- 47561 # Replace with your chain ID
+bun db:push
+
+# Start development server
+bun dev
+```
+
+Browse to http://localhost:3000 to access the application. Create an account by clicking "Sign up" - the first account created will have admin privileges.
+
+> **Note**: The chain ID (47561) used in the commands above is an example. Replace it with your actual chain ID.
+
+### Known Limitations & TODOs
+
+- No CLI command to update ABIs automatically
+- Admin account creation relies on first-signup mechanism, perhaps a dedicated CLI command?
+- Requires running `settlemint connect` twice (after initial connection and after subgraph deployment to update subgraph list)
