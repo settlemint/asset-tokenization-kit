@@ -24,7 +24,7 @@ export function DashboardStatsClient() {
   });
 
   return (
-    <div className="grid grid-cols-1 gap-2 pb-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-2 lg:grid-cols-3">
       <Stat>
         <StatLabel>Assets supply</StatLabel>
         <StatValue>{data.assetsSupplyData.totalSupply.toLocaleString()}</StatValue>
