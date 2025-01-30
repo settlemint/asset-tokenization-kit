@@ -22,6 +22,7 @@ contract BondTest is Test {
     uint8 public constant WHOLE_FACE_FALUE = 100;
     uint8 public constant DECIMALS = 2;
     string public constant VALID_ISIN = "US0378331005";
+    uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
     // Utility functions for decimal conversions
     function toDecimals(uint256 amount) internal pure returns (uint256) {
@@ -59,7 +60,7 @@ contract BondTest is Test {
 
         vm.startPrank(owner);
         bond = new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset)
         );
         bond.mint(owner, initialSupply);
         vm.stopPrank();
@@ -98,6 +99,7 @@ contract BondTest is Test {
                 decimalValues[i],
                 owner,
                 VALID_ISIN,
+                CAP,
                 maturityDate,
                 faceValue,
                 address(underlyingAsset)
@@ -109,7 +111,7 @@ contract BondTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
-        new Bond("Test Bond", "TBOND", 19, owner, VALID_ISIN, maturityDate, faceValue, address(underlyingAsset));
+        new Bond("Test Bond", "TBOND", 19, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset));
         vm.stopPrank();
     }
 
@@ -118,16 +120,26 @@ contract BondTest is Test {
 
         // Test with empty ISIN
         vm.expectRevert(Bond.InvalidISIN.selector);
-        new Bond("Test Bond", "TBOND", DECIMALS, owner, "", maturityDate, faceValue, address(underlyingAsset));
+        new Bond("Test Bond", "TBOND", DECIMALS, owner, "", CAP, maturityDate, faceValue, address(underlyingAsset));
 
         // Test with ISIN that's too short
         vm.expectRevert(Bond.InvalidISIN.selector);
-        new Bond("Test Bond", "TBOND", DECIMALS, owner, "US03783310", maturityDate, faceValue, address(underlyingAsset));
+        new Bond(
+            "Test Bond", "TBOND", DECIMALS, owner, "US03783310", CAP, maturityDate, faceValue, address(underlyingAsset)
+        );
 
         // Test with ISIN that's too long
         vm.expectRevert(Bond.InvalidISIN.selector);
         new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, "US0378331005XX", maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            "US0378331005XX",
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset)
         );
 
         vm.stopPrank();
@@ -717,5 +729,59 @@ contract BondTest is Test {
         // Verify current balance shows initial supply
         assertEq(bond.balanceAt(owner, currentTime), initialSupply, "Current owner balance should be initial supply");
         assertEq(bond.balanceAt(user1, currentTime), 0, "Current user1 balance should be 0");
+    }
+
+    // Add new tests for cap functionality
+    function test_CapEnforcement() public {
+        vm.startPrank(owner);
+
+        // Try to mint tokens that would exceed the cap
+        uint256 remainingToCap = CAP - bond.totalSupply();
+        uint256 exceedingAmount = remainingToCap + 1;
+
+        vm.expectRevert("ERC20Capped: cap exceeded");
+        bond.mint(owner, exceedingAmount);
+
+        // Should be able to mint up to the cap
+        bond.mint(owner, remainingToCap);
+        assertEq(bond.totalSupply(), CAP, "Total supply should equal cap");
+
+        // Verify can't mint even 1 more token
+        vm.expectRevert("ERC20Capped: cap exceeded");
+        bond.mint(owner, 1);
+
+        vm.stopPrank();
+    }
+
+    function test_BurnAndRemintUpToCap() public {
+        vm.startPrank(owner);
+
+        // Burn some tokens
+        uint256 burnAmount = toDecimals(10);
+        bond.burn(burnAmount);
+
+        // Should be able to mint the burned amount
+        bond.mint(owner, burnAmount);
+
+        // Try to mint more than the cap
+        vm.expectRevert("ERC20Capped: cap exceeded");
+        bond.mint(owner, 1);
+
+        vm.stopPrank();
+    }
+
+    function test_InitialCapState() public {
+        assertEq(bond.cap(), CAP, "Cap should be set correctly");
+        assertTrue(bond.totalSupply() <= CAP, "Initial supply should not exceed cap");
+    }
+
+    function test_TransferWithinCap() public {
+        uint256 amount = toDecimals(10);
+
+        vm.prank(owner);
+        bond.transfer(user1, amount);
+
+        assertEq(bond.totalSupply(), initialSupply, "Total supply should remain unchanged after transfer");
+        assertTrue(bond.totalSupply() <= CAP, "Total supply should still be within cap");
     }
 }

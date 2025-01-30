@@ -5,6 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
@@ -24,7 +25,8 @@ contract Bond is
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
-    ERC20Yield
+    ERC20Yield,
+    ERC20Capped
 {
     /// @notice Custom errors for the Bond contract
     error BondAlreadyMatured();
@@ -100,6 +102,7 @@ contract Bond is
     /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
     /// @param isin_ The ISIN (International Securities Identification Number) of the bond
+    /// @param _cap The cap for the token
     /// @param _maturityDate Timestamp when the bond matures
     /// @param _faceValue The face value of the bond in underlying asset base units
     /// @param _underlyingAsset The address of the underlying asset contract used for face value denomination
@@ -109,12 +112,14 @@ contract Bond is
         uint8 decimals_,
         address initialOwner,
         string memory isin_,
+        uint256 _cap,
         uint256 _maturityDate,
         uint256 _faceValue,
         address _underlyingAsset
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC20Capped(_cap)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
@@ -381,24 +386,6 @@ contract Bond is
         return (bondAmount / (10 ** decimals())) * faceValue;
     }
 
-    /// @notice Approves spending of tokens
-    /// @dev Internal function that handles allowance updates across inherited features
-    /// @param owner The token owner
-    /// @param spender The approved spender
-    /// @param value The approved amount in base units
-    /// @param emitEvent Whether to emit an Approval event
-    function _approve(
-        address owner,
-        address spender,
-        uint256 value,
-        bool emitEvent
-    )
-        internal
-        override(ERC20, ERC20Blocklist)
-    {
-        super._approve(owner, spender, value, emitEvent);
-    }
-
     /// @notice Updates token balances during transfers
     /// @dev Internal function that handles balance updates and voting power adjustments
     /// @param from The sender address
@@ -410,7 +397,8 @@ contract Bond is
         uint256 value
     )
         internal
-        override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian)
+        virtual
+        override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian, ERC20Capped)
     {
         // Allow burning during redemption (when to is address(0) and bond is matured)
         if (to == address(0) && isMatured) {
@@ -427,6 +415,25 @@ contract Bond is
         if (to != address(0)) {
             _updateHistoricalBalance(to);
         }
+    }
+
+    /// @notice Approves spending of tokens
+    /// @dev Internal function that handles allowance updates across inherited features
+    /// @param owner The token owner
+    /// @param spender The approved spender
+    /// @param value The approved amount in base units
+    /// @param emitEvent Whether to emit an Approval event
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value,
+        bool emitEvent
+    )
+        internal
+        virtual
+        override(ERC20, ERC20Blocklist)
+    {
+        super._approve(owner, spender, value, emitEvent);
     }
 
     /// @dev Updates historical balance for an address, avoiding duplicate timestamps
