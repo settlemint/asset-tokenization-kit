@@ -1,6 +1,5 @@
 'use server';
 
-import { CreateCryptoCurrencyOutputSchema } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
@@ -8,7 +7,7 @@ import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
 import { parseUnits } from 'viem';
-import { CreateCryptoCurrencyFormSchema } from './schema';
+import { CreateCryptoCurrencyFormSchema, CreateCryptoCurrencyOutputSchema } from './schema';
 
 const CreateCryptocurrency = portalGraphql(`
   mutation CreateCryptocurrency($address: String!, $challengeResponse: String!, $from: String!, $gasLimit: String!, $decimals: Int!, $name: String!, $symbol: String!, $initialSupply: String!, $metadata: JSON!) {

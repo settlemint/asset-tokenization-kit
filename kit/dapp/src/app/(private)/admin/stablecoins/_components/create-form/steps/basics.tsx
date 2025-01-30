@@ -2,10 +2,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useFormContext } from 'react-hook-form';
-import type { CreateCryptoCurrencyFormType } from '../schema';
+import type { CreateStablecoinFormType } from '../schema';
 
 export function Basics() {
-  const { control } = useFormContext<CreateCryptoCurrencyFormType>();
+  const { control } = useFormContext<CreateStablecoinFormType>();
 
   return (
     <div className="space-y-6">
@@ -25,7 +25,7 @@ export function Basics() {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="HODL Coin"
+                  placeholder="e.g., My Stable Coin"
                   {...field}
                   required
                   minLength={2}
@@ -45,7 +45,7 @@ export function Basics() {
             <FormItem>
               <FormLabel>Symbol</FormLabel>
               <FormControl>
-                <Input placeholder="REKT" {...field} required minLength={2} maxLength={11} pattern="^[A-Z0-9]+$" />
+                <Input placeholder="e.g., MSC" {...field} required minLength={2} maxLength={11} pattern="^[A-Z0-9]+$" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -62,6 +62,8 @@ export function Basics() {
                 <Input
                   placeholder="18"
                   type="number"
+                  autoComplete="off"
+                  data-form-type="other"
                   value={value ?? ''}
                   onChange={(e) => {
                     const val = e.target.value === '' ? '' : Number(e.target.value);
@@ -72,6 +74,27 @@ export function Basics() {
                   min={0}
                   max={18}
                   step={1}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="isin"
+          defaultValue=""
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ISIN</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g., US1234567890"
+                  {...field}
+                  required
+                  minLength={2}
+                  maxLength={50}
+                  pattern="^[a-zA-Z0-9\s-]+$"
                 />
               </FormControl>
               <FormMessage />
@@ -100,4 +123,4 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ['assetName', 'symbol', 'decimals', 'private'] as const;
+Basics.validatedFields = ['assetName', 'symbol', 'decimals', 'private', 'isin'] as const;
