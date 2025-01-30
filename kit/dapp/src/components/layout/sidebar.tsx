@@ -21,7 +21,7 @@ interface PrivateSidebarProps {
 
 export function PrivateSidebar({ role, mode, items }: PrivateSidebarProps) {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
