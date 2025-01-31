@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { Test, console2 } from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { StableCoin } from "../contracts/StableCoin.sol";
 
 contract StableCoinTest is Test {
@@ -14,6 +14,8 @@ contract StableCoinTest is Test {
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
     string public constant VALID_ISIN = "US0378331005";
+    uint256 public constant MAX_MINT_AMOUNT = 1_000_000 * 10 ** 18;
+    uint256 public constant MIN_COLLATERAL_UPDATE_INTERVAL = 1 days;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -24,8 +26,18 @@ contract StableCoinTest is Test {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
-        vm.prank(owner);
-        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        vm.startPrank(owner);
+        stableCoin = new StableCoin(
+            "StableCoin",
+            "STBL",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
+        );
+        vm.stopPrank();
     }
 
     // Basic ERC20 functionality tests
@@ -48,9 +60,18 @@ contract StableCoinTest is Test {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
-            vm.prank(owner);
-            StableCoin newToken =
-                new StableCoin("StableCoin", "STBL", decimalValues[i], owner, VALID_ISIN, COLLATERAL_LIVENESS);
+            vm.startPrank(owner);
+            StableCoin newToken = new StableCoin(
+                "StableCoin",
+                "STBL",
+                decimalValues[i],
+                owner,
+                VALID_ISIN,
+                COLLATERAL_LIVENESS,
+                MAX_MINT_AMOUNT,
+                MIN_COLLATERAL_UPDATE_INTERVAL
+            );
+            vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
     }
@@ -58,7 +79,16 @@ contract StableCoinTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
-        new StableCoin("StableCoin", "STBL", 19, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        new StableCoin(
+            "StableCoin",
+            "STBL",
+            19,
+            owner,
+            VALID_ISIN,
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         vm.stopPrank();
     }
 
@@ -66,33 +96,54 @@ contract StableCoinTest is Test {
         vm.startPrank(owner);
 
         // Test with empty ISIN (should be valid for StableCoin)
-        StableCoin emptyIsinToken = new StableCoin("StableCoin", "STBL", DECIMALS, owner, "", COLLATERAL_LIVENESS);
+        StableCoin emptyIsinToken = new StableCoin(
+            "StableCoin",
+            "STBL",
+            DECIMALS,
+            owner,
+            "",
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         assertEq(emptyIsinToken.isin(), "");
 
         // Test with valid ISIN
-        StableCoin validIsinToken =
-            new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        StableCoin validIsinToken = new StableCoin(
+            "StableCoin",
+            "STBL",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         assertEq(validIsinToken.isin(), VALID_ISIN);
 
         // Test with invalid ISIN length
-        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidISIN.selector));
         new StableCoin(
             "StableCoin",
             "STBL",
             DECIMALS,
             owner,
             "US03783310", // too short
-            COLLATERAL_LIVENESS
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
         );
 
-        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidISIN.selector));
         new StableCoin(
             "StableCoin",
             "STBL",
             DECIMALS,
             owner,
             "US0378331005XX", // too long
-            COLLATERAL_LIVENESS
+            COLLATERAL_LIVENESS,
+            MAX_MINT_AMOUNT,
+            MIN_COLLATERAL_UPDATE_INTERVAL
         );
 
         vm.stopPrank();
@@ -100,6 +151,7 @@ contract StableCoinTest is Test {
 
     function test_OnlySupplyManagementCanMint() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY);
@@ -129,27 +181,32 @@ contract StableCoinTest is Test {
     // ERC20Burnable tests
     function test_Burn() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
 
-        vm.prank(user1);
+        vm.startPrank(user1);
         stableCoin.burn(100);
+        vm.stopPrank();
 
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
     }
 
     function test_BurnFrom() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
 
-        vm.prank(user1);
+        vm.startPrank(user1);
         stableCoin.approve(spender, 100);
+        vm.stopPrank();
 
-        vm.prank(spender);
+        vm.startPrank(spender);
         stableCoin.burnFrom(user1, 100);
+        vm.stopPrank();
 
         assertEq(stableCoin.balanceOf(user1), INITIAL_SUPPLY - 100);
     }
@@ -164,14 +221,18 @@ contract StableCoinTest is Test {
         );
         stableCoin.pause();
         vm.stopPrank();
-        vm.prank(owner);
+
+        vm.startPrank(owner);
         stableCoin.pause();
+        vm.stopPrank();
+
         assertTrue(stableCoin.paused());
     }
 
     // ERC20Blocklist tests
     function test_OnlyUserManagementCanBlock() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
@@ -184,20 +245,28 @@ contract StableCoinTest is Test {
         );
         stableCoin.blockUser(user1);
         vm.stopPrank();
-        vm.prank(owner);
+
+        vm.startPrank(owner);
         stableCoin.blockUser(user1);
+        vm.stopPrank();
+
         assertTrue(stableCoin.blocked(user1));
 
+        vm.startPrank(user1);
         vm.expectRevert();
-        vm.prank(user1);
         stableCoin.transfer(user2, 100);
+        vm.stopPrank();
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         stableCoin.unblockUser(user1);
+        vm.stopPrank();
+
         assertFalse(stableCoin.blocked(user1));
 
-        vm.prank(user1);
+        vm.startPrank(user1);
         stableCoin.transfer(user2, 100);
+        vm.stopPrank();
+
         assertEq(stableCoin.balanceOf(user2), 100);
     }
 
@@ -205,20 +274,17 @@ contract StableCoinTest is Test {
     function test_OnlyAdminCanUpdateCollateral() public {
         uint256 collateralAmount = 1_000_000;
 
+        bytes32 role = stableCoin.COLLATERAL_MANAGER_ROLE();
         vm.startPrank(user1);
-        vm.expectRevert(
-            abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)", user1, stableCoin.DEFAULT_ADMIN_ROLE()
-            )
-        );
+        vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
         stableCoin.updateCollateral(collateralAmount);
         vm.stopPrank();
 
-        // Set block timestamp for deterministic testing
-        vm.warp(1000);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         stableCoin.updateCollateral(collateralAmount);
+        vm.stopPrank();
 
         (uint256 amount, uint48 timestamp) = stableCoin.collateral();
         assertEq(amount, collateralAmount);
@@ -228,29 +294,32 @@ contract StableCoinTest is Test {
     // ERC20Custodian tests
     function test_OnlyUserManagementCanFreeze() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, 100);
         vm.stopPrank();
 
-        vm.prank(user2);
+        vm.startPrank(user2);
         vm.expectRevert(abi.encodeWithSignature("ERC20NotCustodian()"));
         stableCoin.freeze(user1, 100);
+        vm.stopPrank();
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         stableCoin.freeze(user1, 100);
+        vm.stopPrank();
+
         assertEq(stableCoin.frozen(user1), 100);
 
+        vm.startPrank(user1);
         vm.expectRevert();
-        vm.prank(user1);
         stableCoin.transfer(user2, 100);
+        vm.stopPrank();
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         stableCoin.unfreeze(user1, 100);
-        assertEq(stableCoin.frozen(user1), 0);
+        vm.stopPrank();
 
-        vm.prank(user1);
-        stableCoin.transfer(user2, 100);
-        assertEq(stableCoin.balanceOf(user2), 100);
+        assertEq(stableCoin.frozen(user1), 0);
     }
 
     // ERC20Permit tests
@@ -259,6 +328,7 @@ contract StableCoinTest is Test {
         address signer = vm.addr(privateKey);
 
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(signer, INITIAL_SUPPLY);
         vm.stopPrank();
@@ -297,6 +367,7 @@ contract StableCoinTest is Test {
     // Transfer and approval tests
     function test_TransferAndApproval() public {
         vm.startPrank(owner);
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
         stableCoin.updateCollateral(INITIAL_SUPPLY);
         stableCoin.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();

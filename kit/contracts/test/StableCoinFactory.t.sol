@@ -12,6 +12,8 @@ contract StableCoinFactoryTest is Test {
     uint48 public constant LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
     string public constant VALID_ISIN = "US0378331005";
+    uint256 public constant MAX_MINT_AMOUNT = 1_000_000 ether;
+    uint256 public constant MIN_COLLATERAL_UPDATE_INTERVAL = 1 days;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -23,7 +25,9 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address tokenAddress = factory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -51,7 +55,9 @@ contract StableCoinFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, LIVENESS);
+            address tokenAddress = factory.create(
+                name, symbol, decimalValues[i], VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+            );
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
@@ -69,13 +75,17 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address token1 = factory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
 
         // Create a new factory instance
         StableCoinFactory newFactory = new StableCoinFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address token2 = newFactory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -85,7 +95,9 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address tokenAddress = factory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
@@ -105,8 +117,13 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address tokenAddress = factory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
         StableCoin token = StableCoin(tokenAddress);
+
+        // Advance time by 1 day to allow collateral update
+        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
 
         // Test minting with supply management role
         uint256 amount = 1000 ether;
@@ -121,7 +138,7 @@ contract StableCoinFactoryTest is Test {
         vm.startPrank(user);
         vm.expectRevert(
             abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.DEFAULT_ADMIN_ROLE()
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.COLLATERAL_MANAGER_ROLE()
             )
         );
         token.updateCollateral(amount);
@@ -155,13 +172,15 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
+        address tokenAddress = factory.create(
+            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
+        );
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            4,
-            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and StableCoinCreated"
+            5,
+            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (collateral), and StableCoinCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -193,8 +212,16 @@ contract StableCoinFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be StableCoinCreated
-        VmSafe.Log memory lastEntry = entries[3];
+        // Fourth event should be RoleGranted for COLLATERAL_MANAGER_ROLE
+        VmSafe.Log memory fourthEntry = entries[3];
+        assertEq(
+            fourthEntry.topics[0],
+            keccak256("RoleGranted(bytes32,address,address)"),
+            "Wrong event signature for fourth RoleGranted"
+        );
+
+        // Fifth event should be StableCoinCreated
+        VmSafe.Log memory lastEntry = entries[4];
         assertEq(
             lastEntry.topics[0],
             keccak256("StableCoinCreated(address,string,string,uint8,address,string,uint256)"),

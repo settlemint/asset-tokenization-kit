@@ -2,20 +2,25 @@
 pragma solidity ^0.8.27;
 
 import { StableCoin } from "./StableCoin.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title StableCoinFactory - A factory contract for creating StableCoin tokens
 /// @notice This contract allows the creation of new StableCoin tokens with deterministic addresses
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
-contract StableCoinFactory {
-    /// @notice Emitted when a new stablecoin token is created
-    /// @param token The address of the newly created token
-    /// @param name The name of the token
-    /// @param symbol The symbol of the token
-    /// @param decimals The number of decimals for the token
-    /// @param owner The owner of the token
-    /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
-    /// @param tokenCount The total number of tokens created so far
+contract StableCoinFactory is ReentrancyGuard {
+    error AddressAlreadyDeployed();
+
+    /// @notice Mapping to track if an address was deployed by this factory
+    mapping(address => bool) public isFactoryToken;
+
+    /// @notice Mapping of owner to their tokens
+    mapping(address => StableCoin[]) public ownerTokens;
+
+    /// @notice Array of all tokens created by this factory
+    StableCoin[] public allTokens;
+
+    /// @notice Emitted when a new stablecoin is created
     event StableCoinCreated(
         address indexed token,
         string name,
@@ -26,13 +31,29 @@ contract StableCoinFactory {
         uint256 tokenCount
     );
 
-    /// @notice Array of all tokens created by this factory
-    StableCoin[] public allTokens;
-
-    /// @notice Returns the total number of tokens created by this factory
-    /// @return The length of the allTokens array
+    /// @notice Returns the number of tokens created by this factory
+    /// @return The number of tokens
     function allTokensLength() external view returns (uint256) {
         return allTokens.length;
+    }
+
+    /// @notice Returns a batch of tokens from the allTokens array
+    /// @param start The start index
+    /// @param end The end index (exclusive)
+    /// @return A slice of the allTokens array
+    function allTokensBatch(uint256 start, uint256 end) external view returns (StableCoin[] memory) {
+        if (end > allTokens.length) {
+            end = allTokens.length;
+        }
+        if (start > end) {
+            start = end;
+        }
+
+        StableCoin[] memory batch = new StableCoin[](end - start);
+        for (uint256 i = start; i < end; i++) {
+            batch[i - start] = allTokens[i];
+        }
+        return batch;
     }
 
     /// @notice Creates a new stablecoin token with the specified parameters
@@ -42,25 +63,133 @@ contract StableCoinFactory {
     /// @param decimals The number of decimals for the token
     /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
+    /// @param maxMintAmount Maximum amount that can be minted in a single transaction
+    /// @param minCollateralUpdateInterval Minimum time between collateral updates in seconds
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
         uint8 decimals,
         string memory isin,
-        uint48 collateralLivenessSeconds
+        uint48 collateralLivenessSeconds,
+        uint256 maxMintAmount,
+        uint256 minCollateralUpdateInterval
     )
         external
+        nonReentrant
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds));
+        // Check if address is already deployed
+        address predicted = predictAddress(
+            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
+        );
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        StableCoin newToken =
-            new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds);
+        bytes32 salt = _calculateSalt(
+            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
+        );
+
+        StableCoin newToken = new StableCoin{ salt: salt }(
+            name,
+            symbol,
+            decimals,
+            msg.sender,
+            isin,
+            collateralLivenessSeconds,
+            maxMintAmount,
+            minCollateralUpdateInterval
+        );
 
         token = address(newToken);
         allTokens.push(newToken);
+        ownerTokens[msg.sender].push(newToken);
+        isFactoryToken[token] = true;
 
         emit StableCoinCreated(token, name, symbol, decimals, msg.sender, isin, allTokens.length);
+    }
+
+    /// @notice Calculates the deterministic address for a token with the given parameters
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
+    /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
+    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
+    /// @param maxMintAmount Maximum amount that can be minted in a single transaction
+    /// @param minCollateralUpdateInterval Minimum time between collateral updates in seconds
+    /// @return predicted The predicted address where the token will be deployed
+    function predictAddress(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory isin,
+        uint48 collateralLivenessSeconds,
+        uint256 maxMintAmount,
+        uint256 minCollateralUpdateInterval
+    )
+        public
+        view
+        returns (address predicted)
+    {
+        bytes32 salt = _calculateSalt(
+            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
+        );
+
+        predicted = address(
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            bytes1(0xff),
+                            address(this),
+                            salt,
+                            keccak256(
+                                abi.encodePacked(
+                                    type(StableCoin).creationCode,
+                                    abi.encode(
+                                        name,
+                                        symbol,
+                                        decimals,
+                                        msg.sender,
+                                        isin,
+                                        collateralLivenessSeconds,
+                                        maxMintAmount,
+                                        minCollateralUpdateInterval
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @dev Internal function to generate a deterministic salt based on token parameters
+    function _calculateSalt(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory isin,
+        uint48 collateralLivenessSeconds,
+        uint256 maxMintAmount,
+        uint256 minCollateralUpdateInterval
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encodePacked(
+                name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
+            )
+        );
+    }
+
+    /// @notice Returns all tokens owned by an address
+    /// @param owner The address to query
+    /// @return tokens Array of token addresses owned by the address
+    function getTokensByOwner(address owner) external view returns (StableCoin[] memory) {
+        return ownerTokens[owner];
     }
 }

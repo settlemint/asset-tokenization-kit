@@ -2,12 +2,25 @@
 pragma solidity ^0.8.27;
 
 import { Equity } from "./Equity.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title EquityFactory - A factory contract for creating Equity tokens
 /// @notice This contract allows the creation of new Equity tokens with deterministic addresses
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
-contract EquityFactory {
+contract EquityFactory is ReentrancyGuard {
+    error AddressAlreadyDeployed();
+    error InvalidISIN();
+
+    /// @notice Mapping to track if an address was deployed by this factory
+    mapping(address => bool) public isFactoryToken;
+
+    /// @notice Mapping of owner to their tokens
+    mapping(address => Equity[]) public ownerTokens;
+
+    /// @notice Array of all tokens created by this factory
+    Equity[] public allTokens;
+
     /// @notice Emitted when a new equity token is created
     /// @param token The address of the newly created token
     /// @param name The name of the token
@@ -30,15 +43,27 @@ contract EquityFactory {
         uint256 tokenCount
     );
 
-    error InvalidISIN();
-
-    /// @notice Array of all tokens created by this factory
-    Equity[] public allTokens;
-
-    /// @notice Returns the total number of tokens created by this factory
-    /// @return The length of the allTokens array
-    function allTokensLength() external view returns (uint256) {
-        return allTokens.length;
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
+    /// @param equityClass The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
+    /// @param isin The ISIN (International Securities Identification Number) of the equity
+    /// @return bytes32 The calculated salt
+    function _calculateSalt(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory equityClass,
+        string memory equityCategory,
+        string memory isin
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, isin));
     }
 
     /// @notice Creates a new equity token with the specified parameters
@@ -59,18 +84,94 @@ contract EquityFactory {
         string memory equityCategory
     )
         external
+        nonReentrant
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, msg.sender, isin));
+        // Check if address is already deployed
+        address predicted = predictAddress(name, symbol, decimals, isin, equityClass, equityCategory);
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
+
+        bytes32 salt = _calculateSalt(name, symbol, decimals, equityClass, equityCategory, isin);
 
         Equity newToken =
             new Equity{ salt: salt }(name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
 
         token = address(newToken);
         allTokens.push(newToken);
+        ownerTokens[msg.sender].push(newToken);
+        isFactoryToken[token] = true;
 
         emit EquityCreated(
             token, name, symbol, decimals, msg.sender, isin, equityClass, equityCategory, allTokens.length
         );
+    }
+
+    /// @notice Predicts the address where a token will be deployed
+    /// @dev Uses the same CREATE2 address derivation as the create function
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
+    /// @param isin The ISIN (International Securities Identification Number) of the equity
+    /// @param equityClass The equity class (e.g., "Common", "Preferred")
+    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
+    /// @return predicted The predicted address where the token will be deployed
+    function predictAddress(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory isin,
+        string memory equityClass,
+        string memory equityCategory
+    )
+        public
+        view
+        returns (address predicted)
+    {
+        bytes32 salt = _calculateSalt(name, symbol, decimals, equityClass, equityCategory, isin);
+
+        predicted = address(
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            bytes1(0xff),
+                            address(this),
+                            salt,
+                            keccak256(
+                                abi.encodePacked(
+                                    type(Equity).creationCode,
+                                    abi.encode(name, symbol, decimals, isin, equityClass, equityCategory)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /// @notice Returns all tokens owned by an address
+    /// @param owner The address to query
+    /// @return tokens Array of token addresses owned by the address
+    function getTokensByOwner(address owner) external view returns (Equity[] memory) {
+        return ownerTokens[owner];
+    }
+
+    /// @notice Returns the number of tokens created by this factory
+    /// @return The number of tokens
+    function allTokensLength() external view returns (uint256) {
+        return allTokens.length;
+    }
+
+    /// @notice Returns a subset of all tokens
+    /// @param start Start index
+    /// @param end End index (exclusive)
+    /// @return subset Array of tokens in the specified range
+    function getTokensInRange(uint256 start, uint256 end) external view returns (Equity[] memory subset) {
+        require(start < end && end <= allTokens.length, "Invalid range");
+        subset = new Equity[](end - start);
+        for (uint256 i = start; i < end; i++) {
+            subset[i - start] = allTokens[i];
+        }
     }
 }

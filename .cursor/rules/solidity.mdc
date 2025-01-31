@@ -13,6 +13,7 @@ General Rules
 	•	No AI self-references or knowledge date disclaimers.
 	•	Retain my code style in examples.
 	•	For tweaks, show minimal context—just enough to be clear.
+	•	We do not want any compilation or linting errors NOR warnings, fix them all	
 
 Solidity Best Practices (Hardhat Ignition + Foundry)
 	1.	Visibility & NatSpec

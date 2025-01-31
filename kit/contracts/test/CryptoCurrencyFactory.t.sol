@@ -174,16 +174,18 @@ contract CryptoCurrencyFactoryTest is Test {
         );
 
         // Third event should be Transfer
-        VmSafe.Log memory thirdEntry = entries[2];
+        VmSafe.Log memory transferEvent = entries[2];
         assertEq(
-            thirdEntry.topics[0], keccak256("Transfer(address,address,uint256)"), "Wrong event signature for Transfer"
+            transferEvent.topics[0],
+            keccak256("Transfer(address,address,uint256)"),
+            "Wrong event signature for Transfer"
         );
 
         // Fourth event should be CryptoCurrencyCreated
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256)"),
+            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256,uint256)"),
             "Wrong event signature for CryptoCurrencyCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

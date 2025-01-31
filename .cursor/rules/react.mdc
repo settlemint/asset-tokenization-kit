@@ -133,6 +133,7 @@ export async function GET(request: Request) {
 	3.	Error Handling
 	•	Use typed errors or return typed responses.
 	•	Rely on route-specific error.tsx to gracefully handle request errors.
+	•	We do not want any compilation or linting errors NOR warnings, fix them all	
 
 6. UI Development & Shadcn UI
 	1.	shadcn UI Components

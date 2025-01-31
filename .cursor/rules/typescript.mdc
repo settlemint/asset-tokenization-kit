@@ -234,7 +234,8 @@ function identity<const T>(value: T): T {
 	•	Write all code, comments, and documentation in English.
 	2.	Explicit typing
 	•	Always declare parameter types and return types.
-	•	Rely on inference for local variables only when it’s clear and improves readability.
+	•	Prefer inferance over hardcoded types in all cases
+	•	We do not want any compilation or linting errors NOR warnings, fix them all	
 	3.	TSDoc for public APIs
 	•	Use block comments with @param, @returns, @throws, etc. for clarity:
 

@@ -3,6 +3,7 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { CryptoCurrency } from "../contracts/CryptoCurrency.sol";
+import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 contract CryptoCurrencyTest is Test {
     CryptoCurrency public token;
@@ -18,8 +19,9 @@ contract CryptoCurrencyTest is Test {
         owner = makeAddr("owner");
         user = makeAddr("user");
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner);
+        vm.stopPrank();
     }
 
     function test_InitialState() public view {
@@ -40,8 +42,9 @@ contract CryptoCurrencyTest is Test {
         decimalValues[3] = 18; // Test max decimals
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
-            vm.prank(owner);
+            vm.startPrank(owner);
             CryptoCurrency newToken = new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner);
+            vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
     }
@@ -55,12 +58,13 @@ contract CryptoCurrencyTest is Test {
 
     function test_Transfer() public {
         uint256 amount = 1000e18;
-        vm.prank(owner);
+        vm.startPrank(owner);
 
         vm.expectEmit(true, true, false, true);
         emit Transfer(owner, user, amount);
 
         token.transfer(user, amount);
+        vm.stopPrank();
 
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(user), amount);
@@ -69,11 +73,13 @@ contract CryptoCurrencyTest is Test {
     function test_TransferFrom() public {
         uint256 amount = 1000e18;
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         token.approve(user, amount);
+        vm.stopPrank();
 
-        vm.prank(user);
+        vm.startPrank(user);
         token.transferFrom(owner, user, amount);
+        vm.stopPrank();
 
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY - amount);
         assertEq(token.balanceOf(user), amount);
@@ -83,11 +89,13 @@ contract CryptoCurrencyTest is Test {
     function test_Approve() public {
         uint256 amount = 1000e18;
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         vm.expectEmit(true, true, false, true);
         emit Approval(owner, user, amount);
 
         token.approve(user, amount);
+        vm.stopPrank();
+
         assertEq(token.allowance(owner, user), amount);
     }
 
@@ -153,17 +161,22 @@ contract CryptoCurrencyTest is Test {
     function testFuzz_Transfer(uint256 amount) public {
         vm.assume(amount <= INITIAL_SUPPLY);
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         token.transfer(user, amount);
+        vm.stopPrank();
 
         assertEq(token.balanceOf(user), amount);
         assertEq(token.balanceOf(owner), INITIAL_SUPPLY - amount);
     }
 
-    function testFail_TransferInsufficientBalance(uint256 amount) public {
+    function test_RevertWhen_TransferInsufficientBalance(uint256 amount) public {
         vm.assume(amount > INITIAL_SUPPLY);
 
-        vm.prank(owner);
+        vm.startPrank(owner);
+        vm.expectRevert(
+            abi.encodeWithSelector(IERC20Errors.ERC20InsufficientBalance.selector, owner, INITIAL_SUPPLY, amount)
+        );
         token.transfer(user, amount);
+        vm.stopPrank();
     }
 }
