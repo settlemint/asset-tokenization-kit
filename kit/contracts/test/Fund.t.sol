@@ -54,7 +54,7 @@ contract FundTest is Test {
         vm.stopPrank();
     }
 
-    function test_InitialState() public {
+    function test_InitialState() public view {
         assertEq(fund.name(), NAME);
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
