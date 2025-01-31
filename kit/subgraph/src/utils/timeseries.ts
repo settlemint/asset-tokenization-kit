@@ -1,7 +1,8 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { BigInt, Bytes, dataSource, ethereum } from '@graphprotocol/graph-ts';
 import {
   Account,
   AccountActivityData,
+  AssetActivityData,
   AssetSupplyData,
   Bond,
   BondMetricsData,
@@ -108,4 +109,24 @@ export function recordYieldMetricsData(schedule: FixedYield, timestamp: BigInt):
   data.unclaimedYield = schedule.unclaimedYield;
   data.underlyingBalance = schedule.underlyingBalance;
   data.save();
+}
+
+export function recordAssetActivityData(
+  assetId: Bytes,
+  mintedAmount: BigInt,
+  burnedAmount: BigInt,
+  transferredAmount: BigInt,
+  decimals: i32,
+  assetType: string
+): void {
+  const activityData = new AssetActivityData('auto');
+  activityData.asset = assetId;
+  activityData.mintedAmountExact = mintedAmount;
+  activityData.mintedAmount = toDecimals(mintedAmount, decimals);
+  activityData.burnedAmountExact = burnedAmount;
+  activityData.burnedAmount = toDecimals(burnedAmount, decimals);
+  activityData.transferredAmountExact = transferredAmount;
+  activityData.transferredAmount = toDecimals(transferredAmount, decimals);
+  activityData.assetType = assetType;
+  activityData.save();
 }

@@ -1,4 +1,4 @@
-import { Address, log, store } from '@graphprotocol/graph-ts';
+import { Address, BigInt, log, store } from '@graphprotocol/graph-ts';
 import { Account, BlockedAccount, Event_Transfer, Role } from '../generated/schema';
 import {
   Approval as ApprovalEvent,
@@ -18,16 +18,16 @@ import { fetchAccount } from './fetch/account';
 import { fetchBalance } from './fetch/balance';
 import { fetchStableCoin } from './fetch/stable-coin';
 import { balanceId } from './utils/balance';
-import { toDecimals } from './utils/decimals';
-import { eventId } from './utils/events';
 import { handleRoleAdminChangedEvent, handleRoleGrantedEvent, handleRoleRevokedEvent } from './utils/roles';
 import {
   recordAccountActivityData,
+  recordAssetActivityData,
   recordAssetSupplyData,
   recordRoleActivityData,
   recordStableCoinMetricsData,
   recordTransferData,
 } from './utils/timeseries';
+import { handleAssetTransfer } from './utils/transfer';
 
 export function handleApproval(event: ApprovalEvent): void {}
 
@@ -52,71 +52,7 @@ export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {
 }
 
 export function handleTransfer(event: TransferEvent): void {
-  log.info('Transfer event received: {} {} {} {}', [
-    event.address.toHexString(),
-    event.params.from.toHexString(),
-    event.params.to.toHexString(),
-    event.params.value.toString(),
-  ]);
-
-  let stableCoin = fetchStableCoin(event.address);
-  let from: Account | null = null;
-  let to: Account | null = null;
-
-  let eventTransfer = new Event_Transfer(eventId(event));
-  eventTransfer.emitter = stableCoin.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.asset = stableCoin.id;
-  eventTransfer.from = event.params.from;
-  eventTransfer.to = event.params.to;
-  eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact, stableCoin.decimals);
-
-  if (event.params.from.equals(Address.zero())) {
-    stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(eventTransfer.valueExact);
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
-  } else {
-    from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(stableCoin.id, from), stableCoin.id, from.id, stableCoin.decimals);
-    fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact, stableCoin.decimals);
-    fromBalance.save();
-
-    eventTransfer.from = from.id;
-    eventTransfer.fromBalance = fromBalance.id;
-
-    // Record account activity for sender
-    recordAccountActivityData(from, stableCoin.id, fromBalance.valueExact, stableCoin.decimals, false);
-  }
-
-  if (event.params.to.equals(Address.zero())) {
-    stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.minus(eventTransfer.valueExact);
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
-  } else {
-    to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(stableCoin.id, to), stableCoin.id, to.id, stableCoin.decimals);
-    toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact, stableCoin.decimals);
-    toBalance.save();
-
-    eventTransfer.to = to.id;
-    eventTransfer.toBalance = toBalance.id;
-
-    // Record account activity for receiver
-    recordAccountActivityData(to, stableCoin.id, toBalance.valueExact, stableCoin.decimals, false);
-  }
-
-  eventTransfer.save();
-  stableCoin.save();
-
-  // Record transfer data
-  recordTransferData(stableCoin.id, eventTransfer.valueExact, stableCoin.decimals, from, to);
-
-  // Record supply data
-  recordAssetSupplyData(stableCoin.id, stableCoin.totalSupplyExact, stableCoin.decimals, 'StableCoin');
-
-  // Record stablecoin metrics
-  recordStableCoinMetricsData(stableCoin);
+  handleAssetTransfer(event, 'StableCoin', fetchStableCoin, recordStableCoinMetricsData);
 }
 
 export function handleUnpaused(event: UnpausedEvent): void {

@@ -24,72 +24,10 @@ import {
   recordRoleActivityData,
   recordTransferData,
 } from './utils/timeseries';
+import { handleAssetTransfer } from './utils/transfer';
 
 export function handleTransfer(event: TransferEvent): void {
-  log.info('Transfer event received: {} {} {} {}', [
-    event.address.toHexString(),
-    event.params.from.toHexString(),
-    event.params.to.toHexString(),
-    event.params.value.toString(),
-  ]);
-
-  let equity = fetchEquity(event.address);
-  let from: Account | null = null;
-  let to: Account | null = null;
-
-  let eventTransfer = new Event_Transfer(eventId(event));
-  eventTransfer.emitter = equity.id;
-  eventTransfer.timestamp = event.block.timestamp;
-  eventTransfer.asset = equity.id;
-  eventTransfer.from = event.params.from;
-  eventTransfer.to = event.params.to;
-  eventTransfer.valueExact = event.params.value;
-  eventTransfer.value = toDecimals(eventTransfer.valueExact, equity.decimals);
-
-  if (event.params.from.equals(Address.zero())) {
-    equity.totalSupplyExact = equity.totalSupplyExact.plus(eventTransfer.valueExact);
-    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
-  } else {
-    from = fetchAccount(event.params.from);
-    let fromBalance = fetchBalance(balanceId(equity.id, from), equity.id, from.id, equity.decimals);
-    fromBalance.valueExact = fromBalance.valueExact.minus(eventTransfer.valueExact);
-    fromBalance.value = toDecimals(fromBalance.valueExact, equity.decimals);
-    fromBalance.save();
-
-    eventTransfer.from = from.id;
-    eventTransfer.fromBalance = fromBalance.id;
-
-    // Record account activity for sender
-    recordAccountActivityData(from, equity.id, fromBalance.valueExact, equity.decimals, false);
-  }
-
-  if (event.params.to.equals(Address.zero())) {
-    equity.totalSupplyExact = equity.totalSupplyExact.minus(eventTransfer.valueExact);
-    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
-  } else {
-    to = fetchAccount(event.params.to);
-    let toBalance = fetchBalance(balanceId(equity.id, to), equity.id, to.id, equity.decimals);
-    toBalance.valueExact = toBalance.valueExact.plus(eventTransfer.valueExact);
-    toBalance.value = toDecimals(toBalance.valueExact, equity.decimals);
-    toBalance.save();
-
-    eventTransfer.to = to.id;
-    eventTransfer.toBalance = toBalance.id;
-
-    // Record account activity for receiver
-    recordAccountActivityData(to, equity.id, toBalance.valueExact, equity.decimals, false);
-  }
-
-  eventTransfer.save();
-  equity.save();
-  // Record transfer data
-  recordTransferData(equity.id, eventTransfer.valueExact, equity.decimals, from, to);
-
-  // Record supply data
-  recordAssetSupplyData(equity.id, equity.totalSupplyExact, equity.decimals, 'Equity');
-
-  // Record equity category data
-  recordEquityCategoryData(equity);
+  handleAssetTransfer(event, 'Equity', fetchEquity, recordEquityCategoryData);
 }
 
 export function handlePaused(event: PausedEvent): void {
