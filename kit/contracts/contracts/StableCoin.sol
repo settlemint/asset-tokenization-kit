@@ -28,6 +28,7 @@ contract StableCoin is
 
     error InvalidDecimals(uint8 decimals);
     error InvalidISIN();
+    error InvalidLiveness();
 
     /// @dev Stores the collateral proof details
     struct CollateralProof {
@@ -63,6 +64,7 @@ contract StableCoin is
         ERC20Collateral(collateralLivenessSeconds)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
+        if (collateralLivenessSeconds == 0) revert InvalidLiveness();
         if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;

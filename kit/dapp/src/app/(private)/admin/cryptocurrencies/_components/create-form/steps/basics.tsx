@@ -1,6 +1,6 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { AssetFormSwitch } from '@/components/blocks/asset-form/inputs/asset-form-switch';
+import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
 import type { CreateCryptoCurrencyFormType } from '../schema';
 
@@ -16,85 +16,16 @@ export function Basics() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <FormField
-          control={control}
-          name="assetName"
-          defaultValue=""
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="HODL Coin"
-                  {...field}
-                  required
-                  minLength={2}
-                  maxLength={50}
-                  pattern="^[a-zA-Z0-9\s-]+$"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="symbol"
-          defaultValue=""
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Symbol</FormLabel>
-              <FormControl>
-                <Input placeholder="REKT" {...field} required minLength={2} maxLength={11} pattern="^[A-Z0-9]+$" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name="decimals"
-          defaultValue={18}
-          render={({ field: { value, onChange, ...field } }) => (
-            <FormItem>
-              <FormLabel>Decimals</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="18"
-                  type="number"
-                  value={value ?? ''}
-                  onChange={(e) => {
-                    const val = e.target.value === '' ? '' : Number(e.target.value);
-                    onChange(val);
-                  }}
-                  {...field}
-                  required
-                  min={0}
-                  max={18}
-                  step={1}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <AssetFormInput control={control} name="assetName" label="Name" placeholder="HODL Coin" />
+        <AssetFormInput control={control} name="symbol" label="Symbol" placeholder="HODL" />
+        <AssetFormInput control={control} type="number" name="decimals" label="Decimals" defaultValue={18} />
       </div>
-      <FormField
+      <AssetFormSwitch
         control={control}
         name="private"
+        label="Private Token"
+        helperText="Other organisations won&apos;t see this asset"
         defaultValue={true}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Private Token</FormLabel>
-            <FormControl>
-              <div className="flex items-center space-x-2">
-                <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
-                <span className="text-muted-foreground text-sm">Other organisations won&apos;t see this asset</span>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
       />
     </div>
   );

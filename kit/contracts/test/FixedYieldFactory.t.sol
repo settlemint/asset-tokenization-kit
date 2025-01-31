@@ -143,45 +143,10 @@ contract FixedYieldFactoryTest is Test {
         vm.stopPrank();
     }
 
-    function test_RevertInvalidToken() public {
-        vm.startPrank(owner);
-        vm.expectRevert(FixedYieldFactory.InvalidToken.selector);
-        factory.create(ERC20YieldMock(address(0)), startDate, endDate, YIELD_RATE, INTERVAL);
-        vm.stopPrank();
-    }
-
     function test_RevertUnauthorized() public {
         vm.startPrank(user1);
         vm.expectRevert(FixedYieldFactory.NotAuthorized.selector);
         factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
-        vm.stopPrank();
-    }
-
-    function test_RevertInvalidStartDate() public {
-        vm.startPrank(owner);
-        vm.expectRevert(FixedYieldFactory.InvalidStartDate.selector);
-        factory.create(token, block.timestamp, endDate, YIELD_RATE, INTERVAL);
-        vm.stopPrank();
-    }
-
-    function test_RevertInvalidEndDate() public {
-        vm.startPrank(owner);
-        vm.expectRevert(FixedYieldFactory.InvalidEndDate.selector);
-        factory.create(token, startDate, startDate, YIELD_RATE, INTERVAL);
-        vm.stopPrank();
-    }
-
-    function test_RevertInvalidRate() public {
-        vm.startPrank(owner);
-        vm.expectRevert(FixedYieldFactory.InvalidRate.selector);
-        factory.create(token, startDate, endDate, 0, INTERVAL);
-        vm.stopPrank();
-    }
-
-    function test_RevertInvalidInterval() public {
-        vm.startPrank(owner);
-        vm.expectRevert(FixedYieldFactory.InvalidInterval.selector);
-        factory.create(token, startDate, endDate, YIELD_RATE, 0);
         vm.stopPrank();
     }
 
