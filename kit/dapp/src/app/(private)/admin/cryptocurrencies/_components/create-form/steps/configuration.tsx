@@ -1,5 +1,5 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
 import type { CreateCryptoCurrencyFormType } from '../schema';
 
@@ -15,30 +15,7 @@ export function Configuration() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <FormField
-          control={control}
-          name="initialSupply"
-          defaultValue={0}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Initial supply</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="1000000"
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  value={field.value}
-                  required
-                  min={0}
-                  max={1000000000000}
-                  step={1}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <AssetFormInput control={control} name="initialSupply" label="Initial supply" defaultValue={0} />
       </div>
     </div>
   );

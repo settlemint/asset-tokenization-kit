@@ -6,7 +6,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { type Address, parseEther } from 'viem';
 import { CreateBondFormSchema } from './schema';
 
 const CreateBond = portalGraphql(`
@@ -52,8 +52,8 @@ export const createBond = actionClient
         name: assetName,
         symbol,
         decimals,
-        isin,
-        faceValue,
+        isin: isin ?? '',
+        faceValue: parseEther(faceValue.toString()).toString(),
         maturityDate: maturityDate.toISOString(),
         underlyingAsset: '',
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),

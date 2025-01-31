@@ -1,5 +1,5 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
 import type { CreateEquityFormType } from '../schema';
 
@@ -15,47 +15,12 @@ export function Configuration() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <FormField
-          control={control}
-          name="equityClass"
-          defaultValue=""
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Equity class</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g., Common"
-                  {...field}
-                  required
-                  minLength={2}
-                  maxLength={50}
-                  pattern="^[a-zA-Z0-9\s-]+$"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
+        <AssetFormInput control={control} name="equityClass" label="Equity class" placeholder="Common Stock" />
+        <AssetFormInput
           control={control}
           name="equityCategory"
-          defaultValue=""
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Equity category</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g., Series A"
-                  {...field}
-                  required
-                  minLength={2}
-                  maxLength={50}
-                  pattern="^[a-zA-Z0-9\s-]+$"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Equity category"
+          placeholder="Oil & Gas Drilling"
         />
       </div>
     </div>
