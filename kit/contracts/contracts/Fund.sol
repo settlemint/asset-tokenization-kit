@@ -11,6 +11,8 @@ import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/ex
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title Fund - A security token representing fund shares
 /// @notice This contract implements a security token that represents fund shares with voting rights, blocklist,
@@ -29,10 +31,10 @@ contract Fund is
     ERC20Votes
 {
     using Math for uint256;
+    using SafeERC20 for IERC20;
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
-    bytes32 public constant NAV_MANAGER_ROLE = keccak256("NAV_MANAGER_ROLE");
 
     uint256 public constant MIN_INVESTMENT = 100 ether; // Minimum investment amount
     uint256 public constant MAX_INVESTMENT = 10_000_000 ether; // Maximum investment amount
@@ -53,6 +55,9 @@ contract Fund is
     error TooFrequentFeeCollection();
     error BatchOperationFailed(uint256 index);
     error InvalidBatchInput();
+    error TokenTransferFailed();
+    error InvalidTokenAddress();
+    error InsufficientTokenBalance();
 
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
@@ -93,6 +98,8 @@ contract Fund is
     event ManagementFeeCollected(uint256 amount, uint256 timestamp, uint256 navPerShare);
     event PerformanceFeeCollected(uint256 amount, uint256 timestamp, uint256 navPerShare);
     event HighWaterMarkUpdated(uint256 oldValue, uint256 newValue);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+    event BatchTokenWithdrawn(address[] tokens, address[] recipients, uint256[] amounts);
 
     /// @notice Constructor
     /// @param name The token name
@@ -137,7 +144,6 @@ contract Fund is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
-        _grantRole(NAV_MANAGER_ROLE, initialOwner);
     }
 
     /// @notice Returns the fund class
@@ -278,7 +284,7 @@ contract Fund is
     /// @notice Updates the fund's NAV with slippage protection
     /// @param newNAV The new NAV value in base units
     /// @param maxSlippageBps Maximum allowed slippage in basis points
-    function updateNAV(uint256 newNAV, uint256 maxSlippageBps) public onlyRole(NAV_MANAGER_ROLE) {
+    function updateNAV(uint256 newNAV, uint256 maxSlippageBps) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         if (newNAV == 0) revert InvalidNAV();
 
         // Check slippage if there's a previous NAV
@@ -549,5 +555,73 @@ contract Fund is
                 revert BatchOperationFailed(i);
             }
         }
+    }
+
+    /// @notice Withdraws tokens from the fund
+    /// @dev Only callable by supply manager. Emits a TokenWithdrawn event
+    /// @param token The token to withdraw
+    /// @param to The recipient address
+    /// @param amount The amount to withdraw
+    function withdrawToken(address token, address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (token == address(0)) revert InvalidTokenAddress();
+        if (to == address(0)) revert InvalidTokenAddress();
+        if (amount == 0) return;
+
+        uint256 balance = IERC20(token).balanceOf(address(this));
+        if (balance < amount) revert InsufficientTokenBalance();
+
+        IERC20(token).safeTransfer(to, amount);
+        emit TokenWithdrawn(token, to, amount);
+    }
+
+    /// @notice Batch withdraws multiple tokens from the fund
+    /// @dev Only callable by portfolio manager. Emits a BatchTokenWithdrawn event
+    /// @param tokens Array of token addresses to withdraw
+    /// @param recipients Array of recipient addresses
+    /// @param amounts Array of amounts to withdraw
+    function batchWithdrawTokens(
+        address[] calldata tokens,
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    )
+        public
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+    {
+        if (tokens.length != recipients.length || tokens.length != amounts.length || tokens.length == 0) {
+            revert InvalidBatchInput();
+        }
+
+        for (uint256 i = 0; i < tokens.length; i++) {
+            if (tokens[i] == address(0)) revert InvalidTokenAddress();
+            if (recipients[i] == address(0)) revert InvalidTokenAddress();
+            if (amounts[i] == 0) continue;
+
+            uint256 balance = IERC20(tokens[i]).balanceOf(address(this));
+            if (balance < amounts[i]) revert InsufficientTokenBalance();
+
+            IERC20(tokens[i]).safeTransfer(recipients[i], amounts[i]);
+        }
+
+        emit BatchTokenWithdrawn(tokens, recipients, amounts);
+    }
+
+    /// @notice Gets the balance of a specific token held by the fund
+    /// @param token The token address to query
+    /// @return The balance of the token
+    function getTokenBalance(address token) public view returns (uint256) {
+        if (token == address(0)) revert InvalidTokenAddress();
+        return IERC20(token).balanceOf(address(this));
+    }
+
+    /// @notice Gets the balances of multiple tokens held by the fund
+    /// @param tokens Array of token addresses to query
+    /// @return balances Array of token balances
+    function getTokenBalances(address[] calldata tokens) public view returns (uint256[] memory) {
+        uint256[] memory balances = new uint256[](tokens.length);
+        for (uint256 i = 0; i < tokens.length; i++) {
+            if (tokens[i] == address(0)) revert InvalidTokenAddress();
+            balances[i] = IERC20(tokens[i]).balanceOf(address(this));
+        }
+        return balances;
     }
 }

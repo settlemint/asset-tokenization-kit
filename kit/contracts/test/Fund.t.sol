@@ -9,7 +9,6 @@ contract FundTest is Test {
     address public owner;
     address public investor1;
     address public investor2;
-    address public navManager;
 
     // Constants for fund setup
     string constant NAME = "Test Fund";
@@ -37,19 +36,13 @@ contract FundTest is Test {
         owner = makeAddr("owner");
         investor1 = makeAddr("investor1");
         investor2 = makeAddr("investor2");
-        navManager = makeAddr("navManager");
 
         vm.startPrank(owner);
         fund = new Fund(
             NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS, FUND_CLASS, FUND_CATEGORY
         );
 
-        // Grant NAV manager role
-        fund.grantRole(fund.NAV_MANAGER_ROLE(), navManager);
-        vm.stopPrank();
-
-        // Set initial NAV
-        vm.startPrank(navManager);
+        // Set initial NAV (owner has SUPPLY_MANAGEMENT_ROLE)
         fund.updateNAV(INITIAL_NAV, 10_000);
         vm.stopPrank();
     }
@@ -63,13 +56,14 @@ contract FundTest is Test {
         assertEq(fund.fundCategory(), FUND_CATEGORY);
         assertEq(fund.currentNAV(), INITIAL_NAV);
         assertTrue(fund.hasRole(fund.DEFAULT_ADMIN_ROLE(), owner));
-        assertTrue(fund.hasRole(fund.NAV_MANAGER_ROLE(), navManager));
+        assertTrue(fund.hasRole(fund.SUPPLY_MANAGEMENT_ROLE(), owner));
+        assertTrue(fund.hasRole(fund.USER_MANAGEMENT_ROLE(), owner));
     }
 
     function test_UpdateNAV() public {
         uint256 newNAV = 1100 ether;
 
-        vm.startPrank(navManager);
+        vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
         emit NAVUpdated(INITIAL_NAV, newNAV, block.timestamp);
         fund.updateNAV(newNAV, 10_000);
@@ -81,7 +75,7 @@ contract FundTest is Test {
     function test_UpdateNAV_Slippage() public {
         uint256 newNAV = 1500 ether; // 50% increase
 
-        vm.startPrank(navManager);
+        vm.startPrank(owner);
         vm.expectRevert(Fund.SlippageExceeded.selector);
         fund.updateNAV(newNAV, 1000); // 10% max slippage
         vm.stopPrank();
@@ -168,16 +162,12 @@ contract FundTest is Test {
         // Make initial investment
         vm.startPrank(owner);
         fund.processInvestment(investor1, LARGE_INVESTMENT_AMOUNT);
-        vm.stopPrank();
 
         // Increase NAV by 20%
         uint256 newNAV = (INITIAL_NAV * 120) / 100;
-        vm.startPrank(navManager);
         fund.updateNAV(newNAV, 10_000);
-        vm.stopPrank();
 
         // Collect performance fee
-        vm.startPrank(owner);
         uint256 fee = fund.collectPerformanceFee();
         vm.stopPrank();
 

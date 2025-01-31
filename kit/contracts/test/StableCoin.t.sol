@@ -274,7 +274,7 @@ contract StableCoinTest is Test {
     function test_OnlyAdminCanUpdateCollateral() public {
         uint256 collateralAmount = 1_000_000;
 
-        bytes32 role = stableCoin.COLLATERAL_MANAGER_ROLE();
+        bytes32 role = stableCoin.SUPPLY_MANAGEMENT_ROLE();
         vm.startPrank(user1);
         vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
         stableCoin.updateCollateral(collateralAmount);

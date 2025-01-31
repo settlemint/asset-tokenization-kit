@@ -27,7 +27,6 @@ contract StableCoin is
 {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
-    bytes32 public constant COLLATERAL_MANAGER_ROLE = keccak256("COLLATERAL_MANAGER_ROLE");
 
     /// @notice Maximum amount that can be minted in a single transaction
     uint256 private immutable _maxMintAmount;
@@ -107,7 +106,6 @@ contract StableCoin is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
-        _grantRole(COLLATERAL_MANAGER_ROLE, initialOwner);
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -165,7 +163,7 @@ contract StableCoin is
 
     /// @notice Updates the proven collateral amount with a timestamp
     /// @param amount New collateral amount
-    function updateCollateral(uint256 amount) public onlyRole(COLLATERAL_MANAGER_ROLE) {
+    function updateCollateral(uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         if (block.timestamp < _lastCollateralUpdate + _minCollateralUpdateInterval) {
             revert TooFrequentCollateralUpdate();
         }

@@ -83,7 +83,6 @@ contract BondTest is Test {
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner));
-        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner));
     }
 
     function test_DifferentDecimals() public {

@@ -138,7 +138,7 @@ contract StableCoinFactoryTest is Test {
         vm.startPrank(user);
         vm.expectRevert(
             abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.COLLATERAL_MANAGER_ROLE()
+                "AccessControlUnauthorizedAccount(address,bytes32)", user, token.SUPPLY_MANAGEMENT_ROLE()
             )
         );
         token.updateCollateral(amount);
@@ -179,8 +179,8 @@ contract StableCoinFactoryTest is Test {
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (collateral), and StableCoinCreated"
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and StableCoinCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -212,16 +212,8 @@ contract StableCoinFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be RoleGranted for COLLATERAL_MANAGER_ROLE
-        VmSafe.Log memory fourthEntry = entries[3];
-        assertEq(
-            fourthEntry.topics[0],
-            keccak256("RoleGranted(bytes32,address,address)"),
-            "Wrong event signature for fourth RoleGranted"
-        );
-
-        // Fifth event should be StableCoinCreated
-        VmSafe.Log memory lastEntry = entries[4];
+        // Fourth event should be StableCoinCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
             keccak256("StableCoinCreated(address,string,string,uint8,address,string,uint256)"),

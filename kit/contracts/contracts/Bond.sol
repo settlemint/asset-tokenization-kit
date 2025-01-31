@@ -43,7 +43,6 @@ contract Bond is
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
-    bytes32 public constant FINANCIAL_MANAGEMENT_ROLE = keccak256("FINANCIAL_MANAGEMENT_ROLE");
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
@@ -143,7 +142,6 @@ contract Bond is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
-        _grantRole(FINANCIAL_MANAGEMENT_ROLE, initialOwner);
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -231,17 +229,17 @@ contract Bond is
     }
 
     /// @notice Allows withdrawing excess underlying assets
-    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _withdrawUnderlyingAsset(to, amount);
     }
 
     /// @notice Allows withdrawing excess underlying assets
-    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawExcessUnderlyingAssets(address to) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+    function withdrawExcessUnderlyingAssets(address to) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 
@@ -325,11 +323,11 @@ contract Bond is
     }
 
     /// @notice Checks if an address can manage yield on this token
-    /// @dev Only addresses with FINANCIAL_MANAGEMENT_ROLE can manage yield
+    /// @dev Only addresses with SUPPLY_MANAGEMENT_ROLE can manage yield
     /// @param manager The address to check
-    /// @return True if the address has FINANCIAL_MANAGEMENT_ROLE
+    /// @return True if the address has SUPPLY_MANAGEMENT_ROLE
     function canManageYield(address manager) public view override returns (bool) {
-        return hasRole(FINANCIAL_MANAGEMENT_ROLE, manager);
+        return hasRole(SUPPLY_MANAGEMENT_ROLE, manager);
     }
 
     /// @notice Returns the balance of tokens a holder had at a specific timestamp

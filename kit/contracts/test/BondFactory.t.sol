@@ -49,7 +49,6 @@ contract BondFactoryTest is Test {
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
-        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner), "Owner should have financial management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
 
         // Test factory tracking
@@ -235,8 +234,8 @@ contract BondFactoryTest is Test {
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (financial), and BondCreated"
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and BondCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -268,16 +267,8 @@ contract BondFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be RoleGranted for FINANCIAL_MANAGEMENT_ROLE
-        VmSafe.Log memory fourthEntry = entries[3];
-        assertEq(
-            fourthEntry.topics[0],
-            keccak256("RoleGranted(bytes32,address,address)"),
-            "Wrong event signature for fourth RoleGranted"
-        );
-
-        // Fifth event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[4];
+        // Fourth event should be BondCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
             keccak256("BondCreated(address,string,string,uint8,address,string,uint256,uint256,uint256,address,uint256)"),
