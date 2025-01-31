@@ -34,13 +34,13 @@ contract Equity is
     error InvalidISIN();
 
     /// @notice The class of the equity (e.g., "Common", "Preferred")
-    bytes32 private _equityClass;
+    string private _equityClass;
 
     /// @notice The category of the equity (e.g., "Series A", "Seed")
-    bytes32 private _equityCategory;
+    string private _equityCategory;
 
     /// @notice The ISIN (International Securities Identification Number) of the equity
-    bytes12 private immutable _isin;
+    string private _isin;
 
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
@@ -70,9 +70,9 @@ contract Equity is
         if (bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
-        _isin = bytes12(bytes(isin_));
-        _equityClass = bytes32(bytes(equityClass_));
-        _equityCategory = bytes32(bytes(equityCategory_));
+        _isin = isin_;
+        _equityClass = equityClass_;
+        _equityCategory = equityCategory_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
@@ -89,34 +89,22 @@ contract Equity is
     /// @notice Returns the class of equity this token represents
     /// @return The equity class as a string
     function equityClass() public view returns (string memory) {
-        return _stripNullBytes(_equityClass);
+        return _equityClass;
     }
 
     /// @notice Returns the category of equity this token represents
     /// @return The equity category as a string
     function equityCategory() public view returns (string memory) {
-        return _stripNullBytes(_equityCategory);
+        return _equityCategory;
     }
 
     /// @notice Returns the ISIN (International Securities Identification Number) of the equity
     /// @return The ISIN of the equity
     function isin() public view returns (string memory) {
-        return string(abi.encodePacked(_isin));
+        return _isin;
     }
 
-    /// @dev Helper function to strip null bytes from a bytes32 value
-    /// @param value The bytes32 value to strip null bytes from
-    /// @return The string with null bytes removed
-    function _stripNullBytes(bytes32 value) internal pure returns (string memory) {
-        uint256 i;
-        for (i = 0; i < 32 && value[i] != 0; i++) { }
-        bytes memory bytesArray = new bytes(i);
-        for (uint256 j = 0; j < i; j++) {
-            bytesArray[j] = value[j];
-        }
-        return string(bytesArray);
-    }
-
+    /// @notice Pauses all token transfers
     /// @notice Pauses all token transfers
     /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
     function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {

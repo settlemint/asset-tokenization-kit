@@ -26,7 +26,6 @@ contract CryptoCurrencyFactoryTest is Test {
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
-        assertEq(factory.allTokensLength(), 1, "Should have created one token");
 
         CryptoCurrency token = CryptoCurrency(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
@@ -59,8 +58,6 @@ contract CryptoCurrencyFactoryTest is Test {
             assertEq(token.balanceOf(owner), INITIAL_SUPPLY, "Owner should have initial supply");
         }
         vm.stopPrank();
-
-        assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
     function test_DeterministicAddresses() public {
@@ -185,7 +182,7 @@ contract CryptoCurrencyFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256,uint256)"),
+            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256)"),
             "Wrong event signature for CryptoCurrencyCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

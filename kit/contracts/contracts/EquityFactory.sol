@@ -10,13 +10,9 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.s
 /// @custom:security-contact support@settlemint.com
 contract EquityFactory is ReentrancyGuard {
     error AddressAlreadyDeployed();
-    error InvalidISIN();
 
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
-
-    /// @notice Array of all tokens created by this factory
-    Equity[] public allTokens;
 
     /// @notice Emitted when a new equity token is created
     /// @param token The address of the newly created token
@@ -27,7 +23,6 @@ contract EquityFactory is ReentrancyGuard {
     /// @param isin The ISIN (International Securities Identification Number) of the equity
     /// @param equityClass The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory The equity category (e.g., "Series A", "Seed")
-    /// @param tokenCount The total number of tokens created so far
     event EquityCreated(
         address indexed token,
         string name,
@@ -36,31 +31,26 @@ contract EquityFactory is ReentrancyGuard {
         address indexed owner,
         string isin,
         string equityClass,
-        string equityCategory,
-        uint256 tokenCount
+        string equityCategory
     );
 
     /// @notice Calculates the salt for CREATE2 deployment
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param equityClass The equity class (e.g., "Common", "Preferred")
-    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @param isin The ISIN (International Securities Identification Number) of the equity
     /// @return bytes32 The calculated salt
     function _calculateSalt(
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory equityClass,
-        string memory equityCategory,
         string memory isin
     )
         internal
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(name, symbol, decimals, equityClass, equityCategory, isin));
+        return keccak256(abi.encode(name, symbol, decimals, isin));
     }
 
     /// @notice Creates a new equity token with the specified parameters
@@ -88,18 +78,15 @@ contract EquityFactory is ReentrancyGuard {
         address predicted = predictAddress(name, symbol, decimals, isin, equityClass, equityCategory);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(name, symbol, decimals, equityClass, equityCategory, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         Equity newToken =
             new Equity{ salt: salt }(name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
 
         token = address(newToken);
-        allTokens.push(newToken);
         isFactoryToken[token] = true;
 
-        emit EquityCreated(
-            token, name, symbol, decimals, msg.sender, isin, equityClass, equityCategory, allTokens.length
-        );
+        emit EquityCreated(token, name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
     }
 
     /// @notice Predicts the address where a token will be deployed
@@ -123,7 +110,7 @@ contract EquityFactory is ReentrancyGuard {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, equityClass, equityCategory, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         predicted = address(
             uint160(
@@ -144,23 +131,5 @@ contract EquityFactory is ReentrancyGuard {
                 )
             )
         );
-    }
-
-    /// @notice Returns the number of tokens created by this factory
-    /// @return The number of tokens
-    function allTokensLength() external view returns (uint256) {
-        return allTokens.length;
-    }
-
-    /// @notice Returns a subset of all tokens
-    /// @param start Start index
-    /// @param end End index (exclusive)
-    /// @return subset Array of tokens in the specified range
-    function getTokensInRange(uint256 start, uint256 end) external view returns (Equity[] memory subset) {
-        require(start < end && end <= allTokens.length, "Invalid range");
-        subset = new Equity[](end - start);
-        for (uint256 i = start; i < end; i++) {
-            subset[i - start] = allTokens[i];
-        }
     }
 }

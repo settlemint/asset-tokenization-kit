@@ -25,7 +25,6 @@ contract FundFactory is ReentrancyGuard {
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points
     /// @param hurdleRateBps The hurdle rate in basis points
-    /// @param tokenCount The total number of tokens created so far
     event FundCreated(
         address indexed token,
         string name,
@@ -36,12 +35,8 @@ contract FundFactory is ReentrancyGuard {
         string fundClass,
         string fundCategory,
         uint256 managementFeeBps,
-        uint256 hurdleRateBps,
-        uint256 tokenCount
+        uint256 hurdleRateBps
     );
-
-    /// @notice Array of all tokens created by this factory
-    Fund[] public allTokens;
 
     /// @notice Calculates the salt for CREATE2 deployment
     /// @return bytes32 The calculated salt
@@ -49,21 +44,13 @@ contract FundFactory is ReentrancyGuard {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory fundClass,
-        string memory fundCategory,
-        string memory isin,
-        uint256 managementFeeBps,
-        uint256 hurdleRateBps
+        string memory isin
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
-        return keccak256(
-            abi.encode(
-                name, symbol, decimals, fundClass, fundCategory, msg.sender, isin, managementFeeBps, hurdleRateBps
-            )
-        );
+        return keccak256(abi.encode(name, symbol, decimals, isin));
     }
 
     /// @notice Creates a new fund token with the specified parameters
@@ -96,29 +83,17 @@ contract FundFactory is ReentrancyGuard {
             predictAddress(name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps, hurdleRateBps);
         if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt =
-            _calculateSalt(name, symbol, decimals, fundClass, fundCategory, isin, managementFeeBps, hurdleRateBps);
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         Fund newToken = new Fund{ salt: salt }(
             name, symbol, decimals, msg.sender, isin, managementFeeBps, hurdleRateBps, fundClass, fundCategory
         );
 
         token = address(newToken);
-        allTokens.push(newToken);
         isFactoryFund[token] = true;
 
         emit FundCreated(
-            token,
-            name,
-            symbol,
-            decimals,
-            msg.sender,
-            isin,
-            fundClass,
-            fundCategory,
-            managementFeeBps,
-            hurdleRateBps,
-            allTokens.length
+            token, name, symbol, decimals, msg.sender, isin, fundClass, fundCategory, managementFeeBps, hurdleRateBps
         );
     }
 
@@ -147,8 +122,7 @@ contract FundFactory is ReentrancyGuard {
         view
         returns (address predicted)
     {
-        bytes32 salt =
-            _calculateSalt(name, symbol, decimals, fundClass, fundCategory, isin, managementFeeBps, hurdleRateBps);
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         predicted = address(
             uint160(
@@ -179,17 +153,5 @@ contract FundFactory is ReentrancyGuard {
                 )
             )
         );
-    }
-
-    /// @notice Returns a subset of all tokens
-    /// @param start Start index
-    /// @param end End index (exclusive)
-    /// @return subset Array of funds in the specified range
-    function getTokensInRange(uint256 start, uint256 end) external view returns (Fund[] memory subset) {
-        require(start < end && end <= allTokens.length, "Invalid range");
-        subset = new Fund[](end - start);
-        for (uint256 i = start; i < end; i++) {
-            subset[i - start] = allTokens[i];
-        }
     }
 }

@@ -14,44 +14,10 @@ contract StableCoinFactory is ReentrancyGuard {
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
 
-    /// @notice Array of all tokens created by this factory
-    StableCoin[] public allTokens;
-
     /// @notice Emitted when a new stablecoin is created
     event StableCoinCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint8 decimals,
-        address indexed owner,
-        string isin,
-        uint256 tokenCount
+        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, string isin
     );
-
-    /// @notice Returns the number of tokens created by this factory
-    /// @return The number of tokens
-    function allTokensLength() external view returns (uint256) {
-        return allTokens.length;
-    }
-
-    /// @notice Returns a batch of tokens from the allTokens array
-    /// @param start The start index
-    /// @param end The end index (exclusive)
-    /// @return A slice of the allTokens array
-    function allTokensBatch(uint256 start, uint256 end) external view returns (StableCoin[] memory) {
-        if (end > allTokens.length) {
-            end = allTokens.length;
-        }
-        if (start > end) {
-            start = end;
-        }
-
-        StableCoin[] memory batch = new StableCoin[](end - start);
-        for (uint256 i = start; i < end; i++) {
-            batch[i - start] = allTokens[i];
-        }
-        return batch;
-    }
 
     /// @notice Creates a new stablecoin token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits a StableCoinCreated event
@@ -82,9 +48,7 @@ contract StableCoinFactory is ReentrancyGuard {
         );
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(
-            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
-        );
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         StableCoin newToken = new StableCoin{ salt: salt }(
             name,
@@ -98,10 +62,9 @@ contract StableCoinFactory is ReentrancyGuard {
         );
 
         token = address(newToken);
-        allTokens.push(newToken);
         isFactoryToken[token] = true;
 
-        emit StableCoinCreated(token, name, symbol, decimals, msg.sender, isin, allTokens.length);
+        emit StableCoinCreated(token, name, symbol, decimals, msg.sender, isin);
     }
 
     /// @notice Calculates the deterministic address for a token with the given parameters
@@ -126,9 +89,7 @@ contract StableCoinFactory is ReentrancyGuard {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(
-            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
-        );
+        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         predicted = address(
             uint160(
@@ -166,19 +127,12 @@ contract StableCoinFactory is ReentrancyGuard {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
-        uint48 collateralLivenessSeconds,
-        uint256 maxMintAmount,
-        uint256 minCollateralUpdateInterval
+        string memory isin
     )
         internal
         pure
         returns (bytes32)
     {
-        return keccak256(
-            abi.encodePacked(
-                name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
-            )
-        );
+        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
     }
 }

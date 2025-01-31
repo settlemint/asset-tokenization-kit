@@ -10,14 +10,9 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.s
 /// @custom:security-contact support@settlemint.com
 contract CryptoCurrencyFactory is ReentrancyGuard {
     error AddressAlreadyDeployed();
-    error InvalidDecimals(uint8 decimals);
-    error InvalidInitialSupply();
 
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
-
-    /// @notice Array of all tokens created by this factory
-    CryptoCurrency[] public allTokens;
 
     /// @notice Emitted when a new cryptocurrency token is created
     /// @param token The address of the newly created token
@@ -26,41 +21,9 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
     /// @param decimals The number of decimals for the token
     /// @param owner The owner of the token
     /// @param initialSupply The initial supply of tokens minted to the owner
-    /// @param tokenCount The total number of tokens created so far
     event CryptoCurrencyCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint8 decimals,
-        address indexed owner,
-        uint256 initialSupply,
-        uint256 tokenCount
+        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 initialSupply
     );
-
-    /// @notice Returns the number of tokens created by this factory
-    /// @return The number of tokens
-    function allTokensLength() external view returns (uint256) {
-        return allTokens.length;
-    }
-
-    /// @notice Returns a batch of tokens from the allTokens array
-    /// @param start The start index
-    /// @param end The end index (exclusive)
-    /// @return A slice of the allTokens array
-    function allTokensBatch(uint256 start, uint256 end) external view returns (CryptoCurrency[] memory) {
-        if (end > allTokens.length) {
-            end = allTokens.length;
-        }
-        if (start > end) {
-            start = end;
-        }
-
-        CryptoCurrency[] memory batch = new CryptoCurrency[](end - start);
-        for (uint256 i = start; i < end; i++) {
-            batch[i - start] = allTokens[i];
-        }
-        return batch;
-    }
 
     /// @notice Creates a new cryptocurrency token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits a CryptoCurrencyCreated event
@@ -79,21 +42,18 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
         nonReentrant
         returns (address token)
     {
-        if (decimals > 18) revert InvalidDecimals(decimals);
-
         // Check if address is already deployed
         address predicted = predictAddress(name, symbol, decimals, initialSupply);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(name, symbol, decimals, initialSupply);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(name, symbol, decimals, initialSupply, msg.sender);
 
         token = address(newToken);
-        allTokens.push(newToken);
         isFactoryToken[token] = true;
 
-        emit CryptoCurrencyCreated(token, name, symbol, decimals, msg.sender, initialSupply, allTokens.length);
+        emit CryptoCurrencyCreated(token, name, symbol, decimals, msg.sender, initialSupply);
     }
 
     /// @notice Calculates the deterministic address for a token with the given parameters
@@ -112,7 +72,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, initialSupply);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         predicted = address(
             uint160(
@@ -137,16 +97,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
 
     /// @notice Calculates the salt for CREATE2 deployment
     /// @dev Internal function to generate a deterministic salt based on token parameters
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        uint256 initialSupply
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(name, symbol, decimals, initialSupply));
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

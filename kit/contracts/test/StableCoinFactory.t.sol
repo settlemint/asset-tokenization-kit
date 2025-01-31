@@ -31,7 +31,6 @@ contract StableCoinFactoryTest is Test {
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
-        assertEq(factory.allTokensLength(), 1, "Should have created one token");
 
         StableCoin token = StableCoin(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
@@ -67,8 +66,6 @@ contract StableCoinFactoryTest is Test {
             assertEq(collateralAmount, 0, "Initial collateral should be zero");
             assertEq(collateralTimestamp, 0, "Initial timestamp should be zero");
         }
-
-        assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
     function test_DeterministicAddresses() public {
@@ -216,7 +213,7 @@ contract StableCoinFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("StableCoinCreated(address,string,string,uint8,address,string,uint256)"),
+            keccak256("StableCoinCreated(address,string,string,uint8,address,string)"),
             "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

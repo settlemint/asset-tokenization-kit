@@ -31,8 +31,7 @@ contract FundFactoryTest is Test {
         string fundClass,
         string fundCategory,
         uint256 managementFeeBps,
-        uint256 hurdleRateBps,
-        uint256 tokenCount
+        uint256 hurdleRateBps
     );
 
     function setUp() public {
@@ -63,8 +62,7 @@ contract FundFactoryTest is Test {
             FUND_CLASS,
             FUND_CATEGORY,
             MANAGEMENT_FEE_BPS,
-            HURDLE_RATE_BPS,
-            1
+            HURDLE_RATE_BPS
         );
 
         address fundAddress =
@@ -94,40 +92,6 @@ contract FundFactoryTest is Test {
         // Try to create duplicate fund
         vm.expectRevert(FundFactory.AddressAlreadyDeployed.selector);
         factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
-
-        vm.stopPrank();
-    }
-
-    function test_GetTokensInRange() public {
-        vm.startPrank(owner);
-
-        // Create multiple funds
-        address[] memory funds = new address[](3);
-        for (uint256 i = 0; i < 3; i++) {
-            funds[i] = factory.create(
-                NAME,
-                string(abi.encodePacked(SYMBOL, unicode"_", vm.toString(i + 1))),
-                DECIMALS,
-                ISIN,
-                FUND_CLASS,
-                FUND_CATEGORY,
-                MANAGEMENT_FEE_BPS,
-                HURDLE_RATE_BPS
-            );
-        }
-
-        // Get subset of funds
-        Fund[] memory subset = factory.getTokensInRange(1, 3);
-        assertEq(subset.length, 2);
-        assertEq(address(subset[0]), funds[1]);
-        assertEq(address(subset[1]), funds[2]);
-
-        // Test invalid range
-        vm.expectRevert("Invalid range");
-        factory.getTokensInRange(2, 1);
-
-        vm.expectRevert("Invalid range");
-        factory.getTokensInRange(0, 4);
 
         vm.stopPrank();
     }

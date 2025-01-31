@@ -14,11 +14,6 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
     uint8 private immutable _decimals;
 
     error InvalidDecimals(uint8 decimals);
-    error InvalidBatchOperation();
-    error InvalidAddress();
-    error InvalidMintAmount();
-
-    event BatchMint(address[] accounts, uint256[] amounts);
 
     /// @notice Deploys a new CryptoCurrency token contract
     /// @dev Sets up the token with specified parameters and optionally mints initial supply
@@ -60,27 +55,5 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
     /// @param amount The quantity of tokens to create (in base units)
     function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _mint(to, amount);
-    }
-
-    /// @notice Mints tokens to multiple accounts in a single transaction
-    /// @dev Only callable by accounts with SUPPLY_MANAGEMENT_ROLE
-    /// @param accounts Array of addresses to mint tokens to
-    /// @param amounts Array of token amounts to mint
-    function batchMint(
-        address[] calldata accounts,
-        uint256[] calldata amounts
-    )
-        external
-        onlyRole(SUPPLY_MANAGEMENT_ROLE)
-    {
-        if (accounts.length == 0 || accounts.length != amounts.length) revert InvalidBatchOperation();
-
-        for (uint256 i = 0; i < accounts.length; i++) {
-            if (accounts[i] == address(0)) revert InvalidAddress();
-            if (amounts[i] == 0) revert InvalidMintAmount();
-            _mint(accounts[i], amounts[i]);
-        }
-
-        emit BatchMint(accounts, amounts);
     }
 }
