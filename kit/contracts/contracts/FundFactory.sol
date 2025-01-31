@@ -14,9 +14,6 @@ contract FundFactory is ReentrancyGuard {
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryFund;
 
-    /// @notice Mapping of owner to their funds
-    mapping(address => Fund[]) public ownerFunds;
-
     /// @notice Emitted when a new fund token is created
     /// @param token The address of the newly created token
     /// @param name The name of the token
@@ -108,7 +105,6 @@ contract FundFactory is ReentrancyGuard {
 
         token = address(newToken);
         allTokens.push(newToken);
-        ownerFunds[msg.sender].push(newToken);
         isFactoryFund[token] = true;
 
         emit FundCreated(
@@ -183,13 +179,6 @@ contract FundFactory is ReentrancyGuard {
                 )
             )
         );
-    }
-
-    /// @notice Returns all funds owned by an address
-    /// @param owner The address to query
-    /// @return funds Array of fund addresses owned by the address
-    function getFundsByOwner(address owner) external view returns (Fund[] memory) {
-        return ownerFunds[owner];
     }
 
     /// @notice Returns a subset of all tokens

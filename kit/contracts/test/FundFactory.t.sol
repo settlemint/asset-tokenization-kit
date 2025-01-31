@@ -98,30 +98,6 @@ contract FundFactoryTest is Test {
         vm.stopPrank();
     }
 
-    function test_GetFundsByOwner() public {
-        vm.startPrank(owner);
-
-        // Create first fund
-        address fund1 =
-            factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
-
-        // Create second fund with different symbol
-        address fund2 = factory.create(
-            NAME, "TFUND2", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS
-        );
-
-        Fund[] memory ownerFunds = factory.getFundsByOwner(owner);
-        assertEq(ownerFunds.length, 2);
-        assertEq(address(ownerFunds[0]), fund1);
-        assertEq(address(ownerFunds[1]), fund2);
-
-        // Check other user has no funds
-        Fund[] memory user1Funds = factory.getFundsByOwner(user1);
-        assertEq(user1Funds.length, 0);
-
-        vm.stopPrank();
-    }
-
     function test_GetTokensInRange() public {
         vm.startPrank(owner);
 

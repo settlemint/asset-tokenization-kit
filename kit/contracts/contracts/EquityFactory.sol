@@ -15,9 +15,6 @@ contract EquityFactory is ReentrancyGuard {
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
 
-    /// @notice Mapping of owner to their tokens
-    mapping(address => Equity[]) public ownerTokens;
-
     /// @notice Array of all tokens created by this factory
     Equity[] public allTokens;
 
@@ -98,7 +95,6 @@ contract EquityFactory is ReentrancyGuard {
 
         token = address(newToken);
         allTokens.push(newToken);
-        ownerTokens[msg.sender].push(newToken);
         isFactoryToken[token] = true;
 
         emit EquityCreated(
@@ -148,13 +144,6 @@ contract EquityFactory is ReentrancyGuard {
                 )
             )
         );
-    }
-
-    /// @notice Returns all tokens owned by an address
-    /// @param owner The address to query
-    /// @return tokens Array of token addresses owned by the address
-    function getTokensByOwner(address owner) external view returns (Equity[] memory) {
-        return ownerTokens[owner];
     }
 
     /// @notice Returns the number of tokens created by this factory

@@ -16,9 +16,6 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
 
-    /// @notice Mapping of owner to their tokens
-    mapping(address => CryptoCurrency[]) public ownerTokens;
-
     /// @notice Array of all tokens created by this factory
     CryptoCurrency[] public allTokens;
 
@@ -94,7 +91,6 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
 
         token = address(newToken);
         allTokens.push(newToken);
-        ownerTokens[msg.sender].push(newToken);
         isFactoryToken[token] = true;
 
         emit CryptoCurrencyCreated(token, name, symbol, decimals, msg.sender, initialSupply, allTokens.length);
@@ -152,12 +148,5 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
         returns (bytes32)
     {
         return keccak256(abi.encodePacked(name, symbol, decimals, initialSupply));
-    }
-
-    /// @notice Returns all tokens owned by an address
-    /// @param owner The address to query
-    /// @return tokens Array of token addresses owned by the address
-    function getTokensByOwner(address owner) external view returns (CryptoCurrency[] memory) {
-        return ownerTokens[owner];
     }
 }

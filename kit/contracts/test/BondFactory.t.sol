@@ -51,6 +51,9 @@ contract BondFactoryTest is Test {
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
         assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner), "Owner should have financial management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
+
+        // Test factory tracking
+        assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
     }
 
     function test_CreateMultipleBonds() public {
@@ -76,9 +79,114 @@ contract BondFactoryTest is Test {
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
             assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
             assertEq(bond.cap(), CAP, "Bond cap should match");
+            assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
         }
 
         assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
+    }
+
+    function test_PredictAddress() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.startPrank(owner);
+        address predictedAddress = factory.predictAddress(
+            name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
+        );
+
+        address actualAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+
+        assertEq(predictedAddress, actualAddress, "Predicted address should match actual address");
+        vm.stopPrank();
+    }
+
+    function test_BatchRetrieval() public {
+        // Create 5 bonds
+        for (uint256 i = 0; i < 5; i++) {
+            factory.create(
+                "Test Bond",
+                string(abi.encodePacked("TBOND", uint8(i + 1))),
+                DECIMALS,
+                VALID_ISIN,
+                CAP,
+                futureDate,
+                FACE_VALUE,
+                address(underlyingAsset)
+            );
+        }
+
+        // Test full batch
+        Bond[] memory allBonds = factory.allBondsBatch(0, 5);
+        assertEq(allBonds.length, 5, "Should return all bonds");
+
+        // Test partial batch
+        Bond[] memory partialBonds = factory.allBondsBatch(1, 3);
+        assertEq(partialBonds.length, 2, "Should return partial bonds");
+
+        // Test out of bounds
+        Bond[] memory outOfBounds = factory.allBondsBatch(4, 10);
+        assertEq(outOfBounds.length, 1, "Should handle out of bounds end");
+
+        // Test invalid range
+        Bond[] memory invalidRange = factory.allBondsBatch(3, 2);
+        assertEq(invalidRange.length, 0, "Should handle invalid range");
+    }
+
+    function test_RevertInvalidDecimals() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.expectRevert(abi.encodeWithSelector(BondFactory.InvalidDecimals.selector, 19));
+        factory.create(name, symbol, 19, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+    }
+
+    function test_RevertInvalidISIN() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+        string memory invalidISIN = "US123"; // Too short
+
+        vm.expectRevert(BondFactory.InvalidISIN.selector);
+        factory.create(name, symbol, DECIMALS, invalidISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+    }
+
+    function test_RevertInvalidMaturityDate() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+        uint256 pastDate = block.timestamp - 1;
+
+        vm.expectRevert(BondFactory.InvalidMaturityDate.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, pastDate, FACE_VALUE, address(underlyingAsset));
+    }
+
+    function test_RevertInvalidFaceValue() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.expectRevert(BondFactory.InvalidFaceValue.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, 0, address(underlyingAsset));
+    }
+
+    function test_RevertInvalidUnderlyingAsset() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.expectRevert(BondFactory.InvalidUnderlyingAsset.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(0));
+    }
+
+    function test_RevertDuplicateDeployment() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        // First deployment should succeed
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        assertTrue(factory.isFactoryToken(bondAddress), "First deployment should be tracked");
+
+        // Second deployment with same parameters should revert
+        vm.expectRevert(BondFactory.AddressAlreadyDeployed.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
     }
 
     function test_DeterministicAddresses() public {
