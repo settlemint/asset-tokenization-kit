@@ -1,33 +1,41 @@
 import { Button } from '@/components/ui/button';
 
-export function AssetFormButton({
-  currentStep,
-  handlePrev,
-  isLastStep,
-  handleNext,
-}: {
+/**
+ * Props for the AssetFormButton component
+ */
+interface AssetFormButtonProps {
+  /** Current step index in the form (0-based) */
   currentStep: number;
-  handlePrev: () => void;
+  /** Handler for navigating to the previous step */
+  onPreviousStep: () => void;
+  /** Whether this is the final step in the form */
   isLastStep: boolean;
-  handleNext: () => void;
-}) {
+  /** Handler for navigating to the next step */
+  onNextStep: () => void;
+}
+
+/**
+ * Navigation buttons for multi-step asset creation form.
+ * Provides Previous/Next navigation and a final Create Asset button.
+ */
+export function AssetFormButton({ currentStep, onPreviousStep, isLastStep, onNextStep }: AssetFormButtonProps) {
   return (
-    <div className="mt-8 flex justify-between">
+    <div className="flex justify-between space-x-4">
       {currentStep > 0 && (
-        <Button type="button" variant="outline" onClick={handlePrev}>
+        <Button type="button" variant="outline" onClick={onPreviousStep} aria-label="Go to previous step">
           Previous
         </Button>
       )}
 
-      <div className="ml-auto">
-        {isLastStep ? (
-          <Button type="submit">Create Asset</Button>
-        ) : (
-          <Button type="button" onClick={handleNext}>
-            Next
-          </Button>
-        )}
-      </div>
+      <Button
+        type="button"
+        variant="default"
+        onClick={onNextStep}
+        aria-label={isLastStep ? 'Create asset' : 'Go to next step'}
+        className={currentStep === 0 ? 'ml-auto' : ''}
+      >
+        {isLastStep ? 'Create Asset' : 'Next'}
+      </Button>
     </div>
   );
 }

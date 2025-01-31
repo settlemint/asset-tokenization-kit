@@ -53,7 +53,7 @@ export function EvmAddressBalances({ address }: { address: string }) {
           <div key={balance.asset.symbol} className="flex items-center justify-between">
             <dt className="text-muted-foreground">{balance.asset.name}:</dt>
             <dd>
-              {formatTokenValue(Number.parseFloat(balance.value), 2)} {balance.asset.symbol}
+              {formatTokenValue(Number.parseFloat(balance.value), { decimals: 2 })} {balance.asset.symbol}
             </dd>
           </div>
         ))}

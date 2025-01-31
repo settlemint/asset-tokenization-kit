@@ -91,7 +91,7 @@ export function SignUpForm({
                 authClient.organization
                   .create({
                     name: data.organizationName || data.name,
-                    slug: slugify(data.organizationName || data.name, true),
+                    slug: slugify(data.organizationName || data.name, { unique: true }),
                   })
                   .then((org) => {
                     return authClient.organization.setActive({

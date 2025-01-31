@@ -32,7 +32,7 @@ export const columns = [
         <DataTableColumnCell variant="numeric">
           <div className={cn('flex items-center gap-2', color)}>
             <Icon className="h-4 w-4" />
-            <span>{formatPercentage(totalSupply === 0 ? 100 : (collateral / totalSupply) * 100)}</span>
+            <span>{formatPercentage(totalSupply === 0 ? 100 : (collateral / totalSupply) * 100).value}</span>
           </div>
         </DataTableColumnCell>
       );

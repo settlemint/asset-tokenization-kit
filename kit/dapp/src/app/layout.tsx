@@ -1,7 +1,7 @@
 import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { fontSans } from '@/lib/fonts';
-import { theme } from '@/lib/site-config';
+import { themeConfig } from '@/lib/site-config';
 import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -34,8 +34,8 @@ export default function RootLayout({
             disableTransitionOnChange
             enableSystem
             value={{
-              light: theme === 'settlemint' ? 'settlemint-light' : 'light',
-              dark: theme === 'settlemint' ? 'settlemint-dark' : 'dark',
+              light: themeConfig.variant === 'settlemint' ? 'settlemint-light' : 'light',
+              dark: themeConfig.variant === 'settlemint' ? 'settlemint-dark' : 'dark',
             }}
           >
             <QueryClientProvider>{children}</QueryClientProvider>

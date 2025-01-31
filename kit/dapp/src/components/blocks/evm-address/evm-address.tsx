@@ -27,7 +27,7 @@ export function EvmAddress({ address, explorerUrl, children, prefixLength = 6, s
           <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
             <AddressAvatar address={address} variant="tiny" />
           </Suspense>
-          <span className="font-mono">{shortHex(address, prefixLength, suffixLength)}</span>
+          <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
@@ -37,7 +37,7 @@ export function EvmAddress({ address, explorerUrl, children, prefixLength = 6, s
               <AddressAvatar address={address} className="row-span-2" />
             </Suspense>
             <div className="flex flex-col">
-              <span className="font-mono">{shortHex(address, 12, 8)}</span>
+              <span className="font-mono">{shortHex(address, { prefixLength: 12, suffixLength: 8 })}</span>
               {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
                 <Link
                   prefetch={false}
