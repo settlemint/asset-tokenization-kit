@@ -1,6 +1,9 @@
 'use server';
 
-import { CreateStablecoinOutputSchema } from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
+import {
+  type CollateralProofValidityDuration,
+  CreateStablecoinOutputSchema,
+} from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
@@ -22,6 +25,28 @@ const CreateStablecoin = portalGraphql(`
     }
   }
 `);
+
+/**
+ * Converts CollateralProofValidityDuration enum values to seconds
+ * @param duration - The duration value from CollateralProofValidityDuration enum
+ * @returns The duration in seconds
+ */
+function convertDurationToSeconds(duration: keyof typeof CollateralProofValidityDuration): number {
+  switch (duration) {
+    case 'OneHour':
+      return 60 * 60;
+    case 'OneDay':
+      return 24 * 60 * 60;
+    case 'OneWeek':
+      return 7 * 24 * 60 * 60;
+    case 'OneMonth':
+      return 30 * 24 * 60 * 60;
+    case 'OneYear':
+      return 365 * 24 * 60 * 60;
+    default:
+      return 365 * 24 * 60 * 60;
+  }
+}
 
 export const createStablecoin = actionClient
   .schema(CreateStablecoinFormSchema)
@@ -48,8 +73,8 @@ export const createStablecoin = actionClient
         name: assetName,
         symbol,
         decimals,
-        isin,
-        collateralLivenessSeconds: collateralProofValidityDuration,
+        isin: isin ?? '',
+        collateralLivenessSeconds: convertDurationToSeconds(collateralProofValidityDuration),
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
         metadata: {

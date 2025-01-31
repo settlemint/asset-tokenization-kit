@@ -1,7 +1,8 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
+import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
-import type { CreateStablecoinFormType } from '../schema';
+import { CollateralProofValidityDuration, type CreateStablecoinFormType } from '../schema';
 
 export function Configuration() {
   const { control } = useFormContext<CreateStablecoinFormType>();
@@ -14,66 +15,26 @@ export function Configuration() {
           <p className="text-muted-foreground text-sm">Set parameters specific to your stable coin.</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-6">
-        <FormField
+      <div className="grid grid-cols-2 gap-6">
+        <AssetFormInput
           control={control}
           name="collateralThreshold"
-          defaultValue={0}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Collateral threshold</FormLabel>
-              <FormControl>
-                <div className="flex rounded-lg shadow-black/5 shadow-sm">
-                  <Input
-                    className="-me-px rounded-e-none shadow-none focus:mr-[1px]"
-                    placeholder="e.g., 100"
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    value={field.value}
-                    required
-                    min={0}
-                    max={100}
-                    step={1}
-                  />
-                  <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">
-                    %
-                  </span>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Collateral threshold"
+          type="number"
+          postfix="%"
+          min={0}
+          max={100}
+          defaultValue={100}
         />
-        <FormField
+        <AssetFormSelect
           control={control}
           name="collateralProofValidityDuration"
-          defaultValue={30 * 24 * 60 * 60}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Collateral Proof Validity duration</FormLabel>
-              <FormControl>
-                <div className="flex rounded-lg shadow-black/5 shadow-sm">
-                  <Input
-                    className="-me-px rounded-e-none shadow-none focus:mr-[1px]"
-                    placeholder="e.g., 3600"
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    value={field.value}
-                    required
-                    min={0}
-                    max={100}
-                    step={1}
-                  />
-                  <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">
-                    seconds
-                  </span>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Collateral proof validity duration"
+          defaultValue="OneYear"
+          options={Object.entries(CollateralProofValidityDuration).map(([value, label]) => ({
+            label,
+            value,
+          }))}
         />
       </div>
     </div>

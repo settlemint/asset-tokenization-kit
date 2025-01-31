@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const CollateralProofValidityDuration = {
+  OneHour: 'One hour',
+  OneDay: 'One day',
+  OneWeek: 'One week',
+  OneMonth: 'One month',
+  OneYear: 'One year',
+} as const;
+
 export const CreateStablecoinFormSchema = z.object({
   assetName: z.string().min(1, { message: 'Name is required' }),
   symbol: z.string().min(1, { message: 'Symbol is required' }),
@@ -13,16 +21,15 @@ export const CreateStablecoinFormSchema = z.object({
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
-  isin: z.string(),
+  isin: z.string().optional(),
   collateralThreshold: z
     .number()
     .min(0, { message: 'Collateral threshold must be at least 0' })
     .max(100, { message: 'Collateral threshold must be between 0 and 100 %' })
     .default(100),
   collateralProofValidityDuration: z
-    .number()
-    .min(3600, { message: 'Collateral Proof Validity duration must be at least 3600 seconds' })
-    .default(30 * 24 * 60 * 60),
+    .enum(Object.keys(CollateralProofValidityDuration) as [keyof typeof CollateralProofValidityDuration])
+    .default('OneYear'),
 });
 
 export type CreateStablecoinFormType = z.infer<typeof CreateStablecoinFormSchema>;

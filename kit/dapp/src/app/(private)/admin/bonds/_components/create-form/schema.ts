@@ -20,9 +20,9 @@ export const CreateBondFormSchema = z.object({
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
-  isin: z.string(),
+  isin: z.string().optional(),
   faceValueCurrency: z.string().min(1, { message: 'Face value currency is required' }),
-  faceValue: z.string().min(1, { message: 'Face value is required' }),
+  faceValue: z.number().min(1, { message: 'Face value is required' }),
   maturityDate: z.date(),
   couponRate: z.number().int().min(0, { message: 'Coupon rate must be at least 0' }),
   paymentFrequency: z.enum([
