@@ -162,9 +162,9 @@ export function AssetForm<
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
-                  handlePrev={handlePrev}
+                  onPreviousStep={handlePrev}
                   isLastStep={isLastStep}
-                  handleNext={handleNext}
+                  onNextStep={handleNext}
                 />
               </form>
             </Form>

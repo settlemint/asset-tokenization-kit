@@ -7,12 +7,12 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { ColumnHelper } from '@tanstack/react-table';
 import { Pause, Play } from 'lucide-react';
-import type { ReactElement } from 'react';
+import type { ComponentType, ReactElement } from 'react';
 
 export const icons = {
   paused: Pause,
   active: Play,
-} as const;
+} as const satisfies Record<string, ComponentType>;
 
 export type BaseAsset = {
   id: string;

@@ -89,7 +89,7 @@ export function UserDropdown() {
               <Skeleton className="h-4 w-24" />
             )}
             {wallet ? (
-              <span className="truncate text-xs">{shortHex(wallet, 12, 8)}</span>
+              <span className="truncate text-xs">{shortHex(wallet, { prefixLength: 12, suffixLength: 8 })}</span>
             ) : (
               <Skeleton className="h-3 w-20" />
             )}

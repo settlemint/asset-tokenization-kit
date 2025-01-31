@@ -1,0 +1,255 @@
+---
+description: Rules for React/NextJS files
+globs: *.tsx
+---
+1. Architecture & Project Structure
+	1.	Modular Architecture
+	•	Separate your domain logic into feature-based modules (e.g., user, product, order).
+	•	Within each module:
+	•	Controllers (Route Handlers) for incoming requests (app/api/... or route-based components).
+	•	Models folder containing:
+	•	DTOs (validated by Zod).
+	•	Basic or derived TypeScript types for outputs.
+	•	Services with business and persistence logic. If you have multiple entities, create one service per entity for clarity.
+	2.	Database Persistence (Drizzle ORM)
+	•	Use Drizzle ORM for schema definitions and queries.
+	•	Manage migrations via drizzle-kit (db:pull, db:push, db:migrate).
+	•	Keep related entities and migrations in the same domain folder if it makes logical sense.
+	3.	Core & Shared Modules
+	•	Keep global or “core” logic (e.g., exception filters, global middlewares, guards) in a dedicated folder.
+	•	Share cross-cutting utilities (e.g., date helpers, fetch wrappers, logging) in a shared or common module.
+	4.	Project Scripts
+	•	Use the provided npm scripts for building, linting, type-checking, Docker publishing, and Drizzle migrations.
+	•	Prefer bun:test (see Section 9 on Testing) over other test runners whenever possible.
+
+2. React Server Components (RSC) & Rendering
+	1.	Default to Server Components
+	•	Use React 19 Server Components by default for data-fetching and rendering.
+	•	Add 'use client' only where interactivity or client-specific APIs are needed.
+	2.	Partial Prerendering
+	•	Combine Suspense boundaries and streaming for improved performance:
+
+export default async function Page() {
+  return (
+    <>
+      <Suspense fallback={<Loading />}>
+        <ServerFetchedContent />
+      </Suspense>
+      <PrerenderedContent />
+    </>
+  );
+}
+
+
+	3.	Error & Loading Boundaries
+	•	Provide loading.tsx in route folders for skeleton/loading states.
+	•	Provide error.tsx for error boundaries in each route folder.
+	4.	Minimize use client
+	•	Keep client components small and targeted (e.g., interactive forms, modals, real-time dashboards).
+
+3. State Management
+	1.	Server Actions
+	•	Use Next.js 15 Server Actions for form submissions and side effects:
+
+export default function FormComponent() {
+  async function handleSubmit(formData: FormData) {
+    'use server'
+    // server-side logic
+  }
+  return <form action={handleSubmit}>...</form>;
+}
+
+
+	2.	React Query (TanStack)
+	•	For client-side data that needs real-time updates, caching, or offline capabilities, use @tanstack/react-query.
+	•	Use @tanstack/react-query-next-experimental if you need advanced Next.js integrations.
+	3.	URL State with nuqs
+	•	Leverage nuqs for state persisted in the URL (e.g., search filters, pagination info).
+	4.	Form Management with react-hook-form
+	•	Validate inputs with Zod and React Hook Form Resolvers.
+	•	Use useActionState or improved useFormStatus if available in your Next Safe Action setup.
+	5.	Minimize Global State
+	•	Default to server-fetched data and local component state.
+	•	Only elevate state to global (e.g., via React Context) if truly necessary across many components.
+
+4. Data Fetching & Caching
+	1.	Async Runtime APIs
+	•	Use the async variants (cookies(), headers(), etc.) in Server Components:
+
+const cookieStore = await cookies();
+const { isEnabled } = await draftMode();
+
+
+	2.	Caching & Revalidation
+	•	Next.js 15 fetch calls are not cached by default.
+	•	Explicitly set caching strategies:
+
+fetch(url, { cache: 'force-cache' });
+// or
+fetchCache: 'default-cache';
+
+
+	•	At the route level:
+
+export const dynamic = 'force-static'; // or 'force-dynamic'
+
+
+	3.	Parallel Fetching
+	•	Fetch multiple endpoints in parallel for performance:
+
+const [users, posts] = await Promise.all([getUsers(), getPosts()]);
+
+
+	4.	unstable_cache
+	•	For granular caching or revalidation tags:
+
+import { unstable_cache } from 'next/cache';
+
+const getCachedData = unstable_cache(
+  async () => { /* fetch data */ },
+  ['cache-key'],
+  { revalidate: 3600, tags: ['data-tag'] }
+);
+
+
+	5.	Client-Side Data (React Query)
+	•	When you must fetch in a client component, prefer useQuery from @tanstack/react-query.
+
+5. Route Handlers & API Endpoints
+	1.	File-based Routing
+	•	Organize endpoints under app/api/ or the new route.ts pattern.
+	2.	Caching in Route Handlers
+	•	For static data:
+
+export const dynamic = 'force-static';
+
+export async function GET(request: Request) {
+  // ...
+}
+
+
+	•	For dynamic data, use 'force-dynamic'.
+
+	3.	Error Handling
+	•	Use typed errors or return typed responses.
+	•	Rely on route-specific error.tsx to gracefully handle request errors.
+
+6. UI Development & Shadcn UI
+	1.	shadcn UI Components
+	•	Prefer using shadcn UI for base components like Dialog, DropdownMenu, Tooltip, etc.
+	•	Avoid direct usage of @radix-ui/* imports; they are managed internally by shadcn.
+	•	Maintain a consistent design system with class-variance-authority and utilities like clsx or tailwind-merge.
+	2.	Tailwind CSS
+	•	Mobile-first approach, utility-based classes for layout and design.
+	•	Use tailwind-merge for conditional class merging.
+	•	Use tailwindcss-animate for predefined animation utilities.
+	3.	Theming with next-themes
+	•	Integrate light/dark mode using next-themes.
+	•	If needed, adapt custom themes using CSS variables or class toggles.
+	4.	Additional UI Libraries
+	•	Use lucide-react for icons.
+	•	cmdk for command palettes.
+	•	react-day-picker or date-fns for date handling.
+	5.	Accessibility
+	•	Ensure correct ARIA attributes.
+	•	Provide semantic HTML elements.
+	•	Test with screen readers and keyboard navigation.
+
+7. Performance & Optimizations
+	1.	Image Optimization
+	•	Leverage <Image /> from Next.js for responsive, lazy-loaded, and compressed images.
+	•	Consider using placeholder="blur" for important images.
+	2.	Dynamic Imports & Code Splitting
+	•	Dynamically import large components:
+
+const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+  ssr: false,
+  loading: () => <Loading />
+});
+
+
+	3.	View Transitions API
+	•	For smooth page transitions:
+
+'use client'
+import { useRouter } from 'next/navigation';
+
+export default function NavigationButton() {
+  const router = useRouter();
+  return (
+    <button
+      onClick={() => {
+        document.startViewTransition(() => router.push('/next-page'));
+      }}
+    >
+      Go Next
+    </button>
+  );
+}
+
+
+	4.	Core Web Vitals
+	•	Monitor LCP, CLS, FID, etc. in production.
+	•	Use performance tooling or analytics that respect user privacy.
+	5.	Route Groups
+	•	Use the route group functionality in app/(group-name)/ to break up large sections and improve bundling.
+
+8. Security & Authentication
+	1.	Better Auth
+	•	Use better-auth or better-auth-harmony for authentication flows.
+	•	Manage login/logout and session tokens securely on the server side.
+	2.	No Committed Secrets
+	•	Store secrets in .env.local or managed environment variables.
+	•	Never push .env files to source control.
+	3.	Security Headers
+	•	Configure Content Security Policy and other headers in next.config.js.
+	•	Use Strict-Transport-Security, X-Content-Type-Options, etc.
+	4.	Access Control
+	•	Use server actions, route handlers, or middleware to guard protected routes.
+	•	Return a redirect or 401/403 for unauthorized requests.
+
+9. Development & Testing
+	1.	Use bun:test
+	•	Prefer Bun’s built-in test runner over other runners to leverage faster execution and better integration with your current setup.
+	•	Align your CI/CD pipeline to use bun:test for consistent test environments.
+	2.	Error Boundaries
+	•	Provide error.tsx in each route folder for localized error handling.
+	•	For unexpected global errors, use global-error.tsx.
+	3.	React Testing Library
+	•	Combine @testing-library/react with bun:test for comprehensive unit and component-level tests.
+	•	Mock Next.js-specific functions (useRouter, metadata) when needed.
+	4.	E2E Testing
+	•	Use Playwright or Cypress if you need advanced end-to-end scenarios.
+	•	Configure them alongside bun:test in your CI to maintain consistent coverage.
+	5.	CI/CD
+	•	Use linting (eslint) and type-checking (tsc --noEmit) as part of CI.
+	•	Automate Docker builds (publish-docker) and platform deployments (deploy) through your pipeline.
+
+10. Environment & Configuration
+	1.	Zod for Env Validation
+	•	Validate all process.env variables with Zod at startup for safer runtime behavior:
+
+import { z } from 'zod';
+
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  // ...
+});
+
+export const env = envSchema.parse(process.env);
+
+
+	2.	Version Management
+	•	Use npm version or a semantic release process to tag and publish properly.
+	•	Ensure Docker tags (publish-docker) and environment updates (deploy) align with your versioning strategy.
+	3.	Monitoring & Analytics
+	•	Integrate logging (e.g., Sentry, LogRocket) for error reporting.
+	•	Track usage metrics in compliance with data privacy regulations (GDPR, etc.).
+
+Final Notes
+	•	Shadcn UI is your primary UI library, so use it over direct @radix-ui imports.
+	•	Drizzle ORM and drizzle-kit are your go-tos for schema migrations and database operations.
+	•	Zod is used for input validation, both in forms (react-hook-form) and environment variables.
+	•	@tanstack/react-query manages client-side async data where needed; otherwise, rely on Next.js 15 Server Components and caching for server-side data fetching.
+	•	Bun offers a fast test runner (bun:test)—adopt it as your main testing tool for speed and simplicity.
+	•	Keep these practices updated as Next.js and React evolve. Regularly check for library version changes and new features to maintain a robust, scalable codebase.

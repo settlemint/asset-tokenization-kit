@@ -31,14 +31,14 @@ export function AssetDetailsGrid<Asset extends StableCoinAsset>({
           <span className="font-medium text-muted-foreground text-sm">Contract address</span>
           <div className="text-md">
             {' '}
-            <span className="truncate text-sm">{shortHex(data.id, 12, 8)}</span>
+            <span className="truncate text-sm">{shortHex(data.id, { prefixLength: 12, suffixLength: 8 })}</span>
           </div>
         </div>
         <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Creator</span>
           <div className="flex items-center gap-2 text-md">
             <AddressAvatar address={data.id} variant="small" />
-            <span className="truncate text-sm">{shortHex(data.id, 12, 8)}</span>
+            <span className="truncate text-sm">{shortHex(data.id, { prefixLength: 12, suffixLength: 8 })}</span>
           </div>
         </div>
         <div className="space-y-1">

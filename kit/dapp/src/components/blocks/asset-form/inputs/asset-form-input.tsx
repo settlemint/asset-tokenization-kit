@@ -3,28 +3,40 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import type { BaseFormInputProps, WithPostfixProps } from '@/types/form-types';
+import { getAriaAttributes } from '@/types/form-types';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
-import type { FieldValues, UseControllerProps } from 'react-hook-form';
+import type { FieldValues } from 'react-hook-form';
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
-type AssetFormInputProps<T extends FieldValues> = Omit<InputProps, keyof UseControllerProps<T>> &
-  UseControllerProps<T> & {
-    label?: string;
-    description?: string;
-    postfix?: string;
-  };
+type AssetFormInputProps<T extends FieldValues> = Omit<InputProps, keyof BaseFormInputProps<T>> &
+  BaseFormInputProps<T> &
+  WithPostfixProps;
 
 /**
  * A form input component that wraps shadcn's Input component with form field functionality.
+ * Supports various input types including text, number, and email with built-in validation.
+ *
+ * @example
+ * ```tsx
+ * <AssetFormInput
+ *   name="email"
+ *   control={form.control}
+ *   label="Email"
+ *   type="email"
+ *   required
+ * />
+ * ```
  */
 export function AssetFormInput<T extends FieldValues>({
   label,
   rules,
   description,
   postfix,
+  className,
   ...props
 }: AssetFormInputProps<T>) {
   return (
@@ -32,7 +44,9 @@ export function AssetFormInput<T extends FieldValues>({
       {...props}
       rules={{
         ...rules,
-        ...(props.type === 'email' && { pattern: EMAIL_PATTERN }),
+        ...(props.type === 'email' && {
+          pattern: { value: EMAIL_PATTERN, message: 'Please enter a valid email address' },
+        }),
       }}
       render={({ field, fieldState }) => {
         const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +60,8 @@ export function AssetFormInput<T extends FieldValues>({
           }
         };
 
+        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+
         return (
           <FormItem>
             {label && (
@@ -57,7 +73,8 @@ export function AssetFormInput<T extends FieldValues>({
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
-                {label}
+                <span>{label}</span>
+                {props.required && <span className="ml-1 text-red-500">*</span>}
               </FormLabel>
             )}
             <FormControl>
@@ -65,16 +82,13 @@ export function AssetFormInput<T extends FieldValues>({
                 <Input
                   {...field}
                   {...props}
-                  className={cn(props.className, postfix && '-me-px rounded-e-none shadow-none focus:mr-[1px]')}
+                  className={cn(className, postfix && '-me-px rounded-e-none shadow-none focus:mr-[1px]')}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? '')}
                   onChange={handleChange}
                   inputMode={props.type === 'number' ? 'decimal' : 'text'}
                   pattern={props.type === 'number' ? '[0-9]*.?[0-9]*' : undefined}
-                  id={field.name}
-                  aria-invalid={!!fieldState.error}
-                  aria-describedby={`${field.name}-error ${field.name}-description ${field.name}-label`}
-                  aria-disabled={props.disabled}
+                  {...ariaAttrs}
                 />
                 {postfix && (
                   <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">

@@ -2,7 +2,7 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import * as React from "react"
 
-import { theme } from "@/lib/site-config"
+import { themeConfig } from "@/lib/site-config"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -35,7 +35,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      theme: theme
+      theme: themeConfig.variant,
     },
     compoundVariants: [
       {
