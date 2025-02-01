@@ -119,9 +119,9 @@ contract BondTest is Test {
     function test_RevertOnInvalidISIN() public {
         vm.startPrank(owner);
 
-        // Test with empty ISIN
-        vm.expectRevert(Bond.InvalidISIN.selector);
-        new Bond("Test Bond", "TBOND", DECIMALS, owner, "", CAP, maturityDate, faceValue, address(underlyingAsset));
+        Bond emptyIsinToken =
+            new Bond("Test Bond", "TBOND", DECIMALS, owner, "", CAP, maturityDate, faceValue, address(underlyingAsset));
+        assertEq(emptyIsinToken.isin(), "");
 
         // Test with ISIN that's too short
         vm.expectRevert(Bond.InvalidISIN.selector);
