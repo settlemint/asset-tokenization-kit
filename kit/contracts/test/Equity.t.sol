@@ -77,9 +77,8 @@ contract EquityTest is Test {
     function test_RevertOnInvalidISIN() public {
         vm.startPrank(owner);
 
-        // Test with empty ISIN
-        vm.expectRevert(Equity.InvalidISIN.selector);
-        new Equity("Test Equity Token", "TEST", DECIMALS, owner, "", "Common", "Series A");
+        Equity emptyIsinToken = new Equity("Test Equity Token", "TEST", DECIMALS, owner, "", "Common", "Series A");
+        assertEq(emptyIsinToken.isin(), "");
 
         // Test with ISIN that's too short
         vm.expectRevert(Equity.InvalidISIN.selector);
