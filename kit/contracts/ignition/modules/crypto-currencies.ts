@@ -1,4 +1,5 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import { keccak256, toUtf8Bytes } from 'ethers';
 import CryptoCurrencyFactoryModule from './crypto-currency-factory';
 
 const CryptoCurrenciesModule = buildModule('CryptoCurrenciesModule', (m) => {
@@ -16,7 +17,7 @@ const CryptoCurrenciesModule = buildModule('CryptoCurrenciesModule', (m) => {
   const btc = m.contractAt('CryptoCurrency', readBTCAddress, { id: 'btc' });
 
   // Set up roles for the cryptocurrency
-  const supplyManagementRole = '0x5a6feb5c973d4f1e5b73d7b4429f99d9d6e1f71ae8911c7d8b1f84f4e0f2f1c0';
+  const supplyManagementRole = keccak256(toUtf8Bytes('SUPPLY_MANAGEMENT_ROLE'));
 
   // Grant roles to the deployer
   m.call(btc, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });

@@ -1,4 +1,5 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import { keccak256, toUtf8Bytes } from 'ethers';
 import StableCoinFactoryModule from './stable-coin-factory';
 
 const StableCoinsModule = buildModule('StableCoinsModule', (m) => {
@@ -16,8 +17,8 @@ const StableCoinsModule = buildModule('StableCoinsModule', (m) => {
   const usdc = m.contractAt('StableCoin', readUSDCAddress, { id: 'usdc' });
 
   // Set up roles for the stablecoin
-  const supplyManagementRole = '0x5a6feb5c973d4f1e5b73d7b4429f99d9d6e1f71ae8911c7d8b1f84f4e0f2f1c0';
-  const userManagementRole = '0x2f2c0f4f96d5f4c6d4c2d4f2c0f4f96d5f4c6d4c2d4f2c0f4f96d5f4c6d4c2d';
+  const supplyManagementRole = keccak256(toUtf8Bytes('SUPPLY_MANAGEMENT_ROLE'));
+  const userManagementRole = keccak256(toUtf8Bytes('USER_MANAGEMENT_ROLE'));
 
   // Grant roles to the deployer
   m.call(usdc, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
