@@ -7,7 +7,7 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.27',
     settings: {
-      evmVersion: 'paris',
+      evmVersion: 'cancun',
       viaIR: true,
       optimizer: {
         enabled: true,
