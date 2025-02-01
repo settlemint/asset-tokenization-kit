@@ -20,6 +20,7 @@ import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.so
 /// @custom:security-contact support@settlemint.com
 contract Bond is
     ERC20,
+    ERC20HistoricalBalances,
     ERC20Capped,
     ERC20Burnable,
     ERC20Pausable,
@@ -144,6 +145,21 @@ contract Bond is
     /// @return The number of decimals
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
+    }
+
+    /// @notice Override the clock function to use timestamps instead of block numbers
+    /// @dev This is used for historical balance tracking
+    /// @return The current timestamp
+    function clock() public view virtual override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    /// @notice Override the clock mode to indicate we're using timestamps
+    /// @dev This is used for historical balance tracking
+    /// @return A string indicating the clock mode
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure virtual override returns (string memory) {
+        return "mode=timestamp";
     }
 
     /// @notice Pauses all token transfers
@@ -356,6 +372,7 @@ contract Bond is
         }
 
         super._update(from, to, value);
+        _afterTokenTransfer(from, to, value);
     }
 
     /// @notice Approves spending of tokens

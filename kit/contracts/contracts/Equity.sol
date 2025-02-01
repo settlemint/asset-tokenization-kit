@@ -125,11 +125,19 @@ contract Equity is
         _mint(to, amount);
     }
 
-    /// @notice Returns the current block timestamp for voting snapshots
-    /// @dev Implementation of ERC20Votes clock method for voting delay and period calculations
-    /// @return Current block timestamp cast to uint48
-    function clock() public view override returns (uint48) {
+    /// @notice Override the clock function to use timestamps instead of block numbers
+    /// @dev This is used for historical balance tracking
+    /// @return The current timestamp
+    function clock() public view virtual override returns (uint48) {
         return uint48(block.timestamp);
+    }
+
+    /// @notice Override the clock mode to indicate we're using timestamps
+    /// @dev This is used for historical balance tracking
+    /// @return A string indicating the clock mode
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure virtual override returns (string memory) {
+        return "mode=timestamp";
     }
 
     /// @notice Get the current nonce for an address
