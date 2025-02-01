@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.27;
 
 import { Checkpoints } from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
@@ -12,6 +12,13 @@ import { Time } from "@openzeppelin/contracts/utils/types/Time.sol";
  */
 abstract contract ERC20HistoricalBalances {
     using Checkpoints for Checkpoints.Trace208;
+
+    /**
+     * @dev Error thrown when attempting to query a timepoint in the future
+     * @param requestedTimepoint The timepoint that was requested
+     * @param currentTimepoint The current timepoint
+     */
+    error FutureLookup(uint256 requestedTimepoint, uint48 currentTimepoint);
 
     // Track historical balances for each account
     mapping(address account => Checkpoints.Trace208) private _balanceCheckpoints;
@@ -47,7 +54,7 @@ abstract contract ERC20HistoricalBalances {
     function balanceOfAt(address account, uint256 timepoint) public view virtual returns (uint256) {
         uint48 currentTimepoint = clock();
         if (timepoint >= currentTimepoint) {
-            revert("ERC20HistoricalBalances: future lookup");
+            revert FutureLookup(timepoint, currentTimepoint);
         }
         return _balanceCheckpoints[account].upperLookupRecent(SafeCast.toUint48(timepoint));
     }
@@ -59,7 +66,7 @@ abstract contract ERC20HistoricalBalances {
     function totalSupplyAt(uint256 timepoint) public view virtual returns (uint256) {
         uint48 currentTimepoint = clock();
         if (timepoint >= currentTimepoint) {
-            revert("ERC20HistoricalBalances: future lookup");
+            revert FutureLookup(timepoint, currentTimepoint);
         }
         return _totalSupplyCheckpoints.upperLookupRecent(SafeCast.toUint48(timepoint));
     }

@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.27;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC20HistoricalBalances } from "./ERC20HistoricalBalances.sol";
+
 /// @title ERC20Yield - Extension for ERC20 tokens to support yield functionality
 /// @notice This abstract contract provides the base functionality for ERC20 tokens to work with fixed yield schedules
 /// @dev Inherit this contract to add yield support to your ERC20 token
 /// @custom:security-contact support@settlemint.com
-
 abstract contract ERC20Yield is Context, ERC20HistoricalBalances {
     /// @notice Custom errors for the ERC20Yield contract
     error InvalidYieldSchedule();
