@@ -55,6 +55,12 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
           path: 'bonds',
           icon: <AssetIcon value="BN" />,
         },
+        {
+          queryKey: 'funds' as const,
+          label: 'Funds',
+          path: 'funds',
+          icon: <AssetIcon value="FN" />,
+        },
       ].reduce<NavItem[]>((acc, section) => {
         const assetsOfSection = assets[section.queryKey];
 

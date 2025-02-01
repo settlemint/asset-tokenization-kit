@@ -10,23 +10,24 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { TokenType } from '@/types/token-types';
 import { createColumnHelper } from '@tanstack/react-table';
 import { PauseCircle, PlayCircle } from 'lucide-react';
-import type { EquityAsset } from './data';
-const columnHelper = createColumnHelper<EquityAsset>();
+import type { FundAsset } from './data';
+
+const columnHelper = createColumnHelper<FundAsset>();
 
 export const columns = [
   ...createBaseColumns(columnHelper),
-  columnHelper.accessor((row) => row.equityCategory, {
-    id: 'equityCategory',
+  columnHelper.accessor((row) => row.fundCategory, {
+    id: 'fundCategory',
     header: ({ column }) => <DataTableColumnHeader column={column}>Category</DataTableColumnHeader>,
-    cell: ({ row }) => <DataTableColumnCell>{row.getValue('equityCategory')}</DataTableColumnCell>,
+    cell: ({ row }) => <DataTableColumnCell>{row.getValue('fundCategory')}</DataTableColumnCell>,
   }),
-  columnHelper.accessor((row) => row.equityClass, {
-    id: 'equityClass',
+  columnHelper.accessor((row) => row.fundClass, {
+    id: 'fundClass',
     header: ({ column }) => <DataTableColumnHeader column={column}>Class</DataTableColumnHeader>,
-    cell: ({ row }) => <DataTableColumnCell>{row.getValue('equityClass')}</DataTableColumnCell>,
+    cell: ({ row }) => <DataTableColumnCell>{row.getValue('fundClass')}</DataTableColumnCell>,
   }),
   createPausedColumn(columnHelper),
-  createActionsColumn(columnHelper, TokenType.Equity),
+  createActionsColumn(columnHelper, TokenType.Fund),
 ];
 
 export const icons = {

@@ -3,17 +3,17 @@
 import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseEther } from 'viem';
 import { CreateBondFormSchema } from './schema';
 
 const CreateBond = portalGraphql(`
-   mutation CreateBond($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $faceValue: String!, $isin: String!, $maturityDate: String!, $underlyingAsset: String!) {
+   mutation CreateBond($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $faceValue: String!, $isin: String!, $maturityDate: String!, $underlyingAsset: String!, $cap: String!) {
     BondFactoryCreate(
       from: $from
-      input: {decimals: $decimals, faceValue: $faceValue, isin: $isin, maturityDate: $maturityDate, name: $name, symbol: $symbol, underlyingAsset: $underlyingAsset}
+      input: {decimals: $decimals, faceValue: $faceValue, isin: $isin, maturityDate: $maturityDate, name: $name, symbol: $symbol, underlyingAsset: $underlyingAsset, cap: $cap}
       challengeResponse: $challengeResponse
       address: $address
       gasLimit: $gasLimit
@@ -41,13 +41,14 @@ export const createBond = actionClient
         couponRate,
         paymentFrequency,
         firstCouponDate,
+        cap,
       },
     }) => {
       const user = await getAuthenticatedUser();
       const organizationId = await getActiveOrganizationId();
 
       const data = await portalClient.request(CreateBond, {
-        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        address: BOND_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
@@ -58,6 +59,7 @@ export const createBond = actionClient
         underlyingAsset: '',
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
+        cap: cap ? parseEther(cap.toString()).toString() : '0',
       });
 
       const transactionHash = data.BondFactoryCreate?.transactionHash;

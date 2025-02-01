@@ -29,6 +29,9 @@ const NavigationQuery = theGraphGraphql(
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc) {
       ...AssetsFragment
     }
+    funds(orderBy: totalSupplyExact, orderDirection: desc) {
+      ...AssetsFragment
+    }
   }
 `,
   [AssetsFragment]

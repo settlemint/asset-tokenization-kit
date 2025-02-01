@@ -3,6 +3,7 @@ export const TokenType = {
   Equity: 'equity',
   Bond: 'bond',
   Cryptocurrency: 'cryptocurrency',
+  Fund: 'fund',
 } as const;
 
 export type TokenTypeKey = keyof typeof TokenType;

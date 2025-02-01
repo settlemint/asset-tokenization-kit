@@ -93,31 +93,10 @@ dataSources:
           handler: handleStableCoinCreated
       file: ./src/stable-coin-factory.ts
   - kind: ethereum/contract
-    name: FixedYieldFactory
-    network: settlemint
-    source:
-      address: "0x5e771e1417100000000000000000000000000005"
-      abi: FixedYieldFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.9
-      language: wasm/assemblyscript
-      entities:
-        - Event_FixedYieldCreated
-      abis:
-        - name: FixedYieldFactory
-          file: ../contracts/artifacts/contracts/FixedYieldFactory.sol/FixedYieldFactory.json
-        - name: FixedYield
-          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
-      eventHandlers:
-        - event: FixedYieldCreated(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
-          handler: handleFixedYieldCreated
-      file: ./src/fixed-yield-factory.ts
-  - kind: ethereum/contract
     name: FundFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000006"
+      address: "0x5e771e1417100000000000000000000000000005"
       abi: FundFactory
     mapping:
       kind: ethereum/events
@@ -134,6 +113,27 @@ dataSources:
         - event: FundCreated(indexed address,string,string,uint8,indexed address,string,string,string,uint16)
           handler: handleFundCreated
       file: ./src/fund-factory.ts
+  - kind: ethereum/contract
+    name: FixedYieldFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000006"
+      abi: FixedYieldFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_FixedYieldCreated
+      abis:
+        - name: FixedYieldFactory
+          file: ../contracts/artifacts/contracts/FixedYieldFactory.sol/FixedYieldFactory.json
+        - name: FixedYield
+          file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
+      eventHandlers:
+        - event: FixedYieldCreated(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
+          handler: handleFixedYieldCreated
+      file: ./src/fixed-yield-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond

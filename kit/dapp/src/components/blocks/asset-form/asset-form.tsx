@@ -46,6 +46,7 @@ export function AssetForm<
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
   const totalSteps = children.length;
 
   useEffect(() => {
@@ -112,6 +113,7 @@ export function AssetForm<
       return;
     }
 
+    setIsValidating(true);
     // Mark fields as touched
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<Infer<S>>);
@@ -126,6 +128,7 @@ export function AssetForm<
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
+    setIsValidating(false);
   };
 
   const handlePrev = () => {
@@ -144,27 +147,18 @@ export function AssetForm<
         <Card className="w-full pt-10">
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  if (!isLastStep) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleSubmitWithAction(e);
-                }}
-              >
+              <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
                 <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
-
                 {/* Current step content */}
                 <div className="min-h-[400px]">{children[currentStep]}</div>
-
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
                   onPreviousStep={handlePrev}
                   isLastStep={isLastStep}
                   onNextStep={handleNext}
+                  isSubmitting={form.formState.isSubmitting || isValidating}
                 />
               </form>
             </Form>
