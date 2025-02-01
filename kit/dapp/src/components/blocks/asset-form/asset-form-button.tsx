@@ -20,7 +20,7 @@ interface AssetFormButtonProps {
  */
 export function AssetFormButton({ currentStep, onPreviousStep, isLastStep, onNextStep }: AssetFormButtonProps) {
   return (
-    <div className="flex justify-between space-x-4">
+    <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (
         <Button type="button" variant="outline" onClick={onPreviousStep} aria-label="Go to previous step">
           Previous
@@ -28,9 +28,9 @@ export function AssetFormButton({ currentStep, onPreviousStep, isLastStep, onNex
       )}
 
       <Button
-        type="button"
+        type={isLastStep ? 'submit' : 'button'}
         variant="default"
-        onClick={onNextStep}
+        onClick={isLastStep ? undefined : onNextStep}
         aria-label={isLastStep ? 'Create asset' : 'Go to next step'}
         className={currentStep === 0 ? 'ml-auto' : ''}
       >

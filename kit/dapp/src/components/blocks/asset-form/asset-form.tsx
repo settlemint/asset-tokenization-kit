@@ -144,21 +144,11 @@ export function AssetForm<
         <Card className="w-full pt-10">
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  if (!isLastStep) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleSubmitWithAction(e);
-                }}
-              >
+              <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
                 <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
-
                 {/* Current step content */}
                 <div className="min-h-[400px]">{children[currentStep]}</div>
-
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
