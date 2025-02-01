@@ -62,7 +62,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const createYieldSchedule = m.call(
     fixedYieldFactory,
     'create',
-    [ustb, stableCoin, startDate, oneYearFromNow, yieldRate, yieldInterval],
+    [ustb, startDate, oneYearFromNow, yieldRate, yieldInterval],
     {
       id: 'createYieldSchedule',
       from: deployer,
