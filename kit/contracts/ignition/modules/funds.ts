@@ -8,11 +8,10 @@ const FundsModule = buildModule('FundsModule', (m) => {
   const { fundFactory } = m.useModule(FundFactoryModule);
 
   const managementFeeBps = 200; // 2% annual management fee
-  const hurdleRateBps = 800; // 8% hurdle rate
   const createHedgeFund = m.call(
     fundFactory,
     'create',
-    ['Global Macro Fund', 'GMF', 6, 'US0378331005', managementFeeBps, hurdleRateBps, 'Hedge Fund', 'Global Macro'],
+    ['Global Macro Fund', 'GMF', 6, 'US0378331005', managementFeeBps, 'Hedge Fund', 'Global Macro'],
     {
       id: 'createHedgeFund',
       from: deployer,
