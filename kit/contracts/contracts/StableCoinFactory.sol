@@ -26,40 +26,26 @@ contract StableCoinFactory is ReentrancyGuard {
     /// @param decimals The number of decimals for the token
     /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
-    /// @param maxMintAmount Maximum amount that can be minted in a single transaction
-    /// @param minCollateralUpdateInterval Minimum time between collateral updates in seconds
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
         uint8 decimals,
         string memory isin,
-        uint48 collateralLivenessSeconds,
-        uint256 maxMintAmount,
-        uint256 minCollateralUpdateInterval
+        uint48 collateralLivenessSeconds
     )
         external
         nonReentrant
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(
-            name, symbol, decimals, isin, collateralLivenessSeconds, maxMintAmount, minCollateralUpdateInterval
-        );
+        address predicted = predictAddress(name, symbol, decimals, isin, collateralLivenessSeconds);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
-        StableCoin newToken = new StableCoin{ salt: salt }(
-            name,
-            symbol,
-            decimals,
-            msg.sender,
-            isin,
-            collateralLivenessSeconds,
-            maxMintAmount,
-            minCollateralUpdateInterval
-        );
+        StableCoin newToken =
+            new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds);
 
         token = address(newToken);
         isFactoryToken[token] = true;
@@ -73,17 +59,13 @@ contract StableCoinFactory is ReentrancyGuard {
     /// @param decimals The number of decimals for the token
     /// @param isin The optional ISIN (International Securities Identification Number) of the stablecoin
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
-    /// @param maxMintAmount Maximum amount that can be minted in a single transaction
-    /// @param minCollateralUpdateInterval Minimum time between collateral updates in seconds
     /// @return predicted The predicted address where the token will be deployed
     function predictAddress(
         string memory name,
         string memory symbol,
         uint8 decimals,
         string memory isin,
-        uint48 collateralLivenessSeconds,
-        uint256 maxMintAmount,
-        uint256 minCollateralUpdateInterval
+        uint48 collateralLivenessSeconds
     )
         public
         view
@@ -102,16 +84,7 @@ contract StableCoinFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(StableCoin).creationCode,
-                                    abi.encode(
-                                        name,
-                                        symbol,
-                                        decimals,
-                                        msg.sender,
-                                        isin,
-                                        collateralLivenessSeconds,
-                                        maxMintAmount,
-                                        minCollateralUpdateInterval
-                                    )
+                                    abi.encode(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds)
                                 )
                             )
                         )

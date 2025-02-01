@@ -18,8 +18,7 @@ contract FundTest is Test {
     string constant SYMBOL = "TFUND";
     uint8 constant DECIMALS = 18;
     string constant ISIN = "US0378331005";
-    uint256 constant MANAGEMENT_FEE_BPS = 200; // 2%
-    uint256 constant HURDLE_RATE_BPS = 1000; // 10%
+    uint16 constant MANAGEMENT_FEE_BPS = 200; // 2%
     string constant FUND_CLASS = "Hedge Fund";
     string constant FUND_CATEGORY = "Long/Short Equity";
 
@@ -30,7 +29,6 @@ contract FundTest is Test {
     event ManagementFeeCollected(uint256 amount, uint256 timestamp);
     event PerformanceFeeCollected(uint256 amount, uint256 timestamp);
     event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
-    event TokensUnfrozen(address indexed account, uint256 amount);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -38,9 +36,7 @@ contract FundTest is Test {
         investor2 = makeAddr("investor2");
 
         vm.startPrank(owner);
-        fund = new Fund(
-            NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS, FUND_CLASS, FUND_CATEGORY
-        );
+        fund = new Fund(NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY);
 
         // Initial supply for testing
         fund.mint(address(fund), INITIAL_SUPPLY);
@@ -121,15 +117,6 @@ contract FundTest is Test {
         uint256 expectedFee = (INITIAL_SUPPLY * MANAGEMENT_FEE_BPS * 365 days) / (10_000 * 365 days);
         assertEq(fee, expectedFee);
         assertEq(fund.balanceOf(owner) - initialOwnerBalance, expectedFee);
-    }
-
-    function test_CollectPerformanceFee() public {
-        vm.startPrank(owner);
-        uint256 fee = fund.collectPerformanceFee();
-        vm.stopPrank();
-
-        // Currently, performance fee is not implemented and should return 0
-        assertEq(fee, 0);
     }
 
     function test_WithdrawToken() public {

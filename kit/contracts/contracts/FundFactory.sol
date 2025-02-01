@@ -24,7 +24,6 @@ contract FundFactory is ReentrancyGuard {
     /// @param fundClass The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points
-    /// @param hurdleRateBps The hurdle rate in basis points
     event FundCreated(
         address indexed token,
         string name,
@@ -34,24 +33,8 @@ contract FundFactory is ReentrancyGuard {
         string isin,
         string fundClass,
         string fundCategory,
-        uint256 managementFeeBps,
-        uint256 hurdleRateBps
+        uint16 managementFeeBps
     );
-
-    /// @notice Calculates the salt for CREATE2 deployment
-    /// @return bytes32 The calculated salt
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encode(name, symbol, decimals, isin));
-    }
 
     /// @notice Creates a new fund token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits a FundCreated event
@@ -62,7 +45,6 @@ contract FundFactory is ReentrancyGuard {
     /// @param fundClass The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points (e.g., 100 for 1%)
-    /// @param hurdleRateBps The hurdle rate in basis points (e.g., 1000 for 10%)
     /// @return token The address of the newly created token
     function create(
         string memory name,
@@ -71,30 +53,25 @@ contract FundFactory is ReentrancyGuard {
         string memory isin,
         string memory fundClass,
         string memory fundCategory,
-        uint256 managementFeeBps,
-        uint256 hurdleRateBps
+        uint16 managementFeeBps
     )
         external
         nonReentrant
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted =
-            predictAddress(name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps, hurdleRateBps);
+        address predicted = predictAddress(name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps);
         if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
-        Fund newToken = new Fund{ salt: salt }(
-            name, symbol, decimals, msg.sender, isin, managementFeeBps, hurdleRateBps, fundClass, fundCategory
-        );
+        Fund newToken =
+            new Fund{ salt: salt }(name, symbol, decimals, msg.sender, isin, managementFeeBps, fundClass, fundCategory);
 
         token = address(newToken);
         isFactoryFund[token] = true;
 
-        emit FundCreated(
-            token, name, symbol, decimals, msg.sender, isin, fundClass, fundCategory, managementFeeBps, hurdleRateBps
-        );
+        emit FundCreated(token, name, symbol, decimals, msg.sender, isin, fundClass, fundCategory, managementFeeBps);
     }
 
     /// @notice Predicts the address where a fund will be deployed
@@ -106,7 +83,6 @@ contract FundFactory is ReentrancyGuard {
     /// @param fundClass The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points (e.g., 100 for 1%)
-    /// @param hurdleRateBps The hurdle rate in basis points (e.g., 1000 for 10%)
     /// @return predicted The predicted address where the fund will be deployed
     function predictAddress(
         string memory name,
@@ -115,8 +91,7 @@ contract FundFactory is ReentrancyGuard {
         string memory isin,
         string memory fundClass,
         string memory fundCategory,
-        uint256 managementFeeBps,
-        uint256 hurdleRateBps
+        uint16 managementFeeBps
     )
         public
         view
@@ -142,7 +117,6 @@ contract FundFactory is ReentrancyGuard {
                                         msg.sender,
                                         isin,
                                         managementFeeBps,
-                                        hurdleRateBps,
                                         fundClass,
                                         fundCategory
                                     )
@@ -153,5 +127,20 @@ contract FundFactory is ReentrancyGuard {
                 )
             )
         );
+    }
+
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @return bytes32 The calculated salt
+    function _calculateSalt(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory isin
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
     }
 }

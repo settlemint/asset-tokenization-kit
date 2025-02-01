@@ -12,8 +12,6 @@ contract StableCoinFactoryTest is Test {
     uint48 public constant LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
     string public constant VALID_ISIN = "US0378331005";
-    uint256 public constant MAX_MINT_AMOUNT = 1_000_000 ether;
-    uint256 public constant MIN_COLLATERAL_UPDATE_INTERVAL = 1 days;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -25,9 +23,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -54,9 +50,7 @@ contract StableCoinFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(
-                name, symbol, decimalValues[i], VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-            );
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], VALID_ISIN, LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             StableCoin token = StableCoin(tokenAddress);
@@ -72,17 +66,13 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address token1 = factory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         // Create a new factory instance
         StableCoinFactory newFactory = new StableCoinFactory();
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -92,9 +82,7 @@ contract StableCoinFactoryTest is Test {
         string memory name = "Test Stable";
         string memory symbol = "TSTB";
 
-        address tokenAddress = factory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
 
         // Test initial state
@@ -114,13 +102,8 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
         StableCoin token = StableCoin(tokenAddress);
-
-        // Advance time by 1 day to allow collateral update
-        vm.warp(block.timestamp + MIN_COLLATERAL_UPDATE_INTERVAL);
 
         // Test minting with supply management role
         uint256 amount = 1000 ether;
@@ -169,9 +152,7 @@ contract StableCoinFactoryTest is Test {
         string memory symbol = "TSTB";
 
         vm.recordLogs();
-        address tokenAddress = factory.create(
-            name, symbol, DECIMALS, VALID_ISIN, LIVENESS, MAX_MINT_AMOUNT, MIN_COLLATERAL_UPDATE_INTERVAL
-        );
+        address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(

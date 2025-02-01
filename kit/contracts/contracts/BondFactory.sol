@@ -139,6 +139,6 @@ contract BondFactory is ReentrancyGuard {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encode(name, symbol, decimals, isin));
+        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
     }
 }

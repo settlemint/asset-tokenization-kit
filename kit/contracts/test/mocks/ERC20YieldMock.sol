@@ -46,13 +46,6 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _yieldManagementBlocked[account] = blocked;
     }
 
-    function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
-        if (timestamp >= block.timestamp) return balanceOf(holder);
-
-        // Return mocked historical balance if set, otherwise return 0
-        return _historicalBalances[holder][timestamp];
-    }
-
     // Test helper function to set historical balances
     function setHistoricalBalance(address holder, uint256 timestamp, uint256 balance) public {
         _historicalBalances[holder][timestamp] = balance;

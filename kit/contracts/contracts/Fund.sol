@@ -44,6 +44,12 @@ contract Fund is
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
 
+    /// @notice The timestamp of the last fee collection
+    uint40 private _lastFeeCollection;
+
+    /// @notice The management fee in basis points
+    uint16 private immutable _managementFeeBps;
+
     /// @notice The ISIN (International Securities Identification Number) of the fund
     string private _isin;
 
@@ -53,17 +59,10 @@ contract Fund is
     /// @notice The category of the fund (e.g., "Long/Short Equity", "Global Macro")
     string private _fundCategory;
 
-    // Fee management state variables
-    uint256 private immutable _managementFeeBps; // Management fee in basis points
-    uint256 private immutable _hurdleRateBps; // Hurdle rate in basis points
-    uint256 private _lastFeeCollection; // Timestamp of last fee collection
-
     // Additional events for fund management
-    event FundTypeUpdated(string fundClass, string fundCategory);
     event ManagementFeeCollected(uint256 amount, uint256 timestamp);
     event PerformanceFeeCollected(uint256 amount, uint256 timestamp);
     event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
-    event BatchTokenWithdrawn(address[] tokens, address[] recipients, uint256[] amounts);
 
     /// @notice Constructor
     /// @param name The token name
@@ -72,7 +71,6 @@ contract Fund is
     /// @param initialOwner The address that will receive admin rights
     /// @param isin_ The ISIN (International Securities Identification Number) of the fund
     /// @param managementFeeBps_ The management fee in basis points
-    /// @param hurdleRateBps_ The hurdle rate in basis points
     /// @param fundClass_ The class of the fund
     /// @param fundCategory_ The category of the fund
     constructor(
@@ -81,8 +79,7 @@ contract Fund is
         uint8 decimals_,
         address initialOwner,
         string memory isin_,
-        uint256 managementFeeBps_,
-        uint256 hurdleRateBps_,
+        uint16 managementFeeBps_,
         string memory fundClass_,
         string memory fundCategory_
     )
@@ -91,16 +88,13 @@ contract Fund is
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (bytes(isin_).length != 12) revert InvalidISIN();
-        require(managementFeeBps_ <= 1000, "Management fee too high"); // Max 10%
-        require(hurdleRateBps_ <= 5000, "Hurdle rate too high"); // Max 50%
 
         _decimals = decimals_;
         _isin = isin_;
         _managementFeeBps = managementFeeBps_;
-        _hurdleRateBps = hurdleRateBps_;
         _fundClass = fundClass_;
         _fundCategory = fundCategory_;
-        _lastFeeCollection = block.timestamp;
+        _lastFeeCollection = uint40(block.timestamp);
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
@@ -108,17 +102,17 @@ contract Fund is
     }
 
     /// @notice Returns the fund class
-    function fundClass() public view returns (string memory) {
+    function fundClass() external view returns (string memory) {
         return _fundClass;
     }
 
     /// @notice Returns the fund category
-    function fundCategory() public view returns (string memory) {
+    function fundCategory() external view returns (string memory) {
         return _fundCategory;
     }
 
     /// @notice Returns the ISIN
-    function isin() public view returns (string memory) {
+    function isin() external view returns (string memory) {
         return _isin;
     }
 
@@ -131,13 +125,13 @@ contract Fund is
 
     /// @notice Pauses all token transfers
     /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
-    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
     /// @notice Unpauses token transfers
     /// @dev Only callable by the admin. Emits an Unpaused event from ERC20Pausable
-    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
@@ -145,7 +139,7 @@ contract Fund is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE role. Emits a Transfer event from ERC20
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
-    function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function mint(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _mint(to, amount);
     }
 
@@ -154,14 +148,6 @@ contract Fund is
     /// @return Current block timestamp cast to uint48
     function clock() public view override returns (uint48) {
         return uint48(block.timestamp);
-    }
-
-    /// @notice Returns the description of the clock mode for voting snapshots
-    /// @dev Implementation of ERC20Votes CLOCK_MODE method as required by EIP-6372
-    /// @return String indicating timestamp-based clock mode
-    // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() public pure override returns (string memory) {
-        return "mode=timestamp";
     }
 
     /// @notice Get the current nonce for an address
@@ -250,16 +236,7 @@ contract Fund is
             emit ManagementFeeCollected(fee, block.timestamp);
         }
 
-        _lastFeeCollection = block.timestamp;
-        return fee;
-    }
-
-    /// @notice Collects performance fee with high water mark
-    function collectPerformanceFee() public onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
-        if (totalSupply() == 0) return 0;
-
-        uint256 fee = 0; // No performance fee without NAV tracking
-        _lastFeeCollection = block.timestamp;
+        _lastFeeCollection = uint40(block.timestamp);
         return fee;
     }
 
@@ -268,7 +245,7 @@ contract Fund is
     /// @param token The token to withdraw
     /// @param to The recipient address
     /// @param amount The amount to withdraw
-    function withdrawToken(address token, address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function withdrawToken(address token, address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         if (token == address(0)) revert InvalidTokenAddress();
         if (to == address(0)) revert InvalidTokenAddress();
         if (amount == 0) return;

@@ -16,8 +16,7 @@ contract FundFactoryTest is Test {
     string constant SYMBOL = "TFUND";
     uint8 constant DECIMALS = 18;
     string constant ISIN = "US0378331005";
-    uint256 constant MANAGEMENT_FEE_BPS = 200; // 2%
-    uint256 constant HURDLE_RATE_BPS = 1000; // 10%
+    uint16 constant MANAGEMENT_FEE_BPS = 200; // 2%
     string constant FUND_CLASS = "Hedge Fund";
     string constant FUND_CATEGORY = "Long/Short Equity";
 
@@ -30,8 +29,7 @@ contract FundFactoryTest is Test {
         string isin,
         string fundClass,
         string fundCategory,
-        uint256 managementFeeBps,
-        uint256 hurdleRateBps
+        uint16 managementFeeBps
     );
 
     function setUp() public {
@@ -47,26 +45,16 @@ contract FundFactoryTest is Test {
     function test_CreateFund() public {
         vm.startPrank(owner);
 
-        address predictedAddress = factory.predictAddress(
-            NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS
-        );
+        address predictedAddress =
+            factory.predictAddress(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         vm.expectEmit(true, true, true, true);
         emit FundCreated(
-            predictedAddress,
-            NAME,
-            SYMBOL,
-            DECIMALS,
-            owner,
-            ISIN,
-            FUND_CLASS,
-            FUND_CATEGORY,
-            MANAGEMENT_FEE_BPS,
-            HURDLE_RATE_BPS
+            predictedAddress, NAME, SYMBOL, DECIMALS, owner, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
         );
 
         address fundAddress =
-            factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
+            factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         assertEq(fundAddress, predictedAddress);
         assertTrue(factory.isFactoryFund(fundAddress));
@@ -87,11 +75,11 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         // Create first fund
-        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
+        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         // Try to create duplicate fund
         vm.expectRevert(FundFactory.AddressAlreadyDeployed.selector);
-        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
+        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         vm.stopPrank();
     }
@@ -99,18 +87,16 @@ contract FundFactoryTest is Test {
     function test_PredictAddress() public {
         vm.startPrank(owner);
 
-        address predicted = factory.predictAddress(
-            NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS
-        );
+        address predicted =
+            factory.predictAddress(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
-        address actual =
-            factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS);
+        address actual = factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         assertEq(actual, predicted);
 
         // Predict address with different parameters
         address predicted2 = factory.predictAddress(
-            "Different Fund", "DFUND", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS, HURDLE_RATE_BPS
+            "Different Fund", "DFUND", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
         );
 
         assertTrue(predicted2 != predicted);

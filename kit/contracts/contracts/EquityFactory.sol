@@ -34,25 +34,6 @@ contract EquityFactory is ReentrancyGuard {
         string equityCategory
     );
 
-    /// @notice Calculates the salt for CREATE2 deployment
-    /// @param name The name of the token
-    /// @param symbol The symbol of the token
-    /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the equity
-    /// @return bytes32 The calculated salt
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encode(name, symbol, decimals, isin));
-    }
-
     /// @notice Creates a new equity token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits an EquityCreated event
     /// @param name The name of the token
@@ -131,5 +112,24 @@ contract EquityFactory is ReentrancyGuard {
                 )
             )
         );
+    }
+
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
+    /// @param isin The ISIN (International Securities Identification Number) of the equity
+    /// @return bytes32 The calculated salt
+    function _calculateSalt(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        string memory isin
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
     }
 }

@@ -132,14 +132,6 @@ contract Equity is
         return uint48(block.timestamp);
     }
 
-    /// @notice Returns the description of the clock mode for voting snapshots
-    /// @dev Implementation of ERC20Votes CLOCK_MODE method as required by EIP-6372
-    /// @return String indicating timestamp-based clock mode
-    // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() public pure override returns (string memory) {
-        return "mode=timestamp";
-    }
-
     /// @notice Get the current nonce for an address
     /// @dev Required override to resolve ambiguity between ERC20Permit and Nonces
     /// @param owner The address to get the nonce for
