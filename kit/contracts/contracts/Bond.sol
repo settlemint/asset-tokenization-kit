@@ -120,7 +120,7 @@ contract Bond is
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (_faceValue == 0) revert InvalidFaceValue();
         if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
-        if (bytes(isin_).length != 12) revert InvalidISIN();
+        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         // Verify the underlying asset contract exists by attempting to call a view function
         try IERC20(_underlyingAsset).totalSupply() returns (uint256) {

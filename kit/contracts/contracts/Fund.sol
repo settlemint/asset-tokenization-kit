@@ -87,7 +87,7 @@ contract Fund is
         ERC20Permit(name)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
-        if (bytes(isin_).length != 12) revert InvalidISIN();
+        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
         _isin = isin_;
