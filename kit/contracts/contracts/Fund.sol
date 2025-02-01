@@ -123,6 +123,10 @@ contract Fund is
         return _decimals;
     }
 
+    function managementFeeBps() external view returns (uint16) {
+        return _managementFeeBps;
+    }
+
     /// @notice Pauses all token transfers
     /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
     function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {

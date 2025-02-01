@@ -1,10 +1,16 @@
 import { Address, log, store } from '@graphprotocol/graph-ts';
 import { Account, BlockedAccount, Event_Transfer, Role } from '../generated/schema';
 import {
+  Approval as ApprovalEvent,
+  DelegateChanged as DelegateChangedEvent,
+  DelegateVotesChanged as DelegateVotesChangedEvent,
+  EIP712DomainChanged as EIP712DomainChangedEvent,
   Paused as PausedEvent,
   RoleAdminChanged as RoleAdminChangedEvent,
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent,
+  TokensFrozen as TokensFrozenEvent,
+  TokensUnfrozen as TokensUnfrozenEvent,
   Transfer as TransferEvent,
   Unpaused as UnpausedEvent,
   UserBlocked as UserBlockedEvent,
@@ -185,5 +191,29 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
   );
 
   // Record category data on state change
+  recordEquityCategoryData(equity);
+}
+
+export function handleApproval(event: ApprovalEvent): void {}
+
+export function handleDelegateChanged(event: DelegateChangedEvent): void {
+  let equity = fetchEquity(event.address);
+  recordEquityCategoryData(equity);
+}
+
+export function handleDelegateVotesChanged(event: DelegateVotesChangedEvent): void {
+  let equity = fetchEquity(event.address);
+  recordEquityCategoryData(equity);
+}
+
+export function handleEIP712DomainChanged(event: EIP712DomainChangedEvent): void {}
+
+export function handleTokensFrozen(event: TokensFrozenEvent): void {
+  let equity = fetchEquity(event.address);
+  recordEquityCategoryData(equity);
+}
+
+export function handleTokensUnfrozen(event: TokensUnfrozenEvent): void {
+  let equity = fetchEquity(event.address);
   recordEquityCategoryData(equity);
 }

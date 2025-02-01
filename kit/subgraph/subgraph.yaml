@@ -26,8 +26,7 @@ dataSources:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,uint8,indexed
-            address,string,uint256,uint256,uint256,indexed address,uint256)
+        - event: BondCreated(indexed address,string,string,uint8,indexed address,string,uint256,uint256,uint256,indexed address)
           handler: handleBondCreated
       file: ./src/bond-factory.ts
   - kind: ethereum/contract
@@ -48,8 +47,7 @@ dataSources:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
       eventHandlers:
-        - event: CryptoCurrencyCreated(indexed address,string,string,uint8,indexed
-            address,uint256)
+        - event: CryptoCurrencyCreated(indexed address,string,string,uint8,indexed address,uint256)
           handler: handleCryptoCurrencyCreated
       file: ./src/crypto-currency-factory.ts
   - kind: ethereum/contract
@@ -70,8 +68,7 @@ dataSources:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
-        - event: EquityCreated(indexed address,string,string,uint8,indexed
-            address,string,string,string,uint256)
+        - event: EquityCreated(indexed address,string,string,uint8,indexed address,string,string,string)
           handler: handleEquityCreated
       file: ./src/equity-factory.ts
   - kind: ethereum/contract
@@ -92,8 +89,7 @@ dataSources:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address,string,string,uint8,indexed
-            address,string,uint256)
+        - event: StableCoinCreated(indexed address,string,string,uint8,indexed address,string)
           handler: handleStableCoinCreated
       file: ./src/stable-coin-factory.ts
   - kind: ethereum/contract
@@ -114,10 +110,30 @@ dataSources:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: FixedYieldCreated(indexed address,indexed address,indexed
-            address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
+        - event: FixedYieldCreated(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
           handler: handleFixedYieldCreated
       file: ./src/fixed-yield-factory.ts
+  - kind: ethereum/contract
+    name: FundFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000006"
+      abi: FundFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_FundCreated
+      abis:
+        - name: FundFactory
+          file: ../contracts/artifacts/contracts/FundFactory.sol/FundFactory.json
+        - name: Fund
+          file: ../contracts/artifacts/contracts/Fund.sol/Fund.json
+      eventHandlers:
+        - event: FundCreated(indexed address,string,string,uint8,indexed address,string,string,string,uint16)
+          handler: handleFundCreated
+      file: ./src/fund-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -379,3 +395,73 @@ templates:
         - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
       file: ./src/fixed-yield.ts
+  - kind: ethereum/contract
+    name: Fund
+    network: settlemint
+    source:
+      abi: Fund
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Event_Approval
+        - Event_EIP712DomainChanged
+        - Event_Paused
+        - Event_TokensFrozen
+        - Event_TokensUnfrozen
+        - Event_Transfer
+        - Event_Unpaused
+        - Event_UserBlocked
+        - Event_UserUnblocked
+        - Event_RoleGranted
+        - Event_RoleRevoked
+        - Event_RoleAdminChanged
+        - Event_ManagementFeeCollected
+        - Event_PerformanceFeeCollected
+        - Event_TokenWithdrawn
+        - TransferData
+        - TransferStats
+        - AssetSupplyData
+        - AssetSupplyStats
+        - AccountActivityData
+        - AccountActivityStats
+        - RoleActivityData
+        - RoleActivityStats
+        - FundMetricsData
+        - FundMetricsStats
+      abis:
+        - name: Fund
+          file: ../contracts/artifacts/contracts/Fund.sol/Fund.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,uint256)
+          handler: handleTokensUnfrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserBlocked(indexed address)
+          handler: handleUserBlocked
+        - event: UserUnblocked(indexed address)
+          handler: handleUserUnblocked
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: ManagementFeeCollected(uint256,uint256)
+          handler: handleManagementFeeCollected
+        - event: PerformanceFeeCollected(uint256,uint256)
+          handler: handlePerformanceFeeCollected
+        - event: TokenWithdrawn(indexed address,indexed address,uint256)
+          handler: handleTokenWithdrawn
+      file: ./src/fund.ts
