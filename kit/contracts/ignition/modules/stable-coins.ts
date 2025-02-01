@@ -8,7 +8,7 @@ const StableCoinsModule = buildModule('StableCoinsModule', (m) => {
   const { stableCoinFactory } = m.useModule(StableCoinFactoryModule);
 
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
-  const createUSDC = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, '', collateralLivenessSeconds], {
+  const createUSDC = m.call(stableCoinFactory, 'create', ['Euro Coin', 'EUR', 6, '', collateralLivenessSeconds], {
     id: 'createUSDC',
     from: deployer,
   });
