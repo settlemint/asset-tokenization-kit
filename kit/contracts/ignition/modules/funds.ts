@@ -11,12 +11,13 @@ const FundsModule = buildModule('FundsModule', (m) => {
   const createHedgeFund = m.call(
     fundFactory,
     'create',
-    ['Global Macro Fund', 'GMF', 6, 'US0378331005', managementFeeBps, 'Hedge Fund', 'Global Macro'],
+    ['Global Macro Fund', 'GMF', 6, 'US0378331005', 'Hedge Fund', 'Global Macro', managementFeeBps],
     {
       id: 'createHedgeFund',
       from: deployer,
     }
   );
+
   const readHedgeFundAddress = m.readEventArgument(createHedgeFund, 'FundCreated', 'token', {
     id: 'readHedgeFundAddress',
   });
