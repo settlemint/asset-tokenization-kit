@@ -3,7 +3,7 @@
 import { CreateEquityOutputSchema } from '@/app/(private)/admin/equities/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
@@ -34,7 +34,7 @@ export const createEquity = actionClient
       const organizationId = await getActiveOrganizationId();
 
       const data = await portalClient.request(CreateEquity, {
-        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        address: EQUITY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,

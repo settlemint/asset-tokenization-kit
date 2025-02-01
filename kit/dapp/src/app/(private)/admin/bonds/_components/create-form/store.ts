@@ -3,7 +3,7 @@
 import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseEther } from 'viem';
@@ -48,7 +48,7 @@ export const createBond = actionClient
       const organizationId = await getActiveOrganizationId();
 
       const data = await portalClient.request(CreateBond, {
-        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        address: BOND_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
