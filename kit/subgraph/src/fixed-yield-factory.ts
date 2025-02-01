@@ -5,7 +5,7 @@ import { FixedYield } from '../generated/templates';
 import { fetchFixedYield } from './fetch/fixed-yield';
 
 export function handleFixedYieldCreated(event: FixedYieldCreatedEvent): void {
-  log.info('FixedYieldCreated event received: {} {} {} {} {} {} {} {} {} {} {}', [
+  log.info('FixedYieldCreated event received: {} {} {} {} {} {} {} {} {} {}', [
     event.params.schedule.toHexString(),
     event.params.token.toHexString(),
     event.params.underlyingAsset.toHexString(),

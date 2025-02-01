@@ -1,4 +1,5 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import { keccak256, toUtf8Bytes } from 'ethers';
 import BondFactoryModule from './bond-factory';
 import FixedYieldFactoryModule from './fixed-yield-factory';
 import StableCoinFactoryModule from './stable-coin-factory';
@@ -26,12 +27,22 @@ const BondsModule = buildModule('BondsModule', (m) => {
 
   const oneYearFromNow = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
   const faceValue = 100_000_000; // 100 USDC (with 6 decimals)
+  const maxSupply = 1000; // Maximum 1000 bonds can be minted
 
   // Create bond using the deployed StableCoin
   const createBondUSTB = m.call(
     bondFactory,
     'create',
-    ['US Treasury Bond', 'USTB', 2, 'US0378331005', 1000 * 10 ** 2, oneYearFromNow, faceValue, stableCoin],
+    [
+      'US Treasury Bond',
+      'USTB',
+      2,
+      'US0378331005',
+      maxSupply * 10 ** 2, // Cap is in bond units (2 decimals)
+      oneYearFromNow,
+      faceValue,
+      stableCoin,
+    ],
     {
       id: 'createBondUSTB',
       from: deployer,
@@ -48,7 +59,7 @@ const BondsModule = buildModule('BondsModule', (m) => {
   const yieldRate = 500; // 5% annual yield (in basis points)
   const yieldInterval = 30 * 24 * 60 * 60; // 30 days in seconds
 
-  // Create the yield schedule after granting the role
+  // Create the yield schedule
   const createYieldSchedule = m.call(
     fixedYieldFactory,
     'create',
@@ -63,6 +74,14 @@ const BondsModule = buildModule('BondsModule', (m) => {
     id: 'readYieldScheduleAddress',
   });
   const yieldSchedule = m.contractAt('FixedYield', readYieldScheduleAddress, { id: 'yieldSchedule' });
+
+  // Set up roles for the bond
+  const supplyManagementRole = keccak256(toUtf8Bytes('SUPPLY_MANAGEMENT_ROLE'));
+  const userManagementRole = keccak256(toUtf8Bytes('USER_MANAGEMENT_ROLE'));
+
+  // Grant roles to the deployer
+  m.call(ustb, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
+  m.call(ustb, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
 
   return { ustb, stableCoin, yieldSchedule };
 });

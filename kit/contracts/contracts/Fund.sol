@@ -10,14 +10,17 @@ import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/ex
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
+import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-/// @title Equity - A security token representing equity ownership
-/// @notice This contract implements a security token that represents equity ownership with voting rights, blocklist,
+/// @title Fund - A security token representing fund shares
+/// @notice This contract implements a security token that represents fund shares with voting rights, blocklist,
 /// and custodian features
 /// @dev Inherits from OpenZeppelin contracts to provide comprehensive security token functionality with governance
 /// capabilities
 /// @custom:security-contact support@settlemint.com
-contract Equity is
+contract Fund is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
@@ -27,41 +30,58 @@ contract Equity is
     ERC20Custodian,
     ERC20Votes
 {
+    using Math for uint256;
+    using SafeERC20 for IERC20;
+
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
 
     error InvalidDecimals(uint8 decimals);
     error InvalidISIN();
-
-    /// @notice The class of the equity (e.g., "Common", "Preferred")
-    string private _equityClass;
-
-    /// @notice The category of the equity (e.g., "Series A", "Seed")
-    string private _equityCategory;
-
-    /// @notice The ISIN (International Securities Identification Number) of the equity
-    string private _isin;
+    error InvalidTokenAddress();
+    error InsufficientTokenBalance();
 
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
 
-    /// @notice Deploys a new Equity token contract
-    /// @dev Initializes the token with name, symbol, class, category and sets up voting capabilities
+    /// @notice The timestamp of the last fee collection
+    uint40 private _lastFeeCollection;
+
+    /// @notice The management fee in basis points
+    uint16 private immutable _managementFeeBps;
+
+    /// @notice The ISIN (International Securities Identification Number) of the fund
+    string private _isin;
+
+    /// @notice The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
+    string private _fundClass;
+
+    /// @notice The category of the fund (e.g., "Long/Short Equity", "Global Macro")
+    string private _fundCategory;
+
+    // Additional events for fund management
+    event ManagementFeeCollected(uint256 amount, uint256 timestamp);
+    event PerformanceFeeCollected(uint256 amount, uint256 timestamp);
+    event TokenWithdrawn(address indexed token, address indexed to, uint256 amount);
+
+    /// @notice Constructor
     /// @param name The token name
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token
     /// @param initialOwner The address that will receive admin rights
-    /// @param isin_ The ISIN (International Securities Identification Number) of the equity
-    /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
-    /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
+    /// @param isin_ The ISIN (International Securities Identification Number) of the fund
+    /// @param managementFeeBps_ The management fee in basis points
+    /// @param fundClass_ The class of the fund
+    /// @param fundCategory_ The category of the fund
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
         string memory isin_,
-        string memory equityClass_,
-        string memory equityCategory_
+        uint16 managementFeeBps_,
+        string memory fundClass_,
+        string memory fundCategory_
     )
         ERC20(name, symbol)
         ERC20Permit(name)
@@ -71,49 +91,51 @@ contract Equity is
 
         _decimals = decimals_;
         _isin = isin_;
-        _equityClass = equityClass_;
-        _equityCategory = equityCategory_;
+        _managementFeeBps = managementFeeBps_;
+        _fundClass = fundClass_;
+        _fundCategory = fundCategory_;
+        _lastFeeCollection = uint40(block.timestamp);
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
     }
 
-    /// @notice Returns the number of decimals used to get its user representation
-    /// @dev Override the default ERC20 decimals function to use the configurable value
+    /// @notice Returns the fund class
+    function fundClass() external view returns (string memory) {
+        return _fundClass;
+    }
+
+    /// @notice Returns the fund category
+    function fundCategory() external view returns (string memory) {
+        return _fundCategory;
+    }
+
+    /// @notice Returns the ISIN
+    function isin() external view returns (string memory) {
+        return _isin;
+    }
+
+    /// @notice Returns the number of decimals used for token amounts
+    /// @dev Implementation of the ERC20 decimals() function
     /// @return The number of decimals
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
     }
 
-    /// @notice Returns the class of equity this token represents
-    /// @return The equity class as a string
-    function equityClass() public view returns (string memory) {
-        return _equityClass;
+    function managementFeeBps() external view returns (uint16) {
+        return _managementFeeBps;
     }
 
-    /// @notice Returns the category of equity this token represents
-    /// @return The equity category as a string
-    function equityCategory() public view returns (string memory) {
-        return _equityCategory;
-    }
-
-    /// @notice Returns the ISIN (International Securities Identification Number) of the equity
-    /// @return The ISIN of the equity
-    function isin() public view returns (string memory) {
-        return _isin;
-    }
-
-    /// @notice Pauses all token transfers
     /// @notice Pauses all token transfers
     /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
-    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
     /// @notice Unpauses token transfers
     /// @dev Only callable by the admin. Emits an Unpaused event from ERC20Pausable
-    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
@@ -121,23 +143,15 @@ contract Equity is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE role. Emits a Transfer event from ERC20
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
-    function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function mint(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _mint(to, amount);
     }
 
-    /// @notice Override the clock function to use timestamps instead of block numbers
-    /// @dev This is used for historical balance tracking
-    /// @return The current timestamp
-    function clock() public view virtual override returns (uint48) {
+    /// @notice Returns the current block timestamp for voting snapshots
+    /// @dev Implementation of ERC20Votes clock method for voting delay and period calculations
+    /// @return Current block timestamp cast to uint48
+    function clock() public view override returns (uint48) {
         return uint48(block.timestamp);
-    }
-
-    /// @notice Override the clock mode to indicate we're using timestamps
-    /// @dev This is used for historical balance tracking
-    /// @return A string indicating the clock mode
-    // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() public pure virtual override returns (string memory) {
-        return "mode=timestamp";
     }
 
     /// @notice Get the current nonce for an address
@@ -210,5 +224,40 @@ contract Equity is
         override(ERC20, ERC20Pausable, ERC20Blocklist, ERC20Custodian, ERC20Votes)
     {
         super._update(from, to, value);
+    }
+
+    /// @notice Collects management fee with minimum interval check
+    function collectManagementFee() public onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+        uint256 timeElapsed = block.timestamp - _lastFeeCollection;
+        uint256 aum = totalSupply();
+
+        // Calculate fee: (AUM * fee_rate * time_elapsed) / (100% * 1 year)
+        // Rearranged to minimize precision loss
+        uint256 fee = Math.mulDiv(Math.mulDiv(aum, _managementFeeBps, 10_000), timeElapsed, 365 days);
+
+        if (fee > 0) {
+            _mint(msg.sender, fee);
+            emit ManagementFeeCollected(fee, block.timestamp);
+        }
+
+        _lastFeeCollection = uint40(block.timestamp);
+        return fee;
+    }
+
+    /// @notice Withdraws tokens from the fund
+    /// @dev Only callable by supply manager. Emits a TokenWithdrawn event
+    /// @param token The token to withdraw
+    /// @param to The recipient address
+    /// @param amount The amount to withdraw
+    function withdrawToken(address token, address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (token == address(0)) revert InvalidTokenAddress();
+        if (to == address(0)) revert InvalidTokenAddress();
+        if (amount == 0) return;
+
+        uint256 balance = IERC20(token).balanceOf(address(this));
+        if (balance < amount) revert InsufficientTokenBalance();
+
+        IERC20(token).safeTransfer(to, amount);
+        emit TokenWithdrawn(token, to, amount);
     }
 }

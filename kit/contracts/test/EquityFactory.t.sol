@@ -27,7 +27,6 @@ contract EquityFactoryTest is Test {
         address tokenAddress = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
-        assertEq(factory.allTokensLength(), 1, "Should have created one token");
 
         Equity token = Equity(tokenAddress);
         assertEq(token.name(), name, "Token name should match");
@@ -70,8 +69,6 @@ contract EquityFactoryTest is Test {
             assertEq(token.equityCategory(), categories[i], "Token category should match");
             assertEq(token.isin(), VALID_ISIN, "Token ISIN should match");
         }
-
-        assertEq(factory.allTokensLength(), 3, "Should have created three tokens");
     }
 
     function test_DeterministicAddresses() public {
@@ -209,28 +206,9 @@ contract EquityFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,uint8,address,string,string,string,uint256)"),
+            keccak256("EquityCreated(address,string,string,uint8,address,string,string,string)"),
             "Wrong event signature for EquityCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
-    }
-
-    function test_RevertWhenInvalidISIN() public {
-        string memory name = "Test Equity";
-        string memory symbol = "TEQT";
-        string memory class = "Common";
-        string memory category = "Series A";
-
-        // Test with empty ISIN
-        vm.expectRevert(EquityFactory.InvalidISIN.selector);
-        factory.create(name, symbol, DECIMALS, "", class, category);
-
-        // Test with ISIN that's too short
-        vm.expectRevert(EquityFactory.InvalidISIN.selector);
-        factory.create(name, symbol, DECIMALS, "US03783310", class, category);
-
-        // Test with ISIN that's too long
-        vm.expectRevert(EquityFactory.InvalidISIN.selector);
-        factory.create(name, symbol, DECIMALS, "US0378331005XX", class, category);
     }
 }

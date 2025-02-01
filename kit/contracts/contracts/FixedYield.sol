@@ -246,7 +246,7 @@ contract FixedYield is AccessControl {
         // Calculate yield for complete unclaimed periods
         uint256 completePeriodAmount = 0;
         for (uint256 period = fromPeriod; period <= lastCompleted; period++) {
-            uint256 balance = _token.balanceAt(holder, _periodEndTimestamps[period - 1]);
+            uint256 balance = _token.balanceOfAt(holder, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 completePeriodAmount += (balance * basis * _rate) / RATE_BASIS_POINTS;
             }
@@ -288,7 +288,7 @@ contract FixedYield is AccessControl {
 
         // Calculate yield for each unclaimed period using historical balances
         for (uint256 period = fromPeriod; period <= lastPeriod; period++) {
-            uint256 balance = _token.balanceAt(msg.sender, _periodEndTimestamps[period - 1]);
+            uint256 balance = _token.balanceOfAt(msg.sender, _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmount += periodYield;

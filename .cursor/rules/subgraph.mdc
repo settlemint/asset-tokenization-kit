@@ -115,6 +115,7 @@ globs: kit/subgraph/*
 	•	Use Logs for Debugging:
 	•	In your mappings, you can use log.info or log.debug to track state changes.
 	•	Logging helps track down indexing issues or unexpected data.
+	•	We do not want any compilation or linting errors NOR warnings, fix them all	
 
 7. Security & Reliability
 

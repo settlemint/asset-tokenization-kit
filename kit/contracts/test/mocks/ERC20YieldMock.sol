@@ -30,6 +30,14 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _yieldToken = IERC20(yieldToken_);
     }
 
+    function clock() public view virtual override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    function CLOCK_MODE() public pure virtual override returns (string memory) {
+        return "mode=timestamp";
+    }
+
     function yieldBasisPerUnit(address) public view override returns (uint256) {
         return _yieldBasisPerUnit;
     }
@@ -46,15 +54,12 @@ contract ERC20YieldMock is ERC20, ERC20Yield, Ownable {
         _yieldManagementBlocked[account] = blocked;
     }
 
-    function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
-        if (timestamp >= block.timestamp) return balanceOf(holder);
-
-        // Return mocked historical balance if set, otherwise return 0
-        return _historicalBalances[holder][timestamp];
-    }
-
     // Test helper function to set historical balances
     function setHistoricalBalance(address holder, uint256 timestamp, uint256 balance) public {
         _historicalBalances[holder][timestamp] = balance;
+    }
+
+    function balanceOfAt(address account, uint256 timepoint) public view virtual override returns (uint256) {
+        return _historicalBalances[account][timepoint];
     }
 }

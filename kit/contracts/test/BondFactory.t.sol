@@ -36,7 +36,6 @@ contract BondFactoryTest is Test {
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
-        assertEq(factory.allBondsLength(), 1, "Should have created one bond");
 
         Bond bond = Bond(bondAddress);
         assertEq(bond.name(), name, "Bond name should match");
@@ -49,8 +48,10 @@ contract BondFactoryTest is Test {
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
-        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner), "Owner should have financial management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
+
+        // Test factory tracking
+        assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
     }
 
     function test_CreateMultipleBonds() public {
@@ -76,9 +77,38 @@ contract BondFactoryTest is Test {
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
             assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
             assertEq(bond.cap(), CAP, "Bond cap should match");
+            assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
         }
+    }
 
-        assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
+    function test_PredictAddress() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.startPrank(owner);
+        address predictedAddress = factory.predictAddress(
+            name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
+        );
+
+        address actualAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+
+        assertEq(predictedAddress, actualAddress, "Predicted address should match actual address");
+        vm.stopPrank();
+    }
+
+    function test_RevertDuplicateDeployment() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        // First deployment should succeed
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        assertTrue(factory.isFactoryToken(bondAddress), "First deployment should be tracked");
+
+        // Second deployment with same parameters should revert
+        vm.expectRevert(BondFactory.AddressAlreadyDeployed.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
     }
 
     function test_DeterministicAddresses() public {
@@ -127,8 +157,8 @@ contract BondFactoryTest is Test {
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (financial), and BondCreated"
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and BondCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
@@ -160,19 +190,11 @@ contract BondFactoryTest is Test {
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be RoleGranted for FINANCIAL_MANAGEMENT_ROLE
-        VmSafe.Log memory fourthEntry = entries[3];
-        assertEq(
-            fourthEntry.topics[0],
-            keccak256("RoleGranted(bytes32,address,address)"),
-            "Wrong event signature for fourth RoleGranted"
-        );
-
-        // Fifth event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[4];
+        // Fourth event should be BondCreated
+        VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,uint8,address,string,uint256,uint256,uint256,address,uint256)"),
+            keccak256("BondCreated(address,string,string,uint8,address,string,uint256,uint256,uint256,address)"),
             "Wrong event signature for BondCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
