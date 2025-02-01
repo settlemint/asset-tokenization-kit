@@ -1,5 +1,8 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
+import { TokenType } from '@/types/token-types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DASHBOARD_STATS_QUERY_KEY } from '../../../(dashboard)/_components/dashboard-stats/consts';
+import { ASSETS_SIDEBAR_CACHE_KEY } from '../../../_lib/consts';
 import { CreateStablecoinFormSchema } from './schema';
 import { Basics } from './steps/basics';
 import { Configuration } from './steps/configuration';
@@ -13,7 +16,7 @@ export function CreateStablecoinForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={['stablecoins']}
+      revalidateTags={[TokenType.Stablecoin, DASHBOARD_STATS_QUERY_KEY, ASSETS_SIDEBAR_CACHE_KEY]}
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}

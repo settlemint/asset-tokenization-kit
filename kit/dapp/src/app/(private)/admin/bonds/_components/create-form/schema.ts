@@ -32,6 +32,7 @@ export const CreateBondFormSchema = z.object({
     PaymentFrequency.Annually,
   ]),
   firstCouponDate: z.date(),
+  cap: z.number(),
 });
 
 export type CreateBondFormType = z.infer<typeof CreateBondFormSchema>;

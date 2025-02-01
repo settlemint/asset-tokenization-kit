@@ -9,6 +9,7 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { formatPercentage } from '@/lib/number';
 import { cn } from '@/lib/utils';
+import { TokenType } from '@/types/token-types';
 import { createColumnHelper } from '@tanstack/react-table';
 import { AlertCircle, AlertTriangle, CheckCircle, PauseCircle, PlayCircle } from 'lucide-react';
 import type { StableCoinAsset } from './data';
@@ -40,7 +41,7 @@ export const columns = [
     enableColumnFilter: false,
   }),
   createPausedColumn(columnHelper),
-  createActionsColumn(columnHelper, 'stablecoins'),
+  createActionsColumn(columnHelper, TokenType.Stablecoin),
 ];
 
 export const icons = {

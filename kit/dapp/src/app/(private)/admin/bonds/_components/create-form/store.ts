@@ -10,10 +10,10 @@ import { type Address, parseEther } from 'viem';
 import { CreateBondFormSchema } from './schema';
 
 const CreateBond = portalGraphql(`
-   mutation CreateBond($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $faceValue: String!, $isin: String!, $maturityDate: String!, $underlyingAsset: String!) {
+   mutation CreateBond($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $faceValue: String!, $isin: String!, $maturityDate: String!, $underlyingAsset: String!, $cap: String!) {
     BondFactoryCreate(
       from: $from
-      input: {decimals: $decimals, faceValue: $faceValue, isin: $isin, maturityDate: $maturityDate, name: $name, symbol: $symbol, underlyingAsset: $underlyingAsset}
+      input: {decimals: $decimals, faceValue: $faceValue, isin: $isin, maturityDate: $maturityDate, name: $name, symbol: $symbol, underlyingAsset: $underlyingAsset, cap: $cap}
       challengeResponse: $challengeResponse
       address: $address
       gasLimit: $gasLimit
@@ -41,6 +41,7 @@ export const createBond = actionClient
         couponRate,
         paymentFrequency,
         firstCouponDate,
+        cap,
       },
     }) => {
       const user = await getAuthenticatedUser();
@@ -58,6 +59,7 @@ export const createBond = actionClient
         underlyingAsset: '',
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
+        cap: cap ? parseEther(cap.toString()).toString() : '0',
       });
 
       const transactionHash = data.BondFactoryCreate?.transactionHash;
