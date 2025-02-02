@@ -2,34 +2,23 @@
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { TokenType } from '@/types/token-types';
-import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
 
-const StableCoinFragment = theGraphGraphqlStarterkits(`
-  fragment StableCoinFields on StableCoin {
-    id
-    name
-    symbol
-  }
-`);
-
-const StableCoin = theGraphGraphqlStarterkits(
+const StableCoinTitle = theGraphGraphqlStarterkits(
   `
   query StableCoin($id: ID!) {
     stableCoin(id: $id) {
-      ...StableCoinFields
-    }
+    id
+    name
+    symbol    }
   }
-`,
-  [StableCoinFragment]
+`
 );
-
-export type StableCoinAsset = FragmentOf<typeof StableCoinFragment>;
 
 export async function getStableCoinTitle(id: string) {
   return await unstable_cache(
     async () => {
-      const data = await theGraphClientStarterkits.request(StableCoin, { id });
+      const data = await theGraphClientStarterkits.request(StableCoinTitle, { id });
       if (!data.stableCoin) {
         throw new Error('Stablecoin not found');
       }

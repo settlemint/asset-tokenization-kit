@@ -2,34 +2,24 @@
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { TokenType } from '@/types/token-types';
-import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
 
-const BondFragment = theGraphGraphqlStarterkits(`
-  fragment BondFields on Bond {
-    id
-    name
-    symbol
-  }
-`);
-
-const Bond = theGraphGraphqlStarterkits(
+const BondTitle = theGraphGraphqlStarterkits(
   `
   query Bond($id: ID!) {
     bond(id: $id) {
-      ...BondFields
+    id
+    name
+    symbol
     }
   }
-`,
-  [BondFragment]
+`
 );
-
-export type BondAsset = FragmentOf<typeof BondFragment>;
 
 export async function getBondTitle(id: string) {
   return await unstable_cache(
     async () => {
-      const data = await theGraphClientStarterkits.request(Bond, { id });
+      const data = await theGraphClientStarterkits.request(BondTitle, { id });
       if (!data.bond) {
         throw new Error('Bond not found');
       }

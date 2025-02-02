@@ -2,11 +2,12 @@
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { TokenType } from '@/types/token-types';
-import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { unstable_cache } from 'next/cache';
 
-const FundFragment = theGraphGraphqlStarterkits(`
-  fragment FundFields on Fund {
+const FundDetails = theGraphGraphqlStarterkits(
+  `
+  query Fund($id: ID!) {
+    fund(id: $id) {
     id
     name
     symbol
@@ -15,26 +16,15 @@ const FundFragment = theGraphGraphqlStarterkits(`
     fundCategory
     fundClass
     paused
-  }
-`);
-
-const Fund = theGraphGraphqlStarterkits(
-  `
-  query Fund($id: ID!) {
-    fund(id: $id) {
-      ...FundFields
     }
   }
-`,
-  [FundFragment]
+`
 );
-
-export type FundAsset = FragmentOf<typeof FundFragment>;
 
 export async function getFund(id: string) {
   return await unstable_cache(
     async () => {
-      const data = await theGraphClientStarterkits.request(Fund, { id });
+      const data = await theGraphClientStarterkits.request(FundDetails, { id });
       if (!data.fund) {
         throw new Error('Fund not found');
       }
