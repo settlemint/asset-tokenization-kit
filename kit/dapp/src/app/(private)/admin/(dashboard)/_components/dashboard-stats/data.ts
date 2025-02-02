@@ -1,6 +1,6 @@
 'use server';
 
-import { hasuraGraphql } from '@/lib/settlemint/hasura';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { unstable_cache } from 'next/cache';
@@ -59,13 +59,12 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   }
 `);
 
-// biome-ignore lint/suspicious/useAwait: <explanation>
 async function getUsersData() {
-  // const data = await hasuraClient.request(UsersQuery);
+  const data = await hasuraClient.request(UsersQuery);
 
   return {
-    totalUsers: 0, // data.user_aggregate.nodes.length,
-    usersInLast24Hours: 0, // data.recent_users_aggregate.aggregate?.count ?? 0,
+    totalUsers: data.user_aggregate.nodes.length,
+    usersInLast24Hours: data.recent_users_aggregate.aggregate?.count ?? 0,
   };
 }
 

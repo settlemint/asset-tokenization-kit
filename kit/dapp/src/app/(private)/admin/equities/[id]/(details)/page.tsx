@@ -1,13 +1,10 @@
-import type { PropsWithChildren } from 'react';
 import { DetailsGrid } from './_components/details-grid';
 
-interface EquityDetailPageProps extends PropsWithChildren {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function EquityDetailPage({ params }: EquityDetailPageProps) {
+export default async function EquityDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   return <DetailsGrid id={id} />;
 }

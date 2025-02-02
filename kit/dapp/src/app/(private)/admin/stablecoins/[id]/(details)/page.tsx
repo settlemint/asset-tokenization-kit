@@ -1,13 +1,10 @@
-import type { PropsWithChildren } from 'react';
 import { DetailsGrid } from './_components/details-grid';
 
-interface StableCoinDetailPageProps extends PropsWithChildren {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function StableCoinDetailPage({ params }: StableCoinDetailPageProps) {
+export default async function StableCoinDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   return <DetailsGrid id={id} />;
 }

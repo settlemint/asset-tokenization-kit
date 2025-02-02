@@ -1,13 +1,10 @@
-import type { PropsWithChildren } from 'react';
 import { HoldersTable } from './_components/holders-table';
 
-interface StableCoinHoldersPageProps extends PropsWithChildren {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-export default async function StableCoinHoldersPage({ params }: StableCoinHoldersPageProps) {
+export default async function StableCoinHoldersPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   return <HoldersTable id={id} />;
