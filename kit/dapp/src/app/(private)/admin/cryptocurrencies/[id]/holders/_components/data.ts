@@ -14,7 +14,7 @@ const CryptocurrencyBalancesFragment = theGraphGraphqlStarterkits(`
   }
 `);
 
-const BondBalances = theGraphGraphqlStarterkits(
+const CryptocurrencyBalances = theGraphGraphqlStarterkits(
   `
   query CryptocurrencyBalances($id: ID!) {
     cryptoCurrency(id: $id) {
@@ -27,10 +27,10 @@ const BondBalances = theGraphGraphqlStarterkits(
 
 export type CryptocurrencyHoldersBalance = FragmentOf<typeof CryptocurrencyBalancesFragment>;
 
-export async function getBondBalances(id: string) {
+export async function getCryptocurrencyBalances(id: string) {
   return await unstable_cache(
     async () => {
-      const data = await theGraphClientStarterkits.request(BondBalances, { id });
+      const data = await theGraphClientStarterkits.request(CryptocurrencyBalances, { id });
       if (!data.cryptoCurrency) {
         throw new Error('Cryptocurrency not found');
       }
