@@ -10,6 +10,8 @@ const StableCoinFragment = theGraphGraphqlStarterkits(`
     id
     name
     symbol
+    decimals
+    totalSupply
   }
 `);
 
@@ -26,7 +28,7 @@ const StableCoin = theGraphGraphqlStarterkits(
 
 export type StableCoinAsset = FragmentOf<typeof StableCoinFragment>;
 
-export async function getStableCoinTitle(id: string) {
+export async function getStableCoin(id: string) {
   return await unstable_cache(
     async () => {
       const data = await theGraphClientStarterkits.request(StableCoin, { id });
@@ -35,10 +37,10 @@ export async function getStableCoinTitle(id: string) {
       }
       return data.stableCoin;
     },
-    [TokenType.Stablecoin, id, 'title'],
+    [TokenType.Stablecoin, id, 'details'],
     {
       revalidate: 60,
-      tags: [TokenType.Stablecoin, `${TokenType.Stablecoin}:${id}`, `${TokenType.Stablecoin}:${id}:title`],
+      tags: [TokenType.Stablecoin, `${TokenType.Stablecoin}:${id}`, `${TokenType.Stablecoin}:${id}:details`],
     }
   )();
 }

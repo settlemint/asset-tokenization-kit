@@ -5,7 +5,7 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import type { TokenTypeValue } from '@/types/token-types';
+import { TokenTypeRoutes, type TokenTypeValue } from '@/types/token-types';
 import type { ColumnHelper } from '@tanstack/react-table';
 import { Pause, Play } from 'lucide-react';
 import type { ComponentType, ReactElement } from 'react';
@@ -90,7 +90,7 @@ export function createActionsColumn<T extends BaseAsset>(
     header: () => 'Action',
     cell: ({ row }) => {
       return (
-        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>
+        <DataTableRowActions detailUrl={`/admin/${TokenTypeRoutes[type]}/${row.original.id}`}>
           {rowActions?.(row.original)}
         </DataTableRowActions>
       );
