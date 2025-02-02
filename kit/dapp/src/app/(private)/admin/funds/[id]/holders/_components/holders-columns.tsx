@@ -1,11 +1,11 @@
 'use client';
-import type { FundHoldersBalance } from '@/app/(private)/admin/funds/_components/details/data';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
+import type { FundHoldersBalance } from './data';
 
 const columnHelper = createColumnHelper<FundHoldersBalance['balances'][number]>();
 
