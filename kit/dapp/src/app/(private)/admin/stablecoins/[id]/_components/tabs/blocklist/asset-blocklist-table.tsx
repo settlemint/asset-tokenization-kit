@@ -1,8 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import type { ComponentType } from 'react';
-import type { StableCoinAsset } from '../../../../_components/data';
+import type { StableCoinDetail } from '../../data';
 
-export function AssetBlockListTable<Asset extends StableCoinAsset>({
+export function AssetBlockListTable<Asset extends StableCoinDetail>({
   data,
 }: {
   data: Asset;

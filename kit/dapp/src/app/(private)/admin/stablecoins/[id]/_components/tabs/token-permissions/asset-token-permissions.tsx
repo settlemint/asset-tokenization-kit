@@ -3,7 +3,7 @@ import { AssetTabHeader } from '@/components/blocks/asset-tabs/asset-tab-header'
 import type { TokenTypeValue } from '@/types/token-types';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { ComponentType } from 'react';
-import type { StableCoinAsset } from '../../../../_components/data';
+import type { StableCoinDetail } from '../../data';
 import { AssetTokenPermissionsTable } from './asset-token-permissions-table';
 
 export type AssetTokenPermissionsProps<Asset> = {
@@ -14,7 +14,7 @@ export type AssetTokenPermissionsProps<Asset> = {
   icons?: Record<string, ComponentType<{ className?: string }>>;
 };
 
-export function AssetTokenPermissions<Asset extends StableCoinAsset>({
+export function AssetTokenPermissions<Asset extends StableCoinDetail>({
   dataAction,
   type,
   id,

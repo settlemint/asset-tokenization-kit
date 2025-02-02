@@ -1,5 +1,6 @@
 import { AssetTab } from '@/components/blocks/asset-tabs/asset-tab';
-import { type StableCoinAsset, getStableCoin } from '../../_components/data';
+import type { StableCoinDetail } from '../_components/data';
+import { getStableCoin } from '../_components/data';
 import { AssetEvents } from '../_components/tabs/events/asset-events';
 
 export default async function StableCoinEventsPage({
@@ -10,8 +11,8 @@ export default async function StableCoinEventsPage({
   const { id } = await params;
 
   return (
-    <AssetTab<StableCoinAsset> id={id} type="stablecoin" dataAction={getStableCoin} activeTab="events">
-      <AssetEvents<StableCoinAsset> id={id} refetchInterval={5000} type="stablecoin" dataAction={getStableCoin} />
+    <AssetTab<StableCoinDetail> id={id} type="stablecoin" dataAction={getStableCoin} activeTab="events">
+      <AssetEvents<StableCoinDetail> id={id} refetchInterval={5000} type="stablecoin" dataAction={getStableCoin} />
     </AssetTab>
   );
 }

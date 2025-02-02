@@ -50,16 +50,6 @@ export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelpe
       cell: ({ row }) => <DataTableColumnCell>{row.getValue('symbol')}</DataTableColumnCell>,
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => row.decimals, {
-      id: 'decimals',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} variant="numeric">
-          Decimals
-        </DataTableColumnHeader>
-      ),
-      cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('decimals')}</DataTableColumnCell>,
-      enableColumnFilter: false,
-    }),
     columnHelper.accessor((row) => row.totalSupply, {
       id: 'totalSupply',
       header: ({ column }) => (

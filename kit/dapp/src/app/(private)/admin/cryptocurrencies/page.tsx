@@ -1,7 +1,7 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { TokenType } from '@/types/token-types';
-import { columns } from './_components/columns';
-import { getCryptocurrencies } from './_components/data';
+import { columns } from './_components/table/columns';
+import { getCryptocurrencies } from './_components/table/data';
 
 export default function CryptoCurrenciesPage() {
   return (
