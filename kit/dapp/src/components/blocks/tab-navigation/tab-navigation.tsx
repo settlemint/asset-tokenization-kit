@@ -12,14 +12,12 @@ export function TabNavigation({ items }: TabNavigationProps) {
   const pathname = usePathname();
 
   return (
-    <div className="border-card border-b">
-      <NavigationMenu>
-        <NavigationMenuList>
-          {items.map((item) => (
-            <TabItem key={item.href} {...item} active={pathname.startsWith(item.href)} />
-          ))}
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
+    <NavigationMenu className="mb-4">
+      <NavigationMenuList>
+        {items.map((item) => (
+          <TabItem key={item.href} {...item} active={pathname === item.href} />
+        ))}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }

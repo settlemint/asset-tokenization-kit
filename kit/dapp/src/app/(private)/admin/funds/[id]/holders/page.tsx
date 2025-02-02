@@ -1,13 +1,13 @@
 import type { PropsWithChildren } from 'react';
 import { HoldersTable } from './_components/holders-table';
 
-interface StableCoinHoldersPageProps extends PropsWithChildren {
+interface FundsHoldersPageProps extends PropsWithChildren {
   params: Promise<{
     id: string;
   }>;
 }
 
-export default async function StableCoinHoldersPage({ params }: StableCoinHoldersPageProps) {
+export default async function FundsHoldersPage({ params }: FundsHoldersPageProps) {
   const { id } = await params;
 
   return <HoldersTable id={id} />;

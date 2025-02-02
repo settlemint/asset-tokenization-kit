@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { NavigationMenuItem, NavigationMenuLink, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import type { FC } from 'react';
 
 export interface TabItemProps {
   href: string;
@@ -10,7 +11,7 @@ export interface TabItemProps {
   active?: boolean;
 }
 
-export const TabItem: React.FC<TabItemProps> = ({ href, name, badge, active }) => (
+export const TabItem: FC<TabItemProps> = ({ href, name, badge, active }) => (
   <NavigationMenuItem>
     <Link href={href} legacyBehavior passHref>
       <NavigationMenuLink
