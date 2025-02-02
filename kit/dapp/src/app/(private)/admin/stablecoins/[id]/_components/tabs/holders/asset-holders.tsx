@@ -3,7 +3,7 @@ import { AssetTabHeader } from '@/components/blocks/asset-tabs/asset-tab-header'
 import type { TokenTypeValue } from '@/types/token-types';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { ComponentType } from 'react';
-import type { StableCoinAsset } from '../../../../_components/data';
+import type { StableCoinDetail } from '../../data';
 import { AssetHoldersTable } from './asset-holders-table';
 
 export type AssetHoldersProps<Asset> = {
@@ -14,7 +14,7 @@ export type AssetHoldersProps<Asset> = {
   icons?: Record<string, ComponentType<{ className?: string }>>;
 };
 
-export function AssetHolders<Asset extends StableCoinAsset>({
+export function AssetHolders<Asset extends StableCoinDetail>({
   dataAction,
   type,
   id,

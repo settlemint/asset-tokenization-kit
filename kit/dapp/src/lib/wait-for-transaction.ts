@@ -99,7 +99,7 @@ export async function waitForTransactionMining(
   let metadata: Record<string, unknown> | null = null;
   const startTime = Date.now();
 
-  while (!receipt || !metadata) {
+  while (!receipt) {
     if (Date.now() - startTime > timeoutMs) {
       throw new TransactionError(`Transaction mining timed out after ${timeoutMs / 1000} seconds`, 'TIMEOUT', {
         transactionHash,
@@ -128,5 +128,5 @@ export async function waitForTransactionMining(
     }
   }
 
-  return { receipt, metadata };
+  return { receipt, metadata: metadata ?? {} };
 }

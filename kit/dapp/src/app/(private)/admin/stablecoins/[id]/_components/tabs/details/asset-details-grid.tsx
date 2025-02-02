@@ -2,9 +2,9 @@ import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar
 import { Card, CardContent } from '@/components/ui/card';
 import { shortHex } from '@/lib/hex';
 import type { ComponentType } from 'react';
-import type { StableCoinAsset } from '../../../../_components/data';
+import type { StableCoinDetail } from '../../data';
 
-export function AssetDetailsGrid<Asset extends StableCoinAsset>({
+export function AssetDetailsGrid<Asset extends StableCoinDetail>({
   data,
 }: {
   data: Asset;
@@ -50,10 +50,6 @@ export function AssetDetailsGrid<Asset extends StableCoinAsset>({
           <div className="text-md">{data.totalSupply}</div>
         </div>
         <div className="space-y-1">
-          <span className="font-medium text-muted-foreground text-sm">Circulating supply</span>
-          <div className="text-md">{data.totalSupplyExact}</div>
-        </div>
-        <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Burned supply</span>
           <div className="text-md">0</div>
         </div>
@@ -64,10 +60,6 @@ export function AssetDetailsGrid<Asset extends StableCoinAsset>({
         <div className="col-span-2 space-y-1">
           <span className="font-medium text-muted-foreground text-sm">#Ownership concentration holders</span>
           <div className="text-md">30%</div>
-        </div>
-        <div className="space-y-1">
-          <span className="font-medium text-muted-foreground text-sm">Proven collateral</span>
-          <div className="text-md">{data.collateralExact}</div>
         </div>
         <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Current collateral ratio</span>

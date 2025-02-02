@@ -1,5 +1,7 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
 import { useFormContext } from 'react-hook-form';
+import { fundCategories, fundClasses } from '../options';
 import type { CreateFundFormType } from '../schema';
 
 export function Configuration() {
@@ -14,8 +16,18 @@ export function Configuration() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <AssetFormInput control={control} name="fundClass" label="Fund class" placeholder="Long/Short Equity" />
-        <AssetFormInput control={control} name="fundCategory" label="Fund category" placeholder="Global Macro" />
+        <AssetFormSelect
+          control={control}
+          name="fundCategory"
+          label="Fund category"
+          options={fundCategories.map((category) => ({ label: category, value: category }))}
+        />
+        <AssetFormSelect
+          control={control}
+          name="fundClass"
+          label="Fund class"
+          options={fundClasses.map((category) => ({ label: category, value: category }))}
+        />
         <AssetFormInput
           control={control}
           name="managementFeeBps"

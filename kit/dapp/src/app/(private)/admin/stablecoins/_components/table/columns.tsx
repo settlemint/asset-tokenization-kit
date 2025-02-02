@@ -12,9 +12,9 @@ import { cn } from '@/lib/utils';
 import { TokenType } from '@/types/token-types';
 import { createColumnHelper } from '@tanstack/react-table';
 import { AlertCircle, AlertTriangle, CheckCircle, PauseCircle, PlayCircle } from 'lucide-react';
-import type { StableCoinAsset } from './data';
+import type { StableCoinList } from './data';
 
-const columnHelper = createColumnHelper<StableCoinAsset>();
+const columnHelper = createColumnHelper<StableCoinList>();
 
 export const columns = [
   ...createBaseColumns(columnHelper),
