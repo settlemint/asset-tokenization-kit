@@ -10,6 +10,7 @@ type Account @entity {
   blockedAssets: [BlockedAccount!]! @derivedFrom(field: "account")
   roleGranted: [Event_RoleGranted!]! @derivedFrom(field: "account")
   roleRevoked: [Event_RoleRevoked!]! @derivedFrom(field: "account")
+  lastActivity: BigInt
 }
 
 type BlockedAccount @entity {

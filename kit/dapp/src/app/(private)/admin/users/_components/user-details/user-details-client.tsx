@@ -1,4 +1,5 @@
 'use client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { User } from '@/lib/auth/types';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { UserDetailsGrid } from './user-details-grid';
@@ -11,7 +12,7 @@ export type UserDetailsClientProps = {
 };
 
 export function UserDetailsClient({ dataAction, id, refetchInterval }: UserDetailsClientProps) {
-  const { data } = useSuspenseQuery<User>({
+  const { data, error } = useSuspenseQuery<User>({
     queryKey: [`user-${id}`],
     queryFn: () => dataAction(id),
     refetchInterval: refetchInterval,
@@ -19,6 +20,15 @@ export function UserDetailsClient({ dataAction, id, refetchInterval }: UserDetai
     refetchIntervalInBackground: false,
     networkMode: 'online',
   });
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="UserDetailsClient">
       <UserDetailsHeader data={data} />
