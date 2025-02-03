@@ -52,6 +52,10 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
       id
       totalSupply
     }
+    funds {
+      id
+      totalSupply
+    }
   }
 `);
 
@@ -99,6 +103,10 @@ async function getAssetsSupplyData() {
     {
       type: 'Cryptocurrencies',
       supply: calculateTotalSupply(data.cryptoCurrencies),
+    },
+    {
+      type: 'Funds',
+      supply: calculateTotalSupply(data.funds),
     },
   ];
 

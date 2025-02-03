@@ -33,8 +33,13 @@ contract Equity is
     error InvalidDecimals(uint8 decimals);
     error InvalidISIN();
 
+    /// @notice The class of the equity (e.g., "Common", "Preferred")
     string private _equityClass;
+
+    /// @notice The category of the equity (e.g., "Series A", "Seed")
     string private _equityCategory;
+
+    /// @notice The ISIN (International Securities Identification Number) of the equity
     string private _isin;
 
     /// @notice The number of decimals used for token amounts
@@ -62,7 +67,7 @@ contract Equity is
         ERC20Permit(name)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
-        if (bytes(isin_).length != 12) revert InvalidISIN();
+        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
         _isin = isin_;
@@ -100,6 +105,7 @@ contract Equity is
     }
 
     /// @notice Pauses all token transfers
+    /// @notice Pauses all token transfers
     /// @dev Only callable by the admin. Emits a Paused event from ERC20Pausable
     function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
@@ -119,18 +125,18 @@ contract Equity is
         _mint(to, amount);
     }
 
-    /// @notice Returns the current block timestamp for voting snapshots
-    /// @dev Implementation of ERC20Votes clock method for voting delay and period calculations
-    /// @return Current block timestamp cast to uint48
-    function clock() public view override returns (uint48) {
+    /// @notice Override the clock function to use timestamps instead of block numbers
+    /// @dev This is used for historical balance tracking
+    /// @return The current timestamp
+    function clock() public view virtual override returns (uint48) {
         return uint48(block.timestamp);
     }
 
-    /// @notice Returns the description of the clock mode for voting snapshots
-    /// @dev Implementation of ERC20Votes CLOCK_MODE method as required by EIP-6372
-    /// @return String indicating timestamp-based clock mode
+    /// @notice Override the clock mode to indicate we're using timestamps
+    /// @dev This is used for historical balance tracking
+    /// @return A string indicating the clock mode
     // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() public pure override returns (string memory) {
+    function CLOCK_MODE() public pure virtual override returns (string memory) {
         return "mode=timestamp";
     }
 

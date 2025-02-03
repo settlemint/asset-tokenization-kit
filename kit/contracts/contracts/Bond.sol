@@ -11,6 +11,7 @@ import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/ex
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
+import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
@@ -19,6 +20,7 @@ import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 /// @custom:security-contact support@settlemint.com
 contract Bond is
     ERC20,
+    ERC20HistoricalBalances,
     ERC20Capped,
     ERC20Burnable,
     ERC20Pausable,
@@ -43,7 +45,6 @@ contract Bond is
 
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
-    bytes32 public constant FINANCIAL_MANAGEMENT_ROLE = keccak256("FINANCIAL_MANAGEMENT_ROLE");
 
     /// @notice Timestamp when the bond matures
     uint256 public immutable maturityDate;
@@ -51,14 +52,14 @@ contract Bond is
     /// @notice The number of decimals used for token amounts
     uint8 private immutable _decimals;
 
+    /// @notice Tracks whether the bond has matured
+    bool public isMatured;
+
     /// @notice The face value of the bond in underlying asset base units
     uint256 public immutable faceValue;
 
     /// @notice The underlying asset contract used for face value denomination
     IERC20 public immutable underlyingAsset;
-
-    /// @notice Tracks whether the bond has matured
-    bool public isMatured;
 
     /// @notice Tracks how many bonds each holder has redeemed
     mapping(address => uint256) public bondRedeemed;
@@ -77,12 +78,6 @@ contract Bond is
 
     /// @notice Event emitted when underlying assets are withdrawn
     event UnderlyingAssetWithdrawn(address indexed to, uint256 amount);
-
-    /// @notice Mapping of holder to their balance history (timestamp => balance)
-    mapping(address => mapping(uint256 => uint256)) private _historicalBalances;
-
-    /// @notice Mapping of holder to their balance update timestamps
-    mapping(address => uint256[]) private _addressTimestamps;
 
     /// @notice Modifier to prevent transfers after maturity
     modifier notMatured() {
@@ -125,7 +120,7 @@ contract Bond is
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (_faceValue == 0) revert InvalidFaceValue();
         if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
-        if (bytes(isin_).length != 12) revert InvalidISIN();
+        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         // Verify the underlying asset contract exists by attempting to call a view function
         try IERC20(_underlyingAsset).totalSupply() returns (uint256) {
@@ -143,7 +138,6 @@ contract Bond is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
-        _grantRole(FINANCIAL_MANAGEMENT_ROLE, initialOwner);
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -151,6 +145,21 @@ contract Bond is
     /// @return The number of decimals
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
+    }
+
+    /// @notice Override the clock function to use timestamps instead of block numbers
+    /// @dev This is used for historical balance tracking
+    /// @return The current timestamp
+    function clock() public view virtual override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    /// @notice Override the clock mode to indicate we're using timestamps
+    /// @dev This is used for historical balance tracking
+    /// @return A string indicating the clock mode
+    // solhint-disable-next-line func-name-mixedcase
+    function CLOCK_MODE() public pure virtual override returns (string memory) {
+        return "mode=timestamp";
     }
 
     /// @notice Pauses all token transfers
@@ -231,17 +240,17 @@ contract Bond is
     }
 
     /// @notice Allows withdrawing excess underlying assets
-    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         _withdrawUnderlyingAsset(to, amount);
     }
 
     /// @notice Allows withdrawing excess underlying assets
-    /// @dev Only callable by addresses with FINANCIAL_MANAGEMENT_ROLE
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
-    function withdrawExcessUnderlyingAssets(address to) external onlyRole(FINANCIAL_MANAGEMENT_ROLE) {
+    function withdrawExcessUnderlyingAssets(address to) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 
@@ -325,54 +334,11 @@ contract Bond is
     }
 
     /// @notice Checks if an address can manage yield on this token
-    /// @dev Only addresses with FINANCIAL_MANAGEMENT_ROLE can manage yield
+    /// @dev Only addresses with SUPPLY_MANAGEMENT_ROLE can manage yield
     /// @param manager The address to check
-    /// @return True if the address has FINANCIAL_MANAGEMENT_ROLE
+    /// @return True if the address has SUPPLY_MANAGEMENT_ROLE
     function canManageYield(address manager) public view override returns (bool) {
-        return hasRole(FINANCIAL_MANAGEMENT_ROLE, manager);
-    }
-
-    /// @notice Returns the balance of tokens a holder had at a specific timestamp
-    /// @param holder The address to check the balance for
-    /// @param timestamp The timestamp to check the balance at
-    /// @return The balance the holder had at the specified timestamp
-    function balanceAt(address holder, uint256 timestamp) public view override returns (uint256) {
-        // For current or future timestamps, return current balance
-        if (timestamp >= block.timestamp) return balanceOf(holder);
-
-        // Check for exact match first (optimization)
-        uint256 exactBalance = _historicalBalances[holder][timestamp];
-        if (exactBalance != 0) {
-            return exactBalance;
-        }
-
-        uint256[] storage timestamps = _addressTimestamps[holder];
-        if (timestamps.length == 0) return 0;
-
-        // If timestamp is before first recorded timestamp, return 0
-        if (timestamp < timestamps[0]) return 0;
-
-        // If timestamp is after or equal to the last recorded timestamp
-        uint256 lastIndex = timestamps.length - 1;
-        if (timestamp >= timestamps[lastIndex]) {
-            return _historicalBalances[holder][timestamps[lastIndex]];
-        }
-
-        // Binary search for the closest timestamp
-        uint256 left = 0;
-        uint256 right = lastIndex;
-
-        while (left < right) {
-            // Safe way to calculate midpoint without overflow
-            uint256 mid = left + (right - left + 1) / 2;
-            if (timestamps[mid] <= timestamp) {
-                left = mid;
-            } else {
-                right = mid - 1;
-            }
-        }
-
-        return _historicalBalances[holder][timestamps[left]];
+        return hasRole(SUPPLY_MANAGEMENT_ROLE, manager);
     }
 
     // Internal functions
@@ -406,10 +372,7 @@ contract Bond is
         }
 
         super._update(from, to, value);
-
-        // Update historical balances
-        _updateHistoricalBalance(from, balanceOf(from));
-        _updateHistoricalBalance(to, balanceOf(to));
+        _afterTokenTransfer(from, to, value);
     }
 
     /// @notice Approves spending of tokens
@@ -429,18 +392,6 @@ contract Bond is
         override(ERC20, ERC20Blocklist)
     {
         super._approve(owner, spender, value, emitEvent);
-    }
-
-    /// @dev Updates historical balance for an address, avoiding duplicate timestamps
-    function _updateHistoricalBalance(address account, uint256 balance) private {
-        uint256[] storage timestamps = _addressTimestamps[account];
-        if (timestamps.length == 0 || timestamps[timestamps.length - 1] < block.timestamp) {
-            timestamps.push(block.timestamp);
-            _historicalBalances[account][block.timestamp] = balance;
-        } else if (timestamps[timestamps.length - 1] == block.timestamp) {
-            // Update the balance for the current timestamp if it already exists
-            _historicalBalances[account][block.timestamp] = balance;
-        }
     }
 
     /// @notice Internal function to handle withdrawing underlying assets

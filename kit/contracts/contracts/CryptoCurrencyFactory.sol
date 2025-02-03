@@ -2,31 +2,28 @@
 pragma solidity ^0.8.27;
 
 import { CryptoCurrency } from "./CryptoCurrency.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @title CryptoCurrencyFactory - A factory contract for creating CryptoCurrency tokens
 /// @notice This contract allows the creation of new CryptoCurrency tokens with deterministic addresses
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
-contract CryptoCurrencyFactory {
+contract CryptoCurrencyFactory is ReentrancyGuard {
+    error AddressAlreadyDeployed();
+
+    /// @notice Mapping to track if an address was deployed by this factory
+    mapping(address => bool) public isFactoryToken;
+
     /// @notice Emitted when a new cryptocurrency token is created
     /// @param token The address of the newly created token
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
     /// @param owner The owner of the token
-    /// @param tokenCount The total number of tokens created so far
+    /// @param initialSupply The initial supply of tokens minted to the owner
     event CryptoCurrencyCreated(
-        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 tokenCount
+        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, uint256 initialSupply
     );
-
-    /// @notice Array of all tokens created by this factory
-    CryptoCurrency[] public allTokens;
-
-    /// @notice Returns the total number of tokens created by this factory
-    /// @return The length of the allTokens array
-    function allTokensLength() external view returns (uint256) {
-        return allTokens.length;
-    }
 
     /// @notice Creates a new cryptocurrency token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits a CryptoCurrencyCreated event
@@ -42,15 +39,65 @@ contract CryptoCurrencyFactory {
         uint256 initialSupply
     )
         external
+        nonReentrant
         returns (address token)
     {
-        bytes32 salt = keccak256(abi.encode(name, symbol, decimals, initialSupply, msg.sender));
+        // Check if address is already deployed
+        address predicted = predictAddress(name, symbol, decimals, initialSupply);
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
+
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         CryptoCurrency newToken = new CryptoCurrency{ salt: salt }(name, symbol, decimals, initialSupply, msg.sender);
 
         token = address(newToken);
-        allTokens.push(newToken);
+        isFactoryToken[token] = true;
 
-        emit CryptoCurrencyCreated(token, name, symbol, decimals, msg.sender, allTokens.length);
+        emit CryptoCurrencyCreated(token, name, symbol, decimals, msg.sender, initialSupply);
+    }
+
+    /// @notice Calculates the deterministic address for a token with the given parameters
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
+    /// @param decimals The number of decimals for the token
+    /// @param initialSupply The initial supply of tokens to mint to the owner
+    /// @return predicted The predicted address where the token will be deployed
+    function predictAddress(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        uint256 initialSupply
+    )
+        public
+        view
+        returns (address predicted)
+    {
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
+
+        predicted = address(
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            bytes1(0xff),
+                            address(this),
+                            salt,
+                            keccak256(
+                                abi.encodePacked(
+                                    type(CryptoCurrency).creationCode,
+                                    abi.encode(name, symbol, decimals, initialSupply, msg.sender)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /// @notice Calculates the salt for CREATE2 deployment
+    /// @dev Internal function to generate a deterministic salt based on token parameters
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

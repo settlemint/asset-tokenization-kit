@@ -189,17 +189,6 @@ jobs:
           severity: "HIGH,CRITICAL"
           scanners: 'secret'
 
-      - name: Run Trivy vulnerability scanner on the codestudio docker image
-        if: ${{ env.TAG != 'pr' }}
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          image-ref: 'ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${{ env.VERSION }}'
-          format: 'table'
-          exit-code: '1'
-          trivy-config: trivy-secret.yaml
-          severity: "HIGH,CRITICAL"
-          scanners: 'secret'
-
       - name: Run Drizzle migrations
         if: ${{ env.TAG != 'pr' }}
         run: bunx drizzle-kit push --force

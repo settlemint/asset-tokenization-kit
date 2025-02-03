@@ -3,6 +3,7 @@
 import { CreateBondForm } from '@/app/(private)/admin/bonds/_components/create-form/form';
 import { CreateCryptocurrencyForm } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/form';
 import { CreateEquityForm } from '@/app/(private)/admin/equities/_components/create-form/form';
+import { CreateFundForm } from '@/app/(private)/admin/funds/_components/create-form/form';
 import { CreateStablecoinForm } from '@/app/(private)/admin/stablecoins/_components/create-form/form';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,23 +21,28 @@ import { useState } from 'react';
 const TOKEN_CONFIGS = {
   Stablecoin: {
     label: 'Stable coin',
-    title: 'Design a new stable coin token',
+    title: 'Design a new stable coin',
     description: 'Digital assets pegged to a stable asset like USD',
   },
   Equity: {
     label: 'Equity',
-    title: 'Design a new equity token',
+    title: 'Design a new equity',
     description: 'Digital assets representing ownership in a company',
   },
   Bond: {
     label: 'Bond',
-    title: 'Design a new bond token',
+    title: 'Design a new bond',
     description: 'Digital assets representing a debt obligation',
   },
   Cryptocurrency: {
     label: 'Cryptocurrency',
-    title: 'Design a new cryptocurrency token',
+    title: 'Design a new cryptocurrency',
     description: 'Digital assets representing a fully decentralized currency',
+  },
+  Fund: {
+    label: 'Fund',
+    title: 'Design a new fund',
+    description: 'Digital assets representing a fund',
   },
 } as const satisfies Record<TokenTypeKey, { label: string; title: string; description: string }>;
 
@@ -85,6 +91,8 @@ export function TokenDesignerButton() {
                     return <CreateEquityForm onClose={() => setTokenType(null)} />;
                   case 'Bond':
                     return <CreateBondForm onClose={() => setTokenType(null)} />;
+                  case 'Fund':
+                    return <CreateFundForm onClose={() => setTokenType(null)} />;
                   default:
                     return null;
                 }

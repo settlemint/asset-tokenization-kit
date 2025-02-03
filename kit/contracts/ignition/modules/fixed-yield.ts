@@ -3,7 +3,6 @@ import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 const FixedYieldModule = buildModule('FixedYieldModule', (m) => {
   const fixedYield = m.contract('FixedYield', [
     m.getParameter('token'),
-    m.getParameter('owner'),
     m.getParameter('startDate'),
     m.getParameter('endDate'),
     m.getParameter('rate'),

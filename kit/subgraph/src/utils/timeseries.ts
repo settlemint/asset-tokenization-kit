@@ -8,6 +8,8 @@ import {
   Equity,
   EquityCategoryData,
   FixedYield,
+  Fund,
+  FundMetricsData,
   Role,
   RoleActivityData,
   StableCoin,
@@ -108,4 +110,13 @@ export function recordYieldMetricsData(schedule: FixedYield, timestamp: BigInt):
   data.unclaimedYield = schedule.unclaimedYield;
   data.underlyingBalance = schedule.underlyingBalance;
   data.save();
+}
+
+export function recordFundMetricsData(fund: Fund, amount: BigInt, timestamp: BigInt): void {
+  const metricsData = new FundMetricsData('auto');
+  metricsData.fund = fund.id;
+  metricsData.timestamp = timestamp.toI32();
+  metricsData.managementFeesCollected = amount;
+  metricsData.totalFees = amount;
+  metricsData.save();
 }

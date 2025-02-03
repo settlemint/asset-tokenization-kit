@@ -37,8 +37,8 @@ type AssetRole @entity {
 interface Asset {
   id: Bytes!
   asAccount: Account!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
@@ -67,13 +67,14 @@ interface UnderlyingAssetHolder {
   id: Bytes!
   underlyingAsset: Bytes!
   underlyingBalance: BigInt!
-  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+  underlyingMovements: [Event_UnderlyingAssetMovement!]!
+    @derivedFrom(field: "emitter")
 }
 
 type Bond implements Asset & UnderlyingAssetHolder @entity {
   id: Bytes!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   cap: BigDecimal!
   capExact: BigInt!
@@ -92,7 +93,8 @@ type Bond implements Asset & UnderlyingAssetHolder @entity {
   balances: [Balance!]! @derivedFrom(field: "asset")
   roles: [AssetRole!]! @derivedFrom(field: "asset")
   transfers: [Event_Transfer!]! @derivedFrom(field: "asset")
-  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+  underlyingMovements: [Event_UnderlyingAssetMovement!]!
+    @derivedFrom(field: "emitter")
   redemptions: [Event_BondRedemption!]! @derivedFrom(field: "emitter")
   metrics: [BondMetricsData!]! @derivedFrom(field: "bond")
 }
@@ -109,8 +111,8 @@ type Event_BondRedemption implements BondEvent @entity(immutable: true) {
 type Equity implements Asset @entity {
   id: Bytes!
   asAccount: Account!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
@@ -123,11 +125,93 @@ type Equity implements Asset @entity {
   paused: Boolean!
 }
 
+type Fund implements Asset @entity {
+  id: Bytes!
+  asAccount: Account!
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  balances: [Balance!]! @derivedFrom(field: "asset")
+  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
+  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  isin: String!
+  fundClass: String!
+  fundCategory: String!
+  paused: Boolean!
+  managementFeeBps: Int!
+  lastFeeCollection: BigInt!
+  metrics: [FundMetricsData!]! @derivedFrom(field: "fund")
+  holdings: [FundHolding!]! @derivedFrom(field: "fund")
+  portfolioMetrics: [FundPortfolioData!]! @derivedFrom(field: "fund")
+}
+
+# Track individual asset holdings in the fund
+type FundHolding @entity {
+  id: Bytes!
+  fund: Fund!
+  asset: Asset!
+  amount: BigDecimal!
+  amountExact: BigInt!
+  lastUpdateTimestamp: BigInt!
+}
+
+# Fund Portfolio Time Series
+type FundPortfolioData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  fund: Fund!
+  totalAssets: Int! # Number of different assets held
+  assetAllocation: [FundAssetAllocation!]! # Breakdown by asset type
+}
+
+# Asset allocation within a portfolio snapshot
+type FundAssetAllocation @entity {
+  id: Bytes!
+  portfolioData: FundPortfolioData!
+  assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency", "Fund"
+  amount: BigDecimal! # Amount of tokens
+  amountExact: BigInt!
+}
+
+# Fund Portfolio Aggregations
+type FundPortfolioStats
+  @aggregation(intervals: ["hour", "day"], source: "FundPortfolioData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  fund: Fund! # dimension
+  maxAssets: Int! @aggregate(fn: "max", arg: "totalAssets")
+  minAssets: Int! @aggregate(fn: "min", arg: "totalAssets")
+}
+
+# Fund Metrics Time Series
+type FundMetricsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  fund: Fund!
+  managementFeesCollected: BigInt!
+  totalFees: BigInt!
+}
+
+# Fund Metrics Aggregations
+type FundMetricsStats
+  @aggregation(intervals: ["hour", "day"], source: "FundMetricsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  fund: Fund! # dimension
+  totalFeesCollected: BigInt! @aggregate(fn: "sum", arg: "totalFees")
+  managementFeesCollected: BigInt!
+    @aggregate(fn: "sum", arg: "managementFeesCollected")
+}
+
 type StableCoin implements Asset @entity {
   id: Bytes!
   asAccount: Account!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
@@ -144,8 +228,8 @@ type StableCoin implements Asset @entity {
 type CryptoCurrency implements Asset @entity {
   id: Bytes!
   asAccount: Account!
-  name: String
-  symbol: String
+  name: String!
+  symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
@@ -173,7 +257,7 @@ interface AssetEvent {
 interface BondEvent implements AssetEvent {
   id: Bytes!
   timestamp: BigInt!
-  emitter: Bond!   # Further narrow to Bond type
+  emitter: Bond! # Further narrow to Bond type
 }
 
 type Event_Transfer implements AssetEvent @entity(immutable: true) {
@@ -405,7 +489,8 @@ type FixedYield implements UnderlyingAssetHolder @entity {
   underlyingBalance: BigInt!
   periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
   yieldClaims: [Event_YieldClaimed!]! @derivedFrom(field: "emitter")
-  underlyingMovements: [Event_UnderlyingAssetMovement!]! @derivedFrom(field: "emitter")
+  underlyingMovements: [Event_UnderlyingAssetMovement!]!
+    @derivedFrom(field: "emitter")
   metrics: [YieldMetricsData!]! @derivedFrom(field: "schedule")
 }
 

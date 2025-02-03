@@ -5,14 +5,15 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { TokenTypeRoutes, type TokenTypeValue } from '@/types/token-types';
 import type { ColumnHelper } from '@tanstack/react-table';
 import { Pause, Play } from 'lucide-react';
-import type { ReactElement } from 'react';
+import type { ComponentType, ReactElement } from 'react';
 
 export const icons = {
   paused: Pause,
   active: Play,
-} as const;
+} as const satisfies Record<string, ComponentType>;
 
 export type BaseAsset = {
   id: string;
@@ -49,16 +50,6 @@ export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelpe
       cell: ({ row }) => <DataTableColumnCell>{row.getValue('symbol')}</DataTableColumnCell>,
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => row.decimals, {
-      id: 'decimals',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} variant="numeric">
-          Decimals
-        </DataTableColumnHeader>
-      ),
-      cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('decimals')}</DataTableColumnCell>,
-      enableColumnFilter: false,
-    }),
     columnHelper.accessor((row) => row.totalSupply, {
       id: 'totalSupply',
       header: ({ column }) => (
@@ -91,7 +82,7 @@ export function createPausedColumn<T extends BaseAsset>(columnHelper: ColumnHelp
 
 export function createActionsColumn<T extends BaseAsset>(
   columnHelper: ColumnHelper<T>,
-  type: 'bonds' | 'equities' | 'stablecoins' | 'cryptocurrencies',
+  type: TokenTypeValue,
   rowActions?: (row: T) => ReactElement[]
 ) {
   return columnHelper.display({
@@ -99,7 +90,7 @@ export function createActionsColumn<T extends BaseAsset>(
     header: () => 'Action',
     cell: ({ row }) => {
       return (
-        <DataTableRowActions detailUrl={`/admin/${type}/${row.original.id}`}>
+        <DataTableRowActions detailUrl={`/admin/${TokenTypeRoutes[type]}/${row.original.id}`}>
           {rowActions?.(row.original)}
         </DataTableRowActions>
       );

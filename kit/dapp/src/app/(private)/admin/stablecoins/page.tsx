@@ -1,7 +1,7 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { TokenType } from '@/types/token-types';
-import { columns, icons } from './_components/columns';
-import { getStableCoins } from './_components/data';
+import { columns, icons } from './_components/table/columns';
+import { getStableCoins } from './_components/table/data';
 
 export default function StableCoinsPage() {
   return (

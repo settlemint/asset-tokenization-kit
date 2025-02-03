@@ -1,0 +1,166 @@
+---
+description: Rules for Subgraphs
+globs: kit/subgraph/*
+---
+
+1. Subgraph Design & Architecture
+
+1.1 Model Your Data in a Clear Schema
+	•	Leverage GraphQL Relationships:
+	•	Instead of storing arrays of IDs in an entity, use GraphQL’s reference types (type A { bEntities: [B!] @derivedFrom(field: "aEntity") }) to create relationships.
+	•	This avoids manual index management, simplifies your mappings, and improves query performance.
+	•	Use Derived Fields:
+	•	A “derivedFrom” field in one entity automatically creates a reverse lookup from the related entity.
+	•	Minimizes duplication (e.g., maintaining a manual list of references).
+	•	Avoid Overly Large Arrays:
+	•	Large arrays in entity fields can balloon the index size and slow down queries.
+	•	Instead, maintain references between entities and rely on GraphQL for querying.
+
+1.2 Keep Data Structures Simple & Focused
+	•	Only Store What You Need:
+	•	If a piece of data is not queried or used downstream, don’t store it.
+	•	The Graph index can grow large. Minimizing unnecessary fields helps keep indexing costs and query response times low.
+	•	Balance Granularity:
+	•	Overly granular entities (e.g., storing each small piece of data in its own entity) may lead to complexity.
+	•	Conversely, storing everything in a single entity creates large, unwieldy objects.
+	•	Strive for a logical data breakdown that will be intuitive to query.
+
+1.3 Consider Future Maintenance
+	•	Version & Update Your Schema:
+	•	You can use semver or a clear naming scheme for subgraph versions (e.g., v1, v2) if you plan major updates.
+	•	Keep in mind the need for re-deployment or re-indexing if you change the schema drastically.
+
+2. Mapping & Handlers
+
+2.1 Event Handlers
+	•	Use Event Handlers as the Primary Mechanism:
+	•	Most subgraphs are driven by smart contract events, which are ideal for capturing discrete state changes.
+	•	Avoid using block handlers or call handlers unless there’s a direct need (see below).
+	•	Minimize Complex Logic:
+	•	If possible, do any heavy computations off-chain.
+	•	Subgraphs are better at reacting to events than performing intense data transformations or computations.
+	•	Optimize for Fewer Handlers:
+	•	Combine event logic if multiple events contain similar or related data.
+	•	Keep the number of handlers to a necessary minimum to reduce overhead.
+
+2.2 Call Handlers
+	•	Use Call Handlers Sparingly:
+	•	Call handlers are triggered whenever a function is called on a contract, even if it doesn’t emit an event. This can add extra indexing overhead.
+	•	Ensure you actually need call data. Often, events suffice because they’re explicitly meant to notify off-chain processes.
+
+2.3 Block Handlers
+	•	Avoid “Every Block” Handlers:
+	•	Running code on every single block is very expensive.
+	•	If you need time-based triggers, consider using events from a block-based oracle or reduce frequency (e.g., block interval or aggregator) if possible.
+
+3. Coding Tips in AssemblyScript Mappings
+
+3.1 Efficient AssemblyScript
+	•	Use Typed Mappings for Entity Fields:
+	•	Avoid repeatedly parsing or converting data.
+	•	For example, parse an event.param.value once, store it in a local variable, then use it.
+	•	Safe Casting & Conversion:
+	•	Know your integer ranges. Casting BigInt to i32 can cause overflow if the value is large.
+	•	When storing numerical values in your schema, choose appropriate fields (BigInt, BigDecimal, etc.).
+	•	Minimize External Calls:
+	•	Every call to a contract (via the ethereum namespace) slows indexing and can lead to reorg complications.
+	•	Cache data in your subgraph if you must do a call more than once or try to rely purely on events.
+
+3.2 Error Handling & Defensive Checks
+	•	Check for Null/Undefined:
+	•	Smart contract events might return unexpected data if the contract logic changed.
+	•	Defensive coding can prevent runtime errors in your mapping.
+	•	Use Try/Catch:
+	•	AssemblyScript does not have try/catch in the same sense as JavaScript, but you can check for null or reverted calls.
+	•	Validate data before storing in an entity.
+
+4. Performance & Scalability
+
+4.1 Minimize Reorg Complexity
+	•	Idempotent Handlers:
+	•	Write your event handlers so that re-running them yields consistent results.
+	•	If The Graph node encounters a chain reorganization, it will rollback to a safe state and re-run the mappings.
+
+4.2 Use DataSource Templates Wisely
+	•	DataSource Templates:
+	•	Useful for indexing dynamic contract addresses, e.g., factories spawning new instances.
+	•	Avoid creating too many sub-dataSources, especially if some addresses will never emit events.
+	•	Prune Unused Templates:
+	•	If your logic no longer needs to index a certain type of contract, remove it or comment it out to avoid ballooning indexing overhead.
+
+4.3 Limit Expensive Operations
+	•	Index-Only the Necessities:
+	•	Revisit your schema and mappings to see if any expensive calls or transformations can be omitted.
+	•	Example: Instead of calling a “balanceOf” on every block, compute or cache it at the time of relevant events.
+
+5. Testing & Validation
+
+5.1 Local Testing
+	•	Test Against a Local Graph Node:
+	•	Use graph-cli to spin up a local environment.
+	•	You can replay known events from a local blockchain (Ganache, Hardhat, Foundry, etc.) to verify correctness before deploying.
+
+5.2 Automated Testing & CI
+	•	Set Up CI:
+	•	Use a continuous integration pipeline (e.g., GitHub Actions) to run graph test or any custom tests on every commit.
+	•	This ensures you catch regressions early.
+
+5.3 Reproducible Results
+	•	Pin to Specific Block Numbers:
+	•	When you’re building and testing a subgraph, specify a start block or a deterministic set of blocks for consistent test results.
+
+6. Deployment & Maintenance
+
+6.1 Monitoring & Logging
+	•	Use Logs for Debugging:
+	•	In your mappings, you can use log.info or log.debug to track state changes.
+	•	Logging helps track down indexing issues or unexpected data.
+	•	We do not want any compilation or linting errors NOR warnings, fix them all	
+
+7. Security & Reliability
+
+7.1 Handle Unexpected Data
+	•	Defensive Field Assignments:
+	•	On chain upgrades or contract changes, events might look different or be removed.
+	•	Validate data presence before storing.
+
+7.2 Re-Entrant Data & Front-running
+	•	Smart Contract Patterns:
+	•	If your indexed contract is prone to re-entrancy or front-running, your subgraph might see multiple event sequences.
+	•	Ensure your logic is robust to these scenarios, or accept the final chain state as the source of truth.
+
+8. Documentation & Collaboration
+
+8.1 Inline Comments & README
+	•	Document Entities & Fields:
+	•	Include short comments explaining what each entity and field represents.
+	•	Helps future collaborators or open-source contributors quickly understand your schema.
+
+8.2 Publish a Usage Guide
+	•	Example Queries:
+	•	Provide example GraphQL queries in your subgraph’s README.
+	•	Helps users get started and ensures you’re indexing data in a useful format.
+
+9. Practical Workflow Overview
+	1.	Draft a Schema:
+	•	Identify the entities you need and how they link together.
+	•	Keep them minimal yet sufficient for all anticipated queries.
+	2.	Configure subgraph.yaml:
+	•	Set up data sources, contract addresses, ABIs, start block, and handlers.
+	3.	Write Your Mappings:
+	•	Implement the event handlers in AssemblyScript (or generated code from graph codegen).
+	•	Keep logic minimal, primarily focusing on transforming raw event data into your entities.
+	4.	Local Testing:
+	•	Spin up a local Graph Node.
+	•	Use local or testnet events to ensure the indexing works as expected.
+	5.	Deploy to Hosted Service:
+	•	Once stable locally, deploy to the Hosted Service for further testing with real chain data.
+	•	Monitor indexing progress and fix any failures.
+	6.	Optimize & Document:
+	•	Profile your subgraph performance.
+	•	Reduce unneeded fields and calls.
+	•	Write a clear README and usage documentation.
+	7.	Production Deployment:
+	•	Deploy to the decentralized Graph network (via Subgraph Studio).
+	•	Keep track of indexing costs, query usage, and user feedback.
+

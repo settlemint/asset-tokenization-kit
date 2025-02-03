@@ -3,6 +3,7 @@
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
+import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
@@ -11,9 +12,9 @@ import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
+import { invalidateCache } from './actions/invalidate-cache';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
-import { revalidateTags } from './revalidate-tags';
 
 export type AssetFormProps<
   ServerError,
@@ -46,6 +47,8 @@ export function AssetForm<
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
+  const invalidateTags = useInvalidateTags();
   const totalSteps = children.length;
 
   useEffect(() => {
@@ -64,7 +67,8 @@ export function AssetForm<
         toast.promise(waitForTransactionMining(data), {
           loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
           success: async () => {
-            await revalidateTags(tagsToRevalidate);
+            await invalidateCache(tagsToRevalidate);
+            await invalidateTags(tagsToRevalidate);
             return `${input.assetName} (${input.symbol}) created successfully on chain`;
           },
           error: (error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
@@ -112,6 +116,7 @@ export function AssetForm<
       return;
     }
 
+    setIsValidating(true);
     // Mark fields as touched
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<Infer<S>>);
@@ -126,6 +131,7 @@ export function AssetForm<
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
+    setIsValidating(false);
   };
 
   const handlePrev = () => {
@@ -144,27 +150,18 @@ export function AssetForm<
         <Card className="w-full pt-10">
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  if (!isLastStep) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleSubmitWithAction(e);
-                }}
-              >
+              <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
                 <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
-
                 {/* Current step content */}
                 <div className="min-h-[400px]">{children[currentStep]}</div>
-
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
-                  handlePrev={handlePrev}
+                  onPreviousStep={handlePrev}
                   isLastStep={isLastStep}
-                  handleNext={handleNext}
+                  onNextStep={handleNext}
+                  isSubmitting={form.formState.isSubmitting || isValidating}
                 />
               </form>
             </Form>
