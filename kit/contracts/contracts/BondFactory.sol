@@ -64,17 +64,9 @@ contract BondFactory is ReentrancyGuard {
         returns (address bond)
     {
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
-
-        // Check for existing deployment first
-        bytes32 bytecodeHash = keccak256(
-            abi.encodePacked(
-                type(Bond).creationCode,
-                abi.encode(name, symbol, decimals, msg.sender, isin, cap, maturityDate, faceValue, underlyingAsset)
-            )
-        );
-        address predictedAddress =
-            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
-        if (isFactoryToken[predictedAddress]) revert AddressAlreadyDeployed();
+        address predicted =
+            predictAddress(msg.sender, name, symbol, decimals, isin, cap, maturityDate, faceValue, underlyingAsset);
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
             name, symbol, decimals, msg.sender, isin, cap, maturityDate, faceValue, underlyingAsset
@@ -98,6 +90,7 @@ contract BondFactory is ReentrancyGuard {
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
     /// @return The address where the bond would be deployed
     function predictAddress(
+        address sender,
         string memory name,
         string memory symbol,
         uint8 decimals,
@@ -107,7 +100,7 @@ contract BondFactory is ReentrancyGuard {
         uint256 faceValue,
         address underlyingAsset
     )
-        external
+        public
         view
         returns (address)
     {
@@ -115,7 +108,7 @@ contract BondFactory is ReentrancyGuard {
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(Bond).creationCode,
-                abi.encode(name, symbol, decimals, msg.sender, isin, cap, maturityDate, faceValue, underlyingAsset)
+                abi.encode(name, symbol, decimals, sender, isin, cap, maturityDate, faceValue, underlyingAsset)
             )
         );
 

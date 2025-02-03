@@ -56,7 +56,7 @@ contract EquityFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(name, symbol, decimals, isin, equityClass, equityCategory);
+        address predicted = predictAddress(msg.sender, name, symbol, decimals, isin, equityClass, equityCategory);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
@@ -80,6 +80,7 @@ contract EquityFactory is ReentrancyGuard {
     /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @return predicted The predicted address where the token will be deployed
     function predictAddress(
+        address sender,
         string memory name,
         string memory symbol,
         uint8 decimals,
@@ -104,7 +105,7 @@ contract EquityFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(Equity).creationCode,
-                                    abi.encode(name, symbol, decimals, isin, equityClass, equityCategory)
+                                    abi.encode(name, symbol, decimals, sender, isin, equityClass, equityCategory)
                                 )
                             )
                         )
