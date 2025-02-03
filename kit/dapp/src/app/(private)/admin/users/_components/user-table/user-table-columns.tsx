@@ -1,5 +1,6 @@
 'use client';
 
+import type { User } from '@/app/(private)/admin/users/_components/data';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
@@ -9,7 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { User } from '@/lib/auth/types';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Suspense } from 'react';
 import { BanUserAction } from './actions/ban-user-action';
@@ -56,7 +56,7 @@ export const columns = [
           />
         </Suspense>
         <span>{renderValue()}</span>
-        {row.original.banned && <Badge variant="destructive">Banned for {row.original.banReason}</Badge>}
+        {row.original.banned && <Badge variant="destructive">Banned for {row.original.ban_reason}</Badge>}
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,

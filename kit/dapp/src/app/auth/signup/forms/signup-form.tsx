@@ -23,7 +23,6 @@ const signUpSchema = z
     email: z.string().email('Please enter a valid email'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     name: z.string().min(1, 'Name is required'),
-    organizationName: z.string().optional(),
     walletPincode: z.string().length(6, 'PIN code must be exactly 6 digits'),
     walletPincodeConfirm: z.string().length(6, 'PIN code must be exactly 6 digits'),
   })
@@ -61,7 +60,6 @@ export function SignUpForm({
       email: '',
       password: '',
       name: '',
-      organizationName: '',
       walletPincode: '',
       walletPincodeConfirm: '',
     },
@@ -88,10 +86,11 @@ export function SignUpForm({
                 pincode: data.walletPincode,
               })
               .then(() => {
+                const defaultOrganizationName = 'SettleMint';
                 authClient.organization
                   .create({
-                    name: data.organizationName || data.name,
-                    slug: slugify(data.organizationName || data.name, { unique: true }),
+                    name: defaultOrganizationName,
+                    slug: slugify(defaultOrganizationName, { unique: true }),
                   })
                   .then((org) => {
                     return authClient.organization.setActive({
@@ -140,24 +139,6 @@ export function SignUpForm({
                     autoComplete="name"
                     required
                     minLength={1}
-                    maxLength={100}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="organizationName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Organization (optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Definitely Not A Ponzi Ltd."
-                    autoComplete="organization"
                     maxLength={100}
                     {...field}
                   />
