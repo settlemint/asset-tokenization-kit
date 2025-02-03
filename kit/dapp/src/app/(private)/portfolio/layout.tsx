@@ -1,6 +1,6 @@
 import Header from '@/components/layout/header';
 import type { NavElement } from '@/components/layout/nav-main';
-import { PrivateSidebar } from '@/components/layout/sidebar';
+import { PrivateSidebar } from '@/components/layout/private-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { ArrowLeftRight, LayoutDashboard, Users } from 'lucide-react';

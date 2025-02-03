@@ -1,20 +1,18 @@
 import { AssetIcon } from '@/components/icons/assets';
-import type { NavElement, NavItem } from '@/components/layout/nav-main';
-import { PrivateSidebar } from '@/components/layout/sidebar';
+import type { NavElement } from '@/components/layout/nav-main';
+import { PrivateSidebar } from '@/components/layout/private-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { AlertTriangle, ArrowRightLeft, LayoutDashboard, Settings, Users } from 'lucide-react';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 import Header from '../../../components/layout/header';
-import { getAssets } from './_lib/dynamic-navigation';
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
   const role = (session?.user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
-  const assets = await getAssets();
 
   const defaultNavItems: NavElement[] = [
     {
@@ -32,59 +30,31 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
       groupTitle: 'Token management',
       items: [
         {
-          queryKey: 'cryptoCurrencies' as const,
           label: 'Crypto Currencies',
-          path: 'cryptocurrencies',
+          path: '/admin/cryptocurrencies',
           icon: <AssetIcon value="CC" />,
         },
         {
-          queryKey: 'stableCoins' as const,
           label: 'Stable Coins',
-          path: 'stablecoins',
+          path: '/admin/stablecoins',
           icon: <AssetIcon value="SC" />,
         },
         {
-          queryKey: 'equities' as const,
           label: 'Equities',
-          path: 'equities',
+          path: '/admin/equities',
           icon: <AssetIcon value="EQ" />,
         },
         {
-          queryKey: 'bonds' as const,
           label: 'Bonds',
-          path: 'bonds',
+          path: '/admin/bonds',
           icon: <AssetIcon value="BN" />,
         },
         {
-          queryKey: 'funds' as const,
           label: 'Funds',
-          path: 'funds',
+          path: '/admin/funds',
           icon: <AssetIcon value="FN" />,
         },
-      ].reduce<NavItem[]>((acc, section) => {
-        const assetsOfSection = assets[section.queryKey];
-
-        const subItems = assetsOfSection.slice(0, 5).map<NavItem>((asset) => ({
-          label: asset.symbol ?? asset.name ?? asset.id,
-          path: `/admin/${section.path}/${asset.id}`,
-        }));
-
-        if (assetsOfSection.length > 5) {
-          subItems.push({
-            label: 'More...',
-            path: `/admin/${section.path}`,
-          });
-        }
-
-        acc.push({
-          ...section,
-          label: section.label,
-          path: `/admin/${section.path}`,
-          badge: assetsOfSection.length.toString(),
-          subItems,
-        });
-        return acc;
-      }, []),
+      ],
     },
     {
       label: 'User management',
