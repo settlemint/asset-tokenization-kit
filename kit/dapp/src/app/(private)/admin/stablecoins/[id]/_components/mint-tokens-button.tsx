@@ -15,7 +15,7 @@ export function MintTokensButton({ assetName = 'asset' }: { assetName: string | 
           Mint tokens
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>Mint {assetName}</SheetTitle>
           <SheetDescription>
