@@ -15,7 +15,7 @@ export function Summary() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm Mint</h2>
+        <h2 className="font-semibold text-base">Review and confirm Burn</h2>
         <p className="text-muted-foreground text-xs">
           Verify the details of your burn before proceeding. Ensure the recipient and amount are correct.
         </p>

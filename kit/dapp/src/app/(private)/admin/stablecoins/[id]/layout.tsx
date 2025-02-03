@@ -11,6 +11,7 @@ import {
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
+import { BurnTokensButton } from './_components/burn-tokens-button';
 import { getStableCoinTitle } from './_components/data';
 import { MintTokensButton } from './_components/mint-tokens-button';
 
@@ -67,6 +68,9 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
               <MintTokensButton assetName={stableCoin?.name} />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <BurnTokensButton assetName={stableCoin?.name} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
