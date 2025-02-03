@@ -4,10 +4,10 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { MintStablecoinFormType } from '../schema';
+import type { BurnStablecoinFormType } from '../schema';
 
 export function Summary() {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<BurnStablecoinFormType>();
   const values = useWatch({
     control: control,
   });
@@ -17,7 +17,7 @@ export function Summary() {
       <div>
         <h2 className="font-semibold text-base">Review and confirm Mint</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details of your mint before proceeding. Ensure the recipient and amount are correct.
+          Verify the details of your burn before proceeding. Ensure the recipient and amount are correct.
         </p>
       </div>
 

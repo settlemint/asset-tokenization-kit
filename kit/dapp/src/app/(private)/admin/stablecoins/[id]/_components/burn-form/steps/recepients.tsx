@@ -1,10 +1,10 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
-import type { MintStablecoinFormType } from '../schema';
+import type { BurnStablecoinFormType } from '../schema';
 
 export function Recipients() {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<BurnStablecoinFormType>();
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MintStablecoinFormSchema = z.object({
+export const BurnStablecoinFormSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
   amount: z.number().min(1, { message: 'Amount is required' }),
   pincode: z
@@ -9,7 +9,7 @@ export const MintStablecoinFormSchema = z.object({
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
 });
 
-export type MintStablecoinFormType = z.infer<typeof MintStablecoinFormSchema>;
+export type BurnStablecoinFormType = z.infer<typeof BurnStablecoinFormSchema>;
 
-export const MintStablecoinOutputSchema = z.string();
-export type MintStablecoinOutputType = z.infer<typeof MintStablecoinOutputSchema>;
+export const BurnStablecoinOutputSchema = z.string();
+export type BurnStablecoinOutputType = z.infer<typeof BurnStablecoinOutputSchema>;
