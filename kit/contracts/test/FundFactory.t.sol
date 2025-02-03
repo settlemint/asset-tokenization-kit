@@ -46,7 +46,7 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         address predictedAddress =
-            factory.predictAddress(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         vm.expectEmit(true, true, true, true);
         emit FundCreated(
@@ -88,7 +88,7 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         address predicted =
-            factory.predictAddress(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         address actual = factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
@@ -96,7 +96,7 @@ contract FundFactoryTest is Test {
 
         // Predict address with different parameters
         address predicted2 = factory.predictAddress(
-            "Different Fund", "DFUND", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
+            owner, "Different Fund", "DFUND", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
         );
 
         assertTrue(predicted2 != predicted);

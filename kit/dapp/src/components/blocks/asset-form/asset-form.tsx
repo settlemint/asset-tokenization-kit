@@ -12,7 +12,6 @@ import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
-import { invalidateCache } from './actions/invalidate-cache';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
 
@@ -69,7 +68,6 @@ export function AssetForm<
         toast.promise(waitForTransactionMining(data), {
           loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
           success: async () => {
-            await invalidateCache(tagsToRevalidate);
             await invalidateTags(tagsToRevalidate);
             return `${input.assetName} (${input.symbol}) created successfully on chain`;
           },

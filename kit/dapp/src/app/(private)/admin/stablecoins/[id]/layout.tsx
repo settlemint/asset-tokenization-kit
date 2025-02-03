@@ -11,9 +11,9 @@ import {
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
-import { BurnTokensButton } from './_components/burn-tokens-button';
+import { BurnTokensButton } from './_components/button-burn-tokens';
+import { MintTokensButton } from './_components/button-mint-tokens';
 import { getStableCoinTitle } from './_components/data';
-import { MintTokensButton } from './_components/mint-tokens-button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{

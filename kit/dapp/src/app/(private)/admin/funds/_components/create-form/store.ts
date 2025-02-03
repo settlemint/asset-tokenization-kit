@@ -3,6 +3,8 @@
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { FUND_FACTORY_ADDRESS } from '@/lib/contracts';
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
@@ -23,9 +25,10 @@ const CreateFund = portalGraphql(`
 `);
 
 const CreateFundPredictAddress = portalGraphql(`
-  query CreateFundPredictAddress($address: String!, $decimals: Int!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!, $isin: String!, $name: String!, $symbol: String!) {
+  query CreateFundPredictAddress($address: String!, $sender: String!, $decimals: Int!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!, $isin: String!, $name: String!, $symbol: String!) {
     FundFactory(address: $address) {
       predictAddress(
+        sender: $sender
         decimals: $decimals
         fundCategory: $fundCategory
         fundClass: $fundClass
@@ -62,6 +65,7 @@ export const createFund = actionClient
 
       const predictedAddress = await portalClient.request(CreateFundPredictAddress, {
         address: FUND_FACTORY_ADDRESS,
+        sender: user.wallet,
         decimals,
         fundCategory,
         fundClass,
@@ -71,7 +75,17 @@ export const createFund = actionClient
         symbol,
       });
 
-      console.log(predictedAddress);
+      const address = predictedAddress.FundFactory?.predictAddress?.predicted;
+
+      if (!address) {
+        throw new Error('Failed to predict the address');
+      }
+
+      await db.insert(asset).values({
+        id: address,
+        organizationId,
+        private: isPrivate,
+      });
 
       const data = await portalClient.request(CreateFund, {
         address: FUND_FACTORY_ADDRESS,
@@ -85,11 +99,6 @@ export const createFund = actionClient
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
         managementFeeBps,
-        metadata: {
-          private: isPrivate,
-          organization: organizationId,
-          predictedAddress: predictedAddress.FundFactory?.predictAddress?.predicted,
-        },
       });
 
       const transactionHash = data.FundFactoryCreate?.transactionHash;

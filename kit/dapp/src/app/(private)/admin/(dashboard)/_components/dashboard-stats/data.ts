@@ -3,8 +3,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { unstable_cache } from 'next/cache';
-import { DASHBOARD_STATS_QUERY_KEY } from './consts';
 
 const UsersQuery = hasuraGraphql(`
 query UsersQuery {
@@ -119,24 +117,15 @@ async function getAssetsSupplyData() {
 }
 
 export async function getDashboardMetrics() {
-  return await unstable_cache(
-    async () => {
-      const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
-        getUsersData(),
-        getProcessedTransactions(),
-        getAssetsSupplyData(),
-      ]);
+  const [usersData, processedTransactions, assetsSupplyData] = await Promise.all([
+    getUsersData(),
+    getProcessedTransactions(),
+    getAssetsSupplyData(),
+  ]);
 
-      return {
-        usersData,
-        processedTransactions,
-        assetsSupplyData,
-      };
-    },
-    [DASHBOARD_STATS_QUERY_KEY],
-    {
-      revalidate: 60,
-      tags: [DASHBOARD_STATS_QUERY_KEY],
-    }
-  )();
+  return {
+    usersData,
+    processedTransactions,
+    assetsSupplyData,
+  };
 }

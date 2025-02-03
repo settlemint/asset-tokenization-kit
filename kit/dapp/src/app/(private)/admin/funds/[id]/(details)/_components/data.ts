@@ -1,8 +1,9 @@
 'use server';
 
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { TokenType } from '@/types/token-types';
-import { unstable_cache } from 'next/cache';
+import { eq } from 'drizzle-orm';
 
 const FundDetails = theGraphGraphqlStarterkits(
   `
@@ -22,18 +23,19 @@ const FundDetails = theGraphGraphqlStarterkits(
 );
 
 export async function getFund(id: string) {
-  return await unstable_cache(
-    async () => {
-      const data = await theGraphClientStarterkits.request(FundDetails, { id });
-      if (!data.fund) {
-        throw new Error('Fund not found');
-      }
-      return data.fund;
-    },
-    [TokenType.Fund, id, 'details'],
-    {
-      revalidate: 60,
-      tags: [TokenType.Fund, `${TokenType.Fund}:${id}`, `${TokenType.Fund}:${id}:details`],
-    }
-  )();
+  const data = await theGraphClientStarterkits.request(FundDetails, { id });
+  if (!data.fund) {
+    throw new Error('Fund not found');
+  }
+  const theGraphFund = data.fund;
+  const dbFund = await db.select().from(asset).where(eq(asset.id, id)).limit(1);
+  return {
+    ...theGraphFund,
+    ...(dbFund[0]
+      ? dbFund[0]
+      : {
+          private: false,
+          organizationId: '',
+        }),
+  };
 }

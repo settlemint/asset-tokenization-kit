@@ -43,7 +43,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(name, symbol, decimals, initialSupply);
+        address predicted = predictAddress(msg.sender, name, symbol, decimals, initialSupply);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals);
@@ -63,6 +63,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
     /// @param initialSupply The initial supply of tokens to mint to the owner
     /// @return predicted The predicted address where the token will be deployed
     function predictAddress(
+        address sender,
         string memory name,
         string memory symbol,
         uint8 decimals,
@@ -85,7 +86,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(CryptoCurrency).creationCode,
-                                    abi.encode(name, symbol, decimals, initialSupply, msg.sender)
+                                    abi.encode(name, symbol, decimals, initialSupply, sender)
                                 )
                             )
                         )

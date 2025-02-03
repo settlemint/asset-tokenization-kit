@@ -1,9 +1,11 @@
 'use server';
 
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { TokenType } from '@/types/token-types';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { unstable_cache } from 'next/cache';
+import { inArray } from 'drizzle-orm';
+import { getAddress } from 'viem';
 
 const BondFragment = theGraphGraphqlStarterkits(`
   fragment BondFields on Bond {
@@ -35,15 +37,27 @@ const Bonds = theGraphGraphqlStarterkits(
 export type BondAsset = FragmentOf<typeof BondFragment>;
 
 export async function getBonds() {
-  return await unstable_cache(
-    async () => {
-      const data = await theGraphClientStarterkits.request(Bonds);
-      return data.bonds;
-    },
-    [TokenType.Bond],
-    {
-      revalidate: 60,
-      tags: [TokenType.Bond],
-    }
-  )();
+  const data = await theGraphClientStarterkits.request(Bonds);
+  const theGraphBonds = data.bonds;
+
+  const bondAddresses = theGraphBonds.map((bond) => bond.id);
+  const dbBonds = await db
+    .select()
+    .from(asset)
+    .where(inArray(asset.id, bondAddresses.map(getAddress)));
+
+  const bonds = theGraphBonds.map((bond) => {
+    const dbBond = dbBonds.find((b) => b.id === getAddress(bond.id));
+    return {
+      ...bond,
+      ...(dbBond
+        ? dbBond
+        : {
+            private: false,
+            organizationId: '',
+          }),
+    };
+  });
+
+  return bonds;
 }

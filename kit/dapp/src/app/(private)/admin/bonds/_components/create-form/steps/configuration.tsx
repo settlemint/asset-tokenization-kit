@@ -36,8 +36,8 @@ export function Configuration() {
             options={stableCoins
               .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
               .map((coin) => ({
-                label: `${coin.name ?? ''} (${coin.symbol ?? ''})`,
-                value: coin.symbol ?? '',
+                label: `${coin.name} (${coin.symbol})`,
+                value: coin.symbol,
               }))}
           />
           <AssetFormInput control={control} name="faceValue" label="Face value" type="number" />

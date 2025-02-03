@@ -87,7 +87,7 @@ contract BondFactoryTest is Test {
 
         vm.startPrank(owner);
         address predictedAddress = factory.predictAddress(
-            name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
+            owner, name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
         );
 
         address actualAddress =

@@ -7,10 +7,12 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { TokenTypeRoutes, type TokenTypeValue } from '@/types/token-types';
 import type { ColumnHelper } from '@tanstack/react-table';
-import { Pause, Play } from 'lucide-react';
+import { Lock, Pause, Play, Unlock } from 'lucide-react';
 import type { ComponentType, ReactElement } from 'react';
 
 export const icons = {
+  private: Lock,
+  public: Unlock,
   paused: Pause,
   active: Play,
 } as const satisfies Record<string, ComponentType>;
@@ -22,6 +24,7 @@ export type BaseAsset = {
   decimals: number;
   totalSupply: string;
   paused?: boolean;
+  private?: boolean;
 };
 
 export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelper<T>) {
@@ -29,25 +32,25 @@ export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelpe
     columnHelper.accessor((row) => row.id, {
       id: 'id',
       header: ({ column }) => <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>,
-      cell: ({ row }) => (
+      cell: ({ getValue }) => (
         <DataTableColumnCell>
-          <EvmAddress address={row.getValue('id')}>
-            <EvmAddressBalances address={row.getValue('id')} />
+          <EvmAddress address={getValue()}>
+            <EvmAddressBalances address={getValue()} />
           </EvmAddress>
         </DataTableColumnCell>
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => row.name ?? row.id, {
+    columnHelper.accessor((row) => row.name, {
       id: 'name',
       header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
-      cell: ({ row }) => <DataTableColumnCell>{row.getValue('name')}</DataTableColumnCell>,
+      cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => row.symbol ?? row.id, {
+    columnHelper.accessor((row) => row.symbol, {
       id: 'symbol',
       header: ({ column }) => <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>,
-      cell: ({ row }) => <DataTableColumnCell>{row.getValue('symbol')}</DataTableColumnCell>,
+      cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
       enableColumnFilter: false,
     }),
     columnHelper.accessor((row) => row.totalSupply, {
@@ -57,8 +60,22 @@ export function createBaseColumns<T extends BaseAsset>(columnHelper: ColumnHelpe
           Total Supply
         </DataTableColumnHeader>
       ),
-      cell: ({ row }) => <DataTableColumnCell variant="numeric">{row.getValue('totalSupply')}</DataTableColumnCell>,
+      cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
       enableColumnFilter: false,
+    }),
+    columnHelper.accessor((row) => row.private, {
+      id: 'private',
+      header: ({ column }) => <DataTableColumnHeader column={column}>Private</DataTableColumnHeader>,
+      cell: ({ getValue }) => {
+        const privateAsset = !!getValue();
+        const Icon = icons[privateAsset ? 'private' : 'public'];
+        return (
+          <DataTableColumnCell>
+            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            <span>{privateAsset ? 'Private' : 'Public'}</span>
+          </DataTableColumnCell>
+        );
+      },
     }),
   ];
 }
