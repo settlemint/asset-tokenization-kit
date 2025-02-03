@@ -20,7 +20,7 @@ export function Recipients() {
         <AssetFormInput
           control={control}
           name="address"
-          label="Address"
+          label="Wallet Address"
           placeholder="0x0000000000000000000000000000000000000000"
         />
       </div>
