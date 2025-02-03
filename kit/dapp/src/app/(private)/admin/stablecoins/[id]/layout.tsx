@@ -1,9 +1,18 @@
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { getStableCoinTitle } from './_components/data';
+import { MintTokensButton } from './_components/mint-tokens-button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -44,10 +53,23 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
         <span className="mr-2">{stableCoin?.name}</span>
         <span className="text-muted-foreground">({stableCoin?.symbol})</span>
       </h1>
-      <div className="text-muted-foreground text-sm">
+      <div className="flex justify-between text-muted-foreground text-sm">
         <EvmAddress address={id}>
           <EvmAddressBalances address={id} />
         </EvmAddress>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>
+              Mint tokens
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem asChild>
+              <MintTokensButton assetName={stableCoin?.name} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="relative mt-4 space-y-2">

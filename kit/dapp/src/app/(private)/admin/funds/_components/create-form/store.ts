@@ -1,6 +1,5 @@
 'use server';
 
-import {} from '@/app/(private)/admin/equities/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { FUND_FACTORY_ADDRESS } from '@/lib/contracts';

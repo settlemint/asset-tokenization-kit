@@ -15,6 +15,8 @@ interface AssetFormButtonProps {
   onNextStep: () => void;
   /** Whether the form is currently submitting */
   isSubmitting?: boolean;
+  /** Label for the submit button */
+  submitLabel?: string;
 }
 
 /**
@@ -27,6 +29,7 @@ export function AssetFormButton({
   isLastStep,
   onNextStep,
   isSubmitting = false,
+  submitLabel = 'Create Asset',
 }: AssetFormButtonProps) {
   const getButtonContent = () => {
     if (isSubmitting) {
@@ -37,7 +40,7 @@ export function AssetFormButton({
         </>
       );
     }
-    return isLastStep ? 'Create Asset' : 'Next';
+    return isLastStep ? submitLabel : 'Next';
   };
 
   return (

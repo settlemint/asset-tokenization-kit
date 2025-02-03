@@ -29,6 +29,7 @@ export type AssetFormProps<
   resolverAction: Resolver<Infer<S>, FormContext>;
   revalidateTags: string[];
   onClose?: () => void;
+  submitLabel?: string;
 };
 
 export function AssetForm<
@@ -44,6 +45,7 @@ export function AssetForm<
   resolverAction,
   onClose,
   revalidateTags: tagsToRevalidate,
+  submitLabel,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -162,6 +164,7 @@ export function AssetForm<
                   isLastStep={isLastStep}
                   onNextStep={handleNext}
                   isSubmitting={form.formState.isSubmitting || isValidating}
+                  submitLabel={submitLabel}
                 />
               </form>
             </Form>
