@@ -1,9 +1,11 @@
 'use server';
 
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 import { CreateStablecoinOutputSchema } from './schema';
 import { CreateStablecoinFormSchema } from './schema';
 
@@ -25,8 +27,12 @@ export const createStablecoin = actionClient
     const data = await portalClient.request(MintStableCoin, {
       address: STABLE_COIN_FACTORY_ADDRESS,
       to: address,
+      challengeResponse: await handleChallenge(user.wallet as Address, pincode),
       amount,
-      pincode,
+      metadata: {
+        organization: organizationId,
+        predictedAddress: predictedAddress.MintFactory?.predictAddress?.predicted,
+      },
     });
 
     const transactionHash = data.StableCoinMint?.transactionHash;
