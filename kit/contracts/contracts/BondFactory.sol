@@ -88,7 +88,7 @@ contract BondFactory is ReentrancyGuard {
     /// @param maturityDate The timestamp when the bond matures
     /// @param faceValue The face value of the bond in underlying asset base units
     /// @param underlyingAsset The address of the underlying asset contract used for face value denomination
-    /// @return The address where the bond would be deployed
+    /// @return predicted The predicted address where the bond would be deployed
     function predictAddress(
         address sender,
         string memory name,
@@ -102,7 +102,7 @@ contract BondFactory is ReentrancyGuard {
     )
         public
         view
-        returns (address)
+        returns (address predicted)
     {
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
         bytes32 bytecodeHash = keccak256(
