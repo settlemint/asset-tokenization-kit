@@ -7,14 +7,9 @@ import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { CreateStablecoinOutputSchema } from './schema';
 import { CreateStablecoinFormSchema } from './schema';
 
-const CreateStablecoin = portalGraphql(`
-  mutation MintStableCoin($address: String!, $from: String!, $amount: String!, $pincode: String!) {
-    StableCoinFactoryMint(
-      address: $address
-      from: $from
-      amount: $amount
-      pincode: $pincode
-    ) {
+const MintStableCoin = portalGraphql(`
+  mutation MintStableCoin($address: String!, $to: String!, $amount: String!, $pincode: String!) {
+    StableCoinMint(address: $address, to: $to, amount: $amount, pincode: $pincode) {
       transactionHash
     }
   }
@@ -27,14 +22,14 @@ export const createStablecoin = actionClient
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
-    const data = await portalClient.request(CreateStablecoin, {
+    const data = await portalClient.request(MintStableCoin, {
       address: STABLE_COIN_FACTORY_ADDRESS,
       to: address,
       amount,
       pincode,
     });
 
-    const transactionHash = data.StableCoinFactoryCreate?.transactionHash;
+    const transactionHash = data.StableCoinMint?.transactionHash;
     if (!transactionHash) {
       throw new Error('Failed to send the transaction to create the cryptocurrency');
     }
