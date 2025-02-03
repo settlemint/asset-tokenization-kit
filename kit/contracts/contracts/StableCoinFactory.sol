@@ -39,7 +39,7 @@ contract StableCoinFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(name, symbol, decimals, isin, collateralLivenessSeconds);
+        address predicted = predictAddress(msg.sender, name, symbol, decimals, isin, collateralLivenessSeconds);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
@@ -61,6 +61,7 @@ contract StableCoinFactory is ReentrancyGuard {
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @return predicted The predicted address where the token will be deployed
     function predictAddress(
+        address sender,
         string memory name,
         string memory symbol,
         uint8 decimals,
@@ -84,7 +85,7 @@ contract StableCoinFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(StableCoin).creationCode,
-                                    abi.encode(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds)
+                                    abi.encode(name, symbol, decimals, sender, isin, collateralLivenessSeconds)
                                 )
                             )
                         )
