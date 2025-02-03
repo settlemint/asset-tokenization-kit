@@ -1,9 +1,5 @@
 'use server';
 
-import {
-  type CollateralProofValidityDuration,
-  CreateStablecoinOutputSchema,
-} from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
@@ -12,6 +8,7 @@ import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
+import { type CollateralProofValidityDuration, CreateStablecoinOutputSchema } from './schema';
 import { CreateStablecoinFormSchema } from './schema';
 
 const CreateStablecoin = portalGraphql(`
