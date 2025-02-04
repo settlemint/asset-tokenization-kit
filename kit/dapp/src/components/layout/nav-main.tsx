@@ -138,11 +138,11 @@ export function NavMain({ items }: { items: NavElement[] }) {
       .map((path) => (path.endsWith('/') ? path.slice(0, -1) : path))
       .filter((path) => {
         // Exact match for root path
-        if (path === '' && normalizedPathname === '') {
+        if (path === '/admin' && normalizedPathname === '/admin') {
           return true;
         }
         // For other paths, check if it's an exact match or if it's a direct parent
-        if (path === '') {
+        if (path === '/admin') {
           return false;
         } // Skip empty paths
         if (path === normalizedPathname) {
