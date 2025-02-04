@@ -11,10 +11,10 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { authClient } from '@/lib/auth/client';
-import type { User } from '@/lib/auth/types';
 import { useRouter } from 'next/navigation';
 import { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
+import type { User } from '../../data';
 
 export function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
   const [showBanDialog, setShowBanDialog] = useState(false);

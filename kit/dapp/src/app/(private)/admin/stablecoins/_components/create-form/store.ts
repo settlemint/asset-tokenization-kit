@@ -1,6 +1,6 @@
 'use server';
 
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -72,7 +72,6 @@ export const createStablecoin = actionClient
       parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, collateralProofValidityDuration },
     }) => {
       const user = await getAuthenticatedUser();
-      const organizationId = await getActiveOrganizationId();
 
       const predictedAddress = await portalClient.request(CreateStablecoinPredictAddress, {
         address: STABLE_COIN_FACTORY_ADDRESS,
@@ -92,7 +91,6 @@ export const createStablecoin = actionClient
 
       await db.insert(asset).values({
         id: address,
-        organizationId,
         private: isPrivate,
       });
 
@@ -108,7 +106,6 @@ export const createStablecoin = actionClient
         gasLimit: '5000000',
         metadata: {
           private: isPrivate,
-          organization: organizationId,
         },
       });
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -18,9 +18,8 @@ const BurnStableCoin = portalGraphql(`
 export const burnStablecoin = actionClient
   .schema(BurnStablecoinFormSchema)
   .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, from, amount, pincode } }) => {
+  .action(async ({ parsedInput: { address, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
-    const organizationId = await getActiveOrganizationId();
 
     const data = await portalClient.request(BurnStableCoin, {
       address: STABLE_COIN_FACTORY_ADDRESS,
@@ -29,9 +28,6 @@ export const burnStablecoin = actionClient
         value: address,
         amount: amount.toString(),
         pincode,
-        metadata: {
-          organization: organizationId,
-        },
       },
     });
 

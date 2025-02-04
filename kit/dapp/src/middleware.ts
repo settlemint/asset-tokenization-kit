@@ -4,7 +4,7 @@ import type { Session, User } from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
 import { match } from 'path-to-regexp';
 
-const isUserAuthenticatedRoute = match(['/user', '/user/*path']);
+const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
 const isIssuerAuthenticatedRoute = match(['/issuer', '/issuer/*path']);
 const isAdminAuthenticatedRoute = match(['/admin', '/admin/*path']);
 

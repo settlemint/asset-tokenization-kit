@@ -4,7 +4,7 @@ import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, openAPI, organization } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
 import { metadata } from '../config/metadata';
@@ -16,12 +16,12 @@ import { createUserWallet } from './portal';
  * Custom error class for authentication-related errors
  */
 export class AuthError extends Error {
-  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED' | 'NO_ACTIVE_ORGANIZATION';
+  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED';
   readonly context?: Record<string, unknown>;
 
   constructor(
     message: string,
-    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED' | 'NO_ACTIVE_ORGANIZATION',
+    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED',
     context?: Record<string, unknown>
   ) {
     super(message);
@@ -29,17 +29,6 @@ export class AuthError extends Error {
     this.code = code;
     this.context = context;
   }
-}
-
-/**
- * Type for the authenticated user
- */
-export interface AuthenticatedUser {
-  id: string;
-  email: string;
-  wallet: string;
-  role: 'admin' | 'user';
-  organizationId?: string;
 }
 
 // Validate environment variables at startup
@@ -67,6 +56,10 @@ export const auth = betterAuth({
         required: true,
         unique: true,
       },
+      kycVerifiedAt: {
+        type: 'date',
+        required: false,
+      },
     },
   },
   databaseHooks: {
@@ -86,7 +79,6 @@ export const auth = betterAuth({
             }
 
             const firstUser = await db.query.user.findFirst();
-
             return {
               data: {
                 ...user,
@@ -110,7 +102,7 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
   },
-  plugins: [nextCookies(), admin(), organization(), passkey(), openAPI(), emailHarmony()],
+  plugins: [nextCookies(), admin(), passkey(), openAPI(), emailHarmony()],
 });
 
 /**
@@ -134,27 +126,12 @@ async function getSession() {
  * @returns {Promise<AuthenticatedUser>} The authenticated user
  * @throws {AuthError} If user is not authenticated
  */
-export async function getAuthenticatedUser(): Promise<AuthenticatedUser> {
+export async function getAuthenticatedUser() {
   const session = await getSession();
 
   if (!session?.user) {
     throw new AuthError('User not authenticated', 'USER_NOT_AUTHENTICATED');
   }
 
-  return session.user as AuthenticatedUser;
-}
-
-/**
- * Get the active organization ID for the current user
- * @returns {Promise<string>} The active organization ID
- * @throws {AuthError} If no active organization is found
- */
-export async function getActiveOrganizationId(): Promise<string> {
-  const session = await getSession();
-
-  if (!session?.session?.activeOrganizationId) {
-    throw new AuthError('User does not have an active organization', 'NO_ACTIVE_ORGANIZATION');
-  }
-
-  return session.session.activeOrganizationId;
+  return session.user;
 }

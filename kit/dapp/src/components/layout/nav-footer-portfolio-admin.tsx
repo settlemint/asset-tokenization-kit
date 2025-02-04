@@ -1,33 +1,10 @@
 'use client';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
-import { authClient } from '@/lib/auth/client';
-import { Building2, ChevronsUpDown, Wallet2 } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { ChevronsUpDown, Wallet2 } from 'lucide-react';
 
 export function NavFooterPortfolioAdmin() {
-  const { isMobile } = useSidebar();
-  const { data: organizations } = authClient.useListOrganizations();
-  const { data: activeOrganization } = authClient.useActiveOrganization();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!activeOrganization) {
-      authClient.organization.setActive({
-        organizationId: organizations?.[0]?.id,
-      });
-    }
-  }, [activeOrganization, organizations]);
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -46,37 +23,6 @@ export function NavFooterPortfolioAdmin() {
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            align="start"
-            side={isMobile ? 'bottom' : 'right'}
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">My organizations</DropdownMenuLabel>
-            {(organizations ?? []).map((team) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() =>
-                  authClient.organization
-                    .setActive({
-                      organizationId: team.id,
-                    })
-                    .then(() => {
-                      router.push('/admin');
-                    })
-                }
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  {team.logo && (
-                    <Image src={team.logo} alt={team.name} width={24} height={24} className="size-4 shrink-0" />
-                  )}
-                  {!team.logo && <Building2 className="size-4 shrink-0" />}
-                </div>
-                {team.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
