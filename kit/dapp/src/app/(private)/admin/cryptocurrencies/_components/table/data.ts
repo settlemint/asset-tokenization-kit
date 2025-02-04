@@ -1,9 +1,11 @@
 'use server';
 
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { TokenType } from '@/types/token-types';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { unstable_cache } from 'next/cache';
+import { inArray } from 'drizzle-orm';
+import { getAddress } from 'viem';
 
 const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
   fragment CryptoCurrencyFields on CryptoCurrency {
@@ -29,15 +31,27 @@ const CryptoCurrencies = theGraphGraphqlStarterkits(
 export type CryptoCurrencyAsset = FragmentOf<typeof CryptoCurrencyFragment>;
 
 export async function getCryptocurrencies() {
-  return await unstable_cache(
-    async () => {
-      const data = await theGraphClientStarterkits.request(CryptoCurrencies);
-      return data.cryptoCurrencies;
-    },
-    [TokenType.Cryptocurrency],
-    {
-      revalidate: 60,
-      tags: [TokenType.Cryptocurrency],
-    }
-  )();
+  const data = await theGraphClientStarterkits.request(CryptoCurrencies);
+  const theGraphCryptocurrencies = data.cryptoCurrencies;
+
+  const cryptocurrencyAddresses = theGraphCryptocurrencies.map((cryptocurrency) => cryptocurrency.id);
+  const dbCryptocurrencies = await db
+    .select()
+    .from(asset)
+    .where(inArray(asset.id, cryptocurrencyAddresses.map(getAddress)));
+
+  const cryptocurrencies = theGraphCryptocurrencies.map((cryptocurrency) => {
+    const dbCryptocurrency = dbCryptocurrencies.find((c) => c.id === getAddress(cryptocurrency.id));
+    return {
+      ...cryptocurrency,
+      ...(dbCryptocurrency
+        ? dbCryptocurrency
+        : {
+            private: false,
+            organizationId: '',
+          }),
+    };
+  });
+
+  return cryptocurrencies;
 }

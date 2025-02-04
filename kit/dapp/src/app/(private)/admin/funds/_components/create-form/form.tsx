@@ -1,7 +1,5 @@
-import { DASHBOARD_STATS_QUERY_KEY } from '@/app/(private)/admin/(dashboard)/_components/dashboard-stats/consts';
-import { ASSETS_SIDEBAR_CACHE_KEY } from '@/app/(private)/admin/_lib/consts';
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateFundFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -16,7 +14,7 @@ export function CreateFundForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={[TokenType.Fund, DASHBOARD_STATS_QUERY_KEY, ASSETS_SIDEBAR_CACHE_KEY]}
+      invalidate={[assetConfig.fund.queryKey, ['transactions']]}
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onClose}

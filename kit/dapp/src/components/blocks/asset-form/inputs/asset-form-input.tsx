@@ -1,10 +1,10 @@
 'use client';
 
+import type { BaseFormInputProps, WithPostfixProps } from '@/components/blocks/asset-form/asset-form-types';
+import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import type { BaseFormInputProps, WithPostfixProps } from '@/types/form-types';
-import { getAriaAttributes } from '@/types/form-types';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 

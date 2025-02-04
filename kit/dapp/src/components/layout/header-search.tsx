@@ -70,9 +70,9 @@ export function HeaderSearch() {
   const filteredAssets = useFuzzySearchList({
     list: assets,
     queryText: search,
-    getText: (asset) => [asset.name ?? '', asset.symbol ?? '', asset.id],
+    getText: (asset) => [asset.name, asset.symbol, asset.id],
     strategy: 'smart',
-    mapResultItem: (result) => ({ main: result.item.name ?? '', sub: result.item.symbol ?? '', id: result.item.id }),
+    mapResultItem: (result) => ({ main: result.item.name, sub: result.item.symbol, id: result.item.id }),
   });
 
   return (

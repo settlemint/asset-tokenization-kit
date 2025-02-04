@@ -1,5 +1,4 @@
 import * as authSchema from '@/lib/db/schema-auth';
-import { metadata } from '@/lib/site-config';
 import { betterAuth } from 'better-auth';
 import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -8,6 +7,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { admin, openAPI } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
+import { metadata } from '../config/metadata';
 import { db } from '../db';
 import { validateEnvironmentVariables } from './config';
 import { createUserWallet } from './portal';

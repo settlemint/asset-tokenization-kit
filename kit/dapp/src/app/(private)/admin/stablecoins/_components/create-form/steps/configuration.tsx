@@ -1,6 +1,5 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
-import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
 import { CollateralProofValidityDuration, type CreateStablecoinFormType } from '../schema';
 

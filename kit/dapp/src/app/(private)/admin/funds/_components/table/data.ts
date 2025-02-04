@@ -1,10 +1,12 @@
 'use server';
 
 import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-columns';
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { TokenType } from '@/types/token-types';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { unstable_cache } from 'next/cache';
+import { inArray } from 'drizzle-orm';
+import { getAddress } from 'viem';
 
 const FundFragment = theGraphGraphqlStarterkits(`
   fragment FundFields on Fund {
@@ -33,15 +35,27 @@ const Funds = theGraphGraphqlStarterkits(
 export type FundAsset = FragmentOf<typeof FundFragment> & BaseAsset;
 
 export async function getFunds() {
-  return await unstable_cache(
-    async () => {
-      const data = await theGraphClientStarterkits.request(Funds);
-      return data.funds;
-    },
-    [TokenType.Fund],
-    {
-      revalidate: 60,
-      tags: [TokenType.Fund],
-    }
-  )();
+  const data = await theGraphClientStarterkits.request(Funds);
+  const theGraphFunds = data.funds;
+
+  const fundAddresses = theGraphFunds.map((fund) => fund.id);
+  const dbFunds = await db
+    .select()
+    .from(asset)
+    .where(inArray(asset.id, fundAddresses.map(getAddress)));
+
+  const funds = theGraphFunds.map((fund) => {
+    const dbFund = dbFunds.find((f) => f.id === getAddress(fund.id));
+    return {
+      ...fund,
+      ...(dbFund
+        ? dbFund
+        : {
+            private: false,
+            organizationId: '',
+          }),
+    };
+  });
+
+  return funds;
 }

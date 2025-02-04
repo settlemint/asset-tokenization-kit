@@ -1,6 +1,6 @@
 import { icons } from '@/app/(private)/admin/equities/_components/table/columns';
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { columns } from './_components/table/columns';
 import { getEquities } from './_components/table/data';
 
@@ -11,7 +11,7 @@ export default function EquitiesPage() {
         <h2 className="font-bold text-3xl tracking-tight">Equities</h2>
       </div>
       <AssetTable
-        type={TokenType.Equity}
+        assetConfig={assetConfig.equity}
         dataAction={getEquities}
         columns={columns}
         icons={icons}

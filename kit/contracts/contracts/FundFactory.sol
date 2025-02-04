@@ -60,7 +60,8 @@ contract FundFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps);
+        address predicted =
+            predictAddress(msg.sender, name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps);
         if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
@@ -85,6 +86,7 @@ contract FundFactory is ReentrancyGuard {
     /// @param managementFeeBps The management fee in basis points (e.g., 100 for 1%)
     /// @return predicted The predicted address where the fund will be deployed
     function predictAddress(
+        address sender,
         string memory name,
         string memory symbol,
         uint8 decimals,
@@ -111,14 +113,7 @@ contract FundFactory is ReentrancyGuard {
                                 abi.encodePacked(
                                     type(Fund).creationCode,
                                     abi.encode(
-                                        name,
-                                        symbol,
-                                        decimals,
-                                        msg.sender,
-                                        isin,
-                                        managementFeeBps,
-                                        fundClass,
-                                        fundCategory
+                                        name, symbol, decimals, sender, isin, managementFeeBps, fundClass, fundCategory
                                     )
                                 )
                             )

@@ -4,6 +4,8 @@ import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseEther } from 'viem';
@@ -23,29 +25,58 @@ const CreateBond = portalGraphql(`
   }
 `);
 
+const CreateBondPredictAddress = portalGraphql(`
+  query CreateBondPredictAddress($address: String!, $sender: String!, $decimals: Int!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!, $cap: String!, $name: String!, $symbol: String!, $isin: String!) {
+    BondFactory(address: $address) {
+      predictAddress(
+        sender: $sender
+        decimals: $decimals
+        faceValue: $faceValue
+        maturityDate: $maturityDate
+        underlyingAsset: $underlyingAsset
+        cap: $cap
+        name: $name
+        symbol: $symbol
+        isin: $isin
+      )
+    }
+  }
+`);
+
 export const createBond = actionClient
   .schema(CreateBondFormSchema)
   .outputSchema(CreateBondOutputSchema)
   .action(
     async ({
-      parsedInput: {
-        assetName,
-        symbol,
-        decimals,
-        pincode,
-        isin,
-        private: isPrivate,
-        faceValueCurrency,
-        faceValue,
-        maturityDate,
-        couponRate,
-        paymentFrequency,
-        firstCouponDate,
-        cap,
-      },
+      parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, faceValue, maturityDate, cap },
     }) => {
       const user = await getAuthenticatedUser();
       const organizationId = await getActiveOrganizationId();
+
+      const predictedAddress = await portalClient.request(CreateBondPredictAddress, {
+        address: BOND_FACTORY_ADDRESS,
+        sender: user.wallet,
+        decimals,
+        faceValue: parseEther(faceValue.toString()).toString(),
+        maturityDate: maturityDate.toISOString(),
+        underlyingAsset: '',
+        cap: cap ? parseEther(cap.toString()).toString() : '0',
+        name: assetName,
+        symbol,
+        isin: isin ?? '',
+      });
+
+      const address = predictedAddress.BondFactory?.predictAddress;
+
+      if (!address) {
+        throw new Error('Failed to predict the address');
+      }
+
+      await db.insert(asset).values({
+        id: address,
+        organizationId,
+        private: isPrivate,
+      });
 
       const data = await portalClient.request(CreateBond, {
         address: BOND_FACTORY_ADDRESS,
