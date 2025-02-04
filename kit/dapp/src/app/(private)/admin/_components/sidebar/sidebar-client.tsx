@@ -35,7 +35,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
 
     const assetsOfSection = data[section.assetType];
     const subItems = assetsOfSection.slice(0, 10).map<NavItem>((asset) => ({
-      label: `${asset.id} ${asset.name} (${asset.symbol ?? asset.id})`,
+      label: `${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
       icon: <AddressAvatar address={getAddress(asset.id)} variant="tiny" />,
     }));
