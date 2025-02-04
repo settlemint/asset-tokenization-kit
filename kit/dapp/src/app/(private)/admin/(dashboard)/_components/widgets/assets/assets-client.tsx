@@ -1,11 +1,11 @@
 'use client';
 
 import { Stat, StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from './data';
 
 interface DashboardWidgetClientProps {
-  queryKey: string[];
+  queryKey: QueryKey;
 }
 
 export function AssetsWidgetClient({ queryKey }: DashboardWidgetClientProps) {
@@ -13,9 +13,6 @@ export function AssetsWidgetClient({ queryKey }: DashboardWidgetClientProps) {
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
     refetchInterval: 1000 * 10,
-    refetchOnWindowFocus: true,
-    refetchIntervalInBackground: false,
-    networkMode: 'online',
   });
 
   return (

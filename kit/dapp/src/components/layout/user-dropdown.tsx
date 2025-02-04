@@ -54,10 +54,6 @@ export function UserDropdown() {
     refetchInterval: interval,
     enabled: !!wallet,
     initialData: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchIntervalInBackground: false,
-    networkMode: 'online',
   });
 
   const handleSignOut = useCallback(async () => {

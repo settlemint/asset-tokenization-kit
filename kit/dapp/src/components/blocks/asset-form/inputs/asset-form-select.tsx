@@ -1,10 +1,10 @@
 'use client';
 
+import type { BaseFormInputProps, WithPlaceholderProps } from '@/components/blocks/asset-form/asset-form-types';
+import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import type { BaseFormInputProps, WithPlaceholderProps } from '@/types/form-types';
-import { getAriaAttributes } from '@/types/form-types';
 import { useRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 

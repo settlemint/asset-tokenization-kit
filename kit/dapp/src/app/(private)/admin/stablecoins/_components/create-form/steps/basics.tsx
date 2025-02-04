@@ -1,6 +1,5 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSwitch } from '@/components/blocks/asset-form/inputs/asset-form-switch';
-import {} from '@/components/ui/form';
 import { useFormContext } from 'react-hook-form';
 import type { CreateStablecoinFormType } from '../schema';
 

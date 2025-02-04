@@ -6,13 +6,14 @@
 'use client';
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export type AssetTableClientProps<Asset> = {
-  type: string;
+  assetConfig: AssetDetailConfig;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */
@@ -27,21 +28,16 @@ export type AssetTableClientProps<Asset> = {
  */
 export function AssetTableClient<Asset extends Record<string, unknown>>({
   dataAction,
-  type,
+  assetConfig,
   refetchInterval,
   columns,
   icons,
 }: AssetTableClientProps<Asset>) {
   const { data } = useSuspenseQuery<Asset[]>({
-    queryKey: [type],
+    queryKey: assetConfig.queryKey,
     queryFn: () => dataAction(),
     refetchInterval,
-    refetchOnWindowFocus: true,
-    refetchIntervalInBackground: false,
-    networkMode: 'online',
-    staleTime: 1000 * 60, // Consider data stale after 1 minute
-    retry: 3, // Retry failed requests 3 times
   });
 
-  return <DataTable columns={columns} data={data} icons={icons ?? {}} name={type} />;
+  return <DataTable columns={columns} data={data} icons={icons ?? {}} name={assetConfig.name} />;
 }

@@ -2,11 +2,7 @@ import { getStableCoins } from '@/app/(private)/admin/stablecoins/_components/ta
 import { AssetFormDate } from '@/components/blocks/asset-form/inputs/asset-form-date';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
-import {} from '@/components/ui/card';
-import {} from '@/components/ui/form';
-import {} from '@/components/ui/popover';
-import { TokenType } from '@/types/token-types';
-import {} from '@radix-ui/react-select';
+import { assetConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { type CreateBondFormType, PaymentFrequency } from '../schema';
@@ -15,7 +11,7 @@ export function Configuration() {
   const { control } = useFormContext<CreateBondFormType>();
 
   const { data: stableCoins } = useSuspenseQuery({
-    queryKey: [TokenType.Stablecoin],
+    queryKey: assetConfig.stablecoin.queryKey,
     queryFn: () => getStableCoins(),
   });
 

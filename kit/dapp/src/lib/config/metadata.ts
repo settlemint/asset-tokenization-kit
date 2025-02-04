@@ -1,43 +1,6 @@
+import type { QueryKey } from '@tanstack/react-query';
 import type { Metadata } from 'next';
-
-/**
- * Interface defining the site's theme configuration
- */
-interface ThemeConfig {
-  /** The theme variant to use throughout the application */
-  variant: 'settlemint' | 'shadcn';
-  /** Whether dark mode is enabled by default */
-  defaultDarkMode: boolean;
-}
-
-/**
- * Interface defining the site's configuration
- */
-interface SiteConfig {
-  /** The name of the site */
-  name: string;
-  /** The description of the site */
-  description: string;
-  /** The base URL of the site */
-  url: string;
-}
-
-/**
- * The main site configuration
- */
-export const siteConfig = {
-  name: 'Asset Tokenization',
-  description: 'SettleMint Asset Tokenization Starter Kit',
-  url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-} as const satisfies SiteConfig;
-
-/**
- * The theme configuration
- */
-export const themeConfig = {
-  variant: 'settlemint',
-  defaultDarkMode: false,
-} as const satisfies ThemeConfig;
+import { siteConfig } from './site';
 
 /**
  * Next.js metadata configuration for SEO and site presentation
@@ -64,7 +27,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: siteConfig.name,
     description: siteConfig.description,
-    creator: '@SettleMint',
+    creator: '@SettleMintCom',
   },
   icons: {
     icon: '/favicon.ico',
@@ -75,3 +38,12 @@ export const metadata = {
     'darkreader-lock': '',
   },
 } as const satisfies Metadata;
+
+export interface AssetDetailConfig {
+  name: string;
+  pluralName: string;
+  description: string;
+  factoryAddress: string;
+  queryKey: QueryKey;
+  urlSegment: string;
+}

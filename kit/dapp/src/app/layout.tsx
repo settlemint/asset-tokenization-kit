@@ -1,14 +1,15 @@
 import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
+import { themeConfig } from '@/lib/config/theme';
 import { fontSans } from '@/lib/fonts';
-import { themeConfig } from '@/lib/site-config';
 import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import './globals.css';
-export { metadata } from '@/lib/site-config';
+
+export { metadata } from '../lib/config/metadata';
 
 export const viewport: Viewport = {
   width: 'device-width',

@@ -7,10 +7,11 @@ import {
 } from '@/components/blocks/asset-table/asset-table-columns';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { createColumnHelper } from '@tanstack/react-table';
 import { PauseCircle, PlayCircle } from 'lucide-react';
 import type { EquityAsset } from './data';
+
 const columnHelper = createColumnHelper<EquityAsset>();
 
 export const columns = [
@@ -26,7 +27,7 @@ export const columns = [
     cell: ({ row }) => <DataTableColumnCell>{row.getValue('equityClass')}</DataTableColumnCell>,
   }),
   createPausedColumn(columnHelper),
-  createActionsColumn(columnHelper, TokenType.Equity),
+  createActionsColumn(columnHelper, assetConfig.equity),
 ];
 
 export const icons = {

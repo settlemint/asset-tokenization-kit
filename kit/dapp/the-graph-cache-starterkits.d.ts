@@ -39,7 +39,7 @@ declare module 'gql.tada' {
     "\n  query EquityBalances($id: ID!) {\n    equity(id: $id) {\n      ...EquityBalancesFields\n    }\n  }\n":
       TadaDocumentNode<{ equity: { balances: { id: string; value: string; }[]; } | null; }, { id: string; }, void>;
     "\n  query AddressBalances($account: String!) {\n    balances(where: {account: $account}) {\n      value\n      asset {\n        name\n        symbol\n      }\n    }\n  }\n":
-      TadaDocumentNode<{ balances: { value: string; asset: { __typename?: "Bond" | undefined; name: string; symbol: string; } | { __typename?: "CryptoCurrency" | undefined; name: string; symbol: string; } | { __typename?: "Equity" | undefined; name: string; symbol: string; } | { __typename?: "Fund" | undefined; name: string; symbol: string; } | { __typename?: "StableCoin" | undefined; name: string; symbol: string; }; }[]; }, { account: string; }, void>;
+      TadaDocumentNode<{ balances: { value: string; asset: { __typename?: "StableCoin" | undefined; name: string; symbol: string; } | { __typename?: "Bond" | undefined; name: string; symbol: string; } | { __typename?: "Equity" | undefined; name: string; symbol: string; } | { __typename?: "CryptoCurrency" | undefined; name: string; symbol: string; } | { __typename?: "Fund" | undefined; name: string; symbol: string; }; }[]; }, { account: string; }, void>;
     "\n  fragment EquityFields on Equity {\n    id\n    name\n    symbol\n    decimals\n    totalSupply\n    equityCategory\n    equityClass\n    paused\n  }\n":
       TadaDocumentNode<{ id: string; name: string; symbol: string; decimals: number; totalSupply: string; equityCategory: string; equityClass: string; paused: boolean; }, {}, { fragment: "EquityFields"; on: "Equity"; masked: false; }>;
     "\n  query Equities {\n    equities {\n      ...EquityFields\n    }\n  }\n":
@@ -69,6 +69,6 @@ declare module 'gql.tada' {
     "\n  query StableCoins {\n    stableCoins {\n      ...StableCoinFields\n    }\n  }\n":
       TadaDocumentNode<{ stableCoins: { id: string; name: string; symbol: string; decimals: number; totalSupply: string; collateral: string; paused: boolean; }[]; }, {}, void>;
     "\n  query SearchAssets {\n    assets {\n      id\n      name\n      symbol\n    }\n  }\n":
-      TadaDocumentNode<{ assets: ({ __typename?: "Bond" | undefined; id: string; name: string; symbol: string; } | { __typename?: "CryptoCurrency" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Equity" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Fund" | undefined; id: string; name: string; symbol: string; } | { __typename?: "StableCoin" | undefined; id: string; name: string; symbol: string; })[]; }, {}, void>;
+      TadaDocumentNode<{ assets: ({ __typename?: "StableCoin" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Bond" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Equity" | undefined; id: string; name: string; symbol: string; } | { __typename?: "CryptoCurrency" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Fund" | undefined; id: string; name: string; symbol: string; })[]; }, {}, void>;
   }
 }

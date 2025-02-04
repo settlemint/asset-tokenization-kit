@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCryptoCurrencyFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -17,7 +17,7 @@ export function CreateCryptocurrencyForm({
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onClose}
-      invalidate={[[TokenType.Cryptocurrency], ['transactions']]}
+      invalidate={[assetConfig.cryptocurrency.queryKey, ['transactions']]}
     >
       <Basics />
       <Configuration />
