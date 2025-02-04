@@ -21,13 +21,13 @@ const BurnStableCoin = portalGraphql(`
 export const burnStablecoin = actionClient
   .schema(BurnStablecoinFormSchema)
   .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode } }) => {
+  .action(async ({ parsedInput: { address, amount, from, pincode } }) => {
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
     const data = await portalClient.request(BurnStableCoin, {
       address: address,
-      from: user.wallet as string,
+      from: from ?? (user.wallet as string),
       amount: amount.toString(),
       challengeResponse: pincode,
       metadata: {
