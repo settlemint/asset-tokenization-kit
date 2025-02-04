@@ -6,11 +6,11 @@ import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { BurnStablecoinFormSchema, BurnStablecoinOutputSchema } from './schema';
 
 const BurnStableCoin = portalGraphql(`
-  mutation BurnStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!) {
+  mutation BurnStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
     StableCoinBurn(
     address: $address
       from: $from
-      input: {value: $value}
+      input: {value: $amount}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -28,7 +28,7 @@ export const burnStablecoin = actionClient
     const data = await portalClient.request(BurnStableCoin, {
       address: address,
       from: user.wallet as string,
-      value: amount.toString(),
+      amount: amount.toString(),
       challengeResponse: pincode,
       metadata: {
         organization: organizationId,
