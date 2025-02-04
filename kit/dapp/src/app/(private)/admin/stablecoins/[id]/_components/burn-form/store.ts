@@ -1,15 +1,18 @@
 'use server';
 
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
-import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { BurnStablecoinFormSchema, BurnStablecoinOutputSchema } from './schema';
 
-// TODO: this does not work
 const BurnStableCoin = portalGraphql(`
-  mutation BurnStableCoin($address: String!, $from: String!, $input: StableCoinBurnInput!) {
-    StableCoinBurn(address: $address, from: $from, input: $input) {
+  mutation BurnStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!) {
+    StableCoinBurn(
+    address: $address
+      from: $from
+      input: {value: $value}
+      challengeResponse: $challengeResponse
+    ) {
       transactionHash
     }
   }
@@ -18,20 +21,17 @@ const BurnStableCoin = portalGraphql(`
 export const burnStablecoin = actionClient
   .schema(BurnStablecoinFormSchema)
   .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, from, amount, pincode } }) => {
+  .action(async ({ parsedInput: { address, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
     const data = await portalClient.request(BurnStableCoin, {
-      address: STABLE_COIN_FACTORY_ADDRESS,
+      address: address,
       from: user.wallet as string,
-      input: {
-        value: address,
-        amount: amount.toString(),
-        pincode,
-        metadata: {
-          organization: organizationId,
-        },
+      value: amount.toString(),
+      challengeResponse: pincode,
+      metadata: {
+        organization: organizationId,
       },
     });
 
