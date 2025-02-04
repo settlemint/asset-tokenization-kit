@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { type HTMLAttributes, forwardRef, useEffect, useMemo, useState } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
-import { type Address, createPublicClient, http, isAddress } from 'viem';
+import { type Address, createPublicClient, getAddress, http, isAddress } from 'viem';
 import { mainnet } from 'viem/chains';
 
 /**
@@ -70,7 +70,7 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }, [address]);
 
     const { data: avatar } = useSuspenseQuery({
-      queryKey: ['avatar', email, validAddress],
+      queryKey: [`avatar-${imageUrl ?? ''}-${address ?? ''}-${email ?? ''}-${validAddress ?? ''}`],
       queryFn: async () => {
         try {
           if (imageUrl) {
@@ -87,7 +87,7 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             }
           }
 
-          const avatarUrl = getGravatarUrl(email ?? address ?? '', {
+          const avatarUrl = getGravatarUrl(email ?? getAddress(address ?? '') ?? '', {
             default: 'identicon',
             size: 400,
           });

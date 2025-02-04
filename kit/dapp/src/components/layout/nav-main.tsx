@@ -9,7 +9,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
+import type { assetConfig } from '@/lib/config/assets';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,11 +19,12 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 export type NavItem = {
+  assetType?: keyof typeof assetConfig;
   label: string;
   path: string;
   icon?: ReactNode;
   badge?: string;
-  subItems?: { label: string; path: string }[];
+  subItems?: NavItem[];
 };
 
 export type NavGroup = {
@@ -39,15 +42,16 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   const Icon = item.icon ?? undefined;
   const [isOpen, setIsOpen] = useState(false);
   const isActiveFn = item.isActive ?? (() => false);
+  const { state } = useSidebar();
 
   // Regular menu item without subitems
-  if (!item.subItems?.length) {
+  if (!item.subItems?.length || state !== 'expanded') {
     return (
       <SidebarMenuItem>
-        <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'bg-accent' : undefined}>
+        <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'font-bold' : undefined}>
           <Link href={item.path}>
             {Icon ?? null}
-            <span>{item.label}</span>
+            <span className="truncate">{item.label}</span>
             {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
           </Link>
         </SidebarMenuButton>
@@ -62,11 +66,11 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
     <Collapsible asChild className="group/collapsible" open={isOpen || isGroupActive} onOpenChange={setIsOpen}>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton className={isGroupActive ? 'bg-accent' : undefined}>
+          <SidebarMenuButton className={isGroupActive ? 'font-bold' : undefined}>
             <div>{Icon ?? null}</div>
             <div className="flex w-full items-center justify-between">
-              <div>{item.label}</div>
-              <div className="flex items-center gap-2">
+              <div className="truncate">{item.label}</div>
+              <div className="flex shrink-0 items-center gap-2">
                 {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
                 <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </div>
@@ -75,13 +79,20 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.subItems.map((subItem) => (
-              <SidebarMenuSubItem key={subItem.label}>
-                <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'bg-accent' : undefined}>
-                  <Link href={subItem.path}>{subItem.label}</Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
+            {item.subItems.map((subItem) => {
+              const SubIcon = subItem.icon ?? undefined;
+
+              return (
+                <SidebarMenuSubItem key={subItem.label}>
+                  <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'font-bold' : undefined}>
+                    <Link href={subItem.path} className="flex min-w-0 truncate">
+                      {SubIcon ?? null}
+                      <span className="truncate">{subItem.label}</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
           </SidebarMenuSub>
         </CollapsibleContent>
       </SidebarMenuItem>
@@ -129,11 +140,11 @@ export function NavMain({ items }: { items: NavElement[] }) {
       .map((path) => (path.endsWith('/') ? path.slice(0, -1) : path))
       .filter((path) => {
         // Exact match for root path
-        if (path === '' && normalizedPathname === '') {
+        if (path === '/admin' && normalizedPathname === '/admin') {
           return true;
         }
         // For other paths, check if it's an exact match or if it's a direct parent
-        if (path === '') {
+        if (path === '/admin') {
           return false;
         } // Skip empty paths
         if (path === normalizedPathname) {
