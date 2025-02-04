@@ -79,6 +79,7 @@ export function AssetForm<
         onClose?.();
       },
       onError: (data) => {
+        console.log('ONERROR', data);
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           if (data.error.serverError instanceof Error) {
