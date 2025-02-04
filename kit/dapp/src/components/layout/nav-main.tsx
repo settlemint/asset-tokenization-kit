@@ -10,6 +10,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import type { assetConfig } from '@/lib/config/assets';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,6 +18,7 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 export type NavItem = {
+  assetType?: keyof typeof assetConfig;
   label: string;
   path: string;
   icon?: ReactNode;
@@ -44,10 +46,10 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   if (!item.subItems?.length) {
     return (
       <SidebarMenuItem>
-        <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'bg-accent' : undefined}>
+        <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'font-bold' : undefined}>
           <Link href={item.path}>
             {Icon ?? null}
-            <span>{item.label}</span>
+            <span className="truncate">{item.label}</span>
             {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
           </Link>
         </SidebarMenuButton>
@@ -62,11 +64,11 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
     <Collapsible asChild className="group/collapsible" open={isOpen || isGroupActive} onOpenChange={setIsOpen}>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton className={isGroupActive ? 'bg-accent' : undefined}>
+          <SidebarMenuButton className={isGroupActive ? 'font-bold' : undefined}>
             <div>{Icon ?? null}</div>
             <div className="flex w-full items-center justify-between">
-              <div>{item.label}</div>
-              <div className="flex items-center gap-2">
+              <div className="truncate">{item.label}</div>
+              <div className="flex shrink-0 items-center gap-2">
                 {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
                 <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </div>
@@ -77,8 +79,10 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
           <SidebarMenuSub>
             {item.subItems.map((subItem) => (
               <SidebarMenuSubItem key={subItem.label}>
-                <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'bg-accent' : undefined}>
-                  <Link href={subItem.path}>{subItem.label}</Link>
+                <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'font-bold' : undefined}>
+                  <Link href={subItem.path} className="flex min-w-0 truncate">
+                    <span className="truncate">{subItem.label}</span>
+                  </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
