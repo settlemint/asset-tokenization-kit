@@ -1,4 +1,4 @@
-import { adminClient, inferAdditionalFields, organizationClient, passkeyClient } from 'better-auth/client/plugins';
+import { adminClient, inferAdditionalFields, passkeyClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import type { auth } from './auth';
 
@@ -24,5 +24,5 @@ const getBaseURL = (): string => {
  */
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
-  plugins: [inferAdditionalFields<typeof auth>(), adminClient(), passkeyClient(), organizationClient()],
+  plugins: [inferAdditionalFields<typeof auth>(), adminClient(), passkeyClient()],
 });

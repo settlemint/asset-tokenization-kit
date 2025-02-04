@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { authClient } from '@/lib/auth/client';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { slugify } from '@/lib/slugify';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
@@ -75,33 +74,26 @@ export function SignUpForm({
       },
       {
         onSuccess: async () => {
-          authClient.getSession().then((session) => {
+          try {
+            const session = await authClient.getSession();
             if (!session.data?.user.wallet) {
-              throw new Error('No wallet address found');
-            }
-            portalClient
-              .request(SetPinCode, {
-                name: data.name,
-                address: session.data.user.wallet,
-                pincode: data.walletPincode,
-              })
-              .then(() => {
-                const defaultOrganizationName = 'SettleMint';
-                authClient.organization
-                  .create({
-                    name: defaultOrganizationName,
-                    slug: slugify(defaultOrganizationName, { unique: true }),
-                  })
-                  .then((org) => {
-                    return authClient.organization.setActive({
-                      organizationId: org.data?.id,
-                    });
-                  })
-                  .then(() => {
-                    router.push(decodedRedirectUrl);
-                  });
+              form.setError('root', {
+                message: 'No wallet address found',
               });
-          });
+              return;
+            }
+            await portalClient.request(SetPinCode, {
+              name: data.name,
+              address: session.data.user.wallet,
+              pincode: data.walletPincode,
+            });
+            router.push(decodedRedirectUrl);
+          } catch (err) {
+            const error = err as Error;
+            form.setError('root', {
+              message: `Unexpected error: ${error.message}`,
+            });
+          }
         },
         onError: (ctx) => {
           form.setError('root', {

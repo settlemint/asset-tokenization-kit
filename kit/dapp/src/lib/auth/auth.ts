@@ -1,21 +1,16 @@
 import * as authSchema from '@/lib/db/schema-auth';
 import { metadata } from '@/lib/site-config';
-import { slugify } from '@/lib/slugify';
 import { betterAuth } from 'better-auth';
 import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, openAPI, organization } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
-import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { db } from '../db';
 import { validateEnvironmentVariables } from './config';
 import { createUserWallet } from './portal';
-
-const DEFAULT_USER_ORGANIZATION_NAME = 'Users';
-// const DEFAULT_ADMIN_ORGANIZATION_NAME = 'Admins';
 
 /**
  * Custom error class for authentication-related errors
@@ -89,59 +84,18 @@ export const auth = betterAuth({
                 message: 'Failed to create wallet',
               });
             }
-            const defaultOrganization = await db.query.organization.findFirst({
-              where: eq(authSchema.organization.name, DEFAULT_USER_ORGANIZATION_NAME),
-            });
+
             const firstUser = await db.query.user.findFirst();
             return {
               data: {
                 ...user,
                 wallet: wallet.createWallet.address,
-                role: firstUser && defaultOrganization ? 'user' : 'admin',
+                role: firstUser ? 'user' : 'admin',
               },
             };
           } catch (error) {
             throw new APIError('BAD_REQUEST', {
               message: 'Failed to create user wallet',
-              cause: error instanceof Error ? error : undefined,
-            });
-          }
-        },
-        after: async (user) => {
-          try {
-            const defaultOrganization = await db.query.organization.findFirst({
-              where: eq(authSchema.organization.name, DEFAULT_USER_ORGANIZATION_NAME),
-            });
-            let defaultOrganizationId = defaultOrganization?.id;
-            const authHeaders = await headers();
-            if (!defaultOrganization) {
-              const newOrg = await auth.api.createOrganization({
-                headers: authHeaders,
-                body: {
-                  name: DEFAULT_USER_ORGANIZATION_NAME,
-                  slug: slugify(DEFAULT_USER_ORGANIZATION_NAME, { unique: true }),
-                },
-              });
-              defaultOrganizationId = newOrg?.id;
-            }
-            await auth.api.addMember({
-              body: {
-                userId: user.id,
-                organizationId: defaultOrganizationId,
-                role: 'member',
-              },
-              headers: authHeaders,
-            });
-
-            await auth.api.setActiveOrganization({
-              body: {
-                organizationId: defaultOrganizationId,
-              },
-              headers: authHeaders,
-            });
-          } catch (error) {
-            throw new APIError('BAD_REQUEST', {
-              message: 'Failed to add user to the default organization',
               cause: error instanceof Error ? error : undefined,
             });
           }
@@ -155,19 +109,7 @@ export const auth = betterAuth({
       maxAge: 5 * 60,
     },
   },
-  plugins: [
-    nextCookies(),
-    admin(),
-    organization({
-      allowUserToCreateOrganization: async (user) => {
-        const userFromDb = await db.query.user.findFirst({ where: eq(authSchema.user.id, user.id) });
-        return userFromDb?.role === 'admin';
-      },
-    }),
-    passkey(),
-    openAPI(),
-    emailHarmony(),
-  ],
+  plugins: [nextCookies(), admin(), passkey(), openAPI(), emailHarmony()],
 });
 
 /**
@@ -199,19 +141,4 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser> {
   }
 
   return session.user as AuthenticatedUser;
-}
-
-/**
- * Get the active organization ID for the current user
- * @returns {Promise<string>} The active organization ID
- * @throws {AuthError} If no active organization is found
- */
-export async function getActiveOrganizationId(): Promise<string> {
-  const session = await getSession();
-
-  if (!session?.session?.activeOrganizationId) {
-    throw new AuthError('User does not have an active organization', 'NO_ACTIVE_ORGANIZATION');
-  }
-
-  return session.session.activeOrganizationId;
 }
