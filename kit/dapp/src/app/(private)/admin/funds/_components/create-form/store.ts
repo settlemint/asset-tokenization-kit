@@ -1,6 +1,6 @@
 'use server';
 
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { FUND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -61,7 +61,6 @@ export const createFund = actionClient
       },
     }) => {
       const user = await getAuthenticatedUser();
-      const organizationId = await getActiveOrganizationId();
 
       const predictedAddress = await portalClient.request(CreateFundPredictAddress, {
         address: FUND_FACTORY_ADDRESS,
@@ -83,7 +82,6 @@ export const createFund = actionClient
 
       await db.insert(asset).values({
         id: address,
-        organizationId,
         private: isPrivate,
       });
 

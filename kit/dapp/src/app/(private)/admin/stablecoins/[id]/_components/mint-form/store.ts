@@ -1,6 +1,6 @@
 'use server';
 
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { MintStablecoinFormSchema, MintStablecoinOutputSchema } from './schema';
@@ -23,7 +23,6 @@ export const mintStablecoin = actionClient
   .outputSchema(MintStablecoinOutputSchema)
   .action(async ({ parsedInput: { address, to, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
-    const organizationId = await getActiveOrganizationId();
 
     const data = await portalClient.request(MintStableCoin, {
       address: address,
@@ -31,9 +30,6 @@ export const mintStablecoin = actionClient
       to: to,
       amount: amount.toString(),
       challengeResponse: pincode,
-      metadata: {
-        organization: organizationId,
-      },
     });
 
     const transactionHash = data.StableCoinMint?.transactionHash;

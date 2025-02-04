@@ -1,6 +1,6 @@
 'use server';
 
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -46,7 +46,6 @@ export const createCryptocurrency = actionClient
   .outputSchema(CreateCryptoCurrencyOutputSchema)
   .action(async ({ parsedInput: { assetName, symbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
     const user = await getAuthenticatedUser();
-    const organizationId = await getActiveOrganizationId();
 
     const predictedAddress = await portalClient.request(CreateCryptocurrencyPredictAddress, {
       address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
@@ -65,7 +64,6 @@ export const createCryptocurrency = actionClient
 
     await db.insert(asset).values({
       id: address,
-      organizationId,
       private: isPrivate,
     });
 

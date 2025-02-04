@@ -16,12 +16,12 @@ import { createUserWallet } from './portal';
  * Custom error class for authentication-related errors
  */
 export class AuthError extends Error {
-  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED' | 'NO_ACTIVE_ORGANIZATION';
+  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED';
   readonly context?: Record<string, unknown>;
 
   constructor(
     message: string,
-    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED' | 'NO_ACTIVE_ORGANIZATION',
+    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED',
     context?: Record<string, unknown>
   ) {
     super(message);
@@ -29,17 +29,6 @@ export class AuthError extends Error {
     this.code = code;
     this.context = context;
   }
-}
-
-/**
- * Type for the authenticated user
- */
-export interface AuthenticatedUser {
-  id: string;
-  email: string;
-  wallet: string;
-  role: 'admin' | 'user';
-  organizationId?: string;
 }
 
 // Validate environment variables at startup
@@ -133,12 +122,12 @@ async function getSession() {
  * @returns {Promise<AuthenticatedUser>} The authenticated user
  * @throws {AuthError} If user is not authenticated
  */
-export async function getAuthenticatedUser(): Promise<AuthenticatedUser> {
+export async function getAuthenticatedUser() {
   const session = await getSession();
 
   if (!session?.user) {
     throw new AuthError('User not authenticated', 'USER_NOT_AUTHENTICATED');
   }
 
-  return session.user as AuthenticatedUser;
+  return session.user;
 }

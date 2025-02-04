@@ -49,7 +49,6 @@ export async function getStableCoins() {
         ? dbStableCoin
         : {
             private: false,
-            organizationId: '',
           }),
     };
   });

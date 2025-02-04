@@ -23,17 +23,11 @@ const UserFragment = hasuraGraphql(`
   }
 `);
 
-const UsersForOrganizationQuery = hasuraGraphql(
+const UsersQuery = hasuraGraphql(
   `
-  query UsersForOrganizationQuery($organizationId: String!) {
-    organization(where: { id: { _eq: $organizationId } }) {
-      id
-      name
-      members {
-        user {
-          ...UserFields
-        }
-      }
+  query UsersQuery {
+    user {
+      ...UserFields
     }
   }
   `,
@@ -44,7 +38,7 @@ const UserQuery = hasuraGraphql(
   `
   query User($userId: String!) {
     user(where: { id: {_eq: $userId } }) {
-        ...UserFields
+      ...UserFields
     }
   }
   `,
@@ -53,14 +47,12 @@ const UserQuery = hasuraGraphql(
 
 export type User = FragmentOf<typeof UserFragment>;
 
-export async function getUsers(organizationId: string) {
+// biome-ignore lint/suspicious/useAwait: needed for cache
+export async function getUsers(): Promise<User[]> {
   return unstable_cache(
     async () => {
-      const { organization } = await hasuraClient.request(UsersForOrganizationQuery, { organizationId });
-      if (!organization || organization.length === 0) {
-        throw new Error(`Organization with id ${organizationId} not found`);
-      }
-      return organization[0].members.map((member) => member.user);
+      const { user } = await hasuraClient.request(UsersQuery);
+      return user;
     },
     [USERS_QUERY_KEY],
     {
@@ -70,7 +62,7 @@ export async function getUsers(organizationId: string) {
   )();
 }
 
-export async function getUser(id: string) {
+export async function getUser(id: string): Promise<User> {
   return unstable_cache(
     async () => {
       const result = await hasuraClient.request(UserQuery, { userId: id });

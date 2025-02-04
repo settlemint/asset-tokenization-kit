@@ -54,7 +54,6 @@ export async function getBonds() {
         ? dbBond
         : {
             private: false,
-            organizationId: '',
           }),
     };
   });
