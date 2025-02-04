@@ -1,3 +1,5 @@
+'use client';
+
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';

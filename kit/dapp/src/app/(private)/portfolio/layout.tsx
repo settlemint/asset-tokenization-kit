@@ -1,7 +1,17 @@
 import Header from '@/components/layout/header';
-import type { NavElement } from '@/components/layout/nav-main';
-import { PrivateSidebar } from '@/components/layout/private-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { NavFooter } from '@/components/layout/nav-footer';
+import { NavHeader } from '@/components/layout/nav-header';
+import { type NavElement, NavMain } from '@/components/layout/nav-main';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+} from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { ArrowLeftRight, LayoutDashboard, Users } from 'lucide-react';
 import { headers } from 'next/headers';
@@ -33,7 +43,23 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider>
-      <PrivateSidebar role={role} mode="portfolio" items={sidebarData} />
+      <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
+        <SidebarHeader>
+          <NavHeader />
+        </SidebarHeader>
+        <SidebarContent className="pt-4">
+          <NavMain items={sidebarData} />
+        </SidebarContent>
+        {['admin', 'issuer'].includes(role) && (
+          <>
+            <SidebarSeparator />
+            <SidebarFooter>
+              <NavFooter mode="portfolio" />
+            </SidebarFooter>
+          </>
+        )}
+        <SidebarRail />
+      </Sidebar>
       <SidebarInset>
         <Header />
         {children}
