@@ -14,7 +14,7 @@ export function CreateFundForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={[TokenType.Fund]}
+      invalidate={[[TokenType.Fund], ['transactions']]}
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onClose}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { type QueryKey, useQueryClient } from '@tanstack/react-query';
 
 /**
  * Utility function to invalidate both Next.js cache tags and React Query tags
@@ -10,10 +10,12 @@ import { useQueryClient } from '@tanstack/react-query';
 export function useInvalidateTags() {
   const queryClient = useQueryClient();
 
-  return async (tags: readonly string[]) => {
-    await queryClient.invalidateQueries({
-      queryKey: tags,
-      refetchType: 'active',
-    });
+  return (tags: QueryKey[]) => {
+    for (const tag of tags) {
+      queryClient.invalidateQueries({
+        queryKey: tag,
+        refetchType: 'active',
+      });
+    }
   };
 }

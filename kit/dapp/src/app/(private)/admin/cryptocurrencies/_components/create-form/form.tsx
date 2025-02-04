@@ -17,7 +17,7 @@ export function CreateCryptocurrencyForm({
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onClose}
-      revalidateTags={[TokenType.Cryptocurrency]}
+      invalidate={[[TokenType.Cryptocurrency], ['transactions']]}
     >
       <Basics />
       <Configuration />

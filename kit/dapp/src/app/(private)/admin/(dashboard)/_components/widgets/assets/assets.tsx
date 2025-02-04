@@ -7,10 +7,17 @@ import { AssetsWidgetClient } from './assets-client';
 
 export async function AssetsWidget() {
   const queryClient = getQueryClient();
-  const queryKey = [TokenType.Stablecoin, TokenType.Bond, TokenType.Equity, TokenType.Cryptocurrency, TokenType.Fund];
+  const queryKey = [
+    'AssetsWidget',
+    TokenType.Stablecoin,
+    TokenType.Bond,
+    TokenType.Equity,
+    TokenType.Cryptocurrency,
+    TokenType.Fund,
+  ];
 
   await queryClient.prefetchQuery({
-    queryKey: queryKey,
+    queryKey,
     queryFn: getAssetsWidgetData,
   });
 

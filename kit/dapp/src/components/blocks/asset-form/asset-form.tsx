@@ -6,6 +6,7 @@ import { Form } from '@/components/ui/form';
 import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import type { QueryKey } from '@tanstack/react-query';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ComponentType, ReactElement } from 'react';
@@ -26,7 +27,7 @@ export type AssetFormProps<
   children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  revalidateTags: string[];
+  invalidate: QueryKey[];
   onClose?: () => void;
   submitLabel?: string;
 };
@@ -43,7 +44,7 @@ export function AssetForm<
   storeAction,
   resolverAction,
   onClose,
-  revalidateTags: tagsToRevalidate,
+  invalidate,
   submitLabel,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
@@ -67,8 +68,8 @@ export function AssetForm<
         }
         toast.promise(waitForTransactionMining(data), {
           loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
-          success: async () => {
-            await invalidateTags(tagsToRevalidate);
+          success: () => {
+            invalidateTags(invalidate);
             return `${input.assetName} (${input.symbol}) created successfully on chain`;
           },
           error: (error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,

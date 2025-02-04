@@ -14,7 +14,7 @@ export function CreateEquityForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={[TokenType.Equity]}
+      invalidate={[[TokenType.Equity], ['transactions']]}
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onClose}

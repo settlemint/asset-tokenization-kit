@@ -16,7 +16,7 @@ export function CreateBondForm({
       storeAction={createBond}
       resolverAction={zodResolver(CreateBondFormSchema)}
       onClose={onClose}
-      revalidateTags={[TokenType.Bond]}
+      invalidate={[[TokenType.Bond], ['transactions']]}
     >
       <Basics />
       <Configuration />

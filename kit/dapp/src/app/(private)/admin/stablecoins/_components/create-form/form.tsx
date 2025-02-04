@@ -14,7 +14,7 @@ export function CreateStablecoinForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={[TokenType.Stablecoin]}
+      invalidate={[[TokenType.Stablecoin], ['transactions']]}
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}
