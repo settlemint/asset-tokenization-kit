@@ -1,12 +1,13 @@
-import {} from '@/components/ui/card';
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import type { Address } from 'viem';
 import type { MintStablecoinFormType } from '../schema';
 
-export function Summary() {
+export function Summary({ address }: { address: Address }) {
   const { control } = useFormContext<MintStablecoinFormType>();
   const values = useWatch({
     control: control,
@@ -54,6 +55,8 @@ export function Summary() {
               <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
             </div>
           </div>
+
+          <AssetFormInput control={control} name="address" label="Address" type="hidden" defaultValue={address} />
 
           <FormField
             control={control}

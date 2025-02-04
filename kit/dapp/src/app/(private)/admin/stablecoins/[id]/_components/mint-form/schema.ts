@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const MintStablecoinFormSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
+  to: z.string().min(1, { message: 'Recipient is required' }),
   amount: z.number().min(1, { message: 'Amount is required' }),
   pincode: z
     .string()

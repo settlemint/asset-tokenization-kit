@@ -1,5 +1,5 @@
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
-import type { TokenTypeValue } from '@/types/token-types';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
 import type { ComponentType } from 'react';
@@ -13,8 +13,7 @@ import { AssetTableSkeleton } from './asset-table-skeleton';
  * @template Asset The type of asset data being displayed
  */
 export interface AssetTableProps<Asset extends Record<string, unknown>> {
-  /** The type of token being displayed */
-  type: TokenTypeValue;
+  assetConfig: AssetDetailConfig;
   /** Function to fetch the asset data */
   dataAction: () => Promise<Asset[]>;
   /** Optional interval for refetching data in milliseconds */
@@ -31,7 +30,7 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
  */
 export async function AssetTable<Asset extends Record<string, unknown>>({
   dataAction,
-  type,
+  assetConfig,
   refetchInterval,
   icons,
   columns,
@@ -40,7 +39,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: [type],
+      queryKey: assetConfig.queryKey,
       queryFn: () => dataAction(),
     });
 
@@ -49,7 +48,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
         <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
           <AssetTableClient<Asset>
             refetchInterval={refetchInterval}
-            type={type}
+            assetConfig={assetConfig}
             dataAction={dataAction}
             icons={icons}
             columns={columns}

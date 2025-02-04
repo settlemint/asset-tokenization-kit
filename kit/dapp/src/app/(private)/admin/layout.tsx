@@ -1,6 +1,6 @@
-import { AssetIcon } from '@/components/icons/assets';
 import type { NavElement } from '@/components/layout/nav-main';
 import { PrivateSidebar } from '@/components/layout/private-sidebar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { AlertTriangle, ArrowRightLeft, LayoutDashboard, Settings, Users } from 'lucide-react';
@@ -32,27 +32,47 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
         {
           label: 'Crypto Currencies',
           path: '/admin/cryptocurrencies',
-          icon: <AssetIcon value="CC" />,
+          icon: (
+            <Avatar className="h-4 w-4 border border-foreground-muted">
+              <AvatarFallback className="text-[7px]">CC</AvatarFallback>
+            </Avatar>
+          ),
         },
         {
           label: 'Stable Coins',
           path: '/admin/stablecoins',
-          icon: <AssetIcon value="SC" />,
+          icon: (
+            <Avatar className="h-4 w-4 border border-foreground-muted">
+              <AvatarFallback className="text-[7px]">SC</AvatarFallback>
+            </Avatar>
+          ),
         },
         {
           label: 'Equities',
           path: '/admin/equities',
-          icon: <AssetIcon value="EQ" />,
+          icon: (
+            <Avatar className="h-4 w-4 border border-foreground-muted">
+              <AvatarFallback className="text-[7px]">EQ</AvatarFallback>
+            </Avatar>
+          ),
         },
         {
           label: 'Bonds',
           path: '/admin/bonds',
-          icon: <AssetIcon value="BN" />,
+          icon: (
+            <Avatar className="h-4 w-4 border border-foreground-muted">
+              <AvatarFallback className="text-[7px]">BN</AvatarFallback>
+            </Avatar>
+          ),
         },
         {
           label: 'Funds',
           path: '/admin/funds',
-          icon: <AssetIcon value="FN" />,
+          icon: (
+            <Avatar className="h-4 w-4 border border-foreground-muted">
+              <AvatarFallback className="text-[7px]">FN</AvatarFallback>
+            </Avatar>
+          ),
         },
       ],
     },

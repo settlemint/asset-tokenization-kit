@@ -2,27 +2,31 @@
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
-import { BurnStablecoinForm } from './burn-form/form';
+import type { Address } from 'viem';
+import { MintStablecoinForm } from './form';
 
-export function BurnTokensButton({ assetName = 'asset' }: { assetName: string | null }) {
+export function MintTokensButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          Burn tokens
+          Mint tokens
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
-          <SheetTitle>Burn {assetName}</SheetTitle>
+          <SheetTitle>
+            Mint {name} ({symbol})
+          </SheetTitle>
           <SheetDescription>
-            Easily burn your {assetName} tokens by selecting a recipient and specifying the amount.
+            Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <BurnStablecoinForm onClose={() => setOpen(false)} />
+        <MintStablecoinForm address={address} assetConfig={assetConfig.stablecoin} onClose={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   );

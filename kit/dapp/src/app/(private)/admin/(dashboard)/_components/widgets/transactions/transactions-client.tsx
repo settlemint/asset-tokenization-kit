@@ -13,9 +13,6 @@ export function TransactionsWidgetClient({ queryKey }: DashboardWidgetClientProp
     queryKey: queryKey,
     queryFn: getTransactionsWidgetData,
     refetchInterval: 1000 * 10,
-    refetchOnWindowFocus: true,
-    refetchIntervalInBackground: false,
-    networkMode: 'online',
   });
 
   return (

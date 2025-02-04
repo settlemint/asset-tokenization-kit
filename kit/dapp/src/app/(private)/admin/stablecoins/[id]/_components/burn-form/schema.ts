@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const BurnStablecoinFormSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
+  from: z.string().min(1, { message: 'Burner is required' }),
   amount: z.number().min(1, { message: 'Amount is required' }),
   pincode: z
     .string()

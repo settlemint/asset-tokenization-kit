@@ -1,5 +1,5 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { columns } from './_components/table/columns';
 import { getCryptocurrencies } from './_components/table/data';
 
@@ -10,7 +10,7 @@ export default function CryptoCurrenciesPage() {
         <h2 className="font-bold text-3xl tracking-tight">Cryptocurrencies</h2>
       </div>
       <AssetTable
-        type={TokenType.Cryptocurrency}
+        assetConfig={assetConfig.cryptocurrency}
         dataAction={getCryptocurrencies}
         columns={columns}
         refetchInterval={5000}

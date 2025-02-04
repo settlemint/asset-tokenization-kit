@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateStablecoinFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -14,7 +14,7 @@ export function CreateStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[[TokenType.Stablecoin], ['transactions']]}
+      invalidate={[assetConfig.stablecoin.queryKey, ['transactions']]}
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}

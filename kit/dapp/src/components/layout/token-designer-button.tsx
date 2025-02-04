@@ -14,41 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
-import type { TokenTypeKey } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 
-const TOKEN_CONFIGS = {
-  Stablecoin: {
-    label: 'Stable coin',
-    title: 'Design a new stable coin',
-    description: 'Digital assets pegged to a stable asset like USD',
-  },
-  Equity: {
-    label: 'Equity',
-    title: 'Design a new equity',
-    description: 'Digital assets representing ownership in a company',
-  },
-  Bond: {
-    label: 'Bond',
-    title: 'Design a new bond',
-    description: 'Digital assets representing a debt obligation',
-  },
-  Cryptocurrency: {
-    label: 'Cryptocurrency',
-    title: 'Design a new cryptocurrency',
-    description: 'Digital assets representing a fully decentralized currency',
-  },
-  Fund: {
-    label: 'Fund',
-    title: 'Design a new fund',
-    description: 'Digital assets representing a fund',
-  },
-} as const satisfies Record<TokenTypeKey, { label: string; title: string; description: string }>;
-
 export function TokenDesignerButton() {
   const { state, isMobile } = useSidebar();
-  const [tokenType, setTokenType] = useState<TokenTypeKey | null>(null);
+  const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(null);
 
   return (
     <SidebarGroup>
@@ -65,9 +37,9 @@ export function TokenDesignerButton() {
           side={isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          {Object.entries(TOKEN_CONFIGS).map(([type, config]) => (
-            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as TokenTypeKey)}>
-              {config.label}
+          {Object.entries(assetConfig).map(([type, config]) => (
+            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as keyof typeof assetConfig)}>
+              {config.name}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -78,20 +50,20 @@ export function TokenDesignerButton() {
           {tokenType && (
             <>
               <SheetHeader>
-                <SheetTitle>{TOKEN_CONFIGS[tokenType].title}</SheetTitle>
-                <SheetDescription>{TOKEN_CONFIGS[tokenType].description}</SheetDescription>
+                <SheetTitle>Design a {assetConfig[tokenType].name}</SheetTitle>
+                <SheetDescription>{assetConfig[tokenType].description}</SheetDescription>
               </SheetHeader>
               {(() => {
                 switch (tokenType) {
-                  case 'Cryptocurrency':
+                  case 'cryptocurrency':
                     return <CreateCryptocurrencyForm onClose={() => setTokenType(null)} />;
-                  case 'Stablecoin':
+                  case 'stablecoin':
                     return <CreateStablecoinForm onClose={() => setTokenType(null)} />;
-                  case 'Equity':
+                  case 'equity':
                     return <CreateEquityForm onClose={() => setTokenType(null)} />;
-                  case 'Bond':
+                  case 'bond':
                     return <CreateBondForm onClose={() => setTokenType(null)} />;
-                  case 'Fund':
+                  case 'fund':
                     return <CreateFundForm onClose={() => setTokenType(null)} />;
                   default:
                     return null;

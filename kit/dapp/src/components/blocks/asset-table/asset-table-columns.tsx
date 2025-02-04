@@ -5,7 +5,7 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import { TokenTypeRoutes, type TokenTypeValue } from '@/types/token-types';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import type { ColumnHelper } from '@tanstack/react-table';
 import { Lock, Pause, Play, Unlock } from 'lucide-react';
 import type { ComponentType, ReactElement } from 'react';
@@ -99,7 +99,7 @@ export function createPausedColumn<T extends BaseAsset>(columnHelper: ColumnHelp
 
 export function createActionsColumn<T extends BaseAsset>(
   columnHelper: ColumnHelper<T>,
-  type: TokenTypeValue,
+  assetConfig: AssetDetailConfig,
   rowActions?: (row: T) => ReactElement[]
 ) {
   return columnHelper.display({
@@ -107,7 +107,7 @@ export function createActionsColumn<T extends BaseAsset>(
     header: () => 'Action',
     cell: ({ row }) => {
       return (
-        <DataTableRowActions detailUrl={`/admin/${TokenTypeRoutes[type]}/${row.original.id}`}>
+        <DataTableRowActions detailUrl={`/admin/${assetConfig.urlSegment}/${row.original.id}`}>
           {rowActions?.(row.original)}
         </DataTableRowActions>
       );

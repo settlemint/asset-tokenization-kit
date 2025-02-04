@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateBondFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -16,7 +16,7 @@ export function CreateBondForm({
       storeAction={createBond}
       resolverAction={zodResolver(CreateBondFormSchema)}
       onClose={onClose}
-      invalidate={[[TokenType.Bond], ['transactions']]}
+      invalidate={[assetConfig.bond.queryKey, ['transactions']]}
     >
       <Basics />
       <Configuration />

@@ -8,7 +8,7 @@ import {
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { TokenType } from '@/types/token-types';
+import { assetConfig } from '@/lib/config/assets';
 import { createColumnHelper } from '@tanstack/react-table';
 import { PauseCircle, PlayCircle } from 'lucide-react';
 import type { BondAsset } from './data';
@@ -48,7 +48,7 @@ export const columns = [
     enableColumnFilter: false,
   }),
   createPausedColumn(columnHelper),
-  createActionsColumn(columnHelper, TokenType.Bond),
+  createActionsColumn(columnHelper, assetConfig.bond),
 ];
 
 export const icons = {

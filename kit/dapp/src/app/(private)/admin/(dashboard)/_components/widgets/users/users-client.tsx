@@ -13,9 +13,6 @@ export function UsersWidgetClient({ queryKey }: DashboardWidgetClientProps) {
     queryKey: queryKey,
     queryFn: getUserWidgetData,
     refetchInterval: 1000 * 10,
-    refetchOnWindowFocus: true,
-    refetchIntervalInBackground: false,
-    networkMode: 'online',
   });
 
   return (

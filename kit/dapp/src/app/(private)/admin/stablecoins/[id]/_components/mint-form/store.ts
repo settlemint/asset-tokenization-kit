@@ -1,15 +1,18 @@
 'use server';
 
 import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
-import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { MintStablecoinOutputSchema } from './schema';
-import { MintStablecoinFormSchema } from './schema';
+import { MintStablecoinFormSchema, MintStablecoinOutputSchema } from './schema';
 
 const MintStableCoin = portalGraphql(`
-  mutation MintStableCoin($address: String!, $from: String!, $input: StableCoinMintInput!) {
-    StableCoinMint(address: $address, from: $from, input: $input) {
+  mutation MintStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
+    StableCoinMint(
+      address: $address
+      from: $from
+      input: {amount: $amount, to: $to}
+      challengeResponse: $challengeResponse
+    ) {
       transactionHash
     }
   }
@@ -18,20 +21,18 @@ const MintStableCoin = portalGraphql(`
 export const mintStablecoin = actionClient
   .schema(MintStablecoinFormSchema)
   .outputSchema(MintStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode } }) => {
+  .action(async ({ parsedInput: { address, to, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
     const organizationId = await getActiveOrganizationId();
 
     const data = await portalClient.request(MintStableCoin, {
-      address: STABLE_COIN_FACTORY_ADDRESS,
+      address: address,
       from: user.wallet as string,
-      input: {
-        to: address,
-        amount: amount.toString(),
-        pincode,
-        metadata: {
-          organization: organizationId,
-        },
+      to: to,
+      amount: amount.toString(),
+      challengeResponse: pincode,
+      metadata: {
+        organization: organizationId,
       },
     });
 
