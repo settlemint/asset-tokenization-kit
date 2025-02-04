@@ -37,12 +37,7 @@ export function UserDetailsHeader({ data }: UserDetailsHeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="px-4">
-              {data.banned ? (
-                <DropdownMenuItem>Unblock user</DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem>Block user</DropdownMenuItem>
-              )}
-              <DropdownMenuItem>Freeze user tokens</DropdownMenuItem>
+              <DropdownMenuItem>Change User Role</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
