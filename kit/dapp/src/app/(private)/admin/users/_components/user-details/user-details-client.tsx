@@ -1,7 +1,7 @@
 'use client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import type { User } from '@/lib/auth/types';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import type { User } from '../data';
 import { UserDetailsGrid } from './user-details-grid';
 import { UserDetailsHeader } from './user-details-header';
 

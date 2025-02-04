@@ -61,6 +61,22 @@ export const columns = [
     ),
     enableColumnFilter: false,
   }),
+  columnHelper.accessor('wallet', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>
+        {getValue() && (
+          <div className="flex items-center">
+            <EvmAddress address={getValue()}>
+              <EvmAddressBalances address={getValue()} />
+            </EvmAddress>
+            <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
+          </div>
+        )}
+      </DataTableColumnCell>
+    ),
+    enableColumnFilter: false,
+  }),
   columnHelper.accessor('email', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>,
     cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
@@ -79,20 +95,9 @@ export const columns = [
       );
     },
   }),
-  columnHelper.accessor('wallet', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
-    cell: ({ getValue }) => (
-      <DataTableColumnCell>
-        {getValue() && (
-          <div className="flex items-center">
-            <EvmAddress address={getValue()}>
-              <EvmAddressBalances address={getValue()} />
-            </EvmAddress>
-            <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
-          </div>
-        )}
-      </DataTableColumnCell>
-    ),
+  columnHelper.accessor('kyc_verified', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>KYC Status</DataTableColumnHeader>,
+    cell: ({ getValue }) => <DataTableColumnCell>{getValue() ? 'Verified' : 'Not Verified'}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   columnHelper.display({

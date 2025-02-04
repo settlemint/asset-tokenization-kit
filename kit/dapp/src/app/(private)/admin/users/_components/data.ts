@@ -20,6 +20,7 @@ const UserFragment = hasuraGraphql(`
     created_at
     updated_at
     image
+    kyc_verified
   }
 `);
 
@@ -37,7 +38,7 @@ const UsersQuery = hasuraGraphql(
 const UserQuery = hasuraGraphql(
   `
   query User($userId: String!) {
-    user(where: { id: {_eq: $userId } }) {
+    user(where: { id: {_eq: $userId } }, order_by: { created_at: desc }) {
       ...UserFields
     }
   }

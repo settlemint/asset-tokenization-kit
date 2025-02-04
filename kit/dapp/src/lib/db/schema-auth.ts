@@ -14,6 +14,7 @@ export const user = pgTable('user', {
   banExpires: timestamp('ban_expires'),
   normalizedEmail: text('normalized_email').unique(),
   wallet: text('wallet').notNull().unique(),
+  kycVerifiedAt: timestamp('kyc_verified'),
 });
 
 export const session = pgTable('session', {

@@ -1,9 +1,9 @@
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyToClipboard } from '@/components/ui/copy';
-import type { User } from '@/lib/auth/types';
 import { shortHex } from '@/lib/hex';
 import { format } from 'date-fns';
+import type { User } from '../data';
 
 export function UserDetailsGrid({
   data,
@@ -30,35 +30,26 @@ export function UserDetailsGrid({
 
         <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Created At</span>
-          <div className="text-md">{format(data.createdAt, 'PPP HH:mm')}</div>
+          <div className="text-md">{format(data.created_at as string, 'PPP HH:mm')}</div>
         </div>
 
         <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Verified At</span>
-          <div className="text-md">{'Not Verified'}</div>
+          <div className="text-md">
+            {data.kyc_verified ? format(data.kyc_verified as string, 'PPP HH:mm') : 'Not Verified'}
+          </div>
         </div>
 
         <div className="space-y-1">
           <span className="font-medium text-muted-foreground text-sm">Wallet</span>
           <div className="flex items-center gap-2 text-md">
             <AddressAvatar address={data.wallet} variant="small" />
-            <CopyToClipboard value={data.wallet} displayText={shortHex(data.wallet, 12, 8) ?? ''} className="ml-2" />
+            <CopyToClipboard
+              value={data.wallet}
+              displayText={shortHex(data.wallet, { prefixLength: 12, suffixLength: 8 }) ?? ''}
+              className="ml-2"
+            />
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <span className="font-medium text-muted-foreground text-sm">Token Supply</span>
-          <div className="text-md">{'0'}</div>
-        </div>
-
-        <div className="space-y-1">
-          <span className="font-medium text-muted-foreground text-sm">Transactions</span>
-          <div className="text-md">{'0'}</div>
-        </div>
-
-        <div className="space-y-1">
-          <span className="font-medium text-muted-foreground text-sm">Last Activity</span>
-          <div className="text-md">{format(data.updatedAt, 'PPP HH:mm')}</div>
         </div>
       </CardContent>
     </Card>

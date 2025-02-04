@@ -7,8 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { User } from '@/lib/auth/types';
 import { ChevronDown } from 'lucide-react';
+import type { User } from '../data';
 
 interface UserDetailsHeaderProps {
   data: User;
