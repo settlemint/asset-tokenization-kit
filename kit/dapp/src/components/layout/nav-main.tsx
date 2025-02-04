@@ -9,6 +9,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import type { assetConfig } from '@/lib/config/assets';
 import { ChevronRight } from 'lucide-react';
@@ -41,9 +42,10 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   const Icon = item.icon ?? undefined;
   const [isOpen, setIsOpen] = useState(false);
   const isActiveFn = item.isActive ?? (() => false);
+  const { state } = useSidebar();
 
   // Regular menu item without subitems
-  if (!item.subItems?.length) {
+  if (!item.subItems?.length || state !== 'expanded') {
     return (
       <SidebarMenuItem>
         <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'font-bold' : undefined}>
