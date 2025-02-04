@@ -1,4 +1,5 @@
 'use client';
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
@@ -12,6 +13,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { getAddress } from 'viem';
 import { getSidebarAssets } from './data';
 import { bottomItems, tokenItems, topItems } from './items';
 
@@ -33,13 +35,15 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
 
     const assetsOfSection = data[section.assetType];
     const subItems = assetsOfSection.slice(0, 10).map<NavItem>((asset) => ({
-      label: `${asset.name} (${asset.symbol})`,
+      label: `${asset.id} ${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
+      icon: <AddressAvatar address={getAddress(asset.id)} variant="tiny" />,
     }));
-    if (assetsOfSection.length > 10) {
+    if (assetsOfSection.length > 0) {
       subItems.push({
-        label: 'More...',
+        label: `View all ${assetsOfSection.length} ${section.label}`,
         path: section.path,
+        icon: <span>→</span>,
       });
     }
 

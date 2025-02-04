@@ -23,7 +23,7 @@ export type NavItem = {
   path: string;
   icon?: ReactNode;
   badge?: string;
-  subItems?: { label: string; path: string }[];
+  subItems?: NavItem[];
 };
 
 export type NavGroup = {
@@ -77,15 +77,20 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.subItems.map((subItem) => (
-              <SidebarMenuSubItem key={subItem.label}>
-                <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'font-bold' : undefined}>
-                  <Link href={subItem.path} className="flex min-w-0 truncate">
-                    <span className="truncate">{subItem.label}</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
+            {item.subItems.map((subItem) => {
+              const SubIcon = subItem.icon ?? undefined;
+
+              return (
+                <SidebarMenuSubItem key={subItem.label}>
+                  <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'font-bold' : undefined}>
+                    <Link href={subItem.path} className="flex min-w-0 truncate">
+                      {SubIcon ?? null}
+                      <span className="truncate">{subItem.label}</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
           </SidebarMenuSub>
         </CollapsibleContent>
       </SidebarMenuItem>

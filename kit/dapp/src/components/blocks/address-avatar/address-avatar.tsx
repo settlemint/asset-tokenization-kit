@@ -70,7 +70,7 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     }, [address]);
 
     const { data: avatar } = useSuspenseQuery({
-      queryKey: ['avatar', email, validAddress],
+      queryKey: [`avatar-${imageUrl ?? ''}-${address ?? ''}-${email ?? ''}-${validAddress ?? ''}`],
       queryFn: async () => {
         try {
           if (imageUrl) {
@@ -98,6 +98,8 @@ export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         }
       },
     });
+
+    console.log(address, avatar);
 
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
