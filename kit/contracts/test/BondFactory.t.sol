@@ -2,11 +2,15 @@
 pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
-import { VmSafe } from "forge-std/Vm.sol";
+import { Vm } from "forge-std/Vm.sol";
 import { BondFactory } from "../contracts/BondFactory.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { Forwarder } from "../contracts/Forwarder.sol";
+import { ERC2771Forwarder } from "@openzeppelin/contracts/metatx/ERC2771Forwarder.sol";
+import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract BondFactoryTest is Test {
     BondFactory public factory;
@@ -19,8 +23,14 @@ contract BondFactoryTest is Test {
     string public constant VALID_ISIN = "US0378331005";
     uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
+    // Meta-transaction related
+    uint256 internal constant DEADLINE = 2 ** 256 - 1;
+    uint256 internal constant GAS_LIMIT = 500_000;
+    uint256 internal ownerPrivateKey;
+
     function setUp() public {
-        owner = address(this);
+        ownerPrivateKey = 0xA11CE;
+        owner = vm.addr(ownerPrivateKey);
         // Deploy forwarder first
         forwarder = new Forwarder();
         // Then deploy factory with forwarder address
@@ -160,7 +170,7 @@ contract BondFactoryTest is Test {
         address bondAddress =
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
-        VmSafe.Log[] memory entries = vm.getRecordedLogs();
+        Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
             4,
@@ -168,7 +178,7 @@ contract BondFactoryTest is Test {
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
-        VmSafe.Log memory firstEntry = entries[0];
+        Vm.Log memory firstEntry = entries[0];
         assertEq(
             firstEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
@@ -181,7 +191,7 @@ contract BondFactoryTest is Test {
         );
 
         // Second event should be RoleGranted for SUPPLY_MANAGEMENT_ROLE
-        VmSafe.Log memory secondEntry = entries[1];
+        Vm.Log memory secondEntry = entries[1];
         assertEq(
             secondEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
@@ -189,7 +199,7 @@ contract BondFactoryTest is Test {
         );
 
         // Third event should be RoleGranted for USER_MANAGEMENT_ROLE
-        VmSafe.Log memory thirdEntry = entries[2];
+        Vm.Log memory thirdEntry = entries[2];
         assertEq(
             thirdEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
@@ -197,7 +207,7 @@ contract BondFactoryTest is Test {
         );
 
         // Fourth event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[3];
+        Vm.Log memory lastEntry = entries[3];
         assertEq(lastEntry.topics[0], keccak256("BondCreated(address)"), "Wrong event signature for BondCreated");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
     }
@@ -212,20 +222,29 @@ contract BondFactoryTest is Test {
 
         // Try to mature before maturity date
         vm.expectRevert(Bond.BondNotYetMatured.selector);
-        vm.prank(owner);
+        vm.prank(address(this));
         bond.mature();
 
         // Move time to maturity date
         vm.warp(futureDate);
 
+        // Mint some bonds first
+        vm.startPrank(address(this));
+        bond.mint(address(this), 100 * 10 ** DECIMALS); // Mint 100 bonds
+
+        // Add required underlying assets
+        uint256 requiredAmount = bond.totalUnderlyingNeeded();
+        underlyingAsset.mint(address(this), requiredAmount);
+        underlyingAsset.approve(address(bond), requiredAmount);
+        bond.topUpUnderlyingAsset(requiredAmount);
+
         // Now mature the bond
-        vm.prank(owner);
         bond.mature();
         assertTrue(bond.isMatured(), "Bond should be matured");
 
         // Try to mature again
         vm.expectRevert(Bond.BondAlreadyMatured.selector);
-        vm.prank(owner);
         bond.mature();
+        vm.stopPrank();
     }
 }

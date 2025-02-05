@@ -253,7 +253,7 @@ contract Fund is
         uint256 fee = Math.mulDiv(Math.mulDiv(aum, _managementFeeBps, 10_000), timeElapsed, 365 days);
 
         if (fee > 0) {
-            _mint(msg.sender, fee);
+            _mint(_msgSender(), fee);
             emit ManagementFeeCollected(fee, block.timestamp);
         }
 

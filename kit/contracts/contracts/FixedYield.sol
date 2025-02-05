@@ -211,7 +211,7 @@ contract FixedYield is AccessControl, ERC2771Context {
     /// @notice Returns the last claimed period for the caller
     /// @return The last period number claimed by the caller
     function lastClaimedPeriod() public view returns (uint256) {
-        return lastClaimedPeriod(msg.sender);
+        return lastClaimedPeriod(_msgSender());
     }
 
     /// @notice Calculates the total unclaimed yield across all holders
@@ -285,7 +285,7 @@ contract FixedYield is AccessControl, ERC2771Context {
     /// @notice Calculates the total accrued yield for the caller including pro-rated current period
     /// @return The total accrued yield amount
     function calculateAccruedYield() public view returns (uint256) {
-        return calculateAccruedYield(msg.sender);
+        return calculateAccruedYield(_msgSender());
     }
 
     /// @notice Claims all available yield for the caller
@@ -294,10 +294,10 @@ contract FixedYield is AccessControl, ERC2771Context {
         uint256 lastPeriod = lastCompletedPeriod();
         if (lastPeriod == 0) revert NoYieldAvailable();
 
-        uint256 fromPeriod = _lastClaimedPeriod[msg.sender] + 1;
+        uint256 fromPeriod = _lastClaimedPeriod[_msgSender()] + 1;
         if (fromPeriod > lastPeriod) revert NoYieldAvailable();
 
-        uint256 basis = _token.yieldBasisPerUnit(msg.sender);
+        uint256 basis = _token.yieldBasisPerUnit(_msgSender());
         uint256 totalAmount = 0;
 
         // Create array for all periods in range (including zero amounts)
@@ -305,7 +305,7 @@ contract FixedYield is AccessControl, ERC2771Context {
 
         // Calculate yield for each unclaimed period using historical balances
         for (uint256 period = fromPeriod; period <= lastPeriod; period++) {
-            uint256 balance = _token.balanceOfAt(msg.sender, _periodEndTimestamps[period - 1]);
+            uint256 balance = _token.balanceOfAt(_msgSender(), _periodEndTimestamps[period - 1]);
             if (balance > 0) {
                 uint256 periodYield = (balance * basis * _rate) / RATE_BASIS_POINTS;
                 totalAmount += periodYield;
@@ -317,26 +317,26 @@ contract FixedYield is AccessControl, ERC2771Context {
         if (totalAmount == 0) revert NoYieldAvailable();
 
         // Update claimed periods before transfer
-        _lastClaimedPeriod[msg.sender] = lastPeriod;
+        _lastClaimedPeriod[_msgSender()] = lastPeriod;
         _totalClaimed += totalAmount;
 
         // Transfer the yield
-        bool success = _underlyingAsset.transfer(msg.sender, totalAmount);
+        bool success = _underlyingAsset.transfer(_msgSender(), totalAmount);
         if (!success) revert YieldTransferFailed();
 
         // Calculate remaining unclaimed yield across all holders
         uint256 remainingUnclaimed = totalUnclaimedYield();
 
-        emit YieldClaimed(msg.sender, totalAmount, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
+        emit YieldClaimed(_msgSender(), totalAmount, fromPeriod, lastPeriod, periodAmounts, remainingUnclaimed);
     }
 
     /// @notice Allows topping up the contract with underlying assets for yield payments
     /// @param amount The amount of underlying assets to add
     function topUpUnderlyingAsset(uint256 amount) external {
-        bool success = _underlyingAsset.transferFrom(msg.sender, address(this), amount);
+        bool success = _underlyingAsset.transferFrom(_msgSender(), address(this), amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetTopUp(msg.sender, amount);
+        emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @notice Withdraws underlying assets

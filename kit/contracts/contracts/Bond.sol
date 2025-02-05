@@ -251,10 +251,10 @@ contract Bond is
         if (amount == 0) revert InvalidAmount();
 
         // Transfer the underlying assets from the sender to this contract
-        bool success = underlyingAsset.transferFrom(msg.sender, address(this), amount);
+        bool success = underlyingAsset.transferFrom(_msgSender(), address(this), amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetTopUp(msg.sender, amount);
+        emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @notice Allows withdrawing excess underlying assets
@@ -279,16 +279,16 @@ contract Bond is
     /// @dev Can be called multiple times until all bonds are redeemed
     /// @param amount The amount of bonds to redeem
     function redeem(uint256 amount) external onlyMatured {
-        _redeem(msg.sender, amount);
+        _redeem(_msgSender(), amount);
     }
 
     /// @notice Allows redeeming all available bonds for underlying assets after maturity
     /// @dev Can only be called after the bond has matured
     function redeemAll() external onlyMatured {
-        uint256 redeemableAmount = balanceOf(msg.sender); // already redeemed amount is burned
+        uint256 redeemableAmount = balanceOf(_msgSender()); // already redeemed amount is burned
         if (redeemableAmount == 0) revert InvalidRedemptionAmount();
 
-        _redeem(msg.sender, redeemableAmount);
+        _redeem(_msgSender(), redeemableAmount);
     }
 
     /// @notice Returns the amount of underlying assets held by the contract
@@ -325,10 +325,10 @@ contract Bond is
         uint256 missing = missingUnderlyingAmount();
         if (missing == 0) revert InvalidAmount();
 
-        bool success = underlyingAsset.transferFrom(msg.sender, address(this), missing);
+        bool success = underlyingAsset.transferFrom(_msgSender(), address(this), missing);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetTopUp(msg.sender, missing);
+        emit UnderlyingAssetTopUp(_msgSender(), missing);
     }
 
     /// @notice Returns the ISIN (International Securities Identification Number) of the bond
