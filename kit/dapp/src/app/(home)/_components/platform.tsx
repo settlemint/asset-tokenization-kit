@@ -15,7 +15,15 @@ export function Platform() {
           description="Issue as many assets as you want"
           href="/admin"
           cta="Start issuing now"
-          background={<Image src={Unlimited} alt="Unlimited" />}
+          background={
+            <Image
+              src={Unlimited}
+              alt="Unlimited"
+              quality={85}
+              placeholder="blur"
+              sizes="(min-width: 1024px) 33vw, 100vw"
+            />
+          }
           className="lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-4"
         />
         <BentoCard
@@ -23,7 +31,15 @@ export function Platform() {
           description="Flexible asset design"
           href="/admin"
           cta="Start issuing now"
-          background={<Image src={Designer} alt="Asset Designer" />}
+          background={
+            <Image
+              src={Designer}
+              alt="Asset Designer"
+              quality={85}
+              placeholder="blur"
+              sizes="(min-width: 1024px) 33vw, 100vw"
+            />
+          }
           className="lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2"
         />
         <BentoCard
@@ -31,7 +47,15 @@ export function Platform() {
           description="From creation to redemption"
           href="/admin"
           cta="Get started"
-          background={<Image src={LifeCycle} alt="Life Cycle" />}
+          background={
+            <Image
+              src={LifeCycle}
+              alt="Life Cycle"
+              quality={85}
+              placeholder="blur"
+              sizes="(min-width: 1024px) 33vw, 100vw"
+            />
+          }
           className="lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4"
         />
         <BentoCard
@@ -39,7 +63,15 @@ export function Platform() {
           description="Use it, fork it, or learn from it"
           href="https://github.com/settlemint/starterkit-asset-tokenization"
           cta="Check it out on GitHub"
-          background={<Image src={OpenSource} alt="Open Source" />}
+          background={
+            <Image
+              src={OpenSource}
+              alt="Open Source"
+              quality={85}
+              placeholder="blur"
+              sizes="(min-width: 1024px) 33vw, 100vw"
+            />
+          }
           className="lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-3"
         />
         <BentoCard
@@ -47,7 +79,9 @@ export function Platform() {
           description="Leveraging the SettleMint SDK"
           href="https://github.com/settlemint/sdk"
           cta="Learn more about the SDK"
-          background={<Image src={SDK} alt="SDK" />}
+          background={
+            <Image src={SDK} alt="SDK" quality={85} placeholder="blur" sizes="(min-width: 1024px) 33vw, 100vw" />
+          }
           className="lg:col-start-3 lg:col-end-3 lg:row-start-3 lg:row-end-4"
         />
       </BentoGrid>
