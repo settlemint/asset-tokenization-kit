@@ -5,16 +5,21 @@ import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
 import { CryptoCurrencyFactory } from "../contracts/CryptoCurrencyFactory.sol";
 import { CryptoCurrency } from "../contracts/CryptoCurrency.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract CryptoCurrencyFactoryTest is Test {
     CryptoCurrencyFactory public factory;
+    Forwarder public forwarder;
     address public owner;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 ether;
     uint8 public constant DECIMALS = 8;
 
     function setUp() public {
         owner = makeAddr("owner");
-        factory = new CryptoCurrencyFactory();
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new CryptoCurrencyFactory(address(forwarder));
     }
 
     function test_CreateToken() public {
@@ -64,17 +69,13 @@ contract CryptoCurrencyFactoryTest is Test {
         string memory name = "Test Token";
         string memory symbol = "TEST";
 
-        vm.startPrank(owner);
         address token1 = factory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
-        vm.stopPrank();
 
         // Create a new factory instance
-        CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory();
+        CryptoCurrencyFactory newFactory = new CryptoCurrencyFactory(address(forwarder));
 
-        vm.startPrank(owner);
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, DECIMALS, INITIAL_SUPPLY);
-        vm.stopPrank();
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -182,7 +183,7 @@ contract CryptoCurrencyFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address,string,string,uint8,address,uint256)"),
+            keccak256("CryptoCurrencyCreated(address)"),
             "Wrong event signature for CryptoCurrencyCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");

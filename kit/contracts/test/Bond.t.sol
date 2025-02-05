@@ -4,12 +4,14 @@ pragma solidity ^0.8.27;
 import { Test } from "forge-std/Test.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
 contract BondTest is Test {
     Bond public bond;
     ERC20Mock public underlyingAsset;
+    Forwarder public forwarder;
     address public owner;
     address public user1;
     address public user2;
@@ -60,9 +62,21 @@ contract BondTest is Test {
         underlyingAsset = new ERC20Mock("Mock USD", "MUSD", DECIMALS);
         underlyingAsset.mint(owner, initialUnderlyingSupply); // Mint enough for all bonds
 
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+
         vm.startPrank(owner);
         bond = new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
         );
         bond.mint(owner, initialSupply);
         vm.stopPrank();
@@ -103,7 +117,8 @@ contract BondTest is Test {
                 CAP,
                 maturityDate,
                 faceValue,
-                address(underlyingAsset)
+                address(underlyingAsset),
+                address(forwarder)
             );
             assertEq(newBond.decimals(), decimalValues[i]);
         }
@@ -112,21 +127,51 @@ contract BondTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
-        new Bond("Test Bond", "TBOND", 19, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset));
+        new Bond(
+            "Test Bond",
+            "TBOND",
+            19,
+            owner,
+            VALID_ISIN,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
+        );
         vm.stopPrank();
     }
 
     function test_RevertOnInvalidISIN() public {
         vm.startPrank(owner);
 
-        Bond emptyIsinToken =
-            new Bond("Test Bond", "TBOND", DECIMALS, owner, "", CAP, maturityDate, faceValue, address(underlyingAsset));
+        Bond emptyIsinToken = new Bond(
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            "",
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
+        );
         assertEq(emptyIsinToken.isin(), "");
 
         // Test with ISIN that's too short
         vm.expectRevert(Bond.InvalidISIN.selector);
         new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, "US03783310", CAP, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            "US03783310",
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
         );
 
         // Test with ISIN that's too long
@@ -140,7 +185,8 @@ contract BondTest is Test {
             CAP,
             maturityDate,
             faceValue,
-            address(underlyingAsset)
+            address(underlyingAsset),
+            address(forwarder)
         );
 
         vm.stopPrank();
@@ -597,7 +643,16 @@ contract BondTest is Test {
         // Step 1: Initial state - warp to a starting point and deploy
         vm.warp(1000);
         bond = new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);
@@ -645,7 +700,16 @@ contract BondTest is Test {
         // Step 1: Initial state - warp to a starting point and redeploy
         vm.warp(1000);
         bond = new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);
@@ -714,7 +778,16 @@ contract BondTest is Test {
         // First warp to a starting point and redeploy the contract
         vm.warp(1000);
         bond = new Bond(
-            "Test Bond", "TBOND", DECIMALS, owner, VALID_ISIN, CAP, maturityDate, faceValue, address(underlyingAsset)
+            "Test Bond",
+            "TBOND",
+            DECIMALS,
+            owner,
+            VALID_ISIN,
+            CAP,
+            maturityDate,
+            faceValue,
+            address(underlyingAsset),
+            address(forwarder)
         );
         vm.startPrank(owner);
         bond.mint(owner, initialSupply);

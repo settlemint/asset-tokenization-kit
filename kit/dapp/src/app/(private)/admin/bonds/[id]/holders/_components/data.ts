@@ -4,11 +4,9 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const BondBalancesFragment = theGraphGraphqlStarterkits(`
-  fragment BondBalancesFields on Bond {
-    balances {
+  fragment BondBalancesFields on AssetBalance {
       id
       value
-    }
   }
 `);
 
@@ -16,7 +14,11 @@ const BondBalances = theGraphGraphqlStarterkits(
   `
   query BondBalances($id: ID!) {
     bond(id: $id) {
-      ...BondBalancesFields
+      asAccount {
+        balances {
+          ...BondBalancesFields
+        }
+      }
     }
   }
 `,
@@ -30,5 +32,5 @@ export async function getBondBalances(id: string) {
   if (!data.bond) {
     throw new Error('Bond not found');
   }
-  return data.bond.balances;
+  return data.bond.asAccount.balances;
 }

@@ -3,21 +3,22 @@ pragma solidity ^0.8.27;
 
 import { StableCoin } from "./StableCoin.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 /// @title StableCoinFactory - A factory contract for creating StableCoin tokens
 /// @notice This contract allows the creation of new StableCoin tokens with deterministic addresses
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
-contract StableCoinFactory is ReentrancyGuard {
+contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
     error AddressAlreadyDeployed();
 
     /// @notice Mapping to track if an address was deployed by this factory
     mapping(address => bool) public isFactoryToken;
 
     /// @notice Emitted when a new stablecoin is created
-    event StableCoinCreated(
-        address indexed token, string name, string symbol, uint8 decimals, address indexed owner, string isin
-    );
+    event StableCoinCreated(address indexed token);
+
+    constructor(address forwarder) ERC2771Context(forwarder) { }
 
     /// @notice Creates a new stablecoin token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits a StableCoinCreated event
@@ -39,18 +40,19 @@ contract StableCoinFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(msg.sender, name, symbol, decimals, isin, collateralLivenessSeconds);
+        address predicted = predictAddress(_msgSender(), name, symbol, decimals, isin, collateralLivenessSeconds);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
-        StableCoin newToken =
-            new StableCoin{ salt: salt }(name, symbol, decimals, msg.sender, isin, collateralLivenessSeconds);
+        StableCoin newToken = new StableCoin{ salt: salt }(
+            name, symbol, decimals, _msgSender(), isin, collateralLivenessSeconds, trustedForwarder()
+        );
 
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit StableCoinCreated(token, name, symbol, decimals, msg.sender, isin);
+        emit StableCoinCreated(token);
     }
 
     /// @notice Calculates the deterministic address for a token with the given parameters
@@ -85,7 +87,15 @@ contract StableCoinFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(StableCoin).creationCode,
-                                    abi.encode(name, symbol, decimals, sender, isin, collateralLivenessSeconds)
+                                    abi.encode(
+                                        name,
+                                        symbol,
+                                        decimals,
+                                        sender,
+                                        isin,
+                                        collateralLivenessSeconds,
+                                        trustedForwarder()
+                                    )
                                 )
                             )
                         )

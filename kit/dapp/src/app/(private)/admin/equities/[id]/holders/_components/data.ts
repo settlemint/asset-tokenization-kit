@@ -4,11 +4,9 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const EquityBalancesFragment = theGraphGraphqlStarterkits(`
-  fragment EquityBalancesFields on Equity {
-    balances {
+  fragment EquityBalancesFields on AssetBalance {
       id
       value
-    }
   }
 `);
 
@@ -16,7 +14,11 @@ const EquityBalances = theGraphGraphqlStarterkits(
   `
   query EquityBalances($id: ID!) {
     equity(id: $id) {
-      ...EquityBalancesFields
+      asAccount {
+        balances {
+          ...EquityBalancesFields
+        }
+      }
     }
   }
 `,
@@ -30,5 +32,5 @@ export async function getEquityBalances(id: string) {
   if (!data.equity) {
     throw new Error('Equity not found');
   }
-  return data.equity.balances;
+  return data.equity.asAccount.balances;
 }

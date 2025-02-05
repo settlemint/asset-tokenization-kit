@@ -22,6 +22,11 @@ const CryptoCurrenciesModule = buildModule('CryptoCurrenciesModule', (m) => {
   // Grant roles to the deployer
   m.call(btc, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
 
+  // Mint and burn some tokens
+  const mintAmount = '1000000000000000000000'; // 1000 BTC with 18 decimals
+
+  m.call(btc, 'mint', [deployer, mintAmount], { id: 'mintBTC' });
+
   return { btc };
 });
 

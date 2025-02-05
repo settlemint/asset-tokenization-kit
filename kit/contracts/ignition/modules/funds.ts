@@ -32,6 +32,13 @@ const FundsModule = buildModule('FundsModule', (m) => {
   m.call(gmf, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
   m.call(gmf, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
 
+  // Mint and burn some tokens
+  const mintAmount = 1000000000; // 1000 fund units with 6 decimals
+  const burnAmount = 200000000; // 200 fund units with 6 decimals
+
+  const mintFund = m.call(gmf, 'mint', [deployer, mintAmount], { id: 'mintFund' });
+  m.call(gmf, 'burn', [burnAmount], { id: 'burnFund', after: [mintFund] });
+
   return { gmf };
 });
 

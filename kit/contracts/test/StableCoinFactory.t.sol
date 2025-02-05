@@ -5,17 +5,23 @@ import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
 import { StableCoinFactory } from "../contracts/StableCoinFactory.sol";
 import { StableCoin } from "../contracts/StableCoin.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract StableCoinFactoryTest is Test {
     StableCoinFactory public factory;
+    Forwarder public forwarder;
     address public owner;
     uint48 public constant LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
+    uint256 public constant INITIAL_SUPPLY = 1_000_000;
     string public constant VALID_ISIN = "US0378331005";
 
     function setUp() public {
         owner = makeAddr("owner");
-        factory = new StableCoinFactory();
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new StableCoinFactory(address(forwarder));
     }
 
     function test_CreateToken() public {
@@ -63,13 +69,13 @@ contract StableCoinFactoryTest is Test {
     }
 
     function test_DeterministicAddresses() public {
-        string memory name = "Test Stable";
-        string memory symbol = "TSTB";
+        string memory name = "Test Stable Coin";
+        string memory symbol = "TSC";
 
         address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
 
         // Create a new factory instance
-        StableCoinFactory newFactory = new StableCoinFactory();
+        StableCoinFactory newFactory = new StableCoinFactory(address(forwarder));
 
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, LIVENESS);
@@ -193,9 +199,7 @@ contract StableCoinFactoryTest is Test {
         // Fourth event should be StableCoinCreated
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
-            lastEntry.topics[0],
-            keccak256("StableCoinCreated(address,string,string,uint8,address,string)"),
-            "Wrong event signature for StableCoinCreated"
+            lastEntry.topics[0], keccak256("StableCoinCreated(address)"), "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
     }

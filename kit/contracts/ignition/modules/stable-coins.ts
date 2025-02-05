@@ -24,6 +24,20 @@ const StableCoinsModule = buildModule('StableCoinsModule', (m) => {
   m.call(usdc, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
   m.call(usdc, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
 
+  // Mint and burn some tokens
+  const mintAmount = 1000000000; // 1000 EUR with 6 decimals
+  const burnAmount = 200000000; // 200 EUR with 6 decimals
+
+  // Add collateral before minting
+  const collateralAmount = BigInt(mintAmount) * BigInt(2); // 200% collateralization ratio
+  const updateCollateral = m.call(usdc, 'updateCollateral', [collateralAmount], { id: 'updateCollateral' });
+
+  const mintStableCoin = m.call(usdc, 'mint', [deployer, mintAmount], {
+    id: 'mintStableCoin',
+    after: [updateCollateral],
+  });
+  m.call(usdc, 'burn', [burnAmount], { id: 'burnStableCoin', after: [mintStableCoin] });
+
   return { usdc };
 });
 

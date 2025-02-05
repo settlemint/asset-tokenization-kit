@@ -10,13 +10,15 @@ import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/ex
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
-
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @title Equity - A security token representing equity ownership
 /// @notice This contract implements a security token that represents equity ownership with voting rights, blocklist,
 /// and custodian features
 /// @dev Inherits from OpenZeppelin contracts to provide comprehensive security token functionality with governance
 /// capabilities
 /// @custom:security-contact support@settlemint.com
+
 contract Equity is
     ERC20,
     ERC20Burnable,
@@ -25,7 +27,8 @@ contract Equity is
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
-    ERC20Votes
+    ERC20Votes,
+    ERC2771Context
 {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -61,10 +64,12 @@ contract Equity is
         address initialOwner,
         string memory isin_,
         string memory equityClass_,
-        string memory equityCategory_
+        string memory equityCategory_,
+        address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
@@ -77,6 +82,18 @@ contract Equity is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns the number of decimals used to get its user representation

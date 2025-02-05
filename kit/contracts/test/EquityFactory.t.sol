@@ -5,16 +5,21 @@ import { Test } from "forge-std/Test.sol";
 import { VmSafe } from "forge-std/Vm.sol";
 import { EquityFactory } from "../contracts/EquityFactory.sol";
 import { Equity } from "../contracts/Equity.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract EquityFactoryTest is Test {
     EquityFactory public factory;
+    Forwarder public forwarder;
     address public owner;
     uint8 public constant DECIMALS = 8;
     string public constant VALID_ISIN = "US0378331005";
 
     function setUp() public {
         owner = makeAddr("owner");
-        factory = new EquityFactory();
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new EquityFactory(address(forwarder));
     }
 
     function test_CreateToken() public {
@@ -80,7 +85,7 @@ contract EquityFactoryTest is Test {
         address token1 = factory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
 
         // Create a new factory instance
-        EquityFactory newFactory = new EquityFactory();
+        EquityFactory newFactory = new EquityFactory(address(forwarder));
 
         // Create a token with the same parameters
         address token2 = newFactory.create(name, symbol, DECIMALS, VALID_ISIN, class, category);
@@ -204,11 +209,7 @@ contract EquityFactoryTest is Test {
 
         // Fourth event should be EquityCreated
         VmSafe.Log memory lastEntry = entries[3];
-        assertEq(
-            lastEntry.topics[0],
-            keccak256("EquityCreated(address,string,string,uint8,address,string,string,string)"),
-            "Wrong event signature for EquityCreated"
-        );
+        assertEq(lastEntry.topics[0], keccak256("EquityCreated(address)"), "Wrong event signature for EquityCreated");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
     }
 }
