@@ -4,12 +4,14 @@ pragma solidity ^0.8.27;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
-
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @title FixedYield - A contract for managing token yield distributions
 /// @notice This contract implements fixed yield schedule functionality for ERC20 tokens
 /// @dev Uses AccessControl for permissions and works with ERC20Yield tokens
 /// @custom:security-contact support@settlemint.com
-contract FixedYield is AccessControl {
+
+contract FixedYield is AccessControl, ERC2771Context {
     /// @notice Custom errors for the FixedYield contract
     error InvalidToken();
     error InvalidStartDate();
@@ -97,8 +99,11 @@ contract FixedYield is AccessControl {
         uint256 startDate_,
         uint256 endDate_,
         uint256 rate_,
-        uint256 interval_
-    ) {
+        uint256 interval_,
+        address forwarder
+    )
+        ERC2771Context(forwarder)
+    {
         if (tokenAddress == address(0)) revert InvalidToken();
         if (startDate_ <= block.timestamp) revert InvalidStartDate();
         if (endDate_ <= startDate_) revert InvalidEndDate();
@@ -126,6 +131,18 @@ contract FixedYield is AccessControl {
         }
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns all period end timestamps for this yield schedule

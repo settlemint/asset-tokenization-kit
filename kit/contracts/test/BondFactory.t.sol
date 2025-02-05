@@ -6,9 +6,11 @@ import { VmSafe } from "forge-std/Vm.sol";
 import { BondFactory } from "../contracts/BondFactory.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract BondFactoryTest is Test {
     BondFactory public factory;
+    Forwarder public forwarder;
     ERC20Mock public underlyingAsset;
     address public owner;
     uint256 public futureDate;
@@ -18,8 +20,12 @@ contract BondFactoryTest is Test {
     uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
     function setUp() public {
-        factory = new BondFactory();
         owner = address(this);
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new BondFactory(address(forwarder));
+
         // Set maturity date to 1 year from now
         futureDate = block.timestamp + 365 days;
 
@@ -119,7 +125,7 @@ contract BondFactoryTest is Test {
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // Create a new factory instance
-        BondFactory newFactory = new BondFactory();
+        BondFactory newFactory = new BondFactory(address(forwarder));
 
         // Create a bond with the same parameters
         address bond2 =
@@ -192,11 +198,7 @@ contract BondFactoryTest is Test {
 
         // Fourth event should be BondCreated
         VmSafe.Log memory lastEntry = entries[3];
-        assertEq(
-            lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,uint8,address,string,uint256,uint256,uint256,address)"),
-            "Wrong event signature for BondCreated"
-        );
+        assertEq(lastEntry.topics[0], keccak256("BondCreated(address)"), "Wrong event signature for BondCreated");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
     }
 

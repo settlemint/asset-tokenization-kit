@@ -5,6 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { FixedYield } from "../contracts/FixedYield.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract FixedYieldTest is Test {
     // Events we're testing against
@@ -30,6 +31,7 @@ contract FixedYieldTest is Test {
     FixedYield public yieldSchedule;
     ERC20YieldMock public token;
     ERC20Mock public underlyingAsset;
+    Forwarder public forwarder;
 
     // Test accounts
     address public owner = makeAddr("owner");
@@ -58,12 +60,16 @@ contract FixedYieldTest is Test {
         // Mint tokens to ensure enough for yield payments
         underlyingAsset.mint(owner, toDecimals(YIELD_BASIS * 10));
 
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+
         // Deploy token with yield capability
         vm.startPrank(owner);
         token = new ERC20YieldMock("My Token", "MYT", toDecimals(INITIAL_SUPPLY), address(underlyingAsset), YIELD_BASIS);
 
         // Deploy yield schedule
-        yieldSchedule = new FixedYield(address(token), owner, startDate, endDate, YIELD_RATE, INTERVAL);
+        yieldSchedule =
+            new FixedYield(address(token), owner, startDate, endDate, YIELD_RATE, INTERVAL, address(forwarder));
 
         // Top up yield schedule with underlying assets
         underlyingAsset.approve(address(yieldSchedule), toDecimals(YIELD_BASIS * 10));
@@ -351,30 +357,29 @@ contract FixedYieldTest is Test {
         assertLe(timestamps[timestamps.length - 1], endDate, "Last period exceeds end date");
     }
 
-    function test_ConstructorValidation() public {
-        vm.warp(1 days);
+    function test_InvalidConstructorParams() public {
         uint256 newStartDate = block.timestamp + 1 days;
         uint256 newEndDate = newStartDate + 365 days;
 
-        // Test zero address token
+        // Test invalid token address
         vm.expectRevert(FixedYield.InvalidToken.selector);
-        new FixedYield(address(0), owner, newStartDate, newEndDate, YIELD_RATE, INTERVAL);
+        new FixedYield(address(0), owner, newStartDate, newEndDate, YIELD_RATE, INTERVAL, address(forwarder));
 
         // Test invalid start date
         vm.expectRevert(FixedYield.InvalidStartDate.selector);
-        new FixedYield(address(token), owner, block.timestamp, newEndDate, YIELD_RATE, INTERVAL);
+        new FixedYield(address(token), owner, block.timestamp, newEndDate, YIELD_RATE, INTERVAL, address(forwarder));
 
         // Test invalid end date
         vm.expectRevert(FixedYield.InvalidEndDate.selector);
-        new FixedYield(address(token), owner, newStartDate, newStartDate, YIELD_RATE, INTERVAL);
+        new FixedYield(address(token), owner, newStartDate, newStartDate, YIELD_RATE, INTERVAL, address(forwarder));
 
         // Test zero rate
         vm.expectRevert(FixedYield.InvalidRate.selector);
-        new FixedYield(address(token), owner, newStartDate, newEndDate, 0, INTERVAL);
+        new FixedYield(address(token), owner, newStartDate, newEndDate, 0, INTERVAL, address(forwarder));
 
         // Test zero interval
         vm.expectRevert(FixedYield.InvalidInterval.selector);
-        new FixedYield(address(token), owner, newStartDate, newEndDate, YIELD_RATE, 0);
+        new FixedYield(address(token), owner, newStartDate, newEndDate, YIELD_RATE, 0, address(forwarder));
     }
 
     function test_AccessControl() public {

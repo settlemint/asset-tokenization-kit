@@ -1,8 +1,9 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { Fund } from '../../generated/schema';
-import { Fund as FundContract } from '../../generated/templates/Fund/Fund';
-import { toDecimals } from '../utils/decimals';
-import { fetchAccount } from './account';
+import { Fund } from '../../../generated/schema';
+import { Fund as FundContract } from '../../../generated/templates/Fund/Fund';
+import { fetchAccount } from '../../fetch/account';
+import { toDecimals } from '../../utils/decimals';
+import { AssetType } from '../../utils/enums';
 
 export function fetchFund(address: Address): Fund {
   let fund = Fund.load(address);
@@ -21,6 +22,7 @@ export function fetchFund(address: Address): Fund {
     const account = fetchAccount(address);
 
     fund = new Fund(address);
+    fund.type = AssetType.fund;
     fund.name = name.reverted ? '' : name.value;
     fund.symbol = symbol.reverted ? '' : symbol.value;
     fund.decimals = decimals.reverted ? 18 : decimals.value;
@@ -33,6 +35,9 @@ export function fetchFund(address: Address): Fund {
     fund.paused = paused.reverted ? false : paused.value;
     fund.asAccount = fund.id;
     fund.lastFeeCollection = BigInt.fromI32(0);
+    fund.admins = [];
+    fund.supplyManagers = [];
+    fund.userManagers = [];
     fund.save();
 
     account.asAsset = fund.id;

@@ -1,8 +1,9 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { Equity } from '../../generated/schema';
-import { Equity as EquityContract } from '../../generated/templates/Equity/Equity';
-import { toDecimals } from '../utils/decimals';
-import { fetchAccount } from './account';
+import { Equity } from '../../../generated/schema';
+import { Equity as EquityContract } from '../../../generated/templates/Equity/Equity';
+import { fetchAccount } from '../../fetch/account';
+import { toDecimals } from '../../utils/decimals';
+import { AssetType } from '../../utils/enums';
 
 export function fetchEquity(address: Address): Equity {
   let equity = Equity.load(address);
@@ -20,6 +21,7 @@ export function fetchEquity(address: Address): Equity {
     const account = fetchAccount(address);
 
     equity = new Equity(address);
+    equity.type = AssetType.equity;
     equity.name = name.reverted ? '' : name.value;
     equity.symbol = symbol.reverted ? '' : symbol.value;
     equity.decimals = decimals.reverted ? 18 : decimals.value;
@@ -30,6 +32,9 @@ export function fetchEquity(address: Address): Equity {
     equity.equityCategory = equityCategory.reverted ? '' : equityCategory.value;
     equity.paused = paused.reverted ? false : paused.value;
     equity.asAccount = equity.id;
+    equity.admins = [];
+    equity.supplyManagers = [];
+    equity.userManagers = [];
     equity.save();
 
     account.asAsset = equity.id;

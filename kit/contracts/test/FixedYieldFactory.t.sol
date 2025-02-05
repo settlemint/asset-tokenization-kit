@@ -6,33 +6,22 @@ import { FixedYieldFactory } from "../contracts/FixedYieldFactory.sol";
 import { FixedYield } from "../contracts/FixedYield.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
 import { ERC20YieldMock } from "./mocks/ERC20YieldMock.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract FixedYieldFactoryTest is Test {
-    // Event we're testing against
-    event FixedYieldCreated(
-        address indexed schedule,
-        address indexed token,
-        address indexed underlyingAsset,
-        address owner,
-        uint256 startDate,
-        uint256 endDate,
-        uint256 rate,
-        uint256 interval,
-        uint256[] periods,
-        uint256 scheduleCount
-    );
-
     // Constants for test configuration
     uint256 private constant INITIAL_SUPPLY = 1_000_000;
     uint256 private constant YIELD_RATE = 500; // 5% yield rate in basis points
     uint256 private constant INTERVAL = 30 days;
     uint256 private constant YIELD_BASIS = 100;
     uint8 public constant DECIMALS = 2;
+    uint256 public constant MATURITY_PERIOD = 365 days;
 
     // Test contracts
     FixedYieldFactory public factory;
     ERC20YieldMock public token;
     ERC20Mock public underlyingAsset;
+    Forwarder public forwarder;
 
     // Test accounts
     address public owner = makeAddr("owner");
@@ -56,15 +45,17 @@ contract FixedYieldFactoryTest is Test {
         vm.startPrank(owner);
         token = new ERC20YieldMock("My Token", "MYT", INITIAL_SUPPLY, address(underlyingAsset), YIELD_BASIS);
 
-        // Deploy factory
-        factory = new FixedYieldFactory();
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new FixedYieldFactory(address(forwarder));
 
         // Block user1 from managing yield
         token.blockYieldManagement(user1, true);
         vm.stopPrank();
     }
 
-    function test_InitialState() public {
+    function test_InitialState() public view {
         assertEq(factory.allSchedulesLength(), 0, "Initial schedule count should be 0");
     }
 
@@ -83,39 +74,17 @@ contract FixedYieldFactoryTest is Test {
         // Find our event (it's the last one)
         Vm.Log memory lastEntry = entries[entries.length - 1];
 
-        // Verify the indexed parameters (topics)
-        assertEq(lastEntry.topics[1], bytes32(uint256(uint160(scheduleAddr))), "Schedule address mismatch");
-        assertEq(lastEntry.topics[2], bytes32(uint256(uint160(address(token)))), "Token address mismatch");
-        assertEq(lastEntry.topics[3], bytes32(uint256(uint160(address(underlyingAsset)))), "Underlying asset mismatch");
-
-        // Decode the non-indexed parameters
-        (
-            address eventOwner,
-            uint256 eventStartDate,
-            uint256 eventEndDate,
-            uint256 eventRate,
-            uint256 eventInterval,
-            uint256[] memory eventPeriods,
-            uint256 eventScheduleCount
-        ) = abi.decode(lastEntry.data, (address, uint256, uint256, uint256, uint256, uint256[], uint256));
-
-        // Verify non-indexed parameters
-        assertEq(eventOwner, owner, "Owner mismatch");
-        assertEq(eventStartDate, startDate, "Start date mismatch");
-        assertEq(eventEndDate, endDate, "End date mismatch");
-        assertEq(eventRate, YIELD_RATE, "Rate mismatch");
-        assertEq(eventInterval, INTERVAL, "Interval mismatch");
-        assertEq(eventScheduleCount, 1, "Schedule count mismatch");
+        // Verify the event signature and address
+        assertEq(lastEntry.topics[0], keccak256("FixedYieldCreated(address)"), "Event signature mismatch");
+        assertEq(address(uint160(uint256(lastEntry.topics[1]))), scheduleAddr, "Schedule address mismatch");
 
         // Get the schedule and verify its parameters
         FixedYield schedule = FixedYield(scheduleAddr);
-        uint256[] memory actualPeriods = schedule.allPeriods();
-
-        // Verify periods match
-        assertEq(eventPeriods.length, actualPeriods.length, "Periods length mismatch");
-        for (uint256 i = 0; i < actualPeriods.length; i++) {
-            assertEq(eventPeriods[i], actualPeriods[i], string.concat("Period mismatch at index ", vm.toString(i)));
-        }
+        assertEq(address(schedule.token()), address(token), "Token address mismatch");
+        assertEq(schedule.startDate(), startDate, "Start date mismatch");
+        assertEq(schedule.endDate(), endDate, "End date mismatch");
+        assertEq(schedule.rate(), YIELD_RATE, "Rate mismatch");
+        assertEq(schedule.interval(), INTERVAL, "Interval mismatch");
 
         vm.stopPrank();
     }
@@ -157,7 +126,7 @@ contract FixedYieldFactoryTest is Test {
         vm.recordLogs();
 
         // Create schedule
-        factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
+        address scheduleAddr = factory.create(token, startDate, endDate, YIELD_RATE, INTERVAL);
 
         // Get the emitted events
         Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -165,35 +134,9 @@ contract FixedYieldFactoryTest is Test {
         // Find our event (it's the last one)
         Vm.Log memory lastEntry = entries[entries.length - 1];
 
-        // Verify the indexed parameters (topics)
-        assertEq(
-            lastEntry.topics[0],
-            keccak256(
-                "FixedYieldCreated(address,address,address,address,uint256,uint256,uint256,uint256,uint256[],uint256)"
-            ),
-            "Event signature mismatch"
-        );
-        assertEq(lastEntry.topics[2], bytes32(uint256(uint160(address(token)))), "Token address mismatch");
-        assertEq(lastEntry.topics[3], bytes32(uint256(uint160(address(underlyingAsset)))), "Underlying asset mismatch");
-
-        // Decode the non-indexed parameters
-        (
-            address eventOwner,
-            uint256 eventStartDate,
-            uint256 eventEndDate,
-            uint256 eventRate,
-            uint256 eventInterval,
-            uint256[] memory eventPeriods,
-            uint256 eventScheduleCount
-        ) = abi.decode(lastEntry.data, (address, uint256, uint256, uint256, uint256, uint256[], uint256));
-
-        // Verify non-indexed parameters
-        assertEq(eventOwner, owner, "Owner mismatch");
-        assertEq(eventStartDate, startDate, "Start date mismatch");
-        assertEq(eventEndDate, endDate, "End date mismatch");
-        assertEq(eventRate, YIELD_RATE, "Rate mismatch");
-        assertEq(eventInterval, INTERVAL, "Interval mismatch");
-        assertEq(eventScheduleCount, 1, "Schedule count mismatch");
+        // Verify the event signature and address
+        assertEq(lastEntry.topics[0], keccak256("FixedYieldCreated(address)"), "Event signature mismatch");
+        assertEq(address(uint160(uint256(lastEntry.topics[1]))), scheduleAddr, "Schedule address mismatch");
 
         vm.stopPrank();
     }
@@ -215,5 +158,32 @@ contract FixedYieldFactoryTest is Test {
         bytes32 hash =
             keccak256(abi.encodePacked(bytes1(0xff), address(factory), salt, keccak256(type(FixedYield).creationCode)));
         return address(uint160(uint256(hash)));
+    }
+
+    function test_DeterministicAddresses() public {
+        // Create a yield token first
+        ERC20YieldMock token1 =
+            new ERC20YieldMock("Test Fixed Yield", "TFY", INITIAL_SUPPLY, address(underlyingAsset), YIELD_BASIS);
+
+        uint256 startTime = block.timestamp + 1 days; // Start time must be in the future
+        uint256 endTime = startTime + MATURITY_PERIOD;
+        uint256 interval = 30 days; // Monthly distributions
+
+        address schedule1 = factory.create(token1, startTime, endTime, YIELD_RATE, interval);
+
+        // Create a new factory instance
+        FixedYieldFactory newFactory = new FixedYieldFactory(address(forwarder));
+
+        // Create another yield token with same parameters
+        ERC20YieldMock token2 =
+            new ERC20YieldMock("Test Fixed Yield", "TFY", INITIAL_SUPPLY, address(underlyingAsset), YIELD_BASIS);
+
+        // Create a schedule with the same parameters
+        address schedule2 = newFactory.create(token2, startTime, endTime, YIELD_RATE, interval);
+
+        // The addresses should be different because the factory addresses are different
+        assertNotEq(
+            schedule1, schedule2, "Schedules should have different addresses due to different factory addresses"
+        );
     }
 }

@@ -4,12 +4,14 @@ pragma solidity ^0.8.27;
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @title CryptoCurrency - A customizable ERC20 token implementation
 /// @notice This contract provides a standard ERC20 token with minting capabilities controlled by roles
 /// @dev Inherits from OpenZeppelin's ERC20, AccessControl and ERC20Permit contracts
 /// @custom:security-contact support@settlemint.com
-contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
+
+contract CryptoCurrency is ERC20, AccessControl, ERC20Permit, ERC2771Context {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     uint8 private immutable _decimals;
 
@@ -27,10 +29,12 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
         string memory symbol,
         uint8 decimals_,
         uint256 initialSupply,
-        address initialOwner
+        address initialOwner,
+        address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         _decimals = decimals_;
@@ -40,6 +44,18 @@ contract CryptoCurrency is ERC20, AccessControl, ERC20Permit {
         if (initialSupply > 0) {
             _mint(initialOwner, initialSupply);
         }
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns the number of decimals used to get its user representation

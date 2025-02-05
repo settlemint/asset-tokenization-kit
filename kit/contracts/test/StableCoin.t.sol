@@ -3,9 +3,11 @@ pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
 import { StableCoin } from "../contracts/StableCoin.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract StableCoinTest is Test {
     StableCoin public stableCoin;
+    Forwarder public forwarder;
     address public owner;
     address public user1;
     address public user2;
@@ -24,8 +26,12 @@ contract StableCoinTest is Test {
         user2 = makeAddr("user2");
         spender = makeAddr("spender");
 
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+
         vm.startPrank(owner);
-        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        stableCoin =
+            new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 
@@ -50,8 +56,9 @@ contract StableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            StableCoin newToken =
-                new StableCoin("StableCoin", "STBL", decimalValues[i], owner, VALID_ISIN, COLLATERAL_LIVENESS);
+            StableCoin newToken = new StableCoin(
+                "StableCoin", "STBL", decimalValues[i], owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder)
+            );
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -60,42 +67,24 @@ contract StableCoinTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
-        new StableCoin("StableCoin", "STBL", 19, owner, VALID_ISIN, COLLATERAL_LIVENESS);
+        new StableCoin("StableCoin", "STBL", 19, owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 
-    function test_OptionalISIN() public {
+    function test_RevertOnInvalidISIN() public {
         vm.startPrank(owner);
 
-        // Test with empty ISIN (should be valid for StableCoin)
-        StableCoin emptyIsinToken = new StableCoin("StableCoin", "STBL", DECIMALS, owner, "", COLLATERAL_LIVENESS);
+        StableCoin emptyIsinToken =
+            new StableCoin("StableCoin", "STBL", DECIMALS, owner, "", COLLATERAL_LIVENESS, address(forwarder));
         assertEq(emptyIsinToken.isin(), "");
 
-        // Test with valid ISIN
-        StableCoin validIsinToken =
-            new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS);
-        assertEq(validIsinToken.isin(), VALID_ISIN);
+        // Test with ISIN that's too short
+        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        new StableCoin("StableCoin", "STBL", DECIMALS, owner, "US03783310", COLLATERAL_LIVENESS, address(forwarder));
 
-        // Test with invalid ISIN length
-        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidISIN.selector));
-        new StableCoin(
-            "StableCoin",
-            "STBL",
-            DECIMALS,
-            owner,
-            "US03783310", // too short
-            COLLATERAL_LIVENESS
-        );
-
-        vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidISIN.selector));
-        new StableCoin(
-            "StableCoin",
-            "STBL",
-            DECIMALS,
-            owner,
-            "US0378331005XX", // too long
-            COLLATERAL_LIVENESS
-        );
+        // Test with ISIN that's too long
+        vm.expectRevert(StableCoin.InvalidISIN.selector);
+        new StableCoin("StableCoin", "STBL", DECIMALS, owner, "US0378331005XX", COLLATERAL_LIVENESS, address(forwarder));
 
         vm.stopPrank();
     }

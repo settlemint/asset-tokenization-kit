@@ -9,12 +9,14 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Collateral } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Collateral.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
-
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 /// @title A collateralized stablecoin with advanced control features
 /// @notice This contract implements a stablecoin with collateral backing, blocklist, pause, and custodian capabilities
 /// @dev Inherits from OpenZeppelin contracts to provide comprehensive stablecoin functionality with advanced control
 /// features
 /// @custom:security-contact support@settlemint.com
+
 contract StableCoin is
     ERC20,
     ERC20Burnable,
@@ -23,7 +25,8 @@ contract StableCoin is
     ERC20Permit,
     ERC20Blocklist,
     ERC20Collateral,
-    ERC20Custodian
+    ERC20Custodian,
+    ERC2771Context
 {
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     bytes32 public constant USER_MANAGEMENT_ROLE = keccak256("USER_MANAGEMENT_ROLE");
@@ -67,11 +70,13 @@ contract StableCoin is
         uint8 decimals_,
         address initialOwner,
         string memory isin_,
-        uint48 collateralLivenessSeconds
+        uint48 collateralLivenessSeconds,
+        address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
         ERC20Collateral(collateralLivenessSeconds)
+        ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
@@ -84,6 +89,18 @@ contract StableCoin is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns the number of decimals used to get its user representation

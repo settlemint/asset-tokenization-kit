@@ -1,8 +1,9 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { StableCoin } from '../../generated/schema';
-import { StableCoin as StableCoinContract } from '../../generated/templates/StableCoin/StableCoin';
-import { toDecimals } from '../utils/decimals';
-import { fetchAccount } from './account';
+import { StableCoin } from '../../../generated/schema';
+import { StableCoin as StableCoinContract } from '../../../generated/templates/StableCoin/StableCoin';
+import { fetchAccount } from '../../fetch/account';
+import { toDecimals } from '../../utils/decimals';
+import { AssetType } from '../../utils/enums';
 
 export function fetchStableCoin(address: Address): StableCoin {
   let stableCoin = StableCoin.load(address);
@@ -19,6 +20,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     const account = fetchAccount(address);
 
     stableCoin = new StableCoin(address);
+    stableCoin.type = AssetType.stablecoin;
     stableCoin.name = name.reverted ? '' : name.value;
     stableCoin.symbol = symbol.reverted ? '' : symbol.value;
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
@@ -29,6 +31,9 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.collateral = toDecimals(stableCoin.collateralExact, stableCoin.decimals);
     stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.asAccount = stableCoin.id;
+    stableCoin.admins = [];
+    stableCoin.supplyManagers = [];
+    stableCoin.userManagers = [];
     stableCoin.save();
 
     account.asAsset = stableCoin.id;

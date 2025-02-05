@@ -1,8 +1,9 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { Bond } from '../../generated/schema';
-import { Bond as BondContract } from '../../generated/templates/Bond/Bond';
-import { toDecimals } from '../utils/decimals';
-import { fetchAccount } from './account';
+import { Bond } from '../../../generated/schema';
+import { Bond as BondContract } from '../../../generated/templates/Bond/Bond';
+import { fetchAccount } from '../../fetch/account';
+import { toDecimals } from '../../utils/decimals';
+import { AssetType } from '../../utils/enums';
 
 export function fetchBond(address: Address): Bond {
   let bond = Bond.load(address);
@@ -25,6 +26,7 @@ export function fetchBond(address: Address): Bond {
     const account = fetchAccount(address);
 
     bond = new Bond(address);
+    bond.type = AssetType.bond;
     bond.name = name.reverted ? '' : name.value;
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
@@ -42,6 +44,9 @@ export function fetchBond(address: Address): Bond {
     bond.underlyingBalance = underlyingBalance.reverted ? BigInt.zero() : underlyingBalance.value;
     bond.asAccount = bond.id;
     bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
+    bond.admins = [];
+    bond.supplyManagers = [];
+    bond.userManagers = [];
     bond.save();
 
     account.asAsset = bond.id;

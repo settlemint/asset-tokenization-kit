@@ -13,6 +13,8 @@ import { Nonces } from "@openzeppelin/contracts/utils/Nonces.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title Fund - A security token representing fund shares
 /// @notice This contract implements a security token that represents fund shares with voting rights, blocklist,
@@ -28,7 +30,8 @@ contract Fund is
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
-    ERC20Votes
+    ERC20Votes,
+    ERC2771Context
 {
     using Math for uint256;
     using SafeERC20 for IERC20;
@@ -81,10 +84,12 @@ contract Fund is
         string memory isin_,
         uint16 managementFeeBps_,
         string memory fundClass_,
-        string memory fundCategory_
+        string memory fundCategory_,
+        address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
@@ -99,6 +104,18 @@ contract Fund is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns the fund class
