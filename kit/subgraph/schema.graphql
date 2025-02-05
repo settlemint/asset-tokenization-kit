@@ -2,17 +2,9 @@
 # Grouping Contracts by Contract Type
 # --------------------------------------------------
 
-enum AssetType {
-  bond
-  equity
-  stableCoin
-  cryptocurrency
-  fund
-}
-
 interface Asset {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -25,18 +17,9 @@ interface Asset {
   userManagers: [Account!]!
 }
 
-enum FactoryType {
-  bond
-  equity
-  stableCoin
-  cryptocurrency
-  fund
-  fixedyield
-}
-
 type Factory @entity {
   id: Bytes!
-  type: FactoryType!
+  type: String!
   asAccount: Account!
 }
 
@@ -46,7 +29,7 @@ type Factory @entity {
 
 type Bond implements Asset @entity {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -73,7 +56,7 @@ type Bond implements Asset @entity {
 
 type Equity implements Asset @entity {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -93,7 +76,7 @@ type Equity implements Asset @entity {
 
 type Fund implements Asset @entity {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -115,7 +98,7 @@ type Fund implements Asset @entity {
 
 type StableCoin implements Asset @entity {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -135,7 +118,7 @@ type StableCoin implements Asset @entity {
 
 type CryptoCurrency implements Asset @entity {
   id: Bytes!
-  type: AssetType!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
@@ -200,16 +183,6 @@ type YieldPeriod @entity {
   rate: BigInt!
   totalClaimed: BigDecimal!
   totalClaimedExact: BigInt!
-}
-
-# --------------------------------------------------
-# OTHER
-# --------------------------------------------------
-
-type BlockedAccount @entity {
-  id: Bytes!
-  account: Account!
-  asset: Asset!
 }
 
 # --------------------------------------------------
@@ -626,7 +599,7 @@ type AssetStatsData @entity(timeseries: true) {
   timestamp: Timestamp!
   ## Filters
   asset: Asset!
-  assetType: AssetType!
+  assetType: String!
   assetCategory: String!
   assetClass: String!
   ## Transfers
@@ -659,7 +632,7 @@ type AssetStats
   timestamp: Timestamp!
   ## Filters
   asset: Asset!
-  assetType: AssetType!
+  assetType: String!
   assetCategory: String!
   assetClass: String!
   ## Amounts
@@ -696,7 +669,7 @@ type PortfolioStatsData @entity(timeseries: true) {
   timestamp: Timestamp!
   ## Filters
   account: Account!
-  assetType: AssetType!
+  assetType: String!
   asset: Asset!
   ## Balances
   balance: BigDecimal!
@@ -714,7 +687,7 @@ type PortfolioStats
   ## Filters
   account: Account!
   asset: Asset!
-  assetType: AssetType!
+  assetType: String!
   ## Balances
   totalBalance: BigDecimal! @aggregate(fn: "last", arg: "balance")
   totalBalanceExact: BigInt! @aggregate(fn: "last", arg: "balanceExact")

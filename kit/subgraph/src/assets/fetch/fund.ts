@@ -23,21 +23,23 @@ export function fetchFund(address: Address): Fund {
 
     fund = new Fund(address);
     fund.type = AssetType.fund;
+    fund.asAccount = account.id;
     fund.name = name.reverted ? '' : name.value;
     fund.symbol = symbol.reverted ? '' : symbol.value;
     fund.decimals = decimals.reverted ? 18 : decimals.value;
     fund.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
+    fund.admins = [];
+    fund.supplyManagers = [];
+    fund.userManagers = [];
+
+    // Fund-specific fields
     fund.isin = isin.reverted ? '' : isin.value;
     fund.fundClass = fundClass.reverted ? '' : fundClass.value;
     fund.fundCategory = fundCategory.reverted ? '' : fundCategory.value;
     fund.managementFeeBps = managementFeeBps.reverted ? 0 : managementFeeBps.value;
     fund.paused = paused.reverted ? false : paused.value;
-    fund.asAccount = fund.id;
     fund.lastFeeCollection = BigInt.fromI32(0);
-    fund.admins = [];
-    fund.supplyManagers = [];
-    fund.userManagers = [];
     fund.save();
 
     account.asAsset = fund.id;

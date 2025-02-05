@@ -20,12 +20,12 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
 
     cryptoCurrency = new CryptoCurrency(address);
     cryptoCurrency.type = AssetType.cryptocurrency;
+    cryptoCurrency.asAccount = account.id;
     cryptoCurrency.name = name.reverted ? '' : name.value;
     cryptoCurrency.symbol = symbol.reverted ? '' : symbol.value;
     cryptoCurrency.decimals = decimals.reverted ? 18 : decimals.value;
     cryptoCurrency.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact, cryptoCurrency.decimals);
-    cryptoCurrency.asAccount = cryptoCurrency.id;
     cryptoCurrency.admins = [];
     cryptoCurrency.supplyManagers = [];
     cryptoCurrency.userManagers = [];

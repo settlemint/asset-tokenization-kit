@@ -22,19 +22,21 @@ export function fetchEquity(address: Address): Equity {
 
     equity = new Equity(address);
     equity.type = AssetType.equity;
+    equity.asAccount = account.id;
     equity.name = name.reverted ? '' : name.value;
     equity.symbol = symbol.reverted ? '' : symbol.value;
     equity.decimals = decimals.reverted ? 18 : decimals.value;
     equity.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
+    equity.admins = [];
+    equity.supplyManagers = [];
+    equity.userManagers = [];
+
+    // Equity-specific fields
     equity.isin = isin.reverted ? '' : isin.value;
     equity.equityClass = equityClass.reverted ? '' : equityClass.value;
     equity.equityCategory = equityCategory.reverted ? '' : equityCategory.value;
     equity.paused = paused.reverted ? false : paused.value;
-    equity.asAccount = equity.id;
-    equity.admins = [];
-    equity.supplyManagers = [];
-    equity.userManagers = [];
     equity.save();
 
     account.asAsset = equity.id;

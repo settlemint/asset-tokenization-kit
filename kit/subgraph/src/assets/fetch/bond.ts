@@ -27,26 +27,28 @@ export function fetchBond(address: Address): Bond {
 
     bond = new Bond(address);
     bond.type = AssetType.bond;
+    bond.asAccount = account.id;
     bond.name = name.reverted ? '' : name.value;
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
-    bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
-    bond.cap = toDecimals(bond.capExact, bond.decimals);
     bond.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
+    bond.admins = [];
+    bond.supplyManagers = [];
+    bond.userManagers = [];
+
+    // Bond-specific fields
+    bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
+    bond.cap = toDecimals(bond.capExact, bond.decimals);
     bond.maturityDate = maturityDate.reverted ? BigInt.zero() : maturityDate.value;
-    bond.isMatured = maturityDate.reverted ? false : isMatured.value;
+    bond.isMatured = isMatured.reverted ? false : isMatured.value;
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
     bond.isin = isin.reverted ? '' : isin.value;
     bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
     bond.redeemedAmount = BigInt.zero();
     bond.underlyingBalance = underlyingBalance.reverted ? BigInt.zero() : underlyingBalance.value;
-    bond.asAccount = bond.id;
     bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
-    bond.admins = [];
-    bond.supplyManagers = [];
-    bond.userManagers = [];
     bond.save();
 
     account.asAsset = bond.id;

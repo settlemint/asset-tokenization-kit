@@ -21,19 +21,21 @@ export function fetchStableCoin(address: Address): StableCoin {
 
     stableCoin = new StableCoin(address);
     stableCoin.type = AssetType.stablecoin;
+    stableCoin.asAccount = account.id;
     stableCoin.name = name.reverted ? '' : name.value;
     stableCoin.symbol = symbol.reverted ? '' : symbol.value;
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
-    stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
-    stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
-    stableCoin.collateral = toDecimals(stableCoin.collateralExact, stableCoin.decimals);
-    stableCoin.paused = paused.reverted ? false : paused.value;
-    stableCoin.asAccount = stableCoin.id;
     stableCoin.admins = [];
     stableCoin.supplyManagers = [];
     stableCoin.userManagers = [];
+
+    // StableCoin-specific fields
+    stableCoin.isin = isin.reverted ? '' : isin.value;
+    stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
+    stableCoin.collateral = toDecimals(stableCoin.collateralExact, stableCoin.decimals);
+    stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.save();
 
     account.asAsset = stableCoin.id;

@@ -1,4 +1,4 @@
-import { Address, ByteArray, Bytes, crypto } from '@graphprotocol/graph-ts';
+import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
 import { RoleGranted, RoleRevoked, Transfer } from '../../generated/templates/Bond/Bond';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
@@ -20,7 +20,7 @@ export function handleTransfer(event: Transfer): void {
 
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);
 
-  if (event.params.from === Address.zero()) {
+  if (event.params.from.equals(Address.zero())) {
     const to = fetchAccount(event.params.to);
     const mint = mintEvent(
       eventId(event),
@@ -31,6 +31,13 @@ export function handleTransfer(event: Transfer): void {
       event.params.value,
       bond.decimals
     );
+
+    log.info('Bond mint event: amount={}, to={}, sender={}, bond={}', [
+      mint.value.toString(),
+      mint.to.toHexString(),
+      mint.sender.toHexString(),
+      event.address.toHexString(),
+    ]);
 
     // increase total supply
     bond.totalSupplyExact = bond.totalSupplyExact.plus(mint.valueExact);
@@ -48,9 +55,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, bond.decimals);
     assetStats.mintedExact = event.params.value;
-  }
-
-  if (event.params.to === Address.zero()) {
+  } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
       eventId(event),
@@ -61,6 +66,13 @@ export function handleTransfer(event: Transfer): void {
       event.params.value,
       bond.decimals
     );
+
+    log.info('Bond burn event: amount={}, from={}, sender={}, bond={}', [
+      burn.value.toString(),
+      burn.from.toHexString(),
+      burn.sender.toHexString(),
+      event.address.toHexString(),
+    ]);
 
     // decrease total supply
     bond.totalSupplyExact = bond.totalSupplyExact.minus(burn.valueExact);
@@ -78,9 +90,8 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, bond.decimals);
     assetStats.burnedExact = event.params.value;
-  }
-
-  if (event.params.from !== Address.zero() && event.params.to !== Address.zero()) {
+  } else {
+    // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
     const to = fetchAccount(event.params.to);
     const transfer = transferEvent(
@@ -93,6 +104,14 @@ export function handleTransfer(event: Transfer): void {
       event.params.value,
       bond.decimals
     );
+
+    log.info('Bond transfer event: amount={}, from={}, to={}, sender={}, bond={}', [
+      transfer.value.toString(),
+      transfer.from.toHexString(),
+      transfer.to.toHexString(),
+      transfer.sender.toHexString(),
+      event.address.toHexString(),
+    ]);
 
     const fromBalance = fetchAssetBalance(bond.id, from.id, bond.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
@@ -127,30 +146,63 @@ export function handleTransfer(event: Transfer): void {
 
 export function handleRoleGranted(event: RoleGranted): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const account = fetchAccount(event.params.account);
 
-  roleGrantedEvent(eventId(event), event.block.timestamp, event.address, sender.id, event.params.role, account.id);
+  const roleGranted = roleGrantedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    fetchAccount(event.transaction.from).id,
+    event.params.role,
+    account.id
+  );
+
+  log.info('Bond role granted event: role={}, account={}, bond={}', [
+    roleGranted.role.toHexString(),
+    roleGranted.account.toHexString(),
+    event.address.toHexString(),
+  ]);
 
   // Handle different roles
   if (event.params.role.toHexString() == '0x0000000000000000000000000000000000000000000000000000000000000000') {
     // DEFAULT_ADMIN_ROLE
-    if (!bond.admins.includes(account.id)) {
-      bond.admins.push(account.id);
+    let found = false;
+    for (let i = 0; i < bond.admins.length; i++) {
+      if (bond.admins[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      bond.admins = bond.admins.concat([account.id]);
     }
   } else if (
     event.params.role.toHexString() == crypto.keccak256(ByteArray.fromUTF8('SUPPLY_MANAGEMENT_ROLE')).toHexString()
   ) {
     // SUPPLY_MANAGEMENT_ROLE
-    if (!bond.supplyManagers.includes(account.id)) {
-      bond.supplyManagers.push(account.id);
+    let found = false;
+    for (let i = 0; i < bond.supplyManagers.length; i++) {
+      if (bond.supplyManagers[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      bond.supplyManagers = bond.supplyManagers.concat([account.id]);
     }
   } else if (
     event.params.role.toHexString() == crypto.keccak256(ByteArray.fromUTF8('USER_MANAGEMENT_ROLE')).toHexString()
   ) {
     // USER_MANAGEMENT_ROLE
-    if (!bond.userManagers.includes(account.id)) {
-      bond.userManagers.push(account.id);
+    let found = false;
+    for (let i = 0; i < bond.userManagers.length; i++) {
+      if (bond.userManagers[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      bond.userManagers = bond.userManagers.concat([account.id]);
     }
   }
 
@@ -159,17 +211,29 @@ export function handleRoleGranted(event: RoleGranted): void {
 
 export function handleRoleRevoked(event: RoleRevoked): void {
   const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
   const account = fetchAccount(event.params.account);
 
-  roleRevokedEvent(eventId(event), event.block.timestamp, event.address, sender.id, event.params.role, account.id);
+  const roleRevoked = roleRevokedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    fetchAccount(event.transaction.from).id,
+    event.params.role,
+    account.id
+  );
+
+  log.info('Bond role revoked event: role={}, account={}, bond={}', [
+    roleRevoked.role.toHexString(),
+    roleRevoked.account.toHexString(),
+    event.address.toHexString(),
+  ]);
 
   // Handle different roles
   if (event.params.role.toHexString() == '0x0000000000000000000000000000000000000000000000000000000000000000') {
     // DEFAULT_ADMIN_ROLE
     const newAdmins: Bytes[] = [];
     for (let i = 0; i < bond.admins.length; i++) {
-      if (bond.admins[i] != account.id) {
+      if (!bond.admins[i].equals(account.id)) {
         newAdmins.push(bond.admins[i]);
       }
     }
@@ -180,7 +244,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     // SUPPLY_MANAGEMENT_ROLE
     const newSupplyManagers: Bytes[] = [];
     for (let i = 0; i < bond.supplyManagers.length; i++) {
-      if (bond.supplyManagers[i] != account.id) {
+      if (!bond.supplyManagers[i].equals(account.id)) {
         newSupplyManagers.push(bond.supplyManagers[i]);
       }
     }
@@ -191,7 +255,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     // USER_MANAGEMENT_ROLE
     const newUserManagers: Bytes[] = [];
     for (let i = 0; i < bond.userManagers.length; i++) {
-      if (bond.userManagers[i] != account.id) {
+      if (!bond.userManagers[i].equals(account.id)) {
         newUserManagers.push(bond.userManagers[i]);
       }
     }

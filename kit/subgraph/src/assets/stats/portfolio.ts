@@ -23,12 +23,19 @@ import { PortfolioStatsData } from '../../../generated/schema';
 
 export function newPortfolioStatsData(account: Bytes, asset: Bytes, assetType: string): PortfolioStatsData {
   const portfolioStats = new PortfolioStatsData('auto');
+
+  // Filters
   portfolioStats.account = account;
   portfolioStats.asset = asset;
   portfolioStats.assetType = assetType;
+
+  // Balances
   portfolioStats.balance = BigDecimal.zero();
   portfolioStats.balanceExact = BigInt.zero();
+
+  // Frozen
   portfolioStats.locked = BigDecimal.zero();
   portfolioStats.lockedExact = BigInt.zero();
+
   return portfolioStats;
 }
