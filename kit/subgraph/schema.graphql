@@ -151,6 +151,8 @@ type AssetBalance @entity {
   account: Account!
   value: BigDecimal!
   valueExact: BigInt!
+  approved: BigDecimal!
+  approvedExact: BigInt!
 }
 
 # --------------------------------------------------
@@ -337,6 +339,21 @@ type RoleRevokedEvent implements AssetEvent @entity(immutable: true) {
   sender: Account!
   role: Bytes!
   account: Account! # The account that lost the role
+}
+
+"""
+Entity for role admin changed events.
+Emitted when a role's admin role is changed.
+"""
+type RoleAdminChangedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  role: Bytes! # The role being modified
+  previousAdminRole: Bytes! # The old admin role
+  newAdminRole: Bytes! # The new admin role
 }
 
 """

@@ -1,12 +1,14 @@
 import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
-import { RoleGranted, RoleRevoked, Transfer } from '../../generated/templates/Bond/Bond';
+import { Approval, RoleAdminChanged, RoleGranted, RoleRevoked, Transfer } from '../../generated/templates/Bond/Bond';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType } from '../utils/enums';
 import { eventId } from '../utils/events';
+import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
+import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
 import { transferEvent } from './events/transfer';
@@ -263,4 +265,55 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   }
 
   bond.save();
+}
+
+export function handleApproval(event: Approval): void {
+  const bond = fetchBond(event.address);
+  const owner = fetchAccount(event.params.owner);
+  const spender = fetchAccount(event.params.spender);
+
+  // Update the owner's balance approved amount
+  const ownerBalance = fetchAssetBalance(bond.id, owner.id, bond.decimals);
+  ownerBalance.approvedExact = event.params.value;
+  ownerBalance.approved = toDecimals(event.params.value, bond.decimals);
+  ownerBalance.save();
+
+  const approval = approvalEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    fetchAccount(event.transaction.from).id,
+    owner.id,
+    spender.id,
+    event.params.value,
+    bond.decimals
+  );
+
+  log.info('Bond approval event: amount={}, owner={}, spender={}, bond={}', [
+    approval.value.toString(),
+    approval.owner.toHexString(),
+    approval.spender.toHexString(),
+    event.address.toHexString(),
+  ]);
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  const bond = fetchBond(event.address);
+
+  const roleAdminChanged = roleAdminChangedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    fetchAccount(event.transaction.from).id,
+    event.params.role,
+    event.params.previousAdminRole,
+    event.params.newAdminRole
+  );
+
+  log.info('Bond role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, bond={}', [
+    roleAdminChanged.role.toHexString(),
+    roleAdminChanged.previousAdminRole.toHexString(),
+    roleAdminChanged.newAdminRole.toHexString(),
+    event.address.toHexString(),
+  ]);
 }

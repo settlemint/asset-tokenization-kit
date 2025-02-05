@@ -12,6 +12,8 @@ export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number
     balance.account = account;
     balance.valueExact = BigInt.zero();
     balance.value = toDecimals(balance.valueExact, decimals);
+    balance.approvedExact = BigInt.zero();
+    balance.approved = toDecimals(balance.approvedExact, decimals);
     balance.save();
   }
 

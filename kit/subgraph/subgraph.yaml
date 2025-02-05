@@ -286,6 +286,8 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
       file: ./src/assets/cryptocurrency.ts
   - kind: ethereum/contract
     name: Equity
