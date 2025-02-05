@@ -79,6 +79,7 @@ export function AssetForm<
         onClose?.();
       },
       onError: (data) => {
+        console.log('ONERROR', data);
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           if (data.error.serverError instanceof Error) {
@@ -129,6 +130,8 @@ export function AssetForm<
       fieldsToValidate.map((field) => form.trigger(field as Path<Infer<S>>, { shouldFocus: true }))
     );
 
+    console.log('RESULTS', results);
+
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
@@ -140,6 +143,8 @@ export function AssetForm<
   };
 
   const isLastStep = currentStep === totalSteps - 1;
+
+  console.log('isLastStep', isLastStep);
 
   if (!mounted) {
     return <AssetFormSkeleton totalSteps={totalSteps} />;

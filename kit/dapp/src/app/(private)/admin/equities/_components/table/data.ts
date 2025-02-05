@@ -52,7 +52,6 @@ export async function getEquities() {
         ? dbEquity
         : {
             private: false,
-            organizationId: '',
           }),
     };
   });

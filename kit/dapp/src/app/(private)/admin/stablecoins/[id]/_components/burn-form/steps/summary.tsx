@@ -38,7 +38,7 @@ export function Summary({ address }: { address: Address }) {
               <dd className="font-medium text-sm">{values.address}</dd>
             </div>
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Symbol</dt>
+              <dt className="text-muted-foreground text-sm">Amount</dt>
               <dd className="font-medium text-sm">{values.amount}</dd>
             </div>
           </dl>
