@@ -35,7 +35,6 @@ export async function getFund(id: string) {
       ? dbFund[0]
       : {
           private: false,
-          organizationId: '',
         }),
   };
 }

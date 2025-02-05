@@ -52,7 +52,6 @@ export async function getFunds() {
         ? dbFund
         : {
             private: false,
-            organizationId: '',
           }),
     };
   });

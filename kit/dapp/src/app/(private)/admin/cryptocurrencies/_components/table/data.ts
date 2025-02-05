@@ -48,7 +48,6 @@ export async function getCryptocurrencies() {
         ? dbCryptocurrency
         : {
             private: false,
-            organizationId: '',
           }),
     };
   });
