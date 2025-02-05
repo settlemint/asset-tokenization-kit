@@ -8,11 +8,14 @@ import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
-import { type CollateralProofValidityDuration, CreateStablecoinOutputSchema } from './schema';
-import { CreateStablecoinFormSchema } from './schema';
+import {
+  type CollateralProofValidityDuration,
+  CreateStablecoinFormSchema,
+  CreateStablecoinOutputSchema,
+} from './schema';
 
 const CreateStablecoin = portalGraphql(`
-  mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Int!, $isin: String!) {
+  mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
     StableCoinFactoryCreate(
       address: $address
       from: $from
@@ -26,7 +29,7 @@ const CreateStablecoin = portalGraphql(`
 `);
 
 const CreateStablecoinPredictAddress = portalGraphql(`
-    query CreateStablecoinPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Int!) {
+  query CreateStablecoinPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
     StableCoinFactory(address: $address) {
       predictAddress(
         sender: $sender

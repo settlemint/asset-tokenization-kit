@@ -38,7 +38,9 @@ const CreateBondPredictAddress = portalGraphql(`
         name: $name
         symbol: $symbol
         isin: $isin
-      )
+      ){
+        predicted
+      }
     }
   }
 `);
@@ -65,7 +67,7 @@ export const createBond = actionClient
         isin: isin ?? '',
       });
 
-      const address = predictedAddress.BondFactory?.predictAddress;
+      const address = predictedAddress.BondFactory?.predictAddress?.predicted;
 
       if (!address) {
         throw new Error('Failed to predict the address');

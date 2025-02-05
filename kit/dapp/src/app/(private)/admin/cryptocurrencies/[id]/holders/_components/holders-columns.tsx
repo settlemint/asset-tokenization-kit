@@ -6,9 +6,9 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
-import type { CryptocurrencyHoldersBalance } from './data';
+import type { CryptoCurrencyHoldersBalance } from './data';
 
-const columnHelper = createColumnHelper<CryptocurrencyHoldersBalance['balances'][number]>();
+const columnHelper = createColumnHelper<CryptoCurrencyHoldersBalance>();
 
 export const columns = [
   columnHelper.accessor('id', {

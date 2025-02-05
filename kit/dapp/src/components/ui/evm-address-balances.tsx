@@ -6,7 +6,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
   query AddressBalances($account: String!) {
-    balances(where: {account: $account}) {
+    assetBalances(where: {account: $account}) {
       value
       asset {
         name
@@ -29,10 +29,10 @@ export function EvmAddressBalances({ address }: { address: string }) {
       const response = await theGraphClientStarterkits.request(EvmAddressBalancesQuery, {
         account: address,
       });
-      if (!response?.balances) {
+      if (!response?.assetBalances) {
         return [];
       }
-      return response.balances;
+      return response.assetBalances;
     },
     refetchInterval: 10000,
     staleTime: 5000,

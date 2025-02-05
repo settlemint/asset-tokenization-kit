@@ -8,7 +8,7 @@ import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
 import type { BondHoldersBalance } from './data';
 
-const columnHelper = createColumnHelper<BondHoldersBalance['balances'][number]>();
+const columnHelper = createColumnHelper<BondHoldersBalance>();
 
 export const columns = [
   columnHelper.accessor('id', {
