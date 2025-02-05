@@ -1,17 +1,43 @@
 import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
-import { Approval, RoleAdminChanged, RoleGranted, RoleRevoked, Transfer } from '../../generated/templates/Bond/Bond';
+import {
+  Approval,
+  BondMatured,
+  BondRedeemed,
+  Paused,
+  RoleAdminChanged,
+  RoleGranted,
+  RoleRevoked,
+  TokensFrozen,
+  TokensUnfrozen,
+  Transfer,
+  UnderlyingAssetTopUp,
+  UnderlyingAssetWithdrawn,
+  Unpaused,
+  UserBlocked,
+  UserUnblocked,
+} from '../../generated/templates/Bond/Bond';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { approvalEvent } from './events/approval';
+import { bondMaturedEvent } from './events/bondmatured';
+import { bondRedeemedEvent } from './events/bondredeemed';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
+import { pausedEvent } from './events/paused';
 import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
+import { tokensFrozenEvent } from './events/tokensfrozen';
+import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
+import { underlyingAssetTopUpEvent } from './events/underlyingassettopup';
+import { underlyingAssetWithdrawnEvent } from './events/underlyingassetwithdrawn';
+import { unpausedEvent } from './events/unpaused';
+import { userBlockedEvent } from './events/userblocked';
+import { userUnblockedEvent } from './events/userunblocked';
 import { fetchBond } from './fetch/bond';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
@@ -316,4 +342,205 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     roleAdminChanged.newAdminRole.toHexString(),
     event.address.toHexString(),
   ]);
+}
+
+export function handleBondMatured(event: BondMatured): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Bond matured event: bond={}, sender={}', [event.address.toHexString(), sender.id.toHexString()]);
+
+  bond.isMatured = true;
+  bond.save();
+
+  bondMaturedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleBondRedeemed(event: BondRedeemed): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const holder = fetchAccount(event.params.holder);
+
+  log.info('Bond redeemed event: amount={}, holder={}, sender={}, bond={}', [
+    event.params.bondAmount.toString(),
+    holder.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  // Update bond's redeemed amount
+  bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
+  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
+  bond.save();
+
+  bondRedeemedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    holder.id,
+    event.params.bondAmount,
+    event.params.underlyingAmount,
+    bond.decimals
+  );
+}
+
+export function handlePaused(event: Paused): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Bond paused event: sender={}, bond={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  bond.paused = true;
+  bond.save();
+
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleUnpaused(event: Unpaused): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Bond unpaused event: sender={}, bond={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  bond.paused = false;
+  bond.save();
+
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleTokensFrozen(event: TokensFrozen): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Bond tokens frozen event: amount={}, user={}, sender={}, bond={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
+  assetStats.frozen = toDecimals(event.params.amount, bond.decimals);
+  assetStats.frozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensFrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    bond.decimals
+  );
+}
+
+export function handleTokensUnfrozen(event: TokensUnfrozen): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Bond tokens unfrozen event: amount={}, user={}, sender={}, bond={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
+  assetStats.unfrozen = toDecimals(event.params.amount, bond.decimals);
+  assetStats.unfrozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensUnfrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    bond.decimals
+  );
+}
+
+export function handleUserBlocked(event: UserBlocked): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Bond user blocked event: user={}, sender={}, bond={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleUserUnblocked(event: UserUnblocked): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Bond user unblocked event: user={}, sender={}, bond={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const from = fetchAccount(event.params.from);
+
+  log.info('Bond underlying asset top up event: amount={}, from={}, sender={}, bond={}', [
+    event.params.amount.toString(),
+    from.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
+  bond.save();
+
+  underlyingAssetTopUpEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    from.id,
+    event.params.amount,
+    bond.decimals
+  );
+}
+
+export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn): void {
+  const bond = fetchBond(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const to = fetchAccount(event.params.to);
+
+  log.info('Bond underlying asset withdrawn event: amount={}, to={}, sender={}, bond={}', [
+    event.params.amount.toString(),
+    to.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
+  bond.save();
+
+  underlyingAssetWithdrawnEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    to.id,
+    event.params.amount,
+    bond.decimals
+  );
 }

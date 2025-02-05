@@ -299,6 +299,21 @@ type UnpausedEvent implements AssetEvent @entity(immutable: true) {
 }
 
 """
+Entity for tokens frozen events.
+Emitted when tokens are frozen (a custodian operation).
+"""
+type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  user: Account! # The user whose tokens were frozen
+  amount: BigDecimal! # The amount frozen
+  amountExact: BigInt! # The amount frozen in exact precision
+}
+
+"""
 Entity for tokens unfrozen events.
 Emitted when tokens are unfrozen (a custodian operation).
 """

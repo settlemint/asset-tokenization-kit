@@ -10,7 +10,7 @@ export function roleGrantedEvent(
   account: Bytes
 ): RoleGrantedEvent {
   const roleGrantedEvent = new RoleGrantedEvent(id);
-  roleGrantedEvent.eventName = 'RoleGranted';
+  roleGrantedEvent.eventName = 'Role Granted';
   roleGrantedEvent.timestamp = timestamp;
   roleGrantedEvent.emitter = emitter;
   roleGrantedEvent.sender = sender;

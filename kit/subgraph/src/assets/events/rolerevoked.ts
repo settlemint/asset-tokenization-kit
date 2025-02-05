@@ -10,7 +10,7 @@ export function roleRevokedEvent(
   account: Bytes
 ): RoleRevokedEvent {
   const roleRevokedEvent = new RoleRevokedEvent(id);
-  roleRevokedEvent.eventName = 'RoleRevoked';
+  roleRevokedEvent.eventName = 'Role Revoked';
   roleRevokedEvent.timestamp = timestamp;
   roleRevokedEvent.emitter = emitter;
   roleRevokedEvent.sender = sender;

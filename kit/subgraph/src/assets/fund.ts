@@ -1,5 +1,20 @@
 import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
-import { Approval, RoleAdminChanged, RoleGranted, RoleRevoked, Transfer } from '../../generated/templates/Fund/Fund';
+import {
+  Approval,
+  ManagementFeeCollected,
+  Paused,
+  PerformanceFeeCollected,
+  RoleAdminChanged,
+  RoleGranted,
+  RoleRevoked,
+  TokenWithdrawn,
+  TokensFrozen,
+  TokensUnfrozen,
+  Transfer,
+  Unpaused,
+  UserBlocked,
+  UserUnblocked,
+} from '../../generated/templates/Fund/Fund';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
@@ -7,11 +22,20 @@ import { AssetType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
+import { managementFeeCollectedEvent } from './events/managementfeecollected';
 import { mintEvent } from './events/mint';
+import { pausedEvent } from './events/paused';
+import { performanceFeeCollectedEvent } from './events/performancefeecollected';
 import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
+import { tokensFrozenEvent } from './events/tokensfrozen';
+import { tokensUnfrozenEvent } from './events/tokensunfrozen';
+import { tokenWithdrawnEvent } from './events/tokenwithdrawn';
 import { transferEvent } from './events/transfer';
+import { unpausedEvent } from './events/unpaused';
+import { userBlockedEvent } from './events/userblocked';
+import { userUnblockedEvent } from './events/userunblocked';
 import { fetchFund } from './fetch/fund';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
@@ -316,4 +340,180 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     roleAdminChanged.newAdminRole.toHexString(),
     event.address.toHexString(),
   ]);
+}
+
+export function handlePaused(event: Paused): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Fund paused event: sender={}, fund={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  fund.paused = true;
+  fund.save();
+
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleUnpaused(event: Unpaused): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Fund unpaused event: sender={}, fund={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  fund.paused = false;
+  fund.save();
+
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleTokensFrozen(event: TokensFrozen): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Fund tokens frozen event: amount={}, user={}, sender={}, fund={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(fund.id, AssetType.fund, fund.fundCategory, fund.fundClass);
+  assetStats.frozen = toDecimals(event.params.amount, fund.decimals);
+  assetStats.frozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensFrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    fund.decimals
+  );
+}
+
+export function handleTokensUnfrozen(event: TokensUnfrozen): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Fund tokens unfrozen event: amount={}, user={}, sender={}, fund={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(fund.id, AssetType.fund, fund.fundCategory, fund.fundClass);
+  assetStats.unfrozen = toDecimals(event.params.amount, fund.decimals);
+  assetStats.unfrozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensUnfrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    fund.decimals
+  );
+}
+
+export function handleUserBlocked(event: UserBlocked): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Fund user blocked event: user={}, sender={}, fund={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleUserUnblocked(event: UserUnblocked): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Fund user unblocked event: user={}, sender={}, fund={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleManagementFeeCollected(event: ManagementFeeCollected): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Fund management fee collected event: amount={}, timestamp={}, sender={}, fund={}', [
+    event.params.amount.toString(),
+    event.params.timestamp.toString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  managementFeeCollectedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    event.params.amount,
+    fund.decimals
+  );
+}
+
+export function handlePerformanceFeeCollected(event: PerformanceFeeCollected): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Fund performance fee collected event: amount={}, timestamp={}, sender={}, fund={}', [
+    event.params.amount.toString(),
+    event.params.timestamp.toString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  performanceFeeCollectedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    event.params.amount,
+    fund.decimals
+  );
+}
+
+export function handleTokenWithdrawn(event: TokenWithdrawn): void {
+  const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const token = fetchAccount(event.params.token);
+  const to = fetchAccount(event.params.to);
+
+  log.info('Fund token withdrawn event: token={}, to={}, amount={}, sender={}, fund={}', [
+    token.id.toHexString(),
+    to.id.toHexString(),
+    event.params.amount.toString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  tokenWithdrawnEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    token.id,
+    to.id,
+    event.params.amount,
+    fund.decimals
+  );
 }

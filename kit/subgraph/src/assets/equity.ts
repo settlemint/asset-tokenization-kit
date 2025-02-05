@@ -1,10 +1,16 @@
 import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
 import {
   Approval,
+  Paused,
   RoleAdminChanged,
   RoleGranted,
   RoleRevoked,
+  TokensFrozen,
+  TokensUnfrozen,
   Transfer,
+  Unpaused,
+  UserBlocked,
+  UserUnblocked,
 } from '../../generated/templates/Equity/Equity';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
@@ -14,10 +20,16 @@ import { eventId } from '../utils/events';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
+import { pausedEvent } from './events/paused';
 import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
+import { tokensFrozenEvent } from './events/tokensfrozen';
+import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
+import { unpausedEvent } from './events/unpaused';
+import { userBlockedEvent } from './events/userblocked';
+import { userUnblockedEvent } from './events/userunblocked';
 import { fetchEquity } from './fetch/equity';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
@@ -322,4 +334,112 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     roleAdminChanged.newAdminRole.toHexString(),
     event.address.toHexString(),
   ]);
+}
+
+export function handlePaused(event: Paused): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Equity paused event: sender={}, equity={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  equity.paused = true;
+  equity.save();
+
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleUnpaused(event: Unpaused): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('Equity unpaused event: sender={}, equity={}', [sender.id.toHexString(), event.address.toHexString()]);
+
+  equity.paused = false;
+  equity.save();
+
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+}
+
+export function handleTokensFrozen(event: TokensFrozen): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Equity tokens frozen event: amount={}, user={}, sender={}, equity={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(equity.id, AssetType.equity, equity.equityCategory, equity.equityClass);
+  assetStats.frozen = toDecimals(event.params.amount, equity.decimals);
+  assetStats.frozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensFrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    equity.decimals
+  );
+}
+
+export function handleTokensUnfrozen(event: TokensUnfrozen): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Equity tokens unfrozen event: amount={}, user={}, sender={}, equity={}', [
+    event.params.amount.toString(),
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  const assetStats = newAssetStatsData(equity.id, AssetType.equity, equity.equityCategory, equity.equityClass);
+  assetStats.unfrozen = toDecimals(event.params.amount, equity.decimals);
+  assetStats.unfrozenExact = event.params.amount;
+  assetStats.save();
+
+  tokensUnfrozenEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    user.id,
+    event.params.amount,
+    equity.decimals
+  );
+}
+
+export function handleUserBlocked(event: UserBlocked): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Equity user blocked event: user={}, sender={}, equity={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleUserUnblocked(event: UserUnblocked): void {
+  const equity = fetchEquity(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const user = fetchAccount(event.params.user);
+
+  log.info('Equity user unblocked event: user={}, sender={}, equity={}', [
+    user.id.toHexString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
 }
