@@ -22,6 +22,7 @@ export const mintStablecoin = actionClient
   .schema(MintStablecoinFormSchema)
   .outputSchema(MintStablecoinOutputSchema)
   .action(async ({ parsedInput: { address, to, amount, pincode } }) => {
+    console.log('MINTSTABLECOIN', address, to, amount, pincode);
     const user = await getAuthenticatedUser();
 
     const data = await portalClient.request(MintStableCoin, {

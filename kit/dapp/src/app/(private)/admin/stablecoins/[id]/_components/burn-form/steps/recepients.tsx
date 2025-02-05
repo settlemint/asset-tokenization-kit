@@ -11,14 +11,15 @@ export function Recipients() {
         <div className="mb-2">
           <h2 className="font-semibold text-foreground text-lg">Select Recipient</h2>
           <p className="text-muted-foreground text-sm">
-            Enter a wallet address to send tokens directly, or search for a user by their name or email.
+            Enter a wallet address from which the tokens will be burned, you can search for a user by their name, email
+            or address.
           </p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
         <AssetFormInput
           control={control}
-          name="address"
+          name="from"
           label="Wallet Address"
           placeholder="0x0000000000000000000000000000000000000000"
         />
@@ -27,4 +28,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['address'] as const;
+Recipients.validatedFields = ['from'] as const;

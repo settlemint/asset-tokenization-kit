@@ -35,11 +35,11 @@ export function Summary({ address }: { address: Address }) {
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Name</dt>
+              <dt className="text-muted-foreground text-sm">Address</dt>
               <dd className="font-medium text-sm">{values.address}</dd>
             </div>
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Symbol</dt>
+              <dt className="text-muted-foreground text-sm">Amount</dt>
               <dd className="font-medium text-sm">{values.amount}</dd>
             </div>
           </dl>
