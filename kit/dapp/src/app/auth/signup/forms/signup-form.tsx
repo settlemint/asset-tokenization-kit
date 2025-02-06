@@ -12,7 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,7 +51,6 @@ export function SignUpForm({
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-  const router = useRouter();
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -92,7 +90,8 @@ export function SignUpForm({
             const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
             const adminRedirect = decodedRedirectUrl.trim() || '/admin';
             const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
-            router.push(targetUrl);
+            // Force a full page refresh to ensure new auth state is recognized
+            window.location.href = targetUrl;
           } catch (err) {
             const error = err as Error;
             form.setError('root', {
