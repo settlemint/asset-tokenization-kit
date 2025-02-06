@@ -94,7 +94,7 @@ export function UserDropdown() {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0"
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_4px_12px_-4px_rgba(0,0,0,0.2)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_4px_12px_-4px_rgba(0,0,0,0.9)]"
         side="bottom"
         align="end"
         sideOffset={4}

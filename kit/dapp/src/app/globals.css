@@ -118,7 +118,7 @@
     --foreground: 0 0% 98%;
     --card: 0 0% 22%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 0 0% 22%;
     --popover-foreground: 0 0% 98%;
     --primary: 219 71% 41%;
     --primary-foreground: 240 5.9% 10%;
@@ -162,6 +162,16 @@
 
 @layer components {
   .dropdown-menu-item {
-    @apply cursor-pointer px-4 py-4 transition-none hover:bg-lm-gradient-menu hover:text-foreground focus:bg-lm-gradient-menu focus:text-foreground data-[highlighted]:bg-lm-gradient-menu data-[highlighted]:text-foreground dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
+    @apply cursor-pointer px-4 py-4 transition-none text-foreground !important;
+    @apply hover:bg-lm-gradient-menu focus:bg-lm-gradient-menu data-[highlighted]:bg-lm-gradient-menu !important;
+    @apply dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
+  }
+
+  .settlemint-light .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+    @apply bg-lm-gradient-menu !important;
+  }
+
+  .settlemint-dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+    @apply bg-dm-gradient-menu-hover !important;
   }
 }
