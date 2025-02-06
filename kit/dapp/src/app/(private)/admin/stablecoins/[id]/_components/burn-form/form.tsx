@@ -10,10 +10,14 @@ import { burnStablecoin } from './store';
 
 export function BurnStablecoinForm({
   address,
+  name,
+  symbol,
   assetConfig,
   onClose,
 }: {
   address: Address;
+  name: string;
+  symbol: string;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
@@ -24,6 +28,11 @@ export function BurnStablecoinForm({
       resolverAction={zodResolver(BurnStablecoinFormSchema)}
       onClose={onClose}
       submitLabel="Burn Asset"
+      messages={{
+        onCreate: () => `Burning ${name} (${symbol})`,
+        onSuccess: () => `${name} (${symbol}) burned successfully on chain`,
+        onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
+      }}
     >
       <Recipients />
       <Amount />

@@ -16,10 +16,9 @@ export function Summary({ address }: { address: Address }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm Update Collateral</h2>
+        <h2 className="font-semibold text-base">Review and confirm update proven collateral</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details of your update collateral before proceeding. Ensure the amount is bigger or equal to the
-          current supply.
+          Verify the details of your updated proven collateral before proceeding.
         </p>
       </div>
 
@@ -37,7 +36,7 @@ export function Summary({ address }: { address: Address }) {
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Address</dt>
-              <dd className="font-medium text-sm">{values.address}</dd>
+              <dd className="font-medium text-sm">{address}</dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>

@@ -9,10 +9,14 @@ import { updateCollateral } from './store';
 
 export function UpdateCollateralStablecoinForm({
   address,
+  name,
+  symbol,
   assetConfig,
   onClose,
 }: {
   address: Address;
+  name: string;
+  symbol: string;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
@@ -23,6 +27,11 @@ export function UpdateCollateralStablecoinForm({
       resolverAction={zodResolver(UpdateCollateralFormSchema)}
       onClose={onClose}
       submitLabel="Update collateral"
+      messages={{
+        onCreate: () => `Updating collateral for ${name} (${symbol})`,
+        onSuccess: () => `${name} (${symbol}) collateral updated successfully on chain`,
+        onError: (_input, error) => `Failed to update collateral ${name} (${symbol}) failed: ${error.message}`,
+      }}
     >
       <Amount />
       <Summary address={address} />
