@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import SettleMintIcon from "@/public/logos/settlemint-logo-i-dm.svg";
-import Image from "next/image";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import SettleMintIcon from '@/public/logos/settlemint-logo-i-dm.svg';
+import Image from 'next/image';
 
 export function NavHeader() {
   return (

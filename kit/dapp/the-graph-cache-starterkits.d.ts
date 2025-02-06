@@ -72,6 +72,16 @@ declare module 'gql.tada' {
       TadaDocumentNode<{ id: string; name: string; symbol: string; decimals: number; totalSupply: string; collateral: string; paused: boolean; }, {}, { fragment: "StableCoinFields"; on: "StableCoin"; masked: false; }>;
     "\n  query StableCoins {\n    stableCoins {\n      ...StableCoinFields\n    }\n  }\n":
       TadaDocumentNode<{ stableCoins: { id: string; name: string; symbol: string; decimals: number; totalSupply: string; collateral: string; paused: boolean; }[]; }, {}, void>;
+    "\n  query OgBond($id: ID!) {\n    bond(id: $id) {\n      name\n      symbol\n      totalSupply\n      maturityDate\n      faceValue\n    }\n  }\n":
+      TadaDocumentNode<{ bond: { name: string; symbol: string; totalSupply: string; maturityDate: string; faceValue: string; } | null; }, { id: string; }, void>;
+    "\n  query OgCryptoCurrency($id: ID!) {\n    cryptoCurrency(id: $id) {\n      name\n      symbol\n      totalSupply\n    }\n  }\n":
+      TadaDocumentNode<{ cryptoCurrency: { name: string; symbol: string; totalSupply: string; } | null; }, { id: string; }, void>;
+    "\n  query OgEquity($id: ID!) {\n    equity(id: $id) {\n      name\n      symbol\n      totalSupply\n      equityCategory\n      equityClass\n    }\n  }\n":
+      TadaDocumentNode<{ equity: { name: string; symbol: string; totalSupply: string; equityCategory: string; equityClass: string; } | null; }, { id: string; }, void>;
+    "\n  query OgFund($id: ID!) {\n    fund(id: $id) {\n      name\n      symbol\n      totalSupply\n      fundClass\n      fundCategory\n    }\n  }\n":
+      TadaDocumentNode<{ fund: { name: string; symbol: string; totalSupply: string; fundClass: string; fundCategory: string; } | null; }, { id: string; }, void>;
+    "\n  query OgStablecoin($id: ID!) {\n    stableCoin(id: $id) {\n      name\n      symbol\n      totalSupply\n      collateral\n    }\n  }\n":
+      TadaDocumentNode<{ stableCoin: { name: string; symbol: string; totalSupply: string; collateral: string; } | null; }, { id: string; }, void>;
     "\n  query SearchAssets {\n    assets {\n      id\n      name\n      symbol\n    }\n  }\n":
       TadaDocumentNode<{ assets: ({ __typename?: "StableCoin" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Bond" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Equity" | undefined; id: string; name: string; symbol: string; } | { __typename?: "CryptoCurrency" | undefined; id: string; name: string; symbol: string; } | { __typename?: "Fund" | undefined; id: string; name: string; symbol: string; })[]; }, {}, void>;
   }

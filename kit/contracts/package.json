@@ -15,7 +15,7 @@
     "build": "forge build --sizes",
     "prebuild": "hardhat compile",
     "test": "forge test -vvv",
-    "test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts",
+    "test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts --reset",
     "genesis": "bash -ex genesis-output.sh",
     "deploy:remote": "settlemint scs hardhat deploy remote",
     "prod:deploy": "turbo deploy:remote"

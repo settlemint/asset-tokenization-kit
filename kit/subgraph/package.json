@@ -1,5 +1,5 @@
 {
-  "name": "asset-tokenization",
+  "name": "subgraph",
   "version": "1.0.0",
   "license": "FSL-1.1-MIT",
   "author": {
@@ -8,12 +8,8 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "graph:codegen": "graph codegen",
-    "graph:build": "graph build",
-    "graph:create-local": "graph create --node http://localhost:8020/ asset-tokenization",
-    "graph:remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",
-    "graph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization",
-    "graph:test": "graph test",
+    "codegen": "graph codegen",
+    "build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
     "test:deploy": "bash graph-local-deploy.sh",
     "prod:deploy": "bash graph-remote-deploy.sh"
   },

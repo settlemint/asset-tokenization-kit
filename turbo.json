@@ -9,7 +9,7 @@
       "outputs": [".next/**", "!.next/cache/**", "cache_forge/**", "cache/**", "out/**", "artifacts/**"]
     },
     "lint": {
-      "dependsOn": ["codegen", "^lint", "//#format:biome"]
+      "dependsOn": ["codegen", "^lint"]
     },
     "dev": {
       "dependsOn": ["codegen"],
@@ -27,27 +27,36 @@
       "dependsOn": ["^deploy"],
       "cache": false
     },
-    "check-types": {
-      "dependsOn": ["^check-types", "codegen"]
-    },
     "codegen": {
       "dependsOn": ["^codegen"],
-      "cache": false
+      "outputs": ["*.-cache.d.ts", "*.-env.d.ts", "*.-schema.graphql", "src/lib/settlemint/**", "build/**"]
+    },
+    "subgraph#codegen": {
+      "dependsOn": ["contracts#build"],
+      "outputs": ["build/**"]
     },
     "//#format:biome": {
-      "cache": false
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "//#lint:biome": {
-      "cache": false
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "test": {
-      "dependsOn": ["dependencies", "^test"]
+      "dependsOn": ["dependencies", "^test"],
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "test:deploy": {
       "dependsOn": ["genesis", "^test:deploy"]
     },
+    "subgraph#test:deploy": {
+      "dependsOn": ["contracts#test:deploy"]
+    },
+    "contracts#test:deploy": {
+      "cache": false
+    },
     "dependencies": {
       "dependsOn": ["^dependencies"],
+      "inputs": ["$TURBO_DEFAULT$", "foundry.toml"],
       "outputs": ["dependencies/**"]
     },
     "genesis": {
