@@ -3,6 +3,7 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from 'zod';
 import { BurnFundFormSchema, BurnFundOutputSchema } from './schema';
 
 interface BurnFundResponse {
@@ -25,13 +26,13 @@ const BurnFund = portalGraphql(`
 `);
 
 export const burnFund = actionClient
-  .schema(BurnFundFormSchema)
+  .schema(BurnFundFormSchema.extend({ address: z.string() }))
   .outputSchema(BurnFundOutputSchema)
   .action(async ({ parsedInput: { address, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
 
     const data = await portalClient.request<BurnFundResponse>(BurnFund, {
-      address: address,
+      address,
       from: user.wallet as string,
       amount: amount.toString(),
       challengeResponse: pincode,

@@ -19,7 +19,7 @@ export function BurnFundForm({
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={burnFund}
+      storeAction={(formData) => burnFund({ ...formData, address })}
       resolverAction={zodResolver(BurnFundFormSchema)}
       onClose={onClose}
       submitLabel="Burn"
