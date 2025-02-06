@@ -18,7 +18,7 @@ export function Recipients() {
       <div className="grid grid-cols-1 gap-6">
         <AssetFormInput
           control={control}
-          name="address"
+          name="to"
           label="Wallet Address"
           placeholder="0x0000000000000000000000000000000000000000"
         />
@@ -27,4 +27,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['address'] as const;
+Recipients.validatedFields = ['to'] as const;
