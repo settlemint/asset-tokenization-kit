@@ -3,11 +3,11 @@ export function formatAssetType(type: string) {
     case 'bond':
       return 'Bond';
     case 'stablecoin':
-      return 'Stable coin';
+      return 'Stablecoin';
     case 'equity':
       return 'Equity';
     case 'cryptocurrency':
-      return 'Crypto currency';
+      return 'Cryptocurrency';
     case 'fund':
       return 'Fund';
     default:
