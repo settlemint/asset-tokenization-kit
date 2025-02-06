@@ -1,8 +1,10 @@
 'use server';
 
 import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 import { MintStablecoinFormSchema, MintStablecoinOutputSchema } from './schema';
 
 const MintStableCoin = portalGraphql(`
@@ -22,7 +24,6 @@ export const mintStablecoin = actionClient
   .schema(MintStablecoinFormSchema)
   .outputSchema(MintStablecoinOutputSchema)
   .action(async ({ parsedInput: { address, to, amount, pincode } }) => {
-    console.log('MINTSTABLECOIN', address, to, amount, pincode);
     const user = await getAuthenticatedUser();
 
     const data = await portalClient.request(MintStableCoin, {
@@ -30,7 +31,7 @@ export const mintStablecoin = actionClient
       from: user.wallet as string,
       to: to,
       amount: amount.toString(),
-      challengeResponse: pincode,
+      challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
     const transactionHash = data.StableCoinMint?.transactionHash;
