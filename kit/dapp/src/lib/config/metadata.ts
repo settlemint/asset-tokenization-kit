@@ -1,5 +1,6 @@
 import type { QueryKey } from '@tanstack/react-query';
 import type { Metadata } from 'next';
+import StandardOGImage from './metadata/standard-og.png';
 import { siteConfig } from './site';
 
 /**
@@ -11,6 +12,8 @@ export const metadata = {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
+  applicationName: siteConfig.name,
+  generator: 'SettleMint Asset Tokenization Starter Kit',
   description: siteConfig.description,
   keywords: ['blockchain', 'SettleMint', 'blockchain transformation', 'asset tokenization'],
   authors: [{ name: 'SettleMint', url: 'https://www.settlemint.com' }],
@@ -22,12 +25,28 @@ export const metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: StandardOGImage.src,
+        width: 1280,
+        height: 640,
+        alt: siteConfig.name,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.name,
     description: siteConfig.description,
     creator: '@SettleMintCom',
+    images: [
+      {
+        url: StandardOGImage.src,
+        width: 1280,
+        height: 640,
+        alt: siteConfig.name,
+      },
+    ],
   },
   icons: {
     icon: '/favicon.ico',
