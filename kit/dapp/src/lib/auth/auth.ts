@@ -109,7 +109,7 @@ export const auth = betterAuth({
  * Get the current session from the request headers
  * @throws {AuthError} If no session is found
  */
-async function getSession() {
+export async function getSession() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
