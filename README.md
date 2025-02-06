@@ -57,7 +57,7 @@ If you want to deploy and use your customised contracts, subgraph, and ABIs, fol
 
 #### Prerequisites
 
-1. Forge v0.3.0 - Install the latest Foundry from https://book.getfoundry.sh/getting-started/installation 
+1. Forge v0.3.0 - Install the latest Foundry from https://book.getfoundry.sh/getting-started/installation
 2. Node.js version >=20.18.1 - Required for The Graph CLI. We recommend using [fnm](https://github.com/Schniz/fnm) for Node.js installation.
 
 #### Deployment Steps
@@ -83,7 +83,7 @@ bun settlemint connect # Refresh subgraph list to include your newly deployed su
 # Setup dapp
 cd kit/dapp
 bun codegen
-bun init-contract-addresses -- 47561 # Replace with your chain ID
+bun addresses -- 47561 # Replace with your chain ID
 bun db:push
 
 # Start development server

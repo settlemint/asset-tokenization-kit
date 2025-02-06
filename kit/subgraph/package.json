@@ -11,7 +11,9 @@
     "codegen": "graph codegen",
     "build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
     "test:deploy": "bash graph-local-deploy.sh",
-    "prod:deploy": "bash graph-remote-deploy.sh"
+    "prod:deploy": "bash graph-remote-deploy.sh",
+    "format": "biome format --write .",
+    "lint": "biome lint --write --unsafe ."
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.95.0",

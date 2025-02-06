@@ -14,7 +14,7 @@ export function NavHeader() {
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
-              <span className="font-bold mt-1">SettleMint</span>
+              <span className='mt-1 font-bold'>SettleMint</span>
               <span className="text-xs">Asset Tokenization</span>
             </div>
           </a>
