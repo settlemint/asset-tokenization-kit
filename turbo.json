@@ -73,10 +73,10 @@
 			"persistent": true
 		},
 		"test": {
-			"dependsOn": ["codegen", "contracts#compile:forge"]
+			"dependsOn": ["codegen", "compile:forge"]
 		},
 		"genesis": {
-			"dependsOn": ["dependencies", "contracts#compile:forge"],
+			"dependsOn": ["dependencies", "compile:forge"],
 			"outputs": ["genesis-output.json"]
 		},
 		"deploy:local": {
