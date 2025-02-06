@@ -7,7 +7,7 @@ import { match } from 'path-to-regexp';
 const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
 const isIssuerAuthenticatedRoute = match(['/admin', '/admin/*path']);
 const isAdminAuthenticatedRoute = match(['/admin/supersecure', '/admin/supersecure/*path']);
-const isOgRoute = match(['/*/og', '/*/og/*path']);
+const isOgRoute = match(['/*so/og', '/*so/og/*path']);
 
 const routeRoleMap = [
   { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },
