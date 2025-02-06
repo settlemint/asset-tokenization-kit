@@ -28,6 +28,8 @@ export function UpdateCollateralButton({ address, name, symbol }: { name: string
         </SheetHeader>
         <UpdateCollateralStablecoinForm
           address={address}
+          name={name}
+          symbol={symbol}
           assetConfig={assetConfig.stablecoin}
           onClose={() => setOpen(false)}
         />

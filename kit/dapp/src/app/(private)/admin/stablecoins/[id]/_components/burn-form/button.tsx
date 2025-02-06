@@ -26,7 +26,13 @@ export function BurnTokensButton({ address, name, symbol }: { name: string; symb
             Easily burn your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <BurnStablecoinForm address={address} assetConfig={assetConfig.stablecoin} onClose={() => setOpen(false)} />
+        <BurnStablecoinForm
+          address={address}
+          name={name}
+          symbol={symbol}
+          assetConfig={assetConfig.stablecoin}
+          onClose={() => setOpen(false)}
+        />
       </SheetContent>
     </Sheet>
   );
