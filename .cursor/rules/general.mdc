@@ -1,0 +1,10 @@
+---
+description: General rules
+globs: *.*
+---
+# General Rules
+
+- we ONLY use Bun, NEVER suggest commands with npm, npx, yarn, pnpm, or anything else.
+  - bun add
+  - bunx
+  - bun run
