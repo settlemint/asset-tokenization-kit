@@ -1,4 +1,4 @@
-import EmptyOGImage from '@/lib/config/metadata/empty-og.png' assert { type: 'image' };
+import EmptyOGImage from '@/lib/config/metadata/empty-og.png';
 import { formatTokenValue } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { ImageResponse } from 'next/og';
