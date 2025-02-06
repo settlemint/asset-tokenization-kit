@@ -1,6 +1,6 @@
 import type { QueryKey } from '@tanstack/react-query';
 import type { Metadata } from 'next';
-import StandardOGImage from './metadata/standard-og.png';
+import StandardOGImage from './metadata/standard-og.png' assert { type: 'image' };
 import { siteConfig } from './site';
 
 /**

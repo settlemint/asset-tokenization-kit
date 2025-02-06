@@ -1,11 +1,12 @@
-import EmptyOGImage from '@/lib/config/metadata/empty-og.png';
+import EmptyOGImage from '@/lib/config/metadata/empty-og.png' assert { type: 'image' };
 import { formatTokenValue } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { ImageResponse } from 'next/og';
 import { getGravatarUrl } from 'react-awesome-gravatar';
 import { getAddress } from 'viem';
 
-export const runtime = 'edge';
+// Remove edge runtime as we're running in Node.js
+// export const runtime = 'edge';
 
 interface RouteParams {
   params: Promise<{
@@ -49,7 +50,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   // Construct absolute URL for the background image
   const imageUrl = new URL(EmptyOGImage.src, url.origin).toString();
 
-  return new ImageResponse(
+  const imageResponse = new ImageResponse(
     <div tw="flex flex-col w-full h-full">
       {/* biome-ignore lint/nursery/noImgElement: <explanation> */}
       <img src={imageUrl} alt="Background" tw="absolute top-0 left-0 w-full h-full object-cover" />
@@ -86,4 +87,14 @@ export async function GET(request: Request, { params }: RouteParams) {
       width: 1280,
     }
   );
+
+  // Add caching headers for 1 hour
+  const headers = new Headers(imageResponse.headers);
+  headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=60');
+
+  return new Response(imageResponse.body, {
+    headers,
+    status: imageResponse.status,
+    statusText: imageResponse.statusText,
+  });
 }
