@@ -64,6 +64,14 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: https://console-release.settlemint.com
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis deploy:local --affected
 
@@ -76,3 +84,22 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/contracts/artifacts/contracts/**/*.json
             !kit/contracts/artifacts/contracts/**/*.dbg.json
+
+
+  security:
+    name: Security
+    runs-on: namespace-profile-starterkit
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Secret Scanning (Trivy)
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          format: 'table'
+          exit-code: '1'
+          scanners: 'secret'
