@@ -17,10 +17,9 @@
 		"compile:forge": "forge build --sizes",
 		"compile:hardhat": "hardhat compile",
 		"test": "forge test -vvv",
-		"test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts --reset",
 		"genesis": "bash -ex genesis-output.sh",
 		"deploy:remote": "settlemint scs hardhat deploy remote",
-		"prod:deploy": "turbo deploy:remote"
+		"deploy:local": "settlemint scs hardhat deploy local --reset"
 	},
 	"dependencies": {
 		"@nomicfoundation/hardhat-foundry": "1.1.3",

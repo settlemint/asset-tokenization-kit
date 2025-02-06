@@ -13,7 +13,7 @@
 			"outputs": ["*-cache.d.ts"]
 		},
 		"codegen:graph": {
-			"dependsOn": ["compile:hardhat"],
+			"dependsOn": ["contracts#compile:hardhat"],
 			"outputs": ["generated/**"]
 		},
 		"dependencies": {
@@ -57,6 +57,35 @@
 		"build": {
 			"dependsOn": ["codegen", "addresses"],
 			"outputs": [".next/**", "!.next/cache/**", "build/**"]
+		},
+		"//#docker": {
+			"cache": false
+		},
+		"publish-docker": {
+			"cache": false
+		},
+		"//#publish-npm": {
+			"cache": false
+		},
+		"dev": {
+			"dependsOn": ["codegen"],
+			"cache": false,
+			"persistent": true
+		},
+		"test": {
+			"dependsOn": ["codegen", "contracts#compile:forge"]
+		},
+		"genesis": {
+			"dependsOn": ["dependencies", "contracts#compile:forge"],
+			"outputs": ["genesis-output.json"]
+		},
+		"deploy:local": {
+			"dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
+			"cache": false
+		},
+		"deploy:remote": {
+			"dependsOn": ["compile:hardhat", "^deploy:remote"],
+			"cache": false
 		}
 	}
 }

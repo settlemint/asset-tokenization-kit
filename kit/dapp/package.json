@@ -10,7 +10,7 @@
 	},
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "next build && rm -Rf ./node_modules/next/dist",
 		"start": "next start",
 		"format:biome": "biome format --write .",
 		"lint:biome": "biome lint .",
@@ -67,7 +67,6 @@
 		"class-variance-authority": "0.7.1",
 		"clsx": "2.1.1",
 		"cmdk": "1.0.4",
-		"date-fns": "4.1.0",
 		"drizzle-orm": "0.39.2",
 		"input-otp": "1.4.2",
 		"lucide-react": "0.474.0",

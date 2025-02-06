@@ -1,4 +1,4 @@
-name: CI
+name: PR
 
 on:
   pull_request:
@@ -53,88 +53,15 @@ jobs:
         id: package-version
         run: bash .github/scripts/update-version.sh
 
-      - name: Lint & Check Types
-        run: bunx turbo run lint test build test:deploy --affected
+      - name: Turbo!
+        run: bunx turbo dependencies lint build test genesis deploy:local --affected
 
-
-
-      - name: Build predeployed subgraph
-        working-directory: kit/subgraph
-        run: |
-         bun graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt
-
-      - name: Store genesis output
+      - name: Store predeployed output
         uses: actions/upload-artifact@v4
         with:
-          name: genesis-output
-          path: kit/contracts/genesis-output.json
-
-      - name: Store subgraph output
-        uses: actions/upload-artifact@v4
-        with:
-          name: subgraph-output
-          path: kit/subgraph/subgraph-output.txt
-
-      - name: Store genesis output
-        uses: actions/upload-artifact@v4
-        with:
-          name: abi-output
+          name: predeployed-output
           path: |
+            kit/contracts/genesis-output.json
+            kit/subgraph/subgraph-output.txt
             kit/contracts/artifacts/contracts/**/*.json
             !kit/contracts/artifacts/contracts/**/*.dbg.json
-
-      - name: Login to npm
-        if: ${{ env.TAG != 'pr' }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ env.NPM_TOKEN }}" >> ~/.npmrc
-
-      - name: Publish
-        if: ${{ env.TAG != 'pr' }}
-        run: |
-          PUBLISH_TASKS=""
-          if [[ "$PUBLISH_NPM" == "true" ]]; then
-            PUBLISH_TASKS="$PUBLISH_TASKS publish-npm"
-          fi
-          if [[ "$PUBLISH_DOCKER" == "true" ]]; then
-            PUBLISH_TASKS="$PUBLISH_TASKS publish-docker"
-          fi
-          if [[ -n "$PUBLISH_TASKS" ]]; then
-            bunx turbo run $PUBLISH_TASKS
-          fi
-        env:
-          PUBLISH_NPM: true
-          PUBLISH_DOCKER: true
-
-      - name: Auto-commit updated package versions
-        uses: stefanzweifel/git-auto-commit-action@v5
-        if: ${{ env.TAG == 'latest' }}
-        with:
-          commit_message: "chore: update package versions [skip ci]"
-          branch: main
-          file_pattern: 'package.json'
-
-      - name: Run Trivy vulnerability scanner on the custom deployment docker image
-        if: ${{ env.TAG != 'pr' }}
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          image-ref: 'ghcr.io/settlemint/starterkit-asset-tokenization:${{ env.VERSION }}'
-          format: 'table'
-          exit-code: '1'
-          trivy-config: trivy-secret.yaml
-          severity: "HIGH,CRITICAL"
-          scanners: 'secret'
-
-      - name: Run Drizzle migrations
-        if: ${{ env.TAG != 'pr' }}
-        run: bunx drizzle-kit push --force
-        working-directory: kit/dapp
-
-      - name: Update Custom Deployment
-        if: ${{ env.TAG != 'pr' }}
-        uses: settlemint/settlemint-action@main
-        with:
-          auto-connect: false
-          access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: platform update custom-deployment ${{ env.VERSION }} --wait
