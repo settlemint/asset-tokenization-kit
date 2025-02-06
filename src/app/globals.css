@@ -1,0 +1,7 @@
+@layer components {
+  .dropdown-menu-item {
+    @apply cursor-pointer px-4 py-4 transition-none text-foreground !important;
+    @apply hover:bg-lm-gradient-menu focus:bg-lm-gradient-menu data-[highlighted]:bg-lm-gradient-menu !important;
+    @apply dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
+  }
+}

@@ -159,3 +159,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .dropdown-menu-item {
+    @apply cursor-pointer px-4 py-4 transition-none hover:bg-lm-gradient-menu hover:text-foreground focus:bg-lm-gradient-menu focus:text-foreground data-[highlighted]:bg-lm-gradient-menu data-[highlighted]:text-foreground dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
+  }
+}
