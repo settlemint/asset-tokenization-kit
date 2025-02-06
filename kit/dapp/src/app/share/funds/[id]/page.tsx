@@ -1,0 +1,48 @@
+import { getOgFund } from '@/app/share/funds/[id]/_components/data';
+import type { Metadata } from 'next';
+
+interface SharePageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
+  const { id } = await params;
+  const fund = await getOgFund(id);
+
+  if (!fund) {
+    return {
+      title: 'Asset Not Found',
+      description: 'The requested asset could not be found.',
+    };
+  }
+
+  return {
+    title: fund?.name,
+    openGraph: {
+      images: [
+        {
+          url: `/share/funds/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: fund?.name,
+        },
+      ],
+    },
+    twitter: {
+      images: [
+        {
+          url: `/share/funds/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: fund?.name,
+        },
+      ],
+    },
+  };
+}
+
+export default function FundSharePage() {
+  return null;
+}
