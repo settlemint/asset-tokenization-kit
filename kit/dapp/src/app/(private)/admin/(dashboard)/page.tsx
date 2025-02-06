@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { AssetsWidget } from './_components/widgets/assets/assets';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
 import { UsersWidget } from './_components/widgets/users/users';
