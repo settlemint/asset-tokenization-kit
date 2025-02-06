@@ -17,7 +17,7 @@
 		"compile:forge": "forge build --sizes",
 		"compile:hardhat": "hardhat compile",
 		"test": "forge test -vvv",
-		"genesis": "bash -ex genesis-output.sh",
+		"genesis": "bash -e genesis-output.sh",
 		"deploy:remote": "settlemint scs hardhat deploy remote",
 		"deploy:local": "settlemint scs hardhat deploy local --reset"
 	},
