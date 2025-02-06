@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
 interface WrongRolePageProps {
-  searchParams: {
+  searchParams: Promise<{
     rd?: string;
-  };
+  }>;
 }
 
-export default function WrongRolePage({ searchParams }: WrongRolePageProps) {
+export default async function WrongRolePage({ searchParams }: WrongRolePageProps) {
   const router = useRouter();
-  const { rd } = searchParams;
+  const { rd } = await searchParams;
   const returnUrl = rd ? decodeURIComponent(rd) : '/';
 
   const handleSignOut = useCallback(async () => {
@@ -22,11 +22,11 @@ export default function WrongRolePage({ searchParams }: WrongRolePageProps) {
       fetchOptions: {
         onSuccess: () => {
           // Redirect to login page with return URL
-          router.push(`/auth/signin?rd=${encodeURIComponent(returnUrl)}`);
+          window.location.href = `/auth/signin?rd=${encodeURIComponent(returnUrl)}`;
         },
       },
     });
-  }, [router, returnUrl]);
+  }, [returnUrl]);
 
   return (
     <div className="w-full max-w-xs">
