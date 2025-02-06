@@ -122,6 +122,7 @@ export function AssetForm<
     // Mark fields as touched
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<Infer<S>>);
+      console.log('VALUE', value);
       form.setValue(field as Path<Infer<S>>, value, { shouldValidate: true, shouldTouch: true });
     }
 
