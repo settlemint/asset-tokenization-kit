@@ -30,6 +30,11 @@ export type AssetFormProps<
   invalidate: QueryKey[];
   onClose?: () => void;
   submitLabel?: string;
+  messages?: {
+    onCreate: (input: Infer<S>) => string;
+    onSuccess: (input: Infer<S>) => string;
+    onError: (input: Infer<S>, error: Error) => string;
+  };
 };
 
 export function AssetForm<
@@ -46,6 +51,7 @@ export function AssetForm<
   onClose,
   invalidate,
   submitLabel,
+  messages = getAssetCreateMessages(),
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -67,19 +73,18 @@ export function AssetForm<
           return;
         }
         toast.promise(waitForTransactionMining(data), {
-          loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
+          loading: messages.onCreate(input as Infer<S>),
           success: () => {
             invalidateTags(invalidate);
-            return `${input.assetName} (${input.symbol}) created successfully on chain`;
+            return messages.onSuccess(input as Infer<S>);
           },
-          error: (error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+          error: (error: Error) => messages.onError(input as Infer<S>, error),
         });
 
         resetFormAndAction();
         onClose?.();
       },
       onError: (data) => {
-        console.log('ONERROR', data);
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           if (data.error.serverError instanceof Error) {
@@ -174,3 +179,9 @@ export function AssetForm<
     </div>
   );
 }
+
+const getAssetCreateMessages = <Input extends { assetName: string; symbol: string }>() => ({
+  onCreate: (input: Input) => `Creating ${input.assetName} (${input.symbol})`,
+  onSuccess: (input: Input) => `${input.assetName} (${input.symbol}) created successfully on chain`,
+  onError: (input: Input, error: Error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+});

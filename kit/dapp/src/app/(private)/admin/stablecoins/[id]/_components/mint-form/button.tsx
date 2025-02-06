@@ -26,7 +26,13 @@ export function MintTokensButton({ address, name, symbol }: { name: string; symb
             Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <MintStablecoinForm address={address} assetConfig={assetConfig.stablecoin} onClose={() => setOpen(false)} />
+        <MintStablecoinForm
+          address={address}
+          name={name}
+          symbol={symbol}
+          assetConfig={assetConfig.stablecoin}
+          onClose={() => setOpen(false)}
+        />
       </SheetContent>
     </Sheet>
   );

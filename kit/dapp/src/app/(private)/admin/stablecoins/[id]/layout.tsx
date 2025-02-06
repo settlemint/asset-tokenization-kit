@@ -1,3 +1,4 @@
+import { UpdateCollateralButton } from '@/app/(private)/admin/stablecoins/[id]/_components/update-collateral-form/button';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
@@ -108,6 +109,9 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <BurnTokensButton address={id as Address} name={stableCoin.name} symbol={stableCoin.symbol} />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <UpdateCollateralButton address={id as Address} name={stableCoin.name} symbol={stableCoin.symbol} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

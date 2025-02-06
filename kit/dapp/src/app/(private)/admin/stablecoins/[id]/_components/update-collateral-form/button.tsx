@@ -5,28 +5,28 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BurnStablecoinForm } from './form';
+import { UpdateCollateralStablecoinForm } from './form';
 
-export function BurnTokensButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
+export function UpdateCollateralButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          Burn tokens
+          Update proven collateral
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>
-            Burn {name} ({symbol})
+            Update {name} ({symbol}) proven collateral
           </SheetTitle>
           <SheetDescription>
-            Easily burn your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
+            Update the proven collateral for {name} ({symbol}).
           </SheetDescription>
         </SheetHeader>
-        <BurnStablecoinForm
+        <UpdateCollateralStablecoinForm
           address={address}
           name={name}
           symbol={symbol}
