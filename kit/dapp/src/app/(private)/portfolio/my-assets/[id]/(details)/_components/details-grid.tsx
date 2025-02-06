@@ -1,3 +1,4 @@
+import { formatAssetType } from '@/app/(private)/portfolio/my-assets/_utils/format-asset-type';
 import { getMyAsset } from '@/app/(private)/portfolio/my-assets/data';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -26,7 +27,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
       <CardContent className="grid grid-cols-3 gap-x-4 gap-y-8">
         <DetailsGridItem label="Name">{myAsset.asset.name}</DetailsGridItem>
         <DetailsGridItem label="Symbol">{myAsset.asset.symbol}</DetailsGridItem>
-        <DetailsGridItem label="Type">{myAsset.asset.type}</DetailsGridItem>
+        <DetailsGridItem label="Type">{formatAssetType(myAsset.asset.type)}</DetailsGridItem>
         {myAsset.asset.__typename === 'StableCoin' && (
           <>
             <DetailsGridItem label="ISIN">{myAsset.asset.isin}</DetailsGridItem>
