@@ -92,7 +92,8 @@ export function SignUpForm({
             const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
             const adminRedirect = decodedRedirectUrl.trim() || '/admin';
             const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
-            router.push(targetUrl);
+            // Force a full page refresh to ensure new auth state is recognized
+            window.location.href = targetUrl;
           } catch (err) {
             const error = err as Error;
             form.setError('root', {

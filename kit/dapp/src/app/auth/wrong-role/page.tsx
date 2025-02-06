@@ -6,22 +6,35 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
-export default function WrongRolePage() {
+interface WrongRolePageProps {
+  searchParams: {
+    rd?: string;
+  };
+}
+
+export default function WrongRolePage({ searchParams }: WrongRolePageProps) {
   const router = useRouter();
+  const { rd } = searchParams;
+  const returnUrl = rd ? decodeURIComponent(rd) : '/';
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push('/'); // redirect to login page
+          // Redirect to login page with return URL
+          router.push(`/auth/signin?rd=${encodeURIComponent(returnUrl)}`);
         },
       },
     });
-  }, [router]);
+  }, [router, returnUrl]);
 
   return (
     <div className="w-full max-w-xs">
-      <h1>You are not authorized to access this page</h1>
+      <h1 className="font-semibold text-xl">You are not authorized to access this page</h1>
+      <p className="mt-2 text-muted-foreground text-sm">
+        You don&apos;t have the required role to access this page. Please sign in with an account that has the
+        appropriate permissions.
+      </p>
       <div className="mx-auto mt-8 flex gap-4">
         <Button asChild variant="default">
           <Link href="/">Go home</Link>

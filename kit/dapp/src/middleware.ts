@@ -7,6 +7,7 @@ import { match } from 'path-to-regexp';
 const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
 const isIssuerAuthenticatedRoute = match(['/admin', '/admin/*path']);
 const isAdminAuthenticatedRoute = match(['/admin/supersecure', '/admin/supersecure/*path']);
+const isOgRoute = match(['/*/og', '/*/og/*path']);
 
 const routeRoleMap = [
   { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },
@@ -25,6 +26,10 @@ function buildRedirectUrl(request: NextRequest): URL {
 
 function buildWrongRoleRedirectUrl(request: NextRequest): URL {
   const redirectUrl = new URL('/auth/wrong-role', request.url);
+  const returnPath = request.nextUrl.search
+    ? `${request.nextUrl.pathname}${request.nextUrl.search}`
+    : request.nextUrl.pathname;
+  redirectUrl.searchParams.set('rd', returnPath);
   return redirectUrl;
 }
 
@@ -32,6 +37,11 @@ export default async function middleware(request: NextRequest) {
   const proxyResponse = proxyMiddleware(request);
   if (proxyResponse) {
     return proxyResponse;
+  }
+
+  // Skip authentication for OG routes
+  if (isOgRoute(request.nextUrl.pathname)) {
+    return NextResponse.next();
   }
 
   const { data } = await betterFetch<{ session: Session; user: User & { role: 'user' | 'issuer' | 'admin' } }>(

@@ -42,7 +42,7 @@ export function SignInForm({
   const onSubmit = async (data: SignInFormData) => {
     await authClient.signIn.email(data, {
       onSuccess: () => {
-        router.push(decodedRedirectUrl);
+        window.location.href = decodedRedirectUrl;
       },
       onError: (ctx) => {
         form.setError('root', {
