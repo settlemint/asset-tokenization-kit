@@ -51,7 +51,7 @@ export function AssetForm<
   onClose,
   invalidate,
   submitLabel,
-  messages = getAssetCreateMessages<S>(),
+  messages = getAssetCreateMessages(),
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -180,9 +180,8 @@ export function AssetForm<
   );
 }
 
-const getAssetCreateMessages = <S extends Schema>() => ({
-  onCreate: (input: Infer<S>) => `Creating ${input.assetName} (${input.symbol})`,
-  onSuccess: (input: Infer<S>) => `${input.assetName} (${input.symbol}) created successfully on chain`,
-  onError: (input: Infer<S>, error: Error) =>
-    `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+const getAssetCreateMessages = <Input extends { assetName: string; symbol: string }>() => ({
+  onCreate: (input: Input) => `Creating ${input.assetName} (${input.symbol})`,
+  onSuccess: (input: Input) => `${input.assetName} (${input.symbol}) created successfully on chain`,
+  onError: (input: Input, error: Error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
 });
