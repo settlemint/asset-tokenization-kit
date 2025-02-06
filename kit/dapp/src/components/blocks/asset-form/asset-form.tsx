@@ -122,7 +122,6 @@ export function AssetForm<
     // Mark fields as touched
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<Infer<S>>);
-      console.log('VALUE', value);
       form.setValue(field as Path<Infer<S>>, value, { shouldValidate: true, shouldTouch: true });
     }
 
@@ -130,8 +129,6 @@ export function AssetForm<
     const results = await Promise.all(
       fieldsToValidate.map((field) => form.trigger(field as Path<Infer<S>>, { shouldFocus: true }))
     );
-
-    console.log('RESULTS', results);
 
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
@@ -144,8 +141,6 @@ export function AssetForm<
   };
 
   const isLastStep = currentStep === totalSteps - 1;
-
-  console.log('isLastStep', isLastStep);
 
   if (!mounted) {
     return <AssetFormSkeleton totalSteps={totalSteps} />;

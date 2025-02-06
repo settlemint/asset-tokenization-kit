@@ -43,8 +43,6 @@ export function AssetFormButton({
     return isLastStep ? submitLabel : 'Next';
   };
 
-  console.log('isSubmitting', isSubmitting);
-  console.log('isLastStep', isLastStep);
   return (
     <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (
