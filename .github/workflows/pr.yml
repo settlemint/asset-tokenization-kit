@@ -32,8 +32,15 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            ./.turbo
+            .turbo
+            node_modules
             ~/.bun/install/cache
+
+      - name: Breakpoint if tests failed
+        uses: namespacelabs/breakpoint-action@v0
+        with:
+          duration: 30m
+          authorized-users: roderik
 
       - name: Start Docker Compose
         run: docker compose up -d
