@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
+import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
 import { BurnTokensButton } from './_components/burn-form/button';
@@ -20,6 +21,41 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
+  const { id } = await params;
+  const stableCoin = await getStableCoinTitle(id);
+
+  if (!stableCoin) {
+    return {
+      title: 'Stablecoin not found',
+    };
+  }
+
+  return {
+    title: stableCoin?.name,
+    openGraph: {
+      images: [
+        {
+          url: `/admin/stablecoins/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: stableCoin?.name,
+        },
+      ],
+    },
+    twitter: {
+      images: [
+        {
+          url: `/admin/stablecoins/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: stableCoin?.name,
+        },
+      ],
+    },
+  };
 }
 
 const tabs = (id: string): TabItemProps[] => [

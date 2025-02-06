@@ -30,6 +30,13 @@ const EquitiesModule = buildModule('EquitiesModule', (m) => {
   m.call(aapl, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
   m.call(aapl, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
 
+  // Mint and burn some tokens
+  const mintAmount = 1000; // 1000 shares (0 decimals)
+  const burnAmount = 200; // 200 shares (0 decimals)
+
+  const mintEquity = m.call(aapl, 'mint', [deployer, mintAmount], { id: 'mintEquity' });
+  m.call(aapl, 'burn', [burnAmount], { id: 'burnEquity', after: [mintEquity] });
+
   return { aapl };
 });
 

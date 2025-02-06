@@ -87,7 +87,12 @@ export function SignUpForm({
               address: session.data.user.wallet,
               pincode: data.walletPincode,
             });
-            router.push(decodedRedirectUrl);
+            // Check user role and redirect accordingly
+            const userRole = session.data.user.role;
+            const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
+            const adminRedirect = decodedRedirectUrl.trim() || '/admin';
+            const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
+            router.push(targetUrl);
           } catch (err) {
             const error = err as Error;
             form.setError('root', {

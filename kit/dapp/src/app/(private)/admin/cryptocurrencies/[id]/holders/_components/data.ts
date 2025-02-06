@@ -3,32 +3,34 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
-const CryptocurrencyBalancesFragment = theGraphGraphqlStarterkits(`
-  fragment CryptocurrencyBalancesFields on CryptoCurrency {
-    balances {
+const CryptoCurrencyBalancesFragment = theGraphGraphqlStarterkits(`
+  fragment CryptoCurrencyBalancesFields on AssetBalance {
       id
       value
-    }
   }
 `);
 
-const CryptocurrencyBalances = theGraphGraphqlStarterkits(
+const CryptoCurrencyBalances = theGraphGraphqlStarterkits(
   `
-  query CryptocurrencyBalances($id: ID!) {
+  query CryptoCurrencyBalances($id: ID!) {
     cryptoCurrency(id: $id) {
-      ...CryptocurrencyBalancesFields
+      asAccount {
+        balances {
+          ...CryptoCurrencyBalancesFields
+        }
+      }
     }
   }
 `,
-  [CryptocurrencyBalancesFragment]
+  [CryptoCurrencyBalancesFragment]
 );
 
-export type CryptocurrencyHoldersBalance = FragmentOf<typeof CryptocurrencyBalancesFragment>;
+export type CryptoCurrencyHoldersBalance = FragmentOf<typeof CryptoCurrencyBalancesFragment>;
 
-export async function getCryptocurrencyBalances(id: string) {
-  const data = await theGraphClientStarterkits.request(CryptocurrencyBalances, { id });
+export async function getCryptoCurrencyBalances(id: string) {
+  const data = await theGraphClientStarterkits.request(CryptoCurrencyBalances, { id });
   if (!data.cryptoCurrency) {
-    throw new Error('Cryptocurrency not found');
+    throw new Error('CryptoCurrency not found');
   }
-  return data.cryptoCurrency.balances;
+  return data.cryptoCurrency.asAccount.balances;
 }

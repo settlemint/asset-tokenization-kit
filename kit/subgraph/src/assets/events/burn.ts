@@ -1,0 +1,24 @@
+import { BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { BurnEvent } from '../../../generated/schema';
+import { toDecimals } from '../../utils/decimals';
+
+export function burnEvent(
+  id: Bytes,
+  timestamp: BigInt,
+  emitter: Bytes,
+  sender: Bytes,
+  from: Bytes,
+  value: BigInt,
+  decimals: number
+): BurnEvent {
+  const burnEvent = new BurnEvent(id);
+  burnEvent.eventName = 'Burn';
+  burnEvent.timestamp = timestamp;
+  burnEvent.emitter = emitter;
+  burnEvent.sender = sender;
+  burnEvent.from = from;
+  burnEvent.value = toDecimals(value, decimals);
+  burnEvent.valueExact = value;
+  burnEvent.save();
+  return burnEvent;
+}

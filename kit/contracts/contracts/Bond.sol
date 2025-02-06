@@ -12,6 +12,8 @@ import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/ex
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC20HistoricalBalances } from "./extensions/ERC20HistoricalBalances.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 /// @title Bond - A standard bond token implementation with face value in underlying asset
 /// @notice This contract implements an ERC20 token representing a standard bond with fixed-income characteristics and
@@ -28,7 +30,8 @@ contract Bond is
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
-    ERC20Yield
+    ERC20Yield,
+    ERC2771Context
 {
     /// @notice Custom errors for the Bond contract
     error BondAlreadyMatured();
@@ -101,6 +104,7 @@ contract Bond is
     /// @param _maturityDate Timestamp when the bond matures
     /// @param _faceValue The face value of the bond in underlying asset base units
     /// @param _underlyingAsset The address of the underlying asset contract used for face value denomination
+    /// @param forwarder The address of the forwarder contract
     constructor(
         string memory name,
         string memory symbol,
@@ -110,11 +114,13 @@ contract Bond is
         uint256 _cap,
         uint256 _maturityDate,
         uint256 _faceValue,
-        address _underlyingAsset
+        address _underlyingAsset,
+        address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
         ERC20Capped(_cap)
+        ERC2771Context(forwarder)
     {
         if (_maturityDate <= block.timestamp) revert BondInvalidMaturityDate();
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
@@ -138,6 +144,18 @@ contract Bond is
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
         _grantRole(USER_MANAGEMENT_ROLE, initialOwner);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return super._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return super._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
+        return super._contextSuffixLength();
     }
 
     /// @notice Returns the number of decimals used to get its user representation
@@ -233,10 +251,10 @@ contract Bond is
         if (amount == 0) revert InvalidAmount();
 
         // Transfer the underlying assets from the sender to this contract
-        bool success = underlyingAsset.transferFrom(msg.sender, address(this), amount);
+        bool success = underlyingAsset.transferFrom(_msgSender(), address(this), amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetTopUp(msg.sender, amount);
+        emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
     /// @notice Allows withdrawing excess underlying assets
@@ -261,16 +279,16 @@ contract Bond is
     /// @dev Can be called multiple times until all bonds are redeemed
     /// @param amount The amount of bonds to redeem
     function redeem(uint256 amount) external onlyMatured {
-        _redeem(msg.sender, amount);
+        _redeem(_msgSender(), amount);
     }
 
     /// @notice Allows redeeming all available bonds for underlying assets after maturity
     /// @dev Can only be called after the bond has matured
     function redeemAll() external onlyMatured {
-        uint256 redeemableAmount = balanceOf(msg.sender); // already redeemed amount is burned
+        uint256 redeemableAmount = balanceOf(_msgSender()); // already redeemed amount is burned
         if (redeemableAmount == 0) revert InvalidRedemptionAmount();
 
-        _redeem(msg.sender, redeemableAmount);
+        _redeem(_msgSender(), redeemableAmount);
     }
 
     /// @notice Returns the amount of underlying assets held by the contract
@@ -307,10 +325,10 @@ contract Bond is
         uint256 missing = missingUnderlyingAmount();
         if (missing == 0) revert InvalidAmount();
 
-        bool success = underlyingAsset.transferFrom(msg.sender, address(this), missing);
+        bool success = underlyingAsset.transferFrom(_msgSender(), address(this), missing);
         if (!success) revert InsufficientUnderlyingBalance();
 
-        emit UnderlyingAssetTopUp(msg.sender, missing);
+        emit UnderlyingAssetTopUp(_msgSender(), missing);
     }
 
     /// @notice Returns the ISIN (International Securities Identification Number) of the bond

@@ -4,11 +4,13 @@ pragma solidity ^0.8.27;
 import { Test } from "forge-std/Test.sol";
 import { Fund } from "../contracts/Fund.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 error ERC20Blocked(address account);
 
 contract FundTest is Test {
     Fund public fund;
+    Forwarder public forwarder;
     address public owner;
     address public investor1;
     address public investor2;
@@ -35,8 +37,13 @@ contract FundTest is Test {
         investor1 = makeAddr("investor1");
         investor2 = makeAddr("investor2");
 
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+
         vm.startPrank(owner);
-        fund = new Fund(NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY);
+        fund = new Fund(
+            NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder)
+        );
 
         // Initial supply for testing
         fund.mint(address(fund), INITIAL_SUPPLY);

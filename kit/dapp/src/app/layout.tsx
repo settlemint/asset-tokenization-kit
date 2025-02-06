@@ -1,14 +1,16 @@
 import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { themeConfig } from '@/lib/config/theme';
-import { fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
+import '@fontsource/figtree/300.css';
+import '@fontsource/figtree/400.css';
+import '@fontsource/figtree/700.css';
+import '@fontsource/figtree/900.css';
 import type { Viewport } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import './globals.css';
-
 export { metadata } from '../lib/config/metadata';
 
 export const viewport: Viewport = {
@@ -27,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('min-h-screen font-sans antialiased', fontSans.variable)}>
+      <body className={cn('min-h-screen font-sans antialiased')}>
         <NuqsAdapter>
           <ThemeProvider
             attribute="class"

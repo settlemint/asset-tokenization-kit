@@ -1,5 +1,5 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
-import { getCryptocurrencyBalances } from './data';
+import { getCryptoCurrencyBalances } from './data';
 import { columns } from './holders-columns';
 
 type HoldersTableProps = {
@@ -7,7 +7,7 @@ type HoldersTableProps = {
 };
 
 export async function HoldersTable({ id }: HoldersTableProps) {
-  const balances = await getCryptocurrencyBalances(id);
+  const balances = await getCryptoCurrencyBalances(id);
 
   return <DataTable columns={columns} data={balances} name="Holders" />;
 }

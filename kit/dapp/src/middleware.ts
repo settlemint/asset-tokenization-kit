@@ -5,8 +5,8 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { match } from 'path-to-regexp';
 
 const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
-const isIssuerAuthenticatedRoute = match(['/issuer', '/issuer/*path']);
-const isAdminAuthenticatedRoute = match(['/admin', '/admin/*path']);
+const isIssuerAuthenticatedRoute = match(['/admin', '/admin/*path']);
+const isAdminAuthenticatedRoute = match(['/admin/supersecure', '/admin/supersecure/*path']);
 
 const routeRoleMap = [
   { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },

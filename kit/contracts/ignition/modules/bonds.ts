@@ -83,6 +83,13 @@ const BondsModule = buildModule('BondsModule', (m) => {
   m.call(ustb, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
   m.call(ustb, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
 
+  // Mint and burn some tokens
+  const mintAmount = 500 * 10 ** 2; // 500 bonds with 2 decimals
+  const burnAmount = 100 * 10 ** 2; // 100 bonds with 2 decimals
+
+  const mintBonds = m.call(ustb, 'mint', [deployer, mintAmount], { id: 'mintBonds' });
+  m.call(ustb, 'burn', [burnAmount], { id: 'burnBonds', after: [mintBonds] });
+
   return { ustb, stableCoin, yieldSchedule };
 });
 

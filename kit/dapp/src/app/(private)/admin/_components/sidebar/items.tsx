@@ -12,7 +12,7 @@ export const topItems: NavElement[] = [
   {
     label: 'Actions',
     icon: <AlertTriangle />,
-    path: '/actions',
+    path: '/admin/actions',
     badge: '12',
   },
 ];
@@ -26,12 +26,12 @@ export const bottomItems: NavElement[] = [
   {
     label: 'Transactions',
     icon: <ArrowRightLeft />,
-    path: '/transactions',
+    path: '/admin/transactions',
   },
   {
     label: 'Settings',
     icon: <Settings />,
-    path: '/settings',
+    path: '/admin/settings',
   },
 ];
 

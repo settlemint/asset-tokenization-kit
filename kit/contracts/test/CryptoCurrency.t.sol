@@ -4,9 +4,11 @@ pragma solidity ^0.8.27;
 import { Test } from "forge-std/Test.sol";
 import { CryptoCurrency } from "../contracts/CryptoCurrency.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
 
 contract CryptoCurrencyTest is Test {
     CryptoCurrency public token;
+    Forwarder public forwarder;
     address public owner;
     address public user;
     uint256 public constant INITIAL_SUPPLY = 1_000_000e18;
@@ -19,8 +21,11 @@ contract CryptoCurrencyTest is Test {
         owner = makeAddr("owner");
         user = makeAddr("user");
 
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+
         vm.startPrank(owner);
-        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner);
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, owner, address(forwarder));
         vm.stopPrank();
     }
 
@@ -43,7 +48,8 @@ contract CryptoCurrencyTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            CryptoCurrency newToken = new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner);
+            CryptoCurrency newToken =
+                new CryptoCurrency("Test Token", "TEST", decimalValues[i], INITIAL_SUPPLY, owner, address(forwarder));
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -52,7 +58,7 @@ contract CryptoCurrencyTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(CryptoCurrency.InvalidDecimals.selector, 19));
-        new CryptoCurrency("Test Token", "TEST", 19, INITIAL_SUPPLY, owner);
+        new CryptoCurrency("Test Token", "TEST", 19, INITIAL_SUPPLY, owner, address(forwarder));
         vm.stopPrank();
     }
 
@@ -130,7 +136,7 @@ contract CryptoCurrencyTest is Test {
         uint256 privateKey = 0xA11CE;
         address signer = vm.addr(privateKey);
 
-        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, signer);
+        token = new CryptoCurrency("Test Token", "TEST", DECIMALS, INITIAL_SUPPLY, signer, address(forwarder));
 
         uint256 value = 1000e18;
         uint256 deadline = block.timestamp + 1 hours;

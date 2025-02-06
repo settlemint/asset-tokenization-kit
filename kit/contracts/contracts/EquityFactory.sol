@@ -3,12 +3,13 @@ pragma solidity ^0.8.27;
 
 import { Equity } from "./Equity.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
 /// @title EquityFactory - A factory contract for creating Equity tokens
 /// @notice This contract allows the creation of new Equity tokens with deterministic addresses
 /// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created tokens
 /// @custom:security-contact support@settlemint.com
-contract EquityFactory is ReentrancyGuard {
+contract EquityFactory is ReentrancyGuard, ERC2771Context {
     error AddressAlreadyDeployed();
 
     /// @notice Mapping to track if an address was deployed by this factory
@@ -16,23 +17,9 @@ contract EquityFactory is ReentrancyGuard {
 
     /// @notice Emitted when a new equity token is created
     /// @param token The address of the newly created token
-    /// @param name The name of the token
-    /// @param symbol The symbol of the token
-    /// @param decimals The number of decimals for the token
-    /// @param owner The owner of the token
-    /// @param isin The ISIN (International Securities Identification Number) of the equity
-    /// @param equityClass The equity class (e.g., "Common", "Preferred")
-    /// @param equityCategory The equity category (e.g., "Series A", "Seed")
-    event EquityCreated(
-        address indexed token,
-        string name,
-        string symbol,
-        uint8 decimals,
-        address indexed owner,
-        string isin,
-        string equityClass,
-        string equityCategory
-    );
+    event EquityCreated(address indexed token);
+
+    constructor(address forwarder) ERC2771Context(forwarder) { }
 
     /// @notice Creates a new equity token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses and emits an EquityCreated event
@@ -56,18 +43,19 @@ contract EquityFactory is ReentrancyGuard {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(msg.sender, name, symbol, decimals, isin, equityClass, equityCategory);
+        address predicted = predictAddress(_msgSender(), name, symbol, decimals, isin, equityClass, equityCategory);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
-        Equity newToken =
-            new Equity{ salt: salt }(name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
+        Equity newToken = new Equity{ salt: salt }(
+            name, symbol, decimals, _msgSender(), isin, equityClass, equityCategory, trustedForwarder()
+        );
 
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit EquityCreated(token, name, symbol, decimals, msg.sender, isin, equityClass, equityCategory);
+        emit EquityCreated(token);
     }
 
     /// @notice Predicts the address where a token will be deployed
@@ -105,7 +93,16 @@ contract EquityFactory is ReentrancyGuard {
                             keccak256(
                                 abi.encodePacked(
                                     type(Equity).creationCode,
-                                    abi.encode(name, symbol, decimals, sender, isin, equityClass, equityCategory)
+                                    abi.encode(
+                                        name,
+                                        symbol,
+                                        decimals,
+                                        sender,
+                                        isin,
+                                        equityClass,
+                                        equityCategory,
+                                        trustedForwarder()
+                                    )
                                 )
                             )
                         )

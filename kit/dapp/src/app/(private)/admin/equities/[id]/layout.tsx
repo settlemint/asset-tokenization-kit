@@ -2,6 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import { getEquityTitle } from './_components/data';
 
@@ -9,6 +10,41 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
+  const { id } = await params;
+  const equity = await getEquityTitle(id);
+
+  if (!equity) {
+    return {
+      title: 'Equity not found',
+    };
+  }
+
+  return {
+    title: equity?.name,
+    openGraph: {
+      images: [
+        {
+          url: `/admin/equities/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: equity?.name,
+        },
+      ],
+    },
+    twitter: {
+      images: [
+        {
+          url: `/admin/equities/${id}/og`,
+          width: 1280,
+          height: 640,
+          alt: equity?.name,
+        },
+      ],
+    },
+  };
 }
 
 const tabs = (id: string): TabItemProps[] => [

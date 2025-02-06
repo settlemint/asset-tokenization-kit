@@ -1,84 +1,48 @@
-type Account @entity {
-  id: Bytes!
-  isContract: Boolean!
-  asAsset: Asset
-  balances: [Balance!]! @derivedFrom(field: "account")
-  nativeBalance: BigDecimal!
-  nativeBalanceExact: BigInt!
-  transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "from")
-  transferToEvent: [Event_Transfer!]! @derivedFrom(field: "to")
-  blockedAssets: [BlockedAccount!]! @derivedFrom(field: "account")
-  roleGranted: [Event_RoleGranted!]! @derivedFrom(field: "account")
-  roleRevoked: [Event_RoleRevoked!]! @derivedFrom(field: "account")
-}
-
-type BlockedAccount @entity {
-  id: Bytes!
-  account: Account!
-  asset: Asset!
-}
-
-type Role @entity(immutable: true) {
-  id: Bytes!
-  name: String!
-  assets: [AssetRole!]! @derivedFrom(field: "role")
-}
-
-type AssetRole @entity {
-  id: ID!
-  asset: Asset!
-  role: Role!
-  members: [Account!]!
-  roleGranted: [Event_RoleGranted!]! @derivedFrom(field: "assetRole")
-  roleRevoked: [Event_RoleRevoked!]! @derivedFrom(field: "assetRole")
-}
+# --------------------------------------------------
+# Grouping Contracts by Contract Type
+# --------------------------------------------------
 
 interface Asset {
   id: Bytes!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
 }
 
-enum UnderlyingAssetMovementAction {
-  TOP_UP
-  WITHDRAW
-  CLAIM
-  REDEEM
-}
-
-type Event_UnderlyingAssetMovement @entity(immutable: true) {
+type Factory @entity {
   id: Bytes!
-  emitter: UnderlyingAssetHolder!
-  timestamp: BigInt!
-  action: UnderlyingAssetMovementAction!
-  account: Account!
-  amount: BigInt!
+  type: String!
+  asAccount: Account!
 }
 
-interface UnderlyingAssetHolder {
-  id: Bytes!
-  underlyingAsset: Bytes!
-  underlyingBalance: BigInt!
-  underlyingMovements: [Event_UnderlyingAssetMovement!]!
-    @derivedFrom(field: "emitter")
-}
+# --------------------------------------------------
+# Assets
+# --------------------------------------------------
 
-type Bond implements Asset & UnderlyingAssetHolder @entity {
+type Bond implements Asset @entity {
   id: Bytes!
+  type: String!
+  asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
-  cap: BigDecimal!
-  capExact: BigInt!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # Bond-Specific Fields
+  cap: BigDecimal!
+  capExact: BigInt!
   maturityDate: BigInt!
   isMatured: Boolean!
   paused: Boolean!
@@ -87,37 +51,23 @@ type Bond implements Asset & UnderlyingAssetHolder @entity {
   underlyingAsset: Bytes!
   redeemedAmount: BigInt!
   underlyingBalance: BigInt!
-  asAccount: Account!
   yieldSchedule: FixedYield
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "asset")
-  underlyingMovements: [Event_UnderlyingAssetMovement!]!
-    @derivedFrom(field: "emitter")
-  redemptions: [Event_BondRedemption!]! @derivedFrom(field: "emitter")
-  metrics: [BondMetricsData!]! @derivedFrom(field: "bond")
-}
-
-type Event_BondRedemption implements BondEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Bond!
-  timestamp: BigInt!
-  holder: Account!
-  bondAmount: BigInt!
-  underlyingAmount: BigInt!
 }
 
 type Equity implements Asset @entity {
   id: Bytes!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # Equity-Specific Fields
   isin: String!
   equityClass: String!
   equityCategory: String!
@@ -126,399 +76,654 @@ type Equity implements Asset @entity {
 
 type Fund implements Asset @entity {
   id: Bytes!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # Fund-Specific Fields
   isin: String!
   fundClass: String!
   fundCategory: String!
   paused: Boolean!
   managementFeeBps: Int!
   lastFeeCollection: BigInt!
-  metrics: [FundMetricsData!]! @derivedFrom(field: "fund")
-  holdings: [FundHolding!]! @derivedFrom(field: "fund")
-  portfolioMetrics: [FundPortfolioData!]! @derivedFrom(field: "fund")
-}
-
-# Track individual asset holdings in the fund
-type FundHolding @entity {
-  id: Bytes!
-  fund: Fund!
-  asset: Asset!
-  amount: BigDecimal!
-  amountExact: BigInt!
-  lastUpdateTimestamp: BigInt!
-}
-
-# Fund Portfolio Time Series
-type FundPortfolioData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  fund: Fund!
-  totalAssets: Int! # Number of different assets held
-  assetAllocation: [FundAssetAllocation!]! # Breakdown by asset type
-}
-
-# Asset allocation within a portfolio snapshot
-type FundAssetAllocation @entity {
-  id: Bytes!
-  portfolioData: FundPortfolioData!
-  assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency", "Fund"
-  amount: BigDecimal! # Amount of tokens
-  amountExact: BigInt!
-}
-
-# Fund Portfolio Aggregations
-type FundPortfolioStats
-  @aggregation(intervals: ["hour", "day"], source: "FundPortfolioData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  fund: Fund! # dimension
-  maxAssets: Int! @aggregate(fn: "max", arg: "totalAssets")
-  minAssets: Int! @aggregate(fn: "min", arg: "totalAssets")
-}
-
-# Fund Metrics Time Series
-type FundMetricsData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  fund: Fund!
-  managementFeesCollected: BigInt!
-  totalFees: BigInt!
-}
-
-# Fund Metrics Aggregations
-type FundMetricsStats
-  @aggregation(intervals: ["hour", "day"], source: "FundMetricsData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  fund: Fund! # dimension
-  totalFeesCollected: BigInt! @aggregate(fn: "sum", arg: "totalFees")
-  managementFeesCollected: BigInt!
-    @aggregate(fn: "sum", arg: "managementFeesCollected")
 }
 
 type StableCoin implements Asset @entity {
   id: Bytes!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # StableCoin-Specific Fields
   isin: String
   collateral: BigDecimal!
   collateralExact: BigInt!
   paused: Boolean!
-  metrics: [StableCoinMetricsData!]! @derivedFrom(field: "stableCoin")
 }
 
 type CryptoCurrency implements Asset @entity {
   id: Bytes!
+  type: String!
   asAccount: Account!
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
-  balances: [Balance!]! @derivedFrom(field: "asset")
-  transfers: [Event_Transfer!]! @derivedFrom(field: "emitter")
-  roles: [AssetRole!]! @derivedFrom(field: "asset")
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # CryptoCurrency-Specific Fields
 }
 
-type Balance @entity {
+# --------------------------------------------------
+# Accounts
+# --------------------------------------------------
+
+type Account @entity {
+  id: Bytes!
+  isContract: Boolean!
+  asAsset: Asset
+  balances: [AssetBalance!]! @derivedFrom(field: "account")
+  nativeBalance: BigDecimal!
+  nativeBalanceExact: BigInt!
+}
+
+type AssetBalance @entity {
   id: Bytes!
   asset: Asset!
   account: Account!
   value: BigDecimal!
   valueExact: BigInt!
-  transferFromEvent: [Event_Transfer!]! @derivedFrom(field: "fromBalance")
-  transferToEvent: [Event_Transfer!]! @derivedFrom(field: "toBalance")
+  approved: BigDecimal!
+  approvedExact: BigInt!
 }
 
-interface AssetEvent {
+# --------------------------------------------------
+# Yields
+# --------------------------------------------------
+
+type FixedYield @entity {
   id: Bytes!
-  timestamp: BigInt!
-  emitter: Asset!
-}
-
-interface BondEvent implements AssetEvent {
-  id: Bytes!
-  timestamp: BigInt!
-  emitter: Bond! # Further narrow to Bond type
-}
-
-type Event_Transfer implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Asset!
-  timestamp: BigInt!
-  asset: Asset!
-  from: Account
-  fromBalance: Balance
-  to: Account
-  toBalance: Balance
-  value: BigDecimal!
-  valueExact: BigInt!
-}
-
-type Event_RoleAdminChanged implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Asset!
-  timestamp: BigInt!
-  role: AssetRole!
-  newAdminRole: AssetRole!
-  previousAdminRole: AssetRole!
-}
-
-type Event_RoleGranted implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Asset!
-  timestamp: BigInt!
-  assetRole: AssetRole!
-  account: Account!
-  sender: Account!
-}
-
-type Event_RoleRevoked implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  emitter: Asset!
-  timestamp: BigInt!
-  assetRole: AssetRole!
-  account: Account!
-  sender: Account!
-}
-
-# Transfer Activity Time Series
-type TransferData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset!
-  value: BigDecimal!
-  valueExact: BigInt!
-  from: Account
-  to: Account
-}
-
-# Asset Supply Time Series
-type AssetSupplyData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset!
-  totalSupply: BigDecimal!
-  totalSupplyExact: BigInt!
-  assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency"
-}
-
-# Transfer Activity Aggregations
-type TransferStats
-  @aggregation(intervals: ["hour", "day"], source: "TransferData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset! # dimension
-  totalTransfers: Int8! @aggregate(fn: "count", cumulative: true)
-  totalVolume: BigDecimal! @aggregate(fn: "sum", arg: "value")
-  totalVolumeExact: BigInt! @aggregate(fn: "sum", arg: "valueExact")
-  minTransferValue: BigDecimal! @aggregate(fn: "min", arg: "value")
-  minTransferValueExact: BigInt! @aggregate(fn: "min", arg: "valueExact")
-  maxTransferValue: BigDecimal! @aggregate(fn: "max", arg: "value")
-  maxTransferValueExact: BigInt! @aggregate(fn: "max", arg: "valueExact")
-}
-
-# Asset Supply Aggregations
-type AssetSupplyStats
-  @aggregation(intervals: ["hour", "day"], source: "AssetSupplyData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset! # dimension
-  assetType: String! # dimension
-  totalSupply: BigDecimal! @aggregate(fn: "last", arg: "totalSupply")
-  totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "totalSupplyExact")
-  supplyChange: BigDecimal! @aggregate(fn: "sum", arg: "totalSupply")
-  supplyChangeExact: BigInt! @aggregate(fn: "sum", arg: "totalSupplyExact")
-}
-
-# Account Activity Time Series
-type AccountActivityData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  account: Account!
-  asset: Asset!
-  balance: BigDecimal!
-  balanceExact: BigInt!
-  isBlocked: Boolean!
-  blockedValue: Int! # Numeric field for aggregation
-}
-
-# Account Activity Aggregations
-type AccountActivityStats
-  @aggregation(intervals: ["hour", "day"], source: "AccountActivityData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  account: Account! # dimension
-  asset: Asset! # dimension
-  minBalance: BigDecimal! @aggregate(fn: "min", arg: "balance")
-  minBalanceExact: BigInt! @aggregate(fn: "min", arg: "balanceExact")
-  maxBalance: BigDecimal! @aggregate(fn: "max", arg: "balance")
-  maxBalanceExact: BigInt! @aggregate(fn: "max", arg: "balanceExact")
-  lastBalance: BigDecimal! @aggregate(fn: "last", arg: "balance")
-  lastBalanceExact: BigInt! @aggregate(fn: "last", arg: "balanceExact")
-  blockedCount: Int8! @aggregate(fn: "sum", arg: "blockedValue")
-}
-
-# Role Activity Time Series
-type RoleActivityData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset!
-  role: Role!
-  isGranted: Boolean!
-  account: Account!
-  grantValue: Int! # Numeric field for aggregation
-  revokeValue: Int! # Numeric field for aggregation
-  activeValue: Int! # Numeric field for aggregation
-}
-
-# Role Activity Aggregations
-type RoleActivityStats
-  @aggregation(intervals: ["hour", "day"], source: "RoleActivityData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset! # dimension
-  role: Role! # dimension
-  totalGranted: Int8! @aggregate(fn: "sum", arg: "grantValue")
-  totalRevoked: Int8! @aggregate(fn: "sum", arg: "revokeValue")
-  activeRoles: Int8! @aggregate(fn: "sum", arg: "activeValue", cumulative: true)
-}
-
-# Bond Specific Time Series
-type BondMetricsData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  bond: Bond!
-  daysToMaturity: Int!
-  isMatured: Boolean!
-  maturedValue: Int! # Numeric field for aggregation
-}
-
-# Bond Metrics Aggregations
-type BondMetricsStats
-  @aggregation(intervals: ["hour", "day"], source: "BondMetricsData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  minDaysToMaturity: Int! @aggregate(fn: "min", arg: "daysToMaturity")
-  maxDaysToMaturity: Int! @aggregate(fn: "max", arg: "daysToMaturity")
-  maturedBonds: Int8!
-    @aggregate(fn: "sum", arg: "maturedValue", cumulative: true)
-}
-
-# StableCoin Metrics Time Series
-type StableCoinMetricsData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  stableCoin: StableCoin!
-  collateralRatio: BigDecimal!
-  collateralRatioExact: BigInt!
-}
-
-# StableCoin Metrics Aggregations
-type StableCoinMetricsStats
-  @aggregation(intervals: ["hour", "day"], source: "StableCoinMetricsData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  stableCoin: StableCoin! # dimension
-  minCollateralRatio: BigDecimal! @aggregate(fn: "min", arg: "collateralRatio")
-  minCollateralRatioExact: BigInt!
-    @aggregate(fn: "min", arg: "collateralRatioExact")
-  maxCollateralRatio: BigDecimal! @aggregate(fn: "max", arg: "collateralRatio")
-  maxCollateralRatioExact: BigInt!
-    @aggregate(fn: "max", arg: "collateralRatioExact")
-  lastCollateralRatio: BigDecimal!
-    @aggregate(fn: "last", arg: "collateralRatio")
-  lastCollateralRatioExact: BigInt!
-    @aggregate(fn: "last", arg: "collateralRatioExact")
-}
-
-# Equity Category Time Series
-type EquityCategoryData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  equity: Equity!
-  category: String!
-  equityClass: String!
-}
-
-# Equity Category Aggregations
-type EquityCategoryStats
-  @aggregation(intervals: ["hour", "day"], source: "EquityCategoryData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  category: String! # dimension
-  equityClass: String! # dimension
-  totalEquities: Int8! @aggregate(fn: "count", cumulative: true)
-}
-
-type FixedYield implements UnderlyingAssetHolder @entity {
-  id: Bytes!
-  token: Bytes!
-  underlyingAsset: Bytes!
+  token: Asset!
+  underlyingAsset: Asset!
   startDate: BigInt!
   endDate: BigInt!
   rate: BigInt!
   interval: BigInt!
-  totalClaimed: BigInt!
-  unclaimedYield: BigInt!
-  underlyingBalance: BigInt!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
+  unclaimedYield: BigDecimal!
+  unclaimedYieldExact: BigInt!
+  underlyingBalance: BigDecimal!
+  underlyingBalanceExact: BigInt!
   periods: [YieldPeriod!]! @derivedFrom(field: "schedule")
-  yieldClaims: [Event_YieldClaimed!]! @derivedFrom(field: "emitter")
-  underlyingMovements: [Event_UnderlyingAssetMovement!]!
-    @derivedFrom(field: "emitter")
-  metrics: [YieldMetricsData!]! @derivedFrom(field: "schedule")
 }
 
 type YieldPeriod @entity {
-  id: String!
+  id: Bytes!
   schedule: FixedYield!
   periodId: BigInt!
   startDate: BigInt!
   endDate: BigInt!
   rate: BigInt!
-  totalClaimed: BigInt!
+  totalClaimed: BigDecimal!
+  totalClaimedExact: BigInt!
 }
 
-type Event_YieldClaimed @entity {
+# --------------------------------------------------
+# Grouping Events by Contract Type
+# --------------------------------------------------
+
+interface AssetEvent {
+  id: Bytes! # Unique identifier for the event
+  eventName: String! # Name of the event
+  timestamp: BigInt! # Timestamp of the event
+  sender: Account! # The account that triggered the event
+  emitter: Asset! # The contract that emitted the event
+}
+
+interface FactoryEvent {
+  id: Bytes! # Unique identifier for the event
+  eventName: String! # Name of the event
+  timestamp: BigInt! # Timestamp of the event
+  sender: Account! # The account that triggered the event
+  emitter: Factory! # The contract that emitted the event
+  asset: Asset! # The asset that was created
+}
+
+# --------------------------------------------------
+# Common Events for All Tokens (StableCoin, Fund, Equity, CryptoCurrency, Bond)
+# --------------------------------------------------
+
+"""
+Entity for ERC20 Transfer events.
+Emitted on every token transfer (excluding minting and burning).
+"""
+type TransferEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
-  emitter: FixedYield!
+  eventName: String!
   timestamp: BigInt!
-  holder: Account!
-  amount: BigInt!
-  fromPeriodId: BigInt!
-  toPeriodId: BigInt!
+  emitter: Asset!
+  sender: Account!
+  from: Account! # Sender address
+  to: Account! # Recipient address
+  value: BigDecimal! # Amount transferred
+  valueExact: BigInt! # Amount transferred in exact precision
 }
 
-type YieldMetricsData @entity {
-  id: String!
-  schedule: FixedYield!
+"""
+Entity for ERC20 Mint events.
+Emitted on every token mint (transfer from zero address).
+"""
+type MintEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
   timestamp: BigInt!
-  currentPeriodId: BigInt!
-  totalClaimed: BigInt!
-  unclaimedYield: BigInt!
-  underlyingBalance: BigInt!
+  emitter: Asset!
+  sender: Account!
+  to: Account! # Recipient address
+  value: BigDecimal! # Amount transferred
+  valueExact: BigInt! # Amount transferred in exact precision
+}
+
+"""
+Entity for ERC20 Burn events.
+Emitted on every token burn (transfer to zero address).
+"""
+type BurnEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  from: Account!
+  value: BigDecimal! # Amount transferred
+  valueExact: BigInt! # Amount transferred in exact precision
+}
+
+"""
+Entity for ERC20 Approval events.
+Emitted when an approval is set for a spender.
+"""
+type ApprovalEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  owner: Account! # Token owner
+  spender: Account! # Approved spender
+  value: BigDecimal! # Approved amount
+  valueExact: BigInt! # Approved amount in exact precision
+}
+
+"""
+Entity for pause events.
+Emitted when a token is paused.
+"""
+type PausedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+}
+
+"""
+Entity for unpause events.
+Emitted when a token is unpaused.
+"""
+type UnpausedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+}
+
+"""
+Entity for tokens frozen events.
+Emitted when tokens are frozen (a custodian operation).
+"""
+type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  user: Account! # The user whose tokens were frozen
+  amount: BigDecimal! # The amount frozen
+  amountExact: BigInt! # The amount frozen in exact precision
+}
+
+"""
+Entity for tokens unfrozen events.
+Emitted when tokens are unfrozen (a custodian operation).
+"""
+type TokensUnfrozenEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  user: Account! # The user whose tokens were unfrozen
+  amount: BigDecimal! # The amount unfrozen
+  amountExact: BigInt! # The amount unfrozen in exact precision
+}
+
+"""
+Entity for role granted events.
+Emitted when a role is granted.
+"""
+type RoleGrantedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  role: Bytes! # Role identifier (e.g. SUPPLY_MANAGEMENT_ROLE)
+  account: Account! # The account that received the role
+}
+
+"""
+Entity for role revoked events.
+Emitted when a role is revoked.
+"""
+type RoleRevokedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  role: Bytes!
+  account: Account! # The account that lost the role
+}
+
+"""
+Entity for role admin changed events.
+Emitted when a role's admin role is changed.
+"""
+type RoleAdminChangedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  role: Bytes! # The role being modified
+  previousAdminRole: Bytes! # The old admin role
+  newAdminRole: Bytes! # The new admin role
+}
+
+"""
+Entity for blocklist events.
+Emitted when a user is blocked from token operations.
+"""
+type UserBlockedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  user: Account! # The blocked user's address
+}
+
+"""
+Entity for blocklist events.
+Emitted when a user is unblocked from token operations.
+"""
+type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  user: Account! # The unblocked user's address
+}
+
+# --------------------------------------------------
+# StableCoin-Specific Custom Event
+# --------------------------------------------------
+
+type StableCoinCreatedEvent implements FactoryEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  asset: Asset!
+}
+
+"""
+Entity for collateral update events in StableCoin.
+Emitted when the collateral is updated via updateCollateral.
+"""
+type CollateralUpdatedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  oldAmount: BigDecimal! # Previous collateral amount
+  oldAmountExact: BigInt! # Previous collateral amount in exact precision
+  newAmount: BigDecimal! # New collateral amount
+  newAmountExact: BigInt! # New collateral amount in exact precision
+}
+
+# --------------------------------------------------
+# Fund-Specific Custom Events
+# --------------------------------------------------
+
+type FundCreatedEvent implements FactoryEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  asset: Asset!
+}
+
+"""
+Entity for management fee collection events in Fund.
+Emitted when the management fee is collected.
+"""
+type ManagementFeeCollectedEvent implements AssetEvent
+  @entity(immutable: true)
+{
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  amount: BigDecimal! # Fee amount collected
+  amountExact: BigInt! # Fee amount collected in exact precision
+}
+
+"""
+Entity for performance fee collection events in Fund.
+Emitted when the performance fee is collected.
+"""
+type PerformanceFeeCollectedEvent implements AssetEvent
+  @entity(immutable: true)
+{
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  amount: BigDecimal! # Fee amount collected
+  amountExact: BigInt! # Fee amount collected in exact precision
+}
+
+"""
+Entity for token withdrawal events in Fund.
+Emitted when tokens are withdrawn from the fund.
+"""
+type TokenWithdrawnEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  token: Asset!
+  to: Account! # Recipient address
+  amount: BigDecimal! # Amount withdrawn
+  amountExact: BigInt! # Amount withdrawn in exact precision
+}
+
+# --------------------------------------------------
+# CryptoCurrency-Specific Custom Events
+# --------------------------------------------------
+
+type CryptoCurrencyCreatedEvent implements FactoryEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  asset: Asset!
+}
+
+# --------------------------------------------------
+# Equity-Specific Custom Events
+# --------------------------------------------------
+
+type EquityCreatedEvent implements FactoryEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  asset: Asset!
+}
+
+# --------------------------------------------------
+# Bond-Specific Custom Events
+# --------------------------------------------------
+
+type BondCreatedEvent implements FactoryEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  asset: Asset!
+}
+
+"""
+Entity for bond maturity events.
+Emitted when the bond reaches maturity and is closed.
+"""
+type BondMaturedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+}
+
+"""
+Entity for bond redemption events.
+Emitted when a bond is redeemed for underlying assets.
+"""
+type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  holder: Account! # The address redeeming the bond
+  bondAmount: BigDecimal! # The number of bonds redeemed
+  bondAmountExact: BigInt! # The number of bonds redeemed in exact precision
+  underlyingAmount: BigDecimal! # The amount of underlying assets received
+  underlyingAmountExact: BigInt! # The amount of underlying assets received in exact precision
+}
+
+# --------------------------------------------------
+# Bond/Yield-Specific Custom Events
+# --------------------------------------------------
+
+"""
+Entity for underlying asset top-up events.
+Emitted when underlying assets are added (topped up) to the Bond contract.
+"""
+type UnderlyingAssetTopUpEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  from: Account! # The address providing the top-up
+  amount: BigDecimal! # The amount of underlying assets added
+  amountExact: BigInt! # The amount of underlying assets added in exact precision
+}
+
+"""
+Entity for underlying asset withdrawal events.
+Emitted when underlying assets are withdrawn from the Bond contract.
+"""
+type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  to: Account! # The recipient address for the withdrawn assets
+  amount: BigDecimal! # The amount withdrawn
+  amountExact: BigInt! # The amount withdrawn in exact precision
+}
+
+# --------------------------------------------------
+# FixedYield-Specific Custom Event
+# --------------------------------------------------
+
+type FixedYieldCreatedEvent @entity {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Factory!
+  sender: Account!
+  fixedYield: FixedYield!
+}
+
+"""
+Entity for yield claimed events in FixedYield.
+Emitted when yield is claimed.
+"""
+type YieldClaimedEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  holder: Account! # The address claiming the yield
+  totalAmount: BigDecimal! # The total yield claimed
+  totalAmountExact: BigInt! # The total yield claimed in exact precision
+  fromPeriod: BigInt! # The first period being claimed
+  toPeriod: BigInt! # The last period being claimed
+  periodAmounts: [BigInt!]! # Array of yield amounts claimed for each period
+  unclaimedYield: BigDecimal! # Total unclaimed yield remaining after this claim
+  unclaimedYieldExact: BigInt! # Total unclaimed yield remaining after this claim in exact precision
+}
+
+# --------------------------------------------------
+# Asset Statistics
+# --------------------------------------------------
+
+type AssetStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  asset: Asset!
+  assetType: String!
+  assetCategory: String!
+  assetClass: String!
+  ## Transfers
+  transfers: Int!
+  volume: BigDecimal!
+  volumeExact: BigInt!
+  ## Supply
+  supply: BigDecimal!
+  supplyExact: BigInt!
+  minted: BigDecimal!
+  mintedExact: BigInt!
+  burned: BigDecimal!
+  burnedExact: BigInt!
+  ## Frozen
+  locked: BigDecimal!
+  lockedExact: BigInt!
+  frozen: BigDecimal!
+  frozenExact: BigInt!
+  unfrozen: BigDecimal!
+  unfrozenExact: BigInt!
+  ## Collateral
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+}
+
+type AssetStats
+  @aggregation(intervals: ["hour", "day"], source: "AssetStatsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  asset: Asset!
+  assetType: String!
+  assetCategory: String!
+  assetClass: String!
+  ## Amounts
+  count: Int8! @aggregate(fn: "count", cumulative: true)
+  ## Transfers
+  totalTransfers: Int! @aggregate(fn: "sum", arg: "transfers")
+  totalVolume: BigDecimal! @aggregate(fn: "sum", arg: "volume")
+  totalVolumeExact: BigInt! @aggregate(fn: "sum", arg: "volumeExact")
+  ## Supply
+  totalSupply: BigDecimal! @aggregate(fn: "last", arg: "supply")
+  totalSupplyExact: BigInt! @aggregate(fn: "last", arg: "supplyExact")
+  totalMinted: BigDecimal! @aggregate(fn: "sum", arg: "minted")
+  totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedExact")
+  totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burned")
+  totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedExact")
+  ## Frozen
+  totalLocked: BigDecimal! @aggregate(fn: "last", arg: "locked")
+  totalLockedExact: BigInt! @aggregate(fn: "last", arg: "lockedExact")
+  totalFrozen: BigDecimal! @aggregate(fn: "sum", arg: "frozen")
+  totalFrozenExact: BigInt! @aggregate(fn: "sum", arg: "frozenExact")
+  totalUnfrozen: BigDecimal! @aggregate(fn: "sum", arg: "unfrozen")
+  totalUnfrozenExact: BigInt! @aggregate(fn: "sum", arg: "unfrozenExact")
+  ## Collateral
+  totalCollateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
+  totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
+}
+
+# --------------------------------------------------
+# Portfolio Statistics
+# --------------------------------------------------
+
+type PortfolioStatsData @entity(timeseries: true) {
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  account: Account!
+  assetType: String!
+  asset: Asset!
+  ## Balances
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  ## Frozen
+  locked: BigDecimal!
+  lockedExact: BigInt!
+}
+
+type PortfolioStats
+  @aggregation(intervals: ["hour", "day"], source: "PortfolioStatsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  account: Account!
+  asset: Asset!
+  assetType: String!
+  ## Balances
+  totalBalance: BigDecimal! @aggregate(fn: "last", arg: "balance")
+  totalBalanceExact: BigInt! @aggregate(fn: "last", arg: "balanceExact")
+  ## Frozen
+  totalLocked: BigDecimal! @aggregate(fn: "last", arg: "locked")
+  totalLockedExact: BigInt! @aggregate(fn: "last", arg: "lockedExact")
 }
