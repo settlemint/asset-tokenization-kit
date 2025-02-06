@@ -1,8 +1,14 @@
 import { icons } from '@/app/(private)/admin/equities/_components/table/columns';
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
+import type { Metadata } from 'next';
 import { columns } from './_components/table/columns';
 import { getEquities } from './_components/table/data';
+
+export const metadata: Metadata = {
+  title: 'Equities',
+  description: 'View and manage your equities.',
+};
 
 export default function EquitiesPage() {
   return (

@@ -1,7 +1,13 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
+import type { Metadata } from 'next';
 import { columns } from './_components/table/columns';
 import { getCryptocurrencies } from './_components/table/data';
+
+export const metadata: Metadata = {
+  title: 'Cryptocurrencies',
+  description: 'View and manage your cryptocurrencies.',
+};
 
 export default function CryptoCurrenciesPage() {
   return (
