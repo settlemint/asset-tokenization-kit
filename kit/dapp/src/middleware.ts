@@ -2,12 +2,13 @@ import { betterFetch } from '@better-fetch/fetch';
 import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
 import type { Session, User } from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
-import { match } from 'path-to-regexp';
+import { type Match, match } from 'path-to-regexp';
+import { isCrawler } from './lib/config/crawlers';
 
 const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
 const isIssuerAuthenticatedRoute = match(['/admin', '/admin/*path']);
 const isAdminAuthenticatedRoute = match(['/admin/supersecure', '/admin/supersecure/*path']);
-const isOgRoute = match(['/*so/og', '/*so/og/*path']);
+const isAssetRoute = match(['/admin/:type/:id', '/admin/:type/:id/*path']);
 
 const routeRoleMap = [
   { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },
@@ -34,14 +35,17 @@ function buildWrongRoleRedirectUrl(request: NextRequest): URL {
 }
 
 export default async function middleware(request: NextRequest) {
+  if (isCrawler(request.headers.get('user-agent') || '')) {
+    const assetMatch = isAssetRoute(request.nextUrl.pathname) as Match<{ type: string; id: string }>;
+    if (assetMatch) {
+      const shareUrl = new URL(`/share/${assetMatch.params.type}/${assetMatch.params.id}`, request.url);
+      return NextResponse.redirect(shareUrl);
+    }
+  }
+
   const proxyResponse = proxyMiddleware(request);
   if (proxyResponse) {
     return proxyResponse;
-  }
-
-  // Skip authentication for OG routes
-  if (isOgRoute(request.nextUrl.pathname)) {
-    return NextResponse.next();
   }
 
   const { data } = await betterFetch<{ session: Session; user: User & { role: 'user' | 'issuer' | 'admin' } }>(

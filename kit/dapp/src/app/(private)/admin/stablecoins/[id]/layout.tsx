@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     openGraph: {
       images: [
         {
-          url: `/admin/stablecoins/${id}/og`,
+          url: `/share/stablecoins/${id}/og`,
           width: 1280,
           height: 640,
           alt: stableCoin?.name,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     twitter: {
       images: [
         {
-          url: `/admin/stablecoins/${id}/og`,
+          url: `/share/stablecoins/${id}/og`,
           width: 1280,
           height: 640,
           alt: stableCoin?.name,
