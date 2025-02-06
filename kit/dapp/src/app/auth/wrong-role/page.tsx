@@ -1,10 +1,8 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth/client';
+import { auth } from '@/lib/auth/auth';
+import { headers } from 'next/headers';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { redirect } from 'next/navigation';
 
 interface WrongRolePageProps {
   searchParams: Promise<{
@@ -12,21 +10,18 @@ interface WrongRolePageProps {
   }>;
 }
 
+async function handleSignOut(returnUrl: string) {
+  'use server';
+
+  await auth.api.signOut({
+    headers: await headers(),
+  });
+  redirect(`/auth/signin?rd=${encodeURIComponent(returnUrl)}`);
+}
+
 export default async function WrongRolePage({ searchParams }: WrongRolePageProps) {
-  const router = useRouter();
   const { rd } = await searchParams;
   const returnUrl = rd ? decodeURIComponent(rd) : '/';
-
-  const handleSignOut = useCallback(async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          // Redirect to login page with return URL
-          window.location.href = `/auth/signin?rd=${encodeURIComponent(returnUrl)}`;
-        },
-      },
-    });
-  }, [returnUrl]);
 
   return (
     <div className="w-full max-w-xs">
@@ -39,9 +34,11 @@ export default async function WrongRolePage({ searchParams }: WrongRolePageProps
         <Button asChild variant="default">
           <Link href="/">Go home</Link>
         </Button>
-        <Button onClick={handleSignOut} variant="outline">
-          Sign out and try again
-        </Button>
+        <form action={() => handleSignOut(returnUrl)}>
+          <Button type="submit" variant="outline">
+            Sign out and try again
+          </Button>
+        </form>
       </div>
     </div>
   );

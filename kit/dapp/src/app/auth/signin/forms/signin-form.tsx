@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -29,7 +28,6 @@ export function SignInForm({
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-  const router = useRouter();
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
