@@ -1,7 +1,8 @@
 import { OgDataBox } from '@/app/share/_components/og-data-box';
 import { OgImage } from '@/app/share/_components/og-image';
 import { OgNotFound } from '@/app/share/_components/og-not-found';
-import { ImageResponse } from 'next/og';
+import { createOgResponse } from '@/app/share/_components/og-response';
+import { formatTokenValue } from '@/lib/number';
 import type { Address } from 'viem';
 import { getOgEquity } from '../_components/data';
 
@@ -19,13 +20,10 @@ export async function GET(request: Request, { params }: RouteParams) {
   const equity = await getOgEquity(id);
 
   if (!equity) {
-    return new ImageResponse(<OgNotFound />, {
-      height: 640,
-      width: 1280,
-    });
+    return createOgResponse(<OgNotFound />);
   }
 
-  const imageResponse = new ImageResponse(
+  return createOgResponse(
     <OgImage
       id={id as Address}
       name={equity.name}
@@ -33,22 +31,9 @@ export async function GET(request: Request, { params }: RouteParams) {
       totalSupply={equity.totalSupply}
       baseUrl={url.origin}
     >
+      <OgDataBox label="Total Supply" value={formatTokenValue(BigInt(equity.totalSupply), { decimals: 2 })} />
       <OgDataBox label="Class" value={equity.equityClass} />
       <OgDataBox label="Category" value={equity.equityCategory} />
-    </OgImage>,
-    {
-      height: 640,
-      width: 1280,
-    }
+    </OgImage>
   );
-
-  // Add caching headers for 1 hour
-  const headers = new Headers(imageResponse.headers);
-  headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=60');
-
-  return new Response(imageResponse.body, {
-    headers,
-    status: imageResponse.status,
-    statusText: imageResponse.statusText,
-  });
 }

@@ -23,7 +23,7 @@ export function OgImage({ id, name, symbol, totalSupply, baseUrl, children }: Pr
   return (
     <div tw="flex flex-col w-full h-full">
       {/* biome-ignore lint/nursery/noImgElement: <explanation> */}
-      <img src={imageUrl} alt="Background" tw="absolute top-0 left-0 w-full h-full object-cover" />
+      <img src={imageUrl} alt="Background" tw="absolute top-0 left-0 w-full h-full" style={{ objectFit: 'cover' }} />
       <div tw="flex flex-col absolute top-48 left-32 text-white">
         <p tw="text-7xl font-bold mb-4">
           {name} ({symbol})
@@ -34,7 +34,7 @@ export function OgImage({ id, name, symbol, totalSupply, baseUrl, children }: Pr
           {getAddress(id)}
         </p>
 
-        <div tw="flex gap-24 mt-16 pr-32">
+        <div tw="flex mt-16 pr-32" style={{ gap: '6rem' }}>
           <OgDataBox label="Total Supply" value={formatTokenValue(BigInt(totalSupply), { decimals: 2 })} />
           {children}
         </div>
