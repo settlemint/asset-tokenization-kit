@@ -1,8 +1,10 @@
 'use server';
 
 import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 import { BurnStablecoinFormSchema, BurnStablecoinOutputSchema } from './schema';
 
 const BurnStableCoin = portalGraphql(`
@@ -28,7 +30,7 @@ export const burnStablecoin = actionClient
       address: address,
       from: from ?? (user.wallet as string),
       amount: amount.toString(),
-      challengeResponse: pincode,
+      challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
     const transactionHash = data.StableCoinBurn?.transactionHash;

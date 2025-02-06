@@ -2,13 +2,12 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { BurnStablecoinFormSchema } from './schema';
+import { UpdateCollateralFormSchema } from './schema';
 import { Amount } from './steps/amount';
-import { Recipients } from './steps/recepients';
 import { Summary } from './steps/summary';
-import { burnStablecoin } from './store';
+import { updateCollateral } from './store';
 
-export function BurnStablecoinForm({
+export function UpdateCollateralStablecoinForm({
   address,
   name,
   symbol,
@@ -24,17 +23,16 @@ export function BurnStablecoinForm({
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={burnStablecoin}
-      resolverAction={zodResolver(BurnStablecoinFormSchema)}
+      storeAction={updateCollateral}
+      resolverAction={zodResolver(UpdateCollateralFormSchema)}
       onClose={onClose}
-      submitLabel="Burn Asset"
+      submitLabel="Update collateral"
       messages={{
-        onCreate: () => `Burning ${name} (${symbol})`,
-        onSuccess: () => `${name} (${symbol}) burned successfully on chain`,
-        onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
+        onCreate: () => `Updating collateral for ${name} (${symbol})`,
+        onSuccess: () => `${name} (${symbol}) collateral updated successfully on chain`,
+        onError: (_input, error) => `Failed to update collateral ${name} (${symbol}) failed: ${error.message}`,
       }}
     >
-      <Recipients />
       <Amount />
       <Summary address={address} />
     </AssetForm>

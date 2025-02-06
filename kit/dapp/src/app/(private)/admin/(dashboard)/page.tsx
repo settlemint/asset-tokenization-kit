@@ -1,12 +1,8 @@
-import type { Metadata } from 'next';
+export const dynamic = 'force-dynamic';
+
 import { AssetsWidget } from './_components/widgets/assets/assets';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
 import { UsersWidget } from './_components/widgets/users/users';
-
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'View and manage your assets.',
-};
 
 export default function AdminDashboard() {
   return (

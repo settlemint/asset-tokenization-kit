@@ -10,10 +10,14 @@ import { mintStablecoin } from './store';
 
 export function MintStablecoinForm({
   address,
+  name,
+  symbol,
   assetConfig,
   onClose,
 }: {
   address: Address;
+  name: string;
+  symbol: string;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
@@ -24,6 +28,11 @@ export function MintStablecoinForm({
       resolverAction={zodResolver(MintStablecoinFormSchema)}
       onClose={onClose}
       submitLabel="Mint"
+      messages={{
+        onCreate: () => `Minting ${name} (${symbol})`,
+        onSuccess: () => `${name} (${symbol}) minted successfully on chain`,
+        onError: (_input, error) => `Failed to mint ${name} (${symbol}): ${error.message}`,
+      }}
     >
       <Recipients />
       <Amount />
