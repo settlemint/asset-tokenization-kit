@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     openGraph: {
       images: [
         {
-          url: `/admin/bonds/${id}/og`,
+          url: `/share/bonds/${id}/og`,
           width: 1280,
           height: 640,
           alt: bond?.name,
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     twitter: {
       images: [
         {
-          url: `/admin/bonds/${id}/og`,
+          url: `/share/bonds/${id}/og`,
           width: 1280,
           height: 640,
           alt: bond?.name,
