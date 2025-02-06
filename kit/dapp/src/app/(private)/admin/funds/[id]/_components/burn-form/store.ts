@@ -1,8 +1,10 @@
 'use server';
 
 import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 import { z } from 'zod';
 import { BurnFundFormSchema, BurnFundOutputSchema } from './schema';
 
@@ -35,7 +37,7 @@ export const burnFund = actionClient
       address,
       from: user.wallet as string,
       amount: amount.toString(),
-      challengeResponse: pincode,
+      challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
     const transactionHash = data.FundBurn?.transactionHash;
