@@ -3,9 +3,6 @@
   "workspaces": {
     "": {
       "name": "@settlemint/starterkit-asset-tokenization",
-      "dependencies": {
-        "bignumber.js": "9.1.2",
-      },
       "devDependencies": {
         "@biomejs/biome": "1.9.4",
         "@settlemint/sdk-cli": "1.1.5",
@@ -65,6 +62,7 @@
         "@tanstack/react-table": "8.20.6",
         "better-auth": "1.1.16",
         "better-auth-harmony": "1.2.3",
+        "bignumber.js": "9.1.2",
         "class-variance-authority": "0.7.1",
         "clsx": "2.1.1",
         "cmdk": "1.0.4",
