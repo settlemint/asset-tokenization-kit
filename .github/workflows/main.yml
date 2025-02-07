@@ -89,9 +89,9 @@ jobs:
     name: Custom Deployment dAPP
     runs-on: namespace-profile-starterkit
     environment: staging
-    # needs:
-    #   - security
-    #   - test
+    needs:
+      - security
+      - test
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
