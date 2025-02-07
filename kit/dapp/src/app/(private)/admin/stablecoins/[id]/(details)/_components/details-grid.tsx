@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { formatNumber } from '@/lib/number';
 import type { PropsWithChildren } from 'react';
 import { getStableCoin } from './data';
 
@@ -15,7 +16,9 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <DetailsGridItem label="Name">{asset.name}</DetailsGridItem>
         <DetailsGridItem label="Symbol">{asset.symbol}</DetailsGridItem>
         <DetailsGridItem label="Decimals">{asset.decimals}</DetailsGridItem>
-        <DetailsGridItem label="Total supply">{asset.totalSupply}</DetailsGridItem>
+        <DetailsGridItem label="Total supply">
+          {formatNumber(asset.totalSupply, { decimals: asset.decimals })}
+        </DetailsGridItem>
       </CardContent>
     </Card>
   );

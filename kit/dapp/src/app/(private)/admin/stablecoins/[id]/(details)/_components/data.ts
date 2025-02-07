@@ -11,6 +11,7 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
     symbol
     decimals
     totalSupply
+    totalSupplyExact
     }
   }
 `

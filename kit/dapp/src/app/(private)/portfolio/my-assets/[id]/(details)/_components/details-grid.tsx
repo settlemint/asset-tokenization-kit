@@ -3,6 +3,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { formatNumber } from '@/lib/number';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import type { PropsWithChildren } from 'react';
 import { getMyAsset } from '../../_components/data';
@@ -39,13 +40,15 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
                 <CopyToClipboard value={myAsset.asset.id} displayText={''} className="ml-2" />
               </div>
             </DetailsGridItem>
-            <DetailsGridItem label="Total supply">{myAsset.asset.totalSupplyExact}</DetailsGridItem>
+            <DetailsGridItem label="Total supply">{formatNumber(myAsset.asset.totalSupplyExact)}</DetailsGridItem>
             <DetailsGridItem label="Proven collateral (ratio)">
-              {((Number(myAsset.asset.collateralExact) / Number(myAsset.asset.totalSupplyExact)) * 100).toFixed(2)}%
+              {formatNumber(Number(myAsset.asset.collateralExact) / Number(myAsset.asset.totalSupplyExact), {
+                percentage: true,
+              })}
             </DetailsGridItem>
           </>
         )}
-        <DetailsGridItem label="Balance">{myAsset.valueExact}</DetailsGridItem>
+        <DetailsGridItem label="Balance">{formatNumber(myAsset.valueExact)}</DetailsGridItem>
       </CardContent>
     </Card>
   );
