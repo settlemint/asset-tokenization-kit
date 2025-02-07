@@ -113,7 +113,12 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
               />
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <BurnTokensButton address={id as Address} name={stableCoin.name} symbol={stableCoin.symbol} />
+              <BurnTokensButton
+                address={id as Address}
+                name={stableCoin.name}
+                symbol={stableCoin.symbol}
+                decimals={stableCoin.decimals}
+              />
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateCollateralButton
