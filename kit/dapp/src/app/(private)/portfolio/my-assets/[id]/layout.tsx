@@ -1,3 +1,4 @@
+import { metadata } from "@/lib/config/metadata";
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 import { getMyAsset } from "./_components/data";
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     openGraph: {
       images: [
         {
-          url: `/share/${mapAssetType(myAsset.asset.type)}/${id}/og`,
+          url: new URL(`/share/${mapAssetType(myAsset.asset.type)}/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: myAsset.asset.name,
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     twitter: {
       images: [
         {
-          url: `/share/${mapAssetType(myAsset.asset.type)}/${id}/og`,
+          url: new URL(`/share/${mapAssetType(myAsset.asset.type)}/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: myAsset.asset.name,
