@@ -3,6 +3,7 @@
 import { formatTokenValue } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { BigNumber } from 'bignumber.js';
 
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
   query AddressBalances($account: String!) {
@@ -53,7 +54,7 @@ export function EvmAddressBalances({ address }: { address: string }) {
           <div key={balance.asset.symbol} className="flex items-center justify-between">
             <dt className="text-muted-foreground">{balance.asset.name}:</dt>
             <dd>
-              {formatTokenValue(Number.parseFloat(balance.value), { decimals: 2 })} {balance.asset.symbol}
+              {formatTokenValue(new BigNumber(balance.value).toFixed(2), { decimals: 2 })} {balance.asset.symbol}
             </dd>
           </div>
         ))}

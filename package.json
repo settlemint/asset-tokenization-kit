@@ -44,7 +44,9 @@
 		"deploy:local": "turbo deploy:local",
 		"deploy:remote": "turbo deploy:remote"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"bignumber.js": "9.1.2"
+	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@settlemint/sdk-cli": "1.1.5",

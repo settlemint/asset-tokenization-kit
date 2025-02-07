@@ -71,13 +71,13 @@ export function formatCurrency(amount: number, options: CurrencyFormatOptions): 
  * @param options - Formatting options
  * @returns Formatted token value string
  */
-export function formatTokenValue(amount: number | bigint, options: TokenFormatOptions): string {
+export function formatTokenValue(amount: number | bigint | string, options: TokenFormatOptions): string {
   const { decimals, locale } = options;
   return new Intl.NumberFormat(locale, {
     style: 'decimal',
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
-  }).format(amount);
+  }).format(Number.parseFloat(amount.toString()));
 }
 
 /**

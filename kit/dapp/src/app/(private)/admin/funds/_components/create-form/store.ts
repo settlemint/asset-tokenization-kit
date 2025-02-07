@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { FUND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -59,9 +57,8 @@ export const createFund = actionClient
         fundCategory,
         managementFeeBps,
       },
+      ctx: { user },
     }) => {
-      const user = await getAuthenticatedUser();
-
       const predictedAddress = await portalClient.request(CreateFundPredictAddress, {
         address: FUND_FACTORY_ADDRESS,
         sender: user.wallet,

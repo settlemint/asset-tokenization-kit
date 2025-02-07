@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -73,9 +71,8 @@ export const createStablecoin = actionClient
   .action(
     async ({
       parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, collateralProofValidityDuration },
+      ctx: { user },
     }) => {
-      const user = await getAuthenticatedUser();
-
       const predictedAddress = await portalClient.request(CreateStablecoinPredictAddress, {
         address: STABLE_COIN_FACTORY_ADDRESS,
         sender: user.wallet,

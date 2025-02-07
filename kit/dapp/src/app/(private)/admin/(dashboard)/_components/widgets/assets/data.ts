@@ -1,6 +1,7 @@
 'use server';
 
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { BigNumber } from 'bignumber.js';
 
 const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   query AssetsSupply {
@@ -28,8 +29,8 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
 `);
 
 const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
-  const total = tokens.reduce((sum, token) => sum + BigInt(token.totalSupply), BigInt(0));
-  return total.toString();
+  const total = tokens.reduce((sum, token) => sum.plus(token.totalSupply), new BigNumber(0));
+  return total.toString(2);
 };
 
 export async function getAssetsWidgetData() {
@@ -58,7 +59,7 @@ export async function getAssetsWidgetData() {
     },
   ];
 
-  const totalSupply = breakdown.reduce((sum, item) => sum + BigInt(item.supply), BigInt(0)).toString();
+  const totalSupply = breakdown.reduce((sum, item) => sum.plus(item.supply), new BigNumber(0)).toString(2);
 
   return {
     totalSupply,

@@ -4,6 +4,7 @@ import { OgNotFound } from '@/app/share/_components/og-not-found';
 import { createOgResponse } from '@/app/share/_components/og-response';
 import { formatTokenValue } from '@/lib/number';
 import {} from '@/lib/settlemint/the-graph';
+import { BigNumber } from 'bignumber.js';
 import type { Address } from 'viem';
 import { getOgBond } from '../_components/data';
 
@@ -33,7 +34,10 @@ export async function GET(request: Request, { params }: RouteParams) {
       baseUrl={url.origin}
     >
       <OgDataBox label="Maturity Date" value={bond.maturityDate} />
-      <OgDataBox label="Face Value" value={formatTokenValue(Number.parseFloat(bond.faceValue), { decimals: 2 })} />
+      <OgDataBox
+        label="Face Value"
+        value={formatTokenValue(new BigNumber(bond.faceValue).toFixed(2), { decimals: 2 })}
+      />
     </OgImage>
   );
 }

@@ -1,3 +1,4 @@
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -35,21 +36,50 @@ const devLog = {
   },
 };
 
-export const actionClient = createSafeActionClient({
-  handleServerError(e: Error) {
+const handleServerError = (error: Error) => {
+  if (error instanceof z.ZodError) {
     // Handle known error types
-    if (e instanceof z.ZodError) {
-      return createErrorResponse('VALIDATION_ERROR', 'Invalid input data', { details: e.errors });
-    }
+    devLog.error('Server action validation error:', error);
+    return createErrorResponse('VALIDATION_ERROR', 'Invalid input data', { details: error.errors });
+  }
 
-    // Log unexpected errors in development
-    devLog.error('Server action error:', e);
+  // Log unexpected errors in development
+  devLog.error('Server action error:', error);
 
-    // Return sanitized error for client
-    return createErrorResponse(
-      'INTERNAL_ERROR',
-      'An unexpected error occurred',
-      process.env.NODE_ENV === 'development' ? { details: e.message } : undefined
-    );
-  },
+  // Return sanitized error for client
+  return createErrorResponse(
+    'INTERNAL_ERROR',
+    'An unexpected error occurred',
+    process.env.NODE_ENV === 'development' ? { details: error.message } : undefined
+  );
+};
+
+export const actionClient = createSafeActionClient({
+  handleServerError,
+})
+  .use(async ({ next, clientInput, metadata }) => {
+    const result = await next({ ctx: undefined });
+    devLog.debug('Input ->', clientInput);
+    devLog.debug('Result ->', result.data);
+    devLog.debug('Metadata ->', metadata);
+    return result;
+  })
+  .use(async ({ next }) => {
+    const user = await getAuthenticatedUser();
+
+    return next({
+      ctx: {
+        user,
+      },
+    });
+  });
+
+export const publicActionClient = createSafeActionClient({
+  handleServerError,
+}).use(async ({ next, clientInput, metadata }) => {
+  const result = await next({ ctx: undefined });
+  devLog.debug('Input ->', clientInput);
+  devLog.debug('Result ->', result.data);
+  devLog.debug('Metadata ->', metadata);
+  return result;
 });

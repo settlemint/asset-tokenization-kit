@@ -11,6 +11,7 @@ import { assetConfig } from '@/lib/config/assets';
 import { formatPercentage } from '@/lib/number';
 import { cn } from '@/lib/utils';
 import { createColumnHelper } from '@tanstack/react-table';
+import { BigNumber } from 'bignumber.js';
 import { AlertCircle, AlertTriangle, CheckCircle, PauseCircle, PlayCircle } from 'lucide-react';
 import type { StableCoinList } from './data';
 
@@ -26,14 +27,15 @@ export const columns = [
       </DataTableColumnHeader>
     ),
     cell: ({ getValue, row }) => {
-      const totalSupply = Number.parseFloat(row.getValue<string>('totalSupply'));
-      const collateral = Number.parseFloat(getValue());
+      const totalSupply = new BigNumber(row.getValue<string>('totalSupply'));
+      const collateral = new BigNumber(getValue());
+      const ratio = totalSupply.eq(0) ? new BigNumber(100) : collateral.div(totalSupply).times(100);
       const { Icon, color } = getCollateralStatus(totalSupply, collateral);
       return (
         <DataTableColumnCell variant="numeric">
           <div className={cn('flex items-center gap-2', color)}>
             <Icon className="h-4 w-4" />
-            <span>{formatPercentage(totalSupply === 0 ? 100 : (collateral / totalSupply) * 100).value}</span>
+            <span>{formatPercentage(ratio.toString(2)).value}</span>
           </div>
         </DataTableColumnCell>
       );
@@ -52,15 +54,15 @@ export const icons = {
   okCollateral: CheckCircle,
 };
 
-const getCollateralStatus = (totalSupply: number, collateral: number) => {
-  if (totalSupply === 0) {
+const getCollateralStatus = (totalSupply: BigNumber, collateral: BigNumber) => {
+  if (totalSupply.eq(0)) {
     return { status: 'ok', Icon: icons.okCollateral };
   }
-  const ratio = (collateral / totalSupply) * 100;
-  if (ratio > 90) {
+  const ratio = collateral.div(totalSupply).times(100);
+  if (ratio.gt(90)) {
     return { status: 'ok', Icon: icons.okCollateral };
   }
-  if (ratio > 70) {
+  if (ratio.gt(70)) {
     return { status: 'warning', Icon: icons.warningCollateral, color: 'text-warning' };
   }
   return { status: 'danger', Icon: icons.dangerCollateral, color: 'text-destructive' };
