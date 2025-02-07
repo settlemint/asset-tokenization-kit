@@ -2,6 +2,7 @@
 
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import { pluralize } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { MintFundFormSchema } from './schema';
@@ -26,6 +27,12 @@ export function MintFundForm({
       resolverAction={zodResolver(MintFundFormSchema)}
       onClose={onClose}
       submitLabel="Mint"
+      messages={{
+        onCreate: (data) => `Minting ${data.amount} ${pluralize(data.amount, 'token')}...`,
+        onSuccess: (data) => `Successfully minted ${data.amount} ${pluralize(data.amount, 'token')} on chain`,
+        onError: (data, error) =>
+          `Failed to mint ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, 'token')}: ${error.message}`,
+      }}
     >
       <Recipients />
       <Amount />

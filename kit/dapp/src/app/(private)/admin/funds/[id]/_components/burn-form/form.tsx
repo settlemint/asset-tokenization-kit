@@ -1,5 +1,6 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import { pluralize } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { BurnFundFormSchema } from './schema';
@@ -23,6 +24,12 @@ export function BurnFundForm({
       resolverAction={zodResolver(BurnFundFormSchema)}
       onClose={onClose}
       submitLabel="Burn"
+      messages={{
+        onCreate: (data) => `Burning ${data.amount} ${pluralize(data.amount, 'token')}...`,
+        onSuccess: (data) => `Successfully burned ${data.amount} ${pluralize(data.amount, 'token')} on chain`,
+        onError: (data, error) =>
+          `Failed to burn ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, 'token')}: ${error.message}`,
+      }}
     >
       <Amount />
       <Summary address={address} />
