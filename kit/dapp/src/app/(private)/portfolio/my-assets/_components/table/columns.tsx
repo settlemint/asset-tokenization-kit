@@ -5,6 +5,7 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { Badge } from '@/components/ui/badge';
+import { formatNumber } from '@/lib/number';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { createColumnHelper } from '@tanstack/react-table';
 
@@ -26,9 +27,11 @@ export const columns = [
     cell: ({ getValue }) => <DataTableColumnCell>{formatAssetType(getValue() as string)}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
-  columnHelper.accessor('valueExact', {
+  columnHelper.accessor('value', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Balance</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
+    cell: ({ renderValue, cell }) => (
+      <DataTableColumnCell>{formatNumber(renderValue() as string, { decimals: 18 })}</DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset.paused', {

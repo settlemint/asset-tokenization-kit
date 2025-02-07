@@ -14,12 +14,14 @@ export function TransferButton({
   symbol,
   type,
   balance,
+  decimals,
 }: {
   name: string;
   symbol: string;
   address: Address;
   type: TransferFormAssetType;
   balance: string;
+  decimals: number;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -46,6 +48,7 @@ export function TransferButton({
           symbol={symbol}
           assetType={type}
           balance={balance}
+          decimals={decimals}
           onClose={() => setOpen(false)}
         />
       </SheetContent>

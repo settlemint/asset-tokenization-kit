@@ -1,10 +1,10 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import type { FragmentOf } from '@settlemint/sdk-hasura';
+import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {
-    valueExact
+    value
     asset {
       id
       name

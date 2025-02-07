@@ -40,15 +40,15 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
                 <CopyToClipboard value={myAsset.asset.id} displayText={''} className="ml-2" />
               </div>
             </DetailsGridItem>
-            <DetailsGridItem label="Total supply">{formatNumber(myAsset.asset.totalSupplyExact)}</DetailsGridItem>
+            <DetailsGridItem label="Total supply">{formatNumber(myAsset.asset.totalSupply)}</DetailsGridItem>
             <DetailsGridItem label="Proven collateral (ratio)">
-              {formatNumber(Number(myAsset.asset.collateralExact) / Number(myAsset.asset.totalSupplyExact), {
+              {formatNumber(Number(myAsset.asset.collateral) / Number(myAsset.asset.totalSupply), {
                 percentage: true,
               })}
             </DetailsGridItem>
           </>
         )}
-        <DetailsGridItem label="Balance">{formatNumber(myAsset.valueExact)}</DetailsGridItem>
+        <DetailsGridItem label="Balance">{formatNumber(myAsset.value)}</DetailsGridItem>
       </CardContent>
     </Card>
   );

@@ -16,6 +16,7 @@ export function TransferForm({
   symbol,
   assetType,
   balance,
+  decimals,
   onClose,
 }: {
   address: Address;
@@ -23,6 +24,7 @@ export function TransferForm({
   symbol: string;
   assetType: TransferFormAssetType;
   balance: string;
+  decimals: number;
   onClose: () => void;
 }) {
   const assetConfig = getAssetConfig(assetType);
@@ -44,7 +46,7 @@ export function TransferForm({
     >
       <Recipients />
       <Amount />
-      <Summary address={address} assetType={assetType} />
+      <Summary address={address} assetType={assetType} decimals={decimals} />
     </AssetForm>
   );
 }

@@ -112,7 +112,8 @@ export default async function MyAssetDetailLayout({ children, params }: LayoutPr
                 name={myAsset.asset.name}
                 symbol={myAsset.asset.symbol}
                 type={myAsset.asset.type as TransferFormAssetType}
-                balance={myAsset.valueExact}
+                balance={myAsset.value}
+                decimals={myAsset.asset.decimals}
               />
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

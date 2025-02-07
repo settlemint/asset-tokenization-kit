@@ -16,7 +16,7 @@ export function Amount() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput control={control} name="value" label="Amount" type="number" min={1} step={1} defaultValue={1} />
+        <AssetFormInput control={control} name="value" label="Amount" type="number" min={1} defaultValue={1} />
       </div>
     </div>
   );

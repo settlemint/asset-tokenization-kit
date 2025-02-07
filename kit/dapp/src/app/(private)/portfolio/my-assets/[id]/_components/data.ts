@@ -1,22 +1,21 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
-const BalanceFragment = theGraphGraphqlStarterkits(`
-  fragment BalancesField on AssetBalance {
-    valueExact
+const BalanceFragmentMyAsset = theGraphGraphqlStarterkits(`
+  fragment BalancesFieldMyAsset on AssetBalance {
+    value
     asset {
       __typename
       id
       name
       symbol
+      decimals
       type
       totalSupply
-      totalSupplyExact
       ... on StableCoin {
         isin
         paused
         collateral
-        collateralExact
       }
     }
   }
@@ -27,12 +26,12 @@ const MyAsset = theGraphGraphqlStarterkits(
   query MyAsset($accountId: ID!, $assetId: String!) {
     account(id: $accountId) {
       balances(where: { asset: $assetId }) {
-        ...BalancesField
+        ...BalancesFieldMyAsset
       }
     }
   }
 `,
-  [BalanceFragment]
+  [BalanceFragmentMyAsset]
 );
 
 export async function getMyAsset(assetId: string) {

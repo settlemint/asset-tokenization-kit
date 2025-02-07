@@ -8,7 +8,11 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { TransferFormAssetType, TransferFormType } from '../schema';
 
-export function Summary({ address, assetType }: { address: Address; assetType: TransferFormAssetType }) {
+export function Summary({
+  address,
+  assetType,
+  decimals,
+}: { address: Address; assetType: TransferFormAssetType; decimals: number }) {
   const { control } = useFormContext<TransferFormType>();
   const values = useWatch({
     control: control,
@@ -63,6 +67,7 @@ export function Summary({ address, assetType }: { address: Address; assetType: T
 
           <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
           <AssetFormInput control={control} name="assetType" type="hidden" defaultValue={assetType} />
+          <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField
             control={control}
