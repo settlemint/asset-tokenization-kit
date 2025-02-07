@@ -134,9 +134,6 @@ jobs:
       - name: Turbo!
         run: bunx turbo codegen addresses
 
-      - name: Remove .env files
-        run: find . -type f \( -name ".env" -o -name ".env.local" \) -delete
-
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
 

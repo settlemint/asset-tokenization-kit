@@ -10,6 +10,7 @@
 			"outputs": ["*-env.d.ts", "*-schema.graphql", "src/lib/settlemint/**"]
 		},
 		"codegen:gql-tada": {
+			"dependsOn": ["codegen:settlemint"],
 			"outputs": ["*-cache.d.ts"]
 		},
 		"codegen:graph": {
