@@ -60,6 +60,29 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
 
+      - name: Setup caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            .turbo
+            ~/.bun/install/cache
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
       - name: Install Bun dependencies
         run: bun install --frozen-lockfile
 
@@ -73,6 +96,9 @@ jobs:
 
       - name: Turbo!
         run: bunx turbo codegen
+
+      - name: Remove .env files
+        run: find . -type f \( -name ".env" -o -name ".env.local" \) -delete
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
