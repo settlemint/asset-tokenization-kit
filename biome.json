@@ -7,7 +7,8 @@
       "kit/contracts/dependencies/**/*",
       "kit/contracts/ignition/deployments/**/*",
       "kit/dapp/src/components/ui/**/*",
-      "kit/dapp/*.d.ts"
+      "kit/dapp/*.d.ts",
+      ".vscode/*"
     ]
   },
   "linter": {
