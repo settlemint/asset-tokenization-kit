@@ -1,5 +1,6 @@
-import { getOgStablecoin } from '@/app/share/stablecoins/[id]/_components/data';
-import type { Metadata } from 'next';
+import { getOgStablecoin } from "@/app/share/stablecoins/[id]/_components/data";
+import { metadata } from "@/lib/config/metadata";
+import type { Metadata } from "next";
 
 interface SharePageProps {
   params: Promise<{
@@ -13,8 +14,8 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   if (!stableCoin) {
     return {
-      title: 'Asset Not Found',
-      description: 'The requested asset could not be found.',
+      title: "Asset Not Found",
+      description: "The requested asset could not be found.",
     };
   }
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     openGraph: {
       images: [
         {
-          url: `/share/stablecoins/${id}/og`,
+          url: new URL(`/share/stablecoins/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: stableCoin?.name,
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     twitter: {
       images: [
         {
-          url: `/share/stablecoins/${id}/og`,
+          url: new URL(`/share/stablecoins/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: stableCoin?.name,
