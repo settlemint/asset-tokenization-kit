@@ -9,12 +9,13 @@ import { z } from 'zod';
 import { MintFundFormSchema, MintFundOutputSchema } from './schema';
 
 const MintFund = portalGraphql(`
-  mutation MintFund($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
+  mutation MintFund($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!, $gasLimit: String!) {
     FundMint(
       address: $address
       from: $from
       input: {amount: $amount, to: $to}
       challengeResponse: $challengeResponse
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -45,6 +46,8 @@ export const mintFund = actionClient
         to: recipient,
         amount: amount.toString(),
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+        // Manually raise gas limit
+        gasLimit: '200000',
       });
 
       const transactionHash = data.FundMint?.transactionHash;

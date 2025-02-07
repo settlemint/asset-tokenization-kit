@@ -15,12 +15,13 @@ interface BurnFundResponse {
 }
 
 const BurnFund = portalGraphql(`
-  mutation BurnFund($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+  mutation BurnFund($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $gasLimit: String!) {
     FundBurn(
       address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
+      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -38,6 +39,8 @@ export const burnFund = actionClient
       from: user.wallet as string,
       amount: amount.toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+      // Manually raise gas limit
+      gasLimit: '200000',
     });
 
     const transactionHash = data.FundBurn?.transactionHash;
