@@ -14,7 +14,7 @@ export default function BondsPage() {
   return (
     <>
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="font-bold text-3xl tracking-tight">Bonds</h2>
+        <h2 className="mb-6 font-bold text-3xl tracking-tight">Bonds</h2>
       </div>
       <AssetTable assetConfig={assetConfig.bond} dataAction={getBonds} columns={columns}>
         <BondsTableClient />

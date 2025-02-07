@@ -20,7 +20,7 @@ export function UserDetailsHeader({ data }: UserDetailsHeaderProps) {
       <CollapsedBreadcrumbs routeSegments={['admin', 'users', data.id, 'details']} hideRoot={true} />
       <div className="flex items-center justify-between gap-4 space-y-2">
         <div className="mt-2 flex items-center gap-4 space-y-2">
-          <h2 className="font-bold text-3xl tracking-tight">{data.name}</h2>
+          <h2 className="mb-6font-bold text-3xl tracking-tight">{data.name}</h2>
           {data.banned ? (
             <Badge variant="destructive">Banned</Badge>
           ) : (
