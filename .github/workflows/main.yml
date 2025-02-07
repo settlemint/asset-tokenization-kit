@@ -89,6 +89,7 @@ jobs:
   custom-deployment:
     name: Custom Deployment dAPP
     runs-on: namespace-profile-starterkit
+    environment: staging
     # needs:
     #   - security
     #   - test
@@ -157,13 +158,7 @@ jobs:
           images: |
             ghcr.io/settlemint/starterkit-asset-tokenization
           tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha,prefix={{branch}}-
+            type=raw,value=${{ env.VERSION }}
 
       - name: Extract SHA tag
         id: sha-tag
@@ -192,4 +187,4 @@ jobs:
           access-token: ${{ secrets.SETTLEMINT_ACCESS_TOKEN }}
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-          command: platform update custom-deployment ${{ steps.sha-tag.outputs.sha_tag }} --wait
+          command: platform update custom-deployment ${{ env.VERSION }} --wait
