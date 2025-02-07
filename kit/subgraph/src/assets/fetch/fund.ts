@@ -1,8 +1,7 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Fund } from '../../../generated/schema';
 import { Fund as FundContract } from '../../../generated/templates/Fund/Fund';
 import { fetchAccount } from '../../fetch/account';
-import { toDecimals } from '../../utils/decimals';
 import { AssetType } from '../../utils/enums';
 
 export function fetchFund(address: Address): Fund {
@@ -13,7 +12,6 @@ export function fetchFund(address: Address): Fund {
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
     let isin = endpoint.try_isin();
-    let totalSupply = endpoint.try_totalSupply();
     let fundClass = endpoint.try_fundClass();
     let fundCategory = endpoint.try_fundCategory();
     let managementFeeBps = endpoint.try_managementFeeBps();
@@ -27,8 +25,8 @@ export function fetchFund(address: Address): Fund {
     fund.name = name.reverted ? '' : name.value;
     fund.symbol = symbol.reverted ? '' : symbol.value;
     fund.decimals = decimals.reverted ? 18 : decimals.value;
-    fund.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
+    fund.totalSupplyExact = BigInt.zero();
+    fund.totalSupply = BigDecimal.zero();
     fund.admins = [];
     fund.supplyManagers = [];
     fund.userManagers = [];

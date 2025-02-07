@@ -1,4 +1,4 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Bond } from '../../../generated/schema';
 import { Bond as BondContract } from '../../../generated/templates/Bond/Bond';
 import { fetchAccount } from '../../fetch/account';
@@ -12,7 +12,6 @@ export function fetchBond(address: Address): Bond {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
-    let totalSupply = endpoint.try_totalSupply();
     let maturityDate = endpoint.try_maturityDate();
     let isMatured = endpoint.try_isMatured();
     let paused = endpoint.try_paused();
@@ -20,7 +19,6 @@ export function fetchBond(address: Address): Bond {
     let cap = endpoint.try_cap();
     let faceValue = endpoint.try_faceValue();
     let underlyingAsset = endpoint.try_underlyingAsset();
-    let underlyingBalance = endpoint.try_underlyingAssetBalance();
     let yieldSchedule = endpoint.try_yieldSchedule();
 
     const account = fetchAccount(address);
@@ -31,8 +29,8 @@ export function fetchBond(address: Address): Bond {
     bond.name = name.reverted ? '' : name.value;
     bond.symbol = symbol.reverted ? '' : symbol.value;
     bond.decimals = decimals.reverted ? 18 : decimals.value;
-    bond.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
+    bond.totalSupplyExact = BigInt.zero();
+    bond.totalSupply = BigDecimal.zero();
     bond.admins = [];
     bond.supplyManagers = [];
     bond.userManagers = [];
@@ -47,7 +45,7 @@ export function fetchBond(address: Address): Bond {
     bond.isin = isin.reverted ? '' : isin.value;
     bond.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
     bond.redeemedAmount = BigInt.zero();
-    bond.underlyingBalance = underlyingBalance.reverted ? BigInt.zero() : underlyingBalance.value;
+    bond.underlyingBalance = BigInt.zero();
     bond.yieldSchedule = yieldSchedule.reverted ? null : yieldSchedule.value;
     bond.save();
 

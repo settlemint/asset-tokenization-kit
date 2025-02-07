@@ -1,10 +1,10 @@
-import { getSession } from "@/lib/auth/auth";
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
-import type { FragmentOf } from "@settlemint/sdk-hasura";
+import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {
-    valueExact
+    value
     asset {
       id
       name
@@ -27,13 +27,13 @@ const MyAssets = theGraphGraphqlStarterkits(
     }
   }
 `,
-  [BalanceFragment],
+  [BalanceFragment]
 );
 
 export type MyAsset = FragmentOf<typeof BalanceFragment>;
 
 export async function getMyAssets() {
-  const session = await getSession();
-  const { account } = await theGraphClientStarterkits.request(MyAssets, { accountId: session.user.wallet });
+  const user = await getAuthenticatedUser();
+  const { account } = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet });
   return account?.balances ?? [];
 }

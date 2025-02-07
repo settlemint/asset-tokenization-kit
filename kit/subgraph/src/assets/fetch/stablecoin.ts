@@ -1,8 +1,7 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { StableCoin } from '../../../generated/schema';
 import { StableCoin as StableCoinContract } from '../../../generated/templates/StableCoin/StableCoin';
 import { fetchAccount } from '../../fetch/account';
-import { toDecimals } from '../../utils/decimals';
 import { AssetType } from '../../utils/enums';
 
 export function fetchStableCoin(address: Address): StableCoin {
@@ -25,16 +24,16 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.name = name.reverted ? '' : name.value;
     stableCoin.symbol = symbol.reverted ? '' : symbol.value;
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
-    stableCoin.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
+    stableCoin.totalSupplyExact = BigInt.zero();
+    stableCoin.totalSupply = BigDecimal.zero();
     stableCoin.admins = [];
     stableCoin.supplyManagers = [];
     stableCoin.userManagers = [];
 
     // StableCoin-specific fields
     stableCoin.isin = isin.reverted ? '' : isin.value;
-    stableCoin.collateralExact = collateral.reverted ? BigInt.zero() : collateral.value.getAmount();
-    stableCoin.collateral = toDecimals(stableCoin.collateralExact, stableCoin.decimals);
+    stableCoin.collateralExact = BigInt.zero();
+    stableCoin.collateral = BigDecimal.zero();
     stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.save();
 

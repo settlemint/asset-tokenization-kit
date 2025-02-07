@@ -1,14 +1,19 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { UpdateCollateralFormType } from '../schema';
+import type { TransferFormAssetType, TransferFormType } from '../schema';
 
-export function Summary({ address, decimals }: { address: Address; decimals: number }) {
-  const { control } = useFormContext<UpdateCollateralFormType>();
+export function Summary({
+  address,
+  assetType,
+  decimals,
+}: { address: Address; assetType: TransferFormAssetType; decimals: number }) {
+  const { control } = useFormContext<TransferFormType>();
   const values = useWatch({
     control: control,
   });
@@ -16,9 +21,9 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm update proven collateral</h2>
+        <h2 className="font-semibold text-base">Review and confirm Transfer</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details of your updated proven collateral before proceeding.
+          Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.
         </p>
       </div>
 
@@ -35,12 +40,16 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">Asset type</dt>
+              <dd className="font-medium text-sm">{formatAssetType(assetType)}</dd>
+            </div>
+            <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Address</dt>
               <dd className="font-medium text-sm">{address}</dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{values.amount}</dd>
+              <dd className="font-medium text-sm">{values.value}</dd>
             </div>
           </dl>
         </div>
@@ -57,6 +66,7 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
           </div>
 
           <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="assetType" type="hidden" defaultValue={assetType} />
           <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField

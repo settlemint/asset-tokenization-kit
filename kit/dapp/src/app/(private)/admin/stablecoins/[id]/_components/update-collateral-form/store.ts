@@ -2,7 +2,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { type Address, parseUnits } from 'viem';
 import { UpdateCollateralFormSchema, UpdateCollateralOutputSchema } from './schema';
 
 const UpdateCollateral = portalGraphql(`
@@ -27,11 +27,11 @@ const UpdateCollateral = portalGraphql(`
 export const updateCollateral = actionClient
   .schema(UpdateCollateralFormSchema)
   .outputSchema(UpdateCollateralOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode }, ctx: { user } }) => {
+  .action(async ({ parsedInput: { address, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(UpdateCollateral, {
       address: address,
       from: user.wallet as string,
-      amount: amount.toString(),
+      amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
