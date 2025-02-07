@@ -1,9 +1,10 @@
+import { getTransferFormSchema } from '@/app/(private)/portfolio/my-assets/[id]/_components/transfer-form/schema';
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import { assetConfig } from '@/lib/config/assets';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { type TransferFormAssetType, TransferFormSchema } from './schema';
+import type { TransferFormAssetType } from './schema';
 import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
 import { Amount } from './steps/value';
@@ -21,7 +22,7 @@ export function TransferForm({
   name: string;
   symbol: string;
   assetType: TransferFormAssetType;
-  balance: number;
+  balance: string;
   onClose: () => void;
 }) {
   const assetConfig = getAssetConfig(assetType);
@@ -29,7 +30,7 @@ export function TransferForm({
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
       storeAction={transfer}
-      resolverAction={zodResolver(TransferFormSchema)}
+      resolverAction={zodResolver(getTransferFormSchema(balance))}
       onClose={onClose}
       submitLabel="Transfer"
       messages={{
@@ -42,7 +43,7 @@ export function TransferForm({
       }}
     >
       <Recipients />
-      <Amount balance={balance} />
+      <Amount />
       <Summary address={address} assetType={assetType} />
     </AssetForm>
   );

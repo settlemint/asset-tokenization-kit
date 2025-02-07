@@ -2,7 +2,7 @@ import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form
 import { useFormContext } from 'react-hook-form';
 import type { TransferFormType } from '../schema';
 
-export function Amount({ balance }: { balance: number }) {
+export function Amount() {
   const { control } = useFormContext<TransferFormType>();
 
   return (
@@ -16,15 +16,7 @@ export function Amount({ balance }: { balance: number }) {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput
-          control={control}
-          name="value"
-          label="Amount"
-          type="number"
-          min={1}
-          max={balance}
-          defaultValue={1}
-        />
+        <AssetFormInput control={control} name="value" label="Amount" type="number" min={1} step={1} defaultValue={1} />
       </div>
     </div>
   );

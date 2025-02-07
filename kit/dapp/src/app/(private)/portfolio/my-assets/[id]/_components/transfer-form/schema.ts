@@ -1,18 +1,28 @@
 import { z } from 'zod';
 
-export const TransferFormSchema = z.object({
-  address: z.string().min(1, { message: 'Address is required' }),
-  to: z.string().min(1, { message: 'Recipient is required' }),
-  value: z.number().min(1, { message: 'Value is required' }),
-  assetType: z.enum(['stablecoin', 'fund', 'equity', 'cryptocurrency', 'bond']),
-  pincode: z
-    .string()
-    .length(6, { message: 'PIN code must be exactly 6 digits' })
-    .regex(/^\d+$/, 'PIN code must contain only numbers'),
-});
+const PIN_CODE_REGEX = /^\d+$/;
 
-export type TransferFormType = z.infer<typeof TransferFormSchema>;
-export type TransferFormAssetType = z.infer<typeof TransferFormSchema>['assetType'];
+export const getTransferFormSchema = (balance?: string) => {
+  return z.object({
+    address: z.string().min(1, { message: 'Address is required' }),
+    to: z.string().min(1, { message: 'Recipient is required' }),
+    value: balance
+      ? z
+          .number()
+          .min(1, { message: 'Amount is required' })
+          .max(Number(balance), { message: `Amount cannot be greater than balance ${balance}` })
+      : z.number().min(1, { message: 'Amount is required' }),
+    assetType: z.enum(['stablecoin', 'fund', 'equity', 'cryptocurrency', 'bond']),
+    pincode: z
+      .string()
+      .length(6, { message: 'PIN code must be exactly 6 digits' })
+      .regex(PIN_CODE_REGEX, 'PIN code must contain only numbers'),
+  });
+};
+
+export type TransferFormSchema = ReturnType<typeof getTransferFormSchema>;
+export type TransferFormType = z.infer<TransferFormSchema>;
+export type TransferFormAssetType = z.infer<TransferFormSchema>['assetType'];
 
 export const TransferOutputSchema = z.string();
 export type TransferOutputType = z.infer<typeof TransferOutputSchema>;

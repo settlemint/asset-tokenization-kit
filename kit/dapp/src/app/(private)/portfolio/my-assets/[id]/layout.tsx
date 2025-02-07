@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
@@ -113,6 +114,22 @@ export default async function MyAssetDetailLayout({ children, params }: LayoutPr
                 type={myAsset.asset.type as TransferFormAssetType}
                 balance={myAsset.valueExact}
               />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                Allow token spending
+              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                Spend allowance
+              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                View transactions
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,11 +1,10 @@
 'use server';
 
 import { handleChallenge } from '@/lib/challenge';
-import { formatNumber } from '@/lib/number';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
-import { type TransferFormAssetType, TransferFormSchema, TransferOutputSchema } from './schema';
+import { type TransferFormAssetType, TransferOutputSchema, getTransferFormSchema } from './schema';
 
 const TransferStableCoin = portalGraphql(`
   mutation TransferStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
@@ -73,14 +72,14 @@ const TransferCryptoCurrency = portalGraphql(`
 `);
 
 export const transfer = actionClient
-  .schema(TransferFormSchema)
+  .schema(getTransferFormSchema())
   .outputSchema(TransferOutputSchema)
   .action(async ({ parsedInput: { address, to, value, pincode, assetType }, ctx: { user } }) => {
     const data = await portalClient.request(getQuery(assetType), {
       address: address,
       from: user.wallet as string,
       to: to,
-      value: formatNumber(value),
+      value: value.toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 

@@ -19,7 +19,7 @@ export function TransferButton({
   symbol: string;
   address: Address;
   type: TransferFormAssetType;
-  balance: number;
+  balance: string;
 }) {
   const [open, setOpen] = useState(false);
 
