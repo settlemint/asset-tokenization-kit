@@ -12,6 +12,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import type { assetConfig } from '@/lib/config/assets';
+import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -84,10 +85,13 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
 
               return (
                 <SidebarMenuSubItem key={subItem.label}>
-                  <SidebarMenuSubButton asChild className={isActiveFn(subItem.path) ? 'font-bold' : undefined}>
+                  <SidebarMenuSubButton asChild className={cn(isActiveFn(subItem.path) ? 'font-bold' : undefined)}>
                     <Link href={subItem.path} className="flex min-w-0 truncate">
                       {SubIcon ?? null}
                       <span className="truncate">{subItem.label}</span>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {subItem.badge && <span className="text-muted-foreground text-xs">{subItem.badge}</span>}
+                      </div>
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>

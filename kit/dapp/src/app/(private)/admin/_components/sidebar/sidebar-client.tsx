@@ -40,9 +40,10 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
     }));
     if (assetsOfSection.length > 0) {
       subItems.push({
-        label: `View all ${assetsOfSection.length} ${section.label}`,
+        label: 'View all',
         path: section.path,
         icon: <span>→</span>,
+        badge: assetsOfSection.length.toString(),
       });
     }
 
