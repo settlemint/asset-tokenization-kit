@@ -7,11 +7,11 @@
 			"outputs": ["*.d.ts", "src/lib/settlemint/**", "generated/**"]
 		},
 		"codegen:settlemint": {
-			"outputs": ["*-env.d.ts", "*-schema.graphql", "src/lib/settlemint/**"]
+			"outputs": ["*-env.d.ts", "*-schema.graphql", "*-env-*.d.ts", "*-schema-*.graphql", "src/lib/settlemint/**"]
 		},
 		"codegen:gql-tada": {
 			"dependsOn": ["codegen:settlemint"],
-			"outputs": ["*-cache.d.ts"]
+			"outputs": ["*-cache.d.ts", "*-cache-*.d.ts"]
 		},
 		"codegen:graph": {
 			"dependsOn": ["contracts#compile:hardhat"],

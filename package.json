@@ -41,9 +41,6 @@
 		"format": "turbo format",
 		"test": "turbo test",
 		"codegen": "turbo codegen",
-
-		"publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
-
 		"deploy:local": "turbo deploy:local",
 		"deploy:remote": "turbo deploy:remote"
 	},
