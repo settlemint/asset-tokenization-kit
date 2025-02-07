@@ -1,7 +1,8 @@
 'use server';
 
+import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 
 const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   query AssetsSupply {
@@ -30,7 +31,7 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
 
 const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
   const total = tokens.reduce((sum, token) => sum.plus(token.totalSupply), new BigNumber(0));
-  return total.toString(2);
+  return formatNumber(total);
 };
 
 export async function getAssetsWidgetData() {
@@ -59,10 +60,10 @@ export async function getAssetsWidgetData() {
     },
   ];
 
-  const totalSupply = breakdown.reduce((sum, item) => sum.plus(item.supply), new BigNumber(0)).toString(2);
+  const totalSupply = breakdown.reduce((sum, item) => sum.plus(item.supply), new BigNumber(0));
 
   return {
-    totalSupply,
+    totalSupply: formatNumber(totalSupply),
     breakdown,
   };
 }

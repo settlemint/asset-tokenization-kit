@@ -8,10 +8,10 @@ import {
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { assetConfig } from '@/lib/config/assets';
-import { formatPercentage } from '@/lib/number';
+import { formatNumber } from '@/lib/number';
 import { cn } from '@/lib/utils';
 import { createColumnHelper } from '@tanstack/react-table';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { AlertCircle, AlertTriangle, CheckCircle, PauseCircle, PlayCircle } from 'lucide-react';
 import type { StableCoinList } from './data';
 
@@ -35,7 +35,7 @@ export const columns = [
         <DataTableColumnCell variant="numeric">
           <div className={cn('flex items-center gap-2', color)}>
             <Icon className="h-4 w-4" />
-            <span>{formatPercentage(ratio.toString(2)).value}</span>
+            <span>{formatNumber(ratio)}</span>
           </div>
         </DataTableColumnCell>
       );
