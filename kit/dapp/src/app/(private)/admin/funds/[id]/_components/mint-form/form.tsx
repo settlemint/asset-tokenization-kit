@@ -27,6 +27,7 @@ export function MintFundForm({
       resolverAction={zodResolver(MintFundFormSchema)}
       onClose={onClose}
       submitLabel="Mint"
+      submittingLabel="Minting..."
       messages={{
         onCreate: (data) => `Minting ${data.amount} ${pluralize(data.amount, 'token')}...`,
         onSuccess: (data) => `Successfully minted ${data.amount} ${pluralize(data.amount, 'token')} on chain`,

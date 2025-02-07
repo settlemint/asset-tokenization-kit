@@ -18,6 +18,8 @@ export function CreateStablecoinForm({
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}
+      submitLabel="Create"
+      submittingLabel="Creating..."
       messages={{
         onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
         onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,

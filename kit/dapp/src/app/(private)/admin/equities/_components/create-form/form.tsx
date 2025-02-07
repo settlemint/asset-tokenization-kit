@@ -18,6 +18,8 @@ export function CreateEquityForm({
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onClose}
+      submitLabel="Create"
+      submittingLabel="Creating..."
       messages={{
         onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
         onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,

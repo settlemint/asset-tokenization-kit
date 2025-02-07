@@ -18,6 +18,8 @@ export function CreateFundForm({
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onClose}
+      submitLabel="Create"
+      submittingLabel="Creating..."
       messages={{
         onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
         onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,

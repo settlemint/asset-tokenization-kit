@@ -29,7 +29,8 @@ export function BurnStablecoinForm({
       storeAction={burnStablecoin}
       resolverAction={zodResolver(BurnStablecoinFormSchema)}
       onClose={onClose}
-      submitLabel="Burn Asset"
+      submitLabel="Burn"
+      submittingLabel="Burning..."
       messages={{
         onCreate: () => `Burning ${name} (${symbol})`,
         onSuccess: () => `${name} (${symbol}) burned successfully on chain`,

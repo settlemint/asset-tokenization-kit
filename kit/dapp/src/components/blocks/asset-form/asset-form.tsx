@@ -42,6 +42,8 @@ export type AssetFormProps<
   invalidate: QueryKey[];
   onClose?: () => void;
   submitLabel?: string;
+  submittingLabel?: string;
+  processingLabel?: string;
   messages?: Partial<AssetFormMessages<Infer<S>>>;
 };
 
@@ -59,6 +61,8 @@ export function AssetForm<
   onClose,
   invalidate,
   submitLabel,
+  submittingLabel,
+  processingLabel,
   messages: customMessages = {},
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const defaultMessageHandlers = defaultMessages<Infer<S>>();
@@ -190,10 +194,12 @@ export function AssetForm<
                 <AssetFormButton
                   currentStep={currentStep}
                   onPreviousStep={handlePrev}
-                  isLastStep={isLastStep}
                   onNextStep={handleNext}
-                  isSubmitting={form.formState.isSubmitting || isValidating}
+                  isLastStep={isLastStep}
+                  isSubmitting={form.formState.isSubmitting}
                   submitLabel={submitLabel}
+                  submittingLabel={submittingLabel}
+                  processingLabel={processingLabel}
                 />
               </form>
             </Form>

@@ -18,6 +18,8 @@ export function CreateCryptocurrencyForm({
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onClose}
       invalidate={[assetConfig.cryptocurrency.queryKey, ['transactions']]}
+      submitLabel="Create"
+      submittingLabel="Creating..."
       messages={{
         onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
         onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,

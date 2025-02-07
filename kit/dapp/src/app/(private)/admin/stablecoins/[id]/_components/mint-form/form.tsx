@@ -30,6 +30,7 @@ export function MintStablecoinForm({
       resolverAction={zodResolver(MintStablecoinFormSchema)}
       onClose={onClose}
       submitLabel="Mint"
+      submittingLabel="Minting..."
       messages={{
         onCreate: () => `Minting ${name} (${symbol})`,
         onSuccess: () => `${name} (${symbol}) minted successfully on chain`,

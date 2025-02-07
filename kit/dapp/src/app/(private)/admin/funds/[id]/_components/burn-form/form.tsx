@@ -24,6 +24,7 @@ export function BurnFundForm({
       resolverAction={zodResolver(BurnFundFormSchema)}
       onClose={onClose}
       submitLabel="Burn"
+      submittingLabel="Burning..."
       messages={{
         onCreate: (data) => `Burning ${data.amount} ${pluralize(data.amount, 'token')}...`,
         onSuccess: (data) => `Successfully burned ${data.amount} ${pluralize(data.amount, 'token')} on chain`,

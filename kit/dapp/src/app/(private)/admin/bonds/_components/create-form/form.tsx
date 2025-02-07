@@ -17,6 +17,8 @@ export function CreateBondForm({
       resolverAction={zodResolver(CreateBondFormSchema)}
       onClose={onClose}
       invalidate={[assetConfig.bond.queryKey, ['transactions']]}
+      submitLabel="Create"
+      submittingLabel="Creating..."
       messages={{
         onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
         onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,
