@@ -17,6 +17,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <DetailsGridItem label="Symbol">{asset.symbol}</DetailsGridItem>
         <DetailsGridItem label="Decimals">{asset.decimals}</DetailsGridItem>
         <DetailsGridItem label="Total supply">{formatNumber(asset.totalSupply)}</DetailsGridItem>
+        <DetailsGridItem label="Proven collateral">{formatNumber(asset.collateral)}</DetailsGridItem>
       </CardContent>
     </Card>
   );
