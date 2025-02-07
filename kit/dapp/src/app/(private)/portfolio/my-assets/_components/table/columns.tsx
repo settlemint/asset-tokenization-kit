@@ -1,11 +1,11 @@
 'use client';
 
-import { formatAssetType } from '@/app/(private)/portfolio/my-assets/_utils/format-asset-type';
 import type { MyAsset } from '@/app/(private)/portfolio/my-assets/data';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { Badge } from '@/components/ui/badge';
+import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { createColumnHelper } from '@tanstack/react-table';
 
 const columnHelper = createColumnHelper<MyAsset>();

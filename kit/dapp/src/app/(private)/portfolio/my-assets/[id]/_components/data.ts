@@ -1,6 +1,5 @@
-import { getSession } from "@/lib/auth/auth";
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
-import type { FragmentOf } from "@settlemint/sdk-hasura";
+import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {
@@ -33,11 +32,11 @@ const MyAsset = theGraphGraphqlStarterkits(
     }
   }
 `,
-  [BalanceFragment],
+  [BalanceFragment]
 );
 
 export async function getMyAsset(assetId: string) {
-  const session = await getSession();
-  const { account } = await theGraphClientStarterkits.request(MyAsset, { accountId: session.user.wallet, assetId });
+  const user = await getAuthenticatedUser();
+  const { account } = await theGraphClientStarterkits.request(MyAsset, { accountId: user.wallet, assetId });
   return account?.balances[0];
 }
