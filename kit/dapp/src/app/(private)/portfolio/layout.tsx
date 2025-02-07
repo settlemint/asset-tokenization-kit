@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth/auth';
 import { metadata as baseMetadata } from '@/lib/config/metadata';
-import { ArrowLeftRight, LayoutDashboard, Users } from 'lucide-react';
+import { ArrowLeftRight, LayoutDashboard, Users, Wallet } from 'lucide-react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
@@ -65,6 +65,11 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
       path: '/portfolio',
     },
     {
+      label: 'My Assets',
+      icon: <Wallet />,
+      path: '/portfolio/my-assets',
+    },
+    {
       label: 'Transactions',
       icon: <ArrowLeftRight />,
       path: '/portfolio/transactions',
@@ -97,7 +102,7 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
       </Sidebar>
       <SidebarInset>
         <Header />
-        {children}
+        <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

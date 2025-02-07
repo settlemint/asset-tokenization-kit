@@ -1,3 +1,5 @@
+'use client';
+
 import { authClient } from '@/lib/auth/client';
 import { NavFooterPortfolioAdmin } from './nav-footer-portfolio-admin';
 import { NavFooterPortfolioUser } from './nav-footer-portfolio-user';
