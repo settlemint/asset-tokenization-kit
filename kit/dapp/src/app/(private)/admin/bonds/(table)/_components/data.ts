@@ -55,20 +55,20 @@ export type BondAsset = Prettify<
 >;
 
 export async function getBonds(): Promise<BondAsset[]> {
-  const data = await theGraphClientStarterkits.request(Bonds);
-  const theGraphBonds = data.bonds;
-  const bondAddresses = theGraphBonds.map((bond) => getAddress(bond.id));
+  const [theGraphData, dbAssets] = await Promise.all([
+    theGraphClientStarterkits.request(Bonds),
+    hasuraClient.request(OffchainBonds),
+  ]);
 
-  const dbBonds = await hasuraClient.request(OffchainBonds, {
-    _in: bondAddresses,
-  });
+  const theGraphBonds = theGraphData.bonds;
+  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
 
   const bonds = theGraphBonds.map((bond) => {
-    const dbBond = dbBonds.asset_aggregate.nodes.find((b) => b.id === getAddress(bond.id));
+    const dbAsset = assetsById.get(getAddress(bond.id));
     return {
       ...bond,
-      ...(dbBond
-        ? dbBond
+      ...(dbAsset
+        ? dbAsset
         : {
             private: false,
           }),
