@@ -1,8 +1,8 @@
-import { getSession } from '@/lib/auth/auth';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import type { FragmentOf } from '@settlemint/sdk-hasura';
+import { getSession } from "@/lib/auth/auth";
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import type { FragmentOf } from "@settlemint/sdk-hasura";
 
-const BalanceFragment = theGraphGraphqlStarterkits(`
+export const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {
     valueExact
     asset {
@@ -34,21 +34,7 @@ const MyAssets = theGraphGraphqlStarterkits(
     }
   }
 `,
-  [BalanceFragment]
-);
-
-const MyAsset = theGraphGraphqlStarterkits(
-  `
-  query MyAsset($accountId: ID!, $assetId: String!) {
-    account(id: $accountId) {
-      id
-      balances(where: { asset:$assetId }) {
-        ...BalancesField
-      }
-    }
-  }
-`,
-  [BalanceFragment]
+  [BalanceFragment],
 );
 
 export type MyAsset = FragmentOf<typeof BalanceFragment>;
@@ -57,10 +43,4 @@ export async function getMyAssets() {
   const session = await getSession();
   const { account } = await theGraphClientStarterkits.request(MyAssets, { accountId: session.user.wallet });
   return account?.balances ?? [];
-}
-
-export async function getMyAsset(assetId: string) {
-  const session = await getSession();
-  const { account } = await theGraphClientStarterkits.request(MyAsset, { accountId: session.user.wallet, assetId });
-  return account?.balances[0];
 }
