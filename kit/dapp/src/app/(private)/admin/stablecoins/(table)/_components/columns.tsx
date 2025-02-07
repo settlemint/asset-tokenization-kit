@@ -7,6 +7,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { PercentageProgressBar } from '@/components/blocks/percentage-progress/percentage-progress';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { assetConfig } from '@/lib/config/assets';
+import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import BigNumber from 'bignumber.js';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
@@ -42,7 +43,7 @@ export const columns = [
         Total Supply
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   columnHelper.accessor('collateral', {

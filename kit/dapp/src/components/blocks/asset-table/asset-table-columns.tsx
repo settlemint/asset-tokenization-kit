@@ -1,5 +1,6 @@
 'use client';
 
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import type { ColumnHelper } from '@tanstack/react-table';
@@ -22,7 +23,7 @@ export function createActionsColumn<T extends BaseAsset>(
 ) {
   return columnHelper.display({
     id: 'actions',
-    header: () => 'Action',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>,
     cell: ({ row }) => {
       return (
         <DataTableRowActions detailUrl={`/admin/${assetConfig.urlSegment}/${row.original.id}`}>
