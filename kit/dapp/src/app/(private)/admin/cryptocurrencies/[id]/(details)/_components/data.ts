@@ -1,5 +1,3 @@
-'use server';
-
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
 const CryptocurrencyDetails = theGraphGraphqlStarterkits(

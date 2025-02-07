@@ -1,5 +1,3 @@
-'use server';
-
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 
 const UsersQuery = hasuraGraphql(`

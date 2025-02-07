@@ -1,4 +1,4 @@
-import { getStableCoins } from '@/app/(private)/admin/stablecoins/_components/table/data';
+import { getStableCoins } from '@/app/(private)/admin/stablecoins/(table)/_components/data';
 import { AssetFormDate } from '@/components/blocks/asset-form/inputs/asset-form-date';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';

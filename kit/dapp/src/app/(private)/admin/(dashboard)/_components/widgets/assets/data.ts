@@ -1,5 +1,3 @@
-'use server';
-
 import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import BigNumber from 'bignumber.js';
