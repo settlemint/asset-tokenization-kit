@@ -55,15 +55,6 @@
 			"dependsOn": ["codegen", "addresses"],
 			"outputs": [".next/**", "!.next/cache/**", "build/**"]
 		},
-		"//#docker": {
-			"cache": false
-		},
-		"publish-docker": {
-			"cache": false
-		},
-		"//#publish-npm": {
-			"cache": false
-		},
 		"dev": {
 			"dependsOn": ["codegen"],
 			"cache": false,
