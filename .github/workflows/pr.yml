@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   test:
-    name: PR
+    name: Test
     runs-on: namespace-profile-starterkit
     steps:
       - name: Checkout repository
