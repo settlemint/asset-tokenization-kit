@@ -1,27 +1,26 @@
 {
-	"name": "subgraph",
-	"version": "1.0.0",
-	"license": "FSL-1.1-MIT",
-	"author": {
-		"name": "SettleMint",
-		"email": "support@settlemint.com",
-		"url": "https://settlemint.com"
-	},
-	"scripts": {
-		"codegen:graph": "graph codegen",
-		"build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
-		"deploy:local": "bash graph-local-deploy.sh",
-		"deploy:remote": "bash graph-remote-deploy.sh",
-		"format:biome": "biome format --write .",
-		"lint:biome": "biome lint ."
-	},
-	"dependencies": {
-		"@graphprotocol/graph-cli": "0.95.0",
-		"@graphprotocol/graph-ts": "0.37.0",
-		"contracts": "workspace:*"
-	},
-	"devDependencies": {
-		"matchstick-as": "0.6.0"
-	},
-	"peerDependencies": {}
+  "name": "subgraph",
+  "version": "1.0.0",
+  "license": "FSL-1.1-MIT",
+  "author": {
+    "name": "SettleMint",
+    "email": "support@settlemint.com",
+    "url": "https://settlemint.com"
+  },
+  "scripts": {
+    "codegen:graph": "graph codegen",
+    "build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
+    "deploy:local": "bash graph-local-deploy.sh",
+    "deploy:remote": "bash graph-remote-deploy.sh",
+    "format:biome": "biome format --write ."
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.95.0",
+    "@graphprotocol/graph-ts": "0.37.0",
+    "contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.6.0"
+  },
+  "peerDependencies": {}
 }

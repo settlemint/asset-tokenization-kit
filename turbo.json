@@ -30,10 +30,10 @@
       "cache": false
     },
     "lint": {
-      "dependsOn": ["lint:biome", "lint:solhint", "lint:eslint"]
+      "dependsOn": ["//#lint:biome", "lint:solhint", "lint:eslint"]
     },
-    "lint:biome": {
-      "dependsOn": ["codegen"]
+    "//#lint:biome": {
+      "dependsOn": ["^codegen"]
     },
     "lint:solhint": {
       "dependsOn": ["codegen"]

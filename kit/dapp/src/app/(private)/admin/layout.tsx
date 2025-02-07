@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
       <Sidebar />
       <SidebarInset className="bg-sidebar">
         <Header />
-        <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-6">{children}</main>
+        <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-10">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

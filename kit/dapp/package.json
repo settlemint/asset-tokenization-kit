@@ -13,7 +13,6 @@
     "build": "next build && rm -Rf ./node_modules/next/dist",
     "start": "next start",
     "format:biome": "biome format --write .",
-    "lint:biome": "biome lint .",
     "lint:eslint": "next lint",
     "addresses": "bash contract-addresses.sh",
     "codegen:settlemint": "settlemint codegen",
