@@ -2,7 +2,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { type Address, parseUnits } from 'viem';
 import { BurnStablecoinFormSchema, BurnStablecoinOutputSchema } from './schema';
 
 const BurnStableCoin = portalGraphql(`
@@ -21,11 +21,11 @@ const BurnStableCoin = portalGraphql(`
 export const burnStablecoin = actionClient
   .schema(BurnStablecoinFormSchema)
   .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, amount, from, pincode }, ctx: { user } }) => {
+  .action(async ({ parsedInput: { address, amount, from, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(BurnStableCoin, {
       address: address,
       from: from ?? (user.wallet as string),
-      amount: amount.toString(),
+      amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 

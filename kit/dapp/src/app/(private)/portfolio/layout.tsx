@@ -12,11 +12,10 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { auth } from '@/lib/auth/auth';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { metadata as baseMetadata } from '@/lib/config/metadata';
 import { ArrowLeftRight, LayoutDashboard, Users, Wallet } from 'lucide-react';
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import type { PropsWithChildren } from 'react';
 
 export const metadata: Metadata = {
@@ -53,10 +52,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PortfolioLayout({ children }: PropsWithChildren) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  const role = (session?.user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
+  const user = await getAuthenticatedUser();
+  const role = (user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
 
   const sidebarData: NavElement[] = [
     {

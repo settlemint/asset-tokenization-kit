@@ -1,11 +1,12 @@
-import { formatAssetType } from "@/app/(private)/portfolio/my-assets/_utils/format-asset-type";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
-import { CopyToClipboard } from "@/components/ui/copy";
-import { EvmAddressBalances } from "@/components/ui/evm-address-balances";
-import type { PropsWithChildren } from "react";
-import { getMyAsset } from "../../_components/data";
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { CopyToClipboard } from '@/components/ui/copy';
+import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { formatNumber } from '@/lib/number';
+import { formatAssetType } from '@/lib/utils/format-asset-type';
+import type { PropsWithChildren } from 'react';
+import { getMyAsset } from '../../_components/data';
 
 type DetailsGridProps = {
   id: string;
@@ -28,7 +29,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <DetailsGridItem label="Name">{myAsset.asset.name}</DetailsGridItem>
         <DetailsGridItem label="Symbol">{myAsset.asset.symbol}</DetailsGridItem>
         <DetailsGridItem label="Type">{formatAssetType(myAsset.asset.type)}</DetailsGridItem>
-        {myAsset.asset.__typename === "StableCoin" && (
+        {myAsset.asset.__typename === 'StableCoin' && (
           <>
             <DetailsGridItem label="ISIN">{myAsset.asset.isin}</DetailsGridItem>
             <DetailsGridItem label="Contract address">
@@ -36,16 +37,18 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
                 <EvmAddress address={myAsset.asset.id}>
                   <EvmAddressBalances address={myAsset.asset.id} />
                 </EvmAddress>
-                <CopyToClipboard value={myAsset.asset.id} displayText={""} className="ml-2" />
+                <CopyToClipboard value={myAsset.asset.id} displayText={''} className="ml-2" />
               </div>
             </DetailsGridItem>
-            <DetailsGridItem label="Total supply">{myAsset.asset.totalSupplyExact}</DetailsGridItem>
+            <DetailsGridItem label="Total supply">{formatNumber(myAsset.asset.totalSupply)}</DetailsGridItem>
             <DetailsGridItem label="Proven collateral (ratio)">
-              {((Number(myAsset.asset.collateralExact) / Number(myAsset.asset.totalSupplyExact)) * 100).toFixed(2)}%
+              {formatNumber(Number(myAsset.asset.collateral) / Number(myAsset.asset.totalSupply), {
+                percentage: true,
+              })}
             </DetailsGridItem>
           </>
         )}
-        <DetailsGridItem label="Balance">{myAsset.valueExact}</DetailsGridItem>
+        <DetailsGridItem label="Balance">{formatNumber(myAsset.value)}</DetailsGridItem>
       </CardContent>
     </Card>
   );

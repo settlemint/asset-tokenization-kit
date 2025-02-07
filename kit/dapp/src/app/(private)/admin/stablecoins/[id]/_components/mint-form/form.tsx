@@ -12,12 +12,14 @@ export function MintStablecoinForm({
   address,
   name,
   symbol,
+  decimals,
   assetConfig,
   onClose,
 }: {
   address: Address;
   name: string;
   symbol: string;
+  decimals: number;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
@@ -36,7 +38,7 @@ export function MintStablecoinForm({
     >
       <Recipients />
       <Amount />
-      <Summary address={address} />
+      <Summary address={address} decimals={decimals} />
     </AssetForm>
   );
 }

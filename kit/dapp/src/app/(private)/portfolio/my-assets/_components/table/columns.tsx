@@ -1,11 +1,12 @@
 'use client';
 
-import { formatAssetType } from '@/app/(private)/portfolio/my-assets/_utils/format-asset-type';
 import type { MyAsset } from '@/app/(private)/portfolio/my-assets/data';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { Badge } from '@/components/ui/badge';
+import { formatNumber } from '@/lib/number';
+import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { createColumnHelper } from '@tanstack/react-table';
 
 const columnHelper = createColumnHelper<MyAsset>();
@@ -26,9 +27,15 @@ export const columns = [
     cell: ({ getValue }) => <DataTableColumnCell>{formatAssetType(getValue() as string)}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
-  columnHelper.accessor('valueExact', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Balance</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
+  columnHelper.accessor('value', {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} variant="numeric">
+        Balance
+      </DataTableColumnHeader>
+    ),
+    cell: ({ getValue }) => (
+      <DataTableColumnCell variant="numeric">{formatNumber(getValue() as string)}</DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset.paused', {

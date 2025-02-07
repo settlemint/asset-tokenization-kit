@@ -7,7 +7,12 @@ import { useState } from 'react';
 import type { Address } from 'viem';
 import { BurnStablecoinForm } from './form';
 
-export function BurnTokensButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
+export function BurnTokensButton({
+  address,
+  name,
+  symbol,
+  decimals,
+}: { name: string; symbol: string; address: Address; decimals: number }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,6 +35,7 @@ export function BurnTokensButton({ address, name, symbol }: { name: string; symb
           address={address}
           name={name}
           symbol={symbol}
+          decimals={decimals}
           assetConfig={assetConfig.stablecoin}
           onClose={() => setOpen(false)}
         />

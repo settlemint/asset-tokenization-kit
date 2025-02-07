@@ -2,41 +2,53 @@
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { assetConfig } from '@/lib/config/assets';
+import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { MintStablecoinForm } from './form';
+import { TransferForm } from './form';
+import type { TransferFormAssetType } from './schema';
 
-export function MintTokensButton({
+export function TransferButton({
   address,
   name,
   symbol,
+  type,
+  balance,
   decimals,
-}: { name: string; symbol: string; address: Address; decimals: number }) {
+}: {
+  name: string;
+  symbol: string;
+  address: Address;
+  type: TransferFormAssetType;
+  balance: string;
+  decimals: number;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          Mint tokens
+          Transfer
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>
-            Mint {name} ({symbol})
+            Transfer {formatAssetType(type)} {name} ({symbol})
           </SheetTitle>
           <SheetDescription>
-            Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
+            Easily transfer an amount of {formatAssetType(type)} {name} ({symbol}) by selecting a recipient and
+            specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <MintStablecoinForm
+        <TransferForm
           address={address}
           name={name}
           symbol={symbol}
+          assetType={type}
+          balance={balance}
           decimals={decimals}
-          assetConfig={assetConfig.stablecoin}
           onClose={() => setOpen(false)}
         />
       </SheetContent>

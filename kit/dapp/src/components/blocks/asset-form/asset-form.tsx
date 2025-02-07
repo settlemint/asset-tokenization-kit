@@ -87,10 +87,20 @@ export function AssetForm<
       onError: (data) => {
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
-          if (data.error.serverError instanceof Error) {
-            errorMessage = data.error.serverError.message;
-          } else if (typeof data.error.serverError === 'string') {
-            errorMessage = data.error.serverError;
+          const serverErrorWithContext = data.error.serverError as
+            | (typeof data.error.serverError & {
+                context?: { details: string };
+              })
+            | string;
+          if (serverErrorWithContext instanceof Error) {
+            errorMessage = serverErrorWithContext.message;
+          } else if (typeof serverErrorWithContext === 'string') {
+            errorMessage = serverErrorWithContext;
+          } else if (
+            typeof serverErrorWithContext === 'object' &&
+            typeof serverErrorWithContext.context?.details === 'string'
+          ) {
+            errorMessage = serverErrorWithContext.context.details;
           }
           toast.error(`Server error: ${errorMessage}. Please try again or contact support if the issue persists.`);
         }

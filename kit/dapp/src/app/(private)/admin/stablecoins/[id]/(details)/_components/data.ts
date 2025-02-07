@@ -4,11 +4,12 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
   `
   query StableCoin($id: ID!) {
     stableCoin(id: $id) {
-    id
-    name
-    symbol
-    decimals
-    totalSupply
+      id
+      name
+      symbol
+      decimals
+      totalSupply
+      collateral
     }
   }
 `
