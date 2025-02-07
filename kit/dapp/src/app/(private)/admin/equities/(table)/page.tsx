@@ -1,9 +1,9 @@
-import { icons } from '@/app/(private)/admin/equities/_components/table/columns';
+import { icons } from '@/app/(private)/admin/equities/(table)/_components/columns';
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
-import { columns } from './_components/table/columns';
-import { getEquities } from './_components/table/data';
+import { columns } from './_components/columns';
+import { getEquities } from './_components/data';
 
 export const metadata: Metadata = {
   title: 'Equities',

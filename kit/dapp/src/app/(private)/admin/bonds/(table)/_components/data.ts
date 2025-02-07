@@ -1,10 +1,6 @@
-'use server';
-
-import { db } from '@/lib/db';
-import { asset } from '@/lib/db/schema-asset-tokenization';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { inArray } from 'drizzle-orm';
 import { getAddress } from 'viem';
 
 const BondFragment = theGraphGraphqlStarterkits(`
@@ -34,20 +30,30 @@ const Bonds = theGraphGraphqlStarterkits(
   [BondFragment]
 );
 
+const OffchainBonds = hasuraGraphql(`
+  query OffchainBonds($_in: [String!]) {
+    asset_aggregate(where: {id: {_in: $_in}}) {
+      nodes {
+        id
+        private
+      }
+    }
+  }
+`);
+
 export type BondAsset = FragmentOf<typeof BondFragment>;
 
 export async function getBonds() {
   const data = await theGraphClientStarterkits.request(Bonds);
   const theGraphBonds = data.bonds;
+  const bondAddresses = theGraphBonds.map((bond) => getAddress(bond.id));
 
-  const bondAddresses = theGraphBonds.map((bond) => bond.id);
-  const dbBonds = await db
-    .select()
-    .from(asset)
-    .where(inArray(asset.id, bondAddresses.map(getAddress)));
+  const dbBonds = await hasuraClient.request(OffchainBonds, {
+    _in: bondAddresses,
+  });
 
   const bonds = theGraphBonds.map((bond) => {
-    const dbBond = dbBonds.find((b) => b.id === getAddress(bond.id));
+    const dbBond = dbBonds.asset_aggregate.nodes.find((b) => b.id === getAddress(bond.id));
     return {
       ...bond,
       ...(dbBond

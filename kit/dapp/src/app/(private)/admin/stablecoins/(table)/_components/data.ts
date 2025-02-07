@@ -1,9 +1,6 @@
-'use server';
-import { db } from '@/lib/db';
-import { asset } from '@/lib/db/schema-asset-tokenization';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { inArray } from 'drizzle-orm';
 import { getAddress } from 'viem';
 
 const StableCoinFragment = theGraphGraphqlStarterkits(`
@@ -29,24 +26,34 @@ const StableCoins = theGraphGraphqlStarterkits(
   [StableCoinFragment]
 );
 
+const OffchainAssets = hasuraGraphql(`
+  query OffchainAssets {
+    asset_aggregate {
+      nodes {
+        id
+        private
+      }
+    }
+  }
+`);
+
 export type StableCoinList = FragmentOf<typeof StableCoinFragment>;
 
 export async function getStableCoins() {
-  const data = await theGraphClientStarterkits.request(StableCoins);
-  const theGraphStableCoins = data.stableCoins;
+  const [theGraphData, dbAssets] = await Promise.all([
+    theGraphClientStarterkits.request(StableCoins),
+    hasuraClient.request(OffchainAssets),
+  ]);
 
-  const stableCoinAddresses = theGraphStableCoins.map((stableCoin) => stableCoin.id);
-  const dbStableCoins = await db
-    .select()
-    .from(asset)
-    .where(inArray(asset.id, stableCoinAddresses.map(getAddress)));
+  const theGraphStableCoins = theGraphData.stableCoins;
+  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
 
   const stableCoins = theGraphStableCoins.map((stableCoin) => {
-    const dbStableCoin = dbStableCoins.find((s) => s.id === getAddress(stableCoin.id));
+    const dbAsset = assetsById.get(getAddress(stableCoin.id));
     return {
       ...stableCoin,
-      ...(dbStableCoin
-        ? dbStableCoin
+      ...(dbAsset
+        ? dbAsset
         : {
             private: false,
           }),

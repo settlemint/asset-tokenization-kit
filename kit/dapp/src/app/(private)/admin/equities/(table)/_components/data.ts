@@ -1,11 +1,7 @@
-'use server';
-
 import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-columns';
-import { db } from '@/lib/db';
-import { asset } from '@/lib/db/schema-asset-tokenization';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { inArray } from 'drizzle-orm';
 import { getAddress } from 'viem';
 
 const EquityFragment = theGraphGraphqlStarterkits(`
@@ -32,24 +28,34 @@ const Equities = theGraphGraphqlStarterkits(
   [EquityFragment]
 );
 
+const OffchainAssets = hasuraGraphql(`
+  query OffchainAssets {
+    asset_aggregate {
+      nodes {
+        id
+        private
+      }
+    }
+  }
+`);
+
 export type EquityAsset = FragmentOf<typeof EquityFragment> & BaseAsset;
 
 export async function getEquities() {
-  const data = await theGraphClientStarterkits.request(Equities);
-  const theGraphEquities = data.equities;
+  const [theGraphData, dbAssets] = await Promise.all([
+    theGraphClientStarterkits.request(Equities),
+    hasuraClient.request(OffchainAssets),
+  ]);
 
-  const equityAddresses = theGraphEquities.map((equity) => equity.id);
-  const dbEquities = await db
-    .select()
-    .from(asset)
-    .where(inArray(asset.id, equityAddresses.map(getAddress)));
+  const theGraphEquities = theGraphData.equities;
+  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
 
   const equities = theGraphEquities.map((equity) => {
-    const dbEquity = dbEquities.find((e) => e.id === getAddress(equity.id));
+    const dbAsset = assetsById.get(getAddress(equity.id));
     return {
       ...equity,
-      ...(dbEquity
-        ? dbEquity
+      ...(dbAsset
+        ? dbAsset
         : {
             private: false,
           }),

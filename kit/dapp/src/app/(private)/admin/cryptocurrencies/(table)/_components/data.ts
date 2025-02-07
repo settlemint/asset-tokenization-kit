@@ -1,10 +1,6 @@
-'use server';
-
-import { db } from '@/lib/db';
-import { asset } from '@/lib/db/schema-asset-tokenization';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { inArray } from 'drizzle-orm';
 import { getAddress } from 'viem';
 
 const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
@@ -28,24 +24,34 @@ const CryptoCurrencies = theGraphGraphqlStarterkits(
   [CryptoCurrencyFragment]
 );
 
+const OffchainAssets = hasuraGraphql(`
+  query OffchainAssets {
+    asset_aggregate {
+      nodes {
+        id
+        private
+      }
+    }
+  }
+`);
+
 export type CryptoCurrencyAsset = FragmentOf<typeof CryptoCurrencyFragment>;
 
 export async function getCryptocurrencies() {
-  const data = await theGraphClientStarterkits.request(CryptoCurrencies);
-  const theGraphCryptocurrencies = data.cryptoCurrencies;
+  const [theGraphData, dbAssets] = await Promise.all([
+    theGraphClientStarterkits.request(CryptoCurrencies),
+    hasuraClient.request(OffchainAssets),
+  ]);
 
-  const cryptocurrencyAddresses = theGraphCryptocurrencies.map((cryptocurrency) => cryptocurrency.id);
-  const dbCryptocurrencies = await db
-    .select()
-    .from(asset)
-    .where(inArray(asset.id, cryptocurrencyAddresses.map(getAddress)));
+  const theGraphCryptocurrencies = theGraphData.cryptoCurrencies;
+  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
 
   const cryptocurrencies = theGraphCryptocurrencies.map((cryptocurrency) => {
-    const dbCryptocurrency = dbCryptocurrencies.find((c) => c.id === getAddress(cryptocurrency.id));
+    const dbAsset = assetsById.get(getAddress(cryptocurrency.id));
     return {
       ...cryptocurrency,
-      ...(dbCryptocurrency
-        ? dbCryptocurrency
+      ...(dbAsset
+        ? dbAsset
         : {
             private: false,
           }),

@@ -1,4 +1,3 @@
-'use server';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 import { unstable_cache } from 'next/cache';

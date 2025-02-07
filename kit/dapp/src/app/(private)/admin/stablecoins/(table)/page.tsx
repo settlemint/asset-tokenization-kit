@@ -1,8 +1,8 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
-import { columns, icons } from './_components/table/columns';
-import { getStableCoins } from './_components/table/data';
+import { columns, icons } from './_components/columns';
+import { getStableCoins } from './_components/data';
 
 export const metadata: Metadata = {
   title: 'Stable Coins',
