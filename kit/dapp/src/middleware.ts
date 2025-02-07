@@ -1,20 +1,11 @@
-import { betterFetch } from '@better-fetch/fetch';
-import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
-import type { Session, User } from 'better-auth/types';
+import { getSessionCookie } from 'better-auth';
+import type {} from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
 import { type Match, match } from 'path-to-regexp';
 import { isCrawler } from './lib/config/crawlers';
 
-const isUserAuthenticatedRoute = match(['/user', '/user/*path', '/portfolio', '/portfolio/*path']);
-const isIssuerAuthenticatedRoute = match(['/admin', '/admin/*path']);
-const isAdminAuthenticatedRoute = match(['/admin/supersecure', '/admin/supersecure/*path']);
 const isAssetRoute = match(['/admin/:type/:id', '/admin/:type/:id/*path']);
-
-const routeRoleMap = [
-  { checker: isUserAuthenticatedRoute, roles: ['user', 'issuer', 'admin'] },
-  { checker: isIssuerAuthenticatedRoute, roles: ['issuer', 'admin'] },
-  { checker: isAdminAuthenticatedRoute, roles: ['admin'] },
-];
+const isPrivateRoute = match(['/admin', '/admin/*path', '/proxy', '/proxy/*path']);
 
 function buildRedirectUrl(request: NextRequest): URL {
   const redirectUrl = new URL('/auth/signin', request.url);
@@ -25,16 +16,7 @@ function buildRedirectUrl(request: NextRequest): URL {
   return redirectUrl;
 }
 
-function buildWrongRoleRedirectUrl(request: NextRequest): URL {
-  const redirectUrl = new URL('/auth/wrong-role', request.url);
-  const returnPath = request.nextUrl.search
-    ? `${request.nextUrl.pathname}${request.nextUrl.search}`
-    : request.nextUrl.pathname;
-  redirectUrl.searchParams.set('rd', returnPath);
-  return redirectUrl;
-}
-
-export default async function middleware(request: NextRequest) {
+export default function middleware(request: NextRequest) {
   if (isCrawler(request.headers.get('user-agent') || '')) {
     const assetMatch = isAssetRoute(request.nextUrl.pathname) as Match<{ type: string; id: string }>;
     if (assetMatch) {
@@ -43,30 +25,11 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  const proxyResponse = proxyMiddleware(request);
-  if (proxyResponse) {
-    return proxyResponse;
-  }
+  // quick check for the session cookie
+  const cookies = getSessionCookie(request);
 
-  const { data } = await betterFetch<{ session: Session; user: User & { role: 'user' | 'issuer' | 'admin' } }>(
-    '/api/auth/get-session',
-    {
-      baseURL: request.nextUrl.origin,
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-      },
-    }
-  );
-
-  for (const { checker, roles } of routeRoleMap) {
-    if (checker(request.nextUrl.pathname)) {
-      if (!data) {
-        return NextResponse.redirect(buildRedirectUrl(request));
-      }
-      if (!roles.includes(data.user.role)) {
-        return NextResponse.redirect(buildWrongRoleRedirectUrl(request));
-      }
-    }
+  if (isPrivateRoute(request.nextUrl.pathname) && !cookies) {
+    return NextResponse.redirect(buildRedirectUrl(request));
   }
 
   return NextResponse.next();
