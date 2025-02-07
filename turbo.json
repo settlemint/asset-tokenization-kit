@@ -40,9 +40,6 @@
 		"lint:eslint": {
 			"dependsOn": ["codegen"]
 		},
-		"compile": {
-			"dependsOn": ["compile:hardhat", "compile:forge"]
-		},
 		"compile:hardhat": {
 			"dependsOn": ["dependencies"],
 			"outputs": ["artifacts/**", "cache/**"]
@@ -73,7 +70,7 @@
 			"persistent": true
 		},
 		"test": {
-			"dependsOn": ["codegen", "compile:forge"]
+			"dependsOn": ["codegen", "^compile:forge", "compile:forge"]
 		},
 		"genesis": {
 			"dependsOn": ["dependencies", "compile:forge"],
