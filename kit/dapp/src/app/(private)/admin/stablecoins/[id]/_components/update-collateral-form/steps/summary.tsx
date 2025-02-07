@@ -7,7 +7,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { UpdateCollateralFormType } from '../schema';
 
-export function Summary({ address }: { address: Address }) {
+export function Summary({ address, decimals }: { address: Address; decimals: number }) {
   const { control } = useFormContext<UpdateCollateralFormType>();
   const values = useWatch({
     control: control,
@@ -56,7 +56,8 @@ export function Summary({ address }: { address: Address }) {
             </div>
           </div>
 
-          <AssetFormInput control={control} name="address" label="Address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField
             control={control}

@@ -28,9 +28,13 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('value', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Balance</DataTableColumnHeader>,
-    cell: ({ renderValue, cell }) => (
-      <DataTableColumnCell>{formatNumber(renderValue() as string, { decimals: 18 })}</DataTableColumnCell>
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} variant="numeric">
+        Balance
+      </DataTableColumnHeader>
+    ),
+    cell: ({ getValue }) => (
+      <DataTableColumnCell variant="numeric">{formatNumber(getValue() as string)}</DataTableColumnCell>
     ),
     enableColumnFilter: false,
   }),

@@ -6,9 +6,11 @@ const StableCoinTitle = theGraphGraphqlStarterkits(
   `
   query StableCoin($id: ID!) {
     stableCoin(id: $id) {
-    id
-    name
-    symbol    }
+      id
+      name
+      symbol
+      decimals
+    }
   }
 `
 );

@@ -27,11 +27,11 @@ const UpdateCollateral = portalGraphql(`
 export const updateCollateral = actionClient
   .schema(UpdateCollateralFormSchema)
   .outputSchema(UpdateCollateralOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode }, ctx: { user } }) => {
+  .action(async ({ parsedInput: { address, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(UpdateCollateral, {
       address: address,
       from: user.wallet as string,
-      amount: parseUnits(amount.toString(), 18).toString(),
+      amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
