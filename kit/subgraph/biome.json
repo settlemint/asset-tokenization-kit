@@ -1,0 +1,6 @@
+{
+  "extends": ["ultracite", "../../biome.json"],
+  "linter": {
+    "ignore": ["src/**/*", "generated/**/*"]
+  }
+}

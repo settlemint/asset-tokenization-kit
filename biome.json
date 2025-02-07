@@ -1,17 +1,5 @@
 {
-  "extends": ["ultracite"],
-  "files": {
-    "ignore": [
-      ".vscode/",
-      "kit/contracts/artifacts/**/*",
-      "kit/contracts/dependencies/**/*",
-      "kit/contracts/ignition/deployments/**/*",
-      "kit/dapp/src/components/ui/**/*",
-      "*-env.d.ts"
-    ]
-  },
   "linter": {
-    "ignore": ["kit/subgraph/src/**/*"],
     "rules": {
       "style": {
         "noNonNullAssertion": "off",

@@ -1,0 +1,6 @@
+{
+  "extends": ["ultracite", "../../biome.json"],
+  "files": {
+    "ignore": ["src/components/ui/**/*", "*.d.ts"]
+  }
+}

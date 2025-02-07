@@ -1,0 +1,6 @@
+{
+  "extends": ["ultracite", "../../biome.json"],
+  "files": {
+    "ignore": ["artifacts/**/*", "dependencies/**/*", "ignition/deployments/**/*"]
+  }
+}

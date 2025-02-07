@@ -47,6 +47,7 @@ drizzle
 
 *-env.d.ts
 *-schema.graphql
+the-graph-cache-*.d.ts
 the-graph-env-*.d.ts
 the-graph-schema-*.graphql
 src/lib/settlemint
