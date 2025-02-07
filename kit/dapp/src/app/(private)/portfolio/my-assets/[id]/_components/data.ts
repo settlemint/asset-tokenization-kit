@@ -1,12 +1,32 @@
 import { getSession } from "@/lib/auth/auth";
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
-import { BalanceFragment } from "../../../data";
+import type { FragmentOf } from "@settlemint/sdk-hasura";
+
+const BalanceFragment = theGraphGraphqlStarterkits(`
+  fragment BalancesField on AssetBalance {
+    valueExact
+    asset {
+      __typename
+      id
+      name
+      symbol
+      type
+      totalSupply
+      totalSupplyExact
+      ... on StableCoin {
+        isin
+        paused
+        collateral
+        collateralExact
+      }
+    }
+  }
+`);
 
 const MyAsset = theGraphGraphqlStarterkits(
   `
   query MyAsset($accountId: ID!, $assetId: String!) {
     account(id: $accountId) {
-      id
       balances(where: { asset: $assetId }) {
         ...BalancesField
       }
