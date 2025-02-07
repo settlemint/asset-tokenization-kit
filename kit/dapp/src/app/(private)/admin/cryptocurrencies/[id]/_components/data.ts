@@ -1,6 +1,6 @@
-'use server';
-
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { getAddress } from 'viem';
 
 const CryptocurrencyTitle = theGraphGraphqlStarterkits(
   `
@@ -14,10 +14,32 @@ const CryptocurrencyTitle = theGraphGraphqlStarterkits(
 `
 );
 
+const OffchainCryptocurrency = hasuraGraphql(`
+  query OffchainCryptocurrency($id: String!) {
+    asset(where: {id: {_eq: $id}}, limit: 1) {
+      id
+      private
+    }
+  }
+`);
+
 export async function getCryptocurrencyTitle(id: string) {
-  const data = await theGraphClientStarterkits.request(CryptocurrencyTitle, { id });
+  const normalizedId = getAddress(id);
+  const [data, dbCrypto] = await Promise.all([
+    theGraphClientStarterkits.request(CryptocurrencyTitle, { id }),
+    hasuraClient.request(OffchainCryptocurrency, { id: normalizedId }),
+  ]);
+
   if (!data.cryptoCurrency) {
     throw new Error('Cryptocurrency not found');
   }
-  return data.cryptoCurrency;
+
+  return {
+    ...data.cryptoCurrency,
+    ...(dbCrypto.asset[0]
+      ? dbCrypto.asset[0]
+      : {
+          private: false,
+        }),
+  };
 }

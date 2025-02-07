@@ -3,7 +3,6 @@ import { OgImage } from '@/app/share/_components/og-image';
 import { OgNotFound } from '@/app/share/_components/og-not-found';
 import { createOgResponse } from '@/app/share/_components/og-response';
 import { formatNumber } from '@/lib/number';
-import {} from '@/lib/settlemint/the-graph';
 import type { Address } from 'viem';
 import { getOgBond } from '../_components/data';
 

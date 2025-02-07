@@ -1,5 +1,3 @@
-'use server';
-
 import { db } from '@/lib/db';
 import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
