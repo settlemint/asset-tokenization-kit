@@ -4,7 +4,7 @@ import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, openAPI } from 'better-auth/plugins';
+import { admin } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
 import { metadata } from '../config/metadata';
@@ -99,10 +99,10 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60,
+      maxAge: 10 * 60,
     },
   },
-  plugins: [nextCookies(), admin(), passkey(), openAPI(), emailHarmony()],
+  plugins: [admin(), passkey(), emailHarmony(), nextCookies()],
 });
 
 /**
@@ -123,7 +123,7 @@ export async function getSession() {
 
 /**
  * Get the currently authenticated user
- * @returns {Promise<AuthenticatedUser>} The authenticated user
+ * @returns The authenticated user
  * @throws {AuthError} If user is not authenticated
  */
 export async function getAuthenticatedUser() {
