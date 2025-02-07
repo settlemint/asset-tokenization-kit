@@ -1,7 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { getAddress } from 'viem';
+import { type Prettify, getAddress } from 'viem';
 
 const StableCoinFragment = theGraphGraphqlStarterkits(`
   fragment StableCoinFields on StableCoin {
@@ -26,23 +26,34 @@ const StableCoins = theGraphGraphqlStarterkits(
   [StableCoinFragment]
 );
 
-const OffchainAssets = hasuraGraphql(`
-  query OffchainAssets {
-    asset_aggregate {
+const OffchainStableCoinFragment = hasuraGraphql(`
+  fragment OffchainStableCoinsFields on asset_aggregate {
       nodes {
         id
         private
       }
-    }
   }
 `);
 
-export type StableCoinList = FragmentOf<typeof StableCoinFragment>;
+const OffchainStableCoins = hasuraGraphql(
+  `
+  query OffchainStableCoins {
+    asset_aggregate {
+      ...OffchainStableCoinsFields
+    }
+  }
+`,
+  [OffchainStableCoinFragment]
+);
 
-export async function getStableCoins() {
+export type StableCoinAsset = Prettify<
+  FragmentOf<typeof StableCoinFragment> & FragmentOf<typeof OffchainStableCoinFragment>['nodes'][number]
+>;
+
+export async function getStableCoins(): Promise<StableCoinAsset[]> {
   const [theGraphData, dbAssets] = await Promise.all([
     theGraphClientStarterkits.request(StableCoins),
-    hasuraClient.request(OffchainAssets),
+    hasuraClient.request(OffchainStableCoins),
   ]);
 
   const theGraphStableCoins = theGraphData.stableCoins;

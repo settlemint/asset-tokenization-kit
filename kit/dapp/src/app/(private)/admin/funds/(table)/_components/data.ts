@@ -1,8 +1,7 @@
-import type { BaseAsset } from '@/components/blocks/asset-table/asset-table-columns';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { getAddress } from 'viem';
+import { type Prettify, getAddress } from 'viem';
 
 const FundFragment = theGraphGraphqlStarterkits(`
   fragment FundFields on Fund {
@@ -28,23 +27,34 @@ const Funds = theGraphGraphqlStarterkits(
   [FundFragment]
 );
 
-const OffchainAssets = hasuraGraphql(`
-  query OffchainAssets {
-    asset_aggregate {
+const OffchainFundFragment = hasuraGraphql(`
+  fragment OffchainFundsFields on asset_aggregate {
       nodes {
         id
         private
       }
-    }
   }
 `);
 
-export type FundAsset = FragmentOf<typeof FundFragment> & BaseAsset;
+const OffchainFunds = hasuraGraphql(
+  `
+  query OffchainFunds {
+    asset_aggregate {
+      ...OffchainFundsFields
+    }
+  }
+`,
+  [OffchainFundFragment]
+);
 
-export async function getFunds() {
+export type FundAsset = Prettify<
+  FragmentOf<typeof FundFragment> & FragmentOf<typeof OffchainFundFragment>['nodes'][number]
+>;
+
+export async function getFunds(): Promise<FundAsset[]> {
   const [theGraphData, dbAssets] = await Promise.all([
     theGraphClientStarterkits.request(Funds),
-    hasuraClient.request(OffchainAssets),
+    hasuraClient.request(OffchainFunds),
   ]);
 
   const theGraphFunds = theGraphData.funds;

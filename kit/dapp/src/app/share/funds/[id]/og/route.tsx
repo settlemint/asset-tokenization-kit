@@ -2,7 +2,6 @@ import { OgDataBox } from '@/app/share/_components/og-data-box';
 import { OgImage } from '@/app/share/_components/og-image';
 import { OgNotFound } from '@/app/share/_components/og-not-found';
 import { createOgResponse } from '@/app/share/_components/og-response';
-import {} from '@/lib/settlemint/the-graph';
 import type { Address } from 'viem';
 import { getOgFund } from '../_components/data';
 

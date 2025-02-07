@@ -1,8 +1,10 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
+import type { ColumnDef } from '@tanstack/react-table';
 import type { Metadata } from 'next';
-import { columns, icons } from './_components/columns';
-import { getStableCoins } from './_components/data';
+import { columns } from './_components/columns';
+import { type StableCoinAsset, getStableCoins } from './_components/data';
+import { StableCoinsTableClient } from './_components/table.client';
 
 export const metadata: Metadata = {
   title: 'Stable Coins',
@@ -18,10 +20,10 @@ export default function StableCoinsPage() {
       <AssetTable
         assetConfig={assetConfig.stablecoin}
         dataAction={getStableCoins}
-        columns={columns}
-        icons={icons}
-        refetchInterval={5000}
-      />
+        columns={columns as ColumnDef<StableCoinAsset>[]}
+      >
+        <StableCoinsTableClient />
+      </AssetTable>
     </>
   );
 }

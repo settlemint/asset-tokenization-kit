@@ -1,7 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { getAddress } from 'viem';
+import { type Prettify, getAddress } from 'viem';
 
 const BondFragment = theGraphGraphqlStarterkits(`
   fragment BondFields on Bond {
@@ -30,20 +30,31 @@ const Bonds = theGraphGraphqlStarterkits(
   [BondFragment]
 );
 
-const OffchainBonds = hasuraGraphql(`
-  query OffchainBonds($_in: [String!]) {
-    asset_aggregate(where: {id: {_in: $_in}}) {
+const OffchainBondFragment = hasuraGraphql(`
+  fragment OffchainBondsFields on asset_aggregate {
       nodes {
         id
         private
       }
-    }
   }
 `);
 
-export type BondAsset = FragmentOf<typeof BondFragment>;
+const OffchainBonds = hasuraGraphql(
+  `
+  query OffchainBonds {
+    asset_aggregate {
+      ...OffchainBondsFields
+    }
+  }
+`,
+  [OffchainBondFragment]
+);
 
-export async function getBonds() {
+export type BondAsset = Prettify<
+  FragmentOf<typeof BondFragment> & FragmentOf<typeof OffchainBondFragment>['nodes'][number]
+>;
+
+export async function getBonds(): Promise<BondAsset[]> {
   const data = await theGraphClientStarterkits.request(Bonds);
   const theGraphBonds = data.bonds;
   const bondAddresses = theGraphBonds.map((bond) => getAddress(bond.id));

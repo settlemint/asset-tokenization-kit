@@ -1,9 +1,10 @@
-import { icons } from '@/app/(private)/admin/equities/(table)/_components/columns';
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { assetConfig } from '@/lib/config/assets';
+import type { ColumnDef } from '@tanstack/react-table';
 import type { Metadata } from 'next';
 import { columns } from './_components/columns';
-import { getEquities } from './_components/data';
+import { type EquityAsset, getEquities } from './_components/data';
+import { EquitiesTableClient } from './_components/table.client';
 
 export const metadata: Metadata = {
   title: 'Equities',
@@ -19,10 +20,10 @@ export default function EquitiesPage() {
       <AssetTable
         assetConfig={assetConfig.equity}
         dataAction={getEquities}
-        columns={columns}
-        icons={icons}
-        refetchInterval={5000}
-      />
+        columns={columns as ColumnDef<EquityAsset>[]}
+      >
+        <EquitiesTableClient />
+      </AssetTable>
     </>
   );
 }

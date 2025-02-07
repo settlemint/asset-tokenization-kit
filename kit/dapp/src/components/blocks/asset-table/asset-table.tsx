@@ -2,9 +2,8 @@ import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
-import type { ComponentType } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Suspense } from 'react';
-import { AssetTableClient } from './asset-table-client';
 import { AssetTableError } from './asset-table-error';
 import { AssetTableSkeleton } from './asset-table-skeleton';
 
@@ -16,10 +15,6 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
   assetConfig: AssetDetailConfig;
   /** Function to fetch the asset data */
   dataAction: () => Promise<Asset[]>;
-  /** Optional interval for refetching data in milliseconds */
-  refetchInterval?: number;
-  /** Optional map of icon components */
-  icons?: Record<string, ComponentType<{ className?: string }>>;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
 }
@@ -31,10 +26,9 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
 export async function AssetTable<Asset extends Record<string, unknown>>({
   dataAction,
   assetConfig,
-  refetchInterval,
-  icons,
   columns,
-}: AssetTableProps<Asset>) {
+  children,
+}: PropsWithChildren<AssetTableProps<Asset>>) {
   const queryClient = getQueryClient();
 
   try {
@@ -45,15 +39,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
 
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-          <AssetTableClient<Asset>
-            refetchInterval={refetchInterval}
-            assetConfig={assetConfig}
-            dataAction={dataAction}
-            icons={icons}
-            columns={columns}
-          />
-        </Suspense>
+        <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>{children}</Suspense>
       </HydrationBoundary>
     );
   } catch (error) {

@@ -1,7 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { getAddress } from 'viem';
+import { type Prettify, getAddress } from 'viem';
 
 const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
   fragment CryptoCurrencyFields on CryptoCurrency {
@@ -24,23 +24,34 @@ const CryptoCurrencies = theGraphGraphqlStarterkits(
   [CryptoCurrencyFragment]
 );
 
-const OffchainAssets = hasuraGraphql(`
-  query OffchainAssets {
-    asset_aggregate {
+const OffchainCryptoCurrencyFragment = hasuraGraphql(`
+  fragment OffchainCryptoCurrenciesFields on asset_aggregate {
       nodes {
         id
         private
       }
-    }
   }
 `);
 
-export type CryptoCurrencyAsset = FragmentOf<typeof CryptoCurrencyFragment>;
+const OffchainCryptoCurrencies = hasuraGraphql(
+  `
+  query OffchainCryptoCurrencies {
+    asset_aggregate {
+      ...OffchainCryptoCurrenciesFields
+    }
+  }
+`,
+  [OffchainCryptoCurrencyFragment]
+);
 
-export async function getCryptocurrencies() {
+export type CryptoCurrencyAsset = Prettify<
+  FragmentOf<typeof CryptoCurrencyFragment> & FragmentOf<typeof OffchainCryptoCurrencyFragment>['nodes'][number]
+>;
+
+export async function getCryptocurrencies(): Promise<CryptoCurrencyAsset[]> {
   const [theGraphData, dbAssets] = await Promise.all([
     theGraphClientStarterkits.request(CryptoCurrencies),
-    hasuraClient.request(OffchainAssets),
+    hasuraClient.request(OffchainCryptoCurrencies),
   ]);
 
   const theGraphCryptocurrencies = theGraphData.cryptoCurrencies;
