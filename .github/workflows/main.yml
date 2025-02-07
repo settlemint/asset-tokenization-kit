@@ -131,7 +131,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo codegen
+        run: bunx turbo codegen addresses
 
       - name: Remove .env files
         run: find . -type f \( -name ".env" -o -name ".env.local" \) -delete
