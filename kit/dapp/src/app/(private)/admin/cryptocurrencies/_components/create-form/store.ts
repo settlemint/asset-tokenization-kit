@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -44,44 +42,47 @@ const CreateCryptocurrencyPredictAddress = portalGraphql(`
 export const createCryptocurrency = actionClient
   .schema(CreateCryptoCurrencyFormSchema)
   .outputSchema(CreateCryptoCurrencyOutputSchema)
-  .action(async ({ parsedInput: { assetName, symbol, decimals, pincode, initialSupply, private: isPrivate } }) => {
-    const user = await getAuthenticatedUser();
+  .action(
+    async ({
+      parsedInput: { assetName, symbol, decimals, pincode, initialSupply, private: isPrivate },
+      ctx: { user },
+    }) => {
+      const predictedAddress = await portalClient.request(CreateCryptocurrencyPredictAddress, {
+        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        sender: user.wallet,
+        decimals,
+        initialSupply: parseEther(initialSupply.toString()).toString(),
+        name: assetName,
+        symbol,
+      });
 
-    const predictedAddress = await portalClient.request(CreateCryptocurrencyPredictAddress, {
-      address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-      sender: user.wallet,
-      decimals,
-      initialSupply: parseEther(initialSupply.toString()).toString(),
-      name: assetName,
-      symbol,
-    });
+      const address = predictedAddress.CryptoCurrencyFactory?.predictAddress?.predicted;
 
-    const address = predictedAddress.CryptoCurrencyFactory?.predictAddress?.predicted;
+      if (!address) {
+        throw new Error('Failed to predict the address');
+      }
 
-    if (!address) {
-      throw new Error('Failed to predict the address');
+      await db.insert(asset).values({
+        id: address,
+        private: isPrivate,
+      });
+
+      const data = await portalClient.request(CreateCryptocurrency, {
+        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        from: user.wallet,
+        name: assetName,
+        symbol,
+        decimals,
+        challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+        gasLimit: '5000000',
+        initialSupply: parseUnits(initialSupply.toString(), decimals).toString(),
+      });
+
+      const transactionHash = data.CryptoCurrencyFactoryCreate?.transactionHash;
+      if (!transactionHash) {
+        throw new Error('Failed to send the transaction to create the cryptocurrency');
+      }
+
+      return transactionHash;
     }
-
-    await db.insert(asset).values({
-      id: address,
-      private: isPrivate,
-    });
-
-    const data = await portalClient.request(CreateCryptocurrency, {
-      address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-      from: user.wallet,
-      name: assetName,
-      symbol,
-      decimals,
-      challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-      gasLimit: '5000000',
-      initialSupply: parseUnits(initialSupply.toString(), decimals).toString(),
-    });
-
-    const transactionHash = data.CryptoCurrencyFactoryCreate?.transactionHash;
-    if (!transactionHash) {
-      throw new Error('Failed to send the transaction to create the cryptocurrency');
-    }
-
-    return transactionHash;
-  });
+  );

@@ -89,15 +89,6 @@ Enable strict mode along with advanced compiler options to catch potential error
 3. Exception Handling & Errors
 ----------------------------------------------------------------------------
 
-- **Error Modeling:** Instead of throwing for expected errors, model them using discriminated unions:
-
-    type Result<T, E = AppError> =
-      | { success: true; data: T }
-      | { success: false; error: E };
-
-- **Throwing Exceptions:** Reserve exceptions for truly unexpected conditions. In all other cases,
-  return a typed error state.
-
 - **Try/Catch Practices:** Use try/catch to add context or logging; always re-throw with descriptive errors.
 
 - **Custom Error Classes:** Define custom errors with explicit properties:

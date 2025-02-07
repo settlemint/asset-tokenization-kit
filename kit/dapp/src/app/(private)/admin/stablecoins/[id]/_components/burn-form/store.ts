@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -23,9 +21,7 @@ const BurnStableCoin = portalGraphql(`
 export const burnStablecoin = actionClient
   .schema(BurnStablecoinFormSchema)
   .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, amount, from, pincode } }) => {
-    const user = await getAuthenticatedUser();
-
+  .action(async ({ parsedInput: { address, amount, from, pincode }, ctx: { user } }) => {
     const data = await portalClient.request(BurnStableCoin, {
       address: address,
       from: from ?? (user.wallet as string),

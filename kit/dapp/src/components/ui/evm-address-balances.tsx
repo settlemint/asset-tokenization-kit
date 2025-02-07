@@ -1,6 +1,6 @@
 'use client';
 
-import { formatTokenValue } from '@/lib/number';
+import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
@@ -52,9 +52,7 @@ export function EvmAddressBalances({ address }: { address: string }) {
         {balances.map((balance) => (
           <div key={balance.asset.symbol} className="flex items-center justify-between">
             <dt className="text-muted-foreground">{balance.asset.name}:</dt>
-            <dd>
-              {formatTokenValue(Number.parseFloat(balance.value), { decimals: 2 })} {balance.asset.symbol}
-            </dd>
+            <dd>{formatNumber(balance.value, { token: balance.asset.symbol })}</dd>
           </div>
         ))}
       </dl>

@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -23,9 +21,7 @@ const MintStableCoin = portalGraphql(`
 export const mintStablecoin = actionClient
   .schema(MintStablecoinFormSchema)
   .outputSchema(MintStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, to, amount, pincode } }) => {
-    const user = await getAuthenticatedUser();
-
+  .action(async ({ parsedInput: { address, to, amount, pincode }, ctx: { user } }) => {
     const data = await portalClient.request(MintStableCoin, {
       address: address,
       from: user.wallet as string,

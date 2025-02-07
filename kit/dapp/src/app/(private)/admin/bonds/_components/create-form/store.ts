@@ -1,7 +1,6 @@
 'use server';
 
 import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/create-form/schema';
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -51,9 +50,8 @@ export const createBond = actionClient
   .action(
     async ({
       parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, faceValue, maturityDate, cap },
+      ctx: { user },
     }) => {
-      const user = await getAuthenticatedUser();
-
       const predictedAddress = await portalClient.request(CreateBondPredictAddress, {
         address: BOND_FACTORY_ADDRESS,
         sender: user.wallet,

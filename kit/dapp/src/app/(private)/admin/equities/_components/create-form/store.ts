@@ -1,7 +1,6 @@
 'use server';
 
 import { CreateEquityOutputSchema } from '@/app/(private)/admin/equities/_components/create-form/schema';
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { db } from '@/lib/db';
@@ -49,9 +48,8 @@ export const createEquity = actionClient
   .action(
     async ({
       parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, equityClass, equityCategory },
+      ctx: { user },
     }) => {
-      const user = await getAuthenticatedUser();
-
       const predictedAddress = await portalClient.request(CreateEquityPredictAddress, {
         address: EQUITY_FACTORY_ADDRESS,
         sender: user.wallet,

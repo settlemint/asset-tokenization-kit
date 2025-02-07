@@ -1,6 +1,4 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -29,9 +27,7 @@ const UpdateCollateral = portalGraphql(`
 export const updateCollateral = actionClient
   .schema(UpdateCollateralFormSchema)
   .outputSchema(UpdateCollateralOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode } }) => {
-    const user = await getAuthenticatedUser();
-
+  .action(async ({ parsedInput: { address, amount, pincode }, ctx: { user } }) => {
     const data = await portalClient.request(UpdateCollateral, {
       address: address,
       from: user.wallet as string,

@@ -2,8 +2,7 @@ import { OgDataBox } from '@/app/share/_components/og-data-box';
 import { OgImage } from '@/app/share/_components/og-image';
 import { OgNotFound } from '@/app/share/_components/og-not-found';
 import { createOgResponse } from '@/app/share/_components/og-response';
-import { formatTokenValue } from '@/lib/number';
-import {} from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/number';
 import type { Address } from 'viem';
 import { getOgStablecoin } from '../_components/data';
 
@@ -35,10 +34,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       totalSupply={stableCoin.totalSupply}
       baseUrl={url.origin}
     >
-      <OgDataBox
-        label="Collateral"
-        value={formatTokenValue(Number.parseFloat(stableCoin.collateral), { decimals: 2 })}
-      />
+      <OgDataBox label="Collateral" value={formatNumber(stableCoin.collateral)} />
     </OgImage>
   );
 }
