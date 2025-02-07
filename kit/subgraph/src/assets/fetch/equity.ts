@@ -1,8 +1,7 @@
-import { Address, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Equity } from '../../../generated/schema';
 import { Equity as EquityContract } from '../../../generated/templates/Equity/Equity';
 import { fetchAccount } from '../../fetch/account';
-import { toDecimals } from '../../utils/decimals';
 import { AssetType } from '../../utils/enums';
 
 export function fetchEquity(address: Address): Equity {
@@ -13,7 +12,6 @@ export function fetchEquity(address: Address): Equity {
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
     let isin = endpoint.try_isin();
-    let totalSupply = endpoint.try_totalSupply();
     let equityClass = endpoint.try_equityClass();
     let equityCategory = endpoint.try_equityCategory();
     let paused = endpoint.try_paused();
@@ -26,8 +24,8 @@ export function fetchEquity(address: Address): Equity {
     equity.name = name.reverted ? '' : name.value;
     equity.symbol = symbol.reverted ? '' : symbol.value;
     equity.decimals = decimals.reverted ? 18 : decimals.value;
-    equity.totalSupplyExact = totalSupply.reverted ? BigInt.zero() : totalSupply.value;
-    equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
+    equity.totalSupplyExact = BigInt.zero();
+    equity.totalSupply = BigDecimal.zero();
     equity.admins = [];
     equity.supplyManagers = [];
     equity.userManagers = [];
