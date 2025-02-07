@@ -48,33 +48,65 @@
 		"deploy:local": "turbo deploy:local",
 		"deploy:remote": "turbo deploy:remote"
 	},
-	"dependencies": {},
-	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@settlemint/sdk-cli": "1.1.3",
-		"turbo": "2.4.0",
-		"typescript": "5.7.3",
-		"ultracite": "4.1.18"
-	},
-	"trustedDependencies": [
-		"@biomejs/biome",
-		"@prisma/client",
-		"@prisma/engines",
-		"better-sqlite3",
-		"esbuild",
-		"keccak",
-		"prisma",
-		"protobufjs",
-		"secp256k1"
-	],
-	"packageManager": "bun@1.1.43",
-	"workspaces": ["kit/*"],
-	"overrides": {
-		"react-is": "19.0.0",
-		"graphql": "16.10.0",
-		"elliptic": "6.6.1",
-		"ws": "8.18.0",
-		"adm-zip": "0.5.16",
-		"undici": "7.3.0"
-	}
+ },
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@settlemint/sdk-cli": "1.1.4",
+    "turbo": "2.4.0",
+    "typescript": "5.7.3",
+    "ultracite": "4.1.18"
+  },
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "@prisma/client",
+    "@prisma/engines",
+    "better-sqlite3",
+    "esbuild",
+    "keccak",
+    "prisma",
+    "protobufjs",
+    "secp256k1"
+  ],
+  "packageManager": "bun@1.1.43",
+  "workspaces": ["kit/*"],
+  "overrides": {
+    "react-is": "19.0.0",
+    "graphql": "16.10.0",
+    "elliptic": "6.6.1",
+    "ws": "8.18.0",
+    "adm-zip": "0.5.16",
+    "undici": "7.3.0"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -17,7 +17,7 @@ import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
-import { BringToFront, ChevronsUpDown, LogOut } from 'lucide-react';
+import { BringToFront, ChevronDown, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback } from 'react';
@@ -90,18 +90,18 @@ export function UserDropdown() {
               <Skeleton className="h-3 w-20" />
             )}
           </div>
-          <ChevronsUpDown className="ml-auto size-4" />
+          <ChevronDown className="ml-2 size-4" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown"
         side="bottom"
         align="end"
         sideOffset={4}
       >
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BringToFront />
+          <DropdownMenuItem className="dropdown-menu-item">
+            <BringToFront className="mr-2 size-4" />
             <Link href="/issuer/pending-transactions" prefetch>
               Pending Transactions
               {(pendingCount ?? 0) > 0 && (
@@ -117,8 +117,8 @@ export function UserDropdown() {
           <ThemeMenuItem />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={handleSignOut}>
-          <LogOut />
+        <DropdownMenuItem onSelect={handleSignOut} className="dropdown-menu-item">
+          <LogOut className="mr-2 size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
