@@ -1,8 +1,7 @@
 'use client';
 
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { AssetDetailConfig } from '@/lib/config/assets';
-import { pluralize } from '@/lib/utils';
+import { type AssetDetailConfig, pluralize } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { MintFundFormSchema } from './schema';
@@ -29,10 +28,12 @@ export function MintFundForm({
       submitLabel="Mint"
       submittingLabel="Minting..."
       messages={{
-        onCreate: (data) => `Minting ${data.amount} ${pluralize(data.amount, 'token')}...`,
-        onSuccess: (data) => `Successfully minted ${data.amount} ${pluralize(data.amount, 'token')} on chain`,
+        onCreate: (data) =>
+          `Minting ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}...`,
+        onSuccess: (data) =>
+          `Successfully minted ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)} on chain`,
         onError: (data, error) =>
-          `Failed to mint ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, 'token')}: ${error.message}`,
+          `Failed to mint ${data?.amount ?? ''} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}: ${error.message}`,
       }}
     >
       <Recipients />

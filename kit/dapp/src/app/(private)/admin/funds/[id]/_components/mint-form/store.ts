@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { type Address, parseUnits } from 'viem';
 import { z } from 'zod';
 import { MintFundFormSchema, MintFundOutputSchema } from './schema';
 
@@ -36,7 +36,7 @@ export const mintFund = actionClient
     })
   )
   .outputSchema(MintFundOutputSchema)
-  .action(async ({ parsedInput: { recipient, amount, pincode, address } }) => {
+  .action(async ({ parsedInput: { recipient, amount, pincode, address, decimals } }) => {
     const user = await getAuthenticatedUser();
 
     try {
@@ -44,7 +44,7 @@ export const mintFund = actionClient
         address,
         from: user.wallet,
         to: recipient,
-        amount: amount.toString(),
+        amount: parseUnits(amount.toString(), decimals).toString(),
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         // Manually raise gas limit
         gasLimit: '200000',
