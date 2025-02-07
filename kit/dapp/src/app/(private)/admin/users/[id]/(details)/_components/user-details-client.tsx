@@ -1,20 +1,20 @@
 'use client';
+import type { DetailUser } from '@/app/(private)/admin/users/[id]/(details)/_components/data';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { User } from '../data';
+import { getUser } from './data';
 import { UserDetailsGrid } from './user-details-grid';
 import { UserDetailsHeader } from './user-details-header';
 
 export type UserDetailsClientProps = {
-  dataAction: (id: string) => Promise<User>;
   id: string;
   refetchInterval?: number;
 };
 
-export function UserDetailsClient({ dataAction, id, refetchInterval }: UserDetailsClientProps) {
-  const { data, error } = useSuspenseQuery<User>({
+export function UserDetailsClient({ id, refetchInterval }: UserDetailsClientProps) {
+  const { data, error } = useSuspenseQuery<DetailUser>({
     queryKey: [`user-${id}`],
-    queryFn: () => dataAction(id),
+    queryFn: () => getUser(id),
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: true,
     refetchIntervalInBackground: false,

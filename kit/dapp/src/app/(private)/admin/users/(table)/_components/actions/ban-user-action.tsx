@@ -1,3 +1,4 @@
+import type { ListUser } from '@/app/(private)/admin/users/(table)/_components/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,9 +15,8 @@ import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
-import type { User } from '../../data';
 
-export function BanUserAction({ user, onComplete }: { user: User; onComplete?: () => void }) {
+export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete?: () => void }) {
   const [showBanDialog, setShowBanDialog] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [banDuration, setBanDuration] = useState<string>('forever');

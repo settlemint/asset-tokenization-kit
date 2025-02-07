@@ -1,3 +1,4 @@
+import type { DetailUser } from '@/app/(private)/admin/users/[id]/(details)/_components/data';
 import CollapsedBreadcrumbs from '@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,10 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
-import type { User } from '../data';
 
 interface UserDetailsHeaderProps {
-  data: User;
+  data: DetailUser;
 }
 
 export function UserDetailsHeader({ data }: UserDetailsHeaderProps) {

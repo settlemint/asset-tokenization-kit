@@ -1,6 +1,6 @@
 'use client';
 
-import type { User } from '@/app/(private)/admin/users/_components/data';
+import type { ListUser } from '@/app/(private)/admin/users/(table)/_components/data';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
@@ -11,38 +11,14 @@ import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Suspense } from 'react';
+import { BadgeCheck, BadgePlus, BadgeX, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
+import { type ComponentType, Suspense } from 'react';
 import { BanUserAction } from './actions/ban-user-action';
 import { ChangeRoleAction } from './actions/change-role-action';
-import { icons } from './user-table-icons';
 
-const columnHelper = createColumnHelper<User>();
+const columnHelper = createColumnHelper<ListUser>();
 
 export const columns = [
-  // columnHelper.display({
-  //   id: 'select',
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="translate-y-[2px] border-background"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="translate-y-[2px] border-background"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  //   meta: {
-  //     enableCsvExport: false,
-  //   },
-  // }),
   columnHelper.accessor('name', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
     cell: ({ renderValue, row }) => (
@@ -95,9 +71,34 @@ export const columns = [
       );
     },
   }),
+  columnHelper.accessor('banned', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
+    cell: ({ getValue }) => {
+      const banned = getValue();
+      const status = banned ? 'banned' : 'active';
+      const Icon = icons[status];
+      return (
+        <DataTableColumnCell>
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{banned ? 'Banned' : 'Active'}</span>
+        </DataTableColumnCell>
+      );
+    },
+    enableColumnFilter: false,
+  }),
   columnHelper.accessor('kyc_verified', {
     header: ({ column }) => <DataTableColumnHeader column={column}>KYC Status</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue() ? 'Verified' : 'Not Verified'}</DataTableColumnCell>,
+    cell: ({ getValue }) => {
+      const verified = getValue();
+      const status = verified ? 'verified' : 'notVerified';
+      const Icon = icons[status];
+      return (
+        <DataTableColumnCell>
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{verified ? 'Verified' : 'Not Verified'}</span>
+        </DataTableColumnCell>
+      );
+    },
     enableColumnFilter: false,
   }),
   columnHelper.display({
@@ -114,3 +115,13 @@ export const columns = [
     },
   }),
 ];
+
+export const icons: Record<string, ComponentType<{ className?: string }>> = {
+  admin: ShieldCheck,
+  issuer: BadgePlus,
+  user: User2,
+  banned: Ban,
+  active: Check,
+  verified: BadgeCheck,
+  notVerified: BadgeX,
+};

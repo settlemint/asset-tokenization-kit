@@ -1,6 +1,6 @@
-import { getUser } from '../../_components/data';
-import { UserDetails } from '../../_components/user-details/user-details';
-import { UserDetailsClient } from '../../_components/user-details/user-details-client';
+import { getUser } from './_components/data';
+import { UserDetails } from './_components/user-details';
+import { UserDetailsClient } from './_components/user-details-client';
 
 export default async function UserDetailPage({
   params,
@@ -11,7 +11,7 @@ export default async function UserDetailPage({
 
   return (
     <UserDetails id={id} dataAction={getUser}>
-      <UserDetailsClient id={id} refetchInterval={5000} dataAction={getUser} />
+      <UserDetailsClient id={id} refetchInterval={5000} />
     </UserDetails>
   );
 }

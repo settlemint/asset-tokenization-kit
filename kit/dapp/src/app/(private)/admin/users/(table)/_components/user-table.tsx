@@ -1,7 +1,6 @@
-import { getUsers } from '@/app/(private)/admin/users/_components/data';
 import { DataTable } from '@/components/blocks/data-table/data-table';
-import { columns } from './user-table-columns';
-import { icons } from './user-table-icons';
+import { getUsers } from './data';
+import { columns, icons } from './user-table-columns';
 
 export async function UserTable() {
   const users = await getUsers();
