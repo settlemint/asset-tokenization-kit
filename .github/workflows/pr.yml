@@ -57,13 +57,6 @@ jobs:
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis deploy:local --affected
 
-      - name: Breakpoint to check the build results
-        if: failure()
-        uses: namespacelabs/breakpoint-action@v0
-        with:
-          duration: 10m
-          authorized-users: roderik
-
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
         with:
