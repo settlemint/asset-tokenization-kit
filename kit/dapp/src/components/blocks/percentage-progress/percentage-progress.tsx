@@ -3,22 +3,15 @@ interface PercentageProgressBarProps {
   percentage: number;
 }
 
-// Determine the color based on the percentage
-const getColor = (percent: number, alpha?: number) => {
-  if (percent < 50) {
-    return `bg-destructive${alpha ? `/${alpha}` : ''}`;
-  }
-  if (percent < 80) {
-    return `bg-warning${alpha ? `/${alpha}` : ''}`;
-  }
-  return `bg-success${alpha ? `/${alpha}` : ''}`;
-};
-
 export function PercentageProgressBar({ percentage }: PercentageProgressBarProps) {
   return (
     <div className="grid w-full grid-cols-4 items-center">
       <div className="col-span-3">
-        <Progress value={percentage} className={getColor(percentage, 20)} progressClassName={getColor(percentage)} />
+        <Progress
+          value={percentage}
+          className={percentage < 50 ? 'bg-destructive/20' : percentage < 80 ? 'bg-warning/20' : 'bg-success/20'}
+          progressClassName={percentage < 50 ? 'bg-destructive' : percentage < 80 ? 'bg-warning' : 'bg-success'}
+        />
       </div>
       <div className="text-right">{percentage}%</div>
     </div>

@@ -10,7 +10,8 @@
         "useNamingConvention": "off"
       },
       "nursery": {
-        "noSecrets": "off"
+        "noSecrets": "off",
+        "noNestedTernary": "off"
       }
     }
   },
