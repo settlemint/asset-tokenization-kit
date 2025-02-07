@@ -33,7 +33,7 @@
       "dependsOn": ["//#lint:biome", "lint:solhint", "lint:eslint"]
     },
     "//#lint:biome": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["^codegen"]
     },
     "lint:solhint": {
       "dependsOn": ["codegen"]
