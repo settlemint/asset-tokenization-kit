@@ -8,7 +8,7 @@ import { type TransferFormAssetType, TransferOutputSchema, getTransferFormSchema
 
 const TransferStableCoin = portalGraphql(`
   mutation TransferStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    StableCoinTransfer(
+    Transfer: StableCoinTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -21,7 +21,7 @@ const TransferStableCoin = portalGraphql(`
 
 const TransferFund = portalGraphql(`
   mutation TransferFund($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    FundTransfer(
+    Transfer: FundTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -34,7 +34,7 @@ const TransferFund = portalGraphql(`
 
 const TransferBond = portalGraphql(`
   mutation TransferBond($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    BondTransfer(
+    Transfer: BondTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -47,7 +47,7 @@ const TransferBond = portalGraphql(`
 
 const TransferEquity = portalGraphql(`
   mutation TransferEquity($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    EquityTransfer(
+    Transfer: EquityTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -60,7 +60,7 @@ const TransferEquity = portalGraphql(`
 
 const TransferCryptoCurrency = portalGraphql(`
   mutation TransferCryptoCurrency($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
-    CryptoCurrencyTransfer(
+    Transfer: CryptoCurrencyTransfer(
       address: $address
       from: $from
       input: { to: $to, value: $value }
@@ -83,7 +83,7 @@ export const transfer = actionClient
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
 
-    const transactionHash = data.StableCoinTransfer?.transactionHash;
+    const transactionHash = data?.Transfer?.transactionHash;
     if (!transactionHash) {
       throw new Error('Failed to send the transfer transaction');
     }
