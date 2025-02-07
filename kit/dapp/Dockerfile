@@ -13,6 +13,7 @@ FROM deps AS build
 
 COPY --chmod=0777 . .
 RUN bun run build
+RUN rm -Rf .next/standalone/.env
 
 # RUN
 FROM node:22.13.1-slim

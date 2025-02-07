@@ -1,29 +1,27 @@
 {
-  "name": "asset-tokenization",
-  "version": "1.0.0",
-  "license": "FSL-1.1-MIT",
-  "author": {
-    "name": "SettleMint",
-    "email": "support@settlemint.com",
-    "url": "https://settlemint.com"
-  },
-  "scripts": {
-    "graph:codegen": "graph codegen",
-    "graph:build": "graph build",
-    "graph:create-local": "graph create --node http://localhost:8020/ asset-tokenization",
-    "graph:remove-local": "graph remove --node http://localhost:8020/ asset-tokenization",
-    "graph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 asset-tokenization",
-    "graph:test": "graph test",
-    "test:deploy": "bash graph-local-deploy.sh",
-    "prod:deploy": "bash graph-remote-deploy.sh"
-  },
-  "dependencies": {
-    "@graphprotocol/graph-cli": "0.95.0",
-    "@graphprotocol/graph-ts": "0.37.0"
-  },
-  "devDependencies": {
-    "matchstick-as": "0.6.0",
-    "contracts": "workspace:*"
-  },
-  "peerDependencies": {}
+	"name": "subgraph",
+	"version": "1.0.0",
+	"license": "FSL-1.1-MIT",
+	"author": {
+		"name": "SettleMint",
+		"email": "support@settlemint.com",
+		"url": "https://settlemint.com"
+	},
+	"scripts": {
+		"codegen:graph": "graph codegen",
+		"build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
+		"deploy:local": "bash graph-local-deploy.sh",
+		"deploy:remote": "bash graph-remote-deploy.sh",
+		"format:biome": "biome format --write .",
+		"lint:biome": "biome lint ."
+	},
+	"dependencies": {
+		"@graphprotocol/graph-cli": "0.95.0",
+		"@graphprotocol/graph-ts": "0.37.0",
+		"contracts": "workspace:*"
+	},
+	"devDependencies": {
+		"matchstick-as": "0.6.0"
+	},
+	"peerDependencies": {}
 }

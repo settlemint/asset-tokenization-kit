@@ -1,82 +1,76 @@
 {
-  "name": "@settlemint/starterkit-asset-tokenization",
-  "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.1.5",
-  "private": false,
-  "license": "FSL-1.1-MIT",
-  "author": {
-    "name": "SettleMint",
-    "email": "support@settlemint.com",
-    "url": "https://settlemint.com"
-  },
-  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/dapp/README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git"
-  },
-  "bugs": {
-    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
-    "email": "support@settlemint.com"
-  },
-  "files": [
-    ".github",
-    ".vscode",
-    "kit",
-    "src",
-    ".gitignore",
-    "biome.json",
-    "bunfig.toml",
-    "lefthook.yml",
-    "LICENSE",
-    "logo.svg",
-    "package.json",
-    "README.md",
-    "turbo.json"
-  ],
-  "scripts": {
-    "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "test": "turbo test",
-    "check-types": "turbo check-types",
-    "test:deploy": "turbo test:deploy",
-    "publish-npm": "bun publish --tag ${TAG} --access public || exit 0",
-    "publish-docker": "turbo publish-docker",
-    "docker": "docker buildx build . --platform=linux/amd64,linux/arm64 -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${VERSION:-1.0.0-dev.$(date +%s)} -t ghcr.io/settlemint/codestudio-starterkit-asset-tokenization:${TAG:-dev} --push",
-    "deploy": "turbo deploy",
-    "codegen": "turbo codegen",
-    "lint:biome": "biome lint --write --unsafe .",
-    "format:biome": "biome format --write .",
-    "genesis": "turbo genesis"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@settlemint/sdk-cli": "1.1.3",
-    "turbo": "2.4.0",
-    "typescript": "5.7.3",
-    "ultracite": "4.1.18"
-  },
-  "trustedDependencies": [
-    "@biomejs/biome",
-    "@prisma/client",
-    "@prisma/engines",
-    "better-sqlite3",
-    "esbuild",
-    "keccak",
-    "prisma",
-    "protobufjs",
-    "secp256k1"
-  ],
-  "packageManager": "bun@1.1.43",
-  "workspaces": ["kit/*"],
-  "overrides": {
-    "react-is": "19.0.0",
-    "graphql": "16.10.0",
-    "elliptic": "6.6.1",
-    "ws": "8.18.0",
-    "adm-zip": "0.5.16",
-    "undici": "7.3.0"
-  }
+	"name": "@settlemint/starterkit-asset-tokenization",
+	"description": "SettleMint Starter Kit - Asset Tokenization",
+	"version": "0.1.5",
+	"private": false,
+	"license": "FSL-1.1-MIT",
+	"author": {
+		"name": "SettleMint",
+		"email": "support@settlemint.com",
+		"url": "https://settlemint.com"
+	},
+	"homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/dapp/README.md",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git"
+	},
+	"bugs": {
+		"url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
+		"email": "support@settlemint.com"
+	},
+	"files": [
+		".github",
+		".vscode",
+		"kit",
+		"src",
+		".gitignore",
+		"biome.json",
+		"bunfig.toml",
+		"lefthook.yml",
+		"LICENSE",
+		"logo.svg",
+		"package.json",
+		"README.md",
+		"turbo.json"
+	],
+	"scripts": {
+		"clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
+		"build": "turbo build",
+		"dev": "turbo dev",
+		"lint": "turbo lint",
+		"format": "turbo format",
+		"test": "turbo test",
+		"codegen": "turbo codegen",
+		"deploy:local": "turbo deploy:local",
+		"deploy:remote": "turbo deploy:remote"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@settlemint/sdk-cli": "1.1.4",
+		"turbo": "2.4.0",
+		"typescript": "5.7.3",
+		"ultracite": "4.1.18"
+	},
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@prisma/client",
+		"@prisma/engines",
+		"better-sqlite3",
+		"esbuild",
+		"keccak",
+		"prisma",
+		"protobufjs",
+		"secp256k1"
+	],
+	"packageManager": "bun@1.2.0",
+	"workspaces": ["kit/*"],
+	"overrides": {
+		"react-is": "19.0.0",
+		"graphql": "16.10.0",
+		"elliptic": "6.6.1",
+		"ws": "8.18.0",
+		"adm-zip": "0.5.16",
+		"undici": "7.3.0"
+	}
 }

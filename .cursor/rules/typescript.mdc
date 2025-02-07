@@ -2,9 +2,18 @@
 description: Rules for Typescript files
 globs: *.ts,*.tsx
 ---
-1. TypeScript Configuration
-	1.	Enable strict mode with the strictest compiler options
-Ensure your tsconfig.json includes:
+============================================================
+TypeScript Guidelines for Scalable & High-Performance Codebases
+============================================================
+
+These guidelines are designed to help you write fast, maintainable, and fully type-safe
+TypeScript code by leveraging the latest language features and patterns.
+
+----------------------------------------------------------------------------
+1. TypeScript Configuration (tsconfig.json)
+----------------------------------------------------------------------------
+
+Enable strict mode along with advanced compiler options to catch potential errors early.
 
 {
   "compilerOptions": {
@@ -18,247 +27,213 @@ Ensure your tsconfig.json includes:
     "allowUnusedLabels": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "useDefineForClassFields": true,           // Modern class field semantics
+    "incremental": true,                         // Faster builds with incremental compilation
+    "tsBuildInfoFile": "./.tsbuildinfo"
   }
 }
 
-
-	2.	Prefer interfaces over types
-	•	Use interfaces to describe object structures.
-	•	Use the type keyword for more advanced scenarios like unions, mapped types, or generics where interfaces are insufficient.
-	3.	Avoid enums
-	•	Replace with const objects and the as const assertion when an enum-like structure is needed.
-	4.	Use type-only imports
-	•	For better tree-shaking and clarity, always import types with import type { T } from './types'.
-	5.	Implement exhaustive checks
-	•	Use never in switch statements or conditionals to ensure all cases are handled:
-
-function handleState(state: State) {
-  switch (state.type) {
-    case 'loading':
-      return 'Loading...';
-    case 'success':
-      return 'Success!';
-    default: {
-      const exhaustiveCheck: never = state;
-      return exhaustiveCheck;
-    }
-  }
-}
-
-
-	6.	Special library considerations
-	•	commander-js: Do not type the action parameters; they are automatically inferred.
-	•	wagmi v2: Use useChainId and useSwitchChain instead of useNetwork and useSwitchNetwork.
-	7.	Adhere to any additional biome or ultracite rules
-	•	Incorporate project-specific conventions as needed.
-
+----------------------------------------------------------------------------
 2. Type Safety & Coding Conventions
-	1.	No any or un-narrowed unknown
-	•	Avoid using any or unknown. If unknown is necessary, perform explicit type narrowing before usage.
-	2.	String pattern and discriminated unions
-	•	Use template literal types when possible for stricter string patterns.
-	•	Leverage discriminated unions to represent variants (e.g., in state management).
-	3.	Explicit return types for public APIs
-	•	Always specify return types for functions, especially when they are part of a public interface or library.
-	4.	Branded Types
-	•	Use branded types for identifiers to prevent accidental mix-ups:
+----------------------------------------------------------------------------
 
-type UserId = string & { readonly brand: unique symbol };
+- **Explicit Public API Types:** Always annotate function parameters and return types
+  for any public API. Keep internal implementations concise by using type inference where safe.
 
+- **Interfaces vs. Type Aliases:**
+  - Use*interfaces** to describe object shapes.
+  - Use*type aliases** for unions, mapped types, and complex generics.
 
-	5.	satisfies operator
-	•	Use satisfies to validate objects against specific interface requirements at the assignment site:
+- **Avoid Enums:** Instead of enums, use const objects with `as const` or literal union types.
 
-const config = {
-  endpoint: '/api',
-  timeout: 5000,
-} as const satisfies Config;
+- **Type-Only Imports:** Always import types explicitly:
+    import type { SomeType } from './types';
 
+- **Exhaustiveness Checks:** In switch statements, use a default case with a `never` variable to ensure all cases are handled:
 
-	6.	Prefer for...of instead of forEach
-	•	Maintains better type safety and avoids potential pitfalls with this context.
-	7.	Block statements
-	•	Always wrap statements in curly braces to avoid mistakes due to automatic semicolon insertion.
+    function handleState(state: State): string {
+      switch (state.type) {
+        case 'loading':
+          return 'Loading...';
+        case 'success':
+          return 'Success!';
+        default: {
+          const _exhaustive: never = state;
+          return _exhaustive;
+        }
+      }
+    }
 
-3. Exceptions & Errors
-	1.	Discriminated union for error states
-	•	Model errors that you expect using return types rather than throwing:
+- **Avoid `any`/Un-Narrowed `unknown`:** Never use `any`. When using `unknown`, explicitly narrow the type.
 
-type Result<T, E = AppError> = 
-  | { success: true; data: T }
-  | { success: false; error: E };
+- **Template Literal Types & Discriminated Unions:** Leverage these features to enforce precise string patterns
+  and to clearly define variant structures.
 
+- **Branded Types:** Prevent accidental mix-ups by creating unique brands:
 
-	2.	Exceptions for truly unexpected cases
-	•	Throw an exception only when you cannot reasonably handle the error at that level.
-	3.	Catching exceptions
-	•	Use try/catch to fix an expected problem, add logging/context, or re-throw a more descriptive error.
-	•	Otherwise, rely on a global handler or error boundary.
-	4.	Error handling strategy
-	•	Handle errors and edge cases as early as possible (guard clauses).
-	•	Use early returns to avoid deep nesting; place the main (“happy”) path at the end of the function.
-	•	Avoid unnecessary else by returning early.
-	5.	Custom error classes
-	•	When throwing errors, ensure they have proper typing and context:
-	•	Use a more explicit class property instead of a parameter property.
+    type UserId = string & { readonly brand: unique symbol };
 
-class AppError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly context?: Record<string, unknown>
-  ) {
-    super(message);
-  }
-}
+- **Literal Object Validation:** Use the `satisfies` operator to ensure objects conform to specific interfaces:
 
+    const config = {
+      endpoint: '/api',
+      timeout: 5000,
+    } as const satisfies Config;
 
-	6.	Expected vs. Unexpected errors in Server Actions
-	•	For expected errors, return a typed result rather than throwing.
-	•	Use error boundaries (error.tsx / global-error.tsx) for truly unexpected exceptions.
-	7.	Runtime validation
-	•	Use zod or similar libraries to validate input/output schemas.
-	•	Use assertion functions for critical runtime type checks.
+- **Looping Constructs:** Prefer `for...of` loops over array methods like `forEach` to maintain type inference.
 
-4. Classes & OOP
-	1.	SOLID principles
-	•	Follow the SOLID guidelines for maintainable, scalable class design.
-	2.	Prefer composition over inheritance
-	•	Use interfaces or smaller classes that collaborate, rather than large inheritance chains.
-	3.	Interface contracts
-	•	Declare interfaces (optionally prefixed with I) to define expected behaviors (e.g., IService, IRepository).
-	4.	Class size limits
-	•	Keep classes small and focused:
-	•	< 200 lines (or instructions)
-	•	< 10 public methods
-	•	< 10 properties
-	5.	Immutable properties
-	•	Use readonly and private fields (# in modern TypeScript) to restrict changes where possible.
-	6.	Type guards and predicates
-	•	Implement custom type guards (isX()) to narrow types within your methods when needed.
-	7.	Method decorators
-	•	Leverage decorators only if they provide a clear benefit and maintain type safety.
+- **Block Statements:** Always wrap statements in curly braces to prevent pitfalls (e.g., from automatic semicolon insertion).
 
-5. Data & Immutability
-	1.	Composite types
-	•	Combine primitives into coherent types or interfaces instead of passing individual primitives around.
-	2.	Validation
-	•	Avoid scattering validation logic across multiple functions.
-	•	Centralize validation in classes, or use dedicated libraries like Zod.
-	3.	Prefer immutability
-	•	Use readonly, as const, and Readonly<T> to maintain immutable data structures.
-	4.	Existing data-fetching types
-	•	Do not create unnecessary new types if the project’s data-fetching utilities already provide them.
-	5.	Blockchain interactions
-	•	Use viem or any specified library for blockchain data interactions to maintain consistency and type safety.
-	6.	Literal type constraints
-	•	Combine as const with satisfies to ensure your object literals match an interface or type:
+----------------------------------------------------------------------------
+3. Exception Handling & Errors
+----------------------------------------------------------------------------
 
-const config = {
-  endpoint: '/api',
-  timeout: 5000,
-} as const satisfies Config;
+- **Error Modeling:** Instead of throwing for expected errors, model them using discriminated unions:
 
-6. Functions
-	1.	Function sizing
-	•	Keep functions short and focused, ideally fewer than 20 lines or instructions.
-	2.	Naming
-	•	Use verb-based names:
-	•	For boolean returns: isX, hasX, canX.
-	•	For functions that perform actions: executeX, saveX, etc.
-	3.	Early returns / guard clauses
-	•	Check for invalid states upfront. Return or throw early to avoid deep nesting.
-	4.	Higher-order functions
-	•	Use map, filter, reduce, etc. to avoid excessive nesting.
-	•	For simple inline logic (< 3 lines), use arrow functions.
-	5.	Function overloads
-	•	For complex logic, define explicit overloads to provide better type inference:
+    type Result<T, E = AppError> =
+      | { success: true; data: T }
+      | { success: false; error: E };
 
-function fetch<T>(id: string): Promise<T>;
-function fetch<T>(options: FetchOptions): Promise<T[]>;
+- **Throwing Exceptions:** Reserve exceptions for truly unexpected conditions. In all other cases,
+  return a typed error state.
 
+- **Try/Catch Practices:** Use try/catch to add context or logging; always re-throw with descriptive errors.
 
-	6.	Default parameters
-	•	Prefer default parameter values over manual null/undefined checks:
+- **Custom Error Classes:** Define custom errors with explicit properties:
 
-function greet(name: string = 'Guest') {
-  console.log(`Hello, ${name}!`);
-}
+    class AppError extends Error {
+      constructor(
+        message: string,
+        public readonly code: string,
+        public readonly context?: Record<string, unknown>
+      ) {
+        super(message);
+      }
+    }
 
+- **Runtime Validation:** Employ libraries like Zod for validating critical runtime schemas.
 
-	7.	RO-RO (Receive Object, Return Object)
-	•	Pass an object as a parameter and return an object to reduce positional parameter errors:
+----------------------------------------------------------------------------
+4. Classes & Object-Oriented Programming
+----------------------------------------------------------------------------
 
-interface GreetOptions {
-  name: string;
-  uppercase?: boolean;
-}
+- **SOLID Principles:** Adhere strictly to SOLID guidelines to keep your code modular and testable.
 
-function greet({ name, uppercase = false }: GreetOptions): { message: string } {
-  const message = uppercase ? name.toUpperCase() : name;
-  return { message: `Hello, ${message}!` };
-}
+- **Composition Over Inheritance:** Favor composition, using small, focused classes and interfaces.
 
+- **Interface Contracts:** Define interfaces (optionally with an `I` prefix) to describe expected behaviors.
 
-	8.	Single level of abstraction
-	•	Keep function logic at one conceptual level. If you need a different level of detail, extract it into another function.
-	9.	Generic constraints and conditional types
-	•	Use them thoughtfully to ensure robust compile-time checks.
-	10.	const type parameters
+- **Class Size & Complexity:** Keep classes under 200 lines, with fewer than 10 public methods and properties.
 
-	•	For literal type inference, use const in generics:
+- **Immutability in Classes:** Use `readonly` and private fields (with the `#` syntax if applicable) to enforce immutability.
 
-function identity<const T>(value: T): T {
-  return value;
-}
+- **Custom Type Guards:** Implement type guards (e.g., `isX()`) for narrowing types in complex scenarios.
 
-7. Nomenclature
-	1.	PascalCase
-	•	For Classes, Interfaces, Types, and Type parameters (e.g., UserService, IData, TKey).
-	2.	camelCase
-	•	For variables, functions, methods, and properties (e.g., userName, fetchData).
-	3.	kebab-case
-	•	For file and directory names (e.g., user-service.ts).
-	4.	UPPERCASE
-	•	For environment variables, constants, and enum-like const objects.
-	5.	Boolean variable naming
-	•	Use verbs like isLoading, hasError, canDelete.
-	6.	Complete words
-	•	Avoid abbreviations; exceptions include widely used terms (API, URL) or standard loop variables (i, j).
-	7.	Interface naming
-	•	Optionally prefix interface names with I when they define behavioral contracts (IRepository, IService).
+- **Selective Use of Decorators:** Only apply decorators when they add clear value and do not compromise type safety.
 
-8. Basic Principles
-	1.	English only
-	•	Write all code, comments, and documentation in English.
-	2.	Explicit typing
-	•	Always declare parameter types and return types.
-	•	Prefer inferance over hardcoded types in all cases
-	•	We do not want any compilation or linting errors NOR warnings, fix them all	
-	3.	TSDoc for public APIs
-	•	Use block comments with @param, @returns, @throws, etc. for clarity:
+----------------------------------------------------------------------------
+5. Data Handling & Immutability
+----------------------------------------------------------------------------
 
-/**
- * Fetches a user by ID
- * @template T The type of additional data to include
- * @param id The user's ID
- * @param include Optional fields to include
- * @returns The user object with additional data
- * @throws {UserNotFoundError} If the user doesn't exist
- */
+- **Composite Types:** Group related primitives into interfaces or types rather than passing them separately.
 
+- **Centralized Validation:** Consolidate validation logic—avoid scattering checks across multiple functions.
 
-	4.	No blank lines within functions
-	•	Keep function implementations compact; rely on empty lines only to separate sections or statements meaningfully.
-	5.	One export per file
-	•	Keep files focused on a single responsibility. Re-export through a barrel (index.ts) as needed.
-	6.	Import organization
-	•	Group imports logically:
-	1.	External dependencies
-	2.	Internal modules
-	3.	Type-only imports
-	7.	Barrel exports (index.ts)
-	•	Provide a clean entry point for modules or directories.
-	8.	Type-safe testing
-	•	Implement tests with properly declared types, ensuring that test scenarios match production type constraints.
+- **Immutability First:** Use `readonly`, `as const`, and `Readonly<T>` to enforce immutable data structures.
+
+- **Reuse Existing Types:** Leverage shared types (e.g., for external data or blockchain interactions) to avoid duplication.
+
+- **Literal Constraints:** Use `as const` along with the `satisfies` operator to ensure objects strictly conform to a type.
+
+----------------------------------------------------------------------------
+6. Function Design & Implementation
+----------------------------------------------------------------------------
+
+- **Function Size & Focus:** Aim for functions under 20 lines; each function should have a single responsibility.
+
+- **Naming Conventions:** Use verb-based names for actions (e.g., executeTask, fetchData) and predicate names for booleans (e.g., isLoading).
+
+- **Early Returns & Guard Clauses:** Check for error conditions or invalid states at the beginning to reduce nesting.
+
+- **Inline Logic:** For simple operations (typically < 3 lines), use concise arrow functions.
+
+- **Function Overloads:** For complex behavior, declare explicit overloads to improve type inference:
+
+    function fetch<T>(id: string): Promise<T>;
+    function fetch<T>(options: FetchOptions): Promise<T[]>;
+
+- **Default Parameters:** Use default values directly in function parameters rather than manual checks:
+
+    function greet(name: string = 'Guest'): void {
+      console.log(`Hello, ${name}!`);
+    }
+
+- **Receive Object, Return Object (RO-RO):** Mitigate errors from positional arguments:
+
+    interface GreetOptions {
+      name: string;
+      uppercase?: boolean;
+    }
+
+    function greet({ name, uppercase = false }: GreetOptions): { message: string } {
+      const message = uppercase ? name.toUpperCase() : name;
+      return { message: `Hello, ${message}!` };
+    }
+
+- **Single Level of Abstraction:** Keep each function’s logic on one conceptual level; extract sub-tasks into helper functions.
+
+- **Advanced Generics:** Use generic constraints, conditional types, and const type parameters for precise type inference:
+
+    function identity<const T>(value: T): T {
+      return value;
+    }
+
+----------------------------------------------------------------------------
+7. Nomenclature & Code Organization
+----------------------------------------------------------------------------
+
+- **PascalCase:** For classes, interfaces, types, and type parameters (e.g., UserService, IData, TKey).
+
+- **camelCase:** For variables, functions, methods, and properties (e.g., userName, fetchData).
+
+- **kebab-case:** For file and directory names (e.g., user-service.ts).
+
+- **UPPERCASE:** For environment variables, constants, and enum-like objects.
+
+- **Boolean Variables:** Name booleans with verbs such as isLoading, hasError, canDelete.
+
+- **Clarity Over Brevity:** Avoid abbreviations except for well-known terms (API, URL) or standard loop variables (i, j).
+
+- **Organized Imports:** Group imports in the following order:
+    1. External dependencies
+    2. Internal modules
+    3. Type-only imports
+
+- **Single Export Per File:** Keep files focused; use barrel exports (index.ts) for aggregation.
+
+----------------------------------------------------------------------------
+8. General Best Practices
+----------------------------------------------------------------------------
+
+- **English Only:** Write all code, comments, and documentation in English.
+
+- **Explicit Typing:** Always declare parameter and return types explicitly to avoid hidden type coercions.
+
+- **Zero Linting/Compilation Warnings:** Aim for a codebase free of warnings and errors by treating them as critical.
+
+- **TSDoc for Public APIs:** Use TSDoc block comments with @param, @returns, and @throws annotations:
+
+    /**
+     * Fetches a user by ID.
+     *
+     * @param id - The user's unique identifier.
+     * @returns The user object with detailed information.
+     * @throws {UserNotFoundError} If the user does not exist.
+     */
+
+- **No Blank Lines Within Functions:** Keep implementations compact; use spacing only to separate logical blocks.
+
+- **Type-Safe Testing:** Write tests with full type annotations to ensure parity with production code.
+
+=============================================================================
