@@ -1,5 +1,6 @@
-import { getOgBond } from '@/app/share/bonds/[id]/_components/data';
-import type { Metadata } from 'next';
+import { getOgBond } from "@/app/share/bonds/[id]/_components/data";
+import { metadata } from "@/lib/config/metadata";
+import type { Metadata } from "next";
 
 interface SharePageProps {
   params: Promise<{
@@ -13,8 +14,8 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   if (!bond) {
     return {
-      title: 'Asset Not Found',
-      description: 'The requested asset could not be found.',
+      title: "Asset Not Found",
+      description: "The requested asset could not be found.",
     };
   }
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     openGraph: {
       images: [
         {
-          url: `/share/bonds/${id}/og`,
+          url: new URL(`/share/bonds/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: bond?.name,
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     twitter: {
       images: [
         {
-          url: `/share/bonds/${id}/og`,
+          url: new URL(`/share/bonds/${id}/og`, metadata.metadataBase).toString(),
           width: 1280,
           height: 640,
           alt: bond?.name,
