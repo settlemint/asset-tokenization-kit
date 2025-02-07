@@ -33,7 +33,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       baseUrl={url.origin}
     >
       <OgDataBox label="Maturity Date" value={bond.maturityDate} />
-      <OgDataBox label="Face Value" value={formatTokenValue(BigInt(bond.faceValue), { decimals: 2 })} />
+      <OgDataBox label="Face Value" value={formatTokenValue(Number.parseFloat(bond.faceValue), { decimals: 2 })} />
     </OgImage>
   );
 }

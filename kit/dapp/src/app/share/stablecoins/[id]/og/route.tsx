@@ -35,7 +35,10 @@ export async function GET(request: Request, { params }: RouteParams) {
       totalSupply={stableCoin.totalSupply}
       baseUrl={url.origin}
     >
-      <OgDataBox label="Collateral" value={formatTokenValue(BigInt(stableCoin.collateral), { decimals: 2 })} />
+      <OgDataBox
+        label="Collateral"
+        value={formatTokenValue(Number.parseFloat(stableCoin.collateral), { decimals: 2 })}
+      />
     </OgImage>
   );
 }

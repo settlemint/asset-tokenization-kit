@@ -35,7 +35,7 @@ export function OgImage({ id, name, symbol, totalSupply, baseUrl, children }: Pr
         </p>
 
         <div tw="flex mt-16 pr-32" style={{ gap: '6rem' }}>
-          <OgDataBox label="Total Supply" value={formatTokenValue(BigInt(totalSupply), { decimals: 2 })} />
+          <OgDataBox label="Total Supply" value={formatTokenValue(Number.parseFloat(totalSupply), { decimals: 2 })} />
           {children}
         </div>
       </div>
