@@ -2,9 +2,8 @@
 
 import { AssetTableClient } from '@/components/blocks/asset-table/asset-table-client';
 import { assetConfig } from '@/lib/config/assets';
-import type { ColumnDef } from '@tanstack/react-table';
 import { columns, icons } from './columns';
-import { type EquityAsset, getEquities } from './data';
+import { getEquities } from './data';
 
 export function EquitiesTableClient() {
   return (
@@ -12,7 +11,7 @@ export function EquitiesTableClient() {
       refetchInterval={5000}
       assetConfig={assetConfig.equity}
       dataAction={getEquities}
-      columns={columns as ColumnDef<EquityAsset>[]}
+      columns={columns}
       icons={icons}
     />
   );
