@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - chore/ci-speed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
