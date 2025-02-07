@@ -80,7 +80,7 @@ jobs:
           version: stable
 
       - name: Install Bun dependencies
-        run: bun install --frozen-lockfile
+        run: bun install 
 
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
