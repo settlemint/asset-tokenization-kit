@@ -1,26 +1,44 @@
 import * as authSchema from '@/lib/db/schema-auth';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { metadata } from '@/lib/site-config';
 import { betterAuth } from 'better-auth';
 import { emailHarmony } from 'better-auth-harmony';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
-import { admin, openAPI, organization } from 'better-auth/plugins';
+import { admin } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
+import { metadata } from '../config/metadata';
 import { db } from '../db';
+import { validateEnvironmentVariables } from './config';
+import { createUserWallet } from './portal';
 
-const createUserWallet = portalGraphql(`
-  mutation createUserWallet($keyVaultId: String!, $name: String!) {
-    createWallet(keyVaultId: $keyVaultId, walletInfo: { name: $name }) {
-      address
-    }
+/**
+ * Custom error class for authentication-related errors
+ */
+export class AuthError extends Error {
+  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED';
+  readonly context?: Record<string, unknown>;
+
+  constructor(
+    message: string,
+    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED',
+    context?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'AuthError';
+    this.code = code;
+    this.context = context;
   }
-`);
+}
 
+// Validate environment variables at startup
+validateEnvironmentVariables();
+
+/**
+ * Authentication configuration using better-auth
+ */
 export const auth = betterAuth({
-  appName: metadata.title as string,
+  appName: metadata.title.default,
   secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   trustedOrigins: [process.env.BETTER_AUTH_URL || 'http://localhost:3000'],
@@ -38,32 +56,42 @@ export const auth = betterAuth({
         required: true,
         unique: true,
       },
+      kycVerifiedAt: {
+        type: 'date',
+        required: false,
+      },
     },
   },
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
-          const wallet = await portalClient.request(createUserWallet, {
-            keyVaultId: process.env.SETTLEMINT_HD_PRIVATE_KEY!,
-            name: user.email,
-          });
+          try {
+            const wallet = await createUserWallet({
+              keyVaultId: process.env.SETTLEMINT_HD_PRIVATE_KEY!,
+              name: user.email,
+            });
 
-          if (!wallet.createWallet?.address) {
+            if (!wallet.createWallet?.address) {
+              throw new APIError('BAD_REQUEST', {
+                message: 'Failed to create wallet',
+              });
+            }
+
+            const firstUser = await db.query.user.findFirst();
+            return {
+              data: {
+                ...user,
+                wallet: wallet.createWallet.address,
+                role: firstUser ? 'user' : 'admin',
+              },
+            };
+          } catch (error) {
             throw new APIError('BAD_REQUEST', {
-              message: 'Failed to create wallet',
+              message: 'Failed to create user wallet',
+              cause: error instanceof Error ? error : undefined,
             });
           }
-
-          const firstUser = await db.query.user.findFirst();
-
-          return {
-            data: {
-              ...user,
-              wallet: wallet.createWallet.address,
-              role: firstUser ? 'user' : 'admin',
-            },
-          };
         },
       },
     },
@@ -71,40 +99,39 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60,
+      maxAge: 10 * 60,
     },
   },
-  plugins: [nextCookies(), admin(), organization(), passkey(), openAPI(), emailHarmony()],
+  plugins: [admin(), passkey(), emailHarmony(), nextCookies()],
 });
 
-async function getSession() {
+/**
+ * Get the current session from the request headers
+ * @throws {AuthError} If no session is found
+ */
+export async function getSession() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    throw new Error('User does not have a session');
+    throw new AuthError('User does not have a session', 'SESSION_NOT_FOUND');
   }
 
   return session;
 }
 
+/**
+ * Get the currently authenticated user
+ * @returns The authenticated user
+ * @throws {AuthError} If user is not authenticated
+ */
 export async function getAuthenticatedUser() {
   const session = await getSession();
 
   if (!session?.user) {
-    throw new Error('User not authenticated');
+    throw new AuthError('User not authenticated', 'USER_NOT_AUTHENTICATED');
   }
 
   return session.user;
-}
-
-export async function getActiveOrganizationId() {
-  const session = await getSession();
-
-  if (!session?.session?.activeOrganizationId) {
-    throw new Error('User does not have an active organization');
-  }
-
-  return session.session.activeOrganizationId;
 }

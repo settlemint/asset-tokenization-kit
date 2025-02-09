@@ -1,63 +1,80 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "envMode": "loose",
   "tasks": {
-    "build": {
-      "dependsOn": ["codegen", "^build", "dependencies"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "cache_forge/**", "cache/**", "out/**", "artifacts/**"]
+    "codegen": {
+      "dependsOn": ["codegen:settlemint", "codegen:gql-tada", "codegen:graph"],
+      "outputs": ["*.d.ts", "src/lib/settlemint/**", "generated/**"]
+    },
+    "codegen:settlemint": {
+      "outputs": ["*-env.d.ts", "*-schema.graphql", "*-env-*.d.ts", "*-schema-*.graphql", "src/lib/settlemint/**"]
+    },
+    "codegen:gql-tada": {
+      "dependsOn": ["codegen:settlemint"],
+      "outputs": ["*-cache.d.ts", "*-cache-*.d.ts"]
+    },
+    "codegen:graph": {
+      "dependsOn": ["contracts#compile:hardhat"],
+      "outputs": ["generated/**"]
+    },
+    "dependencies": {
+      "outputs": ["dependencies/**"]
+    },
+    "format": {
+      "dependsOn": ["format:biome", "format:forge"]
+    },
+    "format:biome": {
+      "cache": false
+    },
+    "format:forge": {
+      "cache": false
     },
     "lint": {
-      "dependsOn": ["codegen", "^lint", "//#format:biome"]
+      "dependsOn": ["//#lint:biome", "lint:solhint", "lint:eslint"]
+    },
+    "//#lint:biome": {
+      "dependsOn": ["^codegen"]
+    },
+    "lint:solhint": {
+      "dependsOn": ["codegen"]
+    },
+    "lint:eslint": {
+      "dependsOn": ["codegen"]
+    },
+    "compile:hardhat": {
+      "dependsOn": ["dependencies"],
+      "outputs": ["artifacts/**", "cache/**"]
+    },
+    "compile:forge": {
+      "dependsOn": ["dependencies"],
+      "outputs": ["out/**", "cache_forge/**"]
+    },
+    "addresses": {
+      "outputs": ["src/lib/contracts.ts"]
+    },
+    "build": {
+      "dependsOn": ["codegen", "addresses", "compile:forge"],
+      "outputs": [".next/**", "!.next/cache/**", "build/**"]
     },
     "dev": {
       "dependsOn": ["codegen"],
       "cache": false,
       "persistent": true
     },
-    "//#publish-npm": {
-      "cache": false
-    },
-    "publish-docker": {
-      "dependsOn": ["codegen", "^publish-docker"],
-      "cache": false
-    },
-    "deploy": {
-      "dependsOn": ["^deploy"],
-      "cache": false
-    },
-    "check-types": {
-      "dependsOn": ["^check-types", "codegen"]
-    },
-    "codegen": {
-      "dependsOn": ["^codegen"],
-      "cache": false
-    },
-    "//#format:biome": {
-      "cache": false
-    },
-    "//#lint:biome": {
-      "cache": false
-    },
     "test": {
-      "dependsOn": ["dependencies", "^test"]
-    },
-    "test:deploy": {
-      "dependsOn": ["genesis", "^test:deploy"]
-    },
-    "dependencies": {
-      "dependsOn": ["^dependencies"],
-      "outputs": ["dependencies/**"]
+      "dependsOn": ["codegen", "contracts#compile:forge"]
     },
     "genesis": {
-      "dependsOn": ["dependencies", "^genesis"],
+      "dependsOn": ["dependencies", "compile:forge"],
       "outputs": ["genesis-output.json"]
     },
-    "contracts#deploy:remote": {
-      "dependsOn": ["contracts#dependencies", "contracts#build"],
-      "cache": false,
-      "persistent": true
+    "deploy:local": {
+      "dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
+      "outputs": ["kit/contracts/ignition/deployments/**"]
+    },
+    "deploy:remote": {
+      "dependsOn": ["compile:hardhat", "^deploy:remote"],
+      "cache": false
     }
   }
 }

@@ -1,12 +1,17 @@
-import { DashboardChartsClient } from './_components/dashboard-charts/chart-client';
-import { DashboardStats } from './_components/dashboard-stats/stat';
+export const dynamic = 'force-dynamic';
+
+import { AssetsWidget } from './_components/widgets/assets/assets';
+import { TransactionsWidget } from './_components/widgets/transactions/transactions';
+import { UsersWidget } from './_components/widgets/users/users';
 
 export default function AdminDashboard() {
   return (
     <div>
-      <DashboardStats />
-      <DashboardChartsClient />
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+        <AssetsWidget />
+        <TransactionsWidget />
+        <UsersWidget />
+      </div>
     </div>
   );
 }

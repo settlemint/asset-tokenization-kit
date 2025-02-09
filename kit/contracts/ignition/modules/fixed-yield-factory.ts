@@ -1,7 +1,9 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const FixedYieldFactoryModule = buildModule('FixedYieldFactoryModule', (m) => {
-  const fixedYieldFactory = m.contract('FixedYieldFactory');
+  const { forwarder } = m.useModule(ForwarderModule);
+  const fixedYieldFactory = m.contract('FixedYieldFactory', [forwarder]);
 
   return { fixedYieldFactory };
 });

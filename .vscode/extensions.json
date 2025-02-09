@@ -1,15 +1,16 @@
 {
-  "recommendations": [
-    "biomejs.biome",
-    "oven.bun-vscode",
-    "editorconfig.editorconfig",
-    "dbaeumer.vscode-eslint",
-    "graphql.vscode-graphql-syntax",
-    "nhoizey.gremlins",
-    "yoavbls.pretty-ts-errors",
-    "bradlc.vscode-tailwindcss",
-    "shardulm94.trailing-spaces",
-    "nomicfoundation.hardhat-solidity",
-    "bruceyuhb.hsl-preview"
-  ]
+	"recommendations": [
+		"biomejs.biome",
+		"oven.bun-vscode",
+		"editorconfig.editorconfig",
+		"dbaeumer.vscode-eslint",
+		"graphql.vscode-graphql-syntax",
+		"nhoizey.gremlins",
+		"yoavbls.pretty-ts-errors",
+		"bradlc.vscode-tailwindcss",
+		"shardulm94.trailing-spaces",
+		"nomicfoundation.hardhat-solidity",
+		"bruceyuhb.hsl-preview",
+		"vercel.turbo-vsc"
+	]
 }

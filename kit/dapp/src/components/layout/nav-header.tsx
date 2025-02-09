@@ -14,8 +14,8 @@ export function NavHeader() {
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
             <div className="flex flex-col gap-0.5 leading-none">
-              <span className="font-bold">SettleMint</span>
-              <span className="text-xs">Asset Tokenization</span>
+              <span className="font-bold text-lg">SettleMint</span>
+              <span className="-mt-1 text-md">Asset Tokenization</span>
             </div>
           </a>
         </SidebarMenuButton>

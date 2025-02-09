@@ -3,8 +3,10 @@
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
+import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import type { QueryKey } from '@tanstack/react-query';
 import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ComponentType, ReactElement } from 'react';
@@ -13,7 +15,6 @@ import type { Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
-import { revalidateTags } from './revalidate-tags';
 
 export type AssetFormProps<
   ServerError,
@@ -26,8 +27,14 @@ export type AssetFormProps<
   children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  revalidateTags: string[];
+  invalidate: QueryKey[];
   onClose?: () => void;
+  submitLabel?: string;
+  messages?: {
+    onCreate: (input: Infer<S>) => string;
+    onSuccess: (input: Infer<S>) => string;
+    onError: (input: Infer<S>, error: Error) => string;
+  };
 };
 
 export function AssetForm<
@@ -42,10 +49,14 @@ export function AssetForm<
   storeAction,
   resolverAction,
   onClose,
-  revalidateTags: tagsToRevalidate,
+  invalidate,
+  submitLabel,
+  messages = getAssetCreateMessages(),
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
+  const invalidateTags = useInvalidateTags();
   const totalSteps = children.length;
 
   useEffect(() => {
@@ -62,12 +73,12 @@ export function AssetForm<
           return;
         }
         toast.promise(waitForTransactionMining(data), {
-          loading: `Transaction to create ${input.assetName} (${input.symbol}) waiting to be mined`,
-          success: async () => {
-            await revalidateTags(tagsToRevalidate);
-            return `${input.assetName} (${input.symbol}) created successfully on chain`;
+          loading: messages.onCreate(input as Infer<S>),
+          success: () => {
+            invalidateTags(invalidate);
+            return messages.onSuccess(input as Infer<S>);
           },
-          error: (error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+          error: (error: Error) => messages.onError(input as Infer<S>, error),
         });
 
         resetFormAndAction();
@@ -76,10 +87,20 @@ export function AssetForm<
       onError: (data) => {
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
-          if (data.error.serverError instanceof Error) {
-            errorMessage = data.error.serverError.message;
-          } else if (typeof data.error.serverError === 'string') {
-            errorMessage = data.error.serverError;
+          const serverErrorWithContext = data.error.serverError as
+            | (typeof data.error.serverError & {
+                context?: { details: string };
+              })
+            | string;
+          if (serverErrorWithContext instanceof Error) {
+            errorMessage = serverErrorWithContext.message;
+          } else if (typeof serverErrorWithContext === 'string') {
+            errorMessage = serverErrorWithContext;
+          } else if (
+            typeof serverErrorWithContext === 'object' &&
+            typeof serverErrorWithContext.context?.details === 'string'
+          ) {
+            errorMessage = serverErrorWithContext.context.details;
           }
           toast.error(`Server error: ${errorMessage}. Please try again or contact support if the issue persists.`);
         }
@@ -112,6 +133,7 @@ export function AssetForm<
       return;
     }
 
+    setIsValidating(true);
     // Mark fields as touched
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<Infer<S>>);
@@ -126,6 +148,7 @@ export function AssetForm<
     if (results.every(Boolean)) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
     }
+    setIsValidating(false);
   };
 
   const handlePrev = () => {
@@ -144,27 +167,19 @@ export function AssetForm<
         <Card className="w-full pt-10">
           <CardContent>
             <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  if (!isLastStep) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleSubmitWithAction(e);
-                }}
-              >
+              <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
                 <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
-
                 {/* Current step content */}
                 <div className="min-h-[400px]">{children[currentStep]}</div>
-
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
-                  handlePrev={handlePrev}
+                  onPreviousStep={handlePrev}
                   isLastStep={isLastStep}
-                  handleNext={handleNext}
+                  onNextStep={handleNext}
+                  isSubmitting={form.formState.isSubmitting || isValidating}
+                  submitLabel={submitLabel}
                 />
               </form>
             </Form>
@@ -174,3 +189,9 @@ export function AssetForm<
     </div>
   );
 }
+
+const getAssetCreateMessages = <Input extends { assetName: string; symbol: string }>() => ({
+  onCreate: (input: Input) => `Creating ${input.assetName} (${input.symbol})`,
+  onSuccess: (input: Input) => `${input.assetName} (${input.symbol}) created successfully on chain`,
+  onError: (input: Input, error: Error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
+});

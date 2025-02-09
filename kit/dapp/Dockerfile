@@ -1,6 +1,6 @@
 # BUILD DEPENDENCIES
 FROM node:22.13.1 AS deps
-COPY --from=oven/bun:1.2.1-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+COPY --from=oven/bun:1.2.2-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -13,6 +13,7 @@ FROM deps AS build
 
 COPY --chmod=0777 . .
 RUN bun run build
+RUN rm -Rf .next/standalone/.env
 
 # RUN
 FROM node:22.13.1-slim

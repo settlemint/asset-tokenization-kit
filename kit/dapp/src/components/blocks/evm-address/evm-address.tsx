@@ -1,3 +1,5 @@
+'use client';
+
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,6 +14,7 @@ interface EvmAddressProps extends PropsWithChildren {
   explorerUrl?: string;
   prefixLength?: number;
   suffixLength?: number;
+  iconSize?: 'tiny' | 'small' | 'big';
 }
 
 /**
@@ -19,29 +22,36 @@ interface EvmAddressProps extends PropsWithChildren {
  * @param props - The component props.
  * @returns The rendered EvmAddress component.
  */
-export function EvmAddress({ address, explorerUrl, children, prefixLength = 6, suffixLength = 4 }: EvmAddressProps) {
+export function EvmAddress({
+  address,
+  explorerUrl,
+  children,
+  prefixLength = 6,
+  suffixLength = 4,
+  iconSize = 'tiny',
+}: EvmAddressProps) {
   return (
     <HoverCard>
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
           <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-            <AddressAvatar address={address} variant="tiny" />
+            <AddressAvatar address={address} variant={iconSize} />
           </Suspense>
-          <span className="font-mono">{shortHex(address, prefixLength, suffixLength)}</span>
+          <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>
         </div>
       </HoverCardTrigger>
-      <HoverCardContent className="w-80">
+      <HoverCardContent className="w-120">
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
             <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
               <AddressAvatar address={address} className="row-span-2" />
             </Suspense>
             <div className="flex flex-col">
-              <span className="font-mono">{shortHex(address, 12, 8)}</span>
+              <span className="font-mono">{address}</span>
               {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
                 <Link
                   prefetch={false}
-                  href={`${explorerUrl ?? process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}/${address}`}
+                  href={`${explorerUrl ?? process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}address/${address}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="truncate text-primary text-xs hover:underline"

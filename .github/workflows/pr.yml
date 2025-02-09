@@ -1,0 +1,86 @@
+name: PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    runs-on: namespace-profile-starterkit
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Setup caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            .turbo
+            ~/.bun/install/cache
+
+      - name: Start Docker Compose
+        run: docker compose up -d
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install Bun dependencies
+        run: bun install 
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: https://console-release.settlemint.com
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+
+      - name: Turbo!
+        run: bunx turbo dependencies lint build test genesis deploy:local --affected
+
+      - name: Store predeployed output
+        uses: actions/upload-artifact@v4
+        with:
+          name: predeployed-output
+          path: |
+            kit/contracts/genesis-output.json
+            kit/subgraph/subgraph-output.txt
+            kit/contracts/artifacts/contracts/**/*.json
+            !kit/contracts/artifacts/contracts/**/*.dbg.json
+
+  security:
+    name: Security
+    runs-on: namespace-profile-starterkit
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Secret Scanning (Trivy)
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          format: 'table'
+          exit-code: '1'
+          scanners: 'secret'

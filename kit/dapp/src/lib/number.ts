@@ -1,88 +1,65 @@
-export const formatCurrency = (amount: number, currency: string, locale?: Intl.LocalesArgument) => {
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
-    currencyDisplay: 'symbol',
-  }).format(amount);
-};
+import BigNumber from 'bignumber.js';
+
+BigNumber.config({
+  DECIMAL_PLACES: 6,
+});
 
 /**
- * Formats a token value with a specified number of decimal places.
- * @param amount - The amount to format.
- * @param decimals - The number of decimal places to display.
- * @param locale - Optional locale for formatting.
- * @returns A formatted string representing the token value.
+ * Options for currency formatting
  */
-export const formatTokenValue = (amount: number | bigint, decimals: number, locale?: Intl.LocalesArgument) => {
-  return new Intl.NumberFormat(locale, {
-    style: 'decimal',
-    maximumFractionDigits: decimals,
-    minimumFractionDigits: decimals,
-  }).format(amount);
-};
+export interface FormatOptions {
+  /** The currency code (e.g., 'USD', 'EUR') */
+  readonly currency?: string;
+  /** The token symbol (e.g., 'USDC', 'USDT') */
+  readonly token?: string;
+  /** The locale to use for formatting (e.g., 'en-US') */
+  readonly locale?: Intl.LocalesArgument;
+  /** The number of decimal places to display */
+  readonly decimals?: number;
+  /** Whether to display the number as a percentage */
+  readonly percentage?: boolean;
+}
 
 /**
- * Formats a number or string as a percentage.
- * @param amount - The amount to format as a percentage.
- * @param locale - Optional locale for formatting.
- * @returns A formatted percentage string.
- * @throws Will return "0%" if parsing fails.
+ * Formats a number as currency with the specified options
+ *
+ * @param amount - The amount to format as a string
+ * @param options - Formatting options including currency and locale
+ * @returns Formatted currency string
+ * @throws {Error} If the amount is not a valid number
  */
-export const formatPercentage = (amount: number | bigint | string, locale?: Intl.LocalesArgument) => {
-  try {
-    const numericValue = Number.parseFloat(amount.toString());
-    const dividedValue = numericValue / 100;
+export function formatNumber(amount: string | bigint | number | BigNumber, options: FormatOptions = {}): string {
+  const { currency, token, locale = 'en-US', decimals = 2, percentage = false } = options;
+  let value = new BigNumber(amount.toString());
+
+  if (value.isNaN()) {
+    value = new BigNumber(0);
+  }
+
+  if (percentage) {
+    let percentageValue = new BigNumber(0);
+    if (!value.isZero()) {
+      percentageValue = value.dividedBy(100);
+    }
 
     return new Intl.NumberFormat(locale, {
       style: 'percent',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(dividedValue);
-  } catch {
-    return '0%';
-  }
-};
-
-/**
- * Formats a large number into a more readable string with units.
- * @param value - The number to format.
- * @returns A string representing the large number with appropriate unit.
- */
-export function formatLargeNumber(value: string | number | bigint): string {
-  const bigIntValue = BigInt(Math.floor(Number(value)));
-  const units = [
-    '',
-    'Thousand',
-    'Million',
-    'Billion',
-    'Trillion',
-    'Quadrillion',
-    'Quintillion',
-    'Sextillion',
-    'Septillion',
-    'Octillion',
-    'Nonillion',
-    'Decillion',
-    'Undecillion',
-    'Duodecillion',
-    'Tredecillion',
-    'Quattuordecillion',
-    'Quindecillion',
-    'Sexdecillion',
-    'Septendecillion',
-    'Octodecillion',
-    'Novemdecillion',
-    'Vigintillion',
-  ];
-  const divisor = BigInt(1000);
-
-  let unitIndex = 0;
-  let scaledValue = bigIntValue;
-
-  while (scaledValue >= divisor && unitIndex < units.length - 1) {
-    scaledValue /= divisor;
-    unitIndex++;
+      maximumFractionDigits: decimals,
+      minimumFractionDigits: decimals,
+    }).format(percentageValue.toNumber());
   }
 
-  return `${scaledValue.toString()} ${units[unitIndex]}`;
+  const number = new Intl.NumberFormat(locale, {
+    style: currency ? 'currency' : 'decimal',
+    currency,
+    currencyDisplay: currency ? 'symbol' : undefined,
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: decimals,
+  }).format(value.toNumber());
+
+  if (token) {
+    return `${number} ${token}`;
+  }
+
+  return number;
 }

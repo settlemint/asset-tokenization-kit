@@ -10,6 +10,14 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Figtree', 'sans-serif'],
+      },
+      backgroundImage: {
+        'lm-gradient-menu': 'linear-gradient(83deg, #f9f9fc, #d5e0fa 50%, #cdeadd)',
+        'dm-gradient-menu': 'linear-gradient(83deg, #1a1a1a, #1f2937 50%, #1a2e22)',
+        'dm-gradient-menu-hover': 'linear-gradient(83deg, #37393d, #384258 50%, #375b7b)',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -44,6 +52,10 @@ export default {
         warning: {
           DEFAULT: 'hsl(var(--warning))',
           foreground: 'hsl(var(--warning-foreground))',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
         },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

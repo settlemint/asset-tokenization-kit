@@ -19,17 +19,17 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_BondCreated
+        - Factory
+        - BondCreatedEvent
       abis:
         - name: BondFactory
           file: ../contracts/artifacts/contracts/BondFactory.sol/BondFactory.json
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address,string,string,uint8,indexed
-            address,string,uint256,uint256,uint256,indexed address,uint256)
+        - event: BondCreated(indexed address)
           handler: handleBondCreated
-      file: ./src/bond-factory.ts
+      file: ./src/factories/bond-factory.ts
   - kind: ethereum/contract
     name: CryptoCurrencyFactory
     network: settlemint
@@ -41,17 +41,17 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_CryptoCurrencyCreated
+        - Factory
+        - CryptoCurrencyCreatedEvent
       abis:
         - name: CryptoCurrencyFactory
           file: ../contracts/artifacts/contracts/CryptoCurrencyFactory.sol/CryptoCurrencyFactory.json
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
       eventHandlers:
-        - event: CryptoCurrencyCreated(indexed address,string,string,uint8,indexed
-            address,uint256)
+        - event: CryptoCurrencyCreated(indexed address)
           handler: handleCryptoCurrencyCreated
-      file: ./src/crypto-currency-factory.ts
+      file: ./src/factories/cryptocurrency-factory.ts
   - kind: ethereum/contract
     name: EquityFactory
     network: settlemint
@@ -63,17 +63,17 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_EquityCreated
+        - Factory
+        - EquityCreatedEvent
       abis:
         - name: EquityFactory
           file: ../contracts/artifacts/contracts/EquityFactory.sol/EquityFactory.json
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
-        - event: EquityCreated(indexed address,string,string,uint8,indexed
-            address,string,string,string,uint256)
+        - event: EquityCreated(indexed address)
           handler: handleEquityCreated
-      file: ./src/equity-factory.ts
+      file: ./src/factories/equity-factory.ts
   - kind: ethereum/contract
     name: StableCoinFactory
     network: settlemint
@@ -85,39 +85,61 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_StableCoinCreated
+        - Factory
+        - StableCoinCreatedEvent
       abis:
         - name: StableCoinFactory
           file: ../contracts/artifacts/contracts/StableCoinFactory.sol/StableCoinFactory.json
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address,string,string,uint8,indexed
-            address,string,uint256)
+        - event: StableCoinCreated(indexed address)
           handler: handleStableCoinCreated
-      file: ./src/stable-coin-factory.ts
+      file: ./src/factories/stablecoin-factory.ts
+  - kind: ethereum/contract
+    name: FundFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000005"
+      abi: FundFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+        - FundCreatedEvent
+      abis:
+        - name: FundFactory
+          file: ../contracts/artifacts/contracts/FundFactory.sol/FundFactory.json
+        - name: Fund
+          file: ../contracts/artifacts/contracts/Fund.sol/Fund.json
+      eventHandlers:
+        - event: FundCreated(indexed address)
+          handler: handleFundCreated
+      file: ./src/factories/fund-factory.ts
   - kind: ethereum/contract
     name: FixedYieldFactory
     network: settlemint
     source:
-      address: "0x5e771e1417100000000000000000000000000005"
+      address: "0x5e771e1417100000000000000000000000000006"
       abi: FixedYieldFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_FixedYieldCreated
+        - Factory
+        - FixedYieldCreatedEvent
       abis:
         - name: FixedYieldFactory
           file: ../contracts/artifacts/contracts/FixedYieldFactory.sol/FixedYieldFactory.json
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: FixedYieldCreated(indexed address,indexed address,indexed
-            address,address,uint256,uint256,uint256,uint256,uint256[],uint256)
+        - event: FixedYieldCreated(indexed address)
           handler: handleFixedYieldCreated
-      file: ./src/fixed-yield-factory.ts
+      file: ./src/factories/fixedyield-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -129,29 +151,47 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_Approval
-        - Event_BondMatured
-        - Event_EIP712DomainChanged
-        - Event_Paused
-        - Event_TokensFrozen
-        - Event_TokensUnfrozen
-        - Event_Transfer
-        - Event_Unpaused
-        - Event_UserBlocked
-        - Event_UserUnblocked
-        - Event_RoleGranted
-        - Event_RoleRevoked
-        - Event_RoleAdminChanged
+        # Core Entities
+        - Asset
+        - Account
+        - Factory
+        - Bond
+        # Event Entities
+        - AssetEvent
+        - FactoryEvent
+        - BondCreatedEvent
+        - ApprovalEvent
+        - BondMaturedEvent
+        - BondRedeemedEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TokensUnfrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserBlockedEvent
+        - UserUnblockedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        - UnderlyingAssetTopUpEvent
+        - UnderlyingAssetWithdrawnEvent
+        # Stats Entities
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - BondStats
+        - BondStatsData
+        # Activity Data
         - TransferData
-        - TransferStats
-        - AssetSupplyData
-        - AssetSupplyStats
         - AccountActivityData
-        - AccountActivityStats
         - RoleActivityData
+        - BondActivityData
+        # Activity Stats
+        - TransferStats
+        - AccountActivityStats
         - RoleActivityStats
-        - BondMetricsData
-        - BondMetricsStats
+        - BondActivityStats
       abis:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
@@ -162,8 +202,6 @@ templates:
           handler: handleBondMatured
         - event: BondRedeemed(indexed address,uint256,uint256)
           handler: handleBondRedeemed
-        - event: EIP712DomainChanged()
-          handler: handleEIP712DomainChanged
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -188,7 +226,7 @@ templates:
           handler: handleUnderlyingAssetTopUp
         - event: UnderlyingAssetWithdrawn(indexed address,uint256)
           handler: handleUnderlyingAssetWithdrawn
-      file: ./src/bond.ts
+      file: ./src/assets/bond.ts
   - kind: ethereum/contract
     name: CryptoCurrency
     network: settlemint
@@ -199,28 +237,47 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_Approval
-        - Event_EIP712DomainChanged
-        - Event_Transfer
-        - Event_RoleGranted
-        - Event_RoleRevoked
-        - Event_RoleAdminChanged
+        # Core Entities
+        - Asset
+        - Account
+        - Factory
+        - CryptoCurrency
+        # Event Entities
+        - AssetEvent
+        - FactoryEvent
+        - CryptoCurrencyCreatedEvent
+        - ApprovalEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TokensUnfrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserBlockedEvent
+        - UserUnblockedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        # Stats Entities
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - CryptoCurrencyStats
+        - CryptoCurrencyStatsData
+        # Activity Data
         - TransferData
-        - TransferStats
-        - AssetSupplyData
-        - AssetSupplyStats
         - AccountActivityData
-        - AccountActivityStats
         - RoleActivityData
+        - CryptoCurrencyActivityData
+        # Activity Stats
+        - TransferStats
+        - AccountActivityStats
         - RoleActivityStats
+        - CryptoCurrencyActivityStats
       abis:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: EIP712DomainChanged()
-          handler: handleEIP712DomainChanged
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
@@ -229,7 +286,9 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-      file: ./src/crypto-currency.ts
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+      file: ./src/assets/cryptocurrency.ts
   - kind: ethereum/contract
     name: Equity
     network: settlemint
@@ -240,42 +299,49 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_Approval
-        - Event_DelegateChanged
-        - Event_DelegateVotesChanged
-        - Event_EIP712DomainChanged
-        - Event_Paused
-        - Event_TokensFrozen
-        - Event_TokensUnfrozen
-        - Event_Transfer
-        - Event_Unpaused
-        - Event_UserBlocked
-        - Event_UserUnblocked
-        - Event_RoleGranted
-        - Event_RoleRevoked
-        - Event_RoleAdminChanged
+        # Core Entities
+        - Asset
+        - Account
+        - Factory
+        - Equity
+        # Event Entities
+        - AssetEvent
+        - FactoryEvent
+        - EquityCreatedEvent
+        - ApprovalEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TokensUnfrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserBlockedEvent
+        - UserUnblockedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        # Stats Entities
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - EquityStats
+        - EquityStatsData
+        # Activity Data
         - TransferData
-        - TransferStats
-        - AssetSupplyData
-        - AssetSupplyStats
         - AccountActivityData
-        - AccountActivityStats
         - RoleActivityData
+        - EquityActivityData
+        # Activity Stats
+        - TransferStats
+        - AccountActivityStats
         - RoleActivityStats
-        - EquityCategoryData
-        - EquityCategoryStats
+        - EquityActivityStats
       abis:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-        - event: DelegateChanged(indexed address,indexed address,indexed address)
-          handler: handleDelegateChanged
-        - event: DelegateVotesChanged(indexed address,uint256,uint256)
-          handler: handleDelegateVotesChanged
-        - event: EIP712DomainChanged()
-          handler: handleEIP712DomainChanged
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -296,7 +362,7 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-      file: ./src/equity.ts
+      file: ./src/assets/equity.ts
   - kind: ethereum/contract
     name: StableCoin
     network: settlemint
@@ -307,36 +373,51 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - Event_Approval
-        - Event_EIP712DomainChanged
-        - Event_Paused
-        - Event_TokensFrozen
-        - Event_TokensUnfrozen
-        - Event_Transfer
-        - Event_Unpaused
-        - Event_UserBlocked
-        - Event_UserUnblocked
-        - Event_RoleGranted
-        - Event_RoleRevoked
-        - Event_RoleAdminChanged
+        # Core Entities
+        - Asset
+        - Account
+        - Factory
+        - StableCoin
+        # Event Entities
+        - AssetEvent
+        - FactoryEvent
+        - StableCoinCreatedEvent
+        - ApprovalEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TokensUnfrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserBlockedEvent
+        - UserUnblockedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        - CollateralTopUpEvent
+        - CollateralWithdrawnEvent
+        # Stats Entities
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - StableCoinStats
+        - StableCoinStatsData
+        # Activity Data
         - TransferData
-        - TransferStats
-        - AssetSupplyData
-        - AssetSupplyStats
         - AccountActivityData
-        - AccountActivityStats
         - RoleActivityData
+        - StableCoinActivityData
+        # Activity Stats
+        - TransferStats
+        - AccountActivityStats
         - RoleActivityStats
-        - StableCoinMetricsData
-        - StableCoinMetricsStats
+        - StableCoinActivityStats
       abis:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-        - event: EIP712DomainChanged()
-          handler: handleEIP712DomainChanged
         - event: Paused(address)
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
@@ -357,7 +438,7 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
-      file: ./src/stable-coin.ts
+      file: ./src/assets/stablecoin.ts
   - kind: ethereum/contract
     name: FixedYield
     network: settlemint
@@ -378,4 +459,85 @@ templates:
       eventHandlers:
         - event: YieldClaimed(indexed address,uint256,uint256,uint256,uint256[],uint256)
           handler: handleYieldClaimed
-      file: ./src/fixed-yield.ts
+      file: ./src/assets/fixedyield.ts
+  - kind: ethereum/contract
+    name: Fund
+    network: settlemint
+    source:
+      abi: Fund
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        # Core Entities
+        - Asset
+        - Account
+        - Factory
+        - Fund
+        # Event Entities
+        - AssetEvent
+        - FactoryEvent
+        - FundCreatedEvent
+        - ApprovalEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TokensUnfrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserBlockedEvent
+        - UserUnblockedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        - FeeCollectedEvent
+        # Stats Entities
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - FundStats
+        - FundStatsData
+        # Activity Data
+        - TransferData
+        - AccountActivityData
+        - RoleActivityData
+        - FundActivityData
+        # Activity Stats
+        - TransferStats
+        - AccountActivityStats
+        - RoleActivityStats
+        - FundActivityStats
+      abis:
+        - name: Fund
+          file: ../contracts/artifacts/contracts/Fund.sol/Fund.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: TokensUnfrozen(indexed address,uint256)
+          handler: handleTokensUnfrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserBlocked(indexed address)
+          handler: handleUserBlocked
+        - event: UserUnblocked(indexed address)
+          handler: handleUserUnblocked
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: ManagementFeeCollected(uint256,uint256)
+          handler: handleManagementFeeCollected
+        - event: PerformanceFeeCollected(uint256,uint256)
+          handler: handlePerformanceFeeCollected
+        - event: TokenWithdrawn(indexed address,indexed address,uint256)
+          handler: handleTokenWithdrawn
+      file: ./src/assets/fund.ts

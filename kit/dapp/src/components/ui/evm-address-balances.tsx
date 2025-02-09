@@ -1,12 +1,12 @@
 'use client';
 
-import { formatTokenValue } from '@/lib/number';
+import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
   query AddressBalances($account: String!) {
-    balances(where: {account: $account}) {
+    assetBalances(where: {account: $account}) {
       value
       asset {
         name
@@ -29,10 +29,10 @@ export function EvmAddressBalances({ address }: { address: string }) {
       const response = await theGraphClientStarterkits.request(EvmAddressBalancesQuery, {
         account: address,
       });
-      if (!response?.balances) {
+      if (!response?.assetBalances) {
         return [];
       }
-      return response.balances;
+      return response.assetBalances;
     },
     refetchInterval: 10000,
     staleTime: 5000,
@@ -52,9 +52,7 @@ export function EvmAddressBalances({ address }: { address: string }) {
         {balances.map((balance) => (
           <div key={balance.asset.symbol} className="flex items-center justify-between">
             <dt className="text-muted-foreground">{balance.asset.name}:</dt>
-            <dd>
-              {formatTokenValue(Number.parseFloat(balance.value), 2)} {balance.asset.symbol}
-            </dd>
+            <dd>{formatNumber(balance.value, { token: balance.asset.symbol })}</dd>
           </div>
         ))}
       </dl>

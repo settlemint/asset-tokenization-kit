@@ -32,3 +32,4 @@ typechain-types
 
 # Hardhat files
 cache
+subgraph-output.txt

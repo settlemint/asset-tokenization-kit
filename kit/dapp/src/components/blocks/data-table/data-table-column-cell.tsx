@@ -6,7 +6,7 @@ const dataTableColumnCellVariants = cva('flex items-center space-x-2', {
   variants: {
     variant: {
       default: '',
-      numeric: 'justify-end',
+      numeric: 'justify-end pr-2',
     },
   },
   defaultVariants: {

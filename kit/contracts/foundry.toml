@@ -29,13 +29,21 @@ openzeppelin-community-contracts = { version = "0.0.1", git = "https://github.co
   cache_path  = 'cache_forge'
   solc = "0.8.27"
   optimizer = true
-  optimizer_runs = 10_000
+  optimizer_runs = 200
   gas_reports = ["*"]
+  gas_reports_ignore = []
   fuzz = { runs = 1_000 }
   auto_detect_solc = false
   extra_output_files = [ "metadata" ]
-  viaIR = false
-  evm_version = "paris"
+  viaIR = true
+  evm_version = "shanghai"
+  coverage = true
+  coverage_report_lines = true
+  coverage_report_statements = true
+  bytecode_hash = "none"
+  cbor_metadata = true
+  cache = true
+  force = false
 
 [soldeer]
 remappings_version = false

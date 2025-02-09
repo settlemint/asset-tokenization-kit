@@ -1,0 +1,405 @@
+---
+description: Next 15 / React
+globs: kit/dapp/*
+---
+# Next.js 15 & React 19
+
+## 1. Component Architecture & File Structure
+
+- **Modular Architecture**
+  - Organize your code into feature‑based modules (e.g., _user_, _product_, _order_).
+  - **Within each module:**
+    - **Controllers (Route Handlers):** Place under `app/api/...` or in route‑based components.
+    - **Models:** Include DTOs (validated with Zod) and basic/derived TypeScript interfaces.
+    - **Services:** Isolate business logic and persistence; create one service per entity when needed.
+- **Core & Shared Modules**
+  - Place global logic (e.g., exception filters, global middlewares, guards) in a dedicated folder.
+  - Keep utilities (date helpers, fetch wrappers, logging) in a shared or common module.
+- **Naming & Structure**
+  - **Directories:** Use lowercase with dashes (e.g., `components/auth-wizard`).
+  - **Exports:** Favor named exports for components.
+  - **File Organization:** Start with the exported component, followed by subcomponents, helpers, static content, and types.
+- **TypeScript Usage**
+  - Write all code in TypeScript.
+  - Prefer **interfaces** over types and avoid enums (use maps instead).
+  - Use functional components with clear, descriptive names (e.g., `isLoading`, `hasError`).
+
+---
+
+## 2. React Server Components & Rendering
+
+- **Default to Server Components**
+  - Use React Server Components (RSC) by default for data fetching and rendering.
+  - Add `'use client'` only when interactivity or client‑specific APIs are required.
+  - **Example:**
+    ```typescript
+    // Server Component (default)
+    export default async function Page() {
+      const data = await fetchData();
+      return <ClientComponent initialData={data} />;
+    }
+    ```
+- **Client Components**
+  - Keep client components small and focused (e.g., interactive forms, modals).
+  - **Do Not:** Mix server and client logic (e.g., avoid async server‑only fetches in client components).
+  - **Example – Wrong:**
+    ```typescript
+    'use client';
+    export default async function Component() { // ❌ Error: async not allowed in client components
+      const data = await fetchData();
+    }
+    ```
+- **Partial Prerendering & Streaming**
+  - Combine Suspense boundaries with streaming to optimize performance.
+  - **Example:**
+    ```tsx
+    export default async function Page() {
+      return (
+        <>
+          <Suspense fallback={<Loading />}>
+            <ServerFetchedContent />
+          </Suspense>
+          <PrerenderedContent />
+        </>
+      );
+    }
+    ```
+
+---
+
+## 3. Routing, Metadata & Page Components
+
+- **Route Parameters & Search Params**
+  - **Always use Promise types** and `await` route parameters and search parameters in pages, layouts, and metadata.
+  - **Example:**
+    ```typescript
+    // ✅ Correct usage
+    export default async function Page({
+      params,
+      searchParams
+    }: {
+      params: Promise<{ slug: string }>,
+      searchParams: Promise<{ q?: string }>
+    }) {
+      const { slug } = await params;
+      const { q } = await searchParams;
+    }
+    ```
+- **Metadata Generation**
+  - Write metadata generation functions as async and await params.
+  - **Example:**
+    ```typescript
+    export async function generateMetadata({
+      params,
+      searchParams
+    }: {
+      params: Promise<{ slug: string }>,
+      searchParams: Promise<{ q?: string }>
+    }) {
+      const { slug } = await params;
+      return { title: `Page ${slug}` };
+    }
+    ```
+
+---
+
+## 4. Data Fetching & Caching
+
+- **Server-Side Data Fetching**
+  - Use `fetch` with caching options (e.g., `{ next: { revalidate: 3600 } }` for 1‑hour caching).
+  - Implement parallel fetching using `Promise.all` when possible.
+  - **Example:**
+    ```typescript
+    async function getMultipleData() {
+      const [users, posts] = await Promise.all([getUsers(), getPosts()]);
+      return { users, posts };
+    }
+    ```
+- **Async Runtime APIs**
+  - Use async variants like `cookies()`, `headers()`, etc., in Server Components.
+- **Caching Strategies**
+  - Set caching explicitly (e.g., `fetch(url, { cache: 'force-cache' })`).
+  - At the route level, define:
+    ```typescript
+    export const dynamic = 'force-static'; // or 'force-dynamic'
+    ```
+- **Granular Caching**
+  - Use `unstable_cache` from `'next/cache'` for detailed caching and revalidation tags.
+- **Client-Side Data Fetching**
+  - For client‑side data needing real‑time updates, use `@tanstack/react-query` and its Next‑experimental integration if needed.
+
+---
+
+## 5. Forms & Server Actions
+
+- **Server Actions**
+  - Use Next.js 15 Server Actions for form submissions and side effects.
+  - Always include `'use server'` inside the action function.
+  - Validate inputs using Zod and return a consistent, typed `ActionResponse`.
+  - **Example:**
+    ```typescript
+    'use server'
+    import { createSafeActionClient } from 'next-safe-action'
+    import { z } from 'zod'
+    import type { ActionResponse } from '@/app/actions/actions'
+    
+    const schema = z.object({
+      value: z.string()
+    });
+    
+    export const someAction = createSafeActionClient()
+      .schema(schema)
+      .action(async (input): Promise<ActionResponse> => {
+        try {
+          // Action logic here
+          return { success: true, data: /* result */ };
+        } catch (error) {
+          return {
+            success: false,
+            error: error instanceof AppError ? error : appErrors.UNEXPECTED_ERROR,
+          };
+        }
+      });
+    ```
+- **Form Management**
+  - Use `react-hook-form` with Zod resolvers for input validation.
+  - Leverage hooks like `useActionState` or improved `useFormStatus` if available.
+
+---
+
+## 6. Route Handlers & API Endpoints
+
+- **File-Based Routing**
+  - Organize endpoints under `app/api/` or use the new `route.ts` pattern.
+- **Type-Safe Route Handlers**
+  - Use proper types for requests and responses.
+  - Handle errors gracefully with try/catch and Next.js `Response` helpers.
+  - **Example:**
+    ```typescript
+    export async function GET(
+      request: Request,
+      { params }: { params: { id: string } }
+    ) {
+      return Response.json({ data });
+    }
+    ```
+- **Caching in Endpoints**
+  - For static data, set:
+    ```typescript
+    export const dynamic = 'force-static';
+    ```
+  - For dynamic content, use `'force-dynamic'`.
+
+---
+
+## 7. UI Development & Styling
+
+- **Shadcn UI & Tailwind CSS**
+  - Use shadcn UI for base components (Dialog, DropdownMenu, Tooltip, etc.) rather than direct `@radix-ui/*` imports.
+  - Use Tailwind CSS with a mobile‑first approach and utilities such as `clsx` and `tailwind-merge` for class management.
+  - Integrate `tailwindcss-animate` for animation utilities.
+- **Theming**
+  - Use `next-themes` for managing light/dark mode and custom themes.
+- **Additional UI Libraries**
+  - Use `lucide-react` for icons, `cmdk` for command palettes, and date libraries like `react-day-picker` or `date-fns` for date handling.
+- **Accessibility**
+  - Ensure correct ARIA attributes, semantic HTML, and test with screen readers and keyboard navigation.
+
+---
+
+## 8. Performance & Optimizations
+
+- **Image Optimization**
+  - Use Next.js `<Image />` for responsive, lazy‑loaded, and compressed images; consider `placeholder="blur"` for key images.
+- **Dynamic Imports & Code Splitting**
+  - Dynamically import large or non‑critical components.
+  - **Example:**
+    ```typescript
+    const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+      ssr: false,
+      loading: () => <Loading />
+    });
+    ```
+- **View Transitions API**
+  - Utilize the View Transitions API for smooth page transitions.
+  - **Example:**
+    ```typescript
+    'use client'
+    import { useRouter } from 'next/navigation';
+    
+    export default function NavigationButton() {
+      const router = useRouter();
+      return (
+        <button onClick={() => {
+          document.startViewTransition(() => router.push('/next-page'));
+        }}>
+          Go Next
+        </button>
+      );
+    }
+    ```
+- **Core Web Vitals**
+  - Monitor and optimize for LCP, CLS, FID, etc.
+- **Route Groups**
+  - Use route groups (e.g., `app/(group-name)/`) to better bundle and organize large sections.
+- **Minimize Global State**
+  - Favor server‑fetched data and local component state; elevate state globally only when absolutely necessary.
+
+---
+
+## 9. State Management
+
+- **Server Actions & Local State**
+  - Use server actions for handling form submissions and side effects.
+  - Default to local state and server‑fetched data for component-specific needs.
+- **React Query (TanStack)**
+  - Use `@tanstack/react-query` for client‑side data that requires caching or real‑time updates.
+- **URL State with nuqs**
+  - Manage URL‑based state (e.g., search filters, pagination) using `nuqs`.
+  - **Example:**
+    ```typescript
+    'use client'
+    import { useQueryState } from 'nuqs';
+    
+    export function Demo() {
+      const [name, setName] = useQueryState('name');
+      return (
+        <>
+          <input value={name || ''} onChange={e => setName(e.target.value)} />
+          <button onClick={() => setName(null)}>Clear</button>
+          <p>Hello, {name || 'anonymous visitor'}!</p>
+        </>
+      );
+    }
+    ```
+
+---
+
+## 10. Error Handling & Boundaries
+
+- **Local Error & Loading States**
+  - Provide an `error.tsx` in route folders for error boundaries.
+  - Provide a `loading.tsx` for skeleton or loading states.
+  - **Example – error.tsx:**
+    ```tsx
+    'use client';
+    export default function Error({
+      error,
+      reset,
+    }: {
+      error: Error;
+      reset: () => void;
+    }) {
+      return (
+        <div>
+          <h2>Something went wrong!</h2>
+          <button onClick={() => reset()}>Try again</button>
+        </div>
+      );
+    }
+    ```
+- **Global Error Boundaries**
+  - Use a `global-error.tsx` file for unexpected, global error handling.
+- **Server Action Errors**
+  - Ensure Server Actions catch errors and return a proper `ActionResponse` with error details.
+
+---
+
+## 11. Security & Authentication
+
+- **Authentication**
+  - Use solutions like `better-auth` or `better-auth-harmony` for managing authentication flows.
+  - Handle session tokens and login/logout securely on the server.
+- **Secret Management**
+  - Never commit secrets; store them in `.env.local` or managed environment variables.
+- **Security Headers**
+  - Configure Content Security Policy, Strict-Transport-Security, X-Content-Type-Options, etc., in `next.config.js`.
+- **Access Control**
+  - Guard protected routes using server actions, route handlers, or middleware.
+  - Return appropriate responses (redirect, 401/403) for unauthorized access.
+
+---
+
+## 12. Development, Testing & CI/CD
+
+- **Testing**
+  - **Prefer `bun:test`:** Use Bun’s fast built‑in test runner over others.
+  - Use React Testing Library combined with `bun:test` for unit and component tests.
+  - For end‑to‑end tests, consider Playwright or Cypress.
+- **Error Boundaries**
+  - Include `error.tsx` files in each route for localized error handling.
+- **CI/CD Pipeline**
+  - Integrate linting (ESLint) and type‑checking (`tsc --noEmit`) in CI.
+  - Automate Docker builds (e.g., `publish-docker`) and deployments (e.g., `deploy`) per your versioning strategy.
+
+---
+
+## 13. Environment & Configuration
+
+- **Environment Variable Validation**
+  - Validate all `process.env` variables at startup using Zod.
+  - **Example:**
+    ```typescript
+    import { z } from 'zod';
+    
+    const envSchema = z.object({
+      DATABASE_URL: z.string().url(),
+      // other variables…
+    });
+    
+    export const env = envSchema.parse(process.env);
+    ```
+- **Version Management**
+  - Use semantic versioning (npm version or semantic release).
+  - Ensure Docker tags and environment deployments align with version updates.
+- **Monitoring & Analytics**
+  - Integrate logging (e.g., Sentry, LogRocket) and usage tracking in compliance with data privacy standards (GDPR, etc.).
+
+---
+
+## 14. Code Style, Formatting & Next.js Specifics
+
+- **General Code Style**
+  - Write concise, technical TypeScript code with clear examples.
+  - Use functional and declarative programming patterns; avoid classes.
+  - Use the `function` keyword for pure functions and concise conditional syntax.
+- **Next.js Specifics**
+  - **Next-Safe-Action:** Use it for all server actions with type-safe input schemas defined via Zod.
+  - **Example:**
+    ```typescript
+    'use server'
+    import { createSafeActionClient } from 'next-safe-action'
+    import { z } from 'zod'
+    import type { ActionResponse } from '@/types/actions'
+    
+    const schema = z.object({ value: z.string() });
+    
+    export const someAction = createSafeActionClient()
+      .schema(schema)
+      .action(async (input): Promise<ActionResponse> => {
+        try {
+          // action logic
+          return { success: true, data: /* result */ };
+        } catch (error) {
+          return { success: false, error: error instanceof AppError ? error : appErrors.UNEXPECTED_ERROR };
+        }
+      });
+    ```
+  - Use `import type { ActionResponse } from '@/types/actions'` to enforce consistency.
+  - **Minimize `use client`:** Use it only for Web API access in small components, not for data fetching or state management.
+- **Performance Optimization in Code**
+  - Favor React Server Components and avoid excessive use of `useEffect` or `setState`.
+  - Wrap client components in `Suspense` with fallbacks.
+  - Dynamically load non-critical components.
+
+---
+
+## Final Notes
+
+- **Stay Updated:** Regularly check Next.js, React, and related library updates.
+- **Primary UI Library:** Use shadcn UI for consistency; avoid direct `@radix-ui/*` imports.
+- **ORM & Migrations:** Use Drizzle ORM with drizzle‑kit for schema definitions, queries, and migrations.
+- **Testing:** Adopt `bun:test` for fast, integrated testing.
+- **Documentation:** Always refer to the official Next.js docs for Data Fetching, Rendering, and Routing best practices.
+
+Happy coding!

@@ -2,13 +2,19 @@
 pragma solidity ^0.8.27;
 
 import { Test } from "forge-std/Test.sol";
-import { VmSafe } from "forge-std/Vm.sol";
+import { Vm } from "forge-std/Vm.sol";
 import { BondFactory } from "../contracts/BondFactory.sol";
 import { Bond } from "../contracts/Bond.sol";
 import { ERC20Mock } from "./mocks/ERC20Mock.sol";
+import { Forwarder } from "../contracts/Forwarder.sol";
+import { ERC2771Forwarder } from "@openzeppelin/contracts/metatx/ERC2771Forwarder.sol";
+import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract BondFactoryTest is Test {
     BondFactory public factory;
+    Forwarder public forwarder;
     ERC20Mock public underlyingAsset;
     address public owner;
     uint256 public futureDate;
@@ -17,9 +23,19 @@ contract BondFactoryTest is Test {
     string public constant VALID_ISIN = "US0378331005";
     uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
+    // Meta-transaction related
+    uint256 internal constant DEADLINE = 2 ** 256 - 1;
+    uint256 internal constant GAS_LIMIT = 500_000;
+    uint256 internal ownerPrivateKey;
+
     function setUp() public {
-        factory = new BondFactory();
-        owner = address(this);
+        ownerPrivateKey = 0xA11CE;
+        owner = vm.addr(ownerPrivateKey);
+        // Deploy forwarder first
+        forwarder = new Forwarder();
+        // Then deploy factory with forwarder address
+        factory = new BondFactory(address(forwarder));
+
         // Set maturity date to 1 year from now
         futureDate = block.timestamp + 365 days;
 
@@ -36,7 +52,6 @@ contract BondFactoryTest is Test {
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
-        assertEq(factory.allBondsLength(), 1, "Should have created one bond");
 
         Bond bond = Bond(bondAddress);
         assertEq(bond.name(), name, "Bond name should match");
@@ -49,8 +64,10 @@ contract BondFactoryTest is Test {
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
         assertTrue(bond.hasRole(bond.USER_MANAGEMENT_ROLE(), owner), "Owner should have user management role");
-        assertTrue(bond.hasRole(bond.FINANCIAL_MANAGEMENT_ROLE(), owner), "Owner should have financial management role");
         assertEq(bond.maturityDate(), futureDate, "Bond maturity date should match");
+
+        // Test factory tracking
+        assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
     }
 
     function test_CreateMultipleBonds() public {
@@ -76,9 +93,38 @@ contract BondFactoryTest is Test {
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
             assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
             assertEq(bond.cap(), CAP, "Bond cap should match");
+            assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
         }
+    }
 
-        assertEq(factory.allBondsLength(), 3, "Should have created three bonds");
+    function test_PredictAddress() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        vm.startPrank(owner);
+        address predictedAddress = factory.predictAddress(
+            owner, name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
+        );
+
+        address actualAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+
+        assertEq(predictedAddress, actualAddress, "Predicted address should match actual address");
+        vm.stopPrank();
+    }
+
+    function test_RevertDuplicateDeployment() public {
+        string memory name = "Test Bond";
+        string memory symbol = "TBOND";
+
+        // First deployment should succeed
+        address bondAddress =
+            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        assertTrue(factory.isFactoryToken(bondAddress), "First deployment should be tracked");
+
+        // Second deployment with same parameters should revert
+        vm.expectRevert(BondFactory.AddressAlreadyDeployed.selector);
+        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
     }
 
     function test_DeterministicAddresses() public {
@@ -89,7 +135,7 @@ contract BondFactoryTest is Test {
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // Create a new factory instance
-        BondFactory newFactory = new BondFactory();
+        BondFactory newFactory = new BondFactory(address(forwarder));
 
         // Create a bond with the same parameters
         address bond2 =
@@ -124,15 +170,15 @@ contract BondFactoryTest is Test {
         address bondAddress =
             factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
-        VmSafe.Log[] memory entries = vm.getRecordedLogs();
+        Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
             entries.length,
-            5,
-            "Should emit 5 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), RoleGranted (financial), and BondCreated"
+            4,
+            "Should emit 4 events: RoleGranted (admin), RoleGranted (supply), RoleGranted (user), and BondCreated"
         );
 
         // First event should be RoleGranted for DEFAULT_ADMIN_ROLE
-        VmSafe.Log memory firstEntry = entries[0];
+        Vm.Log memory firstEntry = entries[0];
         assertEq(
             firstEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
@@ -145,7 +191,7 @@ contract BondFactoryTest is Test {
         );
 
         // Second event should be RoleGranted for SUPPLY_MANAGEMENT_ROLE
-        VmSafe.Log memory secondEntry = entries[1];
+        Vm.Log memory secondEntry = entries[1];
         assertEq(
             secondEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
@@ -153,28 +199,16 @@ contract BondFactoryTest is Test {
         );
 
         // Third event should be RoleGranted for USER_MANAGEMENT_ROLE
-        VmSafe.Log memory thirdEntry = entries[2];
+        Vm.Log memory thirdEntry = entries[2];
         assertEq(
             thirdEntry.topics[0],
             keccak256("RoleGranted(bytes32,address,address)"),
             "Wrong event signature for third RoleGranted"
         );
 
-        // Fourth event should be RoleGranted for FINANCIAL_MANAGEMENT_ROLE
-        VmSafe.Log memory fourthEntry = entries[3];
-        assertEq(
-            fourthEntry.topics[0],
-            keccak256("RoleGranted(bytes32,address,address)"),
-            "Wrong event signature for fourth RoleGranted"
-        );
-
-        // Fifth event should be BondCreated
-        VmSafe.Log memory lastEntry = entries[4];
-        assertEq(
-            lastEntry.topics[0],
-            keccak256("BondCreated(address,string,string,uint8,address,string,uint256,uint256,uint256,address,uint256)"),
-            "Wrong event signature for BondCreated"
-        );
+        // Fourth event should be BondCreated
+        Vm.Log memory lastEntry = entries[3];
+        assertEq(lastEntry.topics[0], keccak256("BondCreated(address)"), "Wrong event signature for BondCreated");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
     }
 
@@ -188,20 +222,29 @@ contract BondFactoryTest is Test {
 
         // Try to mature before maturity date
         vm.expectRevert(Bond.BondNotYetMatured.selector);
-        vm.prank(owner);
+        vm.prank(address(this));
         bond.mature();
 
         // Move time to maturity date
         vm.warp(futureDate);
 
+        // Mint some bonds first
+        vm.startPrank(address(this));
+        bond.mint(address(this), 100 * 10 ** DECIMALS); // Mint 100 bonds
+
+        // Add required underlying assets
+        uint256 requiredAmount = bond.totalUnderlyingNeeded();
+        underlyingAsset.mint(address(this), requiredAmount);
+        underlyingAsset.approve(address(bond), requiredAmount);
+        bond.topUpUnderlyingAsset(requiredAmount);
+
         // Now mature the bond
-        vm.prank(owner);
         bond.mature();
         assertTrue(bond.isMatured(), "Bond should be matured");
 
         // Try to mature again
         vm.expectRevert(Bond.BondAlreadyMatured.selector);
-        vm.prank(owner);
         bond.mature();
+        vm.stopPrank();
     }
 }

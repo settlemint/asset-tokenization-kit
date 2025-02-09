@@ -1,4 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateEquityFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -13,7 +14,7 @@ export function CreateEquityForm({
 }) {
   return (
     <AssetForm
-      revalidateTags={['equities']}
+      invalidate={[assetConfig.equity.queryKey, ['transactions']]}
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onClose}

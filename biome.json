@@ -2,23 +2,24 @@
   "extends": ["ultracite"],
   "files": {
     "ignore": [
-      ".vscode/",
+      "kit/subgraph/src/**",
       "kit/contracts/artifacts/**/*",
       "kit/contracts/dependencies/**/*",
       "kit/contracts/ignition/deployments/**/*",
       "kit/dapp/src/components/ui/**/*",
-      "*-env.d.ts"
+      "kit/dapp/*.d.ts",
+      ".vscode/*"
     ]
   },
   "linter": {
-    "ignore": ["kit/subgraph/src/**/*"],
     "rules": {
       "style": {
         "noNonNullAssertion": "off",
         "useNamingConvention": "off"
       },
       "nursery": {
-        "noSecrets": "off"
+        "noSecrets": "off",
+        "noNestedTernary": "off"
       }
     }
   },

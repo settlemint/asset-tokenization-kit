@@ -23,7 +23,7 @@
         "name": "next"
       },
       {
-        "name": "@0no-co/graphqlsp",
+        "name": "gql.tada/ts-plugin",
         "trackFieldUsage": false,
         "schemas": [
           {
@@ -76,9 +76,9 @@
     "preserveConstEnums": true
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "next-env.d.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

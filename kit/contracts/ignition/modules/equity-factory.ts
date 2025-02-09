@@ -1,7 +1,9 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const EquityFactoryModule = buildModule('EquityFactoryModule', (m) => {
-  const equityFactory = m.contract('EquityFactory');
+  const { forwarder } = m.useModule(ForwarderModule);
+  const equityFactory = m.contract('EquityFactory', [forwarder]);
 
   return { equityFactory };
 });

@@ -1,0 +1,130 @@
+---
+description: Rules for Solidity
+globs: *.sol
+---
+# Solidity Best Practices (Hardhat Ignition + Foundry)
+
+1. **Visibility & NatSpec**
+   - Always mark functions as `public`, `external`, `internal`, or `private`.
+   - Use NatSpec (`@param`, `@return`, etc.) for all external/public calls.
+2. **Function Modifiers**
+   - Create common checks like `onlyOwner` or `whenNotPaused` to keep code DRY and readable.
+3. **Naming Conventions**
+   - Use CamelCase for contracts (e.g., `MyToken`), PascalCase for interfaces (e.g., `IMyToken`), and camelCase for variables.
+4. **Interface Segregation**
+   - Split large interfaces into smaller ones for maintainable code.
+5. **Upgradeable Contracts**
+   - Use proven proxy patterns (Transparent/UUPS) if needed.
+   - Handle the initializer carefully to prevent repeated calls.
+6. **Events**
+   - Emit events on major state changes (ownership, token mint/burn, etc.).
+7. **Checks-Effects-Interactions**
+   - Validate inputs, modify state, then interact externally to prevent reentrancy risks.
+8. **Static Analysis**
+   - Integrate tools like Slither, Mythril, or Foundry’s built-in checks into your CI.
+9. **Timelocks & Multisig**
+   - Require time delays and multiple signatures on critical operations in production.
+10. **Gas Optimization**
+    - Use `immutable` for constructor-set variables.
+    - Pack storage to save on SSTORE costs.
+    - Offload data queries to indexing solutions if possible.
+11. **Role-Based Access**
+    - Use OpenZeppelin’s AccessControl or a custom role system for fine-grained permissions.
+12. **Solidity 0.8+**
+    - Leverage built-in overflow/underflow checks; no need for older SafeMath patterns.
+13. **Circuit Breakers**
+    - Include pausable logic to halt risky operations in emergencies.
+14. **Pull Payments**
+    - Let users withdraw funds instead of pushing them to avoid reentrancy loops.
+15. **Rate Limiting**
+    - Throttle or space out calls where it makes sense (e.g., governance functions).
+16. **SafeERC20**
+    - Use SafeERC20 for external token interactions to handle non-standard ERC20s.
+17. **Randomness**
+    - Use Chainlink VRF or a similar trusted oracle for critical randomness; don’t rely on block variables.
+18. **Assembly**
+    - Use only for tight loops or heavy math; document thoroughly.
+19. **State Machine Approach**
+    - Define transitions carefully for complex flows (e.g., auctions, multi-stage sales).
+20. **ReentrancyGuard**
+    - Add it if your logic includes external calls or token transfers.
+21. **Access Control for Initializers**
+    - Ensure only the deployer can call the initializer once in upgradeable setups.
+22. **Snapshottable Tokens**
+    - Use ERC20Snapshot for historical queries.
+23. **TimelockController**
+    - Combine with multisig for especially sensitive system tasks.
+24. **Gasless Approvals**
+    - Implement ERC20Permit if user experience demands it.
+25. **Slippage Protection**
+    - For DEX-like trades, require a user-defined minimum output or revert.
+26. **ERC20Votes**
+    - Automatically handle snapshots for voting power in on-chain governance tokens.
+27. **Storage Layout Optimization**
+    - Group same-type variables together, especially in upgradeable contracts.
+28. **Libraries**
+    - Factor out repeated logic into libraries for clarity and reduced contract size.
+29. **Self-Destruct**
+    - Use rarely; if used, restrict behind strong admin checks.
+30. **Address Library**
+    - Use OpenZeppelin’s Address library for safer low-level calls.
+31. **Custom Errors**
+    - Use custom errors for efficiency (e.g., `error NotOwner(address caller);`).
+32. **View/Pure**
+    - Mark functions as `view` or `pure` appropriately.
+33. **Decimals & Math**
+    - Be cautious with decimal precision; use fixed-point libraries if necessary.
+34. **Fallback & Receive**
+    - Document clearly; keep them minimal or set to revert by default.
+35. **Error Propagation**
+    - Return or revert with custom errors in internal flows for clarity.
+
+---
+
+# Testing & QA (Foundry)
+
+- Write unit and integration tests in `.t.sol` files.
+- Use fuzz testing (`forge test --fuzz`) to catch edge cases.
+- Expect reverts with `vm.expectRevert`.
+- Aim for high coverage on critical paths.
+- Combine with Hardhat for additional static analysis if desired.
+
+---
+
+# Deployment (Hardhat Ignition)
+
+- Keep ignition scripts in `ignition/` directories.
+- Use one script per environment or module.
+- Manage network configurations for testnets, mainnet, etc.
+
+---
+
+# Documentation
+
+- Use NatSpec for external/public functions.
+- Include summaries in a README for each module.
+
+---
+
+# Security
+
+- **Authorization:**
+  - Do not use `tx.origin` for authorization; always rely on `msg.sender`.
+- **External Calls:**
+  - Whitelist or handle external calls carefully—treat them as untrusted.
+- **Secret Management:**
+  - Avoid secret variables on-chain; assume all data is public.
+- **Fallback/Receive:**
+  - Keep them minimal or set to revert if not needed; document clearly.
+- **Verified Libraries:**
+  - Use verified libraries (e.g., OpenZeppelin); avoid random copy-paste.
+- **Arithmetic:**
+  - Even with Solidity 0.8.x checks, validate logic in loops or subtractions.
+- **Block & Timestamp:**
+  - For randomness, do not rely solely on `block.timestamp` or `blockhash`; use oracles or VRF.
+- **Phishing & Social Engineering:**
+  - Protect against leaking private data or secrets in logs.
+- **Upgradeable Storage:**
+  - Ensure consistent storage layout in proxies; avoid shifting variable slots.
+- **Access Patterns:**
+  - Stick to one approach (role-based or Ownable); do not mix them haphazardly.

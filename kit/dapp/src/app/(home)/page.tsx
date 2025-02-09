@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
+import { NavItem } from './_components/nav-item';
 import { Platform } from './_components/platform';
 
 interface MenuItem {
@@ -40,14 +41,6 @@ const footerLinks = [
     label: 'Cookie Policy',
   },
 ];
-
-const NavItem: FC<MenuItem> = ({ href, label, className }) => (
-  <NavigationMenuItem>
-    <Link href={href} passHref legacyBehavior>
-      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), className)}>{label}</NavigationMenuLink>
-    </Link>
-  </NavigationMenuItem>
-);
 
 const DesktopNav: FC = () => (
   <NavigationMenu className="hidden flex-grow justify-center md:flex">
@@ -86,7 +79,7 @@ const MobileNav: FC = () => (
 export default function Home() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-6">
         <div className="w-24">
           <Logo />
         </div>
@@ -97,7 +90,7 @@ export default function Home() {
             <NavigationMenuItem>
               <Link href="/portfolio" passHref legacyBehavior>
                 <NavigationMenuLink>
-                  <Button>My Portfolio</Button>
+                  <Button className="ml-2">My Portfolio</Button>
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>

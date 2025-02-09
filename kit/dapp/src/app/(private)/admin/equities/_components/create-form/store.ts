@@ -1,9 +1,10 @@
 'use server';
 
 import { CreateEquityOutputSchema } from '@/app/(private)/admin/equities/_components/create-form/schema';
-import { getActiveOrganizationId, getAuthenticatedUser } from '@/lib/auth/auth';
 import { handleChallenge } from '@/lib/challenge';
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { db } from '@/lib/db';
+import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
@@ -23,18 +24,56 @@ const CreateEquity = portalGraphql(`
   }
 `);
 
+const CreateEquityPredictAddress = portalGraphql(`
+  query CreateEquityPredictAddress($address: String!, $sender: String!, $decimals: Int!, $equityCategory: String!, $equityClass: String!, $isin: String!, $name: String!, $symbol: String!) {
+    EquityFactory(address: $address) {
+      predictAddress(
+        sender: $sender
+        decimals: $decimals
+        equityCategory: $equityCategory
+        equityClass: $equityClass
+        name: $name
+        symbol: $symbol
+        isin: $isin
+      ) {
+        predicted
+      }
+    }
+  }
+`);
+
 export const createEquity = actionClient
   .schema(CreateEquityFormSchema)
   .outputSchema(CreateEquityOutputSchema)
   .action(
     async ({
       parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, equityClass, equityCategory },
+      ctx: { user },
     }) => {
-      const user = await getAuthenticatedUser();
-      const organizationId = await getActiveOrganizationId();
+      const predictedAddress = await portalClient.request(CreateEquityPredictAddress, {
+        address: EQUITY_FACTORY_ADDRESS,
+        sender: user.wallet,
+        decimals,
+        equityCategory,
+        equityClass,
+        isin: isin ?? '',
+        name: assetName,
+        symbol,
+      });
+
+      const address = predictedAddress.EquityFactory?.predictAddress?.predicted;
+
+      if (!address) {
+        throw new Error('Failed to predict the address');
+      }
+
+      await db.insert(asset).values({
+        id: address,
+        private: isPrivate,
+      });
 
       const data = await portalClient.request(CreateEquity, {
-        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+        address: EQUITY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
@@ -44,10 +83,6 @@ export const createEquity = actionClient
         equityCategory,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
-        metadata: {
-          private: isPrivate,
-          organization: organizationId,
-        },
       });
 
       const transactionHash = data.EquityFactoryCreate?.transactionHash;

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -ex
+#!/usr/bin/env bash -e
 
 # Get the absolute path of the script's directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -8,10 +8,14 @@ rm -Rf "${ALL_ALLOCATIONS_FILE}"
 
 declare -A CONTRACT_ADDRESSES
 CONTRACT_ADDRESSES=(
+    ["Forwarder"]="0x5e771e1417100000000000000000000000000099"
+
     ["CryptoCurrencyFactory"]="0x5e771e1417100000000000000000000000000001"
     ["StableCoinFactory"]="0x5e771e1417100000000000000000000000000002"
     ["EquityFactory"]="0x5e771e1417100000000000000000000000000003"
     ["BondFactory"]="0x5e771e1417100000000000000000000000000004"
+    ["FundFactory"]="0x5e771e1417100000000000000000000000000005"
+    ["FixedYieldFactory"]="0x5e771e1417100000000000000000000000000006"
 )
 
 # Initialize an empty JSON object for all allocations
@@ -28,16 +32,6 @@ process_sol_file() {
 
     local args_file="${sol_file%.*}.args"
     local forge_args=("${sol_file}:${contract_name}" --broadcast --unlocked --from "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" --json --rpc-url "http://localhost:8545")
-
-    if [[ -f "$args_file" ]]; then
-        # Read constructor args
-        local CONSTRUCTOR_ARGS=$(cat "$args_file")
-        forge_args+=(--constructor-args "$CONSTRUCTOR_ARGS")
-
-        # Debug constructor args
-        echo "Constructor args for $contract_name:"
-        echo "$CONSTRUCTOR_ARGS"
-    fi
 
     # Skip if the contract is not in the CONTRACT_ADDRESSES list
     if [[ -z "$target_address" ]]; then

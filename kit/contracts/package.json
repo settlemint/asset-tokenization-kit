@@ -9,16 +9,16 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
-    "dependencies": "forge soldeer install",
-    "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
-    "format": "forge fmt",
-    "build": "forge build --sizes",
-    "prebuild": "hardhat compile",
+    "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} +",
+    "lint:solhint": "solhint --config .solhint.json ./contracts/**/*.sol",
+    "format:biome": "biome format --write .",
+    "format:forge": "forge fmt",
+    "compile:forge": "forge build --sizes",
+    "compile:hardhat": "hardhat compile",
     "test": "forge test -vvv",
-    "test:deploy": "hardhat ignition deploy --network localhost ignition/modules/main.ts",
-    "genesis": "bash -ex genesis-output.sh",
+    "genesis": "bash -e genesis-output.sh",
     "deploy:remote": "settlemint scs hardhat deploy remote",
-    "prod:deploy": "turbo deploy:remote"
+    "deploy:local": "settlemint scs hardhat deploy local --reset"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-foundry": "1.1.3",

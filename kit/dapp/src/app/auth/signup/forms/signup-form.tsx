@@ -7,13 +7,11 @@ import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { authClient } from '@/lib/auth/client';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { slugify } from '@/lib/slugify';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -23,7 +21,6 @@ const signUpSchema = z
     email: z.string().email('Please enter a valid email'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     name: z.string().min(1, 'Name is required'),
-    organizationName: z.string().optional(),
     walletPincode: z.string().length(6, 'PIN code must be exactly 6 digits'),
     walletPincodeConfirm: z.string().length(6, 'PIN code must be exactly 6 digits'),
   })
@@ -54,14 +51,12 @@ export function SignUpForm({
   ...props
 }: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-  const router = useRouter();
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: '',
       password: '',
       name: '',
-      organizationName: '',
       walletPincode: '',
       walletPincodeConfirm: '',
     },
@@ -77,32 +72,32 @@ export function SignUpForm({
       },
       {
         onSuccess: async () => {
-          authClient.getSession().then((session) => {
+          try {
+            const session = await authClient.getSession();
             if (!session.data?.user.wallet) {
-              throw new Error('No wallet address found');
-            }
-            portalClient
-              .request(SetPinCode, {
-                name: data.name,
-                address: session.data.user.wallet,
-                pincode: data.walletPincode,
-              })
-              .then(() => {
-                authClient.organization
-                  .create({
-                    name: data.organizationName || data.name,
-                    slug: slugify(data.organizationName || data.name, true),
-                  })
-                  .then((org) => {
-                    return authClient.organization.setActive({
-                      organizationId: org.data?.id,
-                    });
-                  })
-                  .then(() => {
-                    router.push(decodedRedirectUrl);
-                  });
+              form.setError('root', {
+                message: 'No wallet address found',
               });
-          });
+              return;
+            }
+            await portalClient.request(SetPinCode, {
+              name: data.name,
+              address: session.data.user.wallet,
+              pincode: data.walletPincode,
+            });
+            // Check user role and redirect accordingly
+            const userRole = session.data.user.role;
+            const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
+            const adminRedirect = decodedRedirectUrl.trim() || '/admin';
+            const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
+            // Force a full page refresh to ensure new auth state is recognized
+            window.location.href = targetUrl;
+          } catch (err) {
+            const error = err as Error;
+            form.setError('root', {
+              message: `Unexpected error: ${error.message}`,
+            });
+          }
         },
         onError: (ctx) => {
           form.setError('root', {
@@ -140,24 +135,6 @@ export function SignUpForm({
                     autoComplete="name"
                     required
                     minLength={1}
-                    maxLength={100}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="organizationName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Organization (optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Definitely Not A Ponzi Ltd."
-                    autoComplete="organization"
                     maxLength={100}
                     {...field}
                   />
