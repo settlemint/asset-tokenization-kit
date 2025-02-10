@@ -70,11 +70,11 @@ export const assetConfig = {
   },
 } as const satisfies AssetConfig;
 
-export const assetsQueryKey: QueryKey = [
-  'Assets',
-  assetConfig.bond.queryKey,
-  assetConfig.cryptocurrency.queryKey,
-  assetConfig.equity.queryKey,
-  assetConfig.fund.queryKey,
-  assetConfig.stablecoin.queryKey,
-];
+export type AssetType = (typeof assetConfig)[keyof typeof assetConfig]['pluralName'];
+export const ASSET_COLORS: Record<AssetType, string> = {
+  [assetConfig.stablecoin.pluralName]: '#0ea5e9', // Bright blue
+  [assetConfig.bond.pluralName]: '#8b5cf6', // Purple
+  [assetConfig.equity.pluralName]: '#4ade80', // Light green
+  [assetConfig.cryptocurrency.pluralName]: '#2563eb', // Royal blue
+  [assetConfig.fund.pluralName]: '#10b981', // Emerald
+};

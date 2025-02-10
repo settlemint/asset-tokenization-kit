@@ -1,31 +1,22 @@
 'use client';
 
+import type { ChartConfig } from '@/components/ui/chart';
 import { PieChartComponent } from '@/components/ui/pie-chart';
-import { assetConfig } from '@/lib/config/assets';
+import { ASSET_COLORS, type AssetType } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import { type AssetBreakdown, getAssetsWidgetData } from './data';
+import { getAssetsWidgetData } from './data';
 
-type AssetType = AssetBreakdown['type'];
-type AssetColors = Record<AssetType, string>;
-type AssetConfig = Record<AssetType, { label: string; color: string }>;
+type AssetPieChartConfig = Record<AssetType, { label: string; color: string }>;
 
-const ASSET_COLORS: AssetColors = {
-  [assetConfig.stablecoin.pluralName]: '#0ea5e9', // Bright blue
-  [assetConfig.bond.pluralName]: '#8b5cf6', // Purple
-  [assetConfig.equity.pluralName]: '#4ade80', // Light green
-  [assetConfig.cryptocurrency.pluralName]: '#2563eb', // Royal blue
-  [assetConfig.fund.pluralName]: '#10b981', // Emerald
-};
-
-const ASSET_CONFIG: AssetConfig = Object.fromEntries(
+const ASSET_PIE_CHART_CONFIG: AssetPieChartConfig = Object.fromEntries(
   Object.entries(ASSET_COLORS).map(([key, color]) => [key, { label: key, color }])
-) as AssetConfig;
+) as AssetPieChartConfig satisfies ChartConfig;
 
-interface DashboardWidgetClientProps {
+interface AssetsPieChartClientProps {
   queryKey: QueryKey;
 }
 
-export function AssetsPieChartClient({ queryKey }: DashboardWidgetClientProps) {
+export function AssetsPieChartClient({ queryKey }: AssetsPieChartClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
@@ -43,7 +34,7 @@ export function AssetsPieChartClient({ queryKey }: DashboardWidgetClientProps) {
       data={chartData}
       dataKey="supplyPercentage"
       nameKey="type"
-      config={ASSET_CONFIG}
+      config={ASSET_PIE_CHART_CONFIG}
     />
   );
 }
