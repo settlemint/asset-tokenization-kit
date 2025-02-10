@@ -1,5 +1,5 @@
+import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
 import { getSessionCookie } from 'better-auth';
-import type {} from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
 import { type Match, match } from 'path-to-regexp';
 import { isCrawler } from './lib/config/crawlers';
@@ -30,6 +30,11 @@ export default function middleware(request: NextRequest) {
 
   if (isPrivateRoute(request.nextUrl.pathname) && !cookies) {
     return NextResponse.redirect(buildRedirectUrl(request));
+  }
+
+  const proxyResponse = proxyMiddleware(request);
+  if (proxyResponse) {
+    return proxyResponse;
   }
 
   return NextResponse.next();
