@@ -7,6 +7,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { metadata } from '../config/metadata';
 import { db } from '../db';
 import { validateEnvironmentVariables } from './config';
@@ -115,7 +116,7 @@ export async function getSession() {
   });
 
   if (!session) {
-    throw new AuthError('User does not have a session', 'SESSION_NOT_FOUND');
+    redirect('/auth/signin');
   }
 
   return session;
@@ -130,7 +131,7 @@ export async function getAuthenticatedUser() {
   const session = await getSession();
 
   if (!session?.user) {
-    throw new AuthError('User not authenticated', 'USER_NOT_AUTHENTICATED');
+    redirect('/auth/signin');
   }
 
   return session.user;
