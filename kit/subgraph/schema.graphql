@@ -692,6 +692,29 @@ type AssetStats
   totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
 }
 
+type AssetActivityStats
+  @aggregation(intervals: ["hour", "day"], source: "AssetStatsData")
+{
+  id: Int8!
+  timestamp: Timestamp!
+  ## Filters
+  asset: Asset!
+  assetType: String!
+  assetCategory: String!
+  assetClass: String!
+  ## Event Counts
+  transferEventCount: Int!
+    @aggregate(
+      fn: "count"
+      conditions: [{ minted: 0, burned: 0, frozen: 0, unfrozen: 0 }]
+    )
+  mintEventCount: Int! @aggregate(fn: "count", conditions: [{ minted_gt: 0 }])
+  burnEventCount: Int! @aggregate(fn: "count", conditions: [{ burned_gt: 0 }])
+  frozenEventCount: Int! @aggregate(fn: "count", conditions: [{ frozen_gt: 0 }])
+  unfrozenEventCount: Int!
+    @aggregate(fn: "count", conditions: [{ unfrozen_gt: 0 }])
+}
+
 # --------------------------------------------------
 # Portfolio Statistics
 # --------------------------------------------------
