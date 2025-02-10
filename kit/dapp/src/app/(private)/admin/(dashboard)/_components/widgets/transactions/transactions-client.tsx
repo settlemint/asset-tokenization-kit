@@ -1,6 +1,7 @@
 'use client';
 
-import { Stat, StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
+import { StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
+import { Card, CardContent } from '@/components/ui/card';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getTransactionsWidgetData } from './data';
 
@@ -16,10 +17,12 @@ export function TransactionsWidgetClient({ queryKey }: DashboardWidgetClientProp
   });
 
   return (
-    <Stat>
-      <StatLabel>Transactions</StatLabel>
-      <StatValue>{data.totalTransactions.toLocaleString()}</StatValue>
-      <StatSubtext>{data.transactionsInLast24Hours.toLocaleString()} in last 24 hours</StatSubtext>
-    </Stat>
+    <Card>
+      <CardContent>
+        <StatLabel>Transactions</StatLabel>
+        <StatValue>{data.totalTransactions.toLocaleString()}</StatValue>
+        <StatSubtext>{data.transactionsInLast24Hours.toLocaleString()} in last 24 hours</StatSubtext>
+      </CardContent>
+    </Card>
   );
 }
