@@ -169,19 +169,59 @@
 }
 
 @layer components {
-  .dropdown-menu-item {
-    @apply cursor-pointer px-4 py-4 transition-none text-foreground !important;
-    @apply hover:bg-lm-gradient-menu focus:bg-lm-gradient-menu data-[highlighted]:bg-lm-gradient-menu !important;
-    @apply dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
-  }
+    .dropdown-menu-item {
+        @apply cursor-pointer px-4 py-4 transition-none text-foreground !important;
+        @apply hover:bg-lm-gradient-menu focus:bg-lm-gradient-menu data-[highlighted]:bg-lm-gradient-menu !important;
+        @apply dark:hover:bg-dm-gradient-menu-hover dark:focus:bg-dm-gradient-menu-hover dark:data-[highlighted]:bg-dm-gradient-menu-hover !important;
+    }
 
-  .settlemint-light .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
-    @apply bg-lm-gradient-menu !important;
-  }
+    [data-sidebar="menu-item"] {
+        @apply mt-2 p-1;
+    }
 
-  .settlemint-dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
-    @apply bg-dm-gradient-menu-hover !important;
-  }
+    [data-sidebar="menu-item"].active {
+        @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] dark:text-[#4d80f0] text-primary rounded-xl;
+    }
+
+    [data-sidebar="menu-item"] svg {
+        @apply size-5 !important;
+    }
+
+    [data-sidebar="menu-button"] svg {
+        @apply -ml-0 !important;
+    }
+
+    [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-item"] {
+        @apply w-10 h-10 !important;
+    }
+
+    [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-button"] svg {
+        @apply -translate-x-[2px] !important;
+    }
+
+    [data-sidebar="menu-item"].active:hover > [data-sidebar="menu-button"] {
+        @apply text-primary dark:text-[#4d80f0] !important;
+    }
+
+    [data-sidebar="menu-item"]:hover {
+        @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] rounded-xl;
+    }
+
+    [data-sidebar="menu-button"]:hover {
+        @apply bg-[rgba(255,255,255,0.5)] rounded-xl;
+    }
+
+    [data-sidebar="content"] {
+        @apply ml-2 !important;
+    }
+
+    .settlemint-light .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+        @apply bg-lm-gradient-menu !important;
+    }
+
+    .settlemint-dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+        @apply bg-dm-gradient-menu-hover !important;
+    }
 }
 
 @layer utilities {

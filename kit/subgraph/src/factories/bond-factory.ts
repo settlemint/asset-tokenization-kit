@@ -1,5 +1,5 @@
 import { BondCreated } from '../../generated/BondFactory/BondFactory';
-import { BondCreatedEvent } from '../../generated/schema';
+import { AssetCreatedEvent } from '../../generated/schema';
 import { Bond } from '../../generated/templates';
 import { fetchBond } from '../assets/fetch/bond';
 import { fetchAccount } from '../fetch/account';
@@ -12,13 +12,12 @@ export function handleBondCreated(event: BondCreated): void {
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchBond(event.params.token);
 
-  const bondCreatedEvent = new BondCreatedEvent(eventId(event));
-  bondCreatedEvent.eventName = 'BondCreated';
-  bondCreatedEvent.timestamp = event.block.timestamp;
-  bondCreatedEvent.emitter = event.address;
-  bondCreatedEvent.sender = sender.id;
-  bondCreatedEvent.asset = asset.id;
-  bondCreatedEvent.save();
+  const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
+  assetCreatedEvent.eventName = 'AssetCreatedEvent';
+  assetCreatedEvent.timestamp = event.block.timestamp;
+  assetCreatedEvent.emitter = asset.id
+  assetCreatedEvent.sender = sender.id;
+  assetCreatedEvent.save();
 
   Bond.create(event.params.token);
 }

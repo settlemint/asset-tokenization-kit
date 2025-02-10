@@ -62,15 +62,19 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": ["codegen", "compile:forge"]
+      "dependsOn": ["codegen", "contracts#compile:forge"]
     },
     "genesis": {
       "dependsOn": ["dependencies", "compile:forge"],
       "outputs": ["genesis-output.json"]
     },
-    "deploy:local": {
-      "dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
-      "cache": false
+    "contracts#deploy:local": {
+      "dependsOn": ["genesis", "compile:hardhat"],
+      "inputs": ["kit/subgraph/**"],
+      "outputs": ["kit/contracts/ignition/deployments/**"]
+    },
+    "subgraph#deploy:local": {
+      "dependsOn": ["contracts#deploy:local"]
     },
     "deploy:remote": {
       "dependsOn": ["compile:hardhat", "^deploy:remote"],
