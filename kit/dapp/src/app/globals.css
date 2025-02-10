@@ -195,7 +195,7 @@
     @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] p-1 rounded-xl;
   }
   [data-sidebar="content"]  {
-    @apply ml-2 !important;
+    @apply ml-3 !important;
   }
   [data-sidebar="menu-item"] svg {
     @apply size-5 !important;
