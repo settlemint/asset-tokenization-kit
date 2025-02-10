@@ -211,6 +211,7 @@ interface AssetEvent {
 type AccountActivityEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
+  assetType: String!
   timestamp: BigInt!
   asset: Asset
   account: Account!

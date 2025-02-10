@@ -6,7 +6,8 @@ export function accountActivityEvent(
   account: Bytes,
   eventName: string,
   timestamp: BigInt,
-  asset: Bytes | null
+  assetType: string | null = null,
+  asset: Bytes | null = null
 ): AccountActivityEvent {
   const event = new AccountActivityEvent(id);
   event.eventName = eventName;
@@ -14,6 +15,9 @@ export function accountActivityEvent(
   event.account = account;
   if (asset) {
     event.asset = asset;
+  }
+  if (assetType) {
+    event.assetType = assetType;
   }
   event.save();
   return event;

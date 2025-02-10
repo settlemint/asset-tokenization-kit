@@ -84,8 +84,8 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, bond.decimals);
     assetStats.mintedExact = event.params.value;
-    accountActivityEvent(eventId(event), to.id, "Transfer", event.block.timestamp, event.address);
-    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, event.address);
+    accountActivityEvent(eventId(event), to.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
+    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -121,8 +121,8 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, bond.decimals);
     assetStats.burnedExact = event.params.value;
-    accountActivityEvent(eventId(event), from.id, "Transfer", event.block.timestamp, event.address);
-    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, event.address);
+    accountActivityEvent(eventId(event), from.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
+    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -168,9 +168,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
-    accountActivityEvent(eventId(event), to.id, "Transfer", event.block.timestamp, event.address);
-    accountActivityEvent(eventId(event), from.id, "Transfer", event.block.timestamp, event.address);
-    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, event.address);
+    accountActivityEvent(eventId(event), to.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
+    accountActivityEvent(eventId(event), from.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
+    accountActivityEvent(eventId(event), sender.id, "Transfer", event.block.timestamp, AssetType.bond, bond.id);
   }
 
   bond.save();
@@ -244,8 +244,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   }
 
   bond.save();
-  accountActivityEvent(eventId(event), sender.id, "RoleGranted", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), account.id, "RoleGranted", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "RoleGranted", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), account.id, "RoleGranted", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -304,8 +304,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
   bond.save();
 
-  accountActivityEvent(eventId(event), sender.id, "RoleRevoked", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), account.id, "RoleRevoked", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "RoleRevoked", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), account.id, "RoleRevoked", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleApproval(event: Approval): void {
@@ -338,9 +338,9 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
-  accountActivityEvent(eventId(event), sender.id, "Approval", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), owner.id, "Approval", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), spender.id, "Approval", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "Approval", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), owner.id, "Approval", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), spender.id, "Approval", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -364,7 +364,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.address.toHexString(),
   ]);
 
-  accountActivityEvent(eventId(event), sender.id, "RoleAdminChanged", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "RoleAdminChanged", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleBondMatured(event: BondMatured): void {
@@ -377,7 +377,7 @@ export function handleBondMatured(event: BondMatured): void {
   bond.save();
 
   bondMaturedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-  accountActivityEvent(eventId(event), sender.id, "BondMatured", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "BondMatured", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleBondRedeemed(event: BondRedeemed): void {
@@ -407,8 +407,8 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.underlyingAmount,
     bond.decimals
   );
-  accountActivityEvent(eventId(event), sender.id, "BondRedeemed", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), holder.id, "BondRedeemed", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "BondRedeemed", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), holder.id, "BondRedeemed", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handlePaused(event: Paused): void {
@@ -421,7 +421,7 @@ export function handlePaused(event: Paused): void {
   bond.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-  accountActivityEvent(eventId(event), sender.id, "Paused", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "Paused", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUnpaused(event: Unpaused): void {
@@ -434,7 +434,7 @@ export function handleUnpaused(event: Unpaused): void {
   bond.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-  accountActivityEvent(eventId(event), sender.id, "Unpaused", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "Unpaused", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -463,8 +463,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     bond.decimals
   );
-  accountActivityEvent(eventId(event), sender.id, "TokensFrozen", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), user.id, "TokensFrozen", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "TokensFrozen", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), user.id, "TokensFrozen", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
@@ -493,8 +493,8 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     event.params.amount,
     bond.decimals
   );
-  accountActivityEvent(eventId(event), sender.id, "TokensUnfrozen", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), user.id, "TokensUnfrozen", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "TokensUnfrozen", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), user.id, "TokensUnfrozen", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
@@ -509,8 +509,8 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-  accountActivityEvent(eventId(event), sender.id, "UserBlocked", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), user.id, "UserBlocked", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "UserBlocked", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), user.id, "UserBlocked", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
@@ -525,8 +525,8 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-  accountActivityEvent(eventId(event), sender.id, "UserUnblocked", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), user.id, "UserUnblocked", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "UserUnblocked", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), user.id, "UserUnblocked", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
@@ -553,8 +553,8 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     event.params.amount,
     bond.decimals
   );
-  accountActivityEvent(eventId(event), sender.id, "UnderlyingAssetTopUp", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), from.id, "UnderlyingAssetTopUp", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "UnderlyingAssetTopUp", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), from.id, "UnderlyingAssetTopUp", event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn): void {
@@ -581,6 +581,6 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn):
     event.params.amount,
     bond.decimals
   );
-  accountActivityEvent(eventId(event), sender.id, "UnderlyingAssetWithdrawn", event.block.timestamp, event.address);
-  accountActivityEvent(eventId(event), to.id, "UnderlyingAssetWithdrawn", event.block.timestamp, event.address);
+  accountActivityEvent(eventId(event), sender.id, "UnderlyingAssetWithdrawn", event.block.timestamp, AssetType.bond, bond.id);
+  accountActivityEvent(eventId(event), to.id, "UnderlyingAssetWithdrawn", event.block.timestamp, AssetType.bond, bond.id);
 }
