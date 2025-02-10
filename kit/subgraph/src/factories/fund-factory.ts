@@ -1,5 +1,5 @@
 import { FundCreated } from '../../generated/FundFactory/FundFactory';
-import { FundCreatedEvent } from '../../generated/schema';
+import { AssetCreatedEvent } from '../../generated/schema';
 import { Fund } from '../../generated/templates';
 import { fetchFund } from '../assets/fetch/fund';
 import { fetchAccount } from '../fetch/account';
@@ -12,13 +12,13 @@ export function handleFundCreated(event: FundCreated): void {
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchFund(event.params.token);
 
-  const fundCreatedEvent = new FundCreatedEvent(eventId(event));
-  fundCreatedEvent.eventName = 'FundCreated';
-  fundCreatedEvent.timestamp = event.block.timestamp;
-  fundCreatedEvent.emitter = event.address;
-  fundCreatedEvent.sender = sender.id;
-  fundCreatedEvent.asset = asset.id;
-  fundCreatedEvent.save();
+  const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
+  assetCreatedEvent.eventName = 'AssetCreatedEvent';
+  assetCreatedEvent.timestamp = event.block.timestamp;
+  assetCreatedEvent.emitter = event.address;
+  assetCreatedEvent.sender = sender.id;
+  assetCreatedEvent.asset = asset.id;
+  assetCreatedEvent.save();
 
   Fund.create(event.params.token);
 }

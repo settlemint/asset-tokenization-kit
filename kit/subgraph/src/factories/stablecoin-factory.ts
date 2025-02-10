@@ -1,5 +1,5 @@
 import { StableCoinCreated } from '../../generated/StableCoinFactory/StableCoinFactory';
-import { StableCoinCreatedEvent } from '../../generated/schema';
+import { AssetCreatedEvent } from '../../generated/schema';
 import { StableCoin } from '../../generated/templates';
 import { fetchStableCoin } from '../assets/fetch/stablecoin';
 import { fetchAccount } from '../fetch/account';
@@ -12,13 +12,13 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchStableCoin(event.params.token);
 
-  const stableCoinCreatedEvent = new StableCoinCreatedEvent(eventId(event));
-  stableCoinCreatedEvent.eventName = 'StableCoinCreated';
-  stableCoinCreatedEvent.timestamp = event.block.timestamp;
-  stableCoinCreatedEvent.emitter = event.address;
-  stableCoinCreatedEvent.sender = sender.id;
-  stableCoinCreatedEvent.asset = asset.id;
-  stableCoinCreatedEvent.save();
+  const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
+  assetCreatedEvent.eventName = 'AssetCreatedEvent';
+  assetCreatedEvent.timestamp = event.block.timestamp;
+  assetCreatedEvent.emitter = event.address;
+  assetCreatedEvent.sender = sender.id;
+  assetCreatedEvent.asset = asset.id;
+  assetCreatedEvent.save();
 
   StableCoin.create(event.params.token);
 }

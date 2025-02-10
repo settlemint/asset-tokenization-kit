@@ -195,17 +195,7 @@ interface AssetEvent {
   id: Bytes! # Unique identifier for the event
   eventName: String! # Name of the event
   timestamp: BigInt! # Timestamp of the event
-  sender: Account! # The account that triggered the event
   emitter: Asset! # The contract that emitted the event
-}
-
-interface FactoryEvent {
-  id: Bytes! # Unique identifier for the event
-  eventName: String! # Name of the event
-  timestamp: BigInt! # Timestamp of the event
-  sender: Account! # The account that triggered the event
-  emitter: Factory! # The contract that emitted the event
-  asset: Asset! # The asset that was created
 }
 
 # --------------------------------------------------
@@ -397,11 +387,11 @@ type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
   user: Account! # The unblocked user's address
 }
 
-# --------------------------------------------------
-# StableCoin-Specific Custom Event
-# --------------------------------------------------
-
-type StableCoinCreatedEvent implements FactoryEvent @entity {
+"""
+Entity for blocklist events.
+Emitted when a user is unblocked from token operations.
+"""
+type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -409,6 +399,10 @@ type StableCoinCreatedEvent implements FactoryEvent @entity {
   sender: Account!
   asset: Asset!
 }
+
+# --------------------------------------------------
+# StableCoin-Specific Custom Event
+# --------------------------------------------------
 
 """
 Entity for collateral update events in StableCoin.
@@ -429,15 +423,6 @@ type CollateralUpdatedEvent implements AssetEvent @entity(immutable: true) {
 # --------------------------------------------------
 # Fund-Specific Custom Events
 # --------------------------------------------------
-
-type FundCreatedEvent implements FactoryEvent @entity {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Factory!
-  sender: Account!
-  asset: Asset!
-}
 
 """
 Entity for management fee collection events in Fund.
@@ -491,40 +476,13 @@ type TokenWithdrawnEvent implements AssetEvent @entity(immutable: true) {
 # CryptoCurrency-Specific Custom Events
 # --------------------------------------------------
 
-type CryptoCurrencyCreatedEvent implements FactoryEvent @entity {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Factory!
-  sender: Account!
-  asset: Asset!
-}
-
 # --------------------------------------------------
 # Equity-Specific Custom Events
 # --------------------------------------------------
 
-type EquityCreatedEvent implements FactoryEvent @entity {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Factory!
-  sender: Account!
-  asset: Asset!
-}
-
 # --------------------------------------------------
 # Bond-Specific Custom Events
 # --------------------------------------------------
-
-type BondCreatedEvent implements FactoryEvent @entity {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Factory!
-  sender: Account!
-  asset: Asset!
-}
 
 """
 Entity for bond maturity events.
