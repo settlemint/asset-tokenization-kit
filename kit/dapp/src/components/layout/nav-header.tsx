@@ -12,7 +12,7 @@ export function NavHeader() {
     <SidebarMenu className="">
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <a href="/admin" className={cn(state === 'expanded' ? '-mt-3' : '-mt-1 ml-1')}>
+          <a href="/admin" className={cn(state === 'expanded' ? '-mt-2' : 'mt-0 ml-1')}>
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
