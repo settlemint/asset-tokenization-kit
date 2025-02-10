@@ -39,8 +39,13 @@ export function SignInForm({
 
   const onSubmit = async (data: SignInFormData) => {
     await authClient.signIn.email(data, {
-      onSuccess: () => {
-        window.location.href = decodedRedirectUrl;
+      onSuccess: async () => {
+        const session = await authClient.getSession();
+        const userRole = session.data?.user.role;
+        const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
+        const adminRedirect = decodedRedirectUrl.trim() || '/admin';
+        const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
+        window.location.replace(targetUrl);
       },
       onError: (ctx) => {
         form.setError('root', {
