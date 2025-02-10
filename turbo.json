@@ -69,7 +69,7 @@
       "outputs": ["genesis-output.json"]
     },
     "deploy:local": {
-      "dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
+      "dependsOn": ["genesis", "compile:hardhat", "contracts#deploy:local"],
       "outputs": ["kit/contracts/ignition/deployments/**"]
     },
     "deploy:remote": {
