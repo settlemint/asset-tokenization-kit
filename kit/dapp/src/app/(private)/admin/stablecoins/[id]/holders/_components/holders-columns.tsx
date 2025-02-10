@@ -5,6 +5,7 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { formatDate } from '@/lib/date';
 import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import type { StablecoinHoldersBalance } from './data';
@@ -41,7 +42,31 @@ export const columns = [
         Balance
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
+    cell: ({ getValue, row }) => (
+      <DataTableColumnCell variant="numeric">
+        {formatNumber(getValue(), {
+          currency: row.original.symbol,
+        })}
+      </DataTableColumnCell>
+    ),
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('admins', {
+    id: 'type',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Type</DataTableColumnHeader>,
+    cell: ({ getValue, row }) => {
+      const admins = getValue() as string[];
+      const isAdmin = admins.includes(row.original.account.id);
+      return <DataTableColumnCell>{isAdmin ? 'Creator / Owner' : 'Regular holder'}</DataTableColumnCell>;
+    },
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('lastActivity', {
+    id: 'lastActivity',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>{getValue() ? formatDate(getValue() as Date) : '-'}</DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
 ];
