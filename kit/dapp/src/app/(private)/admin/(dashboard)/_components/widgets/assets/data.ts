@@ -27,9 +27,8 @@ const AssetsSupplyQuery = theGraphGraphqlStarterkits(`
   }
 `);
 
-const calculateTotalSupply = (tokens: { totalSupply: string }[]): string => {
-  const total = tokens.reduce((sum, token) => sum.plus(token.totalSupply), new BigNumber(0));
-  return formatNumber(total);
+const calculateTotalSupply = (tokens: { totalSupply: string }[]): BigNumber => {
+  return tokens.reduce((sum, token) => sum.plus(token.totalSupply), new BigNumber(0));
 };
 
 export async function getAssetsWidgetData() {
@@ -61,7 +60,14 @@ export async function getAssetsWidgetData() {
   const totalSupply = breakdown.reduce((sum, item) => sum.plus(item.supply), new BigNumber(0));
 
   return {
-    totalSupply: formatNumber(totalSupply),
-    breakdown,
+    totalSupply: formatNumber(totalSupply, {
+      decimals: 0,
+    }),
+    breakdown: breakdown.map((item) => ({
+      ...item,
+      supply: formatNumber(item.supply, {
+        decimals: 0,
+      }),
+    })),
   };
 }
