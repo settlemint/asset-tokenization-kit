@@ -1,14 +1,13 @@
 'use client';
 import { UserDropdown } from '@/components/layout/user-dropdown';
 import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
 import CollapsedBreadcrumbs from '../blocks/collapsed-breadcrumb/collapsed-breadcrumb';
 
 export default function Header() {
   const pathname = usePathname();
   const segments = pathname.split('/').filter(Boolean);
-  const { state } = useSidebar();
 
   return (
     <header className="!h-[90px] flex shrink-0 items-center gap-2 bg-sidebar transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
