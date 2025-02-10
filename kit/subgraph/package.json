@@ -22,5 +22,10 @@
   "devDependencies": {
     "matchstick-as": "0.6.0"
   },
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "turbo": {
+    "deploy:local": {
+      "dependsOn": ["contracts#deploy:local"]
+    }
+  }
 }
