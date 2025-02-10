@@ -23,7 +23,7 @@ export function TokenDesignerButton() {
   const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(null);
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="-mb-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           {state === 'expanded' ? (
@@ -32,7 +32,7 @@ export function TokenDesignerButton() {
               {state === 'expanded' && <span>Asset Designer</span>}
             </Button>
           ) : (
-            <button type="button" className="ml-2">
+            <button type="button" className="mt-2 ml-3">
               <Pencil className="size-4" />
             </button>
           )}

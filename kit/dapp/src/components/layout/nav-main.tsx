@@ -48,7 +48,7 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   // Regular menu item without subitems
   if (!item.subItems?.length || state !== 'expanded') {
     return (
-      <SidebarMenuItem>
+      <SidebarMenuItem className={isActiveFn(item.path) ? 'active' : undefined}>
         <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'font-bold' : undefined}>
           <Link href={item.path}>
             {Icon ?? null}
