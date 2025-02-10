@@ -63,7 +63,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent className="mx-2 pt-8">
+      <SidebarContent className="mx-4 pt-0">
         <TokenDesignerButton />
         <NavMain items={topItems} />
         <NavMain
