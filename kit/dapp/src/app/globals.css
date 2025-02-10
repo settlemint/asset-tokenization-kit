@@ -186,13 +186,13 @@
   [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-item"]  {
     @apply w-10 h-10 !important;
   }
-    [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-button"] svg  {
+  [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-button"] svg  {
     @apply -translate-x-[2px] !important;
   }
 
   [data-sidebar="menu-button"] svg {
     @apply -ml-0 !important;
-}
+  }
 
   [data-sidebar="menu-item"].active:hover > [data-sidebar="menu-button"]  {
     @apply text-primary dark:text-[#4d80f0] !important;
