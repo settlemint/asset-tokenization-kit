@@ -32,7 +32,10 @@ export function TokenDesignerButton() {
               {state === 'expanded' && <span>Asset Designer</span>}
             </Button>
           ) : (
-            <button type="button" className="mt-2 ml-3">
+            <button
+              type="button"
+              className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:[bg-[hsla(0,0%,100%,.06)]]"
+            >
               <Pencil className="size-4" />
             </button>
           )}

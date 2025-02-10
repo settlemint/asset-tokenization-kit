@@ -183,19 +183,29 @@
     @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] dark:text-[#4d80f0] text-primary rounded-xl;
   }
 
+  [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-item"]  {
+    @apply w-10 h-10 !important;
+  }
+    [data-variant="sidebar"][data-state="collapsed"] [data-sidebar="menu-button"] svg  {
+    @apply -translate-x-[2px] !important;
+  }
+
   [data-sidebar="menu-button"] svg {
-    @apply -ml-1 !important;
+    @apply -ml-0 !important;
 }
 
-   [data-sidebar="menu-item"].active:hover > [data-sidebar="menu-button"]  {
+  [data-sidebar="menu-item"].active:hover > [data-sidebar="menu-button"]  {
     @apply text-primary dark:text-[#4d80f0] !important;
   }
 
-  [data-sidebar="menu-item"]:hover {
-    @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] p-1 rounded-xl;
+  [data-sidebar="menu-item"]:hover  {
+    @apply bg-[rgba(255,255,255,0.5)] dark:bg-[hsla(0,0%,100%,.06)] rounded-xl;
+  }
+  [data-sidebar="menu-button"]:hover {
+    @apply bg-[rgba(255,255,255,0.5)] rounded-xl;
   }
   [data-sidebar="content"]  {
-    @apply ml-3 !important;
+    @apply ml-2 !important;
   }
   [data-sidebar="menu-item"] svg {
     @apply size-5 !important;
