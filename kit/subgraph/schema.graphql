@@ -395,9 +395,8 @@ type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Factory!
+  emitter: Asset!
   sender: Account!
-  asset: Asset!
 }
 
 # --------------------------------------------------

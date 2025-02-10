@@ -15,9 +15,8 @@ export function handleEquityCreated(event: EquityCreated): void {
   const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
   assetCreatedEvent.eventName = 'AssetCreatedEvent';
   assetCreatedEvent.timestamp = event.block.timestamp;
-  assetCreatedEvent.emitter = event.address;
+  assetCreatedEvent.emitter = asset.id
   assetCreatedEvent.sender = sender.id;
-  assetCreatedEvent.asset = asset.id;
   assetCreatedEvent.save();
 
   Equity.create(event.params.token);
