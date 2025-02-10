@@ -1,6 +1,7 @@
 import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
 import {
   Approval,
+  CollateralUpdated,
   Paused,
   RoleAdminChanged,
   RoleGranted,
@@ -33,6 +34,7 @@ import { userUnblockedEvent } from './events/userunblocked';
 import { fetchStableCoin } from './fetch/stablecoin';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
 
 export function handleTransfer(event: Transfer): void {
   const stableCoin = fetchStableCoin(event.address);
@@ -445,4 +447,30 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+}
+
+export function handleCollateralUpdated(event: CollateralUpdated): void {
+  const stableCoin = fetchStableCoin(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info('StableCoin collateral updated event: oldAmount={}, newAmount={}, sender={}, stablecoin={}', [
+    event.params.oldAmount.toString(),
+    event.params.newAmount.toString(),
+    sender.id.toHexString(),
+    event.address.toHexString(),
+  ]);
+
+  stableCoin.collateral = toDecimals(event.params.newAmount, stableCoin.decimals);
+  stableCoin.collateralExact = event.params.newAmount;
+  stableCoin.save();
+
+  stablecoinCollateralUpdatedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    event.params.oldAmount,
+    event.params.newAmount,
+    stableCoin.decimals
+  );
 }
