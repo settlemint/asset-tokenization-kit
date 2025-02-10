@@ -68,9 +68,12 @@
       "dependsOn": ["dependencies", "compile:forge"],
       "outputs": ["genesis-output.json"]
     },
-    "deploy:local": {
-      "dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
+    "contracts#deploy:local": {
+      "dependsOn": ["genesis", "compile:hardhat"],
       "outputs": ["kit/contracts/ignition/deployments/**"]
+    },
+    "subgraph#deploy:local": {
+      "dependsOn": ["genesis", "compile:hardhat", "contracts#deploy:local"]
     },
     "deploy:remote": {
       "dependsOn": ["compile:hardhat", "^deploy:remote"],
