@@ -690,18 +690,6 @@ type AssetStats
   ## Collateral
   totalCollateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
   totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
-}
-
-type AssetActivityStats
-  @aggregation(intervals: ["hour", "day"], source: "AssetStatsData")
-{
-  id: Int8!
-  timestamp: Timestamp!
-  ## Filters
-  asset: Asset!
-  assetType: String!
-  assetCategory: String!
-  assetClass: String!
   ## Event Counts
   transferEventCount: Int!
     @aggregate(

@@ -151,12 +151,10 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        # Core Entities
         - Asset
         - Account
         - Factory
         - Bond
-        # Event Entities
         - AssetEvent
         - FactoryEvent
         - BondCreatedEvent
@@ -175,19 +173,16 @@ templates:
         - RoleAdminChangedEvent
         - UnderlyingAssetTopUpEvent
         - UnderlyingAssetWithdrawnEvent
-        # Stats Entities
         - AssetStats
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
         - BondStats
         - BondStatsData
-        # Activity Data
         - TransferData
         - AccountActivityData
         - RoleActivityData
         - BondActivityData
-        # Activity Stats
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
@@ -237,12 +232,10 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        # Core Entities
         - Asset
         - Account
         - Factory
         - CryptoCurrency
-        # Event Entities
         - AssetEvent
         - FactoryEvent
         - CryptoCurrencyCreatedEvent
@@ -257,19 +250,16 @@ templates:
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
-        # Stats Entities
         - AssetStats
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
         - CryptoCurrencyStats
         - CryptoCurrencyStatsData
-        # Activity Data
         - TransferData
         - AccountActivityData
         - RoleActivityData
         - CryptoCurrencyActivityData
-        # Activity Stats
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
@@ -299,12 +289,10 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        # Core Entities
         - Asset
         - Account
         - Factory
         - Equity
-        # Event Entities
         - AssetEvent
         - FactoryEvent
         - EquityCreatedEvent
@@ -319,19 +307,16 @@ templates:
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
-        # Stats Entities
         - AssetStats
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
         - EquityStats
         - EquityStatsData
-        # Activity Data
         - TransferData
         - AccountActivityData
         - RoleActivityData
         - EquityActivityData
-        # Activity Stats
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
@@ -373,12 +358,10 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        # Core Entities
         - Asset
         - Account
         - Factory
         - StableCoin
-        # Event Entities
         - AssetEvent
         - FactoryEvent
         - StableCoinCreatedEvent
@@ -395,19 +378,16 @@ templates:
         - RoleAdminChangedEvent
         - CollateralTopUpEvent
         - CollateralWithdrawnEvent
-        # Stats Entities
         - AssetStats
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
         - StableCoinStats
         - StableCoinStatsData
-        # Activity Data
         - TransferData
         - AccountActivityData
         - RoleActivityData
         - StableCoinActivityData
-        # Activity Stats
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
@@ -472,12 +452,10 @@ templates:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        # Core Entities
         - Asset
         - Account
         - Factory
         - Fund
-        # Event Entities
         - AssetEvent
         - FactoryEvent
         - FundCreatedEvent
@@ -493,19 +471,16 @@ templates:
         - RoleRevokedEvent
         - RoleAdminChangedEvent
         - FeeCollectedEvent
-        # Stats Entities
         - AssetStats
         - AssetStatsData
         - PortfolioStats
         - PortfolioStatsData
         - FundStats
         - FundStatsData
-        # Activity Data
         - TransferData
         - AccountActivityData
         - RoleActivityData
         - FundActivityData
-        # Activity Stats
         - TransferStats
         - AccountActivityStats
         - RoleActivityStats
