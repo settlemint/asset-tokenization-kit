@@ -2,14 +2,15 @@
 
 import { StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
 import { Card, CardContent } from '@/components/ui/card';
+import type { QueryKey } from '@tanstack/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getUserWidgetData } from './data';
 
-interface DashboardWidgetClientProps {
-  queryKey: string[];
+interface UsersWidgetClientProps {
+  queryKey: QueryKey;
 }
 
-export function UsersWidgetClient({ queryKey }: DashboardWidgetClientProps) {
+export function UsersWidgetClient({ queryKey }: UsersWidgetClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getUserWidgetData,

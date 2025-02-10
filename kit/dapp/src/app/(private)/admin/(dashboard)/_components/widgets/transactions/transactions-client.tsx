@@ -2,14 +2,15 @@
 
 import { StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
 import { Card, CardContent } from '@/components/ui/card';
+import type { QueryKey } from '@tanstack/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getTransactionsWidgetData } from './data';
 
-interface DashboardWidgetClientProps {
-  queryKey: string[];
+interface TransactionsWidgetClientProps {
+  queryKey: QueryKey;
 }
 
-export function TransactionsWidgetClient({ queryKey }: DashboardWidgetClientProps) {
+export function TransactionsWidgetClient({ queryKey }: TransactionsWidgetClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getTransactionsWidgetData,
