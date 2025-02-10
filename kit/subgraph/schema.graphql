@@ -727,31 +727,3 @@ type PortfolioStats
   totalLocked: BigDecimal! @aggregate(fn: "last", arg: "locked")
   totalLockedExact: BigInt! @aggregate(fn: "last", arg: "lockedExact")
 }
-
-# Asset Activity Time Series
-type AssetActivityData @entity(timeseries: true) {
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset!
-  mintedAmount: BigDecimal!
-  mintedAmountExact: BigInt!
-  burnedAmount: BigDecimal!
-  burnedAmountExact: BigInt!
-  transferredAmount: BigDecimal!
-  transferredAmountExact: BigInt!
-  assetType: String! # "Bond", "Equity", "StableCoin", "CryptoCurrency"
-}
-
-# Asset Activity Aggregations
-type AssetActivityStats @aggregation(intervals: ["hour", "day"], source: "AssetActivityData") {
-  id: Int8!
-  timestamp: Timestamp!
-  asset: Asset! # dimension
-  assetType: String! # dimension
-  totalMinted: BigDecimal! @aggregate(fn: "sum", arg: "mintedAmount")
-  totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedAmountExact")
-  totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burnedAmount")
-  totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedAmountExact")
-  totalTransferred: BigDecimal! @aggregate(fn: "sum", arg: "transferredAmount")
-  totalTransferredExact: BigInt! @aggregate(fn: "sum", arg: "transferredAmountExact")
-}
