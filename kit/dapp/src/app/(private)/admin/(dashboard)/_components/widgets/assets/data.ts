@@ -31,43 +31,58 @@ const calculateTotalSupply = (tokens: { totalSupply: string }[]): BigNumber => {
   return tokens.reduce((sum, token) => sum.plus(token.totalSupply), new BigNumber(0));
 };
 
+const calculateSupplyPercentage = (supply: BigNumber, totalSupply: BigNumber): number =>
+  Number(formatNumber(supply.dividedBy(totalSupply).multipliedBy(100), { decimals: 2 }));
+
+export interface AssetBreakdown {
+  type: 'Stablecoins' | 'Bonds' | 'Equities' | 'Crypto Currencies' | 'Funds';
+  supplyPercentage: number;
+  supply: string;
+}
+
 export async function getAssetsWidgetData() {
   const data = await theGraphClientStarterkits.request(AssetsSupplyQuery);
 
-  const breakdown = [
+  const supplies = {
+    stablecoins: calculateTotalSupply(data.stableCoins),
+    bonds: calculateTotalSupply(data.bonds),
+    equities: calculateTotalSupply(data.equities),
+    cryptoCurrencies: calculateTotalSupply(data.cryptoCurrencies),
+    funds: calculateTotalSupply(data.funds),
+  };
+
+  const totalSupply = Object.values(supplies).reduce((sum, value) => sum.plus(value), new BigNumber(0));
+
+  const breakdown: AssetBreakdown[] = [
     {
       type: 'Stablecoins',
-      supply: calculateTotalSupply(data.stableCoins),
+      supplyPercentage: calculateSupplyPercentage(supplies.stablecoins, totalSupply),
+      supply: formatNumber(supplies.stablecoins),
     },
     {
       type: 'Bonds',
-      supply: calculateTotalSupply(data.bonds),
+      supplyPercentage: calculateSupplyPercentage(supplies.bonds, totalSupply),
+      supply: formatNumber(supplies.bonds),
     },
     {
       type: 'Equities',
-      supply: calculateTotalSupply(data.equities),
+      supplyPercentage: calculateSupplyPercentage(supplies.equities, totalSupply),
+      supply: formatNumber(supplies.equities),
     },
     {
       type: 'Crypto Currencies',
-      supply: calculateTotalSupply(data.cryptoCurrencies),
+      supplyPercentage: calculateSupplyPercentage(supplies.cryptoCurrencies, totalSupply),
+      supply: formatNumber(supplies.cryptoCurrencies),
     },
     {
       type: 'Funds',
-      supply: calculateTotalSupply(data.funds),
+      supplyPercentage: calculateSupplyPercentage(supplies.funds, totalSupply),
+      supply: formatNumber(supplies.funds),
     },
   ];
 
-  const totalSupply = breakdown.reduce((sum, item) => sum.plus(item.supply), new BigNumber(0));
-
   return {
-    totalSupply: formatNumber(totalSupply, {
-      decimals: 0,
-    }),
-    breakdown: breakdown.map((item) => ({
-      ...item,
-      supply: formatNumber(item.supply, {
-        decimals: 0,
-      }),
-    })),
+    totalSupply: formatNumber(totalSupply),
+    breakdown,
   };
 }
