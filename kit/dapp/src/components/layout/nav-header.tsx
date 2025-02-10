@@ -1,15 +1,18 @@
 'use client';
 
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 import SettleMintIcon from '@/public/logos/settlemint-logo-i-dm.svg';
 import Image from 'next/image';
 
 export function NavHeader() {
+  const { state } = useSidebar();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <a href="/admin">
+          <a href="/admin" className={cn(state === 'expanded' ? 'mt-1' : 'mt-3')}>
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
