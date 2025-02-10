@@ -1,5 +1,5 @@
 import { EquityCreated } from '../../generated/EquityFactory/EquityFactory';
-import { EquityCreatedEvent } from '../../generated/schema';
+import { AssetCreatedEvent } from '../../generated/schema';
 import { Equity } from '../../generated/templates';
 import { fetchEquity } from '../assets/fetch/equity';
 import { fetchAccount } from '../fetch/account';
@@ -12,13 +12,12 @@ export function handleEquityCreated(event: EquityCreated): void {
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchEquity(event.params.token);
 
-  const equityCreatedEvent = new EquityCreatedEvent(eventId(event));
-  equityCreatedEvent.eventName = 'EquityCreated';
-  equityCreatedEvent.timestamp = event.block.timestamp;
-  equityCreatedEvent.emitter = event.address;
-  equityCreatedEvent.sender = sender.id;
-  equityCreatedEvent.asset = asset.id;
-  equityCreatedEvent.save();
+  const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
+  assetCreatedEvent.eventName = 'AssetCreatedEvent';
+  assetCreatedEvent.timestamp = event.block.timestamp;
+  assetCreatedEvent.emitter = asset.id
+  assetCreatedEvent.sender = sender.id;
+  assetCreatedEvent.save();
 
   Equity.create(event.params.token);
 }
