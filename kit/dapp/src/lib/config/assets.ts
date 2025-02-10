@@ -69,3 +69,12 @@ export const assetConfig = {
     urlSegment: 'stablecoins',
   },
 } as const satisfies AssetConfig;
+
+export const assetsQueryKey: QueryKey = [
+  'Assets',
+  assetConfig.bond.queryKey,
+  assetConfig.cryptocurrency.queryKey,
+  assetConfig.equity.queryKey,
+  assetConfig.fund.queryKey,
+  assetConfig.stablecoin.queryKey,
+];

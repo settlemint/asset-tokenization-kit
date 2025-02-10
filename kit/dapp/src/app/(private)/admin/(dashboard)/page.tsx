@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic';
-
-import { AssetsPieChart } from '@/app/(private)/admin/(dashboard)/_components/widgets/assets/assets-pie-chart';
-import { AssetsWidget } from './_components/widgets/assets/assets';
+import { AssetsPieChart, AssetsWidget } from './_components/widgets/assets/assets';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
 import { UsersWidget } from './_components/widgets/users/users';
 
