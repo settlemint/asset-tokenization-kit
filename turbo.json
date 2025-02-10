@@ -62,7 +62,7 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": ["codegen", "compile:forge"]
+      "dependsOn": ["codegen", "contracts#compile:forge"]
     },
     "genesis": {
       "dependsOn": ["dependencies", "compile:forge"],
