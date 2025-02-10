@@ -9,10 +9,10 @@ type AssetColors = Record<AssetType, string>;
 type AssetConfig = Record<AssetType, { label: string; color: string }>;
 
 const ASSET_COLORS: AssetColors = {
-  Stablecoins: '#38bdf8', // Bright sky blue
-  Bonds: '#3b82f6', // Bright blue
-  Equities: '#14b8a6', // Teal
-  'Crypto Currencies': '#06b6d4', // Cyan
+  Stablecoins: '#0ea5e9', // Bright blue
+  Bonds: '#8b5cf6', // Purple
+  Equities: '#4ade80', // Light green
+  'Crypto Currencies': '#2563eb', // Royal blue
   Funds: '#10b981', // Emerald
 };
 
