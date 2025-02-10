@@ -14,6 +14,7 @@ export interface AssetDetailConfig {
   factoryAddress: string;
   queryKey: QueryKey;
   urlSegment: string;
+  color: string;
 }
 
 /**
@@ -35,6 +36,7 @@ export const assetConfig = {
     factoryAddress: BOND_FACTORY_ADDRESS,
     queryKey: ['bonds'],
     urlSegment: 'bonds',
+    color: '#8b5cf6',
   },
   cryptocurrency: {
     name: 'Cryptocurrency',
@@ -43,6 +45,7 @@ export const assetConfig = {
     factoryAddress: CRYPTO_CURRENCY_FACTORY_ADDRESS,
     queryKey: ['cryptocurrencies'],
     urlSegment: 'cryptocurrencies',
+    color: '#2563eb',
   },
   equity: {
     name: 'Equity',
@@ -51,6 +54,7 @@ export const assetConfig = {
     factoryAddress: EQUITY_FACTORY_ADDRESS,
     queryKey: ['equities'],
     urlSegment: 'equities',
+    color: '#4ade80',
   },
   fund: {
     name: 'Fund',
@@ -59,6 +63,7 @@ export const assetConfig = {
     factoryAddress: FUND_FACTORY_ADDRESS,
     queryKey: ['funds'],
     urlSegment: 'funds',
+    color: '#10b981',
   },
   stablecoin: {
     name: 'Stablecoin',
@@ -67,5 +72,6 @@ export const assetConfig = {
     factoryAddress: STABLE_COIN_FACTORY_ADDRESS,
     queryKey: ['stablecoins'],
     urlSegment: 'stablecoins',
+    color: '#0ea5e9',
   },
 } as const satisfies AssetConfig;
