@@ -70,7 +70,7 @@
     },
     "deploy:local": {
       "dependsOn": ["genesis", "compile:hardhat", "^deploy:local"],
-      "outputs": ["kit/contracts/ignition/deployments/**"]
+      "cache": false
     },
     "deploy:remote": {
       "dependsOn": ["compile:hardhat", "^deploy:remote"],
