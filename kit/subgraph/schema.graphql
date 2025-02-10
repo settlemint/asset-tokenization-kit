@@ -149,7 +149,6 @@ type Account @entity {
   balances: [AssetBalance!]! @derivedFrom(field: "account")
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
-  mostRecentEvents: [AssetEvent!]!
 }
 
 type AssetBalance @entity {
@@ -213,6 +212,18 @@ interface FactoryEvent {
   sender: Account! # The account that triggered the event
   emitter: Factory! # The contract that emitted the event
   asset: Asset! # The asset that was created
+}
+
+# --------------------------------------------------
+# Activity Events
+# --------------------------------------------------
+
+type AccountActivityEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  asset: Asset
+  account: Account!
 }
 
 # --------------------------------------------------
