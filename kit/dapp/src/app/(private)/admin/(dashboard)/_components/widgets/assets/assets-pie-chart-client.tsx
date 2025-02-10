@@ -2,15 +2,13 @@
 
 import type { ChartConfig } from '@/components/ui/chart';
 import { PieChartComponent } from '@/components/ui/pie-chart';
-import { ASSET_COLORS, type AssetType } from '@/lib/config/assets';
+import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from './data';
 
-type AssetPieChartConfig = Record<AssetType, { label: string; color: string }>;
-
-const ASSET_PIE_CHART_CONFIG: AssetPieChartConfig = Object.fromEntries(
-  Object.entries(ASSET_COLORS).map(([key, color]) => [key, { label: key, color }])
-) as AssetPieChartConfig satisfies ChartConfig;
+const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
+  Object.entries(assetConfig).map(([_, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])
+) satisfies ChartConfig;
 
 interface AssetsPieChartClientProps {
   queryKey: QueryKey;
@@ -25,7 +23,7 @@ export function AssetsPieChartClient({ queryKey }: AssetsPieChartClientProps) {
 
   const chartData = data.breakdown.map((item) => ({
     ...item,
-    fill: ASSET_COLORS[item.type],
+    fill: ASSET_PIE_CHART_CONFIG[item.type].color,
   }));
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { StatLabel, StatSubtext, StatValue } from '@/components/blocks/stat/stat';
+import { StatLabel, StatSubtext, StatValue } from '@/app/(private)/admin/(dashboard)/_components/widgets/blocks/stat';
 import { Card, CardContent } from '@/components/ui/card';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from './data';
