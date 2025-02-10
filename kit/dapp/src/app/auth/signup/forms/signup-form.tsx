@@ -91,7 +91,7 @@ export function SignUpForm({
             const adminRedirect = decodedRedirectUrl.trim() || '/admin';
             const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
             // Force a full page refresh to ensure new auth state is recognized
-            window.location.href = targetUrl;
+            window.location.replace(targetUrl);
           } catch (err) {
             const error = err as Error;
             form.setError('root', {

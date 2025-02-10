@@ -438,6 +438,8 @@ templates:
           handler: handleRoleRevoked
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: CollateralUpdated(uint256,uint256,uint256)
+          handler: handleCollateralUpdated
       file: ./src/assets/stablecoin.ts
   - kind: ethereum/contract
     name: FixedYield
