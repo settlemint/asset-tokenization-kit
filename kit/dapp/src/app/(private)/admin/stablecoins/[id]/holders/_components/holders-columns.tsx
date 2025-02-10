@@ -5,13 +5,20 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import type { StablecoinHoldersBalance } from './data';
 
 const columnHelper = createColumnHelper<StablecoinHoldersBalance>();
 
 export const columns = [
-  columnHelper.accessor('id', {
+  columnHelper.accessor('name', {
+    id: 'name',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
+    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
@@ -31,10 +38,10 @@ export const columns = [
     id: 'value',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} variant="numeric">
-        Amount
+        Balance
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
 ];

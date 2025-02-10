@@ -6,6 +6,7 @@ interface Asset {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
@@ -31,6 +32,7 @@ type Bond implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
@@ -58,6 +60,7 @@ type Equity implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
@@ -78,6 +81,7 @@ type Fund implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
@@ -100,6 +104,7 @@ type StableCoin implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
@@ -120,6 +125,7 @@ type CryptoCurrency implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
