@@ -7,7 +7,6 @@ interface Asset {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
@@ -34,7 +33,6 @@ type Bond implements Asset @entity {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
@@ -63,7 +61,6 @@ type Equity implements Asset @entity {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
@@ -85,7 +82,6 @@ type Fund implements Asset @entity {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
@@ -109,7 +105,6 @@ type StableCoin implements Asset @entity {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
@@ -131,7 +126,6 @@ type CryptoCurrency implements Asset @entity {
   type: String!
   asAccount: Account!
   holders: [AssetBalance!]! @derivedFrom(field: "asset")
-  transferEvents: [TransferEvent!]! @derivedFrom(field: "emitter")
   name: String!
   symbol: String!
   decimals: Int!
