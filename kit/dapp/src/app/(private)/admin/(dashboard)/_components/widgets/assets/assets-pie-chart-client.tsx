@@ -1,6 +1,7 @@
 'use client';
 
 import { PieChartComponent } from '@/components/ui/pie-chart';
+import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { type AssetBreakdown, getAssetsWidgetData } from './data';
 
@@ -9,11 +10,11 @@ type AssetColors = Record<AssetType, string>;
 type AssetConfig = Record<AssetType, { label: string; color: string }>;
 
 const ASSET_COLORS: AssetColors = {
-  Stablecoins: '#0ea5e9', // Bright blue
-  Bonds: '#8b5cf6', // Purple
-  Equities: '#4ade80', // Light green
-  'Crypto Currencies': '#2563eb', // Royal blue
-  Funds: '#10b981', // Emerald
+  [assetConfig.stablecoin.pluralName]: '#0ea5e9', // Bright blue
+  [assetConfig.bond.pluralName]: '#8b5cf6', // Purple
+  [assetConfig.equity.pluralName]: '#4ade80', // Light green
+  [assetConfig.cryptocurrency.pluralName]: '#2563eb', // Royal blue
+  [assetConfig.fund.pluralName]: '#10b981', // Emerald
 };
 
 const ASSET_CONFIG: AssetConfig = Object.fromEntries(

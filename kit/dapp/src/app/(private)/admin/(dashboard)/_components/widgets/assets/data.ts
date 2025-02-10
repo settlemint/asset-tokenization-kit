@@ -1,3 +1,4 @@
+import { assetConfig } from '@/lib/config/assets';
 import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import BigNumber from 'bignumber.js';
@@ -35,7 +36,7 @@ const calculateSupplyPercentage = (supply: BigNumber, totalSupply: BigNumber): n
   Number(formatNumber(supply.dividedBy(totalSupply).multipliedBy(100), { decimals: 2 }));
 
 export interface AssetBreakdown {
-  type: 'Stablecoins' | 'Bonds' | 'Equities' | 'Crypto Currencies' | 'Funds';
+  type: (typeof assetConfig)[keyof typeof assetConfig]['pluralName'];
   supplyPercentage: number;
   supply: string;
 }
@@ -55,27 +56,27 @@ export async function getAssetsWidgetData() {
 
   const breakdown: AssetBreakdown[] = [
     {
-      type: 'Stablecoins',
+      type: assetConfig.stablecoin.pluralName,
       supplyPercentage: calculateSupplyPercentage(supplies.stablecoins, totalSupply),
       supply: formatNumber(supplies.stablecoins),
     },
     {
-      type: 'Bonds',
+      type: assetConfig.bond.pluralName,
       supplyPercentage: calculateSupplyPercentage(supplies.bonds, totalSupply),
       supply: formatNumber(supplies.bonds),
     },
     {
-      type: 'Equities',
+      type: assetConfig.equity.pluralName,
       supplyPercentage: calculateSupplyPercentage(supplies.equities, totalSupply),
       supply: formatNumber(supplies.equities),
     },
     {
-      type: 'Crypto Currencies',
+      type: assetConfig.cryptocurrency.pluralName,
       supplyPercentage: calculateSupplyPercentage(supplies.cryptoCurrencies, totalSupply),
       supply: formatNumber(supplies.cryptoCurrencies),
     },
     {
-      type: 'Funds',
+      type: assetConfig.fund.pluralName,
       supplyPercentage: calculateSupplyPercentage(supplies.funds, totalSupply),
       supply: formatNumber(supplies.funds),
     },
