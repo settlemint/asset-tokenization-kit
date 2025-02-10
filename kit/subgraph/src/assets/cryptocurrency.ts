@@ -21,6 +21,7 @@ import { transferEvent } from './events/transfer';
 import { fetchCryptoCurrency } from './fetch/cryptocurrency';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { updateMostRecentEvents } from '../utils/events';
 
 export function handleTransfer(event: Transfer): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
@@ -63,6 +64,8 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.mintedExact = event.params.value;
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(to.id, eventId(event));
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -98,6 +101,8 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.burnedExact = event.params.value;
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(from.id, eventId(event));
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -143,6 +148,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(from.id, eventId(event));
+    updateMostRecentEvents(to.id, eventId(event));
   }
 
   cryptoCurrency.save();
@@ -215,6 +223,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   }
 
   cryptoCurrency.save();
+  updateMostRecentEvents(fetchAccount(event.transaction.from).id, eventId(event));
+  updateMostRecentEvents(account.id, eventId(event));
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -271,6 +281,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   }
 
   cryptoCurrency.save();
+  updateMostRecentEvents(fetchAccount(event.transaction.from).id, eventId(event));
+  updateMostRecentEvents(account.id, eventId(event));
 }
 
 export function handleApproval(event: Approval): void {
@@ -301,6 +313,7 @@ export function handleApproval(event: Approval): void {
     approval.spender.toHexString(),
     event.address.toHexString(),
   ]);
+  updateMostRecentEvents(fetchAccount(event.transaction.from).id, eventId(event));
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -325,4 +338,5 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
       event.address.toHexString(),
     ]
   );
+  updateMostRecentEvents(fetchAccount(event.transaction.from).id, eventId(event));
 }

@@ -17,7 +17,7 @@ import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType } from '../utils/enums';
-import { eventId } from '../utils/events';
+import { eventId, updateMostRecentEvents } from '../utils/events';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
@@ -77,6 +77,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
+
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(to.id, eventId(event));
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -112,6 +115,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
+
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(from.id, eventId(event));
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -157,6 +163,10 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+
+    updateMostRecentEvents(sender.id, eventId(event));
+    updateMostRecentEvents(from.id, eventId(event));
+    updateMostRecentEvents(to.id, eventId(event));
   }
 
   stableCoin.save();
@@ -473,4 +483,6 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     event.params.newAmount,
     stableCoin.decimals
   );
+
+  updateMostRecentEvents(sender.id, eventId(event));
 }
