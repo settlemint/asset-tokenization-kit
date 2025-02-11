@@ -17,17 +17,21 @@ const columnHelper = createColumnHelper<NormalizedTransactionListItem>();
 export const columns = [
   columnHelper.accessor('timestamp', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Timestamp</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>
+        <span className="[&:first-letter]:uppercase">{getValue()}</span>
+      </DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Asset</DataTableColumnHeader>,
-    cell: ({ getValue, row }) => {
+    cell: ({ getValue }) => {
       const asset = getValue();
 
       return (
         <DataTableColumnCell>
-          <EvmAddress address={asset} name={row.original.emitterName} symbol={row.original.emitterSymbol}>
+          <EvmAddress address={asset}>
             <EvmAddressBalances address={asset} />
           </EvmAddress>
         </DataTableColumnCell>
@@ -42,12 +46,12 @@ export const columns = [
   }),
   columnHelper.accessor('sender', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Sender</DataTableColumnHeader>,
-    cell: ({ getValue, row }) => {
+    cell: ({ getValue }) => {
       const senderId = getValue();
 
       return (
         <DataTableColumnCell>
-          <EvmAddress address={senderId} name={row.original.senderName}>
+          <EvmAddress address={senderId}>
             <EvmAddressBalances address={senderId} />
           </EvmAddress>
         </DataTableColumnCell>
@@ -74,15 +78,11 @@ export const columns = [
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
                     <dt className="text-muted-foreground text-sm">Sender:</dt>
                     <dd className="text-sm">
-                      <EvmAddress address={row.original.sender} name={row.original.senderName} />
+                      <EvmAddress address={row.original.sender} />
                     </dd>
                     <dt className="text-muted-foreground text-sm">Asset:</dt>
                     <dd className="text-sm">
-                      <EvmAddress
-                        address={row.original.asset}
-                        name={row.original.emitterName}
-                        symbol={row.original.emitterSymbol}
-                      />
+                      <EvmAddress address={row.original.asset} />
                     </dd>
                     <dt className="text-muted-foreground text-sm">Date:</dt>
                     <dd className="text-sm">{row.original.timestamp}</dd>
