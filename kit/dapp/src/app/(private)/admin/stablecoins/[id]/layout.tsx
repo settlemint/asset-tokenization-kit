@@ -98,13 +98,13 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
         </EvmAddress>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button>
+            <Button variant="default">
               Mint tokens
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem asChild>
+          <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <MintTokensButton
                 address={id as Address}
                 name={stableCoin.name}
@@ -112,7 +112,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                 decimals={stableCoin.decimals}
               />
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <BurnTokensButton
                 address={id as Address}
                 name={stableCoin.name}
@@ -120,7 +120,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                 decimals={stableCoin.decimals}
               />
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <UpdateCollateralButton
                 address={id as Address}
                 name={stableCoin.name}
