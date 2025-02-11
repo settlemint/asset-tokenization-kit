@@ -18,7 +18,7 @@ export function AssetsPieChartClient({ queryKey }: AssetsPieChartClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
-    refetchInterval: 1000 * 10,
+    refetchInterval: 1000 * 5,
   });
 
   const chartData = data.breakdown
