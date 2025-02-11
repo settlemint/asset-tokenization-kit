@@ -41,11 +41,13 @@ import { userUnblockedEvent } from './events/userunblocked';
 import { fetchBond } from './fetch/bond';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { fetchAssetActivity } from './fetch/assets';
 import { accountActivityEvent,  } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
+  const assetActivity = fetchAssetActivity(AssetType.bond);
 
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);
 
@@ -84,6 +86,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, bond.decimals);
     assetStats.mintedExact = event.params.value;
+    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
     accountActivityEvent(eventId(event), to, EventName.Mint, event.block.timestamp, AssetType.bond, bond.id);
     accountActivityEvent(eventId(event), sender, EventName.Mint, event.block.timestamp, AssetType.bond, bond.id);
@@ -122,6 +125,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, bond.decimals);
     assetStats.burnedExact = event.params.value;
+    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
     accountActivityEvent(eventId(event), from, EventName.Burn, event.block.timestamp, AssetType.bond, bond.id);
     accountActivityEvent(eventId(event), sender, EventName.Burn, event.block.timestamp, AssetType.bond, bond.id);
@@ -170,6 +174,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
 
     accountActivityEvent(eventId(event), to, EventName.Transfer, event.block.timestamp, AssetType.bond, bond.id);
     accountActivityEvent(eventId(event), from, EventName.Transfer, event.block.timestamp, AssetType.bond, bond.id);
@@ -182,6 +187,8 @@ export function handleTransfer(event: Transfer): void {
   assetStats.supply = bond.totalSupply;
   assetStats.supplyExact = bond.totalSupplyExact;
   assetStats.save();
+
+  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
@@ -472,6 +479,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
 
+  const assetActivity = fetchAssetActivity(AssetType.bond);
+  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  assetActivity.save();
+  
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
@@ -505,6 +516,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozen = toDecimals(event.params.amount, bond.decimals);
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
+
+  const assetActivity = fetchAssetActivity(AssetType.bond);
+  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
+  assetActivity.save();
 
   bond.lastActivity = event.block.timestamp;
   bond.save();

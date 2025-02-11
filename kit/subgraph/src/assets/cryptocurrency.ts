@@ -21,11 +21,13 @@ import { transferEvent } from './events/transfer';
 import { fetchCryptoCurrency } from './fetch/cryptocurrency';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { fetchAssetActivity } from './fetch/assets';
 import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const sender = fetchAccount(event.transaction.from);
+  const assetActivity = fetchAssetActivity(AssetType.cryptocurrency);
 
   const assetStats = newAssetStatsData(cryptoCurrency.id, AssetType.cryptocurrency);
 
@@ -64,6 +66,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.mintedExact = event.params.value;
+    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
     accountActivityEvent(eventId(event), sender, EventName.Mint, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
     accountActivityEvent(eventId(event), to, EventName.Mint, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -102,6 +105,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.burnedExact = event.params.value;
+    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
     accountActivityEvent(eventId(event), sender, EventName.Burn, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
     accountActivityEvent(eventId(event), from, EventName.Burn, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -150,6 +154,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
 
     accountActivityEvent(eventId(event), sender, EventName.Transfer, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
     accountActivityEvent(eventId(event), from, EventName.Transfer, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -162,6 +167,8 @@ export function handleTransfer(event: Transfer): void {
   assetStats.supply = cryptoCurrency.totalSupply;
   assetStats.supplyExact = cryptoCurrency.totalSupplyExact;
   assetStats.save();
+
+  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {

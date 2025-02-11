@@ -2,10 +2,10 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { getAssetsWidgetData } from '../../common/assets/data';
 import { StatLabel } from '../stat/stat-label';
 import { StatSubtext } from '../stat/stat-subtext';
 import { StatValue } from '../stat/stat-value';
-import { getAssetsWidgetData } from './data';
 
 interface DashboardWidgetClientProps {
   queryKey: QueryKey;
