@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { PerformanceFeeCollectedEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
+import { EventName } from '../../utils/enums';
 
 export function performanceFeeCollectedEvent(
   id: Bytes,
@@ -11,7 +12,7 @@ export function performanceFeeCollectedEvent(
   decimals: i32
 ): PerformanceFeeCollectedEvent {
   const event = new PerformanceFeeCollectedEvent(id);
-  event.eventName = 'Performance Fee Collected';
+  event.eventName = EventName.PerformanceFeeCollected;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;

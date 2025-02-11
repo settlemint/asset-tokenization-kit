@@ -16,7 +16,7 @@ import {
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
-import { AssetType } from '../utils/enums';
+import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
@@ -35,7 +35,7 @@ import { fetchStableCoin } from './fetch/stablecoin';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
 import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
-import { accountActivityEvent, AccountActivityEventName } from './events/accountactivity';
+import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const stableCoin = fetchStableCoin(event.address);
@@ -79,8 +79,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
 
-    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-    accountActivityEvent(eventId(event), to, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), sender, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), to, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -117,8 +117,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
 
-    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-    accountActivityEvent(eventId(event), from, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), sender, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), from, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -165,9 +165,9 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
 
-    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-    accountActivityEvent(eventId(event), from, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-    accountActivityEvent(eventId(event), to, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), sender, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), from, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+    accountActivityEvent(eventId(event), to, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   }
 
   stableCoin.lastActivity = event.block.timestamp;
@@ -244,8 +244,8 @@ export function handleRoleGranted(event: RoleGranted): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), account, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.RoleGranted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), account, EventName.RoleGranted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
@@ -305,8 +305,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), account, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.RoleRevoked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), account, EventName.RoleRevoked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleApproval(event: Approval): void {
@@ -342,9 +342,9 @@ export function handleApproval(event: Approval): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), owner, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), spender, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), owner, EventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), spender, EventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -370,7 +370,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.RoleAdminChanged, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handlePaused(event: Paused): void {
@@ -384,7 +384,7 @@ export function handlePaused(event: Paused): void {
   stableCoin.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.Paused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.Paused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleUnpaused(event: Unpaused): void {
@@ -401,7 +401,7 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.Unpaused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.Unpaused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -433,8 +433,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     stableCoin.decimals
   );
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), user, AccountActivityEventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), user, EventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
@@ -466,8 +466,8 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     event.params.amount,
     stableCoin.decimals
   );
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), user, AccountActivityEventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), user, EventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
@@ -485,8 +485,8 @@ export function handleUserBlocked(event: UserBlocked): void {
   stableCoin.save();
 
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), user, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), user, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
@@ -504,8 +504,8 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   stableCoin.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(eventId(event), user, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), user, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleCollateralUpdated(event: CollateralUpdated): void {
@@ -533,5 +533,5 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     event.params.newAmount,
     stableCoin.decimals
   );
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.CollateralUpdated, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
+  accountActivityEvent(eventId(event), sender, EventName.CollateralUpdated, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }

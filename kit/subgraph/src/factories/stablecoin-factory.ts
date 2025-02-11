@@ -1,11 +1,10 @@
 import { StableCoinCreated } from '../../generated/StableCoinFactory/StableCoinFactory';
 import { StableCoin } from '../../generated/templates';
-import { AccountActivityEventName } from '../assets/events/accountactivity';
 import { accountActivityEvent } from '../assets/events/accountactivity';
 import { assetCreatedEvent } from '../assets/events/assetcreated';
 import { fetchStableCoin } from '../assets/fetch/stablecoin';
 import { fetchAccount } from '../fetch/account';
-import { AssetType, FactoryType } from '../utils/enums';
+import { AssetType, EventName, FactoryType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { fetchFactory } from './fetch/factory';
 
@@ -15,7 +14,7 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
   const asset = fetchStableCoin(event.params.token);
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.stablecoin, asset.id);
+  accountActivityEvent(eventId(event), sender, EventName.AssetCreated, event.block.timestamp, AssetType.stablecoin, asset.id);
 
   StableCoin.create(event.params.token);
 }
