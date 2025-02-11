@@ -14,8 +14,7 @@ export function handleCryptoCurrencyCreated(event: CryptoCurrencyCreated): void 
   const asset = fetchCryptoCurrency(event.params.token);
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.cryptocurrency, asset.id);
 
   CryptoCurrency.create(event.params.token);
-
-  accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.cryptocurrency, asset.id);
 }
