@@ -1,7 +1,7 @@
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import type { UserBlockedEvent } from '../data';
+import type { UserBlockedEvent } from '../../../../app/(private)/admin/transactions/(table)/_components/data';
 
 interface UserBlockedDetailsProps {
   details: UserBlockedEvent;

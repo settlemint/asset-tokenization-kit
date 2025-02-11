@@ -1,7 +1,8 @@
 'use client';
-import { EventDetailSheet } from '@/app/(private)/admin/transactions/(table)/_components/detail-sheet';
+
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EventDetailSheet } from '@/components/blocks/events/detail-sheet';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';

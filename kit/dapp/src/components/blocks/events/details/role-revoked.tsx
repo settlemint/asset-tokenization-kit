@@ -2,13 +2,13 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { roles } from '@/lib/roles';
-import type { RoleGrantedEvent } from '../data';
+import type { RoleRevokedEvent } from '../../../../app/(private)/admin/transactions/(table)/_components/data';
 
-interface RoleGrantedDetailsProps {
-  details: RoleGrantedEvent;
+interface RoleRevokedDetailsProps {
+  details: RoleRevokedEvent;
 }
 
-export function RoleGrantedDetails({ details }: RoleGrantedDetailsProps) {
+export function RoleRevokedDetails({ details }: RoleRevokedDetailsProps) {
   return (
     <Card>
       <CardHeader>Details</CardHeader>

@@ -1,8 +1,8 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import type { NormalizedTransactionListItem } from './data';
+import type { NormalizedTransactionListItem } from '../../../app/(private)/portfolio/transactions/(table)/_components/data';
+import { EvmAddress } from '../evm-address/evm-address';
 import { ApprovalDetails } from './details/approval';
 import { BondRedeemedDetails } from './details/bond-redeemed';
 import { BurnDetails } from './details/burn';

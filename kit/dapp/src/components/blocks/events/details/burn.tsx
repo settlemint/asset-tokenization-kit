@@ -2,13 +2,13 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { formatNumber } from '@/lib/number';
-import type { TransferEvent } from '../data';
+import type { BurnEvent } from '../../../../app/(private)/admin/transactions/(table)/_components/data';
 
-interface TransferDetailsProps {
-  details: TransferEvent;
+interface BurnDetailsProps {
+  details: BurnEvent;
 }
 
-export function TransferDetails({ details }: TransferDetailsProps) {
+export function BurnDetails({ details }: BurnDetailsProps) {
   return (
     <Card>
       <CardHeader>Details</CardHeader>
@@ -18,12 +18,6 @@ export function TransferDetails({ details }: TransferDetailsProps) {
           <dd className="text-sm">
             <EvmAddress address={details.from.id}>
               <EvmAddressBalances address={details.from.id} />
-            </EvmAddress>
-          </dd>
-          <dt className="text-muted-foreground text-sm">To:</dt>
-          <dd className="text-sm">
-            <EvmAddress address={details.to.id}>
-              <EvmAddressBalances address={details.to.id} />
             </EvmAddress>
           </dd>
           <dt className="text-muted-foreground text-sm">Value:</dt>
