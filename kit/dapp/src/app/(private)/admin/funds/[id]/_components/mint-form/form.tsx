@@ -30,12 +30,10 @@ export function MintFundForm({
       submitLabel="Mint"
       submittingLabel="Minting..."
       messages={{
-        onCreate: (data) =>
-          `Minting ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}...`,
-        onSuccess: (data) =>
-          `Successfully minted ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)} on chain`,
+        onCreate: (data) => `Minting ${data.amount} ${pluralize(data.amount, assetConfig)}...`,
+        onSuccess: (data) => `Successfully minted ${data.amount} ${pluralize(data.amount, assetConfig)} on chain`,
         onError: (data, error) =>
-          `Failed to mint ${data?.amount ?? ''} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}: ${error.message}`,
+          `Failed to mint ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, assetConfig)}: ${error.message}`,
       }}
     >
       <Recipients />

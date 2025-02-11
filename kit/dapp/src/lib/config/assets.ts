@@ -76,4 +76,5 @@ export const assetConfig = {
   },
 } as const satisfies AssetConfig;
 
-export const pluralize = (count: number, name: string, pluralName: string): string => (count === 1 ? name : pluralName);
+export const pluralize = (count: number, config: AssetDetailConfig): string =>
+  count === 1 ? config.name : config.pluralName;
