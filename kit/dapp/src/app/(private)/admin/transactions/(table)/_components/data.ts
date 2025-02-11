@@ -1,6 +1,7 @@
 import { formatDate } from '@/lib/date';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 
 const TransactionListFragment = theGraphGraphqlStarterkits(`
@@ -137,6 +138,20 @@ const TransactionUser = hasuraGraphql(`
   }
 `);
 
+const getUserName = unstable_cache(
+  async (walletAddress: string) => {
+    const user = await hasuraClient.request(TransactionUser, {
+      id: walletAddress,
+    });
+    return user.user[0]?.name;
+  },
+  ['user-name'],
+  {
+    revalidate: 3600, // Cache for 1 hour
+    tags: ['user-name'],
+  }
+);
+
 export interface NormalizedTransactionListItem {
   event: string;
   timestamp: string;
@@ -152,9 +167,8 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
   const results: NormalizedTransactionListItem[] = [];
 
   for (const event of theGraphData.assetEvents) {
-    const user = await hasuraClient.request(TransactionUser, {
-      id: getAddress(event.sender.id),
-    });
+    const walletAddress = getAddress(event.sender.id);
+    const userName = await getUserName(walletAddress);
 
     const normalized: NormalizedTransactionListItem = {
       event: event.eventName,
@@ -163,7 +177,7 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
       emitterName: event.emitter.name,
       emitterSymbol: event.emitter.symbol,
       sender: event.sender.id,
-      senderName: user.user[0]?.name,
+      senderName: userName,
     };
     results.push(normalized);
   }
