@@ -3,8 +3,8 @@ import type { ChartConfig } from '@/components/ui/chart';
 import { PieChartComponent } from '@/components/ui/pie-chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { getAssetsWidgetData } from '../../common/assets/data';
 import { AssetsPieChartSkeleton } from './asset-pie-chart-skeleton';
-import { getAssetsWidgetData } from './data';
 
 const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
   Object.entries(assetConfig).map(([, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])

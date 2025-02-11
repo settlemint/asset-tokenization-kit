@@ -1,8 +1,9 @@
-export const dynamic = 'force-dynamic';
+import { AssetsPieChart } from './_components/charts/assets-pie-chart/assets-pie-chart';
 import { AssetsWidget } from './_components/widgets/assets/assets';
-import { AssetsPieChart } from './_components/widgets/assets/assets-pie-chart';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
 import { UsersWidget } from './_components/widgets/users/users';
+
+export const dynamic = 'force-dynamic';
 
 export default function AdminDashboard() {
   return (
