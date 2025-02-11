@@ -65,8 +65,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.mintedExact = event.params.value;
 
-    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-    accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), to, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -103,8 +103,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.burnedExact = event.params.value;
 
-    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-    accountActivityEvent(eventId(event), from.id, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), from, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -151,9 +151,9 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
 
-    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-    accountActivityEvent(eventId(event), from.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-    accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), from, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+    accountActivityEvent(eventId(event), to, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   }
 
   cryptoCurrency.lastActivity = event.block.timestamp;
@@ -230,19 +230,20 @@ export function handleRoleGranted(event: RoleGranted): void {
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-  accountActivityEvent(eventId(event), account.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), account, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const account = fetchAccount(event.params.account);
+  const sender = fetchAccount(event.transaction.from);
 
   const roleRevoked = roleRevokedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
-    fetchAccount(event.transaction.from).id,
+    sender.id,
     event.params.role,
     account.id
   );
@@ -290,8 +291,8 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
-  accountActivityEvent(eventId(event), fetchAccount(event.transaction.from).id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-  accountActivityEvent(eventId(event), account.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), account, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
 }
 
 export function handleApproval(event: Approval): void {
@@ -327,9 +328,9 @@ export function handleApproval(event: Approval): void {
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-  accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
-  accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), owner, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), spender, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
@@ -359,5 +360,5 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
 }

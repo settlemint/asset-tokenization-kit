@@ -22,5 +22,5 @@ export function handleFundCreated(event: FundCreated): void {
 
   Fund.create(event.params.token);
 
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.fund, asset.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.fund, asset.id);
 }

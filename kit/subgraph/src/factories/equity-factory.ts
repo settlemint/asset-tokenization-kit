@@ -22,5 +22,5 @@ export function handleEquityCreated(event: EquityCreated): void {
 
   Equity.create(event.params.token);
 
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
+  accountActivityEvent(eventId(event), sender, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
 }

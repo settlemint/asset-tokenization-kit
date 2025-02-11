@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AccountActivityEvent } from "../../../generated/schema";
+import { Account, AccountActivityEvent } from "../../../generated/schema";
 
 export enum AccountActivityEventName {
   AssetCreated = "AssetCreated",
@@ -34,7 +34,7 @@ export enum AccountActivityEventName {
 
 export function accountActivityEvent(
   id: Bytes,
-  account: Bytes,
+  account: Account,
   eventName: AccountActivityEventName,
   timestamp: BigInt,
   assetType: string | null = null,
@@ -43,7 +43,7 @@ export function accountActivityEvent(
   const event = new AccountActivityEvent(id);
   event.eventName = eventName;
   event.timestamp = timestamp;
-  event.account = account;
+  event.account = account.id;
   if (asset) {
     event.asset = asset;
   }
@@ -51,5 +51,9 @@ export function accountActivityEvent(
     event.assetType = assetType;
   }
   event.save();
+
+  account.lastActivity = timestamp;
+  account.save();
+
   return event;
 }
