@@ -1,4 +1,4 @@
-import { Address, ethereum } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import { Account } from '../../generated/schema';
 import { toDecimals } from '../utils/decimals';
 
@@ -7,6 +7,7 @@ export function fetchAccount(address: Address): Account {
 
   if (!account) {
     account = new Account(address);
+    account.lastActivity = BigInt.zero();
     if (ethereum.hasCode(address).inner) {
       account.isContract = true;
     } else {
