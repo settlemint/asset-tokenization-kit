@@ -30,6 +30,7 @@ export function fetchFund(address: Address): Fund {
     fund.admins = [];
     fund.supplyManagers = [];
     fund.userManagers = [];
+    fund.lastActivity = BigInt.zero();
 
     // Fund-specific fields
     fund.isin = isin.reverted ? '' : isin.value;

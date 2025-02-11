@@ -75,3 +75,6 @@ export const assetConfig = {
     color: '#0ea5e9',
   },
 } as const satisfies AssetConfig;
+
+export const pluralize = (count: number, config: AssetDetailConfig): string =>
+  count === 1 ? config.name : config.pluralName;
