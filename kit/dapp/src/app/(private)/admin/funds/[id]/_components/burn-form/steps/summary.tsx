@@ -1,13 +1,12 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { BurnStablecoinFormType } from '../schema';
+import type { BurnFundFormType } from '../schema';
 export function Summary({ address }: { address: Address }) {
-  const { control } = useFormContext<BurnStablecoinFormType>();
+  const { control } = useFormContext<BurnFundFormType>();
   const values = useWatch({
     control: control,
   });
@@ -34,8 +33,8 @@ export function Summary({ address }: { address: Address }) {
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Name</dt>
-              <dd className="font-medium text-sm">{values.address}</dd>
+              <dt className="text-muted-foreground text-sm">Address</dt>
+              <dd className="font-medium text-sm">{values.from}</dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>
@@ -55,7 +54,6 @@ export function Summary({ address }: { address: Address }) {
             </div>
           </div>
 
-          <AssetFormInput control={control} name="address" label="Address" type="hidden" defaultValue={address} />
           <FormField
             control={control}
             name="pincode"

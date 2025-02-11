@@ -6,6 +6,7 @@ import type { Address } from 'viem';
 import { BurnFundFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
+import { Targets } from './steps/targets';
 import { burnFund } from './store';
 
 export function BurnFundForm({
@@ -32,6 +33,7 @@ export function BurnFundForm({
           `Failed to burn ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, 'token')}: ${error.message}`,
       }}
     >
+      <Targets />
       <Amount />
       <Summary address={address} />
     </AssetForm>

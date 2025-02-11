@@ -1,9 +1,9 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { useFormContext } from 'react-hook-form';
-import type { BurnStablecoinFormType } from '../schema';
+import type { BurnFundFormType } from '../schema';
 
 export function Amount() {
-  const { control } = useFormContext<BurnStablecoinFormType>();
+  const { control } = useFormContext<BurnFundFormType>();
 
   return (
     <div className="space-y-6">

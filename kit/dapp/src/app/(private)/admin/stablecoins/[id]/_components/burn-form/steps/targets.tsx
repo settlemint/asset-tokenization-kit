@@ -2,7 +2,7 @@ import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form
 import { useFormContext } from 'react-hook-form';
 import type { BurnStablecoinFormType } from '../schema';
 
-export function Recipients() {
+export function Targets() {
   const { control } = useFormContext<BurnStablecoinFormType>();
 
   return (
@@ -28,4 +28,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['from'] as const;
+Targets.validatedFields = ['from'] as const;

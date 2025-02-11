@@ -31,12 +31,12 @@ const BurnFund = portalGraphql(`
 export const burnFund = actionClient
   .schema(BurnFundFormSchema.extend({ address: z.string() }))
   .outputSchema(BurnFundOutputSchema)
-  .action(async ({ parsedInput: { address, amount, pincode } }) => {
+  .action(async ({ parsedInput: { address, amount, from, pincode } }) => {
     const user = await getAuthenticatedUser();
 
     const data = await portalClient.request<BurnFundResponse>(BurnFund, {
       address,
-      from: user.wallet as string,
+      from,
       amount: amount.toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
       // Manually raise gas limit

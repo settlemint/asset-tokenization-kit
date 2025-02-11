@@ -1,15 +1,15 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { useFormContext } from 'react-hook-form';
-import type { BurnStablecoinFormType } from '../schema';
+import type { BurnFundFormType } from '../schema';
 
-export function Recipients() {
-  const { control } = useFormContext<BurnStablecoinFormType>();
+export function Targets() {
+  const { control } = useFormContext<BurnFundFormType>();
 
   return (
     <div className="space-y-6">
       <div className="space-y-8">
         <div className="mb-2">
-          <h2 className="font-semibold text-foreground text-lg">Select Recipient</h2>
+          <h2 className="font-semibold text-foreground text-lg">Select Target</h2>
           <p className="text-muted-foreground text-sm">
             Enter a wallet address from which the tokens will be burned, you can search for a user by their name, email
             or address.
@@ -28,4 +28,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['from'] as const;
+Targets.validatedFields = ['from'] as const;

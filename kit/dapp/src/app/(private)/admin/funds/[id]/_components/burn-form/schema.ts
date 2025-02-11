@@ -6,6 +6,7 @@ export const BurnFundFormSchema = z.object({
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
   amount: z.number().min(1, { message: 'Amount is required' }),
+  from: z.string().min(1, { message: 'Recipient is required' }),
 });
 
 export type BurnFundFormType = z.infer<typeof BurnFundFormSchema>;
