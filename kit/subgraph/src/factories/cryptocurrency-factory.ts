@@ -3,9 +3,10 @@ import { AssetCreatedEvent } from '../../generated/schema';
 import { CryptoCurrency } from '../../generated/templates';
 import { fetchCryptoCurrency } from '../assets/fetch/cryptocurrency';
 import { fetchAccount } from '../fetch/account';
-import { FactoryType } from '../utils/enums';
+import { FactoryType, AssetType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { fetchFactory } from './fetch/factory';
+import { accountActivityEvent, AccountActivityEventName } from '../assets/events/accountactivity';
 
 export function handleCryptoCurrencyCreated(event: CryptoCurrencyCreated): void {
   fetchFactory(event.address, FactoryType.cryptocurrency);
@@ -20,4 +21,6 @@ export function handleCryptoCurrencyCreated(event: CryptoCurrencyCreated): void 
   assetCreatedEvent.save();
 
   CryptoCurrency.create(event.params.token);
+
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.cryptocurrency, asset.id);
 }

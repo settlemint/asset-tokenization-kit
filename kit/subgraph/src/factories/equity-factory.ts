@@ -3,9 +3,10 @@ import { AssetCreatedEvent } from '../../generated/schema';
 import { Equity } from '../../generated/templates';
 import { fetchEquity } from '../assets/fetch/equity';
 import { fetchAccount } from '../fetch/account';
-import { FactoryType } from '../utils/enums';
+import { FactoryType, AssetType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { fetchFactory } from './fetch/factory';
+import { accountActivityEvent, AccountActivityEventName } from '../assets/events/accountactivity';
 
 export function handleEquityCreated(event: EquityCreated): void {
   fetchFactory(event.address, FactoryType.equity);
@@ -20,4 +21,6 @@ export function handleEquityCreated(event: EquityCreated): void {
   assetCreatedEvent.save();
 
   Equity.create(event.params.token);
+
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
 }

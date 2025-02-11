@@ -1,7 +1,7 @@
 import { BondCreated } from '../../generated/BondFactory/BondFactory';
 import { AssetCreatedEvent } from '../../generated/schema';
 import { Bond } from '../../generated/templates';
-import { accountActivityEvent } from '../assets/events/accountactivity';
+import { accountActivityEvent, AccountActivityEventName } from '../assets/events/accountactivity';
 import { fetchBond } from '../assets/fetch/bond';
 import { fetchAccount } from '../fetch/account';
 import { AssetType, FactoryType } from '../utils/enums';
@@ -22,5 +22,5 @@ export function handleBondCreated(event: BondCreated): void {
 
   Bond.create(event.params.token);
 
-  accountActivityEvent(eventId(event), sender.id, "AssetCreated", event.block.timestamp, AssetType.bond, asset.id);
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetCreated, event.block.timestamp, AssetType.bond, asset.id);
 }

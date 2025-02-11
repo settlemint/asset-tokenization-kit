@@ -2,6 +2,7 @@ import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { AccountActivityEvent } from "../../../generated/schema";
 
 export enum AccountActivityEventName {
+  AssetCreated = "AssetCreated",
   AssetTransferred = "AssetTransferred",
   AssetMinted = "AssetMinted",
   AssetBurned = "AssetBurned",
