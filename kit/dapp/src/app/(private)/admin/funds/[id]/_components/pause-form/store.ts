@@ -41,30 +41,37 @@ class InvalidChallengeResponseError extends Error {
   }
 }
 
+type PauseResponse = {
+  FundPause: { transactionHash: string | null } | null;
+};
+
+type UnpauseResponse = {
+  FundUnpause: { transactionHash: string | null } | null;
+};
+
 export const pauseFund = actionClient
   .schema(
     PauseFundFormSchema.extend({
       address: z.string(),
-      isPaused: z.boolean(),
+      paused: z.boolean(),
     })
   )
   .outputSchema(PauseFundOutputSchema)
-  .action(async ({ parsedInput: { pincode, address, isPaused } }) => {
+  .action(async ({ parsedInput: { pincode, address, paused } }) => {
     const user = await getAuthenticatedUser();
 
     try {
-      const mutation = isPaused ? UnpauseFund : PauseFund;
-      const data = await portalClient.request(mutation, {
+      const mutation = paused ? UnpauseFund : PauseFund;
+      const data = await portalClient.request<PauseResponse | UnpauseResponse>(mutation, {
         address,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        // Manually raise gas limit
         gasLimit: '200000',
       });
 
-      const transactionHash = data[isPaused ? 'FundUnpause' : 'FundPause']?.transactionHash;
+      const transactionHash = ('FundUnpause' in data ? data.FundUnpause : data.FundPause)?.transactionHash;
       if (!transactionHash) {
-        throw new Error(`Failed to send the transaction to ${isPaused ? 'unpause' : 'pause'} the fund`);
+        throw new Error(`Failed to send the transaction to ${paused ? 'unpause' : 'pause'} the fund`);
       }
 
       return transactionHash;

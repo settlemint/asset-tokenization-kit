@@ -121,7 +121,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
               />
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} isPaused={fund.paused} />
+              <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

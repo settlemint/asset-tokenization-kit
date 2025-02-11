@@ -22,7 +22,7 @@ export function PauseTokensButton({ address, name, symbol, paused }: PauseTokens
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          {action} tokens
+          {action} {assetConfig.fund.name.toLowerCase()}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">

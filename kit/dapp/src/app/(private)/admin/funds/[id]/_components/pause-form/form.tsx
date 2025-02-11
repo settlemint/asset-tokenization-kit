@@ -19,7 +19,9 @@ export function PauseFundForm({
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
-  const action = paused ? 'Unpause' : 'Pause';
+  const actionLabel = paused ? 'Unpause' : 'Pause';
+  const actionSubmittingLabel = actionLabel === 'Pause' ? 'Pausing' : 'Unpausing';
+  const actionSuccessLabel = actionLabel === 'Pause' ? 'Paused' : 'Unpaused';
 
   return (
     <AssetForm
@@ -27,12 +29,13 @@ export function PauseFundForm({
       storeAction={(formData) => pauseFund({ ...formData, address, paused })}
       resolverAction={zodResolver(PauseFundFormSchema)}
       onClose={onClose}
-      submitLabel={action}
-      submittingLabel={`${action}ing...`}
+      submitLabel={actionLabel}
+      submittingLabel={actionSubmittingLabel}
       messages={{
-        onCreate: () => `${action}ing ${assetConfig.name}...`,
-        onSuccess: () => `Successfully ${action.toLowerCase()}d ${assetConfig.name} on chain`,
-        onError: (_, error) => `Failed to ${action.toLowerCase()} ${assetConfig.name}: ${error.message}`,
+        onCreate: () => `${actionSubmittingLabel} ${assetConfig.name.toLowerCase()}...`,
+        onSuccess: () => `Successfully ${actionSuccessLabel} ${assetConfig.name.toLowerCase()} on chain`,
+        onError: (_, error) =>
+          `Failed to ${actionLabel.toLowerCase()} ${assetConfig.name.toLowerCase()}: ${error.message}`,
       }}
     >
       <Summary address={address} paused={paused} />
