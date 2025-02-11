@@ -15,8 +15,12 @@ interface AssetFormButtonProps {
   onNextStep: () => void;
   /** Whether the form is currently submitting */
   isSubmitting?: boolean;
-  /** Label for the submit button */
+  /** Label for the submit button in normal state */
   submitLabel?: string;
+  /** Label for the submit button when submitting */
+  submittingLabel?: string;
+  /** Label for intermediate steps when processing */
+  processingLabel?: string;
 }
 
 /**
@@ -29,14 +33,16 @@ export function AssetFormButton({
   isLastStep,
   onNextStep,
   isSubmitting = false,
-  submitLabel = 'Create Asset',
+  submitLabel = 'Send transaction',
+  submittingLabel = 'Sending transaction...',
+  processingLabel = 'Processing...',
 }: AssetFormButtonProps) {
   const getButtonContent = () => {
     if (isSubmitting) {
       return (
         <>
           <Loader2 size={16} className="mr-2 animate-spin" />
-          {isLastStep ? 'Creating...' : 'Processing...'}
+          {isLastStep ? submittingLabel : processingLabel}
         </>
       );
     }
@@ -61,7 +67,7 @@ export function AssetFormButton({
         type={isLastStep ? 'submit' : 'button'}
         variant="default"
         onClick={isLastStep ? undefined : onNextStep}
-        aria-label={isLastStep ? 'Create asset' : 'Go to next step'}
+        aria-label={isLastStep ? submitLabel : 'Go to next step'}
         className={currentStep === 0 ? 'ml-auto' : ''}
         disabled={isSubmitting}
       >

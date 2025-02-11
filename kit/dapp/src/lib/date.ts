@@ -1,41 +1,50 @@
-/**
- * Formats a date string or Date object into a localized date-time string.
- * Default format matches 'PPP HH:mm' from date-fns (e.g., "April 29, 2023 14:30")
- *
- * @param date - The date to format (string or Date object)
- * @returns Formatted date string or 'Invalid Date' if the input is invalid
- */
+import { format, formatDistance, formatRelative, fromUnixTime, parseISO } from 'date-fns';
 
 const NUMERIC_REGEX = /^\d+$/;
 
-export function formatDate(date: string | Date): string {
+/**
+ * Options for date formatting
+ */
+export interface DateFormatOptions {
+  /** Format type: absolute (default), relative, or distance */
+  readonly type?: 'absolute' | 'relative' | 'distance';
+  /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
+  readonly formatStr?: string;
+}
+
+/**
+ * Formats a date string or Date object into a localized date-time string.
+ * Uses Intl.DateTimeFormat for consistent localization.
+ *
+ * @param date - The date to format (string or Date object)
+ * @param options - Formatting options including locale and format preferences
+ * @returns Formatted date string or 'Invalid Date' if the input is invalid
+ */
+export function formatDate(date: string | Date, options: DateFormatOptions = {}): string {
+  const { type = 'absolute', formatStr = 'MMMM d, yyyy HH:mm' } = options;
+
   try {
-    const dateObj = typeof date === 'string' ? new Date(normalizeTimestamp(date)) : date;
+    const dateObj =
+      typeof date === 'string'
+        ? NUMERIC_REGEX.test(date)
+          ? fromUnixTime(Number.parseInt(date, 10))
+          : parseISO(date)
+        : date;
 
     if (Number.isNaN(dateObj.getTime())) {
       return 'Invalid Date';
     }
 
-    const dateFormatter = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
+    if (type === 'distance') {
+      return formatDistance(dateObj, new Date());
+    }
 
-    return dateFormatter.format(dateObj);
+    if (type === 'relative') {
+      return formatRelative(dateObj, new Date());
+    }
+
+    return format(dateObj, formatStr);
   } catch {
     return 'Invalid Date';
   }
-}
-
-function normalizeTimestamp(timestamp: string): string {
-  if (NUMERIC_REGEX.test(timestamp)) {
-    const timestampNum = Number.parseInt(timestamp, 10);
-    const date = new Date(timestampNum * (timestamp.length === 10 ? 1000 : 1));
-    return date.toISOString();
-  }
-  return timestamp;
 }

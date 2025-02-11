@@ -43,7 +43,7 @@ export const columns = [
       <DataTableColumnCell>
         {getValue() && (
           <div className="flex items-center">
-            <EvmAddress address={getValue()}>
+            <EvmAddress address={getValue()} prettyNames={false}>
               <EvmAddressBalances address={getValue()} />
             </EvmAddress>
             <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />

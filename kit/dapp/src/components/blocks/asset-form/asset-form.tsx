@@ -16,6 +16,18 @@ import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
 
+type AssetFormMessages<T> = {
+  onCreate: (input: T) => string;
+  onSuccess: (input: T) => string;
+  onError: (input: T, error: Error) => string;
+};
+
+const defaultMessages = <T,>(): AssetFormMessages<T> => ({
+  onCreate: () => 'Transaction sent. Waiting for confirmation...',
+  onSuccess: () => 'Transaction confirmed successfully',
+  onError: (_, error: Error) => `Transaction failed: ${error.message}`,
+});
+
 export type AssetFormProps<
   ServerError,
   S extends Schema,
@@ -30,11 +42,9 @@ export type AssetFormProps<
   invalidate: QueryKey[];
   onClose?: () => void;
   submitLabel?: string;
-  messages?: {
-    onCreate: (input: Infer<S>) => string;
-    onSuccess: (input: Infer<S>) => string;
-    onError: (input: Infer<S>, error: Error) => string;
-  };
+  submittingLabel?: string;
+  processingLabel?: string;
+  messages?: Partial<AssetFormMessages<Infer<S>>>;
 };
 
 export function AssetForm<
@@ -51,8 +61,16 @@ export function AssetForm<
   onClose,
   invalidate,
   submitLabel,
-  messages = getAssetCreateMessages(),
+  submittingLabel,
+  processingLabel,
+  messages: customMessages = {},
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
+  const defaultMessageHandlers = defaultMessages<Infer<S>>();
+  const messages = {
+    ...defaultMessageHandlers,
+    ...customMessages,
+  };
+
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
@@ -176,10 +194,12 @@ export function AssetForm<
                 <AssetFormButton
                   currentStep={currentStep}
                   onPreviousStep={handlePrev}
-                  isLastStep={isLastStep}
                   onNextStep={handleNext}
-                  isSubmitting={form.formState.isSubmitting || isValidating}
+                  isLastStep={isLastStep}
+                  isSubmitting={form.formState.isSubmitting}
                   submitLabel={submitLabel}
+                  submittingLabel={submittingLabel}
+                  processingLabel={processingLabel}
                 />
               </form>
             </Form>
@@ -189,9 +209,3 @@ export function AssetForm<
     </div>
   );
 }
-
-const getAssetCreateMessages = <Input extends { assetName: string; symbol: string }>() => ({
-  onCreate: (input: Input) => `Creating ${input.assetName} (${input.symbol})`,
-  onSuccess: (input: Input) => `${input.assetName} (${input.symbol}) created successfully on chain`,
-  onError: (input: Input, error: Error) => `Creation of ${input.assetName} (${input.symbol}) failed: ${error.message}`,
-});
