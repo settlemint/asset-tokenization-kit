@@ -647,17 +647,22 @@ type AssetStats
   ## Collateral
   totalCollateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
   totalCollateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
-  ## Event Counts
+}
+
+# --------------------------------------------------
+# Asset Activity
+# --------------------------------------------------
+
+type AssetActivityData @entity {
+  id: String!
+  assetType: String! @unique
+
+  ## Activity
   transferEventCount: Int!
-    @aggregate(
-      fn: "count"
-      conditions: [{ minted: 0, burned: 0, frozen: 0, unfrozen: 0 }]
-    )
-  mintEventCount: Int! @aggregate(fn: "count", conditions: [{ minted_gt: 0 }])
-  burnEventCount: Int! @aggregate(fn: "count", conditions: [{ burned_gt: 0 }])
-  frozenEventCount: Int! @aggregate(fn: "count", conditions: [{ frozen_gt: 0 }])
+  mintEventCount: Int!
+  burnEventCount: Int!
+  frozenEventCount: Int!
   unfrozenEventCount: Int!
-    @aggregate(fn: "count", conditions: [{ unfrozen_gt: 0 }])
 }
 
 # --------------------------------------------------

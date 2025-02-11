@@ -21,10 +21,12 @@ import { transferEvent } from './events/transfer';
 import { fetchCryptoCurrency } from './fetch/cryptocurrency';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { fetchAssetActivity } from './fetch/assets';
 
 export function handleTransfer(event: Transfer): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
   const sender = fetchAccount(event.transaction.from);
+  const assetActivity = fetchAssetActivity(AssetType.cryptocurrency);
 
   const assetStats = newAssetStatsData(cryptoCurrency.id, AssetType.cryptocurrency);
 
@@ -63,6 +65,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.mintedExact = event.params.value;
+    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -98,6 +101,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, cryptoCurrency.decimals);
     assetStats.burnedExact = event.params.value;
+    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -143,6 +147,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
   }
 
   cryptoCurrency.save();
@@ -150,6 +155,8 @@ export function handleTransfer(event: Transfer): void {
   assetStats.supply = cryptoCurrency.totalSupply;
   assetStats.supplyExact = cryptoCurrency.totalSupplyExact;
   assetStats.save();
+
+  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {

@@ -39,10 +39,12 @@ import { userUnblockedEvent } from './events/userunblocked';
 import { fetchFund } from './fetch/fund';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { fetchAssetActivity } from './fetch/assets';
 
 export function handleTransfer(event: Transfer): void {
   const fund = fetchFund(event.address);
   const sender = fetchAccount(event.transaction.from);
+  const assetActivity = fetchAssetActivity(AssetType.fund);
 
   const assetStats = newAssetStatsData(fund.id, AssetType.fund, fund.fundCategory, fund.fundClass);
 
@@ -81,6 +83,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, fund.decimals);
     assetStats.mintedExact = event.params.value;
+    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -116,6 +119,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, fund.decimals);
     assetStats.burnedExact = event.params.value;
+    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -161,6 +165,7 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
   }
 
   fund.save();
@@ -168,6 +173,8 @@ export function handleTransfer(event: Transfer): void {
   assetStats.supply = fund.totalSupply;
   assetStats.supplyExact = fund.totalSupplyExact;
   assetStats.save();
+
+  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
@@ -383,6 +390,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
 
+  const assetActivity = fetchAssetActivity(AssetType.fund);
+  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  assetActivity.save();
+
   tokensFrozenEvent(
     eventId(event),
     event.block.timestamp,
@@ -410,6 +421,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozen = toDecimals(event.params.amount, fund.decimals);
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
+
+  const assetActivity = fetchAssetActivity(AssetType.fund);
+  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
+  assetActivity.save();
 
   tokensUnfrozenEvent(
     eventId(event),
