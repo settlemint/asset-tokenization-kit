@@ -41,13 +41,17 @@ export function TokenDesignerButton() {
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="ml-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+          className="-translate-y-2 ml-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl shadow-dropdown"
           align="start"
           side={isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
           {Object.entries(assetConfig).map(([type, config]) => (
-            <DropdownMenuItem key={type} onSelect={() => setTokenType(type as keyof typeof assetConfig)}>
+            <DropdownMenuItem
+              key={type}
+              onSelect={() => setTokenType(type as keyof typeof assetConfig)}
+              className="dropdown-menu-item"
+            >
               {config.name}
             </DropdownMenuItem>
           ))}

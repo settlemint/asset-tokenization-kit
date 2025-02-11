@@ -2,7 +2,7 @@
   "extends": ["ultracite"],
   "files": {
     "ignore": [
-      "kit/subgraph/src/**",
+      "kit/subgraph/**",
       "kit/contracts/artifacts/**/*",
       "kit/contracts/dependencies/**/*",
       "kit/contracts/ignition/deployments/**/*",
