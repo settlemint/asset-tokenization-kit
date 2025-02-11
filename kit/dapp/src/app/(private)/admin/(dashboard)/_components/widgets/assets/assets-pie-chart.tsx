@@ -3,6 +3,7 @@ import { assetConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import { AssetsPieChartSkeleton } from './asset-pie-chart-skeleton';
 import { AssetsPieChartClient } from './assets-pie-chart-client';
 
 export async function AssetsPieChart() {
@@ -22,7 +23,7 @@ export async function AssetsPieChart() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
+      <Suspense fallback={<AssetsPieChartSkeleton categories={Object.keys(assetConfig).length} />}>
         <AssetsPieChartClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>

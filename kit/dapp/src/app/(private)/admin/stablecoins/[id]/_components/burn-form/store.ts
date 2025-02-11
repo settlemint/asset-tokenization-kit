@@ -24,7 +24,7 @@ export const burnStablecoin = actionClient
   .action(async ({ parsedInput: { address, amount, from, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(BurnStableCoin, {
       address: address,
-      from: from ?? (user.wallet as string),
+      from: from ?? (user.wallet),
       amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });
