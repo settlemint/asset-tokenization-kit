@@ -36,13 +36,6 @@ interface BarChartProps {
   title: string
   description?: string
   xAxis: XAxisConfig
-  footer?: {
-    trend?: {
-      value: number
-      label: string
-    }
-    description?: string
-  }
 }
 
 const defaultTickFormatter = (value: string) => value.slice(0, 3)
@@ -54,7 +47,6 @@ export function BarChartComponent({
   title,
   description,
   xAxis,
-  footer,
 }: BarChartProps) {
   const dataKeys = Object.keys(config)
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis
@@ -89,21 +81,6 @@ export function BarChartComponent({
           </BarChart>
         </ChartContainer>
       </CardContent>
-      {footer && (
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          {footer.trend && (
-            <div className="flex gap-2 font-medium leading-none">
-              {footer.trend.label} {footer.trend.value}%{" "}
-              <TrendingUp className="h-4 w-4" />
-            </div>
-          )}
-          {footer.description && (
-            <div className="leading-none text-muted-foreground">
-              {footer.description}
-            </div>
-          )}
-        </CardFooter>
-      )}
     </Card>
   )
 }

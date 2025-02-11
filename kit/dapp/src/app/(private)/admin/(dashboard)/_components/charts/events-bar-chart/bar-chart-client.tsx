@@ -2,6 +2,7 @@
 
 import { BarChartComponent } from '@/components/ui/bar-chart';
 import type { ChartConfig } from '@/components/ui/chart';
+import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsEventsData } from './data';
 
@@ -12,15 +13,15 @@ interface EventsBarChartClientProps {
 const chartConfig = {
   mintEventCount: {
     label: 'Mint',
-    color: 'hsl(var(--chart-1))',
+    color: '#0d9488',
   },
   transferEventCount: {
     label: 'Transfer',
-    color: 'hsl(var(--chart-2))',
+    color: '#3b82f6',
   },
   burnEventCount: {
     label: 'Burn',
-    color: 'hsl(var(--chart-3))',
+    color: '#06b6d4',
   },
 } satisfies ChartConfig;
 
@@ -35,9 +36,13 @@ export function EventsBarChartClient({ queryKey }: EventsBarChartClientProps) {
     <BarChartComponent
       data={data.assetActivityDatas}
       config={chartConfig}
-      title="Asset Events"
+      title="Activity by asset type"
       xAxis={{
         key: 'assetType',
+        tickFormatter: (value: string) => {
+          const assetType = value.toLowerCase() as keyof typeof assetConfig;
+          return assetConfig[assetType]?.pluralName ?? value;
+        },
       }}
     />
   );
