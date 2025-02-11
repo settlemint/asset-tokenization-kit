@@ -10,6 +10,8 @@ import { type PropsWithChildren, Suspense } from 'react';
 interface EvmAddressProps extends PropsWithChildren {
   /** The EVM address to display. */
   address: string;
+  name?: string;
+  symbol?: string;
   /** The URL of the blockchain explorer (optional). */
   explorerUrl?: string;
   prefixLength?: number;
@@ -24,6 +26,8 @@ interface EvmAddressProps extends PropsWithChildren {
  */
 export function EvmAddress({
   address,
+  name,
+  symbol,
   explorerUrl,
   children,
   prefixLength = 6,
@@ -37,7 +41,12 @@ export function EvmAddress({
           <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
             <AddressAvatar address={address} variant={iconSize} />
           </Suspense>
-          <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>
+          {!name && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
+          {name && (
+            <span>
+              {name} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
+            </span>
+          )}
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-120">
@@ -48,6 +57,11 @@ export function EvmAddress({
             </Suspense>
             <div className="flex flex-col">
               <span className="font-mono">{address}</span>
+              {name && (
+                <span className="text-sm">
+                  {name} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
+                </span>
+              )}
               {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
                 <Link
                   prefetch={false}
