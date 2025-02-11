@@ -1,3 +1,5 @@
+import { formatRelative } from 'date-fns';
+
 /**
  * Formats a date string or Date object into a localized date-time string.
  * Default format matches 'PPP HH:mm' from date-fns (e.g., "April 29, 2023 14:30")
@@ -8,7 +10,7 @@
 
 const NUMERIC_REGEX = /^\d+$/;
 
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date, { relative = false, locale = 'en-US' }): string {
   try {
     const dateObj = typeof date === 'string' ? new Date(normalizeTimestamp(date)) : date;
 
@@ -16,7 +18,11 @@ export function formatDate(date: string | Date): string {
       return 'Invalid Date';
     }
 
-    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    if (relative) {
+      return formatRelative(dateObj, new Date());
+    }
+
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

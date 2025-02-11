@@ -250,7 +250,7 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
 
     return {
       event: event.eventName,
-      timestamp: formatDate(event.timestamp),
+      timestamp: formatDate(event.timestamp, { relative: true }),
       asset: event.emitter.id,
       sender: event.sender.id,
       details,

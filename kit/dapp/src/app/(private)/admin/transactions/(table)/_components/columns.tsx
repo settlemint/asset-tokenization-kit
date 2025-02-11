@@ -17,7 +17,11 @@ const columnHelper = createColumnHelper<NormalizedTransactionListItem>();
 export const columns = [
   columnHelper.accessor('timestamp', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Timestamp</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>
+        <span className="[&:first-letter]:uppercase">{getValue()}</span>
+      </DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset', {
