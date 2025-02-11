@@ -7,7 +7,7 @@ import { AssetsPieChartSkeleton } from './asset-pie-chart-skeleton';
 import { getAssetsWidgetData } from './data';
 
 const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
-  Object.entries(assetConfig).map(([_, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])
+  Object.entries(assetConfig).map(([, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])
 ) satisfies ChartConfig;
 
 interface AssetsPieChartClientProps {

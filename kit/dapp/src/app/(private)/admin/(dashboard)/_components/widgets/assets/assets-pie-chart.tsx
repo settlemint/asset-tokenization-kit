@@ -23,7 +23,7 @@ export async function AssetsPieChart() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetsPieChartSkeleton />}>
+      <Suspense fallback={<AssetsPieChartSkeleton categories={Object.keys(assetConfig).length} />}>
         <AssetsPieChartClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
