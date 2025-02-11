@@ -10,7 +10,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { cn } from '@/lib/utils';
 
 export interface BarChartData {
   [key: string]: string | number;
@@ -39,13 +38,13 @@ export function BarChartComponent({ data, config, title, description, xAxis, cla
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
 
   return (
-    <Card className={cn('flex flex-col', className)}>
-      <CardHeader className="items-center pb-2">
+    <Card>
+      <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer config={config} className="mx-auto aspect-square max-h-[300px]">
+      <CardContent>
+        <ChartContainer config={config}>
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -57,7 +56,7 @@ export function BarChartComponent({ data, config, title, description, xAxis, cla
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
-            {dataKeys.map((key, index) => (
+            {dataKeys.map((key) => (
               <Bar key={key} dataKey={key} stackId="a" fill={`var(--color-${key})`} />
             ))}
           </BarChart>
