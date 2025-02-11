@@ -15,18 +15,21 @@ const columnHelper = createColumnHelper<StablecoinHoldersBalance>();
 export const columns = [
   columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
-    cell: ({ getValue }) => (
-      <DataTableColumnCell>
-        {getValue() && (
-          <div className="flex items-center">
-            <EvmAddress address={getValue()}>
-              <EvmAddressBalances address={getValue()} />
-            </EvmAddress>
-            <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
-          </div>
-        )}
-      </DataTableColumnCell>
-    ),
+    cell: ({ getValue, row }) => {
+      const wallet = getValue();
+      return (
+        <DataTableColumnCell>
+          {wallet && (
+            <div className="flex items-center">
+              <EvmAddress address={wallet} name={row.original.name}>
+                <EvmAddressBalances address={wallet} />
+              </EvmAddress>
+              <CopyToClipboard value={wallet} displayText={''} className="ml-2" />
+            </div>
+          )}
+        </DataTableColumnCell>
+      );
+    },
     enableColumnFilter: false,
   }),
   columnHelper.accessor('value', {
