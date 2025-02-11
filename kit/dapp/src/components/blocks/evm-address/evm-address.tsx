@@ -21,6 +21,7 @@ interface EvmAddressProps extends PropsWithChildren {
   prefixLength?: number;
   suffixLength?: number;
   iconSize?: 'tiny' | 'small' | 'big';
+  prettyNames?: boolean;
 }
 
 const EvmAddressUser = hasuraGraphql(`
@@ -56,6 +57,7 @@ export function EvmAddress({
   prefixLength = 6,
   suffixLength = 4,
   iconSize = 'tiny',
+  prettyNames = true,
 }: EvmAddressProps) {
   const user = useSuspenseQuery({
     queryKey: ['user-name', address],
@@ -80,14 +82,15 @@ export function EvmAddress({
     },
   });
 
-  const displayName = name ?? asset.data?.name ?? user.data?.name;
+  const displayName = prettyNames ? (name ?? asset.data?.name ?? user.data?.name) : undefined;
+  const displayEmail = prettyNames ? user.data?.email : undefined;
 
   return (
     <HoverCard>
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
           <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-            <AddressAvatar address={address} variant={iconSize} imageUrl={user.data?.image} email={user.data?.email} />
+            <AddressAvatar address={address} variant={iconSize} imageUrl={user.data?.image} email={displayEmail} />
           </Suspense>
           {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
           {displayName && (
@@ -104,7 +107,7 @@ export function EvmAddress({
               <AddressAvatar
                 address={address}
                 imageUrl={user.data?.image}
-                email={user.data?.email}
+                email={displayEmail}
                 className="row-span-2"
               />
             </Suspense>
