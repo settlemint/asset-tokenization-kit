@@ -8,6 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import type { ReactNode } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 export interface BarChartData {
@@ -27,13 +28,13 @@ interface BarChartProps {
   description?: string;
   xAxis: XAxisConfig;
   className?: string;
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 }
 
 const defaultTickFormatter = (value: string) => value.slice(0, 3);
 const defaultTickMargin = 10;
 
-export function BarChartComponent({ data, config, title, description, xAxis, className, footer }: BarChartProps) {
+export function BarChartComponent({ data, config, title, description, xAxis, footer }: BarChartProps) {
   const dataKeys = Object.keys(config);
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
 
