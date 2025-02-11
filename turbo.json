@@ -76,6 +76,9 @@
     "subgraph#deploy:local": {
       "dependsOn": ["contracts#deploy:local"]
     },
+    "deploy:local": {
+      "dependsOn": ["contracts#deploy:local", "subgraph#deploy:local"]
+    },
     "deploy:remote": {
       "dependsOn": ["compile:hardhat", "^deploy:remote"],
       "cache": false
