@@ -56,7 +56,9 @@ export const columns = [
   }),
   columnHelper.accessor('lastActivity', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue() ? formatDate(getValue()) : '-'}</DataTableColumnCell>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>{getValue() ? formatDate(getValue(), { type: 'distance' }) : '-'}</DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
 ];
