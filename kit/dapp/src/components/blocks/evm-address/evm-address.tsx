@@ -12,6 +12,8 @@ interface EvmAddressProps extends PropsWithChildren {
   address: string;
   name?: string;
   symbol?: string;
+  imageUrl?: string;
+  email?: string;
   /** The URL of the blockchain explorer (optional). */
   explorerUrl?: string;
   prefixLength?: number;
@@ -28,6 +30,8 @@ export function EvmAddress({
   address,
   name,
   symbol,
+  imageUrl,
+  email,
   explorerUrl,
   children,
   prefixLength = 6,
@@ -39,7 +43,7 @@ export function EvmAddress({
       <HoverCardTrigger>
         <div className="flex items-center space-x-2">
           <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-            <AddressAvatar address={address} variant={iconSize} />
+            <AddressAvatar address={address} variant={iconSize} imageUrl={imageUrl} email={email} />
           </Suspense>
           {!name && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
           {name && (

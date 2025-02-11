@@ -196,6 +196,8 @@ const TransactionUser = hasuraGraphql(`
   query TransactionUser($id: String!) {
     user(where: { wallet: { _eq: $id } }) {
       name
+      image
+      email
     }
   }
 `);
@@ -205,7 +207,7 @@ const getUserName = unstable_cache(
     const user = await hasuraClient.request(TransactionUser, {
       id: walletAddress,
     });
-    return user.user[0]?.name;
+    return user.user[0];
   },
   ['user-name'],
   {
@@ -222,6 +224,8 @@ export interface NormalizedTransactionListItem {
   emitterSymbol: string;
   sender: string;
   senderName?: string;
+  senderEmail?: string;
+  senderImage?: string;
   details: Record<string, string>;
 }
 
@@ -231,7 +235,7 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
 
   for (const event of theGraphData.assetEvents) {
     const walletAddress = getAddress(event.sender.id);
-    const userName = await getUserName(walletAddress);
+    const user = await getUserName(walletAddress);
 
     const normalized: NormalizedTransactionListItem = {
       event: event.eventName,
@@ -240,7 +244,9 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
       emitterName: event.emitter.name,
       emitterSymbol: event.emitter.symbol,
       sender: event.sender.id,
-      senderName: userName,
+      senderName: user?.name,
+      senderEmail: user?.email,
+      senderImage: user?.image ?? undefined,
       details: {},
     };
 

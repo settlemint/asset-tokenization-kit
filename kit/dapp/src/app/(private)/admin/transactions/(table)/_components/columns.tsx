@@ -47,7 +47,12 @@ export const columns = [
 
       return (
         <DataTableColumnCell>
-          <EvmAddress address={senderId} name={row.original.senderName}>
+          <EvmAddress
+            address={senderId}
+            name={row.original.senderName}
+            imageUrl={row.original.senderImage}
+            email={row.original.senderEmail}
+          >
             <EvmAddressBalances address={senderId} />
           </EvmAddress>
         </DataTableColumnCell>
@@ -74,7 +79,12 @@ export const columns = [
                   <dl className="grid grid-cols-[1fr_2fr] gap-4">
                     <dt className="text-muted-foreground text-sm">Sender:</dt>
                     <dd className="text-sm">
-                      <EvmAddress address={row.original.sender} name={row.original.senderName} />
+                      <EvmAddress
+                        address={row.original.sender}
+                        name={row.original.senderName}
+                        imageUrl={row.original.senderImage}
+                        email={row.original.senderEmail}
+                      />
                     </dd>
                     <dt className="text-muted-foreground text-sm">Asset:</dt>
                     <dd className="text-sm">
