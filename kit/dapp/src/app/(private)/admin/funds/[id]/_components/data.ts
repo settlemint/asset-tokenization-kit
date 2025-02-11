@@ -1,6 +1,6 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+'use server';
+
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { getAddress } from 'viem';
 
 const FundTitle = theGraphGraphqlStarterkits(
   `
@@ -10,37 +10,16 @@ const FundTitle = theGraphGraphqlStarterkits(
     name
     symbol
     decimals
+    paused
     }
   }
 `
 );
 
-const OffchainFund = hasuraGraphql(`
-  query OffchainFund($id: String!) {
-    asset(where: {id: {_eq: $id}}, limit: 1) {
-      id
-      private
-    }
-  }
-`);
-
 export async function getFundTitle(id: string) {
-  const normalizedId = getAddress(id);
-  const [data, dbFund] = await Promise.all([
-    theGraphClientStarterkits.request(FundTitle, { id }),
-    hasuraClient.request(OffchainFund, { id: normalizedId }),
-  ]);
-
+  const data = await theGraphClientStarterkits.request(FundTitle, { id });
   if (!data.fund) {
     throw new Error('Fund not found');
   }
-
-  return {
-    ...data.fund,
-    ...(dbFund.asset[0]
-      ? dbFund.asset[0]
-      : {
-          private: false,
-        }),
-  };
+  return data.fund;
 }

@@ -16,6 +16,7 @@ import type { Address } from 'viem';
 import { BurnTokensButton } from './_components/burn-form/button';
 import { getFundTitle } from './_components/data';
 import { MintTokensButton } from './_components/mint-form/button';
+import { PauseTokensButton } from './_components/pause-form/button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -118,6 +119,9 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                 symbol={fund.symbol}
                 decimals={fund.decimals}
               />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} isPaused={fund.paused} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

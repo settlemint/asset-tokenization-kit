@@ -36,7 +36,9 @@ export type AssetFormProps<
   CBAVE,
   FormContext = unknown,
 > = {
-  children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
+  children:
+    | ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>
+    | ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
   invalidate: QueryKey[];
@@ -75,7 +77,7 @@ export function AssetForm<
   const [currentStep, setCurrentStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const invalidateTags = useInvalidateTags();
-  const totalSteps = children.length;
+  const totalSteps = Array.isArray(children) ? children.length : 1;
 
   useEffect(() => {
     setMounted(true);
@@ -143,7 +145,7 @@ export function AssetForm<
   });
 
   const handleNext = async () => {
-    const CurrentStep = children[currentStep].type;
+    const CurrentStep = Array.isArray(children) ? children[currentStep].type : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
 
     if (!fieldsToValidate?.length) {
@@ -187,9 +189,9 @@ export function AssetForm<
             <Form {...form}>
               <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
-                <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
+                {totalSteps > 1 && <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />}
                 {/* Current step content */}
-                <div className="min-h-[400px]">{children[currentStep]}</div>
+                <div className="min-h-[400px]">{Array.isArray(children) ? children[currentStep] : children}</div>
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}
