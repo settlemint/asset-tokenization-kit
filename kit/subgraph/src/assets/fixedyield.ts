@@ -7,11 +7,13 @@ import {
 } from '../../generated/templates/FixedYield/FixedYield';
 import { fetchAccount } from '../fetch/account';
 import { toDecimals } from '../utils/decimals';
-import { eventId, updateMostRecentEvents } from '../utils/events';
+import { eventId } from '../utils/events';
 import { underlyingAssetTopUpEvent } from './events/underlyingassettopup';
 import { underlyingAssetWithdrawnEvent } from './events/underlyingassetwithdrawn';
 import { yieldClaimedEvent } from './events/yieldclaimed';
 import { fetchFixedYield } from './fetch/fixed-yield';
+import { accountActivityEvent, AccountActivityEventName } from './events/accountactivity';
+import { AssetType } from '../utils/enums';
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
   const schedule = fetchFixedYield(event.address);
@@ -65,8 +67,8 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     }
   }
 
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(holder.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.YieldClaimed, event.block.timestamp, AssetType.fixedyield, schedule.id);
+  accountActivityEvent(eventId(event), holder.id, AccountActivityEventName.YieldClaimed, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): void {
@@ -99,8 +101,8 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
   schedule.underlyingBalance = toDecimals(schedule.underlyingBalanceExact, token.decimals);
   schedule.save();
 
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(from.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UnderlyingAssetTopUp, event.block.timestamp, AssetType.fixedyield, schedule.id);
+  accountActivityEvent(eventId(event), from.id, AccountActivityEventName.UnderlyingAssetTopUp, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }
 
 export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEvent): void {
@@ -133,6 +135,6 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
   schedule.underlyingBalance = toDecimals(schedule.underlyingBalanceExact, token.decimals);
   schedule.save();
 
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(to.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.fixedyield, schedule.id);
+  accountActivityEvent(eventId(event), to.id, AccountActivityEventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }

@@ -19,7 +19,7 @@ import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType } from '../utils/enums';
-import { eventId, updateMostRecentEvents } from '../utils/events';
+import { eventId } from '../utils/events';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { managementFeeCollectedEvent } from './events/managementfeecollected';
@@ -39,6 +39,7 @@ import { userUnblockedEvent } from './events/userunblocked';
 import { fetchFund } from './fetch/fund';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
+import { accountActivityEvent, AccountActivityEventName } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const fund = fetchFund(event.address);
@@ -82,8 +83,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, fund.decimals);
     assetStats.mintedExact = event.params.value;
 
-    updateMostRecentEvents(sender.id, eventId(event));
-    updateMostRecentEvents(to.id, eventId(event));
+    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.fund, fund.id);
+    accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetMinted, event.block.timestamp, AssetType.fund, fund.id);
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
     const burn = burnEvent(
@@ -120,8 +121,8 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, fund.decimals);
     assetStats.burnedExact = event.params.value;
 
-    updateMostRecentEvents(sender.id, eventId(event));
-    updateMostRecentEvents(from.id, eventId(event));
+    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.fund, fund.id);
+    accountActivityEvent(eventId(event), from.id, AccountActivityEventName.AssetBurned, event.block.timestamp, AssetType.fund, fund.id);
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -168,9 +169,9 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
 
-    updateMostRecentEvents(sender.id, eventId(event));
-    updateMostRecentEvents(from.id, eventId(event));
-    updateMostRecentEvents(to.id, eventId(event));
+    accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.fund, fund.id);
+    accountActivityEvent(eventId(event), from.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.fund, fund.id);
+    accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.fund, fund.id);
   }
 
   fund.save();
@@ -183,12 +184,13 @@ export function handleTransfer(event: Transfer): void {
 export function handleRoleGranted(event: RoleGranted): void {
   const fund = fetchFund(event.address);
   const account = fetchAccount(event.params.account);
+  const sender = fetchAccount(event.transaction.from);
 
   const roleGranted = roleGrantedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
-    fetchAccount(event.transaction.from).id,
+    sender.id,
     event.params.role,
     account.id
   );
@@ -244,18 +246,20 @@ export function handleRoleGranted(event: RoleGranted): void {
 
   fund.save();
 
-  updateMostRecentEvents(account.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), account.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
   const fund = fetchFund(event.address);
   const account = fetchAccount(event.params.account);
+  const sender = fetchAccount(event.transaction.from);
 
   const roleRevoked = roleRevokedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
-    fetchAccount(event.transaction.from).id,
+    sender.id,
     event.params.role,
     account.id
   );
@@ -302,14 +306,15 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 
   fund.save();
 
-  updateMostRecentEvents(account.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), account.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleApproval(event: Approval): void {
   const fund = fetchFund(event.address);
   const owner = fetchAccount(event.params.owner);
   const spender = fetchAccount(event.params.spender);
-
+  const sender = fetchAccount(event.transaction.from);
   // Update the owner's balance approved amount
   const ownerBalance = fetchAssetBalance(fund.id, owner.id, fund.decimals);
   ownerBalance.approvedExact = event.params.value;
@@ -320,7 +325,7 @@ export function handleApproval(event: Approval): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    fetchAccount(event.transaction.from).id,
+    sender.id,
     owner.id,
     spender.id,
     event.params.value,
@@ -334,18 +339,20 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
-  updateMostRecentEvents(owner.id, eventId(event));
-  updateMostRecentEvents(spender.id, eventId(event));
+  accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const fund = fetchFund(event.address);
+  const sender = fetchAccount(event.transaction.from);
 
   const roleAdminChanged = roleAdminChangedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,
-    fetchAccount(event.transaction.from).id,
+    sender.id,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
@@ -358,7 +365,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.address.toHexString(),
   ]);
 
-  updateMostRecentEvents(fetchAccount(event.transaction.from).id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handlePaused(event: Paused): void {
@@ -371,8 +378,7 @@ export function handlePaused(event: Paused): void {
   fund.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-
-  updateMostRecentEvents(sender.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Paused, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleUnpaused(event: Unpaused): void {
@@ -385,8 +391,7 @@ export function handleUnpaused(event: Unpaused): void {
   fund.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
-
-  updateMostRecentEvents(sender.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Unpaused, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
@@ -415,9 +420,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.params.amount,
     fund.decimals
   );
-
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(user.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.TokensFrozen, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), user.id, AccountActivityEventName.TokensFrozen, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
@@ -446,9 +450,8 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     event.params.amount,
     fund.decimals
   );
-
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(user.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.TokensUnfrozen, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), user.id, AccountActivityEventName.TokensUnfrozen, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {
@@ -463,9 +466,8 @@ export function handleUserBlocked(event: UserBlocked): void {
   ]);
 
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(user.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleUserUnblocked(event: UserUnblocked): void {
@@ -480,9 +482,8 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   ]);
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
-
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(user.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleManagementFeeCollected(event: ManagementFeeCollected): void {
@@ -504,8 +505,7 @@ export function handleManagementFeeCollected(event: ManagementFeeCollected): voi
     event.params.amount,
     fund.decimals
   );
-
-  updateMostRecentEvents(sender.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.ManagementFeeCollected, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handlePerformanceFeeCollected(event: PerformanceFeeCollected): void {
@@ -527,8 +527,7 @@ export function handlePerformanceFeeCollected(event: PerformanceFeeCollected): v
     event.params.amount,
     fund.decimals
   );
-
-  updateMostRecentEvents(sender.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.PerformanceFeeCollected, event.block.timestamp, AssetType.fund, fund.id);
 }
 
 export function handleTokenWithdrawn(event: TokenWithdrawn): void {
@@ -555,7 +554,6 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
     event.params.amount,
     fund.decimals
   );
-
-  updateMostRecentEvents(sender.id, eventId(event));
-  updateMostRecentEvents(to.id, eventId(event));
+  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.TokenWithdrawn, event.block.timestamp, AssetType.fund, fund.id);
+  accountActivityEvent(eventId(event), to.id, AccountActivityEventName.TokenWithdrawn, event.block.timestamp, AssetType.fund, fund.id);
 }
