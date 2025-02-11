@@ -35,11 +35,13 @@ import { fetchStableCoin } from './fetch/stablecoin';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
 import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
+import { fetchAssetActivity } from './fetch/assets';
 import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const stableCoin = fetchStableCoin(event.address);
   const sender = fetchAccount(event.transaction.from);
+  const assetActivity = fetchAssetActivity(AssetType.stablecoin);
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
 
@@ -79,6 +81,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
 
+    assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
     accountActivityEvent(eventId(event), sender, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
     accountActivityEvent(eventId(event), to, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   } else if (event.params.to.equals(Address.zero())) {
@@ -117,6 +120,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
 
+    assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
     accountActivityEvent(eventId(event), sender, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
     accountActivityEvent(eventId(event), from, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   } else {
@@ -165,6 +169,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
 
+    assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
     accountActivityEvent(eventId(event), sender, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
     accountActivityEvent(eventId(event), from, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
     accountActivityEvent(eventId(event), to, EventName.Transfer, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -176,6 +181,8 @@ export function handleTransfer(event: Transfer): void {
   assetStats.supply = stableCoin.totalSupply;
   assetStats.supplyExact = stableCoin.totalSupplyExact;
   assetStats.save();
+
+  assetActivity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
@@ -421,6 +428,9 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
 
+  const assetActivity = fetchAssetActivity(AssetType.stablecoin);
+  assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
+  assetActivity.save();
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
@@ -454,6 +464,9 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  const assetActivity = fetchAssetActivity(AssetType.stablecoin);
+  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
+  assetActivity.save();
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 

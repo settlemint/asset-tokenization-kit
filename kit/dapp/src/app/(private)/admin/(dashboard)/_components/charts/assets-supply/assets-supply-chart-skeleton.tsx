@@ -26,11 +26,11 @@ const circleVariants = cva('flex h-[80%] w-[80%] items-center justify-center', {
   },
 });
 
-interface AssetsPieChartSkeletonProps extends VariantProps<typeof circleVariants> {
+interface AssetsSupplySkeletonProps extends VariantProps<typeof circleVariants> {
   categories?: number;
 }
 
-export function AssetsPieChartSkeleton({ variant = 'loading', categories = 5 }: AssetsPieChartSkeletonProps) {
+export function AssetsSupplySkeleton({ variant = 'loading', categories = 5 }: AssetsSupplySkeletonProps) {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
