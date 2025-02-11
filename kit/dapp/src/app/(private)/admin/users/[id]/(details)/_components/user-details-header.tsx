@@ -36,8 +36,11 @@ export function UserDetailsHeader({ data }: UserDetailsHeaderProps) {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="px-4">
-              <DropdownMenuItem>Change User Role</DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-48 rounded-xl shadow-dropdown"
+            >
+              <DropdownMenuItem className="dropdown-menu-item">Change User Role</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
