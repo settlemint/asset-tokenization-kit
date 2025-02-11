@@ -77,7 +77,7 @@ export const transfer = actionClient
   .action(async ({ parsedInput: { address, to, value, pincode, assetType, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(getQuery(assetType), {
       address: address,
-      from: user.wallet as string,
+      from: user.wallet,
       to: to,
       value: parseUnits(value.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
@@ -92,20 +92,20 @@ export const transfer = actionClient
   });
 
 function getQuery(assetType: TransferFormAssetType) {
-  if (assetType === 'stablecoin') {
-    return TransferStableCoin;
+  switch (assetType) {
+    case 'stablecoin':
+      return TransferStableCoin;
+    case 'fund':
+      return TransferFund;
+    case 'bond':
+      return TransferBond;
+    case 'equity':
+      return TransferEquity;
+    case 'cryptocurrency':
+      return TransferCryptoCurrency;
+    default: {
+      const _exhaustiveCheck: never = assetType;
+      throw new Error(`Unsupported asset type: ${_exhaustiveCheck}`);
+    }
   }
-  if (assetType === 'fund') {
-    return TransferFund;
-  }
-  if (assetType === 'bond') {
-    return TransferBond;
-  }
-  if (assetType === 'equity') {
-    return TransferEquity;
-  }
-  if (assetType === 'cryptocurrency') {
-    return TransferCryptoCurrency;
-  }
-  throw new Error(`Unsupported asset type: ${assetType}`);
 }

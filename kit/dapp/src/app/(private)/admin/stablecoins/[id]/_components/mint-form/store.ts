@@ -24,7 +24,7 @@ export const mintStablecoin = actionClient
   .action(async ({ parsedInput: { address, to, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(MintStableCoin, {
       address: address,
-      from: user.wallet as string,
+      from: user.wallet,
       to: to,
       amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),

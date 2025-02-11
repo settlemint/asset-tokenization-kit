@@ -110,7 +110,14 @@ export function SignUpForm({
 
   return (
     <Form {...form}>
-      <form className={cn('flex flex-col gap-6', className)} onSubmit={form.handleSubmit(onSubmit)} {...props}>
+      <form
+        className={cn('flex flex-col gap-6', className)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)(e);
+        }}
+        {...props}
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-bold text-2xl">Create an account</h1>
           <p className="text-balance text-muted-foreground text-sm">

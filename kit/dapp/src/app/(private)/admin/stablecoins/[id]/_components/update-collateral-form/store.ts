@@ -30,7 +30,7 @@ export const updateCollateral = actionClient
   .action(async ({ parsedInput: { address, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(UpdateCollateral, {
       address: address,
-      from: user.wallet as string,
+      from: user.wallet,
       amount: parseUnits(amount.toString(), decimals).toString(),
       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
     });

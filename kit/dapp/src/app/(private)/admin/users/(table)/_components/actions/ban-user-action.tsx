@@ -83,7 +83,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
   const handleBanClick = (e: MouseEvent) => {
     e.preventDefault();
     if (user.banned) {
-      handleUnbanUser(e);
+      handleUnbanUser(e).catch((error) => {
+        toast.error(`Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      });
     } else {
       setShowBanDialog(true);
     }
@@ -113,7 +115,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
               disabled={isLoading}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && banReason.trim()) {
-                  handleBanUser(e);
+                  handleBanUser(e).catch((error) => {
+                    toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                  });
                 }
               }}
             />
@@ -143,7 +147,15 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
             >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={(e) => handleBanUser(e)} disabled={!banReason.trim() || isLoading}>
+            <Button
+              variant="destructive"
+              onClick={(e) => {
+                handleBanUser(e).catch((error) => {
+                  toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                });
+              }}
+              disabled={!banReason.trim() || isLoading}
+            >
               {isLoading ? 'Banning...' : 'Ban User'}
             </Button>
           </DialogFooter>

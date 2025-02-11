@@ -89,7 +89,11 @@ export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onCompl
             </Button>
             <Button
               variant="default"
-              onClick={(e) => handleRoleChange(e)}
+              onClick={(e) => {
+                handleRoleChange(e).catch((error) => {
+                  toast.error(`Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                });
+              }}
               disabled={selectedRole === user.role || isLoading}
             >
               {isLoading ? 'Updating...' : 'Update Role'}
