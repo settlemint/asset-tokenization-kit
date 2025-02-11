@@ -1,13 +1,10 @@
 "use client"
-
-import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -19,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { cn } from '@/lib/utils';
 
 export interface BarChartData {
   [key: string]: string | number
@@ -36,6 +34,7 @@ interface BarChartProps {
   title: string
   description?: string
   xAxis: XAxisConfig
+  className?: string
 }
 
 const defaultTickFormatter = (value: string) => value.slice(0, 3)
@@ -47,18 +46,19 @@ export function BarChartComponent({
   title,
   description,
   xAxis,
+  className,
 }: BarChartProps) {
   const dataKeys = Object.keys(config)
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className={cn("flex flex-col", className)}>
+      <CardHeader className="items-center pb-2">
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={config}>
+      <CardContent className="flex-1">
+        <ChartContainer config={config} className="mx-auto aspect-square max-h-[300px]">
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis
