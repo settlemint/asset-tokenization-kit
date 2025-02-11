@@ -1,16 +1,26 @@
-import { formatRelative } from 'date-fns';
+import { format, formatDistance, formatRelative } from 'date-fns';
+
+/**
+ * Options for date formatting
+ */
+export interface DateFormatOptions {
+  /** Format type: absolute (default), relative, or distance */
+  readonly type?: 'absolute' | 'relative' | 'distance';
+  /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
+  readonly formatStr?: string;
+}
 
 /**
  * Formats a date string or Date object into a localized date-time string.
- * Default format matches 'PPP HH:mm' from date-fns (e.g., "April 29, 2023 14:30")
+ * Uses Intl.DateTimeFormat for consistent localization.
  *
  * @param date - The date to format (string or Date object)
+ * @param options - Formatting options including locale and format preferences
  * @returns Formatted date string or 'Invalid Date' if the input is invalid
  */
+export function formatDate(date: string | Date, options: DateFormatOptions = {}): string {
+  const { type = 'absolute', formatStr = 'MMMM d, yyyy HH:mm' } = options;
 
-const NUMERIC_REGEX = /^\d+$/;
-
-export function formatDate(date: string | Date, { relative = false, locale = 'en-US' }): string {
   try {
     const dateObj = typeof date === 'string' ? new Date(normalizeTimestamp(date)) : date;
 
@@ -18,24 +28,21 @@ export function formatDate(date: string | Date, { relative = false, locale = 'en
       return 'Invalid Date';
     }
 
-    if (relative) {
+    if (type === 'distance') {
+      return formatDistance(dateObj, new Date());
+    }
+
+    if (type === 'relative') {
       return formatRelative(dateObj, new Date());
     }
 
-    const dateFormatter = new Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-
-    return dateFormatter.format(dateObj);
+    return format(dateObj, formatStr);
   } catch {
     return 'Invalid Date';
   }
 }
+
+const NUMERIC_REGEX = /^\d+$/;
 
 function normalizeTimestamp(timestamp: string): string {
   if (NUMERIC_REGEX.test(timestamp)) {
