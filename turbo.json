@@ -82,6 +82,16 @@
     "deploy:remote": {
       "dependsOn": ["contracts#compile:hardhat", "^deploy:remote"],
       "cache": false
+    },
+    "test:e2e": {
+      "dependsOn": ["codegen"],
+      "cache": false,
+      "persistent": true
+    },
+    "test:e2e:ui": {
+      "dependsOn": ["codegen"],
+      "cache": false,
+      "persistent": true
     }
   }
 }
