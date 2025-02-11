@@ -2,13 +2,12 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { BurnStablecoinFormSchema } from './schema';
+import { BurnFundFormSchema } from './schema';
 import { Amount } from './steps/amount';
-import { Recipients } from './steps/recepients';
 import { Summary } from './steps/summary';
-import { burnStablecoin } from './store';
+import { burnFund } from './store';
 
-export function BurnStablecoinForm({
+export function BurnFundForm({
   address,
   assetConfig,
   onClose,
@@ -20,12 +19,11 @@ export function BurnStablecoinForm({
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={burnStablecoin}
-      resolverAction={zodResolver(BurnStablecoinFormSchema)}
+      storeAction={burnFund}
+      resolverAction={zodResolver(BurnFundFormSchema)}
       onClose={onClose}
-      submitLabel="Burn Asset"
+      submitLabel="Burn"
     >
-      <Recipients />
       <Amount />
       <Summary address={address} />
     </AssetForm>

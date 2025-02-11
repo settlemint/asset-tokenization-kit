@@ -1,9 +1,9 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { useFormContext } from 'react-hook-form';
-import type { MintStablecoinFormType } from '../schema';
+import type { MintFundFormType } from '../schema';
 
 export function Recipients() {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<MintFundFormType>();
 
   return (
     <div className="space-y-6">
@@ -18,7 +18,7 @@ export function Recipients() {
       <div className="grid grid-cols-1 gap-6">
         <AssetFormInput
           control={control}
-          name="address"
+          name="recipient"
           label="Wallet Address"
           placeholder="0x0000000000000000000000000000000000000000"
         />
@@ -27,4 +27,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['address'] as const;
+Recipients.validatedFields = ['recipient'] as const;

@@ -3,12 +3,18 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { BurnStablecoinFormSchema, BurnStablecoinOutputSchema } from './schema';
+import { BurnFundFormSchema, BurnFundOutputSchema } from './schema';
 
-const BurnStableCoin = portalGraphql(`
-  mutation BurnStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
-    StableCoinBurn(
-    address: $address
+interface BurnFundResponse {
+  FundBurn: {
+    transactionHash: string;
+  };
+}
+
+const BurnFund = portalGraphql(`
+  mutation BurnFund($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+    FundBurn(
+      address: $address
       from: $from
       input: {value: $amount}
       challengeResponse: $challengeResponse
@@ -18,22 +24,22 @@ const BurnStableCoin = portalGraphql(`
   }
 `);
 
-export const burnStablecoin = actionClient
-  .schema(BurnStablecoinFormSchema)
-  .outputSchema(BurnStablecoinOutputSchema)
-  .action(async ({ parsedInput: { address, amount, from, pincode } }) => {
+export const burnFund = actionClient
+  .schema(BurnFundFormSchema)
+  .outputSchema(BurnFundOutputSchema)
+  .action(async ({ parsedInput: { address, amount, pincode } }) => {
     const user = await getAuthenticatedUser();
 
-    const data = await portalClient.request(BurnStableCoin, {
+    const data = await portalClient.request<BurnFundResponse>(BurnFund, {
       address: address,
-      from: from ?? (user.wallet as string),
+      from: user.wallet as string,
       amount: amount.toString(),
       challengeResponse: pincode,
     });
 
-    const transactionHash = data.StableCoinBurn?.transactionHash;
+    const transactionHash = data.FundBurn?.transactionHash;
     if (!transactionHash) {
-      throw new Error('Failed to send the transaction to burn the stablecoin');
+      throw new Error('Failed to send the transaction to burn the fund');
     }
 
     return transactionHash;

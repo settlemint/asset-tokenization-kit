@@ -5,10 +5,10 @@ import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { MintStablecoinFormType } from '../schema';
+import type { MintFundFormType } from '../schema';
 
 export function Summary({ address }: { address: Address }) {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<MintFundFormType>();
   const values = useWatch({
     control: control,
   });

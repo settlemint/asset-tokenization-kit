@@ -1,14 +1,16 @@
+'use client';
+
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { MintStablecoinFormSchema } from './schema';
+import { MintFundFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
-import { mintStablecoin } from './store';
+import { mintFund } from './store';
 
-export function MintStablecoinForm({
+export function MintFundForm({
   address,
   assetConfig,
   onClose,
@@ -20,8 +22,8 @@ export function MintStablecoinForm({
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={mintStablecoin}
-      resolverAction={zodResolver(MintStablecoinFormSchema)}
+      storeAction={(formData) => mintFund({ ...formData, address })}
+      resolverAction={zodResolver(MintFundFormSchema)}
       onClose={onClose}
       submitLabel="Mint"
     >
