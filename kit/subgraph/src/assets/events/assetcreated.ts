@@ -1,6 +1,6 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { AssetCreatedEvent } from '../../../generated/schema';
-import {EventName} from '../../utils/enums';
+import { EventName } from '../../utils/enums';
 
 export function assetCreatedEvent(
   id: Bytes,
