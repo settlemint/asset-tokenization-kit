@@ -13,12 +13,6 @@ import type { StablecoinHoldersBalance } from './data';
 const columnHelper = createColumnHelper<StablecoinHoldersBalance>();
 
 export const columns = [
-  columnHelper.accessor('name', {
-    id: 'name',
-    header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
-    enableColumnFilter: false,
-  }),
   columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => (
@@ -36,7 +30,6 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('value', {
-    id: 'value',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} variant="numeric">
         Balance
@@ -51,18 +44,14 @@ export const columns = [
     ),
     enableColumnFilter: false,
   }),
-  columnHelper.accessor('admins', {
-    id: 'type',
+  columnHelper.accessor('type', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Type</DataTableColumnHeader>,
-    cell: ({ getValue, row }) => {
-      const admins = getValue() as string[];
-      const isAdmin = admins.includes(row.original.account.id);
-      return <DataTableColumnCell>{isAdmin ? 'Creator / Owner' : 'Regular holder'}</DataTableColumnCell>;
+    cell: ({ renderValue }) => {
+      return <DataTableColumnCell>{renderValue()}</DataTableColumnCell>;
     },
-    enableColumnFilter: false,
+    enableColumnFilter: true,
   }),
   columnHelper.accessor('lastActivity', {
-    id: 'lastActivity',
     header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>{getValue() ? formatDate(getValue() as Date) : '-'}</DataTableColumnCell>
