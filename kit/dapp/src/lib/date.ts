@@ -5,25 +5,37 @@
  * @param date - The date to format (string or Date object)
  * @returns Formatted date string or 'Invalid Date' if the input is invalid
  */
+
+const NUMERIC_REGEX = /^\d+$/;
+
 export function formatDate(date: string | Date): string {
-	try {
-		const dateObj = typeof date === "string" ? new Date(date) : date;
+  try {
+    const dateObj = typeof date === 'string' ? new Date(normalizeTimestamp(date)) : date;
 
-		if (Number.isNaN(dateObj.getTime())) {
-			return "Invalid Date";
-		}
+    if (Number.isNaN(dateObj.getTime())) {
+      return 'Invalid Date';
+    }
 
-		const dateFormatter = new Intl.DateTimeFormat("en-US", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: false,
-		});
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
 
-		return dateFormatter.format(dateObj);
-	} catch {
-		return "Invalid Date";
-	}
+    return dateFormatter.format(dateObj);
+  } catch {
+    return 'Invalid Date';
+  }
+}
+
+function normalizeTimestamp(timestamp: string): string {
+  if (NUMERIC_REGEX.test(timestamp)) {
+    const timestampNum = Number.parseInt(timestamp, 10);
+    const date = new Date(timestampNum * (timestamp.length === 10 ? 1000 : 1));
+    return date.toISOString();
+  }
+  return timestamp;
 }

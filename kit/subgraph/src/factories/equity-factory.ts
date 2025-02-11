@@ -1,6 +1,6 @@
 import { EquityCreated } from '../../generated/EquityFactory/EquityFactory';
-import { AssetCreatedEvent } from '../../generated/schema';
 import { Equity } from '../../generated/templates';
+import { assetCreatedEvent } from '../assets/events/assetcreated';
 import { fetchEquity } from '../assets/fetch/equity';
 import { fetchAccount } from '../fetch/account';
 import { FactoryType } from '../utils/enums';
@@ -12,12 +12,7 @@ export function handleEquityCreated(event: EquityCreated): void {
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchEquity(event.params.token);
 
-  const assetCreatedEvent = new AssetCreatedEvent(eventId(event));
-  assetCreatedEvent.eventName = 'AssetCreatedEvent';
-  assetCreatedEvent.timestamp = event.block.timestamp;
-  assetCreatedEvent.emitter = asset.id
-  assetCreatedEvent.sender = sender.id;
-  assetCreatedEvent.save();
+  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
 
   Equity.create(event.params.token);
 }

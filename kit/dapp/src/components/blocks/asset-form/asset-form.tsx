@@ -125,7 +125,7 @@ export function AssetForm<
   });
 
   const handleNext = async () => {
-    const CurrentStep = children[currentStep].type as (typeof children)[number]['type'];
+    const CurrentStep = children[currentStep].type;
     const fieldsToValidate = CurrentStep.validatedFields;
 
     if (!fieldsToValidate?.length) {
