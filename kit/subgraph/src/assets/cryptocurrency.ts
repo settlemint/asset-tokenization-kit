@@ -156,6 +156,7 @@ export function handleTransfer(event: Transfer): void {
     accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   }
 
+  cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
   assetStats.supply = cryptoCurrency.totalSupply;
@@ -226,6 +227,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     }
   }
 
+  cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -285,6 +287,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     cryptoCurrency.userManagers = newUserManagers;
   }
 
+  cryptoCurrency.lastActivity = event.block.timestamp;
   cryptoCurrency.save();
 
   accountActivityEvent(eventId(event), fetchAccount(event.transaction.from).id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -321,6 +324,9 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
+  cryptoCurrency.lastActivity = event.block.timestamp;
+  cryptoCurrency.save();
+
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
   accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
@@ -349,6 +355,9 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
       event.address.toHexString(),
     ]
   );
+
+  cryptoCurrency.lastActivity = event.block.timestamp;
+  cryptoCurrency.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.cryptocurrency, cryptoCurrency.id);
 }

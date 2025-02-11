@@ -176,6 +176,7 @@ export function handleTransfer(event: Transfer): void {
     accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.bond, bond.id);
   }
 
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   assetStats.supply = bond.totalSupply;
@@ -246,6 +247,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     }
   }
 
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.bond, bond.id);
@@ -306,6 +308,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     bond.userManagers = newUserManagers;
   }
 
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.bond, bond.id);
@@ -323,6 +326,9 @@ export function handleApproval(event: Approval): void {
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(event.params.value, bond.decimals);
   ownerBalance.save();
+
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
 
   const approval = approvalEvent(
     eventId(event),
@@ -351,6 +357,9 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
 
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
+
   const roleAdminChanged = roleAdminChangedEvent(
     eventId(event),
     event.block.timestamp,
@@ -378,6 +387,7 @@ export function handleBondMatured(event: BondMatured): void {
   log.info('Bond matured event: bond={}, sender={}', [event.address.toHexString(), sender.id.toHexString()]);
 
   bond.isMatured = true;
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   bondMaturedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -399,6 +409,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   // Update bond's redeemed amount
   bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   bondRedeemedEvent(
@@ -423,6 +434,7 @@ export function handlePaused(event: Paused): void {
   log.info('Bond paused event: sender={}, bond={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   bond.paused = true;
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -436,6 +448,7 @@ export function handleUnpaused(event: Unpaused): void {
   log.info('Bond unpaused event: sender={}, bond={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   bond.paused = false;
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -458,6 +471,9 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozen = toDecimals(event.params.amount, bond.decimals);
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
+
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
 
   tokensFrozenEvent(
     eventId(event),
@@ -490,6 +506,9 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
+
   tokensUnfrozenEvent(
     eventId(event),
     event.block.timestamp,
@@ -508,6 +527,9 @@ export function handleUserBlocked(event: UserBlocked): void {
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
 
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
+
   log.info('Bond user blocked event: user={}, sender={}, bond={}', [
     user.id.toHexString(),
     sender.id.toHexString(),
@@ -523,6 +545,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
   const user = fetchAccount(event.params.user);
+
+  bond.lastActivity = event.block.timestamp;
+  bond.save();
 
   log.info('Bond user unblocked event: user={}, sender={}, bond={}', [
     user.id.toHexString(),
@@ -548,6 +573,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   ]);
 
   bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   underlyingAssetTopUpEvent(
@@ -576,6 +602,7 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn):
   ]);
 
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
+  bond.lastActivity = event.block.timestamp;
   bond.save();
 
   underlyingAssetWithdrawnEvent(

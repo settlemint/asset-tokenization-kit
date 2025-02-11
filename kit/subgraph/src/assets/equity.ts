@@ -168,6 +168,7 @@ export function handleTransfer(event: Transfer): void {
     accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.equity, equity.id);
   }
 
+  equity.lastActivity = event.block.timestamp;
   equity.save();
 
   assetStats.supply = equity.totalSupply;
@@ -238,6 +239,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     }
   }
 
+  equity.lastActivity = event.block.timestamp;
   equity.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.equity, equity.id);
@@ -298,6 +300,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     equity.userManagers = newUserManagers;
   }
 
+  equity.lastActivity = event.block.timestamp;
   equity.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.equity, equity.id);
@@ -334,6 +337,9 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
+
   accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.equity, equity.id);
   accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.equity, equity.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.equity, equity.id);
@@ -360,6 +366,9 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.address.toHexString(),
   ]);
 
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
+
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.equity, equity.id);
 }
 
@@ -370,6 +379,7 @@ export function handlePaused(event: Paused): void {
   log.info('Equity paused event: sender={}, equity={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   equity.paused = true;
+  equity.lastActivity = event.block.timestamp;
   equity.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -383,6 +393,7 @@ export function handleUnpaused(event: Unpaused): void {
   log.info('Equity unpaused event: sender={}, equity={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   equity.paused = false;
+  equity.lastActivity = event.block.timestamp;
   equity.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -405,6 +416,9 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozen = toDecimals(event.params.amount, equity.decimals);
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
+
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
 
   tokensFrozenEvent(
     eventId(event),
@@ -437,6 +451,9 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
+
   tokensUnfrozenEvent(
     eventId(event),
     event.block.timestamp,
@@ -462,6 +479,9 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.address.toHexString(),
   ]);
 
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.equity, equity.id);
   accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.equity, equity.id);
@@ -477,6 +497,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  equity.lastActivity = event.block.timestamp;
+  equity.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.equity, equity.id);

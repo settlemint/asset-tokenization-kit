@@ -170,6 +170,7 @@ export function handleTransfer(event: Transfer): void {
     accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   }
 
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   assetStats.supply = stableCoin.totalSupply;
@@ -239,6 +240,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     }
   }
 
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   accountActivityEvent(eventId(event), fetchAccount(event.transaction.from).id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -299,6 +301,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     stableCoin.userManagers = newUserManagers;
   }
 
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -335,6 +338,9 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
+
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -360,6 +366,9 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.address.toHexString(),
   ]);
 
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
+
   accountActivityEvent(eventId(event), fetchAccount(event.transaction.from).id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
@@ -370,6 +379,7 @@ export function handlePaused(event: Paused): void {
   log.info('StableCoin paused event: sender={}, stablecoin={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   stableCoin.paused = true;
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -386,6 +396,7 @@ export function handleUnpaused(event: Unpaused): void {
   ]);
 
   stableCoin.paused = false;
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -408,6 +419,9 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
+
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
 
   tokensFrozenEvent(
     eventId(event),
@@ -439,6 +453,9 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
+
   tokensUnfrozenEvent(
     eventId(event),
     event.block.timestamp,
@@ -463,6 +480,9 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.address.toHexString(),
   ]);
 
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -478,6 +498,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -497,6 +520,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
 
   stableCoin.collateral = toDecimals(event.params.newAmount, stableCoin.decimals);
   stableCoin.collateralExact = event.params.newAmount;
+  stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
   stablecoinCollateralUpdatedEvent(

@@ -174,6 +174,7 @@ export function handleTransfer(event: Transfer): void {
     accountActivityEvent(eventId(event), to.id, AccountActivityEventName.AssetTransferred, event.block.timestamp, AssetType.fund, fund.id);
   }
 
+  fund.lastActivity = event.block.timestamp;
   fund.save();
 
   assetStats.supply = fund.totalSupply;
@@ -244,6 +245,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     }
   }
 
+  fund.lastActivity = event.block.timestamp;
   fund.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleGranted, event.block.timestamp, AssetType.fund, fund.id);
@@ -304,6 +306,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     fund.userManagers = newUserManagers;
   }
 
+  fund.lastActivity = event.block.timestamp;
   fund.save();
 
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleRevoked, event.block.timestamp, AssetType.fund, fund.id);
@@ -339,6 +342,9 @@ export function handleApproval(event: Approval): void {
     event.address.toHexString(),
   ]);
 
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
+
   accountActivityEvent(eventId(event), owner.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(eventId(event), spender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.Approval, event.block.timestamp, AssetType.fund, fund.id);
@@ -365,6 +371,9 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.address.toHexString(),
   ]);
 
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
+
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.RoleAdminChanged, event.block.timestamp, AssetType.fund, fund.id);
 }
 
@@ -375,6 +384,7 @@ export function handlePaused(event: Paused): void {
   log.info('Fund paused event: sender={}, fund={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   fund.paused = true;
+  fund.lastActivity = event.block.timestamp;
   fund.save();
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -388,6 +398,7 @@ export function handleUnpaused(event: Unpaused): void {
   log.info('Fund unpaused event: sender={}, fund={}', [sender.id.toHexString(), event.address.toHexString()]);
 
   fund.paused = false;
+  fund.lastActivity = event.block.timestamp;
   fund.save();
 
   unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
@@ -410,6 +421,9 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetStats.frozen = toDecimals(event.params.amount, fund.decimals);
   assetStats.frozenExact = event.params.amount;
   assetStats.save();
+
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
 
   tokensFrozenEvent(
     eventId(event),
@@ -441,6 +455,9 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
+
   tokensUnfrozenEvent(
     eventId(event),
     event.block.timestamp,
@@ -465,6 +482,9 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.address.toHexString(),
   ]);
 
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
@@ -481,6 +501,9 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     event.address.toHexString(),
   ]);
 
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
+
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(eventId(event), user.id, AccountActivityEventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
@@ -496,6 +519,9 @@ export function handleManagementFeeCollected(event: ManagementFeeCollected): voi
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
 
   managementFeeCollectedEvent(
     eventId(event),
@@ -518,6 +544,9 @@ export function handlePerformanceFeeCollected(event: PerformanceFeeCollected): v
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
 
   performanceFeeCollectedEvent(
     eventId(event),
@@ -543,6 +572,9 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  fund.lastActivity = event.block.timestamp;
+  fund.save();
 
   tokenWithdrawnEvent(
     eventId(event),
