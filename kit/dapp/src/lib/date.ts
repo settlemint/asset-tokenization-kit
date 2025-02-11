@@ -1,4 +1,6 @@
-import { format, formatDistance, formatRelative } from 'date-fns';
+import { format, formatDistance, formatRelative, fromUnixTime, parseISO } from 'date-fns';
+
+const NUMERIC_REGEX = /^\d+$/;
 
 /**
  * Options for date formatting
@@ -22,7 +24,12 @@ export function formatDate(date: string | Date, options: DateFormatOptions = {})
   const { type = 'absolute', formatStr = 'MMMM d, yyyy HH:mm' } = options;
 
   try {
-    const dateObj = typeof date === 'string' ? new Date(normalizeTimestamp(date)) : date;
+    const dateObj =
+      typeof date === 'string'
+        ? NUMERIC_REGEX.test(date)
+          ? fromUnixTime(Number.parseInt(date, 10))
+          : parseISO(date)
+        : date;
 
     if (Number.isNaN(dateObj.getTime())) {
       return 'Invalid Date';
@@ -40,15 +47,4 @@ export function formatDate(date: string | Date, options: DateFormatOptions = {})
   } catch {
     return 'Invalid Date';
   }
-}
-
-const NUMERIC_REGEX = /^\d+$/;
-
-function normalizeTimestamp(timestamp: string): string {
-  if (NUMERIC_REGEX.test(timestamp)) {
-    const timestampNum = Number.parseInt(timestamp, 10);
-    const date = new Date(timestampNum * (timestamp.length === 10 ? 1000 : 1));
-    return date.toISOString();
-  }
-  return timestamp;
 }
