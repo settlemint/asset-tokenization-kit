@@ -1,5 +1,8 @@
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { formatNumber } from '@/lib/number';
+import { CopyToClipboard } from '@/components/ui/copy';
+import { formatDate } from '@/lib/date';
+import { shortHex } from '@/lib/hex';
 import type { PropsWithChildren } from 'react';
 import { getUser } from './data';
 
@@ -8,16 +11,28 @@ type DetailsGridProps = {
 };
 
 export async function DetailsGrid({ id }: DetailsGridProps) {
-  const asset = await getUser(id);
+  const user = await getUser(id);
 
   return (
     <Card className="py-4">
       <CardContent className="grid grid-cols-3 gap-x-4 gap-y-8">
-        <DetailsGridItem label="Name">{asset.name}</DetailsGridItem>
-        <DetailsGridItem label="Symbol">{asset.name}</DetailsGridItem>
-        <DetailsGridItem label="Decimals">{asset.name}</DetailsGridItem>
-        <DetailsGridItem label="Total supply">{formatNumber(asset.name)}</DetailsGridItem>
-        <DetailsGridItem label="Proven collateral">{formatNumber(asset.name)}</DetailsGridItem>
+        <DetailsGridItem label="Name">{user.name}</DetailsGridItem>
+        <DetailsGridItem label="Email">{user.email}</DetailsGridItem>
+        <DetailsGridItem label="Status">{user.banned ? 'Banned' : 'Active'}</DetailsGridItem>
+        <DetailsGridItem label="Created At">{formatDate(user.created_at as string)}</DetailsGridItem>
+        <DetailsGridItem label="Verified At">
+          {user.kyc_verified ? formatDate(user.kyc_verified as string) : 'Not Verified'}
+        </DetailsGridItem>
+        <DetailsGridItem label="Wallet">
+          <div className="flex items-center gap-2 text-md">
+            <AddressAvatar address={user.wallet} variant="small" />
+            <CopyToClipboard
+              value={user.wallet}
+              displayText={shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 }) ?? ''}
+              className="ml-2"
+            />
+          </div>
+        </DetailsGridItem>
       </CardContent>
     </Card>
   );

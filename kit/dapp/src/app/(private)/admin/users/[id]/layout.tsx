@@ -1,3 +1,5 @@
+import { ChangeRoleAction } from '@/app/(private)/admin/users/(table)/_components/actions/change-role-action';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { Button } from '@/components/ui/button';
@@ -7,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { getUser } from './(details)/_components/data';
@@ -23,16 +26,12 @@ const tabs = (id: string): TabItemProps[] => [
     href: `/admin/users/${id}`,
   },
   {
-    name: 'Holders',
-    href: `/admin/users/${id}/holders`,
+    name: 'Holdings',
+    href: `/admin/users/${id}/holdings`,
   },
   {
-    name: 'Events',
-    href: `/admin/users/${id}/events`,
-  },
-  {
-    name: 'Block list',
-    href: `/admin/users/${id}/blocklist`,
+    name: 'Last transactions',
+    href: `/admin/users/${id}/last-transactions`,
   },
   {
     name: 'Token permissions',
@@ -40,7 +39,7 @@ const tabs = (id: string): TabItemProps[] => [
   },
 ];
 
-export default async function FundsDetailLayout({ children, params }: LayoutProps) {
+export default async function UserDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
   const user = await getUser(id);
 
@@ -48,25 +47,21 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
     <div>
       <h1 className="flex items-center font-bold text-2xl">
         <span className="mr-2">{user?.name}</span>
-        <span className="text-muted-foreground">({user?.name})</span>
       </h1>
       <div className="flex justify-between text-muted-foreground text-sm">
+        <EvmAddress address={user?.wallet}>
+          <EvmAddressBalances address={user?.wallet} />
+        </EvmAddress>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="self-end">
             <Button variant="default">
-              Mint tokens
+              Edit user
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
             <DropdownMenuItem asChild className="dropdown-menu-item">
-              MintTokensButton
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="dropdown-menu-item">
-              BurnTokensButton
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="dropdown-menu-item">
-              UpdateCollateralButton
+              <ChangeRoleAction user={user} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
