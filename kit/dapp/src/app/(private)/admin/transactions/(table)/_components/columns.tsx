@@ -1,15 +1,11 @@
 'use client';
+import { EventDetailSheet } from '@/app/(private)/admin/transactions/(table)/_components/detail-sheet';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
-import { Fragment } from 'react';
-import { isAddress } from 'viem';
 import type { NormalizedTransactionListItem } from './data';
 
 const columnHelper = createColumnHelper<NormalizedTransactionListItem>();
@@ -64,51 +60,13 @@ export const columns = [
     header: () => '',
     cell: ({ row }) => (
       <DataTableColumnCell>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm">
-              Details
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>{row.original.event}</SheetTitle>
-              <Card>
-                <CardContent className="pt-6">
-                  <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                    <dt className="text-muted-foreground text-sm">Sender:</dt>
-                    <dd className="text-sm">
-                      <EvmAddress address={row.original.sender} />
-                    </dd>
-                    <dt className="text-muted-foreground text-sm">Asset:</dt>
-                    <dd className="text-sm">
-                      <EvmAddress address={row.original.asset} />
-                    </dd>
-                    <dt className="text-muted-foreground text-sm">Date:</dt>
-                    <dd className="text-sm">{row.original.timestamp}</dd>
-                  </dl>
-                </CardContent>
-              </Card>
-              {Object.keys(row.original.details).length > 0 && (
-                <>
-                  <h2 className="font-semibold text-lg">Details</h2>
-                  <Card>
-                    <CardContent className="pt-6">
-                      <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                        {Object.entries(row.original.details).map(([key, value]) => (
-                          <Fragment key={key}>
-                            <dt className="text-muted-foreground text-sm capitalize">{key}:</dt>
-                            <dd className="text-sm">{isAddress(value) ? <EvmAddress address={value} /> : value}</dd>
-                          </Fragment>
-                        ))}
-                      </dl>
-                    </CardContent>
-                  </Card>
-                </>
-              )}
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
+        <EventDetailSheet
+          event={row.original.event}
+          sender={row.original.sender}
+          asset={row.original.asset}
+          timestamp={row.original.timestamp}
+          details={row.original.details}
+        />
       </DataTableColumnCell>
     ),
     meta: {
