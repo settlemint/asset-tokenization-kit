@@ -42,7 +42,7 @@ export async function getStablecoinBalances(id: string) {
       ...holder,
       symbol,
       type: adminIds.includes(holder.account.id) ? 'Creator / Owner' : 'Regular holder',
-      lastActivity: lastAssetActivityTimestamp ? new Date(Number(lastAssetActivityTimestamp) * 1000) : null,
+      lastActivity: lastAssetActivityTimestamp,
     };
   });
 }
