@@ -1,6 +1,6 @@
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { CollateralUpdatedEvent } from "../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 export function stablecoinCollateralUpdatedEvent(
   id: Bytes,
@@ -12,7 +12,7 @@ export function stablecoinCollateralUpdatedEvent(
   decimals: i32
 ): void {
   const event = new CollateralUpdatedEvent(id);
-  event.eventName = "StableCoin Collateral Updated";
+  event.eventName = "Collateral Updated";
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
