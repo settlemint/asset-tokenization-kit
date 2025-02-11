@@ -45,7 +45,7 @@ bun settlemint connect
 
 # Generate types and start development server
 cd kit/dapp
-bun codegen
+bun settlemint codegen
 bun dev
 ```
 
