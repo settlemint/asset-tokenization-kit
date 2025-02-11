@@ -6,11 +6,13 @@ interface Asset {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -31,11 +33,13 @@ type Bond implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -58,11 +62,13 @@ type Equity implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -78,11 +84,13 @@ type Fund implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -100,11 +108,13 @@ type StableCoin implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -120,11 +130,13 @@ type CryptoCurrency implements Asset @entity {
   id: Bytes!
   type: String!
   asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
   name: String!
   symbol: String!
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  lastActivity: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -143,6 +155,8 @@ type Account @entity {
   balances: [AssetBalance!]! @derivedFrom(field: "account")
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
+  lastActivity: BigInt!
+  activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
 }
 
 type AssetBalance @entity {
@@ -196,6 +210,19 @@ interface AssetEvent {
   eventName: String! # Name of the event
   timestamp: BigInt! # Timestamp of the event
   emitter: Asset! # The contract that emitted the event
+}
+
+# --------------------------------------------------
+# Activity Events
+# --------------------------------------------------
+
+type AccountActivityEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  assetType: String!
+  timestamp: BigInt!
+  asset: Asset
+  account: Account!
 }
 
 # --------------------------------------------------
