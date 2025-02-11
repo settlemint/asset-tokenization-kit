@@ -12,8 +12,6 @@ import { underlyingAssetTopUpEvent } from './events/underlyingassettopup';
 import { underlyingAssetWithdrawnEvent } from './events/underlyingassetwithdrawn';
 import { yieldClaimedEvent } from './events/yieldclaimed';
 import { fetchFixedYield } from './fetch/fixed-yield';
-import { accountActivityEvent, AccountActivityEventName } from './events/accountactivity';
-import { AssetType } from '../utils/enums';
 
 export function handleYieldClaimed(event: YieldClaimedEvent): void {
   const schedule = fetchFixedYield(event.address);
@@ -66,9 +64,6 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
       period.save();
     }
   }
-
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.YieldClaimed, event.block.timestamp, AssetType.fixedyield, schedule.id);
-  accountActivityEvent(eventId(event), holder.id, AccountActivityEventName.YieldClaimed, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): void {
@@ -100,9 +95,6 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.plus(event.params.amount);
   schedule.underlyingBalance = toDecimals(schedule.underlyingBalanceExact, token.decimals);
   schedule.save();
-
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UnderlyingAssetTopUp, event.block.timestamp, AssetType.fixedyield, schedule.id);
-  accountActivityEvent(eventId(event), from.id, AccountActivityEventName.UnderlyingAssetTopUp, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }
 
 export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEvent): void {
@@ -134,7 +126,4 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
   schedule.underlyingBalanceExact = schedule.underlyingBalanceExact.minus(event.params.amount);
   schedule.underlyingBalance = toDecimals(schedule.underlyingBalanceExact, token.decimals);
   schedule.save();
-
-  accountActivityEvent(eventId(event), sender.id, AccountActivityEventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.fixedyield, schedule.id);
-  accountActivityEvent(eventId(event), to.id, AccountActivityEventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.fixedyield, schedule.id);
 }

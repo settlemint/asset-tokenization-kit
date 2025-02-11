@@ -5,7 +5,6 @@ export class AssetType {
   static stablecoin: string = 'stablecoin';
   static cryptocurrency: string = 'cryptocurrency';
   static fund: string = 'fund';
-  static fixedyield: string = 'fixedyield';
 }
 
 export class FactoryType {
