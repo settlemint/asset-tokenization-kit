@@ -12,8 +12,6 @@ const AssetsEventsQuery = theGraphGraphqlStarterkits(`
   }
 `);
 
-export async function getAssetsEventsData() {
-  const data = await theGraphClientStarterkits.request(AssetsEventsQuery);
-
-  return data;
+export function getAssetsEventsData() {
+  return theGraphClientStarterkits.request(AssetsEventsQuery);
 }

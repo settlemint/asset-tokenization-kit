@@ -9,7 +9,7 @@ import { AssetsSupplyClient } from './assets-supply-client';
 export async function AssetsSupply() {
   const queryClient = getQueryClient();
   const queryKey: QueryKey = [
-    'AssetsPieChart',
+    'AssetsSupply',
     assetConfig.bond.queryKey,
     assetConfig.cryptocurrency.queryKey,
     assetConfig.equity.queryKey,
