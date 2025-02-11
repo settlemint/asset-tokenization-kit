@@ -1,15 +1,10 @@
 import { formatDate } from '@/lib/date';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { unstable_cache } from 'next/cache';
-import { getAddress } from 'viem';
 
 const TransactionListFragment = theGraphGraphqlStarterkits(`
   fragment TransactionListFragment on AssetEvent {
    emitter {
       id
-      name
-      symbol
     }
     eventName
     timestamp
@@ -192,40 +187,11 @@ query TransactionsList {
   [TransactionListFragment]
 );
 
-const TransactionUser = hasuraGraphql(`
-  query TransactionUser($id: String!) {
-    user(where: { wallet: { _eq: $id } }) {
-      name
-      image
-      email
-    }
-  }
-`);
-
-const getUserName = unstable_cache(
-  async (walletAddress: string) => {
-    const user = await hasuraClient.request(TransactionUser, {
-      id: walletAddress,
-    });
-    return user.user[0];
-  },
-  ['user-name'],
-  {
-    revalidate: 3600, // Cache for 1 hour
-    tags: ['user-name'],
-  }
-);
-
 export interface NormalizedTransactionListItem {
   event: string;
   timestamp: string;
   asset: string;
-  emitterName: string;
-  emitterSymbol: string;
   sender: string;
-  senderName?: string;
-  senderEmail?: string;
-  senderImage?: string;
   details: Record<string, string>;
 }
 
@@ -234,19 +200,11 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
   const results: NormalizedTransactionListItem[] = [];
 
   for (const event of theGraphData.assetEvents) {
-    const walletAddress = getAddress(event.sender.id);
-    const user = await getUserName(walletAddress);
-
     const normalized: NormalizedTransactionListItem = {
       event: event.eventName,
       timestamp: formatDate(event.timestamp),
       asset: event.emitter.id,
-      emitterName: event.emitter.name,
-      emitterSymbol: event.emitter.symbol,
       sender: event.sender.id,
-      senderName: user?.name,
-      senderEmail: user?.email,
-      senderImage: user?.image ?? undefined,
       details: {},
     };
 
