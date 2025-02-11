@@ -12,7 +12,7 @@ const containerVariants = cva('', {
     variant: 'loading',
   },
 });
-interface AssetActivitySkeletonProps extends VariantProps<typeof containerVariants> {}
+type AssetActivitySkeletonProps = VariantProps<typeof containerVariants>;
 
 export function AssetActivitySkeleton({ variant = 'loading' }: AssetActivitySkeletonProps) {
   return (
