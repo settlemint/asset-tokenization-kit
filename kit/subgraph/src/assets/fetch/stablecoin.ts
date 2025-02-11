@@ -12,8 +12,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
     let isin = endpoint.try_isin();
-    let totalSupply = endpoint.try_totalSupply();
-    let collateral = endpoint.try_collateral();
     let paused = endpoint.try_paused();
 
     const account = fetchAccount(address);
@@ -29,6 +27,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.admins = [];
     stableCoin.supplyManagers = [];
     stableCoin.userManagers = [];
+    stableCoin.lastActivity = BigInt.zero();
 
     // StableCoin-specific fields
     stableCoin.isin = isin.reverted ? '' : isin.value;

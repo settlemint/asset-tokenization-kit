@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { ApprovalEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
+import { EventName } from '../../utils/enums';
 
 export function approvalEvent(
   id: Bytes,
@@ -13,7 +14,7 @@ export function approvalEvent(
   decimals: i32
 ): ApprovalEvent {
   const event = new ApprovalEvent(id);
-  event.eventName = 'Approval';
+  event.eventName = EventName.Approval;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;

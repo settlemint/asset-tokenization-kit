@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { TokensFrozenEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
+import { EventName } from '../../utils/enums';
 
 export function tokensFrozenEvent(
   id: Bytes,
@@ -12,7 +13,7 @@ export function tokensFrozenEvent(
   decimals: i32
 ): TokensFrozenEvent {
   const event = new TokensFrozenEvent(id);
-  event.eventName = 'Assets Frozen';
+  event.eventName = EventName.TokensFrozen;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;

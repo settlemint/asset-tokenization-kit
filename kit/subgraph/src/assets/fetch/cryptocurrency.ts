@@ -27,6 +27,7 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.admins = [];
     cryptoCurrency.supplyManagers = [];
     cryptoCurrency.userManagers = [];
+    cryptoCurrency.lastActivity = BigInt.zero();
     cryptoCurrency.save();
 
     account.asAsset = cryptoCurrency.id;
