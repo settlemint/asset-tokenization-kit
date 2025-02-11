@@ -4,17 +4,17 @@ import { PieChartComponent } from '@/components/ui/pie-chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from '../../common/assets/data';
-import { AssetsPieChartSkeleton } from './asset-pie-chart-skeleton';
+import { AssetsSupplySkeleton } from './assets-supply-chart-skeleton';
 
 const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
   Object.entries(assetConfig).map(([, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])
 ) satisfies ChartConfig;
 
-interface AssetsPieChartClientProps {
+interface AssetsSupplyClientProps {
   queryKey: QueryKey;
 }
 
-export function AssetsPieChartClient({ queryKey }: AssetsPieChartClientProps) {
+export function AssetsSupplyClient({ queryKey }: AssetsSupplyClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
@@ -29,7 +29,7 @@ export function AssetsPieChartClient({ queryKey }: AssetsPieChartClientProps) {
     }));
 
   if (chartData.length === 0) {
-    return <AssetsPieChartSkeleton variant="noData" />;
+    return <AssetsSupplySkeleton variant="noData" />;
   }
 
   return (

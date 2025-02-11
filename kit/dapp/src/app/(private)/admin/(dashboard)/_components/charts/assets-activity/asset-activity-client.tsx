@@ -4,9 +4,10 @@ import { BarChartComponent } from '@/components/ui/bar-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { AssetActivitySkeleton } from './asset-activity-chart-skeleton';
 import { getAssetsEventsData } from './data';
 
-interface EventsBarChartClientProps {
+interface AssetActivityClientProps {
   queryKey: QueryKey;
 }
 
@@ -25,12 +26,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function EventsBarChartClient({ queryKey }: EventsBarChartClientProps) {
+export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsEventsData,
     refetchInterval: 1000 * 5,
   });
+
+  const isEmpty = data.assetActivityDatas.every(
+    (asset) => asset.mintEventCount === 0 && asset.burnEventCount === 0 && asset.transferEventCount === 0
+  );
+
+  if (isEmpty) {
+    return <AssetActivitySkeleton variant="noData" />;
+  }
 
   return (
     <BarChartComponent
