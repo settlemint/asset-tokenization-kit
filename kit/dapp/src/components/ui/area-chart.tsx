@@ -40,7 +40,7 @@ export function AreaChartComponent({ data, config, title, description, xAxis, fo
       </CardHeader>
       <CardContent>
         <ChartContainer config={config}>
-          <AreaChart accessibilityLayer data={data} margin={{ left: 12, right: 12 }}>
+          <AreaChart accessibilityLayer data={data} margin={{ left: 16, right: 16, top: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey={key}
@@ -62,7 +62,7 @@ export function AreaChartComponent({ data, config, title, description, xAxis, fo
               <Area
                 key={key}
                 dataKey={key}
-                type="natural"
+                type="step"
                 fill={`url(#fill${key})`}
                 fillOpacity={0.4}
                 stroke={`var(--color-${key})`}
