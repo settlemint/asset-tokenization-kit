@@ -29,6 +29,7 @@ export function UpdateCollateralStablecoinForm({
       resolverAction={zodResolver(UpdateCollateralFormSchema)}
       onClose={onClose}
       submitLabel="Update collateral"
+      submittingLabel="Updating collateral..."
       messages={{
         onCreate: () => `Updating collateral for ${name} (${symbol})`,
         onSuccess: () => `${name} (${symbol}) collateral updated successfully on chain`,
