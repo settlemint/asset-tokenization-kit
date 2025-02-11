@@ -24,7 +24,7 @@ export const columns = [
   }),
   columnHelper.accessor('asset.type', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Type</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{formatAssetType(getValue() as string)}</DataTableColumnCell>,
+    cell: ({ getValue }) => <DataTableColumnCell>{formatAssetType(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   columnHelper.accessor('value', {
@@ -33,9 +33,7 @@ export const columns = [
         Balance
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => (
-      <DataTableColumnCell variant="numeric">{formatNumber(getValue() as string)}</DataTableColumnCell>
-    ),
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset.paused', {

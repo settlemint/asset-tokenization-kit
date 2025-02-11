@@ -49,9 +49,10 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.1.5",
-    "turbo": "2.4.0",
+    "turbo": "2.4.1",
     "typescript": "5.7.3",
-    "ultracite": "4.1.18"
+    "ultracite": "4.1.18",
+    "lefthook": "1.10.10"
   },
   "trustedDependencies": [
     "@biomejs/biome",
@@ -60,6 +61,7 @@
     "better-sqlite3",
     "esbuild",
     "keccak",
+    "lefthook",
     "prisma",
     "protobufjs",
     "secp256k1"

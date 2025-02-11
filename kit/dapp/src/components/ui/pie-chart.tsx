@@ -1,7 +1,5 @@
 "use client"
 
-import { Pie, PieChart } from "recharts"
-import { cn } from "@/lib/utils"
 import {
   Card,
   CardContent,
@@ -11,13 +9,15 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
-  ChartTooltipContent,
   ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart"
+import { cn } from "@/lib/utils"
+import { Pie, PieChart } from "recharts"
 
 interface PieChartProps {
   title: string

@@ -53,7 +53,7 @@
       "outputs": ["src/lib/contracts.ts"]
     },
     "build": {
-      "dependsOn": ["codegen", "addresses", "compile:forge"],
+      "dependsOn": ["codegen", "addresses", "contracts#compile:forge"],
       "outputs": [".next/**", "!.next/cache/**", "build/**"]
     },
     "dev": {
@@ -65,19 +65,22 @@
       "dependsOn": ["codegen", "contracts#compile:forge"]
     },
     "genesis": {
-      "dependsOn": ["dependencies", "compile:forge"],
+      "dependsOn": ["dependencies", "contracts#compile:forge"],
       "outputs": ["genesis-output.json"]
     },
     "contracts#deploy:local": {
-      "dependsOn": ["genesis", "compile:hardhat"],
+      "dependsOn": ["genesis", "contracts#compile:hardhat"],
       "inputs": ["kit/subgraph/**"],
       "outputs": ["kit/contracts/ignition/deployments/**"]
     },
     "subgraph#deploy:local": {
       "dependsOn": ["contracts#deploy:local"]
     },
+    "deploy:local": {
+      "dependsOn": ["contracts#deploy:local", "subgraph#deploy:local"]
+    },
     "deploy:remote": {
-      "dependsOn": ["compile:hardhat", "^deploy:remote"],
+      "dependsOn": ["contracts#compile:hardhat", "^deploy:remote"],
       "cache": false
     }
   }
