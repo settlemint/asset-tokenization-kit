@@ -1,3 +1,5 @@
+'use client';
+
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import { type AssetDetailConfig, pluralize } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,17 +12,19 @@ import { burnFund } from './store';
 
 export function BurnFundForm({
   address,
+  decimals,
   assetConfig,
   onClose,
 }: {
   address: Address;
+  decimals: number;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={(formData) => burnFund({ ...formData, address })}
+      storeAction={(formData) => burnFund({ ...formData, address, decimals })}
       resolverAction={zodResolver(BurnFundFormSchema)}
       onClose={onClose}
       submitLabel="Burn"

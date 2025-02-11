@@ -7,7 +7,12 @@ import { useState } from 'react';
 import type { Address } from 'viem';
 import { MintFundForm } from './form';
 
-export function MintTokensButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
+export function MintTokensButton({
+  address,
+  name,
+  symbol,
+  decimals,
+}: { name: string; symbol: string; address: Address; decimals: number }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -26,7 +31,12 @@ export function MintTokensButton({ address, name, symbol }: { name: string; symb
             Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <MintFundForm address={address} assetConfig={assetConfig.fund} onClose={() => setOpen(false)} />
+        <MintFundForm
+          address={address}
+          decimals={decimals}
+          assetConfig={assetConfig.fund}
+          onClose={() => setOpen(false)}
+        />
       </SheetContent>
     </Sheet>
   );

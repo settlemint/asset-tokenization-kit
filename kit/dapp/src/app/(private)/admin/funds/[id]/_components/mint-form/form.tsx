@@ -12,17 +12,19 @@ import { mintFund } from './store';
 
 export function MintFundForm({
   address,
+  decimals,
   assetConfig,
   onClose,
 }: {
   address: Address;
+  decimals: number;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
 }) {
   return (
     <AssetForm
       invalidate={[assetConfig.queryKey, ['transactions']]}
-      storeAction={(formData) => mintFund({ ...formData, address })}
+      storeAction={(formData) => mintFund({ ...formData, address, decimals })}
       resolverAction={zodResolver(MintFundFormSchema)}
       onClose={onClose}
       submitLabel="Mint"

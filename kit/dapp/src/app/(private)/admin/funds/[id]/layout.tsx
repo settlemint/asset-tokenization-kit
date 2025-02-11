@@ -104,10 +104,20 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem asChild>
-              <MintTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} />
+              <MintTokensButton
+                address={id as Address}
+                name={fund.name}
+                symbol={fund.symbol}
+                decimals={fund.decimals}
+              />
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <BurnTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} />
+              <BurnTokensButton
+                address={id as Address}
+                name={fund.name}
+                symbol={fund.symbol}
+                decimals={fund.decimals}
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

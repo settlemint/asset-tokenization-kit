@@ -7,7 +7,14 @@ import { useState } from 'react';
 import type { Address } from 'viem';
 import { BurnFundForm } from './form';
 
-export function BurnTokensButton({ address, name, symbol }: { name: string; symbol: string; address: Address }) {
+interface BurnTokensButtonProps {
+  address: Address;
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
+export function BurnTokensButton({ address, name, symbol, decimals }: BurnTokensButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -26,7 +33,12 @@ export function BurnTokensButton({ address, name, symbol }: { name: string; symb
             Burn your {name} ({symbol}) tokens by specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <BurnFundForm address={address} assetConfig={assetConfig.fund} onClose={() => setOpen(false)} />
+        <BurnFundForm
+          address={address}
+          assetConfig={assetConfig.fund}
+          onClose={() => setOpen(false)}
+          decimals={decimals}
+        />
       </SheetContent>
     </Sheet>
   );

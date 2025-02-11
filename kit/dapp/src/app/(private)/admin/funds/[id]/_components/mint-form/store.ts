@@ -33,6 +33,7 @@ export const mintFund = actionClient
   .schema(
     MintFundFormSchema.extend({
       address: z.string(),
+      decimals: z.number(),
     })
   )
   .outputSchema(MintFundOutputSchema)
