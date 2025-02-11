@@ -53,7 +53,7 @@ export function BarChartComponent({
 
   return (
     <Card className={cn("flex flex-col", className)}>
-      <CardHeader className="items-center pb-2">
+      <CardHeader className="pb-2">
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

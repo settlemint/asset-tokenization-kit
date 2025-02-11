@@ -42,7 +42,7 @@ export function PieChartComponent({
 }: PieChartProps) {
   return (
     <Card className={cn("flex flex-col", className)}>
-      <CardHeader className="items-center pb-0">
+      <CardHeader className="pb-0">
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

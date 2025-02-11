@@ -46,6 +46,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
       data={data.assetActivityDatas}
       config={chartConfig}
       title="Activity by asset type"
+      description="Showing events for each asset type"
       xAxis={{
         key: 'assetType',
         tickFormatter: (value: string) => {

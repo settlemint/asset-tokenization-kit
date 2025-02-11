@@ -34,6 +34,7 @@ export function AssetsSupplyClient({ queryKey }: AssetsSupplyClientProps) {
 
   return (
     <PieChartComponent
+      description="Showing the distribution of assets"
       title="Asset Distribution (in %)"
       data={chartData}
       dataKey="supplyPercentage"
