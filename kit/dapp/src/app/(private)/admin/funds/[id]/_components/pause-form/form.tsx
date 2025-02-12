@@ -8,27 +8,27 @@ import { PauseFundFormSchema } from './schema';
 import { Summary } from './steps/summary';
 import { pauseFund } from './store';
 
-export function PauseFundForm({
-  address,
-  paused,
-  assetConfig,
-  onClose,
-}: {
+interface PauseFundFormProps {
   address: Address;
   paused: boolean;
   assetConfig: AssetDetailConfig;
   onClose: () => void;
-}) {
+}
+
+export function PauseFundForm({ address, paused, assetConfig, onClose }: PauseFundFormProps) {
   const actionLabel = paused ? 'Unpause' : 'Pause';
   const actionSubmittingLabel = actionLabel === 'Pause' ? 'Pausing' : 'Unpausing';
   const actionSuccessLabel = actionLabel === 'Pause' ? 'Paused' : 'Unpaused';
 
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
       storeAction={(formData) => pauseFund({ ...formData, address, paused })}
       resolverAction={zodResolver(PauseFundFormSchema)}
       onClose={onClose}
+      cacheInvalidation={{
+        clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
+        serverCachePath: () => `/admin/funds/${address}`,
+      }}
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}
       messages={{

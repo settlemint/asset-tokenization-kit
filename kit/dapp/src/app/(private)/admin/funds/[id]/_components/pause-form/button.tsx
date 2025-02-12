@@ -15,6 +15,7 @@ interface PauseTokensButtonProps {
 }
 
 export function PauseTokensButton({ address, name, symbol, paused }: PauseTokensButtonProps) {
+  console.log('PauseTokensButton rendered with paused:', paused);
   const [open, setOpen] = useState(false);
   const action = paused ? 'Unpause' : 'Pause';
 

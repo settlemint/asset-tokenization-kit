@@ -1,5 +1,5 @@
 'use client';
-
+import { revalidatePaths } from '@/app/_actions/revalidate';
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
@@ -28,6 +28,22 @@ const defaultMessages = <T,>(): AssetFormMessages<T> => ({
   onError: (_, error: Error) => `Transaction failed: ${error.message}`,
 });
 
+export type CacheInvalidationConfig<S extends Schema> = {
+  /**
+   * Array of React Query keys to invalidate in the client-side cache.
+   * Use this for refreshing client-side data fetched with React Query.
+   * @example ['users', 'userList']
+   */
+  clientCacheKeys: QueryKey[];
+
+  /**
+   * Function to generate the server-side cache path that should be revalidated.
+   * Use this for refreshing Next.js server-side rendered (SSR) or statically generated pages.
+   * @example (input) => `/users/${input.id}`
+   */
+  serverCachePath?: (input: Infer<S>) => string;
+};
+
 export type AssetFormProps<
   ServerError,
   S extends Schema,
@@ -41,8 +57,12 @@ export type AssetFormProps<
     | ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  invalidate: QueryKey[];
   onClose?: () => void;
+  /**
+   * Configuration for cache invalidation after successful form submission.
+   * Handles both client-side and server-side cache updates.
+   */
+  cacheInvalidation: CacheInvalidationConfig<S>;
   submitLabel?: string;
   submittingLabel?: string;
   processingLabel?: string;
@@ -61,7 +81,7 @@ export function AssetForm<
   storeAction,
   resolverAction,
   onClose,
-  invalidate,
+  cacheInvalidation,
   submitLabel,
   submittingLabel,
   processingLabel,
@@ -94,8 +114,14 @@ export function AssetForm<
         }
         toast.promise(waitForTransactionMining(data), {
           loading: messages.onCreate(input as Infer<S>),
-          success: () => {
-            invalidateTags(invalidate);
+          success: async () => {
+            // Invalidate both client and server caches
+            await Promise.all([
+              invalidateTags(cacheInvalidation.clientCacheKeys),
+              cacheInvalidation.serverCachePath
+                ? revalidatePaths([cacheInvalidation.serverCachePath(input as Infer<S>)])
+                : Promise.resolve(),
+            ]);
             return messages.onSuccess(input as Infer<S>);
           },
           error: (error: Error) => messages.onError(input as Infer<S>, error),
