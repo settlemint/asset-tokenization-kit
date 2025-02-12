@@ -5,6 +5,7 @@ import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import { getRecentUsers } from './data';
+import { UsersHistorySkeleton } from './users-history-chart-skeleton';
 
 interface UsersHistoryClientProps {
   queryKey: QueryKey;
@@ -25,7 +26,7 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
   });
 
   const chartData = useMemo(() => {
-    if (!data) {
+    if (data.length === 0) {
       return [];
     }
 
@@ -40,6 +41,10 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
       users: data.filter((user) => isSameDay(new Date(user.createdAt), date)).length,
     }));
   }, [data]);
+
+  if (data.length === 0) {
+    return <UsersHistorySkeleton variant="noData" />;
+  }
 
   return (
     <AreaChartComponent
