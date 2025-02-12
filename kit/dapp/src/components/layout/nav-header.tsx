@@ -12,7 +12,7 @@ export function NavHeader() {
     <SidebarMenu className="">
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          <a href="/admin" className={cn(state === 'expanded' ? '-mt-2' : 'mt-0 ml-1')}>
+          <div className={cn(state === 'expanded' ? '-mt-2' : 'mt-0 ml-1')}>
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Image src={SettleMintIcon} alt="SettleMint" width={32} height={32} />
             </div>
@@ -20,7 +20,7 @@ export function NavHeader() {
               <span className="font-bold text-lg">SettleMint</span>
               <span className="-mt-1 text-md">Asset Tokenization</span>
             </div>
-          </a>
+          </div>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

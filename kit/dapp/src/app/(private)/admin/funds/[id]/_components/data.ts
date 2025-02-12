@@ -10,6 +10,7 @@ const FundTitle = theGraphGraphqlStarterkits(
     name
     symbol
     decimals
+    paused
     }
   }
 `

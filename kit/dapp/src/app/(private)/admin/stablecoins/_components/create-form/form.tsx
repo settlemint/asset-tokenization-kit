@@ -14,10 +14,12 @@ export function CreateStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.stablecoin.queryKey, ['transactions']]}
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
       onClose={onClose}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.stablecoin.queryKey, ['transactions']],
+      }}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{
