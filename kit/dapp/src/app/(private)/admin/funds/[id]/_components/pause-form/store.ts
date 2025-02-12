@@ -41,14 +41,6 @@ class InvalidChallengeResponseError extends Error {
   }
 }
 
-type PauseResponse = {
-  FundPause: { transactionHash: string | null } | null;
-};
-
-type UnpauseResponse = {
-  FundUnpause: { transactionHash: string | null } | null;
-};
-
 export const pauseFund = actionClient
   .schema(
     PauseFundFormSchema.extend({
@@ -61,20 +53,29 @@ export const pauseFund = actionClient
     const user = await getAuthenticatedUser();
 
     try {
-      const mutation = paused ? UnpauseFund : PauseFund;
-      const data = await portalClient.request<PauseResponse | UnpauseResponse>(mutation, {
+      if (paused) {
+        const { FundUnpause } = await portalClient.request(UnpauseFund, {
+          address,
+          from: user.wallet,
+          challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+          gasLimit: '200000',
+        });
+        if (!FundUnpause?.transactionHash) {
+          throw new Error('Failed to send the transaction to unpause the fund');
+        }
+        return FundUnpause.transactionHash;
+      }
+
+      const { FundPause } = await portalClient.request(PauseFund, {
         address,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '200000',
       });
-
-      const transactionHash = ('FundUnpause' in data ? data.FundUnpause : data.FundPause)?.transactionHash;
-      if (!transactionHash) {
-        throw new Error(`Failed to send the transaction to ${paused ? 'unpause' : 'pause'} the fund`);
+      if (!FundPause?.transactionHash) {
+        throw new Error('Failed to send the transaction to pause the fund');
       }
-
-      return transactionHash;
+      return FundPause.transactionHash;
     } catch (error) {
       if (error instanceof Error && error.message.includes('Invalid challenge response')) {
         throw new InvalidChallengeResponseError();

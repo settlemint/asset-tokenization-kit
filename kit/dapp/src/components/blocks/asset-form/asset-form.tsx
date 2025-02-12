@@ -44,6 +44,12 @@ export type CacheInvalidationConfig<S extends Schema> = {
   serverCachePath?: (input: Infer<S>) => string;
 };
 
+type FormStepComponent<S extends Schema> = ComponentType & {
+  validatedFields: readonly (keyof Infer<S>)[];
+};
+
+type FormStepElement<S extends Schema> = ReactElement<unknown, FormStepComponent<S>>;
+
 export type AssetFormProps<
   ServerError,
   S extends Schema,
@@ -52,9 +58,7 @@ export type AssetFormProps<
   CBAVE,
   FormContext = unknown,
 > = {
-  children:
-    | ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>
-    | ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
+  children: FormStepElement<S> | FormStepElement<S>[]; // Accepts a single component or an array of components
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
   onClose?: () => void;
