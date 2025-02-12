@@ -1,6 +1,6 @@
 'use client';
+import { PieChartComponent } from '@/components/blocks/charts/pie-chart';
 import type { ChartConfig } from '@/components/ui/chart';
-import { PieChartComponent } from '@/components/ui/pie-chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from '../../common/assets/data';
@@ -34,7 +34,8 @@ export function AssetsSupplyClient({ queryKey }: AssetsSupplyClientProps) {
 
   return (
     <PieChartComponent
-      title="Asset Distribution (in %)"
+      description="Showing the distribution of assets (in %)"
+      title="Distribution"
       data={chartData}
       dataKey="supplyPercentage"
       nameKey="type"
