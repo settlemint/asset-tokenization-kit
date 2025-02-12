@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { AssetDetailConfig } from '@/lib/config/assets';
+import { type AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { MintStablecoinFormSchema } from './schema';
@@ -25,7 +25,9 @@ export function MintStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
+      }}
       storeAction={mintStablecoin}
       resolverAction={zodResolver(MintStablecoinFormSchema)}
       onClose={onClose}
