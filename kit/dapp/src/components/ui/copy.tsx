@@ -54,7 +54,7 @@ export function CopyToClipboard({ value, displayText, successMessage = 'Copied t
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 hover:bg-theme-accent-background"
+        className="h-8 w-8 hover:bg-theme-accent-background ml-1"
         onClick={handleCopy}
         title="Copy to clipboard"
       >

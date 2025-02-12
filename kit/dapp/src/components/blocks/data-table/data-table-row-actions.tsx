@@ -55,13 +55,13 @@ export function DataTableRowActions({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-8 w-8 p-0 hover:bg-theme-accent-background active:border-0 data-[state=open]:bg-muted dark:hover:text-foreground"
+              className="flex h-8 w-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuContent align="end" className="w-[160px] dark:bg-theme-accent-background ">
             {children}
           </DropdownMenuContent>
         </DropdownMenu>
