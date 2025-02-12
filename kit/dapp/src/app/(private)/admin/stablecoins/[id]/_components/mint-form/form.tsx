@@ -25,7 +25,9 @@ export function MintStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
+      }}
       storeAction={mintStablecoin}
       resolverAction={zodResolver(MintStablecoinFormSchema)}
       onClose={onClose}

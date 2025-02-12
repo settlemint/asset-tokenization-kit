@@ -1,5 +1,5 @@
 'use client';
-
+import { revalidatePaths } from '@/app/_actions/revalidate';
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
@@ -28,6 +28,28 @@ const defaultMessages = <T,>(): AssetFormMessages<T> => ({
   onError: (_, error: Error) => `Transaction failed: ${error.message}`,
 });
 
+export type CacheInvalidationConfig<S extends Schema> = {
+  /**
+   * Array of React Query keys to invalidate in the client-side cache.
+   * Use this for refreshing client-side data fetched with React Query.
+   * @example ['users', 'userList']
+   */
+  clientCacheKeys: QueryKey[];
+
+  /**
+   * Function to generate the server-side cache path that should be revalidated.
+   * Use this for refreshing Next.js server-side rendered (SSR) or statically generated pages.
+   * @example (input) => `/users/${input.id}`
+   */
+  serverCachePath?: (input: Infer<S>) => string;
+};
+
+type FormStepComponent<S extends Schema> = ComponentType & {
+  validatedFields: readonly (keyof Infer<S>)[];
+};
+
+type FormStepElement<S extends Schema> = ReactElement<unknown, FormStepComponent<S>>;
+
 export type AssetFormProps<
   ServerError,
   S extends Schema,
@@ -36,11 +58,15 @@ export type AssetFormProps<
   CBAVE,
   FormContext = unknown,
 > = {
-  children: ReactElement<unknown, ComponentType & { validatedFields: readonly (keyof Infer<S>)[] }>[];
+  children: FormStepElement<S> | FormStepElement<S>[]; // Accepts a single component or an array of components
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
   resolverAction: Resolver<Infer<S>, FormContext>;
-  invalidate: QueryKey[];
   onClose?: () => void;
+  /**
+   * Configuration for cache invalidation after successful form submission.
+   * Handles both client-side and server-side cache updates.
+   */
+  cacheInvalidation: CacheInvalidationConfig<S>;
   submitLabel?: string;
   submittingLabel?: string;
   processingLabel?: string;
@@ -59,7 +85,7 @@ export function AssetForm<
   storeAction,
   resolverAction,
   onClose,
-  invalidate,
+  cacheInvalidation,
   submitLabel,
   submittingLabel,
   processingLabel,
@@ -73,9 +99,9 @@ export function AssetForm<
 
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isValidating, setIsValidating] = useState(false);
+  const [, setIsValidating] = useState(false);
   const invalidateTags = useInvalidateTags();
-  const totalSteps = children.length;
+  const totalSteps = Array.isArray(children) ? children.length : 1;
 
   useEffect(() => {
     setMounted(true);
@@ -92,8 +118,14 @@ export function AssetForm<
         }
         toast.promise(waitForTransactionMining(data), {
           loading: messages.onCreate(input as Infer<S>),
-          success: () => {
-            invalidateTags(invalidate);
+          success: async () => {
+            // Invalidate both client and server caches
+            await Promise.all([
+              invalidateTags(cacheInvalidation.clientCacheKeys),
+              cacheInvalidation.serverCachePath
+                ? revalidatePaths([cacheInvalidation.serverCachePath(input as Infer<S>)])
+                : Promise.resolve(),
+            ]);
             return messages.onSuccess(input as Infer<S>);
           },
           error: (error: Error) => messages.onError(input as Infer<S>, error),
@@ -143,7 +175,7 @@ export function AssetForm<
   });
 
   const handleNext = async () => {
-    const CurrentStep = children[currentStep].type;
+    const CurrentStep = Array.isArray(children) ? children[currentStep].type : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
 
     if (!fieldsToValidate?.length) {
@@ -187,9 +219,9 @@ export function AssetForm<
             <Form {...form}>
               <form onSubmit={handleSubmitWithAction}>
                 {/* Step indicator */}
-                <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />
+                {totalSteps > 1 && <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />}
                 {/* Current step content */}
-                <div className="min-h-[400px]">{children[currentStep]}</div>
+                <div className="min-h-[400px]">{Array.isArray(children) ? children[currentStep] : children}</div>
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}

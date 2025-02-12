@@ -93,7 +93,7 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
 
   return (
     <>
-      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading}>
+      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading} className="dropdown-menu-item">
         {user.banned ? (isLoading ? 'Unbanning...' : 'Unban') : 'Ban'}
       </DropdownMenuItem>
 

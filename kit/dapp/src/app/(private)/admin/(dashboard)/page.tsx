@@ -1,6 +1,5 @@
 import { AssetActivity } from './_components/charts/assets-activity/asset-activity';
 import { AssetsSupply } from './_components/charts/assets-supply/assets-supply';
-import { TransactionsHistory } from './_components/charts/transactions/transactions-history';
 import { UsersHistory } from './_components/charts/users/users-history';
 import { AssetsWidget } from './_components/widgets/assets/assets';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
@@ -21,7 +20,6 @@ export default function AdminDashboard() {
         <AssetsSupply />
         <AssetActivity />
         <UsersHistory />
-        <TransactionsHistory />
       </div>
     </div>
   );

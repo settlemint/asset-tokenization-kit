@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { type HTMLAttributes, forwardRef, useEffect, useMemo, useState } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
-import { type Address, createPublicClient, getAddress, http, isAddress } from 'viem';
+import { http, type Address, createPublicClient, getAddress, isAddress } from 'viem';
 import { mainnet } from 'viem/chains';
 
 /**
@@ -28,6 +28,7 @@ interface AddressAvatarProps extends HTMLAttributes<HTMLDivElement> {
   imageUrl?: string | null;
   indicator?: boolean;
   variant?: 'big' | 'small' | 'tiny';
+  verbose?: boolean;
 }
 
 // Create a singleton viem client
@@ -54,7 +55,7 @@ const AVATAR_SIZES = {
  * @returns {JSX.Element} The rendered AddressAvatar component.
  */
 export const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
-  ({ address, email, imageUrl, className, indicator, variant = 'big', ...props }, ref) => {
+  ({ address, email, imageUrl, className, indicator, variant = 'big', verbose = false, ...props }, ref) => {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {

@@ -3,9 +3,8 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { Address } from 'viem';
 import type { BurnFundFormType } from '../schema';
-export function Summary({ address }: { address: Address }) {
+export function Summary() {
   const { control } = useFormContext<BurnFundFormType>();
   const values = useWatch({
     control: control,

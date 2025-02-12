@@ -25,6 +25,8 @@ USER root
 
 RUN bun install
 RUN mkdir -p /root/.svm && \
+  cd kit/contracts && \
+  bun dependencies && \
   bun run build
 
 FROM busybox:1.37.0

@@ -7,6 +7,7 @@ export default {
     './{,src/}pages/**/*.{js,ts,jsx,tsx,mdx}',
     './{,src/}components/**/*.{js,ts,jsx,tsx,mdx}',
     './{,src/}app/**/*.{js,ts,jsx,tsx,mdx}',
+    './{,src}/mdx-components.tsx',
   ],
   theme: {
     extend: {
@@ -77,6 +78,8 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        'theme-accent-background': 'hsl(var(--theme-accent-background))',
+        'theme-accent-foreground': 'hsl(var(--theme-accent-foreground))',
       },
       borderRadius: {
         lg: 'var(--radius)',
