@@ -89,7 +89,7 @@
     "zod-form-data": "2.0.5"
   },
   "devDependencies": {
-    "@better-auth/cli": "1.1.16",
+    "@better-auth/cli": "1.1.17",
     "@types/node": "22.13.1",
     "@types/pg": "8.11.11",
     "@types/react": "19.0.8",
