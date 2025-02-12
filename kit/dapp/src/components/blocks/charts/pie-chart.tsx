@@ -9,7 +9,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { cn } from '@/lib/utils';
 import { Pie, PieChart } from 'recharts';
 
 interface PieChartProps {
