@@ -4,7 +4,6 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
 import type { getAssetEvents } from './data';
 
 const columnHelper = createColumnHelper<Awaited<ReturnType<typeof getAssetEvents>>[number]>();
@@ -41,9 +40,3 @@ export const columns = [
     enableColumnFilter: false,
   }),
 ];
-export const icons = {
-  active: PlayCircle,
-  paused: PauseCircle,
-  private: Lock,
-  public: Unlock,
-};

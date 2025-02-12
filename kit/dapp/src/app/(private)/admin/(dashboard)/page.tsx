@@ -1,6 +1,7 @@
 import { AssetActivity } from './_components/charts/assets-activity/asset-activity';
 import { AssetsSupply } from './_components/charts/assets-supply/assets-supply';
 import { UsersHistory } from './_components/charts/users/users-history';
+import LatestEvents from './_components/table/latest-events/latest-events';
 import { AssetsWidget } from './_components/widgets/assets/assets';
 import { TransactionsWidget } from './_components/widgets/transactions/transactions';
 import { UsersWidget } from './_components/widgets/users/users';
@@ -21,6 +22,8 @@ export default function AdminDashboard() {
         <AssetActivity />
         <UsersHistory />
       </div>
+      <p className="mt-8 mb-4 font-bold text-2xl">Latest Events</p>
+      <LatestEvents />
     </div>
   );
 }
