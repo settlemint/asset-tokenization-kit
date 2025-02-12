@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Construct full paths
 CONTRACTS_PATH="$SCRIPT_DIR/src/lib/contracts.ts"
-DEPLOYED_ADDRESSES_PATH="$SCRIPT_DIR/../contracts/ignition/deployments/chain-$1/deployed_addresses.json"
+DEPLOYED_ADDRESSES_PATH="$SCRIPT_DIR/../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json"
 
 # Default fallback addresses
 PREDEPLOYED_CRYPTO_CURRENCY_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000001"
