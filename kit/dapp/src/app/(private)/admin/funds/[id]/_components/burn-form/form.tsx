@@ -14,18 +14,18 @@ export function BurnFundForm({
   address,
   decimals,
   assetConfig,
-  onClose,
+  onCloseAction,
 }: {
   address: Address;
   decimals: number;
   assetConfig: AssetDetailConfig;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={(formData) => burnFund({ ...formData, address, decimals })}
       resolverAction={zodResolver(BurnFundFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.queryKey, ['transactions']],
         serverCachePath: () => `/admin/funds/${address}`,

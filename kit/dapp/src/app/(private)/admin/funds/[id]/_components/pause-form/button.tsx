@@ -38,7 +38,7 @@ export function PauseTokensButton({ address, name, symbol, paused }: PauseTokens
           address={address}
           paused={paused}
           assetConfig={assetConfig.fund}
-          onClose={() => setOpen(false)}
+          onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
     </Sheet>

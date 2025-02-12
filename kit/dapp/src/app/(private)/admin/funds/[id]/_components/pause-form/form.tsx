@@ -12,10 +12,10 @@ interface PauseFundFormProps {
   address: Address;
   paused: boolean;
   assetConfig: AssetDetailConfig;
-  onClose: () => void;
+  onCloseAction: () => void;
 }
 
-export function PauseFundForm({ address, paused, assetConfig, onClose }: PauseFundFormProps) {
+export function PauseFundForm({ address, paused, assetConfig, onCloseAction }: PauseFundFormProps) {
   const actionLabel = paused ? 'Unpause' : 'Pause';
   const actionSubmittingLabel = actionLabel === 'Pause' ? 'Pausing' : 'Unpausing';
   const actionSuccessLabel = actionLabel === 'Pause' ? 'Paused' : 'Unpaused';
@@ -24,7 +24,7 @@ export function PauseFundForm({ address, paused, assetConfig, onClose }: PauseFu
     <AssetForm
       storeAction={(formData) => pauseFund({ ...formData, address, paused })}
       resolverAction={zodResolver(PauseFundFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
         serverCachePath: () => `/admin/funds/${address}`,

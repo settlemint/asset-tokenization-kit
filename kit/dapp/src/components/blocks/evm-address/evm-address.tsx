@@ -84,7 +84,6 @@ export function EvmAddress({
 
   const displayName = prettyNames ? (name ?? asset.data?.name ?? user.data?.name) : undefined;
   const displayEmail = prettyNames ? user.data?.email : undefined;
-
   return (
     <HoverCard>
       <HoverCardTrigger>
