@@ -19,9 +19,9 @@ export default function AdminDashboard() {
       <p className="mt-8 mb-4 font-bold text-2xl">Stats</p>
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-3 lg:divide-x lg:divide-y-0">
         <AssetsSupply />
-        <AssetActivity />
-        <UsersHistory />
         <TransactionsHistory />
+        <UsersHistory />
+        <AssetActivity />
       </div>
     </div>
   );

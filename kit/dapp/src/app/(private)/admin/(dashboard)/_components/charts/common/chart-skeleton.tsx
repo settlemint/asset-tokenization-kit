@@ -16,7 +16,11 @@ const containerVariants = cva('', {
 });
 
 export type ChartSkeletonVariants = VariantProps<typeof containerVariants>;
-type ChartSkeletonProps = ChartSkeletonVariants & PropsWithChildren & { title: string; description?: string };
+
+interface ChartSkeletonProps extends ChartSkeletonVariants, PropsWithChildren {
+  title: string;
+  description?: string;
+}
 
 export function ChartSkeleton({ variant = 'loading', children, title, description }: ChartSkeletonProps) {
   return (
