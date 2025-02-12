@@ -24,7 +24,9 @@ export function BurnStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
+      }}
       storeAction={burnStablecoin}
       resolverAction={zodResolver(BurnStablecoinFormSchema)}
       onClose={onClose}

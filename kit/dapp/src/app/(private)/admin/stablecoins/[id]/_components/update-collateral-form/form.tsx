@@ -24,10 +24,13 @@ export function UpdateCollateralStablecoinForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
       storeAction={updateCollateral}
       resolverAction={zodResolver(UpdateCollateralFormSchema)}
       onClose={onClose}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
+        serverCachePath: () => `/admin/stablecoins/${address}`,
+      }}
       submitLabel="Update collateral"
       submittingLabel="Updating collateral..."
       messages={{

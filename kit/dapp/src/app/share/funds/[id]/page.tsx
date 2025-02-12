@@ -1,6 +1,6 @@
-import { getOgFund } from "@/app/share/funds/[id]/_components/data";
-import { metadata } from "@/lib/config/metadata";
-import type { Metadata } from "next";
+import { getOgFund } from '@/app/share/funds/[id]/_components/data';
+import { metadata } from '@/lib/config/metadata';
+import type { Metadata } from 'next';
 
 interface SharePageProps {
   params: Promise<{
@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   if (!fund) {
     return {
-      title: "Asset Not Found",
-      description: "The requested asset could not be found.",
+      title: 'Asset Not Found',
+      description: 'The requested asset could not be found.',
     };
   }
 

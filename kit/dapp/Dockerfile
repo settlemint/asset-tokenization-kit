@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package.json .
 COPY bun.l* .
 RUN bun install
+RUN bun x playwright install --with-deps
 
 FROM deps AS build
 
