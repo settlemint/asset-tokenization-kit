@@ -43,7 +43,9 @@
     "test": "turbo test",
     "codegen": "turbo codegen",
     "deploy:local": "turbo deploy:local",
-    "deploy:remote": "turbo deploy:remote"
+    "deploy:remote": "turbo deploy:remote",
+    "test:e2e": "bun run --cwd kit/e2e test:e2e",
+    "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
   "dependencies": {},
   "devDependencies": {
@@ -67,9 +69,7 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.2.0",
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0",
     "graphql": "16.10.0",

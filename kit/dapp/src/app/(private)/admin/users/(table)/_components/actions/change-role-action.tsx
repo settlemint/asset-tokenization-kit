@@ -1,3 +1,5 @@
+'use client';
+
 import type { ListUser } from '@/app/(private)/admin/users/(table)/_components/data';
 import { Button } from '@/components/ui/button';
 import {
@@ -52,6 +54,7 @@ export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onCompl
           setShowRoleDialog(true);
         }}
         disabled={isLoading}
+        className="dropdown-menu-item"
       >
         Change Role
       </DropdownMenuItem>
