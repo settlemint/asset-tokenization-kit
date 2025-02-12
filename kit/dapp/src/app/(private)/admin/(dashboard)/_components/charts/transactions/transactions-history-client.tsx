@@ -14,7 +14,7 @@ interface TransactionsHistoryClientProps {
 export const TRANSACTIONS_CHART_CONFIG = {
   transactions: {
     label: 'Transactions',
-    color: '#3b82f6',
+    color: '#3B9E99',
   },
 } satisfies ChartConfig;
 
