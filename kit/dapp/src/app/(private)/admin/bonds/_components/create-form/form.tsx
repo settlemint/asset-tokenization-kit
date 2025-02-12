@@ -16,7 +16,9 @@ export function CreateBondForm({
       storeAction={createBond}
       resolverAction={zodResolver(CreateBondFormSchema)}
       onClose={onClose}
-      invalidate={[assetConfig.bond.queryKey, ['transactions']]}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.bond.queryKey, ['transactions']],
+      }}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

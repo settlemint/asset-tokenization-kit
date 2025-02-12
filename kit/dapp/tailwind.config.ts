@@ -78,6 +78,8 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        'theme-accent-background': 'hsl(var(--theme-accent-background))',
+        'theme-accent-foreground': 'hsl(var(--theme-accent-foreground))',
       },
       borderRadius: {
         lg: 'var(--radius)',

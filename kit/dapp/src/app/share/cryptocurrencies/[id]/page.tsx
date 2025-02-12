@@ -1,6 +1,6 @@
-import { getOgCryptoCurrency } from "@/app/share/cryptocurrencies/[id]/_components/data";
-import { metadata } from "@/lib/config/metadata";
-import type { Metadata } from "next";
+import { getOgCryptoCurrency } from '@/app/share/cryptocurrencies/[id]/_components/data';
+import { metadata } from '@/lib/config/metadata';
+import type { Metadata } from 'next';
 
 interface SharePageProps {
   params: Promise<{
@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   if (!cryptoCurrency) {
     return {
-      title: "Asset Not Found",
-      description: "The requested asset could not be found.",
+      title: 'Asset Not Found',
+      description: 'The requested asset could not be found.',
     };
   }
 

@@ -1,7 +1,7 @@
-import type { QueryKey } from "@tanstack/react-query";
-import type { Metadata } from "next";
-import StandardOGImage from "./metadata/standard-og.png";
-import { siteConfig } from "./site";
+import type { QueryKey } from '@tanstack/react-query';
+import type { Metadata } from 'next';
+import StandardOGImage from './metadata/standard-og.png';
+import { siteConfig } from './site';
 
 /**
  * Next.js metadata configuration for SEO and site presentation
@@ -13,14 +13,14 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   applicationName: siteConfig.name,
-  generator: "SettleMint Asset Tokenization Starter Kit",
+  generator: 'SettleMint Asset Tokenization Starter Kit',
   description: siteConfig.description,
-  keywords: ["blockchain", "SettleMint", "blockchain transformation", "asset tokenization"],
-  authors: [{ name: "SettleMint", url: "https://www.settlemint.com" }],
-  creator: "SettleMint",
+  keywords: ['blockchain', 'SettleMint', 'blockchain transformation', 'asset tokenization'],
+  authors: [{ name: 'SettleMint', url: 'https://www.settlemint.com' }],
+  creator: 'SettleMint',
   openGraph: {
-    type: "website",
-    locale: "en_US",
+    type: 'website',
+    locale: 'en_US',
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
@@ -35,10 +35,10 @@ export const metadata = {
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title: siteConfig.name,
     description: siteConfig.description,
-    creator: "@SettleMintCom",
+    creator: '@SettleMintCom',
     images: [
       {
         url: new URL(StandardOGImage.src, siteConfig.url).toString(),
@@ -49,12 +49,12 @@ export const metadata = {
     ],
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
   },
   other: {
-    "darkreader-lock": "",
+    'darkreader-lock': '',
   },
 } as const satisfies Metadata;
 
