@@ -13,7 +13,7 @@ interface UsersHistoryClientProps {
 export const USERS_CHART_CONFIG = {
   users: {
     label: 'Users',
-    color: 'hsl(var(--chart-1))',
+    color: '#3b82f6',
   },
 } satisfies ChartConfig;
 

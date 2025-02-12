@@ -53,8 +53,8 @@ export function AreaChartComponent({ data, config, title, description, xAxis, fo
             <defs>
               {dataKeys.map((key) => (
                 <linearGradient key={key} id={`fill${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={`var(--color-${key})`} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={`var(--color-${key})`} stopOpacity={0.1} />
+                  <stop offset="5%" stopColor={config[key].color} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={config[key].color} stopOpacity={0.1} />
                 </linearGradient>
               ))}
             </defs>
@@ -65,7 +65,7 @@ export function AreaChartComponent({ data, config, title, description, xAxis, fo
                 type="bump"
                 fill={`url(#fill${key})`}
                 fillOpacity={0.4}
-                stroke={`var(--color-${key})`}
+                stroke={config[key].color}
                 stackId="a"
               />
             ))}
