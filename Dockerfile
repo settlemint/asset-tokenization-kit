@@ -24,7 +24,10 @@ WORKDIR /usecase
 USER root
 
 RUN bun install
-RUN mkdir -p /root/.svm
+RUN mkdir -p /root/.svm && \
+  cd kit/contracts && \
+  bun dependencies && \
+  bun run build
 
 FROM busybox:1.37.0
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
