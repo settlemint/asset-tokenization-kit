@@ -41,7 +41,7 @@ export function BurnFundForm({
     >
       <Targets />
       <Amount />
-      <Summary address={address} />
+      <Summary />
     </AssetForm>
   );
 }
