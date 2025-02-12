@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { PauseCircle, PlayCircle } from 'lucide-react';
+import {} from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { getFund } from './data';
 
@@ -19,21 +19,6 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <DetailsGridItem label="Total supply">{asset.totalSupply}</DetailsGridItem>
         <DetailsGridItem label="Fund category">{asset.fundCategory}</DetailsGridItem>
         <DetailsGridItem label="Fund class">{asset.fundClass}</DetailsGridItem>
-        <DetailsGridItem label="Status">
-          <div className="flex items-center gap-2">
-            {asset.paused ? (
-              <>
-                <PauseCircle className="h-4 w-4" />
-                <span>Paused</span>
-              </>
-            ) : (
-              <>
-                <PlayCircle className="h-4 w-4" />
-                <span>Active</span>
-              </>
-            )}
-          </div>
-        </DetailsGridItem>
       </CardContent>
     </Card>
   );

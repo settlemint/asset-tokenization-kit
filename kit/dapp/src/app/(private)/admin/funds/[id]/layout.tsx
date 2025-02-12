@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, PauseCircle, PlayCircle } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
@@ -91,6 +91,27 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
       <h1 className="flex items-center font-bold text-2xl">
         <span className="mr-2">{fund?.name}</span>
         <span className="text-muted-foreground">({fund?.symbol})</span>
+        <div className="ml-2 flex items-center gap-2 font-normal text-base">
+          <div
+            className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm ${
+              fund?.paused
+                ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
+            }`}
+          >
+            {fund?.paused ? (
+              <>
+                <PauseCircle className="h-4 w-4" />
+                <span>Paused</span>
+              </>
+            ) : (
+              <>
+                <PlayCircle className="h-4 w-4" />
+                <span>Active</span>
+              </>
+            )}
+          </div>
+        </div>
       </h1>
       <div className="flex justify-between text-muted-foreground text-sm">
         <EvmAddress address={id}>
