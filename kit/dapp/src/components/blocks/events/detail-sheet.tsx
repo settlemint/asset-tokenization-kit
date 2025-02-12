@@ -1,8 +1,7 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import type { NormalizedTransactionListItem } from './data';
+import { EvmAddress } from '../evm-address/evm-address';
 import { ApprovalDetails } from './details/approval';
 import { BondRedeemedDetails } from './details/bond-redeemed';
 import { BurnDetails } from './details/burn';
@@ -16,6 +15,7 @@ import { TokenWithdrawnDetails } from './details/token-withdrawn';
 import { TokensFrozenDetails } from './details/tokens-frozen';
 import { TransferDetails } from './details/transfer';
 import { UserBlockedDetails } from './details/user-blocked';
+import type { NormalizedTransactionListItem } from './fragments';
 
 export function EventDetailSheet({ event, sender, asset, timestamp, details }: NormalizedTransactionListItem) {
   return (
