@@ -15,13 +15,13 @@ const columnHelper = createColumnHelper<StablecoinHoldersBalance>();
 export const columns = [
   columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
-    cell: ({ getValue, row }) => {
+    cell: ({ getValue }) => {
       const wallet = getValue();
       return (
         <DataTableColumnCell>
           {wallet && (
             <div className="flex items-center">
-              <EvmAddress address={wallet} name={row.original.name}>
+              <EvmAddress address={wallet}>
                 <EvmAddressBalances address={wallet} />
               </EvmAddress>
               <CopyToClipboard value={wallet} displayText={''} className="ml-2" />

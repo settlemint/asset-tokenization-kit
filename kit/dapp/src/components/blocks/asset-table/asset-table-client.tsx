@@ -13,7 +13,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export type AssetTableClientProps<Asset> = {
-  assetConfig: AssetDetailConfig;
+  assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
   dataAction: () => Promise<Asset[]>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */

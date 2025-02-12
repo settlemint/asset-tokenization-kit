@@ -12,7 +12,7 @@ import { AssetTableSkeleton } from './asset-table-skeleton';
  * @template Asset The type of asset data being displayed
  */
 export interface AssetTableProps<Asset extends Record<string, unknown>> {
-  assetConfig: AssetDetailConfig;
+  assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
   /** Function to fetch the asset data */
   dataAction: () => Promise<Asset[]>;
   /** Column definitions for the table */
