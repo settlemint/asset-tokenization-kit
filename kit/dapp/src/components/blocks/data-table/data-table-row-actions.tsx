@@ -39,7 +39,12 @@ export function DataTableRowActions({
   return (
     <div className={cn(dataTableRowActionsVariants({ variant, className }), className)} {...props}>
       {detailUrl && (
-        <Button variant="outline" size="sm" asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="hover:text-primary-foreground dark:hover:text-foreground"
+        >
           <Link href={detailUrl} prefetch>
             Details
           </Link>
@@ -48,12 +53,15 @@ export function DataTableRowActions({
       {children && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+            <Button
+              variant="ghost"
+              className="flex h-8 w-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+            >
               <MoreHorizontal />
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuContent align="end" className="w-[160px] dark:bg-theme-accent-background ">
             {children}
           </DropdownMenuContent>
         </DropdownMenu>

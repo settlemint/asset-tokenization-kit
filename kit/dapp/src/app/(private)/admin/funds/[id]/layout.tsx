@@ -1,3 +1,4 @@
+import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
@@ -16,6 +17,7 @@ import type { Address } from 'viem';
 import { BurnTokensButton } from './_components/burn-form/button';
 import { getFundTitle } from './_components/data';
 import { MintTokensButton } from './_components/mint-form/button';
+import { PauseTokensButton } from './_components/pause-form/button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -87,40 +89,52 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
 
   return (
     <div>
-      <h1 className="flex items-center font-bold text-2xl">
-        <span className="mr-2">{fund?.name}</span>
-        <span className="text-muted-foreground">({fund?.symbol})</span>
-      </h1>
-      <div className="flex justify-between text-muted-foreground text-sm">
-        <EvmAddress address={id}>
-          <EvmAddressBalances address={id} />
-        </EvmAddress>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>
-              Mint tokens
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <MintTokensButton
-                address={id as Address}
-                name={fund.name}
-                symbol={fund.symbol}
-                decimals={fund.decimals}
-              />
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <BurnTokensButton
-                address={id as Address}
-                name={fund.name}
-                symbol={fund.symbol}
-                decimals={fund.decimals}
-              />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="relative flex justify-between">
+        <div>
+          <h1 className="flex items-center font-bold text-2xl">
+            <span className="mr-2">{fund?.name}</span>
+            <span className="text-muted-foreground">({fund?.symbol})</span>
+            <div className="ml-2 flex items-center gap-2 font-normal text-base">
+              <ActivePill paused={fund?.paused ?? false} />
+            </div>
+          </h1>
+          <div className="mt-1 text-muted-foreground text-sm">
+            <EvmAddress address={id} prettyNames={false}>
+              <EvmAddressBalances address={id} />
+            </EvmAddress>
+          </div>
+        </div>
+        <div className="h-full">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                Actions
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <MintTokensButton
+                  address={id as Address}
+                  name={fund.name}
+                  symbol={fund.symbol}
+                  decimals={fund.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <BurnTokensButton
+                  address={id as Address}
+                  name={fund.name}
+                  symbol={fund.symbol}
+                  decimals={fund.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div className="relative mt-4 space-y-2">

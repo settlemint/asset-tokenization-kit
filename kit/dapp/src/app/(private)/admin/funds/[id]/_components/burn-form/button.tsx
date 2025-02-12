@@ -36,7 +36,7 @@ export function BurnTokensButton({ address, name, symbol, decimals }: BurnTokens
         <BurnFundForm
           address={address}
           assetConfig={assetConfig.fund}
-          onClose={() => setOpen(false)}
+          onCloseAction={() => setOpen(false)}
           decimals={decimals}
         />
       </SheetContent>

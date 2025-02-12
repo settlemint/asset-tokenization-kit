@@ -1,0 +1,14 @@
+{
+  "proseWrap": "always",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "singleQuote": false,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "semi": true,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "embeddedLanguageFormatting": "auto",
+  "singleAttributePerLine": false
+}

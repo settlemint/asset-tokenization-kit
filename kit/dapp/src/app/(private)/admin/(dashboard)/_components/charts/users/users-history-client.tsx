@@ -1,5 +1,5 @@
 'use client';
-import { AreaChartComponent } from '@/components/ui/area-chart';
+import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
