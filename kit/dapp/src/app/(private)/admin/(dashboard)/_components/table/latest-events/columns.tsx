@@ -1,0 +1,49 @@
+'use client';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { createColumnHelper } from '@tanstack/react-table';
+import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import type { getAssetEvents } from './data';
+
+const columnHelper = createColumnHelper<Awaited<ReturnType<typeof getAssetEvents>>[number]>();
+
+export const columns = [
+  columnHelper.accessor('from', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>From</DataTableColumnHeader>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>
+        <EvmAddress address={getValue()}>
+          <EvmAddressBalances address={getValue()} />
+        </EvmAddress>
+      </DataTableColumnCell>
+    ),
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('description', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Description</DataTableColumnHeader>,
+    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('status', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
+    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('transactionHash', {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} variant="numeric">
+        Transaction Hash
+      </DataTableColumnHeader>
+    ),
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
+    enableColumnFilter: false,
+  }),
+];
+export const icons = {
+  active: PlayCircle,
+  paused: PauseCircle,
+  private: Lock,
+  public: Unlock,
+};
