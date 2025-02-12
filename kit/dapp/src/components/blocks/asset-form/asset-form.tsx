@@ -95,7 +95,7 @@ export function AssetForm<
 
   const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isValidating, setIsValidating] = useState(false);
+  const [, setIsValidating] = useState(false);
   const invalidateTags = useInvalidateTags();
   const totalSteps = Array.isArray(children) ? children.length : 1;
 

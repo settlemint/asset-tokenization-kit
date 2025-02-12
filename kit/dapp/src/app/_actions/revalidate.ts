@@ -7,6 +7,6 @@ import { revalidatePath } from 'next/cache';
  */
 export async function revalidatePaths(paths: string[]) {
   for (const path of paths) {
-    revalidatePath(path);
+    await Promise.resolve(revalidatePath(path));
   }
 }
