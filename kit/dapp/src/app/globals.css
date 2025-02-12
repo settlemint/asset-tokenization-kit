@@ -41,6 +41,7 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -81,6 +82,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .settlemint-light {
+    --button-hover-accent: 221 83% 95%;
     --background: 222.86 87.5% 96.86%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -118,6 +120,8 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --theme-accent-background: 221 83% 95%;
+    --theme-accent-foreground: 221 85% 57%;
   }
   .settlemint-dark {
     --background: 0 0% 16%;
