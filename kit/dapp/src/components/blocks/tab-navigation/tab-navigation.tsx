@@ -12,7 +12,7 @@ export function TabNavigation({ items }: TabNavigationProps) {
   const pathname = usePathname();
 
   return (
-    <NavigationMenu className="mb-4">
+    <NavigationMenu className="mb-4 border-b">
       <NavigationMenuList>
         {items.map((item) => (
           <TabItem key={item.href} {...item} active={pathname === item.href} />

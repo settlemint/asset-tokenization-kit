@@ -33,9 +33,7 @@ export const columns = [
         Balance
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => (
-      <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>
-    ),
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset.paused', {

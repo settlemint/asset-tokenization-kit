@@ -1,123 +1,83 @@
+import {
+  ApprovalEventFragment,
+  AssetCreatedEventFragment,
+  type AssetEvent,
+  BondMaturedEventFragment,
+  BondRedeemedEventFragment,
+  BurnEventFragment,
+  CollateralUpdatedEventFragment,
+  ManagementFeeCollectedEventFragment,
+  MintEventFragment,
+  type NormalizedTransactionListItem,
+  PausedEventFragment,
+  PerformanceFeeCollectedEventFragment,
+  RoleAdminChangedEventFragment,
+  RoleGrantedEventFragment,
+  RoleRevokedEventFragment,
+  TokenWithdrawnEventFragment,
+  TokensFrozenEventFragment,
+  TokensUnfrozenEventFragment,
+  TransferEventFragment,
+  UnpausedEventFragment,
+  UserBlockedEventFragment,
+  UserUnblockedEventFragment,
+} from '@/components/blocks/events/fragments';
 import { formatDate } from '@/lib/date';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { unstable_cache } from 'next/cache';
-import { getAddress } from 'viem';
 
-const TransactionListFragment = theGraphGraphqlStarterkits(`
+const TransactionListFragment = theGraphGraphqlStarterkits(
+  `
   fragment TransactionListFragment on AssetEvent {
     emitter {
       id
-      name
-      symbol
     }
     eventName
     timestamp
-    ... on AssetCreatedEvent {
-      sender {
-        id
-      }
-    }
-    ... on ApprovalEvent {
-      sender {
-        id
-      }
-    }
-    ... on BondMaturedEvent {
-      sender {
-        id
-      }
-    }
-    ... on BondRedeemedEvent {
-      sender {
-        id
-      }
-    }
-    ... on BurnEvent {
-      sender {
-        id
-      }
-    }
-    ... on CollateralUpdatedEvent {
-      sender {
-        id
-      }
-    }
-    ... on ManagementFeeCollectedEvent {
-      sender {
-        id
-      }
-    }
-    ... on MintEvent {
-      sender {
-        id
-      }
-    }
-    ... on PausedEvent {
-      sender {
-        id
-      }
-    }
-    ... on PerformanceFeeCollectedEvent {
-      sender {
-        id
-      }
-    }
-    ... on RoleAdminChangedEvent {
-      sender {
-        id
-      }
-    }
-    ... on RoleGrantedEvent {
-      sender {
-        id
-      }
-    }
-    ... on RoleRevokedEvent {
-      sender {
-        id
-      }
-    }
-    ... on TokenWithdrawnEvent {
-      sender {
-        id
-      }
-    }
-    ... on TokensFrozenEvent {
-      sender {
-        id
-      }
-    }
-    ... on TokensUnfrozenEvent {
-      sender {
-        id
-      }
-    }
-    ... on TransferEvent {
-      to {
-        id
-      }
-      sender {
-        id
-      }
-    }
-    ... on UnpausedEvent {
-      sender {
-        id
-      }
-    }
-    ... on UserBlockedEvent {
-      sender {
-        id
-      }
-    }
-    ... on UserUnblockedEvent {
-      sender {
-        id
-      }
-    }
+    ...AssetCreatedEventFragment
+    ...ApprovalEventFragment
+    ...BondMaturedEventFragment
+    ...BondRedeemedEventFragment
+    ...BurnEventFragment
+    ...CollateralUpdatedEventFragment
+    ...ManagementFeeCollectedEventFragment
+    ...MintEventFragment
+    ...PausedEventFragment
+    ...PerformanceFeeCollectedEventFragment
+    ...RoleAdminChangedEventFragment
+    ...RoleGrantedEventFragment
+    ...RoleRevokedEventFragment
+    ...TokenWithdrawnEventFragment
+    ...TokensFrozenEventFragment
+    ...TokensUnfrozenEventFragment
+    ...TransferEventFragment
+    ...UnpausedEventFragment
+    ...UserBlockedEventFragment
+    ...UserUnblockedEventFragment
   }
-`);
+`,
+  [
+    AssetCreatedEventFragment,
+    ApprovalEventFragment,
+    BondMaturedEventFragment,
+    BondRedeemedEventFragment,
+    BurnEventFragment,
+    CollateralUpdatedEventFragment,
+    ManagementFeeCollectedEventFragment,
+    MintEventFragment,
+    PausedEventFragment,
+    PerformanceFeeCollectedEventFragment,
+    RoleAdminChangedEventFragment,
+    RoleGrantedEventFragment,
+    RoleRevokedEventFragment,
+    TokenWithdrawnEventFragment,
+    TokensFrozenEventFragment,
+    TokensUnfrozenEventFragment,
+    TransferEventFragment,
+    UnpausedEventFragment,
+    UserBlockedEventFragment,
+    UserUnblockedEventFragment,
+  ]
+);
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
@@ -130,57 +90,16 @@ query TransactionsList {
   [TransactionListFragment]
 );
 
-const TransactionUser = hasuraGraphql(`
-  query TransactionUser($id: String!) {
-    user(where: { wallet: { _eq: $id } }) {
-      name
-    }
-  }
-`);
-
-const getUserName = unstable_cache(
-  async (walletAddress: string) => {
-    const user = await hasuraClient.request(TransactionUser, {
-      id: walletAddress,
-    });
-    return user.user[0]?.name;
-  },
-  ['user-name'],
-  {
-    revalidate: 3600, // Cache for 1 hour
-    tags: ['user-name'],
-  }
-);
-
-export interface NormalizedTransactionListItem {
-  event: string;
-  timestamp: string;
-  asset: string;
-  emitterName: string;
-  emitterSymbol: string;
-  sender: string;
-  senderName?: string;
-}
-
 export async function getTransactionsList(): Promise<NormalizedTransactionListItem[]> {
   const theGraphData = await theGraphClientStarterkits.request(TransactionsList);
-  const results: NormalizedTransactionListItem[] = [];
 
-  for (const event of theGraphData.assetEvents) {
-    const walletAddress = getAddress(event.sender.id);
-    const userName = await getUserName(walletAddress);
-
-    const normalized: NormalizedTransactionListItem = {
+  return theGraphData.assetEvents.map((event) => {
+    return {
       event: event.eventName,
-      timestamp: formatDate(event.timestamp),
+      timestamp: formatDate(event.timestamp, { type: 'relative' }),
       asset: event.emitter.id,
-      emitterName: event.emitter.name,
-      emitterSymbol: event.emitter.symbol,
       sender: event.sender.id,
-      senderName: userName,
+      details: event as unknown as AssetEvent,
     };
-    results.push(normalized);
-  }
-
-  return results;
+  });
 }

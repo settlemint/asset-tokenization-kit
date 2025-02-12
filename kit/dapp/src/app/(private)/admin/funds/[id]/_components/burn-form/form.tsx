@@ -33,12 +33,10 @@ export function BurnFundForm({
       submitLabel="Burn"
       submittingLabel="Burning..."
       messages={{
-        onCreate: (data) =>
-          `Burning ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}...`,
-        onSuccess: (data) =>
-          `Successfully burned ${data.amount} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)} on chain`,
+        onCreate: (data) => `Burning ${data.amount} ${pluralize(data.amount, assetConfig)}...`,
+        onSuccess: (data) => `Successfully burned ${data.amount} ${pluralize(data.amount, assetConfig)} on chain`,
         onError: (data, error) =>
-          `Failed to burn ${data?.amount ?? ''} ${pluralize(data.amount, assetConfig.name, assetConfig.pluralName)}: ${error.message}`,
+          `Failed to burn ${data?.amount ?? ''} ${pluralize(data?.amount ?? 0, assetConfig)}: ${error.message}`,
       }}
     >
       <Targets />

@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { BurnEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
+import { EventName } from '../../utils/enums';
 
 export function burnEvent(
   id: Bytes,
@@ -12,7 +13,7 @@ export function burnEvent(
   decimals: number
 ): BurnEvent {
   const burnEvent = new BurnEvent(id);
-  burnEvent.eventName = 'Burn';
+  burnEvent.eventName = EventName.Burn;
   burnEvent.timestamp = timestamp;
   burnEvent.emitter = emitter;
   burnEvent.sender = sender;

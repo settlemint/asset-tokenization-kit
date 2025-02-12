@@ -1,9 +1,10 @@
 'use client';
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
+import type { NormalizedTransactionListItem } from '@/components/blocks/events/fragments';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { columns, icons } from './columns';
-import { type NormalizedTransactionListItem, getTransactionsList } from './data';
+import { getTransactionsList } from './data';
 
 export function TransactionsTableClient() {
   const { data } = useSuspenseQuery<NormalizedTransactionListItem[]>({

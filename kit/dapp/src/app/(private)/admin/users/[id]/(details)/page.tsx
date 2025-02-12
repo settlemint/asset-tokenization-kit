@@ -1,6 +1,4 @@
-import { getUser } from './_components/data';
-import { UserDetails } from './_components/user-details';
-import { UserDetailsClient } from './_components/user-details-client';
+import { DetailsGrid } from './_components/details-grid';
 
 export default async function UserDetailPage({
   params,
@@ -8,10 +6,5 @@ export default async function UserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-
-  return (
-    <UserDetails id={id} dataAction={getUser}>
-      <UserDetailsClient id={id} refetchInterval={5000} />
-    </UserDetails>
-  );
+  return <DetailsGrid id={id} />;
 }
