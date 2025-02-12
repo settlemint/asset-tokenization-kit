@@ -62,7 +62,7 @@ export function AreaChartComponent({ data, config, title, description, xAxis, fo
               <Area
                 key={key}
                 dataKey={key}
-                type="step"
+                type="bump"
                 fill={`url(#fill${key})`}
                 fillOpacity={0.4}
                 stroke={`var(--color-${key})`}

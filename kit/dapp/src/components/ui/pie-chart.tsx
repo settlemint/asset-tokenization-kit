@@ -34,13 +34,13 @@ export function PieChartComponent({
   footer,
 }: PieChartProps) {
   return (
-    <Card className={cn('flex flex-col', className)}>
+    <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer config={config} className="mx-auto aspect-square max-h-[300px]">
+      <CardContent>
+        <ChartContainer config={config}>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie data={data} dataKey={dataKey} nameKey={nameKey} />

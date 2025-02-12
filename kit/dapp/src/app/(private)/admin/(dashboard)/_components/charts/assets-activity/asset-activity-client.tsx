@@ -45,7 +45,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
     <BarChartComponent
       data={data.assetActivityDatas}
       config={chartConfig}
-      title="Activity by asset type"
+      title="Activity"
       description="Showing events for each asset type"
       xAxis={{
         key: 'assetType',
