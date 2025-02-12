@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import {} from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { getFund } from './data';
 

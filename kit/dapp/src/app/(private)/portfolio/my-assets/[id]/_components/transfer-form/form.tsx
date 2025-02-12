@@ -30,7 +30,9 @@ export function TransferForm({
   const assetConfig = getAssetConfig(assetType);
   return (
     <AssetForm
-      invalidate={[assetConfig.queryKey, ['transactions']]}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
+      }}
       storeAction={transfer}
       resolverAction={zodResolver(getTransferFormSchema(balance))}
       onClose={onClose}
