@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChartComponent } from '@/components/ui/bar-chart';
+import { BarChartComponent } from '@/components/blocks/charts/bar-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
@@ -45,7 +45,8 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
     <BarChartComponent
       data={data.assetActivityDatas}
       config={chartConfig}
-      title="Activity by asset type"
+      title="Activity"
+      description="Showing events for each asset type"
       xAxis={{
         key: 'assetType',
         tickFormatter: (value: string) => {
