@@ -3,11 +3,11 @@
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EventDetailSheet } from '@/components/blocks/events/detail-sheet';
+import type { NormalizedTransactionListItem } from '@/components/blocks/events/fragments';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
-import type { NormalizedTransactionListItem } from './data';
 
 const columnHelper = createColumnHelper<NormalizedTransactionListItem>();
 

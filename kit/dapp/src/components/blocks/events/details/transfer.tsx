@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { formatNumber } from '@/lib/number';
-import type { TransferEvent } from '../../../../app/(private)/admin/transactions/(table)/_components/data';
+import type { TransferEvent } from '../fragments';
 
 interface TransferDetailsProps {
   details: TransferEvent;

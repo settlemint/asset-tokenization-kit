@@ -290,3 +290,11 @@ export type AssetEvent =
   | UnpausedEvent
   | UserBlockedEvent
   | UserUnblockedEvent;
+
+export interface NormalizedTransactionListItem {
+  event: string;
+  timestamp: string;
+  asset: string;
+  sender: string;
+  details: AssetEvent;
+}

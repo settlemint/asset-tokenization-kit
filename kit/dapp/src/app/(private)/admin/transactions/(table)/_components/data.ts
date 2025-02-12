@@ -8,6 +8,7 @@ import {
   CollateralUpdatedEventFragment,
   ManagementFeeCollectedEventFragment,
   MintEventFragment,
+  type NormalizedTransactionListItem,
   PausedEventFragment,
   PerformanceFeeCollectedEventFragment,
   RoleAdminChangedEventFragment,
@@ -88,14 +89,6 @@ query TransactionsList {
 `,
   [TransactionListFragment]
 );
-
-export interface NormalizedTransactionListItem {
-  event: string;
-  timestamp: string;
-  asset: string;
-  sender: string;
-  details: AssetEvent;
-}
 
 export async function getTransactionsList(): Promise<NormalizedTransactionListItem[]> {
   const theGraphData = await theGraphClientStarterkits.request(TransactionsList);
