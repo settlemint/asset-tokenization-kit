@@ -1,7 +1,13 @@
-'use client';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+"use client"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   type ChartConfig,
   ChartContainer,
@@ -9,37 +15,44 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
+} from "@/components/ui/chart"
 import { cn } from '@/lib/utils';
 
 export interface BarChartData {
-  [key: string]: string | number;
+  [key: string]: string | number
 }
 
 interface XAxisConfig {
-  key: string;
-  tickFormatter?: (value: string) => string;
-  tickMargin?: number;
+  key: string
+  tickFormatter?: (value: string) => string
+  tickMargin?: number
 }
 
 interface BarChartProps {
-  data: BarChartData[];
-  config: ChartConfig;
-  title: string;
-  description?: string;
-  xAxis: XAxisConfig;
-  className?: string;
+  data: BarChartData[]
+  config: ChartConfig
+  title: string
+  description?: string
+  xAxis: XAxisConfig
+  className?: string
 }
 
-const defaultTickFormatter = (value: string) => value.slice(0, 3);
-const defaultTickMargin = 10;
+const defaultTickFormatter = (value: string) => value.slice(0, 3)
+const defaultTickMargin = 10
 
-export function BarChartComponent({ data, config, title, description, xAxis, className }: BarChartProps) {
-  const dataKeys = Object.keys(config);
-  const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
+export function BarChartComponent({
+  data,
+  config,
+  title,
+  description,
+  xAxis,
+  className,
+}: BarChartProps) {
+  const dataKeys = Object.keys(config)
+  const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis
 
   return (
-    <Card className={cn('flex flex-col', className)}>
+    <Card className={cn("flex flex-col", className)}>
       <CardHeader className="items-center pb-2">
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
@@ -58,11 +71,16 @@ export function BarChartComponent({ data, config, title, description, xAxis, cla
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <ChartLegend content={<ChartLegendContent />} />
             {dataKeys.map((key, index) => (
-              <Bar key={key} dataKey={key} stackId="a" fill={`var(--color-${key})`} />
+              <Bar
+                key={key}
+                dataKey={key}
+                stackId="a"
+                fill={`var(--color-${key})`}
+              />
             ))}
           </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

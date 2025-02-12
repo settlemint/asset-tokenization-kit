@@ -29,7 +29,7 @@ export function CopyToClipboard({ value, displayText, successMessage = 'Copied t
     await navigator.clipboard.writeText(value);
     setHasCopied(true);
     toast.success(successMessage);
-
+    
     // Reset copy icon after 2 seconds
     setTimeout(() => {
       setHasCopied(false);
@@ -37,11 +37,27 @@ export function CopyToClipboard({ value, displayText, successMessage = 'Copied t
   };
 
   return (
-    <div className={cn('flex items-center justify-between', className)}>
-      <div className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap" onClick={handleCopy}>
-        <span className="text-xs">{displayText ?? value}</span>
+    <div 
+      className={cn(
+        "flex items-center justify-between",
+        className
+      )}
+    >
+      <div 
+        className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
+        onClick={handleCopy}
+      >
+        <span className="text-xs">
+          {displayText ?? value}
+        </span>
       </div>
-      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCopy} title="Copy to clipboard">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={handleCopy}
+        title="Copy to clipboard"
+      >
         {hasCopied ? (
           <Check className="h-4 w-4 text-green-500" />
         ) : (
