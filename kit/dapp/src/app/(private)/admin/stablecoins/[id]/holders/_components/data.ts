@@ -24,6 +24,9 @@ const StablecoinBalances = theGraphGraphqlStarterkits(
         id
       }
     }
+    assetStats_collection(interval: hour, where: { asset: $activityEventAssetId }) {
+      count
+    }
   }
 `,
   [StablecoinBalancesFragment]
@@ -45,9 +48,10 @@ export async function getStablecoinBalances(id: string, { first, skip }: Paginat
     throw new Error('Stablecoin not found');
   }
   const { holders, symbol, admins } = data.stableCoin;
+  const count = data.assetStats_collection[0].count;
   const adminIds = admins.map((admin) => admin.id);
 
-  return holders.map((holder) => {
+  const records = holders.map((holder) => {
     const lastAssetActivityTimestamp = holder.account.activityEvents[0]?.timestamp;
     return {
       ...holder,
@@ -56,6 +60,7 @@ export async function getStablecoinBalances(id: string, { first, skip }: Paginat
       lastActivity: lastAssetActivityTimestamp,
     };
   });
+  return { holders: records, count: Number(count) };
 }
 
-export type StablecoinHoldersBalance = Awaited<ReturnType<typeof getStablecoinBalances>>[number];
+export type StablecoinHoldersBalance = Awaited<ReturnType<typeof getStablecoinBalances>>['holders'][number];

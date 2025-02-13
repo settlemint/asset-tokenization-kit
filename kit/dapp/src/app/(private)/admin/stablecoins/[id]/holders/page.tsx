@@ -3,8 +3,6 @@ import { getStablecoinBalances } from './_components/data';
 import { columns } from './_components/holders-columns';
 import { HoldersTableClient } from './_components/holders-table.client';
 
-const PAGE_SIZE = 1;
-
 export default async function StableCoinHoldersPage({
   params,
 }: {
@@ -12,16 +10,17 @@ export default async function StableCoinHoldersPage({
 }) {
   const { id } = await params;
 
+  const assetConfig = {
+    queryKey: [],
+    name: 'stablecoin-holders',
+  };
   return (
     <AssetTable
-      assetConfig={{
-        queryKey: [],
-        name: 'stablecoin-holders',
-      }}
-      dataAction={() => getStablecoinBalances(id, { first: PAGE_SIZE, skip: 0 })}
+      assetConfig={assetConfig}
+      dataAction={() => getStablecoinBalances(id, { first: 10, skip: 0 }).then((data) => data.holders)}
       columns={columns}
     >
-      <HoldersTableClient />
+      <HoldersTableClient id={id} assetConfig={assetConfig} />
     </AssetTable>
   );
 }

@@ -8,13 +8,18 @@
 import { DataTableServerSide } from '@/components/blocks/data-table/data-table-server-side';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { useReactTable } from '@tanstack/react-table';
+import type { PaginationState, useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
-import { type ComponentType, useCallback, useState } from 'react';
+import { type ComponentType, useCallback, useEffect, useState } from 'react';
+
+interface DataActionResponse<Asset> {
+  assets: Asset[];
+  rowCount: number;
+}
 
 export type AssetTableClientServerSideProps<Asset> = {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
-  dataAction: (pagination: { first: number; skip: number }) => Promise<Asset[]>;
+  dataAction: (pagination: { first: number; skip: number }) => Promise<DataActionResponse<Asset> | Asset[]>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */
   icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
@@ -22,8 +27,11 @@ export type AssetTableClientServerSideProps<Asset> = {
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
   /** The number of items to display per page */
   pageSize?: number;
-  /** The total number of items in the table */
-  rowCount: number;
+};
+
+const INITIAL_PAGINATION = {
+  first: 10,
+  skip: 0,
 };
 
 /**
@@ -37,34 +45,45 @@ export function AssetTableClientServerSide<Asset extends Record<string, unknown>
   columns,
   icons,
   pageSize = 10,
-  rowCount,
 }: AssetTableClientServerSideProps<Asset>) {
-  const [pagination, setPagination] = useState({
-    first: pageSize,
-    skip: 0,
-  });
+  const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
-  const { data } = useSuspenseQuery<Asset[]>({
+  const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset> | Asset[]>({
     queryKey: assetConfig.queryKey,
     queryFn: () => dataAction(pagination),
     refetchInterval,
   });
 
   const handlePageChanged = useCallback(
-    (pageIndex: number) => {
-      setPagination((current) => ({ first: current.first, skip: pageIndex * pageSize }));
+    (updatedPagination: PaginationState) => {
+      const skip = updatedPagination.pageIndex * updatedPagination.pageSize;
+      if (pagination.skip !== skip || pagination.first !== updatedPagination.pageSize) {
+        setPagination({
+          first: updatedPagination.pageSize,
+          skip: updatedPagination.pageIndex * updatedPagination.pageSize,
+        });
+      }
     },
-    [pageSize]
+    [pagination]
   );
+
+  useEffect(() => {
+    // Skip refetch on initial mount
+    if (pagination === INITIAL_PAGINATION) {
+      return;
+    }
+    refetch();
+  }, [pagination, refetch]);
 
   return (
     <DataTableServerSide
       columns={columns}
-      data={data}
+      data={Array.isArray(data) ? data : data.assets}
       icons={icons ?? {}}
       name={assetConfig.name}
       onPageChanged={handlePageChanged}
-      rowCount={rowCount}
+      pageSize={pageSize}
+      rowCount={Array.isArray(data) ? data.length : data.rowCount}
     />
   );
 }

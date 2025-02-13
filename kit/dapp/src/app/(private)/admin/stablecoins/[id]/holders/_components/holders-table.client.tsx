@@ -1,29 +1,31 @@
 'use client';
 
 import { AssetTableClientServerSide } from '@/components/blocks/asset-table/asset-table-client-server-side';
-import { useParams } from 'next/navigation';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useCallback } from 'react';
 import { getStablecoinBalances } from './data';
 import { columns } from './holders-columns';
 
-export async function HoldersTableClient() {
-  const { id } = useParams<{ id: string }>();
+interface HoldersTableClientProps {
+  id: string;
+  assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
+}
+
+export function HoldersTableClient({ id, assetConfig }: HoldersTableClientProps) {
   const getData = useCallback(
-    (pagination: { first: number; skip: number }) => getStablecoinBalances(id, pagination),
+    async (pagination: { first: number; skip: number }) => {
+      const result = await getStablecoinBalances(id, pagination);
+      return { assets: result.holders, rowCount: result.count };
+    },
     [id]
   );
 
   return (
     <AssetTableClientServerSide
       refetchInterval={5000}
-      assetConfig={{
-        queryKey: [],
-        name: 'stablecoin-holders',
-      }}
+      assetConfig={assetConfig}
       dataAction={getData}
       columns={columns}
-      pageSize={1}
-      rowCount={5}
     />
   );
 }

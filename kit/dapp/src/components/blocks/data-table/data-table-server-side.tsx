@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   type ColumnFiltersState,
+  type PaginationState,
   type RowData,
   type SortingState,
   type VisibilityState,
@@ -35,7 +36,7 @@ interface DataTableProps<TData> {
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
   pageSize?: number;
-  onPageChanged?: (pageIndex: number) => void;
+  onPageChanged?: (pagination: PaginationState) => void;
   rowCount: number;
 }
 
@@ -129,9 +130,9 @@ export function DataTableServerSide<TData>({
 
   useEffect(() => {
     if (typeof onPageChanged === 'function') {
-      onPageChanged(pagination.pageIndex);
+      onPageChanged(pagination);
     }
-  }, [pagination.pageIndex, onPageChanged]);
+  }, [pagination, onPageChanged]);
 
   const renderTableBody = () => {
     if (isLoading) {
