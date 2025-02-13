@@ -9,8 +9,10 @@ import { DataTable, type DataTableProps } from './data-table';
  */
 interface ServerDataTableProps<TData> extends DataTableProps<TData> {
   pagination: PaginationState;
+  globalFilter?: string;
   onPageChanged?: (pagination: PaginationState) => void;
   onFiltersChanged?: (filter: ColumnFiltersState) => void;
+  onGlobalFilterChanged?: (filter: string) => void;
   onSortingChanged?: (sorting: SortingState) => void;
   rowCount: number;
 }
@@ -28,6 +30,7 @@ export function ServerDataTable<TData>({
   rowCount,
   onPageChanged,
   onFiltersChanged,
+  onGlobalFilterChanged,
   onSortingChanged,
   ...otherProps
 }: ServerDataTableProps<TData>) {
@@ -43,6 +46,8 @@ export function ServerDataTable<TData>({
         onPaginationChange: onPageChanged as OnChangeFn<PaginationState>,
         manualFiltering: true,
         onColumnFiltersChange: onFiltersChanged as OnChangeFn<ColumnFiltersState>,
+        enableGlobalFilter: typeof onGlobalFilterChanged === 'function',
+        onGlobalFilterChange: onGlobalFilterChanged as OnChangeFn<string>,
         manualSorting: true,
         onSortingChange: onSortingChanged as OnChangeFn<SortingState>,
       }}

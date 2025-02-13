@@ -39,6 +39,7 @@ export interface DataTableProps<TData> {
   pagination?: PaginationState;
   sorting?: SortingState;
   filters?: ColumnFiltersState;
+  globalFilter?: string;
   tableOptions?: Partial<Parameters<typeof useReactTable<TData>>[0]>;
 }
 
@@ -74,13 +75,14 @@ export function DataTable<TData>({
   pagination,
   sorting,
   filters,
+  globalFilter,
   tableOptions,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sortingState, setSortingState] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilterState, setGlobalFilterState] = useState('');
 
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
@@ -88,9 +90,9 @@ export function DataTable<TData>({
   const tableState: Partial<TableState> = {
     sorting: sorting ?? sortingState, // Server data table passes sorting state directly via props
     columnFilters: filters ?? columnFilters, // Server data table passes filters state directly via props
+    globalFilter: globalFilter ?? globalFilterState, // Server data table passes global filter state directly via props
     columnVisibility,
     rowSelection,
-    globalFilter,
   };
   if (pagination) {
     tableState.pagination = pagination;
@@ -117,7 +119,7 @@ export function DataTable<TData>({
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: setSortingState,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: setGlobalFilterState,
 
     meta: {
       name,
@@ -160,7 +162,7 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} disabled={isLoading} />
       <div className="overflow-x-auto">
         <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
           <Table>

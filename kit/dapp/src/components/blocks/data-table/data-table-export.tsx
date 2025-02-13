@@ -75,12 +75,13 @@ function exportTableToCSV<TData>(table: Table<TData>): void {
 
 interface DataTableExportProps<TData> {
   table: Table<TData>;
+  disabled?: boolean;
 }
 
-export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
+export function DataTableExport<TData>({ table, disabled }: DataTableExportProps<TData>) {
   return (
     <div className="ml-2 flex items-center gap-2">
-      <Button variant="outline" size="sm" onClick={() => exportTableToCSV(table)} className="gap-2">
+      <Button variant="outline" size="sm" onClick={() => exportTableToCSV(table)} className="gap-2" disabled={disabled}>
         <Download className="size-4" aria-hidden="true" />
         Export
       </Button>

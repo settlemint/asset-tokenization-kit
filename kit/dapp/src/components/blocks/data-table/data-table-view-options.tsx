@@ -15,9 +15,10 @@ import { Settings2 } from 'lucide-react';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
+  disabled?: boolean;
 }
 
-export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData>({ table, disabled }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,6 +40,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                disabled={disabled}
               >
                 {column.id}
               </DropdownMenuCheckboxItem>

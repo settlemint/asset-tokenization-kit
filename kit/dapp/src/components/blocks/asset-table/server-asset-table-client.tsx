@@ -8,7 +8,7 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import type { ColumnFiltersState, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react';
 import { ServerDataTable } from '../data-table/server-data-table';
@@ -30,7 +30,12 @@ export type Sorting = {
 
 export type ServerAssetTableClientProps<Asset extends Record<string, unknown>> = {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
-  dataAction: (pagination: Pagination, sorting: Sorting | undefined) => Promise<DataActionResponse<Asset>>;
+  dataAction: (
+    pagination: Pagination,
+    sorting: Sorting | undefined,
+    globalFilter: string | undefined,
+    filters: ColumnFiltersState
+  ) => Promise<DataActionResponse<Asset>>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */
   icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
@@ -59,9 +64,12 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
 }: ServerAssetTableClientProps<Asset>) {
   const [pagination, setPagination] = useState<PaginationState>(INITIAL_PAGINATION);
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
+  const [filters, setFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState<string | undefined>(undefined);
   const didMount = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data, refetch, error, isFetching, isRefetching } = useSuspenseQuery<DataActionResponse<Asset>>({
+  const { data, refetch, error } = useSuspenseQuery<DataActionResponse<Asset>>({
     queryKey: assetConfig.queryKey,
     queryFn: () => {
       return dataAction(
@@ -74,7 +82,9 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
               orderBy: sorting[0].id,
               orderDirection: sorting[0].desc ? 'desc' : 'asc',
             }
-          : undefined
+          : undefined,
+        globalFilter,
+        filters
       );
     },
     refetchInterval,
@@ -89,6 +99,15 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
     }));
   }, []);
 
+  const handleFiltersChanged = useCallback((filtersState: ColumnFiltersState) => {
+    setFilters(filtersState);
+    // Reset to page 1
+    setPagination((current) => ({
+      pageIndex: 0,
+      pageSize: current.pageSize,
+    }));
+  }, []);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: required for refetch
   useEffect(() => {
     // Return early, if this is the first render:
@@ -96,31 +115,55 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
       didMount.current = true;
       return;
     }
-    refetch();
-  }, [pagination, sorting, refetch]);
+    setIsLoading(true);
+    refetch().finally(() => setIsLoading(false));
+  }, [pagination, sorting, filters, refetch]);
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>{error.message}</AlertDescription>
-      </Alert>
-    );
-  }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: required for refetch
+  useEffect(() => {
+    // Return early, if this is the first render:
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    const timeoutId = window.setTimeout(() => {
+      if (pagination.pageIndex !== 0) {
+        // Reset to page 1, this will automatically trigger a refetch
+        setPagination((current) => ({
+          pageIndex: 0,
+          pageSize: current.pageSize,
+        }));
+      } else {
+        setIsLoading(true);
+        refetch().finally(() => setIsLoading(false));
+      }
+    }, 3_000);
+    return () => window.clearTimeout(timeoutId);
+  }, [pagination, globalFilter]);
 
   return (
-    <ServerDataTable<Asset>
-      isLoading={isFetching && !isRefetching}
-      columns={columns}
-      data={data.assets}
-      icons={icons ?? {}}
-      name={assetConfig.name}
-      pagination={pagination}
-      filters={[]}
-      sorting={sorting}
-      onPageChanged={setPagination}
-      onFiltersChanged={() => {}}
-      onSortingChanged={handleSortingChanged}
-      rowCount={data.rowCount}
-    />
+    <>
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
+      <ServerDataTable<Asset>
+        isLoading={isLoading}
+        columns={columns}
+        data={data.assets}
+        icons={icons ?? {}}
+        name={assetConfig.name}
+        pagination={pagination}
+        filters={filters}
+        globalFilter={globalFilter}
+        sorting={sorting}
+        onPageChanged={setPagination}
+        onFiltersChanged={handleFiltersChanged}
+        onGlobalFilterChanged={setGlobalFilter}
+        onSortingChanged={handleSortingChanged}
+        rowCount={data.rowCount}
+      />
+    </>
   );
 }

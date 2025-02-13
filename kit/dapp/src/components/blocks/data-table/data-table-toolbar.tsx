@@ -11,6 +11,7 @@ import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  disabled?: boolean;
 }
 
 const CAPITAL_LETTER_REGEX = /(?=[A-Z])/;
@@ -28,7 +29,7 @@ function prettifyTitle(identifier: string): string {
   return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, disabled }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const facetedColumns = table
@@ -55,15 +56,18 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
             value={table.getState().globalFilter ?? ''}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
             className="h-8 w-[150px] lg:w-[250px]"
+            disabled={disabled}
           />
         )}
         {(facetedColumns ?? []).map((facet) => {
           return (
             <DataTableFacetedFilter
+              showCount={!table.options.manualFiltering}
               key={facet.column.id}
               column={facet.column}
               title={facet.title}
               options={facet.options}
+              disabled={disabled}
             />
           );
         })}
@@ -74,8 +78,8 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
-      <DataTableExport table={table} />
+      <DataTableViewOptions table={table} disabled={disabled} />
+      <DataTableExport table={table} disabled={disabled} />
     </div>
   );
 }
