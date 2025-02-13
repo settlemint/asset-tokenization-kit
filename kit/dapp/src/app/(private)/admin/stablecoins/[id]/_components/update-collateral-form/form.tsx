@@ -13,20 +13,20 @@ export function UpdateCollateralStablecoinForm({
   symbol,
   decimals,
   assetConfig,
-  onClose,
+  onCloseAction,
 }: {
   address: Address;
   name: string;
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={updateCollateral}
       resolverAction={zodResolver(UpdateCollateralFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.queryKey, ['transactions']],
         serverCachePath: () => `/admin/stablecoins/${address}`,

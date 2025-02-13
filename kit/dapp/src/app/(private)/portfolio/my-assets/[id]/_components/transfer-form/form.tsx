@@ -17,7 +17,7 @@ export function TransferForm({
   assetType,
   balance,
   decimals,
-  onClose,
+  onCloseAction,
 }: {
   address: Address;
   name: string;
@@ -25,7 +25,7 @@ export function TransferForm({
   assetType: TransferFormAssetType;
   balance: string;
   decimals: number;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   const assetConfig = getAssetConfig(assetType);
   return (
@@ -35,7 +35,7 @@ export function TransferForm({
       }}
       storeAction={transfer}
       resolverAction={zodResolver(getTransferFormSchema(balance))}
-      onClose={onClose}
+      onClose={onCloseAction}
       submitLabel="Transfer"
       messages={{
         onCreate: (input) =>

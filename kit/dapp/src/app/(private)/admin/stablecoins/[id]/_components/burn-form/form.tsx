@@ -13,14 +13,14 @@ export function BurnStablecoinForm({
   symbol,
   decimals,
   assetConfig,
-  onClose,
+  onCloseAction,
 }: {
   address: Address;
   name: string;
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
@@ -29,7 +29,7 @@ export function BurnStablecoinForm({
       }}
       storeAction={burnStablecoin}
       resolverAction={zodResolver(BurnStablecoinFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       submitLabel="Burn"
       submittingLabel="Burning..."
       messages={{

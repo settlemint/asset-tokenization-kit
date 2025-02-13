@@ -80,6 +80,7 @@ export default {
         },
         'theme-accent-background': 'hsl(var(--theme-accent-background))',
         'theme-accent-foreground': 'hsl(var(--theme-accent-foreground))',
+        'theme-sidebar-accent': 'hsl(var(--theme-sidebar-accent))',
       },
       borderRadius: {
         lg: 'var(--radius)',
