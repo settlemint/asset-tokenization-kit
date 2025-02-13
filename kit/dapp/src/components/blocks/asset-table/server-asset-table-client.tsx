@@ -67,7 +67,7 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
   const [filters, setFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string | undefined>(undefined);
   const didMount = useRef(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const { data, refetch, error } = useSuspenseQuery<DataActionResponse<Asset>>({
     queryKey: assetConfig.queryKey,
@@ -115,9 +115,10 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
       didMount.current = true;
       return;
     }
-    setIsLoading(true);
-    refetch().finally(() => setIsLoading(false));
-  }, [pagination, sorting, filters, refetch]);
+    if (!isSearching) {
+      refetch();
+    }
+  }, [pagination, sorting, filters, refetch, isSearching]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: required for refetch
   useEffect(() => {
@@ -126,20 +127,16 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
       didMount.current = true;
       return;
     }
+    setIsSearching(true);
     const timeoutId = window.setTimeout(() => {
-      if (pagination.pageIndex !== 0) {
-        // Reset to page 1, this will automatically trigger a refetch
-        setPagination((current) => ({
-          pageIndex: 0,
-          pageSize: current.pageSize,
-        }));
-      } else {
-        setIsLoading(true);
-        refetch().finally(() => setIsLoading(false));
-      }
-    }, 3_000);
+      setPagination((current) => ({
+        pageIndex: 0,
+        pageSize: current.pageSize,
+      }));
+      refetch().finally(() => setIsSearching(false));
+    }, 1_000);
     return () => window.clearTimeout(timeoutId);
-  }, [pagination, globalFilter]);
+  }, [globalFilter]);
 
   return (
     <>
@@ -149,7 +146,7 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
         </Alert>
       )}
       <ServerDataTable<Asset>
-        isLoading={isLoading}
+        isLoading={isSearching}
         columns={columns}
         data={data.assets}
         icons={icons ?? {}}
