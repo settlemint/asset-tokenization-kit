@@ -66,6 +66,10 @@ export function UserDropdown() {
     });
   }, [router]);
 
+  if (!userSession) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

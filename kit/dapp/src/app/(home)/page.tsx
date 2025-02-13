@@ -24,7 +24,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { href: '/', label: 'Home' },
   { href: 'https://console.settlemint.com', label: 'Platform' },
-  { href: 'https://console.settlemint.com/documentation', label: 'Documentation' },
+  { href: '/docs', label: 'Documentation' },
 ];
 
 const footerLinks = [

@@ -57,7 +57,7 @@
       "outputs": [".next/**", "!.next/cache/**", "build/**"]
     },
     "dev": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "addresses"],
       "cache": false,
       "persistent": true
     },

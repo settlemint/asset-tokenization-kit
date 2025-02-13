@@ -14,10 +14,12 @@ export function CreateFundForm({
 }) {
   return (
     <AssetForm
-      invalidate={[assetConfig.fund.queryKey, ['transactions']]}
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onClose}
+      cacheInvalidation={{
+        clientCacheKeys: [assetConfig.fund.queryKey, ['transactions']],
+      }}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{
