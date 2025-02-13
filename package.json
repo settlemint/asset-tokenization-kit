@@ -53,7 +53,7 @@
     "@settlemint/sdk-cli": "1.1.5",
     "turbo": "2.4.1",
     "typescript": "5.7.3",
-    "ultracite": "4.1.18",
+    "ultracite": "4.1.19",
     "lefthook": "1.10.10"
   },
   "trustedDependencies": [
