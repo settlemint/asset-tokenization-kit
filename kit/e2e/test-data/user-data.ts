@@ -12,6 +12,7 @@ interface AdminUser {
   email: string;
   password: string;
   name: string;
+  pincode?: string;
 }
 
 export const signUpData: SignUpData = {
@@ -25,4 +26,5 @@ export const adminUser: AdminUser = {
   email: 'test@example.com',
   password: 'TestPassword123!',
   name: 'Test User',
+  pincode: '123456',
 };
