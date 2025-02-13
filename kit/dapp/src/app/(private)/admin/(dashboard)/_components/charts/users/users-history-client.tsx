@@ -51,7 +51,7 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
       data={chartData}
       config={USERS_CHART_CONFIG}
       title="Users"
-      description="Showing total users over the last 7 days"
+      description="Showing users created over the last 7 days"
       xAxis={{ key: 'date' }}
     />
   );
