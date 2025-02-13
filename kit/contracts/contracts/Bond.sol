@@ -53,6 +53,7 @@ contract Bond is
     error InvalidISIN();
     error InvalidTokenAddress();
     error InsufficientTokenBalance();
+    error CannotWithdrawUnderlyingAsset();
 
     /// @notice Role identifier for addresses that can manage token supply
     /// @dev Keccak256 hash of "SUPPLY_MANAGEMENT_ROLE"
@@ -514,6 +515,7 @@ contract Bond is
     function withdrawToken(address token, address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (token == address(0)) revert InvalidTokenAddress();
         if (to == address(0)) revert InvalidTokenAddress();
+        if (token == address(underlyingAsset)) revert CannotWithdrawUnderlyingAsset();
         if (amount == 0) return;
 
         uint256 balance = IERC20(token).balanceOf(address(this));
