@@ -18,8 +18,6 @@ import {
   TokensFrozenEventFragment,
   TokensUnfrozenEventFragment,
   TransferEventFragment,
-  UnderlyingAssetTopUpEventFragment,
-  UnderlyingAssetWithdrawnEventFragment,
   UnpausedEventFragment,
   UserBlockedEventFragment,
   UserUnblockedEventFragment,
@@ -55,8 +53,6 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     ...UnpausedEventFragment
     ...UserBlockedEventFragment
     ...UserUnblockedEventFragment
-    ...UnderlyingAssetTopUpEventFragment
-    ...UnderlyingAssetWithdrawnEventFragment
   }
 `,
   [
@@ -80,8 +76,6 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     UnpausedEventFragment,
     UserBlockedEventFragment,
     UserUnblockedEventFragment,
-    UnderlyingAssetTopUpEventFragment,
-    UnderlyingAssetWithdrawnEventFragment,
   ]
 );
 
