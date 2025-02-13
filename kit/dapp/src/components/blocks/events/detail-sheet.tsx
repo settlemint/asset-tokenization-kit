@@ -79,6 +79,8 @@ export function EventDetailSheet({ event, sender, asset, timestamp, details }: N
               case 'TokensUnfrozenEvent':
               case 'UnpausedEvent':
               case 'UserUnblockedEvent':
+              case 'UnderlyingAssetTopUpEvent':
+              case 'UnderlyingAssetWithdrawnEvent':
                 // These events don't have additional details to display
                 return null;
               default: {

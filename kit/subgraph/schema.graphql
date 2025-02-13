@@ -551,7 +551,7 @@ type UnderlyingAssetTopUpEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Factory!
+  emitter: Asset!
   sender: Account!
   from: Account! # The address providing the top-up
   amount: BigDecimal! # The amount of underlying assets added

@@ -18,6 +18,8 @@ import {
   TokensFrozenEventFragment,
   TokensUnfrozenEventFragment,
   TransferEventFragment,
+  UnderlyingAssetTopUpEventFragment,
+  UnderlyingAssetWithdrawnEventFragment,
   UnpausedEventFragment,
   UserBlockedEventFragment,
   UserUnblockedEventFragment,
@@ -33,8 +35,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     }
     eventName
     timestamp
-    ...AssetCreatedEventFragment
     ...ApprovalEventFragment
+    ...AssetCreatedEventFragment
     ...BondMaturedEventFragment
     ...BondRedeemedEventFragment
     ...BurnEventFragment
@@ -53,6 +55,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     ...UnpausedEventFragment
     ...UserBlockedEventFragment
     ...UserUnblockedEventFragment
+    ...UnderlyingAssetTopUpEventFragment
+    ...UnderlyingAssetWithdrawnEventFragment
   }
 `,
   [
@@ -76,6 +80,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     UnpausedEventFragment,
     UserBlockedEventFragment,
     UserUnblockedEventFragment,
+    UnderlyingAssetTopUpEventFragment,
+    UnderlyingAssetWithdrawnEventFragment,
   ]
 );
 
