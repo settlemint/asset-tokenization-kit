@@ -14,6 +14,7 @@ const columnHelper = createColumnHelper<StablecoinHoldersBalance>();
 
 export const columns = [
   columnHelper.accessor('account.id', {
+    id: 'wallet',
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => {
       const wallet = getValue();
@@ -55,6 +56,7 @@ export const columns = [
     enableColumnFilter: true,
   }),
   columnHelper.accessor('lastActivity', {
+    id: 'last activity',
     header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>{getValue() ? formatDate(getValue(), { type: 'distance' }) : '-'}</DataTableColumnCell>

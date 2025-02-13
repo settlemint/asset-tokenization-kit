@@ -7,7 +7,7 @@
 
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import type { PaginationState, useReactTable } from '@tanstack/react-table';
+import type { PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
 import { type ComponentType, useCallback, useEffect, useState } from 'react';
 import { ServerDataTable } from '../data-table/server-data-table';
@@ -44,6 +44,7 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
   icons,
 }: ServerAssetTableClientProps<Asset>) {
   const [pagination, setPagination] = useState(INITIAL_PAGINATION);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset>>({
     queryKey: assetConfig.queryKey,
@@ -64,6 +65,10 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
     [pagination]
   );
 
+  const handleSortingChanged = useCallback((updatedSorting: SortingState) => {
+    setSorting(updatedSorting);
+  }, []);
+
   useEffect(() => {
     // Skip refetch on initial mount
     if (pagination === INITIAL_PAGINATION) {
@@ -79,6 +84,7 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
       icons={icons ?? {}}
       name={assetConfig.name}
       onPageChanged={handlePageChanged}
+      onSortingChanged={handleSortingChanged}
       initialPageSize={INITIAL_PAGINATION.first}
       rowCount={data.rowCount}
     />
