@@ -24,7 +24,7 @@ const StablecoinBalances = theGraphGraphqlStarterkits(
         id
       }
     }
-    assetStats_collection(interval: hour, where: { asset: $activityEventAssetId }) {
+    assetStats_collection(interval: hour, where: { asset: $activityEventAssetId }, first: 1) {
       count
     }
   }

@@ -8,6 +8,7 @@ import {
   type PaginationState,
   type RowData,
   type SortingState,
+  type TableState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -80,6 +81,17 @@ export function DataTable<TData>({
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
+  const tableState: Partial<TableState> = {
+    sorting,
+    columnFilters,
+    columnVisibility,
+    rowSelection,
+    globalFilter,
+  };
+  if (pagination) {
+    tableState.pagination = pagination;
+  }
+
   const table = useReactTable({
     data: memoizedData,
     columns: memoizedColumns,
@@ -95,14 +107,7 @@ export function DataTable<TData>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
     globalFilterFn: 'includesString',
 
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      globalFilter,
-      pagination,
-    },
+    state: tableState,
 
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
