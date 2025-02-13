@@ -7,9 +7,14 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  enablePagination?: boolean;
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData>({ table, enablePagination = true }: DataTablePaginationProps<TData>) {
+  if (!enablePagination) {
+    return null;
+  }
+
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-muted-foreground text-sm">

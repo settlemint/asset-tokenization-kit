@@ -11,6 +11,8 @@ import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  enableCsvExport?: boolean;
+  enableViewOptions?: boolean;
 }
 
 const CAPITAL_LETTER_REGEX = /(?=[A-Z])/;
@@ -28,7 +30,11 @@ function prettifyTitle(identifier: string): string {
   return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({
+  table,
+  enableCsvExport = true,
+  enableViewOptions = true,
+}: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const facetedColumns = table
@@ -74,8 +80,8 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
-      <DataTableExport table={table} />
+      {enableViewOptions && <DataTableViewOptions table={table} />}
+      {enableCsvExport && <DataTableExport table={table} />}
     </div>
   );
 }

@@ -34,6 +34,13 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
+  toolbarOptions?: {
+    enableCsvExport?: boolean;
+    enableViewOptions?: boolean;
+  };
+  paginationOptions?: {
+    enablePagination?: boolean;
+  };
 }
 
 declare module '@tanstack/table-core' {
@@ -59,7 +66,15 @@ declare module '@tanstack/react-table' {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({ columns, data, isLoading, icons, name }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  columns,
+  data,
+  isLoading,
+  icons,
+  name,
+  toolbarOptions,
+  paginationOptions,
+}: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -138,7 +153,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} {...toolbarOptions} />
       <div className="overflow-x-auto">
         <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
           <Table>
@@ -159,7 +174,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
           </Table>
         </div>
       </div>
-      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} />}
+      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} {...paginationOptions} />}
     </div>
   );
 }

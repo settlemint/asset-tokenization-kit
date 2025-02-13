@@ -18,6 +18,7 @@ export const columns = [
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,
+    enableGlobalFilter: false,
   }),
   columnHelper.accessor('sender', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Sender</DataTableColumnHeader>,
@@ -29,11 +30,13 @@ export const columns = [
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,
+    enableGlobalFilter: false,
   }),
   columnHelper.accessor('description', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Description</DataTableColumnHeader>,
     cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
     enableColumnFilter: false,
+    enableGlobalFilter: false,
   }),
   columnHelper.accessor('status', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
@@ -49,5 +52,6 @@ export const columns = [
       );
     },
     enableColumnFilter: false,
+    enableGlobalFilter: false,
   }),
 ];
