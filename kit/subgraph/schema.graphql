@@ -547,7 +547,7 @@ type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
 Entity for underlying asset top-up events.
 Emitted when underlying assets are added (topped up) to the Bond contract.
 """
-type UnderlyingAssetTopUpEvent @entity(immutable: true) {
+type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -562,7 +562,7 @@ type UnderlyingAssetTopUpEvent @entity(immutable: true) {
 Entity for underlying asset withdrawal events.
 Emitted when underlying assets are withdrawn from the Bond contract.
 """
-type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
+type UnderlyingAssetWithdrawnEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!

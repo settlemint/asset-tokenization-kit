@@ -1,6 +1,5 @@
 'use client';
 'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -18,8 +17,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { type ComponentType, useMemo, useState } from 'react';
-import { DataTablePagination } from './data-table-pagination';
-import { DataTableToolbar } from './data-table-toolbar';
+import { DataTablePagination, type DataTablePaginationOptions } from './data-table-pagination';
+import { DataTableToolbar, type DataTableToolbarOptions } from './data-table-toolbar';
 
 /**
  * Props for the DataTable component.
@@ -34,6 +33,8 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
+  toolbar?: DataTableToolbarOptions;
+  pagination?: DataTablePaginationOptions;
 }
 
 declare module '@tanstack/table-core' {
@@ -59,7 +60,15 @@ declare module '@tanstack/react-table' {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({ columns, data, isLoading, icons, name }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  columns,
+  data,
+  isLoading,
+  icons,
+  name,
+  toolbar,
+  pagination,
+}: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -138,7 +147,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} {...toolbar} />
       <div className="overflow-x-auto">
         <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
           <Table>
@@ -159,7 +168,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
           </Table>
         </div>
       </div>
-      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} />}
+      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} {...pagination} />}
     </div>
   );
 }

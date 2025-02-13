@@ -22,7 +22,7 @@ interface CopyProps {
   className?: string;
 }
 
-export function CopyToClipboard({ value, displayText, successMessage = 'Copied to clipboard!', className }: CopyProps) {
+export function CopyToClipboard({ value, displayText = '', successMessage = 'Copied to clipboard!', className }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
 
   const handleCopy = async () => {

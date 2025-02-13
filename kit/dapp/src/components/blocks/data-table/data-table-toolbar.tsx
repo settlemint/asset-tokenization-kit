@@ -9,7 +9,11 @@ import { DataTableExport } from './data-table-export';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { DataTableViewOptions } from './data-table-view-options';
 
-interface DataTableToolbarProps<TData> {
+export interface DataTableToolbarOptions {
+  enableToolbar?: boolean;
+}
+
+interface DataTableToolbarProps<TData> extends DataTableToolbarOptions {
   table: Table<TData>;
 }
 
@@ -28,7 +32,11 @@ function prettifyTitle(identifier: string): string {
   return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTableToolbarProps<TData>) {
+  if (!enableToolbar) {
+    return null;
+  }
+
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const facetedColumns = table

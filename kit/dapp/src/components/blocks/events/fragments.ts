@@ -319,4 +319,5 @@ export interface NormalizedTransactionListItem {
   asset: string;
   sender: string;
   details: AssetEvent;
+  transactionHash: string;
 }

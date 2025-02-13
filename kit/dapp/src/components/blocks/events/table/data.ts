@@ -1,3 +1,6 @@
+import { formatDate } from '@/lib/date';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -21,13 +24,12 @@ import {
   UnpausedEventFragment,
   UserBlockedEventFragment,
   UserUnblockedEventFragment,
-} from '@/components/blocks/events/fragments';
-import { formatDate } from '@/lib/date';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+} from '../fragments';
 
 const TransactionListFragment = theGraphGraphqlStarterkits(
   `
   fragment TransactionListFragment on AssetEvent {
+    id
     emitter {
       id
     }
@@ -81,8 +83,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList {
-  assetEvents(orderBy: timestamp, orderDirection: desc) {
+query TransactionsList($first: Int) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first) {
     ...TransactionListFragment
   }
 }
@@ -90,8 +92,10 @@ query TransactionsList {
   [TransactionListFragment]
 );
 
-export async function getTransactionsList(): Promise<NormalizedTransactionListItem[]> {
-  const theGraphData = await theGraphClientStarterkits.request(TransactionsList);
+export async function getTransactionsList(first?: number): Promise<NormalizedTransactionListItem[]> {
+  const theGraphData = await theGraphClientStarterkits.request(TransactionsList, {
+    first,
+  });
 
   return theGraphData.assetEvents.map((event) => {
     return {
@@ -100,6 +104,7 @@ export async function getTransactionsList(): Promise<NormalizedTransactionListIt
       asset: event.emitter.id,
       sender: event.sender.id,
       details: event as unknown as AssetEvent,
+      transactionHash: getTransactionHashFromEventId(event.id),
     };
   });
 }

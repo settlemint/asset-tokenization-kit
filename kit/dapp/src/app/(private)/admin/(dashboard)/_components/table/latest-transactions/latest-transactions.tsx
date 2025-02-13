@@ -4,30 +4,33 @@ import { getTransactionsList } from '@/components/blocks/events/table/data';
 import { TransactionsTableClient } from '@/components/blocks/events/table/table.client';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Suspense } from 'react';
 
-export const metadata: Metadata = {
-  title: 'Transactions',
-  description: 'Inspect all transactions on the network.',
-};
-
-export default async function TransactionsPage() {
+export default async function LatestTransactions() {
   const queryClient = getQueryClient();
-  const queryKey = ['transactionslist'];
+  const first = 5;
+  const queryKey = ['first5TransactionsList'];
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getTransactionsList(),
+    queryFn: () => getTransactionsList(first),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="mb-6 font-bold text-3xl tracking-tight">Transactions</h2>
-      </div>
       <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-        <TransactionsTableClient queryKey={queryKey} />
+        <TransactionsTableClient
+          queryKey={queryKey}
+          first={first}
+          toolbar={{ enableToolbar: false }}
+          pagination={{ enablePagination: false }}
+        />
+        <div className="mt-4">
+          <Link href="/admin/transactions" className="text-muted-foreground text-sm hover:text-primary">
+            View all transactions →
+          </Link>
+        </div>
       </Suspense>
     </HydrationBoundary>
   );
