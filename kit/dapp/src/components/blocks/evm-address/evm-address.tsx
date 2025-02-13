@@ -1,6 +1,7 @@
 'use client';
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { Badge } from '@/components/ui/badge';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { shortHex } from '@/lib/hex';
@@ -22,6 +23,8 @@ interface EvmAddressProps extends PropsWithChildren {
   suffixLength?: number;
   iconSize?: 'tiny' | 'small' | 'big';
   prettyNames?: boolean;
+  verbose?: boolean;
+  hoverCard?: boolean;
 }
 
 const EvmAddressUser = hasuraGraphql(`
@@ -58,6 +61,8 @@ export function EvmAddress({
   suffixLength = 4,
   iconSize = 'tiny',
   prettyNames = true,
+  verbose = false,
+  hoverCard = true,
 }: EvmAddressProps) {
   const user = useSuspenseQuery({
     queryKey: ['user-name', address],
@@ -84,6 +89,28 @@ export function EvmAddress({
 
   const displayName = prettyNames ? (name ?? asset.data?.name ?? user.data?.name) : undefined;
   const displayEmail = prettyNames ? user.data?.email : undefined;
+
+  if (!hoverCard) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
+          <AddressAvatar address={address} variant={iconSize} imageUrl={user.data?.image} email={displayEmail} />
+        </Suspense>
+        {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
+        {displayName && (
+          <span>
+            {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
+            {verbose && (
+              <Badge variant="secondary" className="font-mono">
+                {shortHex(address, { prefixLength, suffixLength })}
+              </Badge>
+            )}
+          </span>
+        )}
+      </div>
+    );
+  }
+
   return (
     <HoverCard>
       <HoverCardTrigger>
@@ -94,7 +121,12 @@ export function EvmAddress({
           {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
           {displayName && (
             <span>
-              {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
+              {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
+              {verbose && (
+                <Badge variant="secondary" className="font-mono">
+                  {shortHex(address, { prefixLength, suffixLength })}
+                </Badge>
+              )}
             </span>
           )}
         </div>

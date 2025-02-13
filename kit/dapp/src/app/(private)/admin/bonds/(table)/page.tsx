@@ -1,4 +1,5 @@
 import { AssetTable } from '@/components/blocks/asset-table/asset-table';
+import { PageHeader } from '@/components/layout/page-header';
 import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import { columns } from './_components/columns';
@@ -13,9 +14,7 @@ export const metadata: Metadata = {
 export default function BondsPage() {
   return (
     <>
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="mb-6 font-bold text-3xl tracking-tight">Bonds</h2>
-      </div>
+      <PageHeader title="Bonds" />
       <AssetTable assetConfig={assetConfig.bond} dataAction={getBonds} columns={columns}>
         <BondsTableClient />
       </AssetTable>
