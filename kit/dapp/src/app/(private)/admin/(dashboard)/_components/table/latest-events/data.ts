@@ -6,7 +6,7 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 const AssetEvents = theGraphGraphqlStarterkits(
   `
   query AssetEvents {
-    assetEvents(orderBy: timestamp, orderDirection: desc) {
+    assetEvents(orderBy: timestamp, orderDirection: desc, first: 10) {
       id
       timestamp
       ...TransactionListFragment
@@ -31,7 +31,8 @@ const PendingAndRecentlyProcessedTransactions = portalGraphql(
   `
   query PendingAndRecentlyProcessedTransactions {
     getPendingAndRecentlyProcessedTransactions(
-      processedAfter: "0"
+      processedAfter: "0",
+      pageSize: 10
     ) {
       records {
         ...PendingAndRecentlyProcessedTransactionsFields
@@ -74,5 +75,6 @@ export async function getAssetEvents() {
     .map((event) => ({
       ...event,
       timestamp: formatDate(event.timestamp, { type: 'relative' }),
-    }));
+    }))
+    .slice(0, 10);
 }
