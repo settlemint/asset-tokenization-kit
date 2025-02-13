@@ -7,15 +7,15 @@ import { Configuration } from './steps/configuration';
 import { Summary } from './steps/summary';
 import { createBond } from './store';
 export function CreateBondForm({
-  onClose,
+  onCloseAction,
 }: {
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={createBond}
       resolverAction={zodResolver(CreateBondFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.bond.queryKey, ['transactions']],
       }}

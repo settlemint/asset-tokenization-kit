@@ -9,6 +9,7 @@ const CryptocurrencyTitle = theGraphGraphqlStarterkits(
     id
     name
     symbol
+    decimals
     }
   }
 `

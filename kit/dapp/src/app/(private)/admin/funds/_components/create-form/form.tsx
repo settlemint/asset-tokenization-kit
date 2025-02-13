@@ -8,15 +8,15 @@ import { Summary } from './steps/summary';
 import { createFund } from './store';
 
 export function CreateFundForm({
-  onClose,
+  onCloseAction,
 }: {
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.fund.queryKey, ['transactions']],
       }}

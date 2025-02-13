@@ -8,15 +8,15 @@ import { Summary } from './steps/summary';
 import { createEquity } from './store';
 
 export function CreateEquityForm({
-  onClose,
+  onCloseAction,
 }: {
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.equity.queryKey, ['transactions']],
       }}

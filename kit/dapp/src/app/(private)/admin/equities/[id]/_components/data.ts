@@ -6,9 +6,12 @@ const EquityTitle = theGraphGraphqlStarterkits(
   `
   query Equity($id: ID!) {
     equity(id: $id) {
-    id
-    name
-    symbol    }
+      id
+      name
+      symbol
+      paused
+      decimals
+    }
   }
 `
 );

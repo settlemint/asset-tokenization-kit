@@ -10,6 +10,7 @@ const StableCoinTitle = theGraphGraphqlStarterkits(
       name
       symbol
       decimals
+      paused
     }
   }
 `

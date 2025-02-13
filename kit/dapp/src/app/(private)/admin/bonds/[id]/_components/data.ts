@@ -6,9 +6,11 @@ const BondTitle = theGraphGraphqlStarterkits(
   `
   query Bond($id: ID!) {
     bond(id: $id) {
-    id
-    name
-    symbol
+      id
+      name
+      symbol
+      paused
+      decimals
     }
   }
 `
