@@ -29,7 +29,6 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
             <CopyToClipboard
               value={user.wallet}
               displayText={shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 }) ?? ''}
-              className="ml-2"
             />
           </div>
         </DetailsGridItem>

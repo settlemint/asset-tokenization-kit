@@ -6,6 +6,7 @@ import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { assetConfig } from '@/lib/config/assets';
+import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import type { CryptoCurrencyAsset } from './data';
 
@@ -39,7 +40,7 @@ export const columns = [
         Total Supply
       </DataTableColumnHeader>
     ),
-    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
   createActionsColumn(columnHelper, assetConfig.cryptocurrency),

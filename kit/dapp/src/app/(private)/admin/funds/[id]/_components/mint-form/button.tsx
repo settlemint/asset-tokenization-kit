@@ -35,7 +35,7 @@ export function MintTokensButton({
           address={address}
           decimals={decimals}
           assetConfig={assetConfig.fund}
-          onClose={() => setOpen(false)}
+          onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
     </Sheet>

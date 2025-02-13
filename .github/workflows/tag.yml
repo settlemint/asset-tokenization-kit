@@ -80,7 +80,7 @@ jobs:
           version: stable
 
       - name: Install Bun dependencies
-        run: bun install 
+        run: bun install
 
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
@@ -165,6 +165,11 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v5
         with:
           token: ${{ env.PAT_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5

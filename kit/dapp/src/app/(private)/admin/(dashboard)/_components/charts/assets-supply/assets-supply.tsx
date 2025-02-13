@@ -23,7 +23,7 @@ export async function AssetsSupply() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetsSupplySkeleton categories={Object.keys(assetConfig).length} />}>
+      <Suspense fallback={<AssetsSupplySkeleton />}>
         <AssetsSupplyClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
