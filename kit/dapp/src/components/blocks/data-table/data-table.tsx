@@ -36,8 +36,7 @@ import { DataTableToolbar } from './data-table-toolbar';
  */
 export interface DataTableRowAction<TData> {
   label: string;
-  action: (row: TData) => void;
-  icon?: ComponentType<{ className?: string }>;
+  component: (row: TData) => React.ReactNode;
 }
 
 interface DataTableProps<TData> {
@@ -207,11 +206,10 @@ function DataTableRowActions<TData>({
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {actions.map((action, index) => (
-          <DropdownMenuItem key={index} onClick={() => action.action(row)}>
-            {action.icon && <action.icon className="mr-2 h-4 w-4" />}
-            {action.label}
+      <DropdownMenuContent align="end" className="p-0">
+        {actions?.map((action, index) => (
+          <DropdownMenuItem key={index} className="dropdown-menu-item cursor-pointer p-0">
+            {action.component(row)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

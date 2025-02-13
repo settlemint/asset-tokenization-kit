@@ -1,21 +1,24 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+'use client';
+
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { Lock, ShieldAlert } from 'lucide-react';
+import { Ban, Lock } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { FreezeFundFormType } from '../schema';
+import type { BlockHolderFormType } from '../schema';
 
-export function Summary({ address }: { address: Address }) {
-  const { control } = useFormContext<FreezeFundFormType>();
+export function Summary({ address, holder, blocked }: { address: Address; holder: Address; blocked: boolean }) {
+  const { control } = useFormContext<BlockHolderFormType>();
+  const action = blocked ? 'Unblock' : 'Block';
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm freeze</h2>
+        <h2 className="font-semibold text-base">Review and confirm {action}</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details before proceeding. This action will prevent the account from making transfers.
+          Verify the details before proceeding. This action will {blocked ? 'enable' : 'prevent'} token transfers for
+          this holder.
         </p>
       </div>
 
@@ -23,11 +26,11 @@ export function Summary({ address }: { address: Address }) {
         <div className="rounded-lg border bg-card p-4">
           <div className="mb-3 flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <ShieldAlert className="h-3 w-3 text-primary" />
+              <Ban className="h-3 w-3 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">Freeze Details</h3>
-              <p className="text-muted-foreground text-xs">Contract and account information.</p>
+              <h3 className="font-semibold text-sm">Holder Status</h3>
+              <p className="text-muted-foreground text-xs">Current holder status and target state.</p>
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
@@ -35,20 +38,17 @@ export function Summary({ address }: { address: Address }) {
               <dt className="text-muted-foreground text-sm">Contract Address</dt>
               <dd className="font-medium text-sm">{address}</dd>
             </div>
-            <div className="py-1.5">
-              <FormField
-                control={control}
-                name="account"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account to Freeze</FormLabel>
-                    <FormControl>
-                      <Input placeholder="0x..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">Holder Address</dt>
+              <dd className="font-medium text-sm">{holder}</dd>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">Current State</dt>
+              <dd className="font-medium text-sm">{blocked ? 'Blocked' : 'Active'}</dd>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">Target State</dt>
+              <dd className="font-medium text-sm">{blocked ? 'Active' : 'Blocked'}</dd>
             </div>
           </dl>
         </div>
@@ -91,4 +91,4 @@ export function Summary({ address }: { address: Address }) {
   );
 }
 
-Summary.validatedFields = ['pincode', 'account'] as const;
+Summary.validatedFields = ['pincode'] as const;
