@@ -551,7 +551,7 @@ type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
-  emitter: Factory!
+  emitter: Asset!
   sender: Account!
   from: Account! # The address providing the top-up
   amount: BigDecimal! # The amount of underlying assets added
@@ -577,7 +577,7 @@ type UnderlyingAssetWithdrawnEvent implements AssetEvent @entity(immutable: true
 # FixedYield-Specific Custom Event
 # --------------------------------------------------
 
-type FixedYieldCreatedEvent implements AssetEvent @entity {
+type FixedYieldCreatedEvent @entity {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -590,7 +590,7 @@ type FixedYieldCreatedEvent implements AssetEvent @entity {
 Entity for yield claimed events in FixedYield.
 Emitted when yield is claimed.
 """
-type YieldClaimedEvent implements AssetEvent @entity(immutable: true) {
+type YieldClaimedEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
