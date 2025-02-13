@@ -1,6 +1,6 @@
 'use client';
 
-import { AssetTableClientServerSide } from '@/components/blocks/asset-table/asset-table-client-server-side';
+import { ServerAssetTableClient } from '@/components/blocks/asset-table/server-asset-table-client';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useCallback } from 'react';
 import { getStablecoinBalances } from './data';
@@ -21,11 +21,6 @@ export function HoldersTableClient({ id, assetConfig }: HoldersTableClientProps)
   );
 
   return (
-    <AssetTableClientServerSide
-      refetchInterval={5000}
-      assetConfig={assetConfig}
-      dataAction={getData}
-      columns={columns}
-    />
+    <ServerAssetTableClient refetchInterval={5000} assetConfig={assetConfig} dataAction={getData} columns={columns} />
   );
 }

@@ -5,19 +5,19 @@
 
 'use client';
 
-import { DataTableServerSide } from '@/components/blocks/data-table/data-table-server-side';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { PaginationState, useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
 import { type ComponentType, useCallback, useEffect, useState } from 'react';
+import { ServerDataTable } from '../data-table/server-data-table';
 
 interface DataActionResponse<Asset> {
   assets: Asset[];
   rowCount: number;
 }
 
-export type AssetTableClientServerSideProps<Asset> = {
+export type ServerAssetTableClientProps<Asset> = {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
   dataAction: (pagination: { first: number; skip: number }) => Promise<DataActionResponse<Asset>>;
   refetchInterval?: number;
@@ -36,13 +36,13 @@ const INITIAL_PAGINATION = {
  * Client-side table component for displaying asset data
  * @template Asset - The type of asset data being displayed
  */
-export function AssetTableClientServerSide<Asset extends Record<string, unknown>>({
+export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
   dataAction,
   assetConfig,
   refetchInterval,
   columns,
   icons,
-}: AssetTableClientServerSideProps<Asset>) {
+}: ServerAssetTableClientProps<Asset>) {
   const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
   const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset>>({
@@ -73,7 +73,7 @@ export function AssetTableClientServerSide<Asset extends Record<string, unknown>
   }, [pagination, refetch]);
 
   return (
-    <DataTableServerSide
+    <ServerDataTable
       columns={columns}
       data={data.assets}
       icons={icons ?? {}}

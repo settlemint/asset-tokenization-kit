@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 import { DataTable, type DataTableProps } from './data-table';
 
 /**
- * Props for the DataTableServerSide component.
+ * Props for the ServerDataTable component.
  * @template TData The type of data in the table.
  */
-interface DataTableServerSideProps<TData> extends DataTableProps<TData> {
+interface ServerDataTableProps<TData> extends DataTableProps<TData> {
   initialPageSize?: number;
   onPageChanged?: (pagination: PaginationState) => void;
   rowCount: number;
@@ -20,16 +20,12 @@ interface DataTableServerSideProps<TData> extends DataTableProps<TData> {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTableServerSide<TData>({
-  columns,
-  data,
-  isLoading,
-  icons,
-  name,
+export function ServerDataTable<TData>({
   initialPageSize = 10,
   rowCount,
   onPageChanged,
-}: DataTableServerSideProps<TData>) {
+  ...otherProps
+}: ServerDataTableProps<TData>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: initialPageSize,
@@ -43,11 +39,7 @@ export function DataTableServerSide<TData>({
 
   return (
     <DataTable
-      columns={columns}
-      data={data}
-      isLoading={isLoading}
-      icons={icons}
-      name={name}
+      {...otherProps}
       pagination={pagination}
       tableOptions={{
         manualPagination: true,
