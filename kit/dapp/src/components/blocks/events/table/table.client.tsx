@@ -1,9 +1,9 @@
 'use client';
 
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import type { DataTablePaginationOptions } from '@/components/blocks/data-table/data-table-pagination';
+import type { DataTableToolbarOptions } from '@/components/blocks/data-table/data-table-toolbar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import { DataTable } from '../../data-table/data-table';
-import type { DataTablePaginationOptions } from '../../data-table/data-table-pagination';
-import type { DataTableToolbarOptions } from '../../data-table/data-table-toolbar';
 import type { NormalizedTransactionListItem } from '../fragments';
 import { columns, icons } from './columns';
 import { getTransactionsList } from './data';

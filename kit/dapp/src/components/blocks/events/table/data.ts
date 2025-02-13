@@ -1,10 +1,83 @@
-import {
-  type AssetEvent,
-  type NormalizedTransactionListItem,
-  TransactionListFragment,
-} from '@/components/blocks/events/fragments';
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import {
+  ApprovalEventFragment,
+  AssetCreatedEventFragment,
+  type AssetEvent,
+  BondMaturedEventFragment,
+  BondRedeemedEventFragment,
+  BurnEventFragment,
+  CollateralUpdatedEventFragment,
+  ManagementFeeCollectedEventFragment,
+  MintEventFragment,
+  type NormalizedTransactionListItem,
+  PausedEventFragment,
+  PerformanceFeeCollectedEventFragment,
+  RoleAdminChangedEventFragment,
+  RoleGrantedEventFragment,
+  RoleRevokedEventFragment,
+  TokenWithdrawnEventFragment,
+  TokensFrozenEventFragment,
+  TokensUnfrozenEventFragment,
+  TransferEventFragment,
+  UnpausedEventFragment,
+  UserBlockedEventFragment,
+  UserUnblockedEventFragment,
+} from '../fragments';
+
+export const TransactionListFragment = theGraphGraphqlStarterkits(
+  `
+  fragment TransactionListFragment on AssetEvent {
+    emitter {
+      id
+    }
+    eventName
+    timestamp
+    ...AssetCreatedEventFragment
+    ...ApprovalEventFragment
+    ...BondMaturedEventFragment
+    ...BondRedeemedEventFragment
+    ...BurnEventFragment
+    ...CollateralUpdatedEventFragment
+    ...ManagementFeeCollectedEventFragment
+    ...MintEventFragment
+    ...PausedEventFragment
+    ...PerformanceFeeCollectedEventFragment
+    ...RoleAdminChangedEventFragment
+    ...RoleGrantedEventFragment
+    ...RoleRevokedEventFragment
+    ...TokenWithdrawnEventFragment
+    ...TokensFrozenEventFragment
+    ...TokensUnfrozenEventFragment
+    ...TransferEventFragment
+    ...UnpausedEventFragment
+    ...UserBlockedEventFragment
+    ...UserUnblockedEventFragment
+  }
+`,
+  [
+    AssetCreatedEventFragment,
+    ApprovalEventFragment,
+    BondMaturedEventFragment,
+    BondRedeemedEventFragment,
+    BurnEventFragment,
+    CollateralUpdatedEventFragment,
+    ManagementFeeCollectedEventFragment,
+    MintEventFragment,
+    PausedEventFragment,
+    PerformanceFeeCollectedEventFragment,
+    RoleAdminChangedEventFragment,
+    RoleGrantedEventFragment,
+    RoleRevokedEventFragment,
+    TokenWithdrawnEventFragment,
+    TokensFrozenEventFragment,
+    TokensUnfrozenEventFragment,
+    TransferEventFragment,
+    UnpausedEventFragment,
+    UserBlockedEventFragment,
+    UserUnblockedEventFragment,
+  ]
+);
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `

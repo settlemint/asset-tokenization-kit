@@ -246,60 +246,6 @@ export const UserUnblockedEventFragment = theGraphGraphqlStarterkits(`
   }
 `);
 
-export const TransactionListFragment = theGraphGraphqlStarterkits(
-  `
-  fragment TransactionListFragment on AssetEvent {
-    emitter {
-      id
-    }
-    eventName
-    timestamp
-    ...AssetCreatedEventFragment
-    ...ApprovalEventFragment
-    ...BondMaturedEventFragment
-    ...BondRedeemedEventFragment
-    ...BurnEventFragment
-    ...CollateralUpdatedEventFragment
-    ...ManagementFeeCollectedEventFragment
-    ...MintEventFragment
-    ...PausedEventFragment
-    ...PerformanceFeeCollectedEventFragment
-    ...RoleAdminChangedEventFragment
-    ...RoleGrantedEventFragment
-    ...RoleRevokedEventFragment
-    ...TokenWithdrawnEventFragment
-    ...TokensFrozenEventFragment
-    ...TokensUnfrozenEventFragment
-    ...TransferEventFragment
-    ...UnpausedEventFragment
-    ...UserBlockedEventFragment
-    ...UserUnblockedEventFragment
-  }
-`,
-  [
-    AssetCreatedEventFragment,
-    ApprovalEventFragment,
-    BondMaturedEventFragment,
-    BondRedeemedEventFragment,
-    BurnEventFragment,
-    CollateralUpdatedEventFragment,
-    ManagementFeeCollectedEventFragment,
-    MintEventFragment,
-    PausedEventFragment,
-    PerformanceFeeCollectedEventFragment,
-    RoleAdminChangedEventFragment,
-    RoleGrantedEventFragment,
-    RoleRevokedEventFragment,
-    TokenWithdrawnEventFragment,
-    TokensFrozenEventFragment,
-    TokensUnfrozenEventFragment,
-    TransferEventFragment,
-    UnpausedEventFragment,
-    UserBlockedEventFragment,
-    UserUnblockedEventFragment,
-  ]
-);
-
 // Types for each fragment
 export type AssetCreatedEvent = FragmentOf<typeof AssetCreatedEventFragment>;
 export type ApprovalEvent = FragmentOf<typeof ApprovalEventFragment>;
