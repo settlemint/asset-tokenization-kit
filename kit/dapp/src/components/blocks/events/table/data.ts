@@ -35,8 +35,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
     }
     eventName
     timestamp
-    ...AssetCreatedEventFragment
     ...ApprovalEventFragment
+    ...AssetCreatedEventFragment
     ...BondMaturedEventFragment
     ...BondRedeemedEventFragment
     ...BurnEventFragment

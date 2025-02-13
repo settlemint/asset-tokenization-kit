@@ -1,0 +1,15 @@
+import { z } from 'zod';
+
+export const BurnBondFormSchema = z.object({
+  pincode: z
+    .string()
+    .length(6, { message: 'PIN code must be exactly 6 digits' })
+    .regex(/^\d+$/, 'PIN code must contain only numbers'),
+  amount: z.number().min(1, { message: 'Amount is required' }),
+  from: z.string().min(1, { message: 'Recipient is required' }),
+});
+
+export type BurnBondFormType = z.infer<typeof BurnBondFormSchema>;
+
+export const BurnBondOutputSchema = z.string();
+export type BurnBondOutputType = z.infer<typeof BurnBondOutputSchema>;

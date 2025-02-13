@@ -49,7 +49,7 @@ export function TransferButton({
           assetType={type}
           balance={balance}
           decimals={decimals}
-          onClose={() => setOpen(false)}
+          onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
     </Sheet>

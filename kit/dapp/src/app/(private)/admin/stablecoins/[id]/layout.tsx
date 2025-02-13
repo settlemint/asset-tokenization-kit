@@ -19,7 +19,7 @@ import type { Address } from 'viem';
 import { BurnTokensButton } from './_components/burn-form/button';
 import { getStableCoinTitle } from './_components/data';
 import { MintTokensButton } from './_components/mint-form/button';
-
+import { PauseTokensButton } from './_components/pause-form/button';
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
@@ -126,6 +126,14 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}
                   decimals={stableCoin.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="dropdown-menu-item">
+                <PauseTokensButton
+                  address={id as Address}
+                  name={stableCoin.name}
+                  symbol={stableCoin.symbol}
+                  paused={stableCoin.paused}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">

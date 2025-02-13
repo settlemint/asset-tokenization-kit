@@ -162,6 +162,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
     --theme-accent-background: 240 3.7% 15.9%;
     --theme-accent-foreground: 221 85% 57%;
+    --theme-sidebar-accent: 0 0% 16%;
   }
 }
 
@@ -228,7 +229,7 @@
   .settlemint-dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
     @apply bg-dm-gradient-menu-hover !important;
   }
-  
+
   code[data-line-numbers] {
     counter-reset: line;
   }

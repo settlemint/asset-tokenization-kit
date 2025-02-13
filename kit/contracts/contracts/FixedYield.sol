@@ -3,16 +3,22 @@ pragma solidity ^0.8.27;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-/// @title FixedYield - A contract for managing token yield distributions
-/// @notice This contract implements fixed yield schedule functionality for ERC20 tokens
-/// @dev Uses AccessControl for permissions and works with ERC20Yield tokens
-/// @custom:security-contact support@settlemint.com
 
-contract FixedYield is AccessControl, ERC2771Context {
+/// @title FixedYield - A contract for managing token yield distributions
+/// @notice This contract implements a fixed yield schedule for ERC20 tokens, allowing for periodic
+/// yield distributions based on token balances. It supports features like historical balance tracking,
+/// period-based distributions, and pro-rated yield calculations.
+/// @dev Inherits from AccessControl for role-based permissions and ERC2771Context for meta-transaction
+/// support. Works with ERC20Yield-compatible tokens to manage yield distributions. Uses timestamps for
+/// period calculations and maintains a history of distributions.
+/// @custom:security-contact support@settlemint.com
+contract FixedYield is AccessControl, Pausable, ERC2771Context {
     /// @notice Custom errors for the FixedYield contract
+    /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidToken();
     error InvalidStartDate();
     error InvalidEndDate();
@@ -31,37 +37,43 @@ contract FixedYield is AccessControl, ERC2771Context {
     error InvalidPeriod();
 
     /// @notice The basis points denominator used for rate calculations (10,000 = 100%)
+    /// @dev Used to convert basis points to percentages (e.g., 500 basis points = 5%)
     uint256 public constant RATE_BASIS_POINTS = 10_000;
 
     /// @notice The token this schedule is for
+    /// @dev Must implement the ERC20Yield interface
     ERC20Yield private immutable _token;
 
     /// @notice The underlying asset used for yield payments
+    /// @dev Must be a valid ERC20 token contract
     IERC20 private immutable _underlyingAsset;
 
     /// @notice The start date of the yield schedule
+    /// @dev Must be in the future when the contract is deployed
     uint256 private immutable _startDate;
 
     /// @notice The end date of the yield schedule
+    /// @dev Must be after the start date
     uint256 private immutable _endDate;
 
     /// @notice The yield rate in basis points
-    /// @dev 1 basis point = 0.01%
-    ///      100 basis points = 1%
-    ///      1000 basis points = 10%
-    ///      10000 basis points = 100%
+    /// @dev 1 basis point = 0.01%, must be greater than 0
     uint256 private immutable _rate;
 
     /// @notice The interval between distributions in seconds
+    /// @dev Must be greater than 0
     uint256 private immutable _interval;
 
     /// @notice Array of timestamps when each period ends
+    /// @dev Calculated and stored at deployment for gas-efficient period lookups
     uint256[] private _periodEndTimestamps;
 
     /// @notice Mapping of holder address to last claimed period
+    /// @dev Used to track which periods each holder has claimed
     mapping(address => uint256) private _lastClaimedPeriod;
 
     /// @notice The total amount of yield claimed across all holders
+    /// @dev Used to track total distributions and calculate remaining yield
     uint256 private _totalClaimed;
 
     /// @notice Event emitted when underlying assets are topped up
@@ -290,7 +302,7 @@ contract FixedYield is AccessControl, ERC2771Context {
 
     /// @notice Claims all available yield for the caller
     /// @dev Calculates and transfers all unclaimed yield for completed periods
-    function claimYield() external {
+    function claimYield() external whenNotPaused {
         uint256 lastPeriod = lastCompletedPeriod();
         if (lastPeriod == 0) revert NoYieldAvailable();
 
@@ -332,7 +344,7 @@ contract FixedYield is AccessControl, ERC2771Context {
 
     /// @notice Allows topping up the contract with underlying assets for yield payments
     /// @param amount The amount of underlying assets to add
-    function topUpUnderlyingAsset(uint256 amount) external {
+    function topUpUnderlyingAsset(uint256 amount) external whenNotPaused {
         bool success = _underlyingAsset.transferFrom(_msgSender(), address(this), amount);
         if (!success) revert InsufficientUnderlyingBalance();
 
@@ -343,7 +355,7 @@ contract FixedYield is AccessControl, ERC2771Context {
     /// @dev Only callable by admin
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
-    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
         if (to == address(0)) revert InvalidUnderlyingAsset();
         if (amount == 0) revert InvalidAmount();
 
@@ -359,7 +371,7 @@ contract FixedYield is AccessControl, ERC2771Context {
     /// @notice Withdraws all underlying assets
     /// @dev Only callable by admin
     /// @param to The address to send the underlying assets to
-    function withdrawAllUnderlyingAsset(address to) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawAllUnderlyingAsset(address to) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
         if (to == address(0)) revert InvalidUnderlyingAsset();
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
@@ -405,5 +417,17 @@ contract FixedYield is AccessControl, ERC2771Context {
     /// @return The interval between distributions in seconds
     function interval() external view returns (uint256) {
         return _interval;
+    }
+
+    /// @notice Pauses the contract
+    /// @dev Only callable by admin
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _pause();
+    }
+
+    /// @notice Unpauses the contract
+    /// @dev Only callable by admin
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _unpause();
     }
 }

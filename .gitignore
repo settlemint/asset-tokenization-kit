@@ -39,3 +39,4 @@ yarn-error.log*
 
 .npmrc
 .idea
+.specstory
