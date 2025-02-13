@@ -1,3 +1,5 @@
+'use client';
+
 import { EllipsisDropdown } from '@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb-ellipsis';
 import {
   Breadcrumb,
@@ -8,12 +10,12 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 
 interface BreadcrumbsProps {
   maxVisibleItems?: number;
   className?: string;
-  routeSegments: string[];
   hideRoot?: boolean;
 }
 
@@ -42,13 +44,10 @@ function BreadcrumbItemContent({ item }: { item: BreadcrumbItemType }) {
 
 const SPLITTER = /[-_]/;
 
-export default function CollapsedBreadcrumbs({
-  maxVisibleItems = 3,
-  hideRoot = false,
-  className,
-  routeSegments,
-}: BreadcrumbsProps) {
+export default function CollapsedBreadcrumbs({ maxVisibleItems = 3, hideRoot = false, className }: BreadcrumbsProps) {
   const _maxVisibleItems = maxVisibleItems + (hideRoot ? 1 : 0);
+  const pathname = usePathname();
+  const routeSegments = pathname.split('/').filter(Boolean).slice(0, -1);
 
   if (!routeSegments.length) {
     return null;
@@ -59,7 +58,7 @@ export default function CollapsedBreadcrumbs({
       .split(SPLITTER)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' '),
-    href: index < routeSegments.length - 1 ? `/${routeSegments.slice(0, index + 1).join('/')}` : undefined,
+    href: `/${routeSegments.slice(0, index + 1).join('/')}`,
   }));
 
   const visibleItems =
