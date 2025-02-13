@@ -1,24 +1,31 @@
 import { columns } from '@/app/(private)/admin/stablecoins/(table)/_components/columns';
 import { AssetTableSkeleton } from '@/components/blocks/asset-table/asset-table-skeleton';
+import { getTransactionsList } from '@/components/blocks/events/table/data';
+import { TransactionsTableClient } from '@/components/blocks/events/table/table.client';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import Link from 'next/link';
 import { Suspense } from 'react';
-import { getAssetEvents } from './data';
-import { LatestEventsClient } from './latest-events-client';
 
 export default async function LatestEvents() {
   const queryClient = getQueryClient();
-  const queryKey = ['assetEvents'];
+  const first = 5;
+  const queryKey = ['first5TransactionsList'];
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: getAssetEvents,
+    queryFn: () => getTransactionsList(first),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-        <LatestEventsClient queryKey={queryKey} />
+        <TransactionsTableClient queryKey={queryKey} first={first} enableToolbar={false} enablePagination={false} />
+        <div className="mt-4">
+          <Link href="/admin/transactions" className="text-muted-foreground text-sm hover:text-primary">
+            View all transactions →
+          </Link>
+        </div>
       </Suspense>
     </HydrationBoundary>
   );

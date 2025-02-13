@@ -9,10 +9,12 @@ import { DataTableExport } from './data-table-export';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { DataTableViewOptions } from './data-table-view-options';
 
-interface DataTableToolbarProps<TData> {
+export interface DataTableToolbarOptions {
+  enableToolbar?: boolean;
+}
+
+interface DataTableToolbarProps<TData> extends DataTableToolbarOptions {
   table: Table<TData>;
-  enableCsvExport?: boolean;
-  enableViewOptions?: boolean;
 }
 
 const CAPITAL_LETTER_REGEX = /(?=[A-Z])/;
@@ -30,11 +32,11 @@ function prettifyTitle(identifier: string): string {
   return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-export function DataTableToolbar<TData>({
-  table,
-  enableCsvExport = true,
-  enableViewOptions = true,
-}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTableToolbarProps<TData>) {
+  if (!enableToolbar) {
+    return null;
+  }
+
   const isFiltered = table.getState().columnFilters.length > 0;
 
   const facetedColumns = table
@@ -80,8 +82,8 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      {enableViewOptions && <DataTableViewOptions table={table} />}
-      {enableCsvExport && <DataTableExport table={table} />}
+      <DataTableViewOptions table={table} />
+      <DataTableExport table={table} />
     </div>
   );
 }

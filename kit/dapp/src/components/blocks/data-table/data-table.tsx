@@ -1,6 +1,5 @@
 'use client';
 'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -34,13 +33,6 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
-  toolbarOptions?: {
-    enableCsvExport?: boolean;
-    enableViewOptions?: boolean;
-  };
-  paginationOptions?: {
-    enablePagination?: boolean;
-  };
 }
 
 declare module '@tanstack/table-core' {
@@ -66,15 +58,7 @@ declare module '@tanstack/react-table' {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({
-  columns,
-  data,
-  isLoading,
-  icons,
-  name,
-  toolbarOptions,
-  paginationOptions,
-}: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, isLoading, icons, name, ...props }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -153,7 +137,7 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} {...toolbarOptions} />
+      <DataTableToolbar table={table} {...props} />
       <div className="overflow-x-auto">
         <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
           <Table>
@@ -174,7 +158,7 @@ export function DataTable<TData>({
           </Table>
         </div>
       </div>
-      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} {...paginationOptions} />}
+      {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} {...props} />}
     </div>
   );
 }

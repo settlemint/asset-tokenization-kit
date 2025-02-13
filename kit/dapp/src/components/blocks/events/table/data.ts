@@ -8,8 +8,8 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList {
-  assetEvents(orderBy: timestamp, orderDirection: desc) {
+query TransactionsList($first: Int) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first) {
     ...TransactionListFragment
   }
 }
@@ -17,8 +17,10 @@ query TransactionsList {
   [TransactionListFragment]
 );
 
-export async function getTransactionsList(): Promise<NormalizedTransactionListItem[]> {
-  const theGraphData = await theGraphClientStarterkits.request(TransactionsList);
+export async function getTransactionsList(first?: number): Promise<NormalizedTransactionListItem[]> {
+  const theGraphData = await theGraphClientStarterkits.request(TransactionsList, {
+    first,
+  });
 
   return theGraphData.assetEvents.map((event) => {
     return {

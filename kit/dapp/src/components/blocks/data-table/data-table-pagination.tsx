@@ -5,9 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Table } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>;
+export interface DataTablePaginationOptions {
   enablePagination?: boolean;
+}
+
+interface DataTablePaginationProps<TData> extends DataTablePaginationOptions {
+  table: Table<TData>;
 }
 
 export function DataTablePagination<TData>({ table, enablePagination = true }: DataTablePaginationProps<TData>) {
