@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": [
-      "es2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -26,6 +22,7 @@
       {
         "name": "gql.tada/ts-plugin",
         "trackFieldUsage": false,
+        "shouldCheckForColocatedFragments": false,
         "schemas": [
           {
             "name": "hasura",
@@ -55,12 +52,8 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@schemas/*": [
-        "./*.d.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@schemas/*": ["./*.d.ts"]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -76,13 +69,6 @@
     "allowSyntheticDefaultImports": true,
     "preserveConstEnums": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

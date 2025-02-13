@@ -15,9 +15,9 @@
     "format:forge": "settlemint scs foundry format",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
-    "test": "forge test -vvv",
+    "test": "settlemint scs foundry test -vvv",
     "genesis": "bash -e genesis-output.sh",
-    "deploy:remote": "settlemint scs hardhat deploy remote",
+    "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
     "deploy:local": "settlemint scs hardhat deploy local --reset"
   },
   "dependencies": {
