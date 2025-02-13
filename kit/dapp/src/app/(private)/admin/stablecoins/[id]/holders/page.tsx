@@ -1,4 +1,4 @@
-import { AssetTableServerSide } from '@/components/blocks/asset-table/asset-table-server-side';
+import { AssetTable } from '@/components/blocks/asset-table/asset-table';
 import { getStablecoinBalances } from './_components/data';
 import { columns } from './_components/holders-columns';
 import { HoldersTableClient } from './_components/holders-table.client';
@@ -15,7 +15,7 @@ export default async function StableCoinHoldersPage({
     name: 'stablecoin-holders',
   };
   return (
-    <AssetTableServerSide
+    <AssetTable
       assetConfig={assetConfig}
       dataAction={() =>
         getStablecoinBalances(id, { first: 10, skip: 0 }).then((result) => ({
@@ -26,6 +26,6 @@ export default async function StableCoinHoldersPage({
       columns={columns}
     >
       <HoldersTableClient id={id} assetConfig={assetConfig} />
-    </AssetTableServerSide>
+    </AssetTable>
   );
 }

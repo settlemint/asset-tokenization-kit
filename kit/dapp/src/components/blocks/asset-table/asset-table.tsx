@@ -11,10 +11,10 @@ import { AssetTableSkeleton } from './asset-table-skeleton';
  * Props for the AssetTable component
  * @template Asset The type of asset data being displayed
  */
-export interface AssetTableProps<Asset extends Record<string, unknown>> {
+export interface AssetTableProps<Asset extends Record<string, unknown>, DataActionResponse = Asset[]> {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
   /** Function to fetch the asset data */
-  dataAction: () => Promise<Asset[]>;
+  dataAction: () => Promise<DataActionResponse>;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
 }
@@ -23,12 +23,12 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
  * Server component that renders a table of assets with data fetching capabilities
  * @template Asset The type of asset data being displayed
  */
-export async function AssetTable<Asset extends Record<string, unknown>>({
+export async function AssetTable<Asset extends Record<string, unknown>, DataActionResponse = Asset[]>({
   dataAction,
   assetConfig,
   columns,
   children,
-}: PropsWithChildren<AssetTableProps<Asset>>) {
+}: PropsWithChildren<AssetTableProps<Asset, DataActionResponse>>) {
   const queryClient = getQueryClient();
 
   try {
