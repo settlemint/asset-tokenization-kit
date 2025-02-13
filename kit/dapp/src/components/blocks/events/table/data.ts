@@ -25,7 +25,7 @@ import {
   UserUnblockedEventFragment,
 } from '../fragments';
 
-export const TransactionListFragment = theGraphGraphqlStarterkits(
+const TransactionListFragment = theGraphGraphqlStarterkits(
   `
   fragment TransactionListFragment on AssetEvent {
     emitter {
