@@ -20,7 +20,12 @@ export default async function LatestEvents() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-        <TransactionsTableClient queryKey={queryKey} first={first} enableToolbar={false} enablePagination={false} />
+        <TransactionsTableClient
+          queryKey={queryKey}
+          first={first}
+          toolbar={{ enableToolbar: false }}
+          pagination={{ enablePagination: false }}
+        />
         <div className="mt-4">
           <Link href="/admin/transactions" className="text-muted-foreground text-sm hover:text-primary">
             View all transactions →

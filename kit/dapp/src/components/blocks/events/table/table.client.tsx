@@ -8,17 +8,28 @@ import type { NormalizedTransactionListItem } from '../fragments';
 import { columns, icons } from './columns';
 import { getTransactionsList } from './data';
 
-interface TransactionsTableClientProps extends DataTablePaginationOptions, DataTableToolbarOptions {
+interface TransactionsTableClientProps {
   queryKey: QueryKey;
   first?: number;
+  toolbar?: DataTableToolbarOptions;
+  pagination?: DataTablePaginationOptions;
 }
 
-export function TransactionsTableClient({ queryKey, first, ...props }: TransactionsTableClientProps) {
+export function TransactionsTableClient({ queryKey, first, toolbar, pagination }: TransactionsTableClientProps) {
   const { data } = useSuspenseQuery<NormalizedTransactionListItem[]>({
     queryKey,
     queryFn: () => getTransactionsList(first),
     refetchInterval: 5000,
   });
 
-  return <DataTable columns={columns} data={data} icons={icons ?? {}} name={'Transactions'} {...props} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      icons={icons ?? {}}
+      name={'Transactions'}
+      toolbar={toolbar}
+      pagination={pagination}
+    />
+  );
 }
