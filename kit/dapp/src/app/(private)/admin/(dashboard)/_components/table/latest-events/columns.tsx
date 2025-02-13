@@ -9,6 +9,15 @@ import type { getAssetEvents } from './data';
 const columnHelper = createColumnHelper<Awaited<ReturnType<typeof getAssetEvents>>[number]>();
 
 export const columns = [
+  columnHelper.accessor('timestamp', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Timestamp</DataTableColumnHeader>,
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>
+        <span className="[&:first-letter]:uppercase">{getValue()}</span>
+      </DataTableColumnCell>
+    ),
+    enableColumnFilter: false,
+  }),
   columnHelper.accessor('from', {
     header: ({ column }) => <DataTableColumnHeader column={column}>From</DataTableColumnHeader>,
     cell: ({ getValue }) => (
@@ -28,15 +37,6 @@ export const columns = [
   columnHelper.accessor('status', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
     cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
-    enableColumnFilter: false,
-  }),
-  columnHelper.accessor('transactionHash', {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} variant="numeric">
-        Transaction Hash
-      </DataTableColumnHeader>
-    ),
-    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{getValue()}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
 ];

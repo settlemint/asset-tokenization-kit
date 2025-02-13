@@ -1,3 +1,4 @@
+import { formatDate } from '@/lib/date';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
@@ -63,7 +64,7 @@ export async function getAssetEvents() {
 
   return [
     ...pendingAndFailedTransactions.map((tx) => ({
-      date: new Date(tx.createdAt as string),
+      timestamp: tx.createdAt as string,
       status: tx.receipt ? ('failed' as const) : ('pending' as const),
       description: 'Transaction',
       transactionHash: tx.transactionHash,
@@ -71,11 +72,16 @@ export async function getAssetEvents() {
     })),
 
     ...theGraphData.assetEvents.map((event) => ({
-      date: new Date(Number.parseInt(event.timestamp) * 1000), // Convert unix timestamp to Date
+      timestamp: event.timestamp as string,
       status: 'success' as const,
       description: event.eventName,
       transactionHash: event.id,
       from: event.emitter.id,
     })),
-  ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date descending
+  ]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .map((event) => ({
+      ...event,
+      timestamp: formatDate(event.timestamp, { type: 'relative' }),
+    }));
 }
