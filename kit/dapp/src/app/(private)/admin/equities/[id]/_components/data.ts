@@ -10,6 +10,7 @@ const EquityTitle = theGraphGraphqlStarterkits(
       name
       symbol
       paused
+      decimals
     }
   }
 `
