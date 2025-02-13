@@ -11,7 +11,6 @@ restore_addresses() {
     FUND_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000005"
     FIXED_YIELD_FACTORY_ADDRESS="0x5e771e1417100000000000000000000000000006"
 
-
     yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
     yq -i "(.dataSources[] | select(.name == \"EquityFactory\").source.address) = \"$EQUITY_FACTORY_ADDRESS\"" subgraph.yaml

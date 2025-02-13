@@ -1,6 +1,8 @@
+import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
+import { PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import { ChevronDown, PauseCircle, PlayCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
@@ -88,65 +90,51 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
 
   return (
     <div>
-      <h1 className="flex items-center font-bold text-2xl">
-        <span className="mr-2">{fund?.name}</span>
-        <span className="text-muted-foreground">({fund?.symbol})</span>
-        <div className="ml-2 flex items-center gap-2 font-normal text-base">
-          <div
-            className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm ${
-              fund?.paused
-                ? 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-            }`}
-          >
-            {fund?.paused ? (
-              <>
-                <PauseCircle className="h-4 w-4" />
-                <span>Paused</span>
-              </>
-            ) : (
-              <>
-                <PlayCircle className="h-4 w-4" />
-                <span>Active</span>
-              </>
-            )}
-          </div>
-        </div>
-      </h1>
-      <div className="flex justify-between text-muted-foreground text-sm">
-        <EvmAddress address={id}>
-          <EvmAddressBalances address={id} />
-        </EvmAddress>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>
-              Mint tokens
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <MintTokensButton
-                address={id as Address}
-                name={fund.name}
-                symbol={fund.symbol}
-                decimals={fund.decimals}
-              />
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <BurnTokensButton
-                address={id as Address}
-                name={fund.name}
-                symbol={fund.symbol}
-                decimals={fund.decimals}
-              />
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <PageHeader
+        title={
+          <>
+            <span className="mr-2">{fund?.name}</span>
+            <span className="text-muted-foreground">({fund?.symbol})</span>
+          </>
+        }
+        subtitle={
+          <EvmAddress address={id} prettyNames={false}>
+            <EvmAddressBalances address={id} />
+          </EvmAddress>
+        }
+        pill={<ActivePill paused={fund?.paused ?? false} />}
+        button={
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                Actions
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <MintTokensButton
+                  address={id as Address}
+                  name={fund.name}
+                  symbol={fund.symbol}
+                  decimals={fund.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <BurnTokensButton
+                  address={id as Address}
+                  name={fund.name}
+                  symbol={fund.symbol}
+                  decimals={fund.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        }
+      />
 
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabs(id)} />
