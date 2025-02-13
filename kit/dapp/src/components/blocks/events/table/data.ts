@@ -1,5 +1,6 @@
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -28,6 +29,7 @@ import {
 const TransactionListFragment = theGraphGraphqlStarterkits(
   `
   fragment TransactionListFragment on AssetEvent {
+    id
     emitter {
       id
     }
@@ -102,6 +104,7 @@ export async function getTransactionsList(first?: number): Promise<NormalizedTra
       asset: event.emitter.id,
       sender: event.sender.id,
       details: event as unknown as AssetEvent,
+      transactionHash: getTransactionHashFromEventId(event.id),
     };
   });
 }

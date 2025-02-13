@@ -67,6 +67,7 @@ export const columns = [
           asset={row.original.asset}
           timestamp={row.original.timestamp}
           details={row.original.details}
+          transactionHash={row.original.transactionHash}
         />
       </DataTableColumnCell>
     ),

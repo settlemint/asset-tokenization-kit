@@ -1,3 +1,4 @@
+import { TransactionHash } from '@/components/blocks/transaction-hash/transaction-hash';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -17,7 +18,14 @@ import { TransferDetails } from './details/transfer';
 import { UserBlockedDetails } from './details/user-blocked';
 import type { NormalizedTransactionListItem } from './fragments';
 
-export function EventDetailSheet({ event, sender, asset, timestamp, details }: NormalizedTransactionListItem) {
+export function EventDetailSheet({
+  event,
+  sender,
+  asset,
+  timestamp,
+  details,
+  transactionHash,
+}: NormalizedTransactionListItem) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -25,7 +33,7 @@ export function EventDetailSheet({ event, sender, asset, timestamp, details }: N
           Details
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{event}</SheetTitle>
           <Card>
@@ -41,6 +49,10 @@ export function EventDetailSheet({ event, sender, asset, timestamp, details }: N
                 </dd>
                 <dt className="text-muted-foreground text-sm">Date:</dt>
                 <dd className="text-sm">{timestamp}</dd>
+                <dt className="text-muted-foreground text-sm">Transaction Hash:</dt>
+                <dd className="text-sm">
+                  <TransactionHash hash={transactionHash} />
+                </dd>
               </dl>
             </CardContent>
           </Card>
