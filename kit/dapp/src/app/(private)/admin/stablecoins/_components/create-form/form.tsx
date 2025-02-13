@@ -8,15 +8,15 @@ import { Summary } from './steps/summary';
 import { createStablecoin } from './store';
 
 export function CreateStablecoinForm({
-  onClose,
+  onCloseAction,
 }: {
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
       storeAction={createStablecoin}
       resolverAction={zodResolver(CreateStablecoinFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.stablecoin.queryKey, ['transactions']],
       }}

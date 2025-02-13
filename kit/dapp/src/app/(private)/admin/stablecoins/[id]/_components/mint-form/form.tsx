@@ -14,14 +14,14 @@ export function MintStablecoinForm({
   symbol,
   decimals,
   assetConfig,
-  onClose,
+  onCloseAction,
 }: {
   address: Address;
   name: string;
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   return (
     <AssetForm
@@ -30,7 +30,7 @@ export function MintStablecoinForm({
       }}
       storeAction={mintStablecoin}
       resolverAction={zodResolver(MintStablecoinFormSchema)}
-      onClose={onClose}
+      onClose={onCloseAction}
       submitLabel="Mint"
       submittingLabel="Minting..."
       messages={{
