@@ -1,7 +1,5 @@
 import { BasePage } from './base-page';
 
-export type AssetType = 'Bond' | 'Cryptocurrency' | 'Equity' | 'Fund' | 'Stablecoin';
-
 export class AdminPage extends BasePage {
   async goto() {
     await this.page.goto('/admin');
@@ -18,17 +16,16 @@ export class AdminPage extends BasePage {
 
     if (currentMonth !== tomorrowMonth) {
       await this.page.getByRole('button', { name: 'Next month' }).click();
-      await this.page.waitForTimeout(500);
     }
 
-    await this.page.waitForSelector('table[aria-labelledby*="react-day-picker"]', { timeout: 15000 });
+    await this.page.waitForSelector('table[aria-labelledby*="react-day-picker"]');
 
     // First locate the table cell containing our target date
     const dateCell = this.page.locator('td[role="presentation"]', {
       has: this.page.locator(`button:text("${day}")`),
     });
 
-    await dateCell.locator('button').click({ timeout: 5000 });
+    await dateCell.locator('button').click();
   }
 
   async createAsset(options: {
@@ -53,8 +50,6 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('combobox', { name: 'Face value currency' }).click();
     await this.page.getByRole('option', { name: options.faceValueCurrency }).click();
     await this.page.getByRole('spinbutton', { name: 'Face value' }).fill(options.faceValue);
-    // await this.page.getByLabel('Maturity date').click();
-    // await this.selectTomorrowDate();
     const datepicker = await this.page
       .locator('div')
       .filter({ hasText: 'Pick a date' })
