@@ -2,6 +2,7 @@
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { Badge } from '@/components/ui/badge';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
 import type { getAssetEvents } from './data';
@@ -36,7 +37,17 @@ export const columns = [
   }),
   columnHelper.accessor('status', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    cell: ({ getValue }) => {
+      const status = getValue();
+
+      return (
+        <DataTableColumnCell>
+          <Badge variant={status === 'pending' ? 'warning' : status === 'failed' ? 'destructive' : 'success'}>
+            <span className="[&:first-letter]:uppercase">{status}</span>
+          </Badge>
+        </DataTableColumnCell>
+      );
+    },
     enableColumnFilter: false,
   }),
 ];
