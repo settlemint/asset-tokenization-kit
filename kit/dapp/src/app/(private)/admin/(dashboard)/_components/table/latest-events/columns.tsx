@@ -19,8 +19,8 @@ export const columns = [
     ),
     enableColumnFilter: false,
   }),
-  columnHelper.accessor('from', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>From</DataTableColumnHeader>,
+  columnHelper.accessor('sender', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Sender</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
         <EvmAddress address={getValue()}>

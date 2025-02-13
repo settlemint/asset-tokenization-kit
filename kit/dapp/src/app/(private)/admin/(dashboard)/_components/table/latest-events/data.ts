@@ -1,27 +1,19 @@
+import { TransactionListFragment } from '@/components/blocks/events/fragments';
 import { formatDate } from '@/lib/date';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 
-const AssetEventsFragment = theGraphGraphqlStarterkits(`
-  fragment AssetEventFields on AssetEvent {
-    id
-    timestamp
-    eventName
-    emitter {
-      id
-    }
-  }
-`);
-
 const AssetEvents = theGraphGraphqlStarterkits(
   `
   query AssetEvents {
-    assetEvents(first: 10) {
-      ...AssetEventFields
+    assetEvents(orderBy: timestamp, orderDirection: desc) {
+      id
+      timestamp
+      ...TransactionListFragment
     }
   }
 `,
-  [AssetEventsFragment]
+  [TransactionListFragment]
 );
 
 const PendingAndRecentlyProcessedTransactionsFragment = portalGraphql(`
@@ -40,7 +32,6 @@ const PendingAndRecentlyProcessedTransactions = portalGraphql(
   query PendingAndRecentlyProcessedTransactions {
     getPendingAndRecentlyProcessedTransactions(
       processedAfter: "0"
-      pageSize: 10
     ) {
       records {
         ...PendingAndRecentlyProcessedTransactionsFields
@@ -68,15 +59,15 @@ export async function getAssetEvents() {
       status: tx.receipt ? ('failed' as const) : ('pending' as const),
       description: 'Transaction',
       transactionHash: tx.transactionHash,
-      from: tx.from,
+      sender: tx.from,
     })),
 
     ...theGraphData.assetEvents.map((event) => ({
-      timestamp: event.timestamp as string,
+      timestamp: new Date(Number.parseInt(event.timestamp) * 1000).toISOString(),
       status: 'success' as const,
       description: event.eventName,
       transactionHash: event.id,
-      from: event.emitter.id,
+      sender: event.sender.id,
     })),
   ]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
