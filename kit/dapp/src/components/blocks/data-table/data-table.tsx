@@ -37,6 +37,8 @@ export interface DataTableProps<TData> {
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
   pagination?: PaginationState;
+  sorting?: SortingState;
+  filters?: ColumnFiltersState;
   tableOptions?: Partial<Parameters<typeof useReactTable<TData>>[0]>;
 }
 
@@ -70,10 +72,12 @@ export function DataTable<TData>({
   icons,
   name,
   pagination,
+  sorting,
+  filters,
   tableOptions,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sortingState, setSortingState] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
@@ -82,8 +86,8 @@ export function DataTable<TData>({
   const memoizedData = useMemo(() => data, [data]);
 
   const tableState: Partial<TableState> = {
-    sorting,
-    columnFilters,
+    sorting: sorting ?? sortingState, // Server data table passes sorting state directly via props
+    columnFilters: filters ?? columnFilters, // Server data table passes filters state directly via props
     columnVisibility,
     rowSelection,
     globalFilter,
@@ -111,7 +115,7 @@ export function DataTable<TData>({
 
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: setSorting,
+    onSortingChange: setSortingState,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
 
@@ -124,7 +128,7 @@ export function DataTable<TData>({
 
   const renderTableBody = () => {
     if (isLoading) {
-      return Array.from({ length: 5 }).map((_, index) => (
+      return Array.from({ length: pagination?.pageSize ?? 5 }).map((_, index) => (
         <TableRow key={index}>
           {columns.map((_column, cellIndex) => (
             <TableCell key={cellIndex}>

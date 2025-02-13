@@ -54,6 +54,7 @@ export const columns = [
       return <DataTableColumnCell>{renderValue()}</DataTableColumnCell>;
     },
     enableColumnFilter: true,
+    enableSorting: false,
   }),
   columnHelper.accessor('lastActivity', {
     id: 'last activity',
@@ -62,5 +63,6 @@ export const columns = [
       <DataTableColumnCell>{getValue() ? formatDate(getValue(), { type: 'distance' }) : '-'}</DataTableColumnCell>
     ),
     enableColumnFilter: false,
+    enableSorting: false,
   }),
 ];

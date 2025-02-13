@@ -1,4 +1,6 @@
+import type { Pagination, Sorting } from '@/components/blocks/asset-table/server-asset-table-client';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const StablecoinBalancesFragment = theGraphGraphqlStarterkits(`
   fragment StablecoinBalancesFields on AssetBalance {
@@ -14,10 +16,10 @@ const StablecoinBalancesFragment = theGraphGraphqlStarterkits(`
 
 const StablecoinBalances = theGraphGraphqlStarterkits(
   `
-  query StablecoinBalances($id: ID!, $activityEventAssetId: String!, $first: Int, $skip: Int) {
+  query StablecoinBalances($id: ID!, $activityEventAssetId: String!, $first: Int, $skip: Int, $orderBy: AssetBalance_orderBy, $orderDirection: OrderDirection) {
     stableCoin(id: $id) {
       symbol
-      holders(first: $first, skip: $skip) {
+      holders(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
         ...StablecoinBalancesFields
       }
       admins {
@@ -32,17 +34,24 @@ const StablecoinBalances = theGraphGraphqlStarterkits(
   [StablecoinBalancesFragment]
 );
 
-interface Pagination {
-  first?: number;
-  skip?: number;
+export interface StablecoinHolder extends FragmentOf<typeof StablecoinBalancesFragment> {
+  symbol: string;
+  type: string;
+  lastActivity: string;
 }
 
-export async function getStablecoinBalances(id: string, { first, skip }: Pagination = {}) {
+export async function getStablecoinBalances(
+  id: string,
+  { first, skip }: Pagination = {},
+  sorting: Sorting | null = null
+) {
   const data = await theGraphClientStarterkits.request(StablecoinBalances, {
     id,
     activityEventAssetId: id,
     first,
     skip,
+    orderDirection: sorting?.orderDirection ?? 'desc',
+    orderBy: mapSorting(sorting),
   });
   if (!data.stableCoin) {
     throw new Error('Stablecoin not found');
@@ -61,6 +70,17 @@ export async function getStablecoinBalances(id: string, { first, skip }: Paginat
     };
   });
   return { holders: records, count: Number(count) };
+}
+
+function mapSorting(sorting: Sorting | null) {
+  switch (sorting?.orderBy) {
+    case 'value':
+      return 'value';
+    case 'wallet':
+      return 'id';
+    default:
+      return null;
+  }
 }
 
 export type StablecoinHoldersBalance = Awaited<ReturnType<typeof getStablecoinBalances>>['holders'][number];

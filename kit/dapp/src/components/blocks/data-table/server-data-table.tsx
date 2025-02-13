@@ -1,7 +1,6 @@
 'use client';
 
-import type { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from '@tanstack/react-table';
 import { DataTable, type DataTableProps } from './data-table';
 
 /**
@@ -9,9 +8,9 @@ import { DataTable, type DataTableProps } from './data-table';
  * @template TData The type of data in the table.
  */
 interface ServerDataTableProps<TData> extends DataTableProps<TData> {
-  initialPageSize?: number;
+  pagination: PaginationState;
   onPageChanged?: (pagination: PaginationState) => void;
-  onFilterChanged?: (filter: ColumnFiltersState) => void;
+  onFiltersChanged?: (filter: ColumnFiltersState) => void;
   onSortingChanged?: (sorting: SortingState) => void;
   rowCount: number;
 }
@@ -23,50 +22,29 @@ interface ServerDataTableProps<TData> extends DataTableProps<TData> {
  * @returns The rendered DataTable component.
  */
 export function ServerDataTable<TData>({
-  initialPageSize = 10,
+  pagination,
+  filters,
+  sorting,
   rowCount,
   onPageChanged,
-  onFilterChanged,
+  onFiltersChanged,
   onSortingChanged,
   ...otherProps
 }: ServerDataTableProps<TData>) {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: initialPageSize,
-  });
-  const [filter, setFilter] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
-
-  useEffect(() => {
-    if (typeof onPageChanged === 'function') {
-      onPageChanged(pagination);
-    }
-  }, [pagination, onPageChanged]);
-
-  useEffect(() => {
-    if (typeof onFilterChanged === 'function') {
-      onFilterChanged(filter);
-    }
-  }, [filter, onFilterChanged]);
-
-  useEffect(() => {
-    if (typeof onSortingChanged === 'function') {
-      onSortingChanged(sorting);
-    }
-  }, [sorting, onSortingChanged]);
-
   return (
     <DataTable
       {...otherProps}
       pagination={pagination}
+      sorting={sorting}
+      filters={filters}
       tableOptions={{
         manualPagination: true,
         rowCount,
-        onPaginationChange: setPagination,
+        onPaginationChange: onPageChanged as OnChangeFn<PaginationState>,
         manualFiltering: true,
-        onColumnFiltersChange: setFilter,
+        onColumnFiltersChange: onFiltersChanged as OnChangeFn<ColumnFiltersState>,
         manualSorting: true,
-        onSortingChange: setSorting,
+        onSortingChange: onSortingChanged as OnChangeFn<SortingState>,
       }}
     />
   );

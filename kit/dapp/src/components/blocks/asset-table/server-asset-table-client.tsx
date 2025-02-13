@@ -5,11 +5,12 @@
 
 'use client';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
-import { type ComponentType, useCallback, useEffect, useState } from 'react';
+import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react';
 import { ServerDataTable } from '../data-table/server-data-table';
 
 interface DataActionResponse<Asset> {
@@ -17,19 +18,31 @@ interface DataActionResponse<Asset> {
   rowCount: number;
 }
 
-export type ServerAssetTableClientProps<Asset> = {
+export interface Pagination {
+  first?: number;
+  skip?: number;
+}
+
+export type Sorting = {
+  orderBy: string; // Column ID
+  orderDirection: 'asc' | 'desc';
+};
+
+export type ServerAssetTableClientProps<Asset extends Record<string, unknown>> = {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
-  dataAction: (pagination: { first: number; skip: number }) => Promise<DataActionResponse<Asset>>;
+  dataAction: (pagination: Pagination, sorting: Sorting | undefined) => Promise<DataActionResponse<Asset>>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */
   icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
+  /** Initial sorting state for the table */
+  initialSorting?: SortingState;
 };
 
-const INITIAL_PAGINATION = {
-  first: 10,
-  skip: 0,
+const INITIAL_PAGINATION: PaginationState = {
+  pageIndex: 0,
+  pageSize: 10,
 };
 
 /**
@@ -42,50 +55,71 @@ export function ServerAssetTableClient<Asset extends Record<string, unknown>>({
   refetchInterval,
   columns,
   icons,
+  initialSorting,
 }: ServerAssetTableClientProps<Asset>) {
-  const [pagination, setPagination] = useState(INITIAL_PAGINATION);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>(INITIAL_PAGINATION);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
+  const didMount = useRef(false);
 
-  const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset>>({
+  const { data, refetch, error, isFetching, isRefetching } = useSuspenseQuery<DataActionResponse<Asset>>({
     queryKey: assetConfig.queryKey,
-    queryFn: () => dataAction(pagination),
+    queryFn: () => {
+      return dataAction(
+        {
+          first: pagination.pageSize,
+          skip: pagination.pageIndex * pagination.pageSize,
+        },
+        sorting[0]
+          ? {
+              orderBy: sorting[0].id,
+              orderDirection: sorting[0].desc ? 'desc' : 'asc',
+            }
+          : undefined
+      );
+    },
     refetchInterval,
   });
 
-  const handlePageChanged = useCallback(
-    (updatedPagination: PaginationState) => {
-      const skip = updatedPagination.pageIndex * updatedPagination.pageSize;
-      if (pagination.skip !== skip || pagination.first !== updatedPagination.pageSize) {
-        setPagination({
-          first: updatedPagination.pageSize,
-          skip: updatedPagination.pageIndex * updatedPagination.pageSize,
-        });
-      }
-    },
-    [pagination]
-  );
-
-  const handleSortingChanged = useCallback((updatedSorting: SortingState) => {
-    setSorting(updatedSorting);
+  const handleSortingChanged = useCallback((sortingState: SortingState) => {
+    setSorting(sortingState);
+    // Reset to page 1
+    setPagination((current) => ({
+      pageIndex: 0,
+      pageSize: current.pageSize,
+    }));
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: required for refetch
   useEffect(() => {
-    // Skip refetch on initial mount
-    if (pagination === INITIAL_PAGINATION) {
+    // Return early, if this is the first render:
+    if (!didMount.current) {
+      didMount.current = true;
       return;
     }
     refetch();
-  }, [pagination, refetch]);
+  }, [pagination, sorting, refetch]);
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <ServerDataTable
+    <ServerDataTable<Asset>
+      isLoading={isFetching && !isRefetching}
       columns={columns}
       data={data.assets}
       icons={icons ?? {}}
       name={assetConfig.name}
-      onPageChanged={handlePageChanged}
+      pagination={pagination}
+      filters={[]}
+      sorting={sorting}
+      onPageChanged={setPagination}
+      onFiltersChanged={() => {}}
       onSortingChanged={handleSortingChanged}
-      initialPageSize={INITIAL_PAGINATION.first}
       rowCount={data.rowCount}
     />
   );
