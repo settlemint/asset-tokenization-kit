@@ -27,7 +27,7 @@ export function TransactionHash({
   prefixLength = 6,
   suffixLength = 4,
 }: TransactionHashProps) {
-  const explorerLink = `${explorerUrl ?? process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}tx/${hash}`;
+  const explorerLink = `${explorerUrl ?? process.env.NEXT_PUBLIC_SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}tx/${hash}`;
   const shortHash = shortHex(hash, { prefixLength, suffixLength });
 
   return (

@@ -48,7 +48,7 @@ export function EventDetailSheet({
                   <EvmAddress address={asset} />
                 </dd>
                 <dt className="text-muted-foreground text-sm">Date:</dt>
-                <dd className="text-sm">{timestamp}</dd>
+                <dd className="text-sm [&:first-letter]:uppercase">{timestamp}</dd>
                 <dt className="text-muted-foreground text-sm">Transaction Hash:</dt>
                 <dd className="text-sm">
                   <TransactionHash hash={transactionHash} />
