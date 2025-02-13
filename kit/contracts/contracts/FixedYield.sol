@@ -6,13 +6,18 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-/// @title FixedYield - A contract for managing token yield distributions
-/// @notice This contract implements fixed yield schedule functionality for ERC20 tokens
-/// @dev Uses AccessControl for permissions and works with ERC20Yield tokens
-/// @custom:security-contact support@settlemint.com
 
+/// @title FixedYield - A contract for managing token yield distributions
+/// @notice This contract implements a fixed yield schedule for ERC20 tokens, allowing for periodic
+/// yield distributions based on token balances. It supports features like historical balance tracking,
+/// period-based distributions, and pro-rated yield calculations.
+/// @dev Inherits from AccessControl for role-based permissions and ERC2771Context for meta-transaction
+/// support. Works with ERC20Yield-compatible tokens to manage yield distributions. Uses timestamps for
+/// period calculations and maintains a history of distributions.
+/// @custom:security-contact support@settlemint.com
 contract FixedYield is AccessControl, ERC2771Context {
     /// @notice Custom errors for the FixedYield contract
+    /// @dev These errors provide more gas-efficient and descriptive error handling
     error InvalidToken();
     error InvalidStartDate();
     error InvalidEndDate();
@@ -31,37 +36,43 @@ contract FixedYield is AccessControl, ERC2771Context {
     error InvalidPeriod();
 
     /// @notice The basis points denominator used for rate calculations (10,000 = 100%)
+    /// @dev Used to convert basis points to percentages (e.g., 500 basis points = 5%)
     uint256 public constant RATE_BASIS_POINTS = 10_000;
 
     /// @notice The token this schedule is for
+    /// @dev Must implement the ERC20Yield interface
     ERC20Yield private immutable _token;
 
     /// @notice The underlying asset used for yield payments
+    /// @dev Must be a valid ERC20 token contract
     IERC20 private immutable _underlyingAsset;
 
     /// @notice The start date of the yield schedule
+    /// @dev Must be in the future when the contract is deployed
     uint256 private immutable _startDate;
 
     /// @notice The end date of the yield schedule
+    /// @dev Must be after the start date
     uint256 private immutable _endDate;
 
     /// @notice The yield rate in basis points
-    /// @dev 1 basis point = 0.01%
-    ///      100 basis points = 1%
-    ///      1000 basis points = 10%
-    ///      10000 basis points = 100%
+    /// @dev 1 basis point = 0.01%, must be greater than 0
     uint256 private immutable _rate;
 
     /// @notice The interval between distributions in seconds
+    /// @dev Must be greater than 0
     uint256 private immutable _interval;
 
     /// @notice Array of timestamps when each period ends
+    /// @dev Calculated and stored at deployment for gas-efficient period lookups
     uint256[] private _periodEndTimestamps;
 
     /// @notice Mapping of holder address to last claimed period
+    /// @dev Used to track which periods each holder has claimed
     mapping(address => uint256) private _lastClaimedPeriod;
 
     /// @notice The total amount of yield claimed across all holders
+    /// @dev Used to track total distributions and calculate remaining yield
     uint256 private _totalClaimed;
 
     /// @notice Event emitted when underlying assets are topped up
