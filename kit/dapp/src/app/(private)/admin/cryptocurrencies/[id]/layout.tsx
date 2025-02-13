@@ -2,10 +2,21 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { PageHeader } from '@/components/layout/page-header';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { BurnTokensButton } from './_components/burn-form/button';
 import { getCryptocurrencyTitle } from './_components/data';
+import { MintTokensButton } from './_components/mint-form/button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -89,42 +100,34 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             <EvmAddressBalances address={id} />
           </EvmAddress>
         }
-        // button={
-        // <DropdownMenu>
-        //   <DropdownMenuTrigger asChild>
-        //     <Button variant="default">
-        //       Mint tokens
-        //       <ChevronDown className="h-4 w-4" />
-        //     </Button>
-        //   </DropdownMenuTrigger>
-        //   <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
-        //     <DropdownMenuItem asChild className="dropdown-menu-item">
-        //       <MintTokensButton
-        //         address={id as Address}
-        //         name={stableCoin.name}
-        //         symbol={stableCoin.symbol}
-        //         decimals={stableCoin.decimals}
-        //       />
-        //     </DropdownMenuItem>
-        //     <DropdownMenuItem asChild className="dropdown-menu-item">
-        //       <BurnTokensButton
-        //         address={id as Address}
-        //         name={stableCoin.name}
-        //         symbol={stableCoin.symbol}
-        //         decimals={stableCoin.decimals}
-        //       />
-        //     </DropdownMenuItem>
-        //     <DropdownMenuItem asChild className="dropdown-menu-item">
-        //       <UpdateCollateralButton
-        //         address={id as Address}
-        //         name={stableCoin.name}
-        //         symbol={stableCoin.symbol}
-        //         decimals={stableCoin.decimals}
-        //       />
-        //     </DropdownMenuItem>
-        //   </DropdownMenuContent>
-        // </DropdownMenu>
-        // }
+        button={
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="default">
+                Mint tokens
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
+              <DropdownMenuItem asChild className="dropdown-menu-item">
+                <MintTokensButton
+                  address={id as Address}
+                  name={cryptocurrency.name}
+                  symbol={cryptocurrency.symbol}
+                  decimals={cryptocurrency.decimals}
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="dropdown-menu-item">
+                <BurnTokensButton
+                  address={id as Address}
+                  name={cryptocurrency.name}
+                  symbol={cryptocurrency.symbol}
+                  decimals={cryptocurrency.decimals}
+                />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        }
       />
 
       <div className="relative mt-4 space-y-2">

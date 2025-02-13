@@ -10,6 +10,7 @@ const BondTitle = theGraphGraphqlStarterkits(
       name
       symbol
       paused
+      decimals
     }
   }
 `
