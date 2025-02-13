@@ -19,14 +19,12 @@ interface DataActionResponse<Asset> {
 
 export type AssetTableClientServerSideProps<Asset> = {
   assetConfig: Pick<AssetDetailConfig, 'queryKey' | 'name'>;
-  dataAction: (pagination: { first: number; skip: number }) => Promise<DataActionResponse<Asset> | Asset[]>;
+  dataAction: (pagination: { first: number; skip: number }) => Promise<DataActionResponse<Asset>>;
   refetchInterval?: number;
   /** Map of icon components to be used in the table */
   icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
-  /** The number of items to display per page */
-  pageSize?: number;
 };
 
 const INITIAL_PAGINATION = {
@@ -44,11 +42,10 @@ export function AssetTableClientServerSide<Asset extends Record<string, unknown>
   refetchInterval,
   columns,
   icons,
-  pageSize = 10,
 }: AssetTableClientServerSideProps<Asset>) {
   const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
-  const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset> | Asset[]>({
+  const { data, refetch } = useSuspenseQuery<DataActionResponse<Asset>>({
     queryKey: assetConfig.queryKey,
     queryFn: () => dataAction(pagination),
     refetchInterval,
@@ -78,12 +75,12 @@ export function AssetTableClientServerSide<Asset extends Record<string, unknown>
   return (
     <DataTableServerSide
       columns={columns}
-      data={Array.isArray(data) ? data : data.assets}
+      data={data.assets}
       icons={icons ?? {}}
       name={assetConfig.name}
       onPageChanged={handlePageChanged}
-      pageSize={pageSize}
-      rowCount={Array.isArray(data) ? data.length : data.rowCount}
+      initialPageSize={INITIAL_PAGINATION.first}
+      rowCount={data.rowCount}
     />
   );
 }

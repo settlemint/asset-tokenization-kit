@@ -75,7 +75,13 @@ export function Summary({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field} className="justify-center gap-1.5">
+                  <InputOTP
+                    maxLength={6}
+                    pattern={REGEXP_ONLY_DIGITS}
+                    {...field}
+                    className="justify-center gap-1.5"
+                    autoComplete="off"
+                  >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} className="h-8 w-8" />
                       <InputOTPSlot index={1} className="h-8 w-8" />

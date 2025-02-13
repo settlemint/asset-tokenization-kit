@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   type ColumnFiltersState,
+  type PaginationState,
   type RowData,
   type SortingState,
   type VisibilityState,
@@ -26,7 +27,7 @@ import { DataTableToolbar } from './data-table-toolbar';
  * @template TData The type of data in the table.
  * @template TValue The type of values in the table cells.
  */
-interface DataTableProps<TData> {
+export interface DataTableProps<TData> {
   /** The column definitions for the table. */
   columns: Parameters<typeof useReactTable<TData>>[0]['columns'];
   /** The data to be displayed in the table. */
@@ -34,6 +35,8 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
+  pagination?: PaginationState;
+  tableOptions?: Partial<Parameters<typeof useReactTable<TData>>[0]>;
 }
 
 declare module '@tanstack/table-core' {
@@ -59,7 +62,15 @@ declare module '@tanstack/react-table' {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({ columns, data, isLoading, icons, name }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  columns,
+  data,
+  isLoading,
+  icons,
+  name,
+  pagination,
+  tableOptions,
+}: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -90,6 +101,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
       columnVisibility,
       rowSelection,
       globalFilter,
+      pagination,
     },
 
     onColumnFiltersChange: setColumnFilters,
@@ -102,6 +114,7 @@ export function DataTable<TData>({ columns, data, isLoading, icons, name }: Data
       name,
       icons,
     },
+    ...tableOptions,
   });
 
   const renderTableBody = () => {
