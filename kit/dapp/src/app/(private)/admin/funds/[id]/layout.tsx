@@ -2,6 +2,7 @@ import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
+import { PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -89,22 +90,20 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
 
   return (
     <div>
-      <div className="relative flex justify-between">
-        <div>
-          <h1 className="flex items-center font-bold text-2xl">
+      <PageHeader
+        title={
+          <>
             <span className="mr-2">{fund?.name}</span>
             <span className="text-muted-foreground">({fund?.symbol})</span>
-            <div className="ml-2 flex items-center gap-2 font-normal text-base">
-              <ActivePill paused={fund?.paused ?? false} />
-            </div>
-          </h1>
-          <div className="mt-1 text-muted-foreground text-sm">
-            <EvmAddress address={id} prettyNames={false}>
-              <EvmAddressBalances address={id} />
-            </EvmAddress>
-          </div>
-        </div>
-        <div className="h-full">
+          </>
+        }
+        subtitle={
+          <EvmAddress address={id} prettyNames={false}>
+            <EvmAddressBalances address={id} />
+          </EvmAddress>
+        }
+        pill={<ActivePill paused={fund?.paused ?? false} />}
+        button={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="default">
@@ -134,8 +133,8 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
+        }
+      />
 
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabs(id)} />

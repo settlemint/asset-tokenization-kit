@@ -40,12 +40,13 @@ This is the fastest way to get started with the starterkit. It uses pre-deployed
 bun install
 
 # Login and connect to SettleMint
-bun settlemint login
-bun settlemint connect
+bunx settlemint login
+bunx settlemint connect
 
 # Generate types and start development server
 cd kit/dapp
-bun settlemint codegen
+bun codegen:settlemint
+bun addresses
 bun dev
 ```
 
@@ -57,7 +58,7 @@ If you want to deploy and use your customised contracts, subgraph, and ABIs, fol
 
 #### Prerequisites
 
-1. Forge v0.3.0 - Install the latest Foundry from https://book.getfoundry.sh/getting-started/installation
+1. Forge v0.3.0 - Install the latest Foundry from [https://book.getfoundry.sh/getting-started/installation](https://book.getfoundry.sh/getting-started/installation)
 2. Node.js version >=20.18.1 - Required for The Graph CLI. We recommend using [fnm](https://github.com/Schniz/fnm) for Node.js installation.
 
 #### Deployment Steps
@@ -72,18 +73,19 @@ bun settlemint connect
 
 # Deploy contracts
 cd kit/contracts
-bun run prod:deploy
+bun deploy:remote
 
 # Deploy subgraph
 cd ../subgraph
-bun prod:deploy -- 47561  # Replace with your chain ID
+bun deploy:remote
 cd ../../
-bun settlemint connect # Refresh subgraph list to include your newly deployed subgraph
+
+# Codegen
+bun codegen
 
 # Setup dapp
 cd kit/dapp
-bun codegen
-bun addresses -- 47561 # Replace with your chain ID
+bun addresses
 bun db:push
 
 # Start development server
@@ -92,10 +94,7 @@ bun dev
 
 Browse to http://localhost:3000 to access the application. Create an account by clicking "Sign up" - the first account created will have admin privileges.
 
-> **Note**: The chain ID (47561) used in the commands above is an example. Replace it with your actual chain ID.
-
 ### Known Limitations & TODOs
 
 - No CLI command to update ABIs automatically
 - Admin account creation relies on first-signup mechanism, perhaps a dedicated CLI command?
-- Requires running `settlemint connect` twice (after initial connection and after subgraph deployment to update subgraph list)

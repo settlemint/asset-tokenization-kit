@@ -77,7 +77,8 @@
       "dependsOn": ["contracts#deploy:local"]
     },
     "deploy:local": {
-      "dependsOn": ["contracts#deploy:local", "subgraph#deploy:local"]
+      "dependsOn": ["contracts#deploy:local", "subgraph#deploy:local"],
+      "outputs": ["kit/contracts/ignition/deployments/**"]
     },
     "deploy:remote": {
       "dependsOn": ["contracts#compile:hardhat", "^deploy:remote"],
