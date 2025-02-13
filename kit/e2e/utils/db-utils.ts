@@ -40,10 +40,8 @@ export async function createDbClient(): Promise<postgres.Client> {
 }
 
 export async function updateUserRole(email: string, role: UserRole): Promise<void> {
-  const client = new Client(getDatabaseConfig());
-
+  const client = await createDbClient();
   try {
-    await client.connect();
     await client.query('UPDATE "user" SET role = $1 WHERE email = $2', [role, email]);
   } catch (error) {
     throw new Error(`Failed to update user role: ${error instanceof Error ? error.message : 'Unknown error'}`);

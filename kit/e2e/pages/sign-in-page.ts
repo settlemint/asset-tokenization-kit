@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { createDbClient, getUserRole, updateUserRole } from '../utils/db-utils';
+import { getUserRole, updateUserRole } from '../utils/db-utils';
 import { BasePage } from './base-page';
 import { Pages } from './pages';
 
@@ -16,7 +16,6 @@ export class SignInPage extends BasePage {
   }
 
   async signInAsAdmin(options: { email: string; password: string; name: string; pincode?: string }) {
-    await createDbClient();
     const existingRole = await getUserRole(options.email);
 
     if (!existingRole) {
