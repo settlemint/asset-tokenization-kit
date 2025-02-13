@@ -22,7 +22,7 @@ export default function AdminDashboard() {
         <AssetActivity />
         <UsersHistory />
       </div>
-      <p className="mt-8 mb-4 font-bold text-2xl">Latest Events</p>
+      <p className="mt-8 font-bold text-2xl">Latest Events</p>
       <LatestEvents />
     </div>
   );
