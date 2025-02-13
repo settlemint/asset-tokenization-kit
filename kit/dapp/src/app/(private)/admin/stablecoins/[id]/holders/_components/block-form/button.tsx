@@ -8,7 +8,7 @@ interface BlockHolderButtonProps {
   onClick: (e: React.MouseEvent) => void;
 }
 
-export function BlockHolderButton({ holder, blocked, onClick }: BlockHolderButtonProps) {
+export function BlockHolderButton({ blocked, onClick }: BlockHolderButtonProps) {
   const action = blocked ? 'Unblock' : 'Block';
 
   return (

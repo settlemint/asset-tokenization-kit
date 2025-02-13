@@ -4,7 +4,7 @@ import { DataTable } from '@/components/blocks/data-table/data-table';
 import type { DataTableRowAction } from '@/components/blocks/data-table/data-table';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { ActionSheet } from './action-sheet';
+import { BlockHolderActionSheet } from './block-form/action-sheet';
 import { BlockHolderButton } from './block-form/button';
 import { BlockHolderForm } from './block-form/form';
 import type { StablecoinBalance } from './data';
@@ -22,14 +22,11 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
   const [showForm, setShowForm] = useState(false);
   const [activeAction, setActiveAction] = useState<HolderAction | null>(null);
 
-  console.log('activeAction', activeAction);
-  console.log('showForm', showForm);
-
   const renderActionForm = (action: HolderAction) => {
     switch (action.type) {
       case 'block':
         return (
-          <ActionSheet open={showForm} onOpenChange={setShowForm}>
+          <BlockHolderActionSheet open={showForm} onOpenChange={setShowForm}>
             <BlockHolderForm
               address={id}
               holder={action.holder}
@@ -39,7 +36,7 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
                 setActiveAction(null);
               }}
             />
-          </ActionSheet>
+          </BlockHolderActionSheet>
         );
       default: {
         const _exhaustiveCheck: never = action;

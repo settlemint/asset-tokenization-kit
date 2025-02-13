@@ -42,14 +42,6 @@ export function Summary({ address, holder, blocked }: { address: Address; holder
               <dt className="text-muted-foreground text-sm">Holder Address</dt>
               <dd className="font-medium text-sm">{holder}</dd>
             </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Blocked' : 'Active'}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Target State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Active' : 'Blocked'}</dd>
-            </div>
           </dl>
         </div>
 
