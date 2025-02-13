@@ -7,7 +7,7 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export default async function LatestEvents() {
+export default async function LatestTransactions() {
   const queryClient = getQueryClient();
   const first = 5;
   const queryKey = ['first5TransactionsList'];
