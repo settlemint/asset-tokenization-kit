@@ -52,11 +52,11 @@ export async function updateUserRole(email: string, role: UserRole): Promise<voi
   }
 }
 
-export async function getUserRole(email: string): Promise<string> {
+export async function getUserRole(email: string): Promise<UserRole | null> {
   const client = await createDbClient();
   try {
     const result = await client.query('SELECT role FROM "user" WHERE email = $1', [email]);
-    return result.rows[0].role;
+    return result.rows.length ? (result.rows[0].role as UserRole) : null;
   } finally {
     await client.end();
   }
