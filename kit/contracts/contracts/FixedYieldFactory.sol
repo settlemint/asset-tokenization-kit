@@ -8,9 +8,15 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 
 /// @title FixedYieldFactory - A factory contract for creating fixed yield schedules
 /// @notice This contract allows the creation of new fixed yield schedules with deterministic addresses
-/// @dev Uses CREATE2 for deterministic deployment addresses and maintains a list of all created schedules
+/// using CREATE2. It provides functionality to create and manage yield schedules for tokens that
+/// support the ERC20Yield extension, enabling periodic yield distributions based on token balances.
+/// @dev Inherits from ERC2771Context for meta-transaction support. Uses CREATE2 for deterministic
+/// deployment addresses and maintains a registry of all created schedules. Only authorized yield
+/// managers can create schedules. Each schedule is automatically set on the corresponding token.
 /// @custom:security-contact support@settlemint.com
 contract FixedYieldFactory is ERC2771Context {
+    /// @notice Custom errors for the FixedYieldFactory contract
+    /// @dev These errors provide more gas-efficient and descriptive error handling
     error TokenNotYieldEnabled();
     error ScheduleSetupFailed();
     error NotAuthorized();
@@ -21,23 +27,31 @@ contract FixedYieldFactory is ERC2771Context {
     event FixedYieldCreated(address indexed schedule);
 
     /// @notice Array of all fixed yield schedules created by this factory
+    /// @dev Stores references to all created schedules for tracking and enumeration
     FixedYield[] public allSchedules;
 
+    /// @notice Deploys a new FixedYieldFactory contract
+    /// @dev Sets up the factory with meta-transaction support
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(address forwarder) ERC2771Context(forwarder) { }
 
     /// @notice Returns the total number of fixed yield schedules created by this factory
-    /// @return The length of the allSchedules array
+    /// @dev Provides a way to enumerate all created schedules
+    /// @return The total number of yield schedules created
     function allSchedulesLength() external view returns (uint256) {
         return allSchedules.length;
     }
 
     /// @notice Creates a new fixed yield schedule for a token
-    /// @param token The token to create the yield schedule for
-    /// @param startTime The start time of the yield schedule
-    /// @param endTime The end time of the yield schedule
+    /// @dev Uses CREATE2 for deterministic addresses and requires the caller to have yield management
+    /// permissions on the token. Automatically sets the created schedule on the token. The schedule
+    /// will distribute yield according to the specified rate and interval.
+    /// @param token The ERC20Yield-compatible token to create the yield schedule for
+    /// @param startTime The timestamp when yield distribution should start (must be in the future)
+    /// @param endTime The timestamp when yield distribution should end (must be after startTime)
     /// @param rate The yield rate in basis points (1 basis point = 0.01%, e.g., 500 = 5%)
-    /// @param interval The interval between distributions in seconds
-    /// @return The address of the created yield schedule
+    /// @param interval The interval between yield distributions in seconds (must be > 0)
+    /// @return The address of the newly created yield schedule
     function create(
         ERC20Yield token,
         uint256 startTime,
@@ -58,7 +72,6 @@ contract FixedYieldFactory is ERC2771Context {
         );
 
         // Set the yield schedule on the token
-        // is it the responsibility of the factory to set the yield schedule?
         token.setYieldSchedule(schedule);
 
         emit FixedYieldCreated(schedule);
