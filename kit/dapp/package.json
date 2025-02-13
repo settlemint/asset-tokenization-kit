@@ -9,6 +9,7 @@
     "url": "https://settlemint.com"
   },
   "scripts": {
+    "postinstall": "npx playwright install --with-deps chromium",
     "dev": "next dev",
     "build": "next build && rm -Rf ./node_modules/next/dist",
     "start": "next start",
