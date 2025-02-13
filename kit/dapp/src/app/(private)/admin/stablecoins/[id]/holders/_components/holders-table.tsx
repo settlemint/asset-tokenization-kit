@@ -30,7 +30,7 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
             <BlockHolderForm
               address={id}
               holder={action.holder}
-              blocked={action.blocked}
+              blocked={false} // TODO: replace with the actual blocked state
               onCloseAction={() => {
                 setShowForm(false);
                 setActiveAction(null);
@@ -47,7 +47,7 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
 
   const holdersTableActions: DataTableRowAction<StablecoinBalance>[] = [
     {
-      label: 'Block',
+      label: (row) => (row.blocked ? 'Unblock' : 'Block'),
       component: (row) => (
         <BlockHolderButton
           holder={row.account.id}

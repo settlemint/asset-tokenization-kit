@@ -32,7 +32,7 @@ export function BlockHolderForm({ address, holder, blocked, onCloseAction }: Blo
       submittingLabel={actionSubmittingLabel}
       messages={{
         onCreate: () => `${actionSubmittingLabel} holder...`,
-        onSuccess: () => `Successfully ${actionSuccessLabel} holder on chain`,
+        onSuccess: () => `Successfully ${actionSuccessLabel.toLowerCase()} holder on chain`,
         onError: (_, error) => `Failed to ${actionLabel.toLowerCase()} holder: ${error.message}`,
       }}
     >
