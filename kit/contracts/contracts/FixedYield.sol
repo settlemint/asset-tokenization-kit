@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Pausable } from "@openzeppelin/contracts/security/Pausable.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { ERC20Yield } from "./extensions/ERC20Yield.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
