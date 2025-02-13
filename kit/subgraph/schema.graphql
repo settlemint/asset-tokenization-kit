@@ -547,7 +547,7 @@ type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
 Entity for underlying asset top-up events.
 Emitted when underlying assets are added (topped up) to the Bond contract.
 """
-type UnderlyingAssetTopUpEvent @entity(immutable: true) {
+type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -562,7 +562,7 @@ type UnderlyingAssetTopUpEvent @entity(immutable: true) {
 Entity for underlying asset withdrawal events.
 Emitted when underlying assets are withdrawn from the Bond contract.
 """
-type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
+type UnderlyingAssetWithdrawnEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -577,7 +577,7 @@ type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
 # FixedYield-Specific Custom Event
 # --------------------------------------------------
 
-type FixedYieldCreatedEvent @entity {
+type FixedYieldCreatedEvent implements AssetEvent @entity {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -590,7 +590,7 @@ type FixedYieldCreatedEvent @entity {
 Entity for yield claimed events in FixedYield.
 Emitted when yield is claimed.
 """
-type YieldClaimedEvent @entity(immutable: true) {
+type YieldClaimedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
