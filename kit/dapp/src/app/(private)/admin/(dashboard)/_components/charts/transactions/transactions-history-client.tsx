@@ -4,29 +4,29 @@ import type { ChartConfig } from '@/components/ui/chart';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
-import { getRecentUsers } from './data';
-import { UsersHistorySkeleton } from './users-history-chart-skeleton';
+import { getTransactionsHistoryData } from './data';
+import { TransactionsHistorySkeleton } from './transactions-history-chart-skeleton';
 
-interface UsersHistoryClientProps {
+interface TransactionsHistoryClientProps {
   queryKey: QueryKey;
 }
 
-export const USERS_CHART_CONFIG = {
-  users: {
-    label: 'Users',
-    color: '#3b82f6',
+export const TRANSACTIONS_CHART_CONFIG = {
+  transactions: {
+    label: 'Transactions',
+    color: '#3B9E99',
   },
 } satisfies ChartConfig;
 
-export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
+export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
-    queryFn: getRecentUsers,
+    queryFn: getTransactionsHistoryData,
     refetchInterval: 1000 * 5,
   });
 
   const chartData = useMemo(() => {
-    if (data.length === 0) {
+    if (!data || !data.getProcessedTransactions?.records) {
       return [];
     }
 
@@ -38,20 +38,23 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
 
     return dates.map((date) => ({
       date: format(date, 'EEE, MMM d'),
-      users: data.filter((user) => isSameDay(new Date(user.createdAt), date)).length,
+      transactions:
+        data.getProcessedTransactions?.records.filter(
+          (transaction) => transaction.createdAt && isSameDay(new Date(transaction.createdAt), date)
+        ).length ?? 0,
     }));
   }, [data]);
 
   if (chartData.length === 0) {
-    return <UsersHistorySkeleton variant="noData" />;
+    return <TransactionsHistorySkeleton variant="noData" />;
   }
 
   return (
     <AreaChartComponent
       data={chartData}
-      config={USERS_CHART_CONFIG}
-      title="Users"
-      description="Showing total users over the last 7 days"
+      config={TRANSACTIONS_CHART_CONFIG}
+      title="Transactions"
+      description="Showing transactions over the last 7 days"
       xAxis={{ key: 'date' }}
     />
   );
