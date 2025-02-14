@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { AssetBalance } from '../../generated/schema';
 import { Fund } from '../../generated/templates/Fund/Fund';
 import { toDecimals } from '../utils/decimals';
@@ -16,10 +16,10 @@ export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number
     balance.approvedExact = BigInt.zero();
     balance.approved = toDecimals(balance.approvedExact, decimals);
 
-    // Get blocklist and frozen status directly from the Fund contract
-    const fund = Fund.bind(asset);
-    balance.blocked = fund.blocked(account);
-    balance.frozen = fund.frozen(account);
+    // Convert Bytes to Address for contract calls
+    const fund = Fund.bind(Address.fromBytes(asset));
+    balance.blocked = fund.blocked(Address.fromBytes(account));
+    balance.frozen = fund.frozen(Address.fromBytes(account));
 
     balance.save();
   }
