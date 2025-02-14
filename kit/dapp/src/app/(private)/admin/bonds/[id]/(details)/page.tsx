@@ -41,6 +41,9 @@ export default async function BondDetailPage({
           {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
         */}
+        <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
+          {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
+        </DetailsGridItem>
         <DetailsGridItem label="Underlying asset">{asset.underlyingAsset}</DetailsGridItem>
         <DetailsGridItem label="Redeemed amount">{asset.redeemedAmount}</DetailsGridItem>
       </DetailGrid>

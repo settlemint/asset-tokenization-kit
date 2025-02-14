@@ -1,7 +1,5 @@
-import { db } from '@/lib/db';
-import { asset } from '@/lib/db/schema-asset-tokenization';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { eq } from 'drizzle-orm';
+import BigNumber from 'bignumber.js';
 
 const FundDetails = theGraphGraphqlStarterkits(
   `
@@ -12,10 +10,14 @@ const FundDetails = theGraphGraphqlStarterkits(
       symbol
       decimals
       totalSupply
+      totalSupplyExact
       fundCategory
       fundClass
       paused
       isin
+      holders(first: 5, orderBy: valueExact, orderDirection: desc) {
+        valueExact
+      }
     }
   }
 `
@@ -26,14 +28,14 @@ export async function getFund(id: string) {
   if (!data.fund) {
     throw new Error('Fund not found');
   }
-  const theGraphFund = data.fund;
-  const dbFund = await db.select().from(asset).where(eq(asset.id, id)).limit(1);
+  const totalSupplyExact = new BigNumber(data.fund.totalSupplyExact);
+  const topHoldersSum = data.fund.holders.reduce(
+    (sum, holder) => sum.plus(new BigNumber(holder.valueExact)),
+    new BigNumber(0)
+  );
+
   return {
-    ...theGraphFund,
-    ...(dbFund[0]
-      ? dbFund[0]
-      : {
-          private: false,
-        }),
+    ...data.fund,
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
   };
 }

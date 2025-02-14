@@ -41,6 +41,9 @@ export default async function CryptocurrencyDetailPage({
           {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
         */}
+        <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
+          {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
+        </DetailsGridItem>
       </DetailGrid>
       <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         <TotalSupply asset={id as Address} />

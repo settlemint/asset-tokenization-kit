@@ -1,4 +1,5 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import BigNumber from 'bignumber.js';
 
 const CryptocurrencyDetails = theGraphGraphqlStarterkits(
   `
@@ -9,6 +10,10 @@ const CryptocurrencyDetails = theGraphGraphqlStarterkits(
     symbol
     decimals
     totalSupply
+    totalSupplyExact
+    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
+        valueExact
+      }
     }
   }
 `
@@ -19,5 +24,15 @@ export async function getCryptocurrency(id: string) {
   if (!data.cryptoCurrency) {
     throw new Error('Cryptocurrency not found');
   }
-  return data.cryptoCurrency;
+
+  const totalSupplyExact = new BigNumber(data.cryptoCurrency.totalSupplyExact);
+  const topHoldersSum = data.cryptoCurrency.holders.reduce(
+    (sum, holder) => sum.plus(new BigNumber(holder.valueExact)),
+    new BigNumber(0)
+  );
+
+  return {
+    ...data.cryptoCurrency,
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+  };
 }

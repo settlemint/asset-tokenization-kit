@@ -42,6 +42,9 @@ export default async function FundsDetailPage({
           {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
         */}
+        <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
+          {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
+        </DetailsGridItem>
         <DetailsGridItem label="Fund category">{asset.fundCategory}</DetailsGridItem>
         <DetailsGridItem label="Fund class">{asset.fundClass}</DetailsGridItem>
       </DetailGrid>

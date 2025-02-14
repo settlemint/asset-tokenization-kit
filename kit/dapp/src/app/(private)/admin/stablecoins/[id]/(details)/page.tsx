@@ -43,6 +43,9 @@ export default async function StableCoinDetailPage({
           {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
         */}
+        <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
+          {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
+        </DetailsGridItem>
         <DetailsGridItem
           label="Proven collateral"
           info="The amount of collateral that has been proven to be held by the token"

@@ -42,6 +42,9 @@ export default async function EquityDetailPage({
           {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
         */}
+        <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
+          {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
+        </DetailsGridItem>
         <DetailsGridItem label="Equity category">{asset.equityCategory}</DetailsGridItem>
         <DetailsGridItem label="Equity class">{asset.equityClass}</DetailsGridItem>
       </DetailGrid>
