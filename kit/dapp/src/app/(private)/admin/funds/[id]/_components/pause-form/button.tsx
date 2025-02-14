@@ -21,7 +21,7 @@ export function PauseTokensButton({ address, name, symbol, paused }: PauseTokens
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
           {action} {assetConfig.fund.name.toLowerCase()}
         </Button>
       </SheetTrigger>
