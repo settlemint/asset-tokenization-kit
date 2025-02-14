@@ -8,7 +8,7 @@ import { getStableCoins } from './data';
 export function StableCoinsTableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5000}
+      refetchInterval={60_0000}
       assetConfig={assetConfig.stablecoin}
       dataAction={getStableCoins}
       columns={columns}

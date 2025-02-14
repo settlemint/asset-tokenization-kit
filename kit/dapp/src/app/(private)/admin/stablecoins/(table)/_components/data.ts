@@ -17,8 +17,8 @@ const StableCoinFragment = theGraphGraphqlStarterkits(`
 
 const StableCoins = theGraphGraphqlStarterkits(
   `
-  query StableCoins {
-    stableCoins {
+  query StableCoins($first: Int, $skip: Int) {
+    stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
       ...StableCoinFields
     }
   }
@@ -50,13 +50,32 @@ export type StableCoinAsset = Prettify<
   FragmentOf<typeof StableCoinFragment> & FragmentOf<typeof OffchainStableCoinFragment>['nodes'][number]
 >;
 
+async function fetchAllPages<T>(fetch: (first: number, skip: number) => Promise<T[]>, pageSize = 999): Promise<T[]> {
+  if (pageSize > 999) {
+    throw new Error('pageSize must be less than 1000');
+  }
+  const results: T[] = [];
+  let hasMore = true;
+  let skip = 0;
+  const first = pageSize + 1; // +1 to check if there are more pages
+  while (hasMore) {
+    const data = await fetch(first, skip);
+    results.push(...data.slice(0, pageSize)); // Remove last item as it's the check for more pages
+    hasMore = data.length === first;
+    skip += pageSize;
+  }
+  return results;
+}
+
 export async function getStableCoins(): Promise<StableCoinAsset[]> {
-  const [theGraphData, dbAssets] = await Promise.all([
-    theGraphClientStarterkits.request(StableCoins),
+  const [theGraphStableCoins, dbAssets] = await Promise.all([
+    fetchAllPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(StableCoins, { first, skip });
+      return result.stableCoins;
+    }, 999),
     hasuraClient.request(OffchainStableCoins),
   ]);
 
-  const theGraphStableCoins = theGraphData.stableCoins;
   const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
 
   const stableCoins = theGraphStableCoins.map((stableCoin) => {
