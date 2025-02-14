@@ -1,6 +1,5 @@
+import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { Lock } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { PauseBondFormType } from '../schema';
@@ -27,16 +26,7 @@ export function Pincode() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field} className="justify-center gap-1.5">
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} className="h-8 w-8" />
-                    <InputOTPSlot index={1} className="h-8 w-8" />
-                    <InputOTPSlot index={2} className="h-8 w-8" />
-                    <InputOTPSlot index={3} className="h-8 w-8" />
-                    <InputOTPSlot index={4} className="h-8 w-8" />
-                    <InputOTPSlot index={5} className="h-8 w-8" />
-                  </InputOTPGroup>
-                </InputOTP>
+                <OTPInput value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

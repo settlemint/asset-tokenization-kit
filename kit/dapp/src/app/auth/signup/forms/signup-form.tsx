@@ -1,15 +1,14 @@
 'use client';
 
+import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { authClient } from '@/lib/auth/client';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { ComponentPropsWithoutRef } from 'react';
@@ -183,16 +182,7 @@ export function SignUpForm({
               <FormItem>
                 <FormLabel>Choose a secure wallet PIN code</FormLabel>
                 <FormControl>
-                  <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
-                    <InputOTPGroup className="w-full">
-                      <InputOTPSlot index={0} className="flex-1" />
-                      <InputOTPSlot index={1} className="flex-1" />
-                      <InputOTPSlot index={2} className="flex-1" />
-                      <InputOTPSlot index={3} className="flex-1" />
-                      <InputOTPSlot index={4} className="flex-1" />
-                      <InputOTPSlot index={5} className="flex-1" />
-                    </InputOTPGroup>
-                  </InputOTP>
+                  <OTPInput value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,16 +195,7 @@ export function SignUpForm({
               <FormItem>
                 <FormLabel>Confirm wallet PIN code</FormLabel>
                 <FormControl>
-                  <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
-                    <InputOTPGroup className="w-full">
-                      <InputOTPSlot index={0} className="flex-1" />
-                      <InputOTPSlot index={1} className="flex-1" />
-                      <InputOTPSlot index={2} className="flex-1" />
-                      <InputOTPSlot index={3} className="flex-1" />
-                      <InputOTPSlot index={4} className="flex-1" />
-                      <InputOTPSlot index={5} className="flex-1" />
-                    </InputOTPGroup>
-                  </InputOTP>
+                  <OTPInput value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
