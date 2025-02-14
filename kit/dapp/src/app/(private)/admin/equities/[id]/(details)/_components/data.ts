@@ -4,11 +4,14 @@ const EquityDetails = theGraphGraphqlStarterkits(
   `
   query Equity($id: ID!) {
     equity(id: $id) {
-     id
-    name
-    symbol
-    decimals
-    totalSupply
+      id
+      name
+      symbol
+      decimals
+      totalSupply
+      isin
+      equityCategory
+      equityClass
     }
   }
 `

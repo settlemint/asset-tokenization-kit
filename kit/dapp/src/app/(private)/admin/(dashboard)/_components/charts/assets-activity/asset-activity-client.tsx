@@ -1,10 +1,10 @@
 'use client';
 
 import { BarChartComponent } from '@/components/blocks/charts/bar-chart';
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import { AssetActivitySkeleton } from './asset-activity-chart-skeleton';
 import { getAssetsEventsData } from './data';
 
 interface AssetActivityClientProps {
@@ -38,7 +38,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
   );
 
   if (isEmpty) {
-    return <AssetActivitySkeleton variant="noData" />;
+    return <ChartSkeleton title="Activity" variant="noData" />;
   }
 
   return (

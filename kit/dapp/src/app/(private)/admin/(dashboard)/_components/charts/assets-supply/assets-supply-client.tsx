@@ -1,10 +1,10 @@
 'use client';
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import { PieChartComponent } from '@/components/blocks/charts/pie-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from '../../common/assets/data';
-import { AssetsSupplySkeleton } from './assets-supply-chart-skeleton';
 
 const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
   Object.entries(assetConfig).map(([, asset]) => [asset.pluralName, { label: asset.pluralName, color: asset.color }])
@@ -29,7 +29,7 @@ export function AssetsSupplyClient({ queryKey }: AssetsSupplyClientProps) {
     }));
 
   if (chartData.length === 0) {
-    return <AssetsSupplySkeleton variant="noData" />;
+    return <ChartSkeleton title="Distribution" variant="noData" />;
   }
 
   return (

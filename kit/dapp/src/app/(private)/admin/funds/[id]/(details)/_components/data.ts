@@ -7,14 +7,15 @@ const FundDetails = theGraphGraphqlStarterkits(
   `
   query Fund($id: ID!) {
     fund(id: $id) {
-    id
-    name
-    symbol
-    decimals
-    totalSupply
-    fundCategory
-    fundClass
-    paused
+      id
+      name
+      symbol
+      decimals
+      totalSupply
+      fundCategory
+      fundClass
+      paused
+      isin
     }
   }
 `
