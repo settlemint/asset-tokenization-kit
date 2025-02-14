@@ -14,7 +14,7 @@ export function handleFundCreated(event: FundCreated): void {
   const asset = fetchFund(event.params.token);
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
-  accountActivityEvent(eventId(event), sender, EventName.AssetCreated, event.block.timestamp, AssetType.fund, asset.id);
+  accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.fund, asset.id);
 
   Fund.create(event.params.token);
 }

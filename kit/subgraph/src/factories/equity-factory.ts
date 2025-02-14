@@ -14,7 +14,7 @@ export function handleEquityCreated(event: EquityCreated): void {
   const asset = fetchEquity(event.params.token);
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
-  accountActivityEvent(eventId(event), sender, EventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
+  accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
 
   Equity.create(event.params.token);
 }

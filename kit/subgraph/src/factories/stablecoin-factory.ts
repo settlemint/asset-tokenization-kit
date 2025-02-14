@@ -14,7 +14,7 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
   const asset = fetchStableCoin(event.params.token);
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
-  accountActivityEvent(eventId(event), sender, EventName.AssetCreated, event.block.timestamp, AssetType.stablecoin, asset.id);
+  accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.stablecoin, asset.id);
 
   StableCoin.create(event.params.token);
 }
