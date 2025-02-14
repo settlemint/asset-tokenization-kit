@@ -37,11 +37,11 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
                 <EvmAddress address={myAsset.asset.id}>
                   <EvmAddressBalances address={myAsset.asset.id} />
                 </EvmAddress>
-                <CopyToClipboard value={myAsset.asset.id} displayText={''} className="ml-2" />
+                <CopyToClipboard value={myAsset.asset.id} className="ml-2" />
               </div>
             </DetailsGridItem>
             <DetailsGridItem label="Total supply">
-              {formatNumber(myAsset.asset.totalSupply, { currency: myAsset.asset.symbol })}
+              {formatNumber(myAsset.asset.totalSupply, { token: myAsset.asset.symbol })}
             </DetailsGridItem>
             <DetailsGridItem label="Proven collateral (ratio)">
               {formatNumber(Number(myAsset.asset.collateral) / Number(myAsset.asset.totalSupply), {
@@ -51,7 +51,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
           </>
         )}
         <DetailsGridItem label="Balance">
-          {formatNumber(myAsset.value, { currency: myAsset.asset.symbol })}
+          {formatNumber(myAsset.value, { token: myAsset.asset.symbol })}
         </DetailsGridItem>
       </CardContent>
     </Card>

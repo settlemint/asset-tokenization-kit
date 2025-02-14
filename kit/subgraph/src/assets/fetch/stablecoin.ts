@@ -13,6 +13,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     let decimals = endpoint.try_decimals();
     let isin = endpoint.try_isin();
     let paused = endpoint.try_paused();
+    let liveness = endpoint.try_liveness();
 
     const account = fetchAccount(address);
 
@@ -28,12 +29,18 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.supplyManagers = [];
     stableCoin.userManagers = [];
     stableCoin.lastActivity = BigInt.zero();
+    stableCoin.creator = Address.zero();
+
+    // Stats
+    stableCoin.amountOfHolders = BigInt.zero();
 
     // StableCoin-specific fields
     stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.collateralExact = BigInt.zero();
     stableCoin.collateral = BigDecimal.zero();
     stableCoin.paused = paused.reverted ? false : paused.value;
+    stableCoin.liveness = liveness.reverted ? BigInt.zero() : liveness.value;
+    stableCoin.lastCollateralUpdate = BigInt.zero();
     stableCoin.save();
 
     account.asAsset = stableCoin.id;
