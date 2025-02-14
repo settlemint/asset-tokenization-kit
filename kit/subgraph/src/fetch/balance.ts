@@ -16,7 +16,6 @@ export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number
     balance.approvedExact = BigInt.zero();
     balance.approved = toDecimals(balance.approvedExact, decimals);
 
-    // Convert Bytes to Address for contract calls
     const fund = Fund.bind(Address.fromBytes(asset));
     balance.blocked = fund.blocked(Address.fromBytes(account));
     balance.frozen = fund.frozen(Address.fromBytes(account));
