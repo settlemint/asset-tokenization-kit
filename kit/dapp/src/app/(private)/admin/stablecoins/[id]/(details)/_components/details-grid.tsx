@@ -43,10 +43,13 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         {formatNumber(asset.collateral, { token: asset.symbol })}
       </DetailsGridItem>
       <DetailsGridItem label="Required collateral threshold" info="The amount of collateral that must be proven">
-        {formatNumber(100, { percentage: true })}
+        {formatNumber(100, { percentage: true, decimals: 2 })}
       </DetailsGridItem>
       <DetailsGridItem label="Collateral ratio" info="The ratio of the collateral to the total supply of the token">
-        {formatNumber(new BigNumber(asset.collateral).dividedBy(asset.totalSupply), { percentage: true, decimals: 1 })}
+        {formatNumber(new BigNumber(asset.collateral).dividedBy(asset.totalSupply).times(100), {
+          percentage: true,
+          decimals: 2,
+        })}
       </DetailsGridItem>
       {/* <DetailsGridItem label="Collateral proof expiration" info="From this point the collateral proof is invalid">
         {formatDate(asset.lastCollateralUpdate + asset.liveness, { relative: true })}
