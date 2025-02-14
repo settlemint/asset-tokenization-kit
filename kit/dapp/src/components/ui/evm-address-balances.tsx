@@ -7,6 +7,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
   query AddressBalances($account: String!) {
     assetBalances(where: {account: $account}) {
+      id
       value
       asset {
         name
@@ -50,7 +51,7 @@ export function EvmAddressBalances({ address }: { address: string }) {
     <div className="mt-2">
       <dl className="text-sm">
         {balances.map((balance) => (
-          <div key={balance.asset.symbol} className="flex items-center justify-between">
+          <div key={balance.id} className="flex items-center justify-between">
             <dt className="text-muted-foreground">{balance.asset.name}:</dt>
             <dd>{formatNumber(balance.value, { token: balance.asset.symbol })}</dd>
           </div>
