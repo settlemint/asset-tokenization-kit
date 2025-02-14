@@ -1,10 +1,6 @@
 'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
-import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { portalGraphql } from '@/lib/settlemint/portal';
 import { z } from 'zod';
 import { BlockHolderFormSchema, BlockHolderOutputSchema } from './schema';
 
@@ -56,42 +52,39 @@ export const blockHolder = actionClient
   )
   .outputSchema(BlockHolderOutputSchema)
   .action(async ({ parsedInput: { pincode, address, holder, blocked } }) => {
-    const user = await getAuthenticatedUser();
-
-    try {
-      if (blocked) {
-        const { FundUnblockUser } = await portalClient.request(UnblockHolder, {
-          address,
-          from: user.wallet,
-          challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-          input: {
-            user: holder,
-          },
-        });
-
-        if (!FundUnblockUser?.transactionHash) {
-          throw new Error('Failed to send the transaction to unblock the holder');
-        }
-        return FundUnblockUser.transactionHash;
-      }
-
-      const { FundBlockUser } = await portalClient.request(BlockHolder, {
-        address,
-        from: user.wallet,
-        challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        input: {
-          user: holder,
-        },
-      });
-
-      if (!FundBlockUser?.transactionHash) {
-        throw new Error('Failed to send the transaction to block the holder');
-      }
-      return FundBlockUser.transactionHash;
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('Invalid challenge response')) {
-        throw new InvalidChallengeResponseError();
-      }
-      throw error;
-    }
+    // TODO: add action back in https://linear.app/settlemint/issue/ENG-2357/fund-block-and-unblock-user-user-actions
+    // const user = await getAuthenticatedUser();
+    // try {
+    //   if (blocked) {
+    //     const { FundUnblockUser } = await portalClient.request(UnblockHolder, {
+    //       address,
+    //       from: user.wallet,
+    //       challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+    //       input: {
+    //         user: holder,
+    //       },
+    //     });
+    //     if (!FundUnblockUser?.transactionHash) {
+    //       throw new Error('Failed to send the transaction to unblock the holder');
+    //     }
+    //     return FundUnblockUser.transactionHash;
+    //   }
+    //   const { FundBlockUser } = await portalClient.request(BlockHolder, {
+    //     address,
+    //     from: user.wallet,
+    //     challengeResponse: await handleChallenge(user.wallet as Address, pincode),
+    //     input: {
+    //       user: holder,
+    //     },
+    //   });
+    //   if (!FundBlockUser?.transactionHash) {
+    //     throw new Error('Failed to send the transaction to block the holder');
+    //   }
+    //   return FundBlockUser.transactionHash;
+    // } catch (error) {
+    //   if (error instanceof Error && error.message.includes('Invalid challenge response')) {
+    //     throw new InvalidChallengeResponseError();
+    //   }
+    //   throw error;
+    // }
   });
