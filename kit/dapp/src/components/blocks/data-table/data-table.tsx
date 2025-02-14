@@ -1,5 +1,13 @@
 'use client';
 'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -16,6 +24,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { MoreVertical } from 'lucide-react';
 import { type ComponentType, useMemo, useState } from 'react';
 import { DataTablePagination, type DataTablePaginationOptions } from './data-table-pagination';
 import { DataTableToolbar, type DataTableToolbarOptions } from './data-table-toolbar';
@@ -25,6 +34,11 @@ import { DataTableToolbar, type DataTableToolbarOptions } from './data-table-too
  * @template TData The type of data in the table.
  * @template TValue The type of values in the table cells.
  */
+export interface DataTableRowAction<TData> {
+  label: string;
+  component: (row: TData) => React.ReactNode;
+}
+
 interface DataTableProps<TData> {
   /** The column definitions for the table. */
   columns: Parameters<typeof useReactTable<TData>>[0]['columns'];
@@ -33,6 +47,7 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
+  rowActions?: DataTableRowAction<TData>[];
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
 }
@@ -68,6 +83,7 @@ export function DataTable<TData>({
   name,
   toolbar,
   pagination,
+  rowActions,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -75,7 +91,20 @@ export function DataTable<TData>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedColumns = useMemo(() => {
+    if (!rowActions?.length) {
+      return columns;
+    }
+
+    return [
+      ...columns,
+      {
+        id: 'actions',
+        cell: ({ row }) => <DataTableRowActions row={row.original} actions={rowActions} />,
+      },
+    ];
+  }, [columns, rowActions]);
+
   const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
@@ -170,5 +199,31 @@ export function DataTable<TData>({
       </div>
       {table.getRowModel().rows?.length > 0 && <DataTablePagination table={table} {...pagination} />}
     </div>
+  );
+}
+
+function DataTableRowActions<TData>({
+  row,
+  actions,
+}: {
+  row: TData;
+  actions: DataTableRowAction<TData>[];
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreVertical className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="p-0">
+        {actions?.map((action, index) => (
+          <DropdownMenuItem key={index} className="dropdown-menu-item cursor-pointer p-0">
+            {action.component(row)}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

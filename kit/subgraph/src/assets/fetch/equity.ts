@@ -30,6 +30,10 @@ export function fetchEquity(address: Address): Equity {
     equity.supplyManagers = [];
     equity.userManagers = [];
     equity.lastActivity = BigInt.zero();
+    equity.creator = Address.zero();
+
+    // Stats
+    equity.amountOfHolders = BigInt.zero();
 
     // Equity-specific fields
     equity.isin = isin.reverted ? '' : isin.value;

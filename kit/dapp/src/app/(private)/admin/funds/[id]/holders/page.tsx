@@ -1,3 +1,4 @@
+import { getFundBalances } from './_components/data';
 import { HoldersTable } from './_components/holders-table';
 
 export default async function FundsHoldersPage({
@@ -6,6 +7,7 @@ export default async function FundsHoldersPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const balances = await getFundBalances(id);
 
-  return <HoldersTable id={id} />;
+  return <HoldersTable id={id as `0x${string}`} balances={balances} />;
 }

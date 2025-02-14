@@ -199,6 +199,13 @@ contract StableCoin is
         return (_collateralProof.amount, _collateralProof.timestamp);
     }
 
+    /// @notice Returns the timestamp of the last collateral update
+    /// @dev Returns the timestamp of the last collateral update
+    /// @return The timestamp of the last collateral update
+    function lastCollateralUpdate() public view returns (uint256) {
+        return _lastCollateralUpdate;
+    }
+
     /// @notice Updates the proven collateral amount with a timestamp
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires collateral >= total supply.
     /// @param amount New collateral amount

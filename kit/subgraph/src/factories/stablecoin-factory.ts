@@ -12,6 +12,8 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
   fetchFactory(event.address, FactoryType.stablecoin);
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchStableCoin(event.params.token);
+  asset.creator = sender.id;
+  asset.save();
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
   accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.stablecoin, asset.id);

@@ -20,7 +20,7 @@ export function BurnTokensButton({ address, name, symbol, decimals }: BurnTokens
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
           Burn tokens
         </Button>
       </SheetTrigger>

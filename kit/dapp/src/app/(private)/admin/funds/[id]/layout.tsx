@@ -106,13 +106,13 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
         button={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button>
+              <Button variant="default">
                 Actions
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild>
+            <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
+              <DropdownMenuItem asChild className="dropdown-menu-item">
                 <MintTokensButton
                   address={id as Address}
                   name={fund.name}
@@ -120,7 +120,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   decimals={fund.decimals}
                 />
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className="dropdown-menu-item">
                 <BurnTokensButton
                   address={id as Address}
                   name={fund.name}
@@ -128,7 +128,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   decimals={fund.decimals}
                 />
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className="dropdown-menu-item">
                 <PauseTokensButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
               </DropdownMenuItem>
             </DropdownMenuContent>

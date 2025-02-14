@@ -35,6 +35,10 @@ export function fetchBond(address: Address): Bond {
     bond.supplyManagers = [];
     bond.userManagers = [];
     bond.lastActivity = BigInt.zero();
+    bond.creator = Address.zero();
+
+    // Stats
+    bond.amountOfHolders = BigInt.zero();
 
     // Bond-specific fields
     bond.capExact = cap.reverted ? BigInt.zero() : cap.value;

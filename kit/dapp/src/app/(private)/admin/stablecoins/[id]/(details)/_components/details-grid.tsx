@@ -1,6 +1,8 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
+import { DetailsGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { formatNumber } from '@/lib/number';
-import type { PropsWithChildren } from 'react';
+import BigNumber from 'bignumber.js';
 import { getStableCoin } from './data';
 
 type DetailsGridProps = {
@@ -11,31 +13,50 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
   const asset = await getStableCoin(id);
 
   return (
-    <Card className="py-4">
-      <CardContent className="grid grid-cols-3 gap-x-4 gap-y-8">
-        <DetailsGridItem label="Name">{asset.name}</DetailsGridItem>
-        <DetailsGridItem label="Symbol">{asset.symbol}</DetailsGridItem>
-        <DetailsGridItem label="Decimals">{asset.decimals}</DetailsGridItem>
-        <DetailsGridItem label="Total supply">
-          {formatNumber(asset.totalSupply, { currency: asset.symbol })}
+    <DetailGrid>
+      <DetailsGridItem label="Name">{asset.name}</DetailsGridItem>
+      <DetailsGridItem label="Symbol">{asset.symbol}</DetailsGridItem>
+      <DetailsGridItem label="ISIN">{asset.isin}</DetailsGridItem>
+      <DetailsGridItem label="Contract address">
+        <EvmAddress address={asset.id} prettyNames={false} hoverCard={false} copyToClipboard={true} />
+      </DetailsGridItem>
+      {/*
+        Waiting for the subgraph to be updated with the creator field
+        <DetailsGridItem label="Creator">
+          <EvmAddress address={asset.creator} hoverCard={false}  copyToClipboard={true} />
         </DetailsGridItem>
-        <DetailsGridItem label="Proven collateral">
-          {formatNumber(asset.collateral, { currency: asset.symbol })}
+        */}
+      <DetailsGridItem label="Decimals">{asset.decimals}</DetailsGridItem>
+      <DetailsGridItem label="Total supply" info="The total supply of the token">
+        {formatNumber(asset.totalSupply, { token: asset.symbol })}
+      </DetailsGridItem>
+      {/*
+        Waiting for the subgraph to be updated with the creator field
+        <DetailsGridItem label="# Token Holders">
+          {formatNumber(asset.amountOfHolders, { decimals: 0 })}
         </DetailsGridItem>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface DetailsGridItemProps extends PropsWithChildren {
-  label: string;
-}
-
-export function DetailsGridItem({ label, children }: DetailsGridItemProps) {
-  return (
-    <div className="space-y-1">
-      <span className="font-medium text-muted-foreground text-sm">{label}</span>
-      <div className="text-md">{children}</div>
-    </div>
+        */}
+      <DetailsGridItem
+        label="Proven collateral"
+        info="The amount of collateral that has been proven to be held by the token"
+      >
+        {formatNumber(asset.collateral, { token: asset.symbol })}
+      </DetailsGridItem>
+      <DetailsGridItem label="Required collateral threshold" info="The amount of collateral that must be proven">
+        {formatNumber(100, { percentage: true, decimals: 2 })}
+      </DetailsGridItem>
+      <DetailsGridItem label="Collateral ratio" info="The ratio of the collateral to the total supply of the token">
+        {formatNumber(new BigNumber(asset.collateral).dividedBy(asset.totalSupply).times(100), {
+          percentage: true,
+          decimals: 2,
+        })}
+      </DetailsGridItem>
+      {/* <DetailsGridItem label="Collateral proof expiration" info="From this point the collateral proof is invalid">
+        {formatDate(asset.lastCollateralUpdate + asset.liveness, { relative: true })}
+      </DetailsGridItem> */}
+      {/* <DetailsGridItem label="Collateral proof validity" info="How long the collateral proof is valid for">
+        {formatNumber(asset.liveness, { decimals: 0 })} seconds
+      </DetailsGridItem> */}
+    </DetailGrid>
   );
 }

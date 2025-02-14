@@ -13,6 +13,7 @@ interface Asset {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -40,6 +41,9 @@ type Bond implements Asset @entity {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
+  # Stats
+  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -69,6 +73,9 @@ type Equity implements Asset @entity {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
+  # Stats
+  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -91,6 +98,9 @@ type Fund implements Asset @entity {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
+  # Stats
+  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -115,6 +125,9 @@ type StableCoin implements Asset @entity {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
+  # Stats
+  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -123,6 +136,8 @@ type StableCoin implements Asset @entity {
   isin: String
   collateral: BigDecimal!
   collateralExact: BigInt!
+  liveness: BigInt!
+  lastCollateralUpdate: BigInt!
   paused: Boolean!
 }
 
@@ -137,6 +152,9 @@ type CryptoCurrency implements Asset @entity {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
+  creator: Account!
+  # Stats
+  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!

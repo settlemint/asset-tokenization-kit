@@ -18,6 +18,7 @@ import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
+import { accountActivityEvent } from './events/accountactivity';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
@@ -25,18 +26,17 @@ import { pausedEvent } from './events/paused';
 import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
+import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
 import { tokensFrozenEvent } from './events/tokensfrozen';
 import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
 import { unpausedEvent } from './events/unpaused';
 import { userBlockedEvent } from './events/userblocked';
 import { userUnblockedEvent } from './events/userunblocked';
+import { fetchAssetActivity } from './fetch/assets';
 import { fetchStableCoin } from './fetch/stablecoin';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
-import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
-import { fetchAssetActivity } from './fetch/assets';
-import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const stableCoin = fetchStableCoin(event.address);
@@ -535,6 +535,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   stableCoin.collateral = toDecimals(event.params.newAmount, stableCoin.decimals);
   stableCoin.collateralExact = event.params.newAmount;
   stableCoin.lastActivity = event.block.timestamp;
+  stableCoin.lastCollateralUpdate = event.block.timestamp;
   stableCoin.save();
 
   stablecoinCollateralUpdatedEvent(

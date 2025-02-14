@@ -41,7 +41,7 @@ export const columns = [
     cell: ({ getValue, row }) => (
       <DataTableColumnCell variant="numeric">
         {formatNumber(getValue(), {
-          currency: row.original.symbol,
+          token: row.original.symbol,
         })}
       </DataTableColumnCell>
     ),
