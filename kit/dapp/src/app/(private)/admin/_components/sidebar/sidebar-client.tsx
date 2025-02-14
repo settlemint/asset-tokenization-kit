@@ -33,7 +33,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
     }
 
     const assetsOfSection = data[section.assetType];
-    const subItems = assetsOfSection.map<NavItem>((asset) => ({
+    const subItems = assetsOfSection.slice(0, 10).map<NavItem>((asset) => ({
       id: asset.id,
       label: `${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
