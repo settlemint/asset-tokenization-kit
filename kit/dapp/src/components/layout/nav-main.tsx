@@ -20,6 +20,7 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 export type NavItem = {
+  id?: string;
   assetType?: keyof typeof assetConfig;
   label: string;
   path: string;
@@ -84,7 +85,7 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
               const SubIcon = subItem.icon ?? undefined;
 
               return (
-                <SidebarMenuSubItem key={subItem.label}>
+                <SidebarMenuSubItem key={subItem.id ?? subItem.label}>
                   <SidebarMenuSubButton asChild className={cn(isActiveFn(subItem.path) ? 'font-bold' : undefined)}>
                     <Link href={subItem.path} className="flex min-w-0 truncate">
                       {SubIcon ?? null}
@@ -109,7 +110,7 @@ function NavGroupComponent({ group, isActive }: { group: NavGroup; isActive?: (p
     <div className="my-2">
       <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
       {group.items.map((item) => (
-        <NavItemComponent key={item.label} item={{ ...item, isActive }} />
+        <NavItemComponent key={item.id ?? item.label} item={{ ...item, isActive }} />
       ))}
     </div>
   );
@@ -190,7 +191,7 @@ export function NavMain({ items }: { items: NavElement[] }) {
           if (isGroup(item)) {
             return <NavGroupComponent key={item.groupTitle} group={item} isActive={isActive} />;
           }
-          return <NavItemComponent key={item.label} item={{ ...item, isActive }} />;
+          return <NavItemComponent key={item.id ?? item.label} item={{ ...item, isActive }} />;
         })}
       </SidebarMenu>
     </SidebarGroup>
