@@ -9,5 +9,5 @@ export default async function FundsHoldersPage({
   const { id } = await params;
   const balances = await getFundBalances(id);
 
-  return <HoldersTable id={id} balances={balances} />;
+  return <HoldersTable id={id as `0x${string}`} balances={balances} />;
 }
