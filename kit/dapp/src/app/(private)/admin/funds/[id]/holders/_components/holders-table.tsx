@@ -5,7 +5,6 @@ import type { DataTableRowAction } from '@/components/blocks/data-table/data-tab
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { BlockHolderActionSheet } from './block-form/action-sheet';
-import { BlockHolderButton } from './block-form/button';
 import { BlockHolderForm } from './block-form/form';
 import type { FundBalance } from './data';
 import { columns } from './holders-columns';
@@ -46,24 +45,25 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
   };
 
   const holdersTableActions: DataTableRowAction<FundBalance>[] = [
-    {
-      label: (row) => (row.blocked ? 'Unblock' : 'Block'),
-      component: (row) => (
-        <BlockHolderButton
-          holder={row.account.id}
-          blocked={row.blocked}
-          onClick={(e) => {
-            e.stopPropagation();
-            setActiveAction({
-              type: 'block',
-              holder: row.account.id,
-              blocked: row.blocked,
-            });
-            setShowForm(true);
-          }}
-        />
-      ),
-    },
+    // TODO: add action back in https://linear.app/settlemint/issue/ENG-2357/fund-block-and-unblock-user-user-actions
+    // {
+    //   label: (row) => (row.blocked ? 'Unblock' : 'Block'),
+    //   component: (row) => (
+    //     <BlockHolderButton
+    //       holder={row.account.id}
+    //       blocked={row.blocked}
+    //       onClick={(e) => {
+    //         e.stopPropagation();
+    //         setActiveAction({
+    //           type: 'block',
+    //           holder: row.account.id,
+    //           blocked: row.blocked,
+    //         });
+    //         setShowForm(true);
+    //       }}
+    //     />
+    //   ),
+    // },
   ];
 
   return (
