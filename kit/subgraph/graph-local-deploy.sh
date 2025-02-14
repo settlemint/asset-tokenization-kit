@@ -23,12 +23,12 @@ restore_addresses() {
 trap restore_addresses EXIT
 
 # Read the new addresses from deployed_addresses.json
-BOND_FACTORY_ADDRESS=$(jq -r '."BondFactoryModule#BondFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
-CRYPTO_CURRENCY_FACTORY_ADDRESS=$(jq -r '."CryptoCurrencyFactoryModule#CryptoCurrencyFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
-EQUITY_FACTORY_ADDRESS=$(jq -r '."EquityFactoryModule#EquityFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
-STABLE_COIN_FACTORY_ADDRESS=$(jq -r '."StableCoinFactoryModule#StableCoinFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
-FUND_FACTORY_ADDRESS=$(jq -r '."FundFactoryModule#FundFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
-FIXED_YIELD_FACTORY_ADDRESS=$(jq -r '."FixedYieldFactoryModule#FixedYieldFactory"' ../contracts/ignition/deployments/asset-tokenization/deployed_addresses.json)
+BOND_FACTORY_ADDRESS=$(jq -r '."BondFactoryModule#BondFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+CRYPTO_CURRENCY_FACTORY_ADDRESS=$(jq -r '."CryptoCurrencyFactoryModule#CryptoCurrencyFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+EQUITY_FACTORY_ADDRESS=$(jq -r '."EquityFactoryModule#EquityFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+STABLE_COIN_FACTORY_ADDRESS=$(jq -r '."StableCoinFactoryModule#StableCoinFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+FUND_FACTORY_ADDRESS=$(jq -r '."FundFactoryModule#FundFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
+FIXED_YIELD_FACTORY_ADDRESS=$(jq -r '."FixedYieldFactoryModule#FixedYieldFactory"' ../contracts/ignition/deployments/asset-tokenization-local/deployed_addresses.json)
 # Update the addresses in subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"BondFactory\").source.address) = \"$BOND_FACTORY_ADDRESS\"" subgraph.yaml
 yq -i "(.dataSources[] | select(.name == \"CryptoCurrencyFactory\").source.address) = \"$CRYPTO_CURRENCY_FACTORY_ADDRESS\"" subgraph.yaml
