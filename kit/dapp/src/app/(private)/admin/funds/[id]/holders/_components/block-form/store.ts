@@ -53,7 +53,7 @@ export const blockHolder = actionClient
   .outputSchema(BlockHolderOutputSchema)
   .action(async ({ parsedInput: { pincode, address, holder, blocked } }) => {
     // TODO: add action back in https://linear.app/settlemint/issue/ENG-2357/fund-block-and-unblock-user-user-actions
-    return Promise.resolve('0x0000000000000000000000000000000000000000000000000000000000000000'); // Placeholder transaction hash
+    return await Promise.resolve('0x0000000000000000000000000000000000000000000000000000000000000000'); // Placeholder transaction hash
     // const user = await getAuthenticatedUser();
     // try {
     //   if (blocked) {
