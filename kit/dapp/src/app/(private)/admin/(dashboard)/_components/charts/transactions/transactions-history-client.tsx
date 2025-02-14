@@ -1,11 +1,11 @@
 'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import { getTransactionsHistoryData } from './data';
-import { TransactionsHistorySkeleton } from './transactions-history-chart-skeleton';
 
 interface TransactionsHistoryClientProps {
   queryKey: QueryKey;
@@ -46,7 +46,7 @@ export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClien
   }, [data]);
 
   if (chartData.length === 0) {
-    return <TransactionsHistorySkeleton variant="noData" />;
+    return <ChartSkeleton title="Transactions" variant="noData" />;
   }
 
   return (

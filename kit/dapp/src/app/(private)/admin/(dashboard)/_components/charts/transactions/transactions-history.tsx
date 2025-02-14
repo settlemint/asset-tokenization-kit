@@ -1,8 +1,8 @@
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { getTransactionsHistoryData } from './data';
-import { TransactionsHistorySkeleton } from './transactions-history-chart-skeleton';
 import { TransactionsHistoryClient } from './transactions-history-client';
 
 export async function TransactionsHistory() {
@@ -15,7 +15,7 @@ export async function TransactionsHistory() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<TransactionsHistorySkeleton />}>
+      <Suspense fallback={<ChartSkeleton title="Transactions" variant="loading" />}>
         <TransactionsHistoryClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
