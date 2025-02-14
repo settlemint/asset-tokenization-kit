@@ -1,15 +1,15 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ByteArray } from '@graphprotocol/graph-ts';
 import { Account, AccountActivityEvent } from "../../../generated/schema";
 
 export function accountActivityEvent(
-  id: Bytes,
   account: Account,
   eventName: string,
   timestamp: BigInt,
   assetType: string | null = null,
   asset: Bytes | null = null
 ): AccountActivityEvent {
-  const event = new AccountActivityEvent(id);
+  const eventId = Bytes.fromByteArray(ByteArray.fromUTF8(`${account.id.toHexString()}-${eventName}-${timestamp.toString()}`));
+  const event = new AccountActivityEvent(eventId);
   event.eventName = eventName;
   event.timestamp = timestamp;
   event.account = account.id;
