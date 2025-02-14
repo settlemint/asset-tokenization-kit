@@ -1,4 +1,4 @@
-FROM node:22.13.1 AS build
+FROM node:22.14.0 AS build
 
 COPY --from=oven/bun:1.2.2-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
