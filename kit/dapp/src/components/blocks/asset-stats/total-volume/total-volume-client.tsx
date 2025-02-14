@@ -1,8 +1,10 @@
 'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
-import { createTimeSeries } from '@/lib/charts';
+import { formatDay, getTimestampMs } from '@/lib/charts';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { eachDayOfInterval, isSameDay, subMonths } from 'date-fns';
+import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { getAssetDetailStats } from '../data';
 
@@ -25,14 +27,29 @@ export function TotalVolumeClient({ queryKey, asset }: TotalVolumeClientProps) {
     refetchInterval: 1000 * 5,
   });
 
+  const chartData = useMemo(() => {
+    if (data.length === 0) {
+      return [];
+    }
+
+    const today = new Date();
+    const days = eachDayOfInterval({
+      start: subMonths(today, 1),
+      end: today,
+    });
+
+    return days.map((day) => {
+      const matchingData = data.find((item) => isSameDay(getTimestampMs(item.timestamp), day));
+      return {
+        timestamp: formatDay(day),
+        totalVolume: matchingData?.totalVolume ?? 0,
+      };
+    });
+  }, [data]);
+
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ['totalVolume'], {
-        granularity: 'day',
-        intervalType: 'month',
-        intervalLength: 1,
-        total: false,
-      })}
+      data={chartData}
       config={chartConfig}
       title="Total volume"
       description="Showing the total volume of the token"

@@ -21,6 +21,16 @@ type TimeSeriesResult<T> = {
   [K in keyof T]: number;
 };
 
+export function getTimestampMs(timestampMicroseconds: string | number): number {
+  return typeof timestampMicroseconds === 'string'
+    ? Number(timestampMicroseconds) / 1_000
+    : timestampMicroseconds / 1_000;
+}
+
+export function formatDay(day: Date): string {
+  return format(day, 'EEE, MMM d'); // Eg. Tue, Feb 12
+}
+
 /**
  * Creates a time series with consistent intervals from raw data points
  *
