@@ -1,17 +1,17 @@
 'use client';
 
-import { DataTable } from '@/components/blocks/data-table/data-table';
 import type { DataTableRowAction } from '@/components/blocks/data-table/data-table';
+import { DataTable } from '@/components/blocks/data-table/data-table';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { BlockHolderActionSheet } from './block-form/action-sheet';
 import { BlockHolderForm } from './block-form/form';
-import type { FundBalance } from './data';
+import type { FundHoldersBalance } from './data';
 import { columns } from './holders-columns';
 
 type HoldersTableProps = {
-  id: string;
-  balances: FundBalance[];
+  id: `0x${string}`;
+  balances: FundHoldersBalance[];
 };
 
 type HolderAction = { type: 'block'; holder: Address; blocked: boolean };
@@ -37,14 +37,12 @@ export function HoldersTable({ id, balances }: HoldersTableProps) {
             />
           </BlockHolderActionSheet>
         );
-      default: {
-        const _exhaustiveCheck: never = action;
-        return _exhaustiveCheck;
-      }
+      default:
+        return null;
     }
   };
 
-  const holdersTableActions: DataTableRowAction<FundBalance>[] = [
+  const holdersTableActions: DataTableRowAction<FundHoldersBalance>[] = [
     // TODO: add action back in https://linear.app/settlemint/issue/ENG-2357/fund-block-and-unblock-user-user-actions
     // {
     //   label: (row) => (row.blocked ? 'Unblock' : 'Block'),
