@@ -10,6 +10,7 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
       decimals
       totalSupply
       collateral
+      isin
     }
   }
 `

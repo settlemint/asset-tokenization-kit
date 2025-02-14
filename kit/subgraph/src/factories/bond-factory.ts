@@ -12,6 +12,8 @@ export function handleBondCreated(event: BondCreated): void {
   fetchFactory(event.address, FactoryType.bond);
   const sender = fetchAccount(event.transaction.from);
   const asset = fetchBond(event.params.token);
+  asset.creator = sender.id;
+  asset.save();
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
   accountActivityEvent(eventId(event), sender, EventName.AssetCreated, event.block.timestamp, AssetType.bond, asset.id);
