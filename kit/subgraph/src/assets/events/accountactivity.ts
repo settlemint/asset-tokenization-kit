@@ -1,4 +1,4 @@
-import  {BigInt, Bytes, ByteArray } from '@graphprotocol/graph-ts';
+import { BigInt, Bytes, ByteArray } from '@graphprotocol/graph-ts';
 import { Account, AccountActivityEvent } from "../../../generated/schema";
 
 export function accountActivityEvent(
