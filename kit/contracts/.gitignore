@@ -16,6 +16,7 @@ node_modules
 
 # Hardhat Ignition
 ignition/deployments/chain-*
+ignition/deployments/asset-tokenization
 
 genesis-output.json
 
