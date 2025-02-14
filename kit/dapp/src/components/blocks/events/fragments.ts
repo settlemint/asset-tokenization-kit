@@ -246,6 +246,24 @@ export const UserUnblockedEventFragment = theGraphGraphqlStarterkits(`
   }
 `);
 
+export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlStarterkits(`
+  fragment UnderlyingAssetTopUpEventFragment on UnderlyingAssetTopUpEvent {
+    __typename
+    sender {
+      id
+    }
+  }
+`);
+
+export const UnderlyingAssetWithdrawnEventFragment = theGraphGraphqlStarterkits(`
+  fragment UnderlyingAssetWithdrawnEventFragment on UnderlyingAssetWithdrawnEvent {
+    __typename
+    sender {
+      id
+    }
+  }
+`);
+
 // Types for each fragment
 export type AssetCreatedEvent = FragmentOf<typeof AssetCreatedEventFragment>;
 export type ApprovalEvent = FragmentOf<typeof ApprovalEventFragment>;
@@ -267,6 +285,8 @@ export type TransferEvent = FragmentOf<typeof TransferEventFragment>;
 export type UnpausedEvent = FragmentOf<typeof UnpausedEventFragment>;
 export type UserBlockedEvent = FragmentOf<typeof UserBlockedEventFragment>;
 export type UserUnblockedEvent = FragmentOf<typeof UserUnblockedEventFragment>;
+export type UnderlyingAssetTopUpEvent = FragmentOf<typeof UnderlyingAssetTopUpEventFragment>;
+export type UnderlyingAssetWithdrawnEvent = FragmentOf<typeof UnderlyingAssetWithdrawnEventFragment>;
 
 // Union type of all events
 export type AssetEvent =
@@ -289,7 +309,9 @@ export type AssetEvent =
   | TransferEvent
   | UnpausedEvent
   | UserBlockedEvent
-  | UserUnblockedEvent;
+  | UserUnblockedEvent
+  | UnderlyingAssetTopUpEvent
+  | UnderlyingAssetWithdrawnEvent;
 
 export interface NormalizedTransactionListItem {
   event: string;
@@ -297,4 +319,5 @@ export interface NormalizedTransactionListItem {
   asset: string;
   sender: string;
   details: AssetEvent;
+  transactionHash: string;
 }

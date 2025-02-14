@@ -34,7 +34,7 @@ export function TokenDesignerButton() {
           ) : (
             <button
               type="button"
-              className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:[bg-[hsla(0,0%,100%,.06)]]"
+              className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:bg-theme-sidebar-accent"
             >
               <Pencil className="size-4" />
             </button>
@@ -69,15 +69,15 @@ export function TokenDesignerButton() {
               {(() => {
                 switch (tokenType) {
                   case 'cryptocurrency':
-                    return <CreateCryptocurrencyForm onClose={() => setTokenType(null)} />;
+                    return <CreateCryptocurrencyForm onCloseAction={() => setTokenType(null)} />;
                   case 'stablecoin':
-                    return <CreateStablecoinForm onClose={() => setTokenType(null)} />;
+                    return <CreateStablecoinForm onCloseAction={() => setTokenType(null)} />;
                   case 'equity':
-                    return <CreateEquityForm onClose={() => setTokenType(null)} />;
+                    return <CreateEquityForm onCloseAction={() => setTokenType(null)} />;
                   case 'bond':
-                    return <CreateBondForm onClose={() => setTokenType(null)} />;
+                    return <CreateBondForm onCloseAction={() => setTokenType(null)} />;
                   case 'fund':
-                    return <CreateFundForm onClose={() => setTokenType(null)} />;
+                    return <CreateFundForm onCloseAction={() => setTokenType(null)} />;
                   default:
                     return null;
                 }

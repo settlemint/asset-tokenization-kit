@@ -9,14 +9,19 @@ import { z } from 'zod';
 import { BlockHolderFormSchema, BlockHolderOutputSchema } from './schema';
 
 const BlockHolder = portalGraphql(`
-  mutation BlockHolder($address: String!, $from: String!, $challengeResponse: String!, $input: FundBlockUserInput!) {
+  mutation BlockHolder(
+    $address: String!,
+    $from: String!,
+    $challengeResponse: String,
+    $input: FundBlockUserInput!
+  ) {
     FundBlockUser(
       address: $address
       from: $from
       challengeResponse: $challengeResponse
       input: $input
     ) {
-      hash
+      transactionHash
     }
   }
 `);
@@ -44,8 +49,8 @@ class InvalidChallengeResponseError extends Error {
 export const blockHolder = actionClient
   .schema(
     BlockHolderFormSchema.extend({
-      address: z.string(),
-      holder: z.string(),
+      address: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+      holder: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
       blocked: z.boolean(),
     })
   )
@@ -60,13 +65,14 @@ export const blockHolder = actionClient
           from: user.wallet,
           challengeResponse: await handleChallenge(user.wallet as Address, pincode),
           input: {
-            account: holder,
+            user: holder,
           },
         });
-        if (!FundUnblockUser?.hash) {
+
+        if (!FundUnblockUser?.transactionHash) {
           throw new Error('Failed to send the transaction to unblock the holder');
         }
-        return FundUnblockUser.hash;
+        return FundUnblockUser.transactionHash;
       }
 
       const { FundBlockUser } = await portalClient.request(BlockHolder, {
@@ -74,13 +80,14 @@ export const blockHolder = actionClient
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         input: {
-          account: holder,
+          user: holder,
         },
       });
-      if (!FundBlockUser?.hash) {
+
+      if (!FundBlockUser?.transactionHash) {
         throw new Error('Failed to send the transaction to block the holder');
       }
-      return FundBlockUser.hash;
+      return FundBlockUser.transactionHash;
     } catch (error) {
       if (error instanceof Error && error.message.includes('Invalid challenge response')) {
         throw new InvalidChallengeResponseError();

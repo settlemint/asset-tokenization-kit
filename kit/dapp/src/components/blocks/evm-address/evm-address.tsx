@@ -4,6 +4,7 @@ import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar
 import { Badge } from '@/components/ui/badge';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { shortHex } from '@/lib/hex';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
@@ -89,6 +90,7 @@ export function EvmAddress({
 
   const displayName = prettyNames ? (name ?? asset.data?.name ?? user.data?.name) : undefined;
   const displayEmail = prettyNames ? user.data?.email : undefined;
+  const explorerLink = getBlockExplorerAddressUrl(address, explorerUrl);
 
   if (!hoverCard) {
     return (
@@ -149,10 +151,10 @@ export function EvmAddress({
                   {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
                 </span>
               )}
-              {(explorerUrl || process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT) && (
+              {explorerLink && (
                 <Link
                   prefetch={false}
-                  href={`${explorerUrl ?? process.env.SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT}address/${address}`}
+                  href={explorerLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="truncate text-primary text-xs hover:underline"
