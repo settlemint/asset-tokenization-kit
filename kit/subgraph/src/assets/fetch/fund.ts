@@ -42,7 +42,7 @@ export function fetchFund(address: Address): Fund {
     fund.fundCategory = fundCategory.reverted ? '' : fundCategory.value;
     fund.managementFeeBps = managementFeeBps.reverted ? 0 : managementFeeBps.value;
     fund.paused = paused.reverted ? false : paused.value;
-    fund.lastFeeCollection = BigInt.fromI32(0);
+    fund.lastFeeCollection = BigInt.zero();
     fund.save();
 
     account.asAsset = fund.id;

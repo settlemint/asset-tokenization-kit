@@ -15,7 +15,7 @@ export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number
     balance.approvedExact = BigInt.zero();
     balance.approved = toDecimals(balance.approvedExact, decimals);
     balance.blocked = false;
-    balance.frozen = BigInt.fromI32(0);
+    balance.frozen = BigInt.zero();
     balance.save();
   }
 
