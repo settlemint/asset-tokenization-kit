@@ -60,7 +60,8 @@ export type AssetFormProps<
 > = {
   children: FormStepElement<S> | FormStepElement<S>[]; // Accepts a single component or an array of components
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
-  resolverAction: Resolver<Infer<S>, FormContext>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  resolverAction: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
   onClose?: () => void;
   /**
    * Configuration for cache invalidation after successful form submission.
@@ -186,13 +187,21 @@ export function AssetForm<
     setIsValidating(true);
     // Mark fields as touched
     for (const field of fieldsToValidate) {
-      const value = form.getValues(field as Path<Infer<S>>);
-      form.setValue(field as Path<Infer<S>>, value, { shouldValidate: true, shouldTouch: true });
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const value = form.getValues(field as Path<S extends Schema ? Infer<S> : any>);
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      form.setValue(field as Path<S extends Schema ? Infer<S> : any>, value, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
     }
 
     // Validate fields
     const results = await Promise.all(
-      fieldsToValidate.map((field) => form.trigger(field as Path<Infer<S>>, { shouldFocus: true }))
+      fieldsToValidate.map((field) =>
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        form.trigger(field as Path<S extends Schema ? Infer<S> : any>, { shouldFocus: true })
+      )
     );
 
     if (results.every(Boolean)) {
