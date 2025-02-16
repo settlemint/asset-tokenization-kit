@@ -174,6 +174,8 @@ export function AssetForm<
     },
   });
 
+  const { errors } = form.formState;
+
   const handleNext = async () => {
     const CurrentStep = Array.isArray(children) ? children[currentStep].type : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
@@ -229,6 +231,7 @@ export function AssetForm<
                   onNextStep={handleNext}
                   isLastStep={isLastStep}
                   isSubmitting={form.formState.isSubmitting}
+                  hasErrors={Object.keys(errors).length > 0}
                   submitLabel={submitLabel}
                   submittingLabel={submittingLabel}
                   processingLabel={processingLabel}

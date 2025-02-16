@@ -13,6 +13,8 @@ interface AssetFormButtonProps {
   isLastStep: boolean;
   /** Handler for navigating to the next step */
   onNextStep: () => void;
+  /** Whether the form has errors */
+  hasErrors: boolean;
   /** Whether the form is currently submitting */
   isSubmitting?: boolean;
   /** Label for the submit button in normal state */
@@ -32,6 +34,7 @@ export function AssetFormButton({
   onPreviousStep,
   isLastStep,
   onNextStep,
+  hasErrors,
   isSubmitting = false,
   submitLabel = 'Send transaction',
   submittingLabel = 'Sending transaction...',
@@ -69,7 +72,7 @@ export function AssetFormButton({
         onClick={isLastStep ? undefined : onNextStep}
         aria-label={isLastStep ? submitLabel : 'Go to next step'}
         className={currentStep === 0 ? 'ml-auto' : ''}
-        disabled={isSubmitting}
+        disabled={isSubmitting || (isLastStep && hasErrors)}
       >
         {getButtonContent()}
       </Button>
