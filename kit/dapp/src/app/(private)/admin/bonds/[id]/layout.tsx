@@ -116,7 +116,13 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                 <MintButton address={id as Address} name={bond.name} symbol={bond.symbol} decimals={bond.decimals} />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <BurnButton address={id as Address} name={bond.name} symbol={bond.symbol} decimals={bond.decimals} />
+                <BurnButton
+                  address={id as Address}
+                  name={bond.name}
+                  symbol={bond.symbol}
+                  decimals={bond.decimals}
+                  balance={Number(bond.holders.length > 0 ? (bond.holders[0].value ?? 0) : 0)}
+                />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
                 <PauseButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />

@@ -14,6 +14,7 @@ export function BurnForm({
   decimals,
   assetConfig,
   onCloseAction,
+  balance,
 }: {
   address: Address;
   name: string;
@@ -21,6 +22,7 @@ export function BurnForm({
   decimals: number;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
+  balance: number;
 }) {
   return (
     <AssetForm
@@ -38,7 +40,7 @@ export function BurnForm({
         onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
       }}
     >
-      <Amount />
+      <Amount balance={balance} />
       <Summary address={address} decimals={decimals} />
     </AssetForm>
   );

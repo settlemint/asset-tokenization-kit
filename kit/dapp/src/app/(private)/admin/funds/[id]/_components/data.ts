@@ -1,16 +1,20 @@
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getAddress } from 'viem';
 
 const FundTitle = theGraphGraphqlStarterkits(
   `
-  query Fund($id: ID!) {
+  query Fund($id: ID!, $account: Bytes!) {
     fund(id: $id) {
-     id
-    name
-    symbol
-    decimals
-    paused
+      id
+      name
+      symbol
+      decimals
+      paused
+      holders(where: {account_: {id: $account}}) {
+        value
+      }
     }
   }
 `
@@ -27,8 +31,9 @@ const OffchainFund = hasuraGraphql(`
 
 export async function getFundTitle(id: string) {
   const normalizedId = getAddress(id);
+  const user = await getAuthenticatedUser();
   const [data, dbFund] = await Promise.all([
-    theGraphClientStarterkits.request(FundTitle, { id }),
+    theGraphClientStarterkits.request(FundTitle, { id, account: user.wallet }),
     hasuraClient.request(OffchainFund, { id: normalizedId }),
   ]);
 

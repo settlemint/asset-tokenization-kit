@@ -132,6 +132,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}
                   decimals={stableCoin.decimals}
+                  balance={Number(stableCoin.holders.length > 0 ? (stableCoin.holders[0].value ?? 0) : 0)}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">

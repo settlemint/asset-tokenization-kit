@@ -230,7 +230,27 @@ export function AssetForm<
                 {/* Step indicator */}
                 {totalSteps > 1 && <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />}
                 {/* Current step content */}
-                <div className="min-h-[400px]">{Array.isArray(children) ? children[currentStep] : children}</div>
+                <div className="min-h-[400px]">
+                  {Array.isArray(children) ? children[currentStep] : children}
+                  {/* {process.env.NODE_ENV === 'development' && (
+                    <div>
+                      {JSON.stringify(
+                        {
+                          errors: form.formState.errors,
+                          isDirty: form.formState.isDirty,
+                          dirtyFields: form.formState.dirtyFields,
+                          touchedFields: form.formState.touchedFields,
+                          isSubmitting: form.formState.isSubmitting,
+                          isSubmitted: form.formState.isSubmitted,
+                          isValid: form.formState.isValid,
+                        },
+                        null,
+                        2
+                      )}
+                    </div>
+                  )} */}
+                </div>
+
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}

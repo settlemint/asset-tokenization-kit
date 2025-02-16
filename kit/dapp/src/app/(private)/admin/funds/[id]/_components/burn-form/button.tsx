@@ -12,7 +12,8 @@ export function BurnButton({
   name,
   symbol,
   decimals,
-}: { name: string; symbol: string; address: Address; decimals: number }) {
+  balance,
+}: { name: string; symbol: string; address: Address; decimals: number; balance: number }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,6 +39,7 @@ export function BurnButton({
           decimals={decimals}
           assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
+          balance={balance}
         />
       </SheetContent>
     </Sheet>

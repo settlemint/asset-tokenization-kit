@@ -1,5 +1,4 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
-import { InvalidChallengeResponseError } from '@/lib/errors';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -46,7 +45,8 @@ const handleServerError = (error: Error) => {
 
   // Handle invalid challenge response error
   if (error instanceof Error && error.message.includes('Invalid challenge response')) {
-    throw new InvalidChallengeResponseError();
+    devLog.error('Server action invalid challenge response error:', error);
+    return createErrorResponse('INVALID_CHALLENGE_RESPONSE', 'Invalid challenge response');
   }
 
   // Log unexpected errors in development

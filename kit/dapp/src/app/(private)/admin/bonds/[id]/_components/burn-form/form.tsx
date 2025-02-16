@@ -5,7 +5,7 @@ import type { Address } from 'viem';
 import { BurnFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
-import { burnEquity } from './store';
+import { burnBonds } from './store';
 
 export function BurnForm({
   address,
@@ -14,6 +14,7 @@ export function BurnForm({
   decimals,
   assetConfig,
   onCloseAction,
+  balance,
 }: {
   address: Address;
   name: string;
@@ -21,13 +22,14 @@ export function BurnForm({
   decimals: number;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
+  balance: number;
 }) {
   return (
     <AssetForm
       cacheInvalidation={{
         clientCacheKeys: [assetConfig.queryKey, ['transactions']],
       }}
-      storeAction={burnEquity}
+      storeAction={burnBonds}
       resolverAction={zodResolver(BurnFormSchema)}
       onClose={onCloseAction}
       submitLabel="Burn"
@@ -38,7 +40,7 @@ export function BurnForm({
         onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
       }}
     >
-      <Amount />
+      <Amount balance={balance} />
       <Summary address={address} decimals={decimals} />
     </AssetForm>
   );

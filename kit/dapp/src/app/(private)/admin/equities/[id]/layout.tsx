@@ -126,6 +126,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   name={equity.name}
                   symbol={equity.symbol}
                   decimals={equity.decimals}
+                  balance={Number(equity.holders.length > 0 ? (equity.holders[0].value ?? 0) : 0)}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
