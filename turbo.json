@@ -70,7 +70,6 @@
     },
     "contracts#deploy:local": {
       "dependsOn": ["genesis", "contracts#compile:hardhat"],
-      "inputs": ["kit/subgraph/**"],
       "outputs": ["kit/contracts/ignition/deployments/**"]
     },
     "subgraph#deploy:local": {
