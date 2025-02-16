@@ -2,10 +2,10 @@ import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form
 import { AssetFormUsers } from '@/components/blocks/asset-form/inputs/asset-form-users';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import type { MintStablecoinFormType } from '../schema';
+import type { MintFormType } from '../schema';
 
 export function Recipients() {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<MintFormType>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
   return (

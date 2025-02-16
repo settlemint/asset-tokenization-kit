@@ -1,4 +1,5 @@
 'use client';
+import { SearchIcon } from '@/components/ui/animated-icons/search';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -9,7 +10,6 @@ import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
 import { getAddress, isHex } from 'viem';

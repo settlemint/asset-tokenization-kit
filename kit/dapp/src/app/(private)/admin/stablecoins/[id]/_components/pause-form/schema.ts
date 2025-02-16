@@ -1,13 +1,15 @@
 import { z } from 'zod';
 
-export const PauseStablecoinFormSchema = z.object({
+export const PauseFormSchema = z.object({
+  address: z.string().min(1, { message: 'Address is required' }),
+  paused: z.boolean(),
   pincode: z
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
 });
 
-export type PauseStablecoinFormType = z.infer<typeof PauseStablecoinFormSchema>;
+export type PauseFormType = z.infer<typeof PauseFormSchema>;
 
-export const PauseStablecoinOutputSchema = z.string();
-export type PauseStablecoinOutputType = z.infer<typeof PauseStablecoinOutputSchema>;
+export const PauseOutputSchema = z.string();
+export type PauseOutputType = z.infer<typeof PauseOutputSchema>;

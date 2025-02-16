@@ -4,18 +4,18 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { PauseFundFormSchema } from './schema';
+import { PauseFormSchema } from './schema';
 import { Summary } from './steps/summary';
 import { pauseFund } from './store';
 
-interface PauseFundFormProps {
+interface PauseStablecoinFormProps {
   address: Address;
   paused: boolean;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
 }
 
-export function PauseFundForm({ address, paused, assetConfig, onCloseAction }: PauseFundFormProps) {
+export function PauseStablecoinForm({ address, paused, assetConfig, onCloseAction }: PauseStablecoinFormProps) {
   const actionLabel = paused ? 'Unpause' : 'Pause';
   const actionSubmittingLabel = actionLabel === 'Pause' ? 'Pausing' : 'Unpausing';
   const actionSuccessLabel = actionLabel === 'Pause' ? 'Paused' : 'Unpaused';
@@ -23,11 +23,11 @@ export function PauseFundForm({ address, paused, assetConfig, onCloseAction }: P
   return (
     <AssetForm
       storeAction={(formData) => pauseFund({ ...formData, address, paused })}
-      resolverAction={zodResolver(PauseFundFormSchema)}
+      resolverAction={zodResolver(PauseFormSchema)}
       onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
-        serverCachePath: () => `/admin/funds/${address}`,
+        serverCachePath: () => `/admin/stablecoins/${address}`,
       }}
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}

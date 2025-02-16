@@ -14,9 +14,8 @@ import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { BurnTokensButton } from './_components/burn-form/button';
 import { getCryptocurrencyTitle } from './_components/data';
-import { MintTokensButton } from './_components/mint-form/button';
+import { MintButton } from './_components/mint-form/button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -110,15 +109,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             </DropdownMenuTrigger>
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <MintTokensButton
-                  address={id as Address}
-                  name={cryptocurrency.name}
-                  symbol={cryptocurrency.symbol}
-                  decimals={cryptocurrency.decimals}
-                />
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="dropdown-menu-item">
-                <BurnTokensButton
+                <MintButton
                   address={id as Address}
                   name={cryptocurrency.name}
                   symbol={cryptocurrency.symbol}

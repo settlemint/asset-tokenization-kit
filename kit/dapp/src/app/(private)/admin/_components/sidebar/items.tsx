@@ -1,17 +1,21 @@
 import type { NavElement, NavItem } from '@/components/layout/nav-main';
+import { ActivityIcon } from '@/components/ui/animated-icons/activity';
+import { BellIcon } from '@/components/ui/animated-icons/bell';
+import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
+import { SettingsGearIcon } from '@/components/ui/animated-icons/settings-gear';
+import { UsersIcon } from '@/components/ui/animated-icons/users';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { assetConfig } from '@/lib/config/assets';
-import { AlertTriangle, ArrowRightLeft, LayoutDashboard, Settings, Users } from 'lucide-react';
 
 export const topItems: NavElement[] = [
   {
     label: 'Dashboard',
-    icon: <LayoutDashboard />,
+    icon: <ChartScatterIcon />,
     path: '/admin',
   },
   {
     label: 'Actions',
-    icon: <AlertTriangle />,
+    icon: <BellIcon />,
     path: '/admin/actions',
     badge: '12',
   },
@@ -20,17 +24,17 @@ export const topItems: NavElement[] = [
 export const bottomItems: NavElement[] = [
   {
     label: 'User management',
-    icon: <Users />,
+    icon: <UsersIcon />,
     path: '/admin/users',
   },
   {
     label: 'Transactions',
-    icon: <ArrowRightLeft />,
+    icon: <ActivityIcon />,
     path: '/admin/transactions',
   },
   {
     label: 'Settings',
-    icon: <Settings />,
+    icon: <SettingsGearIcon />,
     path: '/admin/settings',
   },
 ];

@@ -1,4 +1,5 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { InvalidChallengeResponseError } from '@/lib/errors';
 import { createSafeActionClient } from 'next-safe-action';
 import { z } from 'zod';
 
@@ -41,6 +42,11 @@ const handleServerError = (error: Error) => {
     // Handle known error types
     devLog.error('Server action validation error:', error);
     return createErrorResponse('VALIDATION_ERROR', 'Invalid input data', { details: error.errors });
+  }
+
+  // Handle invalid challenge response error
+  if (error instanceof Error && error.message.includes('Invalid challenge response')) {
+    throw new InvalidChallengeResponseError();
   }
 
   // Log unexpected errors in development

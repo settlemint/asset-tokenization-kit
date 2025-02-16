@@ -13,6 +13,7 @@ interface XAxisConfig {
   key: string;
   tickFormatter?: (value: string) => string;
   tickMargin?: number;
+  angle?: number;
 }
 
 interface AreaChartProps {
@@ -27,7 +28,7 @@ interface AreaChartProps {
   stacked?: boolean;
 }
 
-const defaultTickFormatter = (value: string) => value.slice(0, 3);
+const defaultTickFormatter = (value: string) => value.split(',')[0];
 const defaultTickMargin = 8;
 
 export function AreaChartComponent({

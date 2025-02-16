@@ -5,16 +5,16 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { PauseEquityForm } from './form';
+import { PauseStablecoinForm } from './form';
 
-interface PauseTokensButtonProps {
+interface PauseButtonProps {
   address: Address;
   name: string;
   symbol: string;
   paused: boolean;
 }
 
-export function PauseTokensButton({ address, name, symbol, paused }: PauseTokensButtonProps) {
+export function PauseButton({ address, name, symbol, paused }: PauseButtonProps) {
   const [open, setOpen] = useState(false);
   const action = paused ? 'Unpause' : 'Pause';
 
@@ -22,7 +22,7 @@ export function PauseTokensButton({ address, name, symbol, paused }: PauseTokens
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          {action} {assetConfig.fund.name.toLowerCase()}
+          {action} {assetConfig.stablecoin.name.toLowerCase()}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
@@ -34,10 +34,10 @@ export function PauseTokensButton({ address, name, symbol, paused }: PauseTokens
             {action} your {name} ({symbol}) tokens to {paused ? 'enable' : 'prevent'} transfers.
           </SheetDescription>
         </SheetHeader>
-        <PauseEquityForm
+        <PauseStablecoinForm
           address={address}
           paused={paused}
-          assetConfig={assetConfig.equity}
+          assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
