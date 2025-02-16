@@ -1,11 +1,12 @@
 'use client';
 
+import type { MouseEvent } from 'react';
 import type { Address } from 'viem';
 
 interface BlockHolderButtonProps {
   holder: Address;
   blocked: boolean;
-  onClick: (e: React.MouseEvent) => void;
+  onClick: (e: MouseEvent) => void;
 }
 
 export function BlockHolderButton({ blocked, onClick }: BlockHolderButtonProps) {

@@ -1,4 +1,14 @@
-import { type Interval, eachDayOfInterval, eachHourOfInterval, format, subDays, subMonths, subWeeks } from 'date-fns';
+import {
+  type Interval,
+  eachDayOfInterval,
+  eachHourOfInterval,
+  format,
+  isSameDay,
+  parse,
+  subDays,
+  subMonths,
+  subWeeks,
+} from 'date-fns';
 
 type TimeGranularity = 'hour' | 'day';
 type IntervalType = 'month' | 'week' | 'day';
@@ -57,9 +67,6 @@ export function createTimeSeries<T extends DataPoint>(
   const interval: Interval = { start, end: now };
   const ticks = granularity === 'hour' ? eachHourOfInterval(interval) : eachDayOfInterval(interval);
 
-  // Format timestamp based on granularity
-  const formatString = granularity === 'hour' ? 'HH:mm, MMM d' : 'EEE, MMM d';
-
   // Initialize last valid values for each key
   const lastValidValues = new Map<keyof T, number>();
   for (const key of valueKeys) {
@@ -67,17 +74,13 @@ export function createTimeSeries<T extends DataPoint>(
   }
 
   return ticks.map((tick) => {
-    const startOfPeriod = granularity === 'hour' ? tick.setMinutes(0, 0, 0) : tick.setHours(0, 0, 0, 0);
-    const endOfPeriod = granularity === 'hour' ? tick.setMinutes(59, 59, 999) : tick.setHours(23, 59, 59, 999);
-
     const matchingData = data.find((d) => {
-      // Convert microseconds to milliseconds for comparison
-      const timestamp = typeof d.timestamp === 'string' ? Number(d.timestamp) / 1_000_000 : d.timestamp / 1_000_000;
-      return timestamp >= startOfPeriod / 1000 && timestamp <= endOfPeriod / 1000;
+      const timestamp = getDateFromMicroseconds(d.timestamp);
+      return isSameDay(timestamp, tick);
     });
 
     const result = {
-      timestamp: format(tick, formatString),
+      timestamp: formatDate(tick, granularity),
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     // Add each value key to the result
@@ -92,4 +95,12 @@ export function createTimeSeries<T extends DataPoint>(
 
     return result;
   });
+}
+
+function getDateFromMicroseconds(timestampMicroseconds: string | number): Date {
+  return parse((Number(timestampMicroseconds) / 1000).toString(), 'T', new Date());
+}
+
+function formatDate(date: Date, granularity: TimeGranularity): string {
+  return format(date, granularity === 'hour' ? 'HH:mm, MMM d' : 'EEE, MMM d'); // Eg. Tue, Feb 12
 }

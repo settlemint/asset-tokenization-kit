@@ -11,6 +11,8 @@ const StableCoinTitle = theGraphGraphqlStarterkits(
       symbol
       decimals
       paused
+      collateral
+      totalSupply
     }
   }
 `

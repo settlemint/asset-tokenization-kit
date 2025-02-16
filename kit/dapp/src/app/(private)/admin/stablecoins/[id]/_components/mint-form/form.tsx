@@ -14,6 +14,7 @@ export function MintStablecoinForm({
   symbol,
   decimals,
   assetConfig,
+  collateralAvailable,
   onCloseAction,
 }: {
   address: Address;
@@ -21,6 +22,7 @@ export function MintStablecoinForm({
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
+  collateralAvailable: number;
   onCloseAction: () => void;
 }) {
   return (
@@ -40,7 +42,7 @@ export function MintStablecoinForm({
       }}
     >
       <Recipients />
-      <Amount />
+      <Amount collateralAvailable={collateralAvailable} />
       <Summary address={address} decimals={decimals} />
     </AssetForm>
   );

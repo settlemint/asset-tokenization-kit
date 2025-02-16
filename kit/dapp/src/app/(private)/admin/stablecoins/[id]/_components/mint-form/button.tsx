@@ -12,14 +12,23 @@ export function MintTokensButton({
   name,
   symbol,
   decimals,
-}: { name: string; symbol: string; address: Address; decimals: number }) {
+  disabled,
+  collateralAvailable,
+}: {
+  name: string;
+  symbol: string;
+  address: Address;
+  decimals: number;
+  disabled?: boolean;
+  collateralAvailable: number;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
-          Mint tokens
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start" disabled={disabled}>
+          {disabled ? 'Mint: No collateral available' : 'Mint tokens'}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
@@ -38,6 +47,7 @@ export function MintTokensButton({
           decimals={decimals}
           assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
+          collateralAvailable={collateralAvailable}
         />
       </SheetContent>
     </Sheet>
