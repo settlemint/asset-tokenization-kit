@@ -1,10 +1,11 @@
 'use client';
 
-import { Check, Copy as CopyIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { CopyIcon } from './animated-icons/copy';
 import { Button } from './button';
-import { cn } from '@/lib/utils';
 
 interface CopyProps {
   value: string;

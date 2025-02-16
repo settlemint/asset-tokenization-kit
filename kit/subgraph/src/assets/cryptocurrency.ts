@@ -11,6 +11,7 @@ import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
+import { accountActivityEvent } from './events/accountactivity';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { mintEvent } from './events/mint';
@@ -18,11 +19,10 @@ import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
 import { transferEvent } from './events/transfer';
+import { fetchAssetActivity } from './fetch/assets';
 import { fetchCryptoCurrency } from './fetch/cryptocurrency';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
-import { fetchAssetActivity } from './fetch/assets';
-import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const cryptoCurrency = fetchCryptoCurrency(event.address);
@@ -152,6 +152,7 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.balanceExact = toBalance.valueExact;
     toPortfolioStats.save();
 
+    assetStats.transfers = assetStats.transfers + 1;
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;

@@ -5,14 +5,15 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BurnStablecoinForm } from './form';
+import { BurnForm } from './form';
 
-export function BurnTokensButton({
+export function BurnButton({
   address,
   name,
   symbol,
   decimals,
-}: { name: string; symbol: string; address: Address; decimals: number }) {
+  balance,
+}: { name: string; symbol: string; address: Address; decimals: number; balance: number }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,13 +32,14 @@ export function BurnTokensButton({
             Easily burn your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <BurnStablecoinForm
+        <BurnForm
           address={address}
           name={name}
           symbol={symbol}
           decimals={decimals}
           assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
+          balance={balance}
         />
       </SheetContent>
     </Sheet>

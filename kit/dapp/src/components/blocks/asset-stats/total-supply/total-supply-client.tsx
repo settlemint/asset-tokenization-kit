@@ -25,19 +25,22 @@ export function TotalSupplyClient({ queryKey, asset }: TotalSupplyClientProps) {
     refetchInterval: 1000 * 5,
   });
 
+  const timeseries = createTimeSeries(data, ['totalSupply'], {
+    granularity: 'hour',
+    intervalType: 'day',
+    intervalLength: 1,
+    total: true,
+  });
+
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ['totalSupply'], {
-        granularity: 'day',
-        intervalType: 'month',
-        intervalLength: 1,
-        total: true,
-      })}
+      data={timeseries}
       config={chartConfig}
       title="Total supply"
       description="Showing the total supply of the token"
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
+      footer={<div className="text-muted-foreground text-xs">Last updated: {timeseries.at(-1)?.timestamp}</div>}
     />
   );
 }

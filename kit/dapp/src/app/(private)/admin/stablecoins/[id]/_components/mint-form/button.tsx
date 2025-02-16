@@ -5,9 +5,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { MintStablecoinForm } from './form';
+import { MintForm } from './form';
 
-export function MintTokensButton({
+export function MintButton({
   address,
   name,
   symbol,
@@ -40,7 +40,7 @@ export function MintTokensButton({
             Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <MintStablecoinForm
+        <MintForm
           address={address}
           name={name}
           symbol={symbol}

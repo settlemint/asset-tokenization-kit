@@ -4,7 +4,7 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { PauseStablecoinFormSchema } from './schema';
+import { PauseFormSchema } from './schema';
 import { Summary } from './steps/summary';
 import { pauseStablecoin } from './store';
 
@@ -23,7 +23,7 @@ export function PauseStablecoinForm({ address, paused, assetConfig, onCloseActio
   return (
     <AssetForm
       storeAction={(formData) => pauseStablecoin({ ...formData, address, paused })}
-      resolverAction={zodResolver(PauseStablecoinFormSchema)}
+      resolverAction={zodResolver(PauseFormSchema)}
       onClose={onCloseAction}
       cacheInvalidation={{
         clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],

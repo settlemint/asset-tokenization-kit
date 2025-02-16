@@ -5,22 +5,21 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BurnEquityForm } from './form';
+import { BurnForm } from './form';
 
-interface BurnTokensButtonProps {
-  address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-}
-
-export function BurnTokensButton({ address, name, symbol, decimals }: BurnTokensButtonProps) {
+export function BurnButton({
+  address,
+  name,
+  symbol,
+  decimals,
+  balance,
+}: { name: string; symbol: string; address: Address; decimals: number; balance: number }) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
           Burn tokens
         </Button>
       </SheetTrigger>
@@ -30,14 +29,17 @@ export function BurnTokensButton({ address, name, symbol, decimals }: BurnTokens
             Burn {name} ({symbol})
           </SheetTitle>
           <SheetDescription>
-            Burn your {name} ({symbol}) tokens by specifying the amount.
+            Easily burn your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <BurnEquityForm
+        <BurnForm
           address={address}
-          assetConfig={assetConfig.equity}
-          onCloseAction={() => setOpen(false)}
+          name={name}
+          symbol={symbol}
           decimals={decimals}
+          assetConfig={assetConfig.stablecoin}
+          onCloseAction={() => setOpen(false)}
+          balance={balance}
         />
       </SheetContent>
     </Sheet>

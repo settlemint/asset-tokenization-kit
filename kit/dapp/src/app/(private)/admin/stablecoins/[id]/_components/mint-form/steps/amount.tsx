@@ -1,10 +1,10 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
-import type { MintStablecoinFormType } from '../schema';
+import type { MintFormType } from '../schema';
 
 export function Amount({ collateralAvailable }: { collateralAvailable: number }) {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<MintFormType>();
 
   return (
     <div className="space-y-6">

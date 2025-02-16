@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MintStablecoinFormSchema = z.object({
+export const MintFormSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
   to: z.string().min(1, { message: 'Recipient is required' }),
   amount: z.number().min(1, { message: 'Amount is required' }),
@@ -15,7 +15,7 @@ export const MintStablecoinFormSchema = z.object({
     .default(18),
 });
 
-export type MintStablecoinFormType = z.infer<typeof MintStablecoinFormSchema>;
+export type MintFormType = z.infer<typeof MintFormSchema>;
 
-export const MintStablecoinOutputSchema = z.string();
-export type MintStablecoinOutputType = z.infer<typeof MintStablecoinOutputSchema>;
+export const MintOutputSchema = z.string();
+export type MintOutputType = z.infer<typeof MintOutputSchema>;

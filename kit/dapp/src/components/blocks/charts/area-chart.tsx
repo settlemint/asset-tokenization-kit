@@ -13,6 +13,7 @@ interface XAxisConfig {
   key: string;
   tickFormatter?: (value: string) => string;
   tickMargin?: number;
+  angle?: number;
 }
 
 interface AreaChartProps {
@@ -27,7 +28,7 @@ interface AreaChartProps {
   stacked?: boolean;
 }
 
-const defaultTickFormatter = (value: string) => value.slice(0, 3);
+const defaultTickFormatter = (value: string) => value.split(',')[0];
 const defaultTickMargin = 8;
 
 export function AreaChartComponent({
@@ -49,7 +50,7 @@ export function AreaChartComponent({
         <CardTitle>{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0 pr-4 pb-4">
         <ChartContainer config={config}>
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
