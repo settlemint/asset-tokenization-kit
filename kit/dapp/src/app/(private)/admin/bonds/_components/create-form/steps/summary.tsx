@@ -46,6 +46,10 @@ export function Summary() {
               <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
             </div>
             <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground">Cap:</dt>
+              <dd className="font-medium">{values.cap}</dd>
+            </div>
+            <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Private</dt>
               <dd className="font-medium text-sm">{values.private ? 'Yes' : 'No'}</dd>
             </div>

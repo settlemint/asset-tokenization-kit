@@ -7,6 +7,7 @@ import { db } from '@/lib/db';
 import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { getUnixTimestampSeconds } from '@/lib/timestamp';
 import { type Address, parseEther } from 'viem';
 import { CreateBondFormSchema } from './schema';
 
@@ -49,7 +50,18 @@ export const createBond = actionClient
   .outputSchema(CreateBondOutputSchema)
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, faceValue, maturityDate, cap },
+      parsedInput: {
+        assetName,
+        symbol,
+        decimals,
+        pincode,
+        isin,
+        private: isPrivate,
+        faceValue,
+        maturityDate,
+        cap,
+        faceValueCurrency: underlyingAsset,
+      },
       ctx: { user },
     }) => {
       const predictedAddress = await portalClient.request(CreateBondPredictAddress, {
@@ -57,8 +69,8 @@ export const createBond = actionClient
         sender: user.wallet,
         decimals,
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: maturityDate.toISOString(),
-        underlyingAsset: '',
+        maturityDate: getUnixTimestampSeconds(maturityDate).toString(),
+        underlyingAsset,
         cap: cap ? parseEther(cap.toString()).toString() : '0',
         name: assetName,
         symbol,
@@ -84,8 +96,8 @@ export const createBond = actionClient
         decimals,
         isin: isin ?? '',
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: maturityDate.toISOString(),
-        underlyingAsset: '',
+        maturityDate: getUnixTimestampSeconds(maturityDate).toString(),
+        underlyingAsset,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
         cap: cap ? parseEther(cap.toString()).toString() : '0',
