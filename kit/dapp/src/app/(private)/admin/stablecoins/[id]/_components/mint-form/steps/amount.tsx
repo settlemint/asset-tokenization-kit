@@ -1,8 +1,9 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
 import type { MintStablecoinFormType } from '../schema';
 
-export function Amount() {
+export function Amount({ collateralAvailable }: { collateralAvailable: number }) {
   const { control } = useFormContext<MintStablecoinFormType>();
 
   return (
@@ -16,7 +17,16 @@ export function Amount() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput control={control} name="amount" label="Amount" type="number" min={1} defaultValue={1} />
+        <AssetFormInput
+          control={control}
+          name="amount"
+          label="Amount"
+          type="number"
+          min={1}
+          defaultValue={1}
+          max={collateralAvailable}
+          description={`Collateral available: ${formatNumber(collateralAvailable)}`}
+        />
       </div>
     </div>
   );

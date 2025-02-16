@@ -88,6 +88,9 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
   const { id } = await params;
   const stableCoin = await getStableCoinTitle(id);
 
+  const hasCollateralAvailable = Number(stableCoin?.collateral ?? 0) > Number(stableCoin?.totalSupply ?? 0);
+  const collateralAvailable = Number(stableCoin?.collateral ?? 0) - Number(stableCoin?.totalSupply ?? 0);
+
   return (
     <div>
       <PageHeader
@@ -107,7 +110,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="default">
-                Mint tokens
+                Manage Stablecoin
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -118,6 +121,8 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}
                   decimals={stableCoin.decimals}
+                  disabled={!hasCollateralAvailable}
+                  collateralAvailable={collateralAvailable}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
