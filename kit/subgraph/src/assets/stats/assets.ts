@@ -16,7 +16,7 @@ export function newAssetStatsData(
   assetStats.assetClass = assetClass;
 
   // Transfers
-  assetStats.transfers = 1;
+  assetStats.transfers = 0;
   assetStats.volume = BigDecimal.zero();
   assetStats.volumeExact = BigInt.zero();
 

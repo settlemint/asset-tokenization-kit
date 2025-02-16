@@ -20,6 +20,7 @@ import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
+import { accountActivityEvent } from './events/accountactivity';
 import { approvalEvent } from './events/approval';
 import { burnEvent } from './events/burn';
 import { managementFeeCollectedEvent } from './events/managementfeecollected';
@@ -36,11 +37,10 @@ import { transferEvent } from './events/transfer';
 import { unpausedEvent } from './events/unpaused';
 import { userBlockedEvent } from './events/userblocked';
 import { userUnblockedEvent } from './events/userunblocked';
+import { fetchAssetActivity } from './fetch/assets';
 import { fetchFund } from './fetch/fund';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
-import { fetchAssetActivity } from './fetch/assets';
-import { accountActivityEvent } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const fund = fetchFund(event.address);
@@ -170,6 +170,7 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.balanceExact = toBalance.valueExact;
     toPortfolioStats.save();
 
+    assetStats.transfers = assetStats.transfers + 1;
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
@@ -432,7 +433,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   const assetActivity = fetchAssetActivity(AssetType.fund);
   assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
   assetActivity.save();
-  
+
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
@@ -469,7 +470,7 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   const assetActivity = fetchAssetActivity(AssetType.fund);
   assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
   assetActivity.save();
-  
+
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
