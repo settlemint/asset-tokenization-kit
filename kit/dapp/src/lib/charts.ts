@@ -4,6 +4,7 @@ import {
   eachHourOfInterval,
   format,
   isSameDay,
+  isSameHour,
   parse,
   startOfDay,
   startOfHour,
@@ -83,7 +84,7 @@ export function createTimeSeries<T extends DataPoint>(
   return ticks.map((tick) => {
     const matchingData = data.find((d) => {
       const timestamp = getDateFromMicroseconds(d.timestamp);
-      return isSameDay(timestamp, tick);
+      return granularity === 'hour' ? isSameHour(timestamp, tick) : isSameDay(timestamp, tick);
     });
 
     const result = {

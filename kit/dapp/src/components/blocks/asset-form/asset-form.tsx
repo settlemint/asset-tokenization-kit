@@ -1,9 +1,10 @@
 'use client';
-import { revalidatePaths } from '@/app/_actions/revalidate';
+
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
+import { revalidatePaths } from '@/lib/revalidate';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { QueryKey } from '@tanstack/react-query';
