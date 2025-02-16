@@ -10,12 +10,12 @@ import { assetConfig } from '@/lib/config/assets';
 export const topItems: NavElement[] = [
   {
     label: 'Dashboard',
-    icon: <ChartScatterIcon />,
+    icon: <ChartScatterIcon className="h-4 w-4" />,
     path: '/admin',
   },
   {
     label: 'Actions',
-    icon: <BellIcon />,
+    icon: <BellIcon className="h-4 w-4" />,
     path: '/admin/actions',
     badge: '12',
   },
@@ -24,17 +24,17 @@ export const topItems: NavElement[] = [
 export const bottomItems: NavElement[] = [
   {
     label: 'User management',
-    icon: <UsersIcon />,
+    icon: <UsersIcon className="h-4 w-4" />,
     path: '/admin/users',
   },
   {
     label: 'Transactions',
-    icon: <ActivityIcon />,
+    icon: <ActivityIcon className="h-4 w-4" />,
     path: '/admin/transactions',
   },
   {
     label: 'Settings',
-    icon: <SettingsGearIcon />,
+    icon: <SettingsGearIcon className="h-4 w-4" />,
     path: '/admin/settings',
   },
 ];
@@ -45,7 +45,7 @@ export const tokenItems: NavItem[] = [
     label: assetConfig.bond.pluralName,
     path: `/admin/${assetConfig.bond.urlSegment}`,
     icon: (
-      <Avatar className="h-4 w-4 border border-foreground-muted">
+      <Avatar className="h-5 w-5 border border-foreground-muted">
         <AvatarFallback className="text-[7px]">BN</AvatarFallback>
       </Avatar>
     ),
@@ -55,7 +55,7 @@ export const tokenItems: NavItem[] = [
     label: assetConfig.cryptocurrency.pluralName,
     path: `/admin/${assetConfig.cryptocurrency.urlSegment}`,
     icon: (
-      <Avatar className="h-4 w-4 border border-foreground-muted">
+      <Avatar className="h-5 w-5 border border-foreground-muted">
         <AvatarFallback className="text-[7px]">CC</AvatarFallback>
       </Avatar>
     ),
@@ -66,7 +66,7 @@ export const tokenItems: NavItem[] = [
     label: assetConfig.equity.pluralName,
     path: `/admin/${assetConfig.equity.urlSegment}`,
     icon: (
-      <Avatar className="h-4 w-4 border border-foreground-muted">
+      <Avatar className="h-5 w-5 border border-foreground-muted">
         <AvatarFallback className="text-[7px]">EQ</AvatarFallback>
       </Avatar>
     ),
@@ -76,7 +76,7 @@ export const tokenItems: NavItem[] = [
     label: assetConfig.fund.pluralName,
     path: `/admin/${assetConfig.fund.urlSegment}`,
     icon: (
-      <Avatar className="h-4 w-4 border border-foreground-muted">
+      <Avatar className="h-5 w-5 border border-foreground-muted">
         <AvatarFallback className="text-[7px]">FN</AvatarFallback>
       </Avatar>
     ),
@@ -86,7 +86,7 @@ export const tokenItems: NavItem[] = [
     label: assetConfig.stablecoin.pluralName,
     path: `/admin/${assetConfig.stablecoin.urlSegment}`,
     icon: (
-      <Avatar className="h-4 w-4 border border-foreground-muted">
+      <Avatar className="h-5 w-5 border border-foreground-muted">
         <AvatarFallback className="text-[7px]">SC</AvatarFallback>
       </Avatar>
     ),
