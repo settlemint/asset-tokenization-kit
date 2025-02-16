@@ -15,8 +15,8 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { assetConfig } from '@/lib/config/assets';
-import { Pencil } from 'lucide-react';
 import { useState } from 'react';
+import { FrameIcon } from '../ui/animated-icons/frame';
 
 export function TokenDesignerButton() {
   const { state, isMobile } = useSidebar();
@@ -28,7 +28,7 @@ export function TokenDesignerButton() {
         <DropdownMenuTrigger asChild>
           {state === 'expanded' ? (
             <Button className="mb-4 flex w-full items-center gap-2 text-sidebar-accent dark:text-sidebar-accent-foreground">
-              <Pencil className="size-4" />
+              <FrameIcon className="size-4" />
               {state === 'expanded' && <span>Asset Designer</span>}
             </Button>
           ) : (
@@ -36,7 +36,7 @@ export function TokenDesignerButton() {
               type="button"
               className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:bg-theme-sidebar-accent"
             >
-              <Pencil className="size-4" />
+              <FrameIcon className="size-4" />
             </button>
           )}
         </DropdownMenuTrigger>

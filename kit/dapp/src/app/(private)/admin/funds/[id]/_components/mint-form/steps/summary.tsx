@@ -1,13 +1,15 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { MintFundFormType } from '../schema';
+import type { MintFormType } from '../schema';
 
-export function Summary({ address }: { address: Address }) {
-  const { control } = useFormContext<MintFundFormType>();
+export function Summary({ address, decimals }: { address: Address; decimals: number }) {
+  const { control } = useFormContext<MintFormType>();
   const values = useWatch({
     control: control,
   });
@@ -28,18 +30,24 @@ export function Summary({ address }: { address: Address }) {
               <DollarSign className="h-3 w-3 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">Asset Basics</h3>
-              <p className="text-muted-foreground text-xs">Basic asset information and settings.</p>
+              <h3 className="font-semibold text-sm">Action details</h3>
+              <p className="text-muted-foreground text-xs">Details of the action you are about to perform.</p>
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Address</dt>
-              <dd className="font-medium text-sm">{values.recipient}</dd>
+              <dt className="text-muted-foreground text-sm">Asset</dt>
+              <dd className="font-medium text-sm">
+                <EvmAddress address={address} />
+              </dd>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">Recipient</dt>
+              <dd className="font-medium text-sm">{values.to ? <EvmAddress address={values.to} /> : 'N/A'}</dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{values.amount}</dd>
+              <dd className="font-medium text-sm">{formatNumber(values.amount ?? 0)}</dd>
             </div>
           </dl>
         </div>
@@ -55,7 +63,8 @@ export function Summary({ address }: { address: Address }) {
             </div>
           </div>
 
-          <AssetFormInput control={control} name="recipient" label="Address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField
             control={control}

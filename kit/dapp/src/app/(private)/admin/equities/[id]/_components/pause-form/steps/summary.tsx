@@ -3,10 +3,10 @@ import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/f
 import { Lock, PauseCircle } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { PauseEquityFormType } from '../schema';
+import type { PauseFormType } from '../schema';
 
 export function Summary({ address, paused }: { address: Address; paused: boolean }) {
-  const { control } = useFormContext<PauseEquityFormType>();
+  const { control } = useFormContext<PauseFormType>();
   const action = paused ? 'Unpause' : 'Pause';
 
   return (

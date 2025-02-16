@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const BurnStablecoinFormSchema = z.object({
+export const BurnFormSchema = z.object({
   address: z.string().min(1, { message: 'Address is required' }),
   from: z.string().min(1, { message: 'Burner is required' }),
   amount: z.number().min(1, { message: 'Amount is required' }),
@@ -15,7 +15,7 @@ export const BurnStablecoinFormSchema = z.object({
     .default(18),
 });
 
-export type BurnStablecoinFormType = z.infer<typeof BurnStablecoinFormSchema>;
+export type BurnFormType = z.infer<typeof BurnFormSchema>;
 
-export const BurnStablecoinOutputSchema = z.string();
-export type BurnStablecoinOutputType = z.infer<typeof BurnStablecoinOutputSchema>;
+export const BurnOutputSchema = z.string();
+export type BurnOutputType = z.infer<typeof BurnOutputSchema>;

@@ -6,10 +6,10 @@ import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { MintStablecoinFormType } from '../schema';
+import type { MintFormType } from '../schema';
 
 export function Summary({ address, decimals }: { address: Address; decimals: number }) {
-  const { control } = useFormContext<MintStablecoinFormType>();
+  const { control } = useFormContext<MintFormType>();
   const values = useWatch({
     control: control,
   });

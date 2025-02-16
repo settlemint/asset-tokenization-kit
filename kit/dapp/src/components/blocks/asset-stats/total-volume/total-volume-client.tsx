@@ -25,19 +25,22 @@ export function TotalVolumeClient({ queryKey, asset }: TotalVolumeClientProps) {
     refetchInterval: 1000 * 5,
   });
 
+  const timeseries = createTimeSeries(data, ['totalVolume'], {
+    granularity: 'hour',
+    intervalType: 'day',
+    intervalLength: 1,
+    total: false,
+  });
+
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ['totalVolume'], {
-        granularity: 'day',
-        intervalType: 'month',
-        intervalLength: 1,
-        total: false,
-      })}
+      data={timeseries}
       config={chartConfig}
       title="Total volume"
       description="Showing the total volume of the token"
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
+      footer={<div className="text-muted-foreground text-xs">Last updated: {timeseries.at(-1)?.timestamp}</div>}
     />
   );
 }

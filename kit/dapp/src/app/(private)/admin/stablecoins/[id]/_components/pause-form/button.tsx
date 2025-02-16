@@ -7,14 +7,14 @@ import { useState } from 'react';
 import type { Address } from 'viem';
 import { PauseStablecoinForm } from './form';
 
-interface PauseTokensButtonProps {
+interface PauseButtonProps {
   address: Address;
   name: string;
   symbol: string;
   paused: boolean;
 }
 
-export function PauseTokensButton({ address, name, symbol, paused }: PauseTokensButtonProps) {
+export function PauseButton({ address, name, symbol, paused }: PauseButtonProps) {
   const [open, setOpen] = useState(false);
   const action = paused ? 'Unpause' : 'Pause';
 

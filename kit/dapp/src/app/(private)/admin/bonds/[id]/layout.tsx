@@ -15,10 +15,10 @@ import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { BurnTokensButton } from './_components/burn-form/button';
+import { BurnButton } from './_components/burn-form/button';
 import { getBondTitle } from './_components/data';
-import { MintTokensButton } from './_components/mint-form/button';
-import { PauseTokensButton } from './_components/pause-form/button';
+import { MintButton } from './_components/mint-form/button';
+import { PauseButton } from './_components/pause-form/button';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -113,23 +113,13 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             </DropdownMenuTrigger>
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <MintTokensButton
-                  address={id as Address}
-                  name={bond.name}
-                  symbol={bond.symbol}
-                  decimals={bond.decimals}
-                />
+                <MintButton address={id as Address} name={bond.name} symbol={bond.symbol} decimals={bond.decimals} />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <BurnTokensButton
-                  address={id as Address}
-                  name={bond.name}
-                  symbol={bond.symbol}
-                  decimals={bond.decimals}
-                />
+                <BurnButton address={id as Address} name={bond.name} symbol={bond.symbol} decimals={bond.decimals} />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <PauseTokensButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />
+                <PauseButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

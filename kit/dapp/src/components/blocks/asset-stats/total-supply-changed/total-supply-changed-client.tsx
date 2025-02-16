@@ -29,19 +29,22 @@ export function TotalSupplyChangedClient({ queryKey, asset }: TotalSupplyChanged
     refetchInterval: 1000 * 5,
   });
 
+  const timeseries = createTimeSeries(data, ['totalMinted', 'totalBurned'], {
+    granularity: 'hour',
+    intervalType: 'day',
+    intervalLength: 1,
+    total: false,
+  });
+
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ['totalMinted', 'totalBurned'], {
-        granularity: 'day',
-        intervalType: 'month',
-        intervalLength: 1,
-        total: false,
-      })}
+      data={timeseries}
       config={chartConfig}
       title="Supply changes"
       description="Showing the supply change of the token"
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
+      footer={<div className="text-muted-foreground text-xs">Last updated: {timeseries.at(-1)?.timestamp}</div>}
     />
   );
 }

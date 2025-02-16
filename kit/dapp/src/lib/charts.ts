@@ -5,6 +5,10 @@ import {
   format,
   isSameDay,
   parse,
+  startOfDay,
+  startOfHour,
+  startOfMonth,
+  startOfWeek,
   subDays,
   subMonths,
   subWeeks,
@@ -46,25 +50,28 @@ export function createTimeSeries<T extends DataPoint>(
 ): TimeSeriesResult<Pick<T, keyof T>>[] {
   const { granularity, intervalType, intervalLength, total = false } = options;
 
-  // Calculate start date based on interval type
   const now = new Date();
   let start: Date;
+
+  // First round the current time based on granularity
+  const roundedNow = granularity === 'hour' ? startOfHour(now) : startOfDay(now);
+
   switch (intervalType) {
     case 'month':
-      start = subMonths(now, intervalLength);
+      start = startOfMonth(subMonths(roundedNow, intervalLength));
       break;
     case 'week':
-      start = subWeeks(now, intervalLength);
+      start = startOfWeek(subWeeks(roundedNow, intervalLength));
       break;
     case 'day':
-      start = subDays(now, intervalLength);
+      start = startOfDay(subDays(roundedNow, intervalLength));
       break;
     default:
       throw new Error(`Invalid interval type: ${intervalType}`);
   }
 
   // Generate ticks based on granularity
-  const interval: Interval = { start, end: now };
+  const interval: Interval = { start, end: roundedNow };
   const ticks = granularity === 'hour' ? eachHourOfInterval(interval) : eachDayOfInterval(interval);
 
   // Initialize last valid values for each key
