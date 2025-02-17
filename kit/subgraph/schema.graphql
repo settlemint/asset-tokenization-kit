@@ -660,6 +660,7 @@ type AssetStatsData @entity(timeseries: true) {
   ## Collateral
   collateral: BigDecimal!
   collateralExact: BigInt!
+  collateralRatio: BigDecimal!
 }
 
 type AssetStats
@@ -711,6 +712,16 @@ type AssetActivityData @entity {
   burnEventCount: Int!
   frozenEventCount: Int!
   unfrozenEventCount: Int!
+}
+
+# --------------------------------------------------
+# Asset count
+# --------------------------------------------------
+
+type AssetCount @entity {
+  id: String!
+  assetType: String! @unique
+  count: Int!
 }
 
 # --------------------------------------------------

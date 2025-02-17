@@ -1,4 +1,4 @@
-import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
 import {
   Approval,
   CollateralUpdated,
@@ -80,6 +80,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
     accountActivityEvent(sender, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -119,6 +122,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
     accountActivityEvent(sender, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -538,6 +544,14 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.lastCollateralUpdate = event.block.timestamp;
   stableCoin.save();
+
+  const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
+  assetStats.collateral = stableCoin.collateral;
+  assetStats.collateralExact = stableCoin.collateralExact;
+  assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
+  assetStats.save();
 
   stablecoinCollateralUpdatedEvent(
     eventId(event),
