@@ -25,7 +25,7 @@ export interface TimeSeriesOptions {
 }
 
 type DataPoint = {
-  timestamp: number | string;
+  timestamp: number | string | Date;
   [key: string]: unknown;
 };
 
@@ -75,12 +75,10 @@ export function createTimeSeries<T extends DataPoint>(
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {
-      const value = aggregatedData?.[key];
-      if (value !== undefined) {
-        lastValidValues.set(key, Number(value));
-      }
-      const currentValue = total ? (lastValidValues.get(key) ?? 0) : value !== undefined ? Number(value) : 0;
-      Object.assign(result, { [key]: currentValue });
+      const processedValue = processTimeSeriesValue(aggregatedData?.[key], lastValidValues.get(key) ?? 0, total);
+
+      updateLastValidValue(lastValidValues, key, aggregatedData?.[key]);
+      Object.assign(result, { [key]: processedValue });
     }
 
     return result;
@@ -100,7 +98,7 @@ export function startOfInterval(date: Date, intervalType: IntervalType, interval
   }
 }
 
-function isInTick(tick: Date, timestamp: number | string, granularity: TimeGranularity): boolean {
+function isInTick(tick: Date, timestamp: number | string | Date, granularity: TimeGranularity): boolean {
   switch (granularity) {
     case 'hour':
       return isSameHour(timestamp, tick);
@@ -148,5 +146,20 @@ function aggregateData<T extends DataPoint>(
       const _exhaustiveCheck: never = aggregation;
       throw new Error(`Unsupported aggregation type: ${_exhaustiveCheck}`);
     }
+  }
+}
+
+function processTimeSeriesValue(value: unknown, lastValidValue: number, isTotal: boolean): number {
+  if (!value) {
+    return isTotal ? lastValidValue : 0;
+  }
+
+  const currentValue = Number(value);
+  return isTotal ? currentValue + lastValidValue : currentValue;
+}
+
+function updateLastValidValue(lastValidValues: Map<unknown, number>, key: unknown, value: unknown): void {
+  if (value) {
+    lastValidValues.set(key, Number(value));
   }
 }

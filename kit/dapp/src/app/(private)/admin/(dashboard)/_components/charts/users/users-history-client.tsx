@@ -2,6 +2,7 @@
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
+import { createTimeSeries } from '@/lib/charts';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
 import { useMemo } from 'react';
@@ -46,13 +47,25 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
     return <ChartSkeleton title="Users" variant="noData" />;
   }
 
+  const formatted = data.map((user) => ({
+    timestamp: user.createdAt,
+    users: 1,
+  }));
+
   return (
     <AreaChartComponent
-      data={chartData}
+      data={createTimeSeries(formatted, ['users'], {
+        intervalType: 'day',
+        intervalLength: 7,
+        granularity: 'day',
+        aggregation: 'count',
+        total: true,
+      })}
       config={USERS_CHART_CONFIG}
       title="Users"
-      description="Showing users created over the last 7 days"
-      xAxis={{ key: 'date' }}
+      description="Showing users over the last 7 days"
+      xAxis={{ key: 'timestamp' }}
+      showYAxis={true}
     />
   );
 }
