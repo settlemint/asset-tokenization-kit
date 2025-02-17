@@ -1,20 +1,15 @@
 'use client';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { NavFooter } from '@/components/layout/nav-footer';
-import { NavHeader } from '@/components/layout/nav-header';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
-import { TokenDesignerButton } from '@/components/layout/token-designer-button';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getSidebarAssets } from './data';
-import { bottomItems, tokenItems, topItems } from './items';
+import { tokenItems } from './tokens';
 
-type SidebarClientProps = {
+type TokenManagementClientProps = {
   queryKey: QueryKey;
-  role: 'admin' | 'issuer' | 'user';
 };
 
-export function SidebarClient({ queryKey, role }: SidebarClientProps) {
+export function TokenManagementClient({ queryKey }: TokenManagementClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getSidebarAssets,
@@ -55,27 +50,13 @@ export function SidebarClient({ queryKey, role }: SidebarClientProps) {
   }, [] as NavItem[]);
 
   return (
-    <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
-      <SidebarHeader>
-        <NavHeader />
-      </SidebarHeader>
-      <SidebarContent>
-        <TokenDesignerButton />
-        <NavMain items={topItems} />
-        <NavMain
-          items={[
-            {
-              groupTitle: 'Token management',
-              items: processedTokenItems,
-            },
-          ]}
-        />
-        <NavMain items={bottomItems} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavFooter role={role} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <NavMain
+      items={[
+        {
+          groupTitle: 'Token management',
+          items: processedTokenItems,
+        },
+      ]}
+    />
   );
 }

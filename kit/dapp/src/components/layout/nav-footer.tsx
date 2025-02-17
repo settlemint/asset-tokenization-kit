@@ -1,3 +1,4 @@
+'use client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
@@ -13,14 +15,11 @@ import { usePathname } from 'next/navigation';
 const menuItemStyles =
   'flex items-center justify-between px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
-interface NavFooterProps {
-  role: 'admin' | 'issuer' | 'user';
-}
-
-export function NavFooter({ role }: NavFooterProps) {
+export function NavFooter() {
+  const { data } = authClient.useSession();
   const pathname = usePathname();
 
-  if (!['admin', 'issuer'].includes(role)) {
+  if (!['admin', 'issuer'].includes(data?.user.role ?? 'user')) {
     return null;
   }
 
