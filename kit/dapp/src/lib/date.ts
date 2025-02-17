@@ -1,3 +1,4 @@
+import type { CollateralProofValidityDuration } from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
 import { format, formatDistance, formatRelative, fromUnixTime, parseISO } from 'date-fns';
 
 const NUMERIC_REGEX = /^\d+$/;
@@ -6,8 +7,8 @@ const NUMERIC_REGEX = /^\d+$/;
  * Options for date formatting
  */
 export interface DateFormatOptions {
-  /** Format type: absolute (default), relative, or distance */
-  readonly type?: 'absolute' | 'relative' | 'distance';
+  /** Format type: absolute (default), relative, distance, or unix */
+  readonly type?: 'absolute' | 'relative' | 'distance' | 'unixSeconds';
   /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
   readonly formatStr?: string;
 }
@@ -43,8 +44,34 @@ export function formatDate(date: string | Date, options: DateFormatOptions = {})
       return formatRelative(dateObj, new Date());
     }
 
+    if (type === 'unixSeconds') {
+      return (dateObj.getTime() / 1000).toString();
+    }
+
     return format(dateObj, formatStr);
   } catch {
     return 'Invalid Date';
+  }
+}
+
+/**
+ * Converts CollateralProofValidityDuration enum values to seconds
+ * @param duration - The duration value from CollateralProofValidityDuration enum
+ * @returns The duration in seconds
+ */
+export function convertDurationToSeconds(duration: keyof typeof CollateralProofValidityDuration): number {
+  switch (duration) {
+    case 'OneHour':
+      return 60 * 60;
+    case 'OneDay':
+      return 24 * 60 * 60;
+    case 'OneWeek':
+      return 7 * 24 * 60 * 60;
+    case 'OneMonth':
+      return 30 * 24 * 60 * 60;
+    case 'OneYear':
+      return 365 * 24 * 60 * 60;
+    default:
+      return 365 * 24 * 60 * 60;
   }
 }

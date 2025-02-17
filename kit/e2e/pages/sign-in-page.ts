@@ -12,7 +12,8 @@ export class SignInPage extends BasePage {
     await this.page.getByLabel('Email').fill(options.email);
     await this.page.getByLabel('Password').fill(options.password);
     await this.page.getByRole('button', { name: 'Sign in' }).click();
-    await expect(this.page.getByText(options.name)).toBeVisible();
+    await this.page.waitForURL('**/admin');
+    await expect(this.page.locator('div.grid span.truncate.font-semibold', { hasText: options.name })).toBeVisible();
   }
 
   async signInAsAdmin(options: { email: string; password: string; name: string; pincode?: string }) {

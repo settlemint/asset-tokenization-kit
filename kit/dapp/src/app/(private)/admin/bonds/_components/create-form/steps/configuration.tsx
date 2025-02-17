@@ -33,7 +33,7 @@ export function Configuration() {
               .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
               .map((coin) => ({
                 label: `${coin.name} (${coin.symbol})`,
-                value: coin.symbol,
+                value: coin.id,
               }))}
           />
           <AssetFormInput control={control} name="faceValue" label="Face value" type="number" />
