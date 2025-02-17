@@ -1,5 +1,6 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { UserUnblockedEvent } from '../../../generated/schema';
+import { AssetBalance, UserUnblockedEvent } from '../../../generated/schema';
+import { assetBalanceId } from '../../fetch/balance';
 import { EventName } from '../../utils/enums';
 
 export function userUnblockedEvent(
@@ -16,5 +17,14 @@ export function userUnblockedEvent(
   event.sender = sender;
   event.user = user;
   event.save();
+
+  // Update the user's asset balance blocked status
+  const balanceId = assetBalanceId(emitter, user);
+  const balance = AssetBalance.load(balanceId);
+  if (balance !== null) {
+    balance.blocked = false;
+    balance.save();
+  }
+
   return event;
 }

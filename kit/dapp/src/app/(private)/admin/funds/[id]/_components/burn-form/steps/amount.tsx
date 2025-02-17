@@ -1,9 +1,10 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
-import type { BurnFundFormType } from '../schema';
+import type { BurnFormType } from '../schema';
 
-export function Amount() {
-  const { control } = useFormContext<BurnFundFormType>();
+export function Amount({ balance }: { balance: number }) {
+  const { control } = useFormContext<BurnFormType>();
 
   return (
     <div className="space-y-6">
@@ -16,7 +17,16 @@ export function Amount() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput control={control} name="amount" label="Amount" type="number" min={1} defaultValue={1} />
+        <AssetFormInput
+          control={control}
+          name="amount"
+          label="Amount"
+          type="number"
+          min={1}
+          defaultValue={1}
+          max={balance}
+          description={`You have ${formatNumber(balance)} in your wallet.`}
+        />
       </div>
     </div>
   );

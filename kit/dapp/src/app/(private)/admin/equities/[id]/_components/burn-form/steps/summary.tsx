@@ -1,11 +1,15 @@
+import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { BurnEquityFormType } from '../schema';
+import type { Address } from 'viem';
+import type { BurnFormType } from '../schema';
 
-export function Summary() {
-  const { control } = useFormContext<BurnEquityFormType>();
+export function Summary({ address, decimals }: { address: Address; decimals: number }) {
+  const { control } = useFormContext<BurnFormType>();
   const values = useWatch({
     control: control,
   });
@@ -13,9 +17,9 @@ export function Summary() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm Burn</h2>
+        <h2 className="font-semibold text-base">Review and confirm Mint</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details of your burn before proceeding. Ensure the recipient and amount are correct.
+          Verify the details of your mint before proceeding. Ensure the recipient and amount are correct.
         </p>
       </div>
 
@@ -26,18 +30,20 @@ export function Summary() {
               <DollarSign className="h-3 w-3 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm">Asset Basics</h3>
-              <p className="text-muted-foreground text-xs">Basic asset information and settings.</p>
+              <h3 className="font-semibold text-sm">Action details</h3>
+              <p className="text-muted-foreground text-xs">Details of the action you are about to perform.</p>
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Address</dt>
-              <dd className="font-medium text-sm">{values.from}</dd>
+              <dt className="text-muted-foreground text-sm">Asset</dt>
+              <dd className="font-medium text-sm">
+                <EvmAddress address={address} />
+              </dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{values.amount}</dd>
+              <dd className="font-medium text-sm">{formatNumber(values.amount ?? 0)}</dd>
             </div>
           </dl>
         </div>
@@ -52,6 +58,9 @@ export function Summary() {
               <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
             </div>
           </div>
+
+          <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField
             control={control}

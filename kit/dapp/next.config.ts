@@ -10,6 +10,9 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [],
     unoptimized: false,

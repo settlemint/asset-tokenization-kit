@@ -1,4 +1,3 @@
-import { UpdateCollateralButton } from '@/app/(private)/admin/stablecoins/[id]/_components/update-collateral-form/button';
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
@@ -16,10 +15,12 @@ import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { BurnTokensButton } from './_components/burn-form/button';
+import { BurnButton } from './_components/burn-form/button';
 import { getStableCoinTitle } from './_components/data';
-import { MintTokensButton } from './_components/mint-form/button';
-import { PauseTokensButton } from './_components/pause-form/button';
+import { MintButton } from './_components/mint-form/button';
+import { PauseButton } from './_components/pause-form/button';
+import { UpdateCollateralButton } from './_components/update-collateral-form/button';
+
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
@@ -88,6 +89,9 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
   const { id } = await params;
   const stableCoin = await getStableCoinTitle(id);
 
+  const hasCollateralAvailable = Number(stableCoin?.collateral ?? 0) > Number(stableCoin?.totalSupply ?? 0);
+  const collateralAvailable = Number(stableCoin?.collateral ?? 0) - Number(stableCoin?.totalSupply ?? 0);
+
   return (
     <div>
       <PageHeader
@@ -107,29 +111,32 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="default">
-                Mint tokens
+                Manage Stablecoin
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <MintTokensButton
+                <MintButton
                   address={id as Address}
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}
                   decimals={stableCoin.decimals}
+                  disabled={!hasCollateralAvailable}
+                  collateralAvailable={collateralAvailable}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <BurnTokensButton
+                <BurnButton
                   address={id as Address}
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}
                   decimals={stableCoin.decimals}
+                  balance={Number(stableCoin.holders.length > 0 ? (stableCoin.holders[0].value ?? 0) : 0)}
                 />
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="dropdown-menu-item">
-                <PauseTokensButton
+                <PauseButton
                   address={id as Address}
                   name={stableCoin.name}
                   symbol={stableCoin.symbol}

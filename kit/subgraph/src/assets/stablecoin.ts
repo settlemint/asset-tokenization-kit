@@ -166,6 +166,7 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.balanceExact = toBalance.valueExact;
     toPortfolioStats.save();
 
+    assetStats.transfers = assetStats.transfers + 1;
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
 

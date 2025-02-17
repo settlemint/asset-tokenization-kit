@@ -1,9 +1,9 @@
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import { assetConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { getAssetsWidgetData } from '../../common/assets/data';
-import { AssetsSupplySkeleton } from './assets-supply-chart-skeleton';
 import { AssetsSupplyClient } from './assets-supply-client';
 
 export async function AssetsSupply() {
@@ -23,7 +23,7 @@ export async function AssetsSupply() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetsSupplySkeleton />}>
+      <Suspense fallback={<ChartSkeleton title="Distribution" variant="loading" />}>
         <AssetsSupplyClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>

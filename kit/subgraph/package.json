@@ -9,7 +9,7 @@
   },
   "scripts": {
     "codegen:graph": "settlemint scs subgraph codegen",
-    "build": "graph build --ipfs=https://ipfs.network.thegraph.com subgraph.yaml | tee subgraph-output.txt",
+    "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
     "deploy:local": "bash graph-local-deploy.sh",
     "deploy:remote": "bash graph-remote-deploy.sh",
     "format:biome": "biome format --write ."

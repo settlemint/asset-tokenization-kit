@@ -1,9 +1,10 @@
 'use client';
-import { revalidatePaths } from '@/app/_actions/revalidate';
+
 import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
+import { revalidatePaths } from '@/lib/revalidate';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import type { QueryKey } from '@tanstack/react-query';
@@ -60,7 +61,8 @@ export type AssetFormProps<
 > = {
   children: FormStepElement<S> | FormStepElement<S>[]; // Accepts a single component or an array of components
   storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
-  resolverAction: Resolver<Infer<S>, FormContext>;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  resolverAction: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
   onClose?: () => void;
   /**
    * Configuration for cache invalidation after successful form submission.
@@ -186,13 +188,21 @@ export function AssetForm<
     setIsValidating(true);
     // Mark fields as touched
     for (const field of fieldsToValidate) {
-      const value = form.getValues(field as Path<Infer<S>>);
-      form.setValue(field as Path<Infer<S>>, value, { shouldValidate: true, shouldTouch: true });
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const value = form.getValues(field as Path<S extends Schema ? Infer<S> : any>);
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      form.setValue(field as Path<S extends Schema ? Infer<S> : any>, value, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
     }
 
     // Validate fields
     const results = await Promise.all(
-      fieldsToValidate.map((field) => form.trigger(field as Path<Infer<S>>, { shouldFocus: true }))
+      fieldsToValidate.map((field) =>
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        form.trigger(field as Path<S extends Schema ? Infer<S> : any>, { shouldFocus: true })
+      )
     );
 
     if (results.every(Boolean)) {
@@ -221,7 +231,27 @@ export function AssetForm<
                 {/* Step indicator */}
                 {totalSteps > 1 && <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />}
                 {/* Current step content */}
-                <div className="min-h-[400px]">{Array.isArray(children) ? children[currentStep] : children}</div>
+                <div className="min-h-[400px]">
+                  {Array.isArray(children) ? children[currentStep] : children}
+                  {/* {process.env.NODE_ENV === 'development' && (
+                    <div>
+                      {JSON.stringify(
+                        {
+                          errors: form.formState.errors,
+                          isDirty: form.formState.isDirty,
+                          dirtyFields: form.formState.dirtyFields,
+                          touchedFields: form.formState.touchedFields,
+                          isSubmitting: form.formState.isSubmitting,
+                          isSubmitted: form.formState.isSubmitted,
+                          isValid: form.formState.isValid,
+                        },
+                        null,
+                        2
+                      )}
+                    </div>
+                  )} */}
+                </div>
+
                 {/* Navigation buttons */}
                 <AssetFormButton
                   currentStep={currentStep}

@@ -43,6 +43,12 @@ const handleServerError = (error: Error) => {
     return createErrorResponse('VALIDATION_ERROR', 'Invalid input data', { details: error.errors });
   }
 
+  // Handle invalid challenge response error
+  if (error instanceof Error && error.message.includes('Invalid challenge response')) {
+    devLog.error('Server action invalid challenge response error:', error);
+    return createErrorResponse('INVALID_CHALLENGE_RESPONSE', 'Invalid challenge response');
+  }
+
   // Log unexpected errors in development
   devLog.error('Server action error:', error);
 

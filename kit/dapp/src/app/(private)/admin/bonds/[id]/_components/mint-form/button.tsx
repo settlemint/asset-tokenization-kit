@@ -5,21 +5,28 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { MintBondForm } from './form';
+import { MintForm } from './form';
 
-export function MintTokensButton({
+export function MintButton({
   address,
   name,
   symbol,
   decimals,
-}: { name: string; symbol: string; address: Address; decimals: number }) {
+  disabled,
+}: {
+  name: string;
+  symbol: string;
+  address: Address;
+  decimals: number;
+  disabled?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
-          Mint tokens
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start" disabled={disabled}>
+          {disabled ? 'Mint: No collateral available' : 'Mint tokens'}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
@@ -31,10 +38,12 @@ export function MintTokensButton({
             Easily mint your {name} ({symbol}) tokens by selecting a recipient and specifying the amount.
           </SheetDescription>
         </SheetHeader>
-        <MintBondForm
+        <MintForm
           address={address}
+          name={name}
+          symbol={symbol}
           decimals={decimals}
-          assetConfig={assetConfig.bond}
+          assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
         />
       </SheetContent>

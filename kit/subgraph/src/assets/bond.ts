@@ -21,6 +21,7 @@ import { fetchAssetBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
+import { accountActivityEvent, } from './events/accountactivity';
 import { approvalEvent } from './events/approval';
 import { bondMaturedEvent } from './events/bondmatured';
 import { bondRedeemedEvent } from './events/bondredeemed';
@@ -38,11 +39,10 @@ import { underlyingAssetWithdrawnEvent } from './events/underlyingassetwithdrawn
 import { unpausedEvent } from './events/unpaused';
 import { userBlockedEvent } from './events/userblocked';
 import { userUnblockedEvent } from './events/userunblocked';
+import { fetchAssetActivity } from './fetch/assets';
 import { fetchBond } from './fetch/bond';
 import { newAssetStatsData } from './stats/assets';
 import { newPortfolioStatsData } from './stats/portfolio';
-import { fetchAssetActivity } from './fetch/assets';
-import { accountActivityEvent,  } from './events/accountactivity';
 
 export function handleTransfer(event: Transfer): void {
   const bond = fetchBond(event.address);
@@ -172,6 +172,7 @@ export function handleTransfer(event: Transfer): void {
     toPortfolioStats.balanceExact = toBalance.valueExact;
     toPortfolioStats.save();
 
+    assetStats.transfers = assetStats.transfers + 1;
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;

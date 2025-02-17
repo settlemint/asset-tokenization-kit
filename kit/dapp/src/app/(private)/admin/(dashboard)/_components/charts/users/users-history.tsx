@@ -1,8 +1,8 @@
+import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { getRecentUsers } from './data';
-import { UsersHistorySkeleton } from './users-history-chart-skeleton';
 import { UsersHistoryClient } from './users-history-client';
 
 export async function UsersHistory() {
@@ -15,7 +15,7 @@ export async function UsersHistory() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<UsersHistorySkeleton />}>
+      <Suspense fallback={<ChartSkeleton title="Users" variant="loading" />}>
         <UsersHistoryClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>

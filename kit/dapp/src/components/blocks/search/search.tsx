@@ -1,14 +1,15 @@
 'use client';
+import { SearchIcon } from '@/components/ui/animated-icons/search';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
 import { assetConfig } from '@/lib/config/assets';
+import { sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
 import { getAddress, isHex } from 'viem';
@@ -39,25 +40,6 @@ const SearchAssets = theGraphGraphqlStarterkits(`
     }
   }
 `);
-
-/**
- * Sanitizes a search term for safe use in database queries
- * @param search The raw search term
- * @returns The sanitized search term
- */
-function sanitizeSearchTerm(search: string): string {
-  // Remove any non-alphanumeric characters except spaces and common symbols
-  const cleaned = search
-    .trim()
-    // Allow letters, numbers, spaces, and common symbols
-    .replace(/[^a-zA-Z0-9\s@._-]/g, '')
-    // Replace multiple spaces with single space
-    .replace(/\s+/g, ' ')
-    // Escape special characters used in LIKE patterns
-    .replace(/[%_]/g, '\\$&');
-
-  return cleaned;
-}
 
 export const Search = () => {
   const form = useForm({
