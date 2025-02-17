@@ -36,9 +36,6 @@ export default async function StableCoinDetailPage({
         <DetailsGridItem label="Total supply" info="The total supply of the token">
           {formatNumber(asset.totalSupply, { token: asset.symbol })}
         </DetailsGridItem>
-        <DetailsGridItem label="# Token Holders">
-          {formatNumber(asset.amountOfHolders, { decimals: 0 })}
-        </DetailsGridItem>
         <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
           {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
         </DetailsGridItem>

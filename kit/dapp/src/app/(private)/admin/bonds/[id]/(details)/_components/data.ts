@@ -14,6 +14,9 @@ const BondDetails = theGraphGraphqlStarterkits(
       underlyingAsset
       redeemedAmount
       paused
+      creator {
+        id
+      }
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {
         valueExact
       }

@@ -6,12 +6,15 @@ const CryptocurrencyDetails = theGraphGraphqlStarterkits(
   query Cryptocurrency($id: ID!) {
     cryptoCurrency(id: $id) {
     id
-    name
-    symbol
-    decimals
-    totalSupply
-    totalSupplyExact
-    holders(first: 5, orderBy: valueExact, orderDirection: desc) {
+      name
+      symbol
+      decimals
+      totalSupply
+      totalSupplyExact
+      creator {
+        id
+      }
+      holders(first: 5, orderBy: valueExact, orderDirection: desc) {
         valueExact
       }
     }

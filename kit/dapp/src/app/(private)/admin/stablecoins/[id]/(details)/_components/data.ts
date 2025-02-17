@@ -13,7 +13,6 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
       totalSupplyExact
       collateral
       isin
-      amountOfHolders
       lastCollateralUpdate
       liveness
       creator{

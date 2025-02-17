@@ -31,9 +31,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.lastActivity = BigInt.zero();
     stableCoin.creator = Address.zero();
 
-    // Stats
-    stableCoin.amountOfHolders = BigInt.zero();
-
     // StableCoin-specific fields
     stableCoin.isin = isin.reverted ? '' : isin.value;
     stableCoin.collateralExact = BigInt.zero();

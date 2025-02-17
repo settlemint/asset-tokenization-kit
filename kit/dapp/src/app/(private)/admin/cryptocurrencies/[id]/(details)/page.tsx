@@ -25,22 +25,13 @@ export default async function CryptocurrencyDetailPage({
         <DetailsGridItem label="Contract address">
           <EvmAddress address={asset.id} prettyNames={false} hoverCard={false} copyToClipboard={true} />
         </DetailsGridItem>
-        {/*
-        Waiting for the subgraph to be updated with the creator field
         <DetailsGridItem label="Creator">
-          <EvmAddress address={asset.creator} hoverCard={false}  copyToClipboard={true} />
+          <EvmAddress address={asset.creator.id} hoverCard={false} copyToClipboard={true} />
         </DetailsGridItem>
-        */}
         <DetailsGridItem label="Decimals">{asset.decimals}</DetailsGridItem>
         <DetailsGridItem label="Total supply" info="The total supply of the token">
           {formatNumber(asset.totalSupply, { token: asset.symbol })}
         </DetailsGridItem>
-        {/*
-        Waiting for the subgraph to be updated with the creator field
-        <DetailsGridItem label="# Token Holders">
-          {formatNumber(asset.amountOfHolders, { decimals: 0 })}
-        </DetailsGridItem>
-        */}
         <DetailsGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
           {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
         </DetailsGridItem>
