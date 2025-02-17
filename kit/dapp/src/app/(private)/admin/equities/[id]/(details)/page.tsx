@@ -22,7 +22,7 @@ export default async function EquityDetailPage({
       <DetailGrid>
         <DetailsGridItem label="Name">{asset.name}</DetailsGridItem>
         <DetailsGridItem label="Symbol">{asset.symbol}</DetailsGridItem>
-        <DetailsGridItem label="ISIN">{asset.isin}</DetailsGridItem>
+        <DetailsGridItem label="ISIN">{asset.isin ?? '-'}</DetailsGridItem>
         <DetailsGridItem label="Contract address">
           <EvmAddress address={asset.id} prettyNames={false} hoverCard={false} copyToClipboard={true} />
         </DetailsGridItem>

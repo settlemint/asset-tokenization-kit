@@ -1,3 +1,4 @@
+import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,9 +30,23 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <DetailsGridItem label="Name">{myAsset.asset.name}</DetailsGridItem>
         <DetailsGridItem label="Symbol">{myAsset.asset.symbol}</DetailsGridItem>
         <DetailsGridItem label="Type">{formatAssetType(myAsset.asset.type)}</DetailsGridItem>
+        {myAsset.asset.__typename !== 'CryptoCurrency' && (
+          <DetailsGridItem label="Status">
+            <ActivePill paused={myAsset.asset.paused} />
+          </DetailsGridItem>
+        )}
+        {myAsset.asset.__typename === 'Bond' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.bondIsin ?? '-'}</DetailsGridItem>
+        )}
+        {myAsset.asset.__typename === 'Equity' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.equityIsin ?? '-'}</DetailsGridItem>
+        )}
+        {myAsset.asset.__typename === 'Fund' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.fundIsin ?? '-'}</DetailsGridItem>
+        )}
         {myAsset.asset.__typename === 'StableCoin' && (
           <>
-            <DetailsGridItem label="ISIN">{myAsset.asset.isin}</DetailsGridItem>
+            <DetailsGridItem label="ISIN">{myAsset.asset.stableCoinIsin ?? '-'}</DetailsGridItem>
             <DetailsGridItem label="Contract address">
               <div className="flex items-center">
                 <EvmAddress address={myAsset.asset.id}>

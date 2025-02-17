@@ -1,4 +1,5 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const UserFragment = hasuraGraphql(`
@@ -16,6 +17,7 @@ const UserFragment = hasuraGraphql(`
     updated_at
     image
     kyc_verified
+    last_login
   }
 `);
 
@@ -30,7 +32,29 @@ const UserQuery = hasuraGraphql(
   [UserFragment]
 );
 
-export type DetailUser = FragmentOf<typeof UserFragment>;
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserData($accountId: ID!, $senderIdFilter: Bytes!) {
+    account(id: $accountId) {
+      id
+      lastActivity
+      balances {
+        id
+      }
+    }
+    assetEvents(orderBy: timestamp, orderDirection: desc, where: { sender_: { id: $senderIdFilter } }) {
+      id
+    }
+  }
+`,
+  []
+);
+
+export type DetailUser = FragmentOf<typeof UserFragment> & {
+  lastActivity: string | undefined;
+  assetCount: number;
+  transactionCount: number;
+};
 
 export async function getUser(id: string): Promise<DetailUser> {
   const result = await hasuraClient.request(UserQuery, { id });
@@ -38,5 +62,14 @@ export async function getUser(id: string): Promise<DetailUser> {
   if (!user) {
     throw new Error(`User with id ${id} not found`);
   }
-  return user;
+  const userData = await theGraphClientStarterkits.request(UserActivity, {
+    accountId: user.wallet,
+    senderIdFilter: user.wallet,
+  });
+  return {
+    ...user,
+    lastActivity: userData.account?.lastActivity,
+    assetCount: userData.account?.balances.length ?? 0,
+    transactionCount: userData.assetEvents.length,
+  };
 }
