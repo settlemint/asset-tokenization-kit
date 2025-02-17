@@ -1,10 +1,9 @@
 'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
-import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
+import { createTimeSeries } from '@/lib/charts';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import { eachDayOfInterval, format, isSameDay, subDays } from 'date-fns';
-import { useMemo } from 'react';
+import {} from 'date-fns';
 import { getTransactionsHistoryData } from './data';
 
 interface TransactionsHistoryClientProps {
@@ -25,37 +24,27 @@ export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClien
     refetchInterval: 1000 * 5,
   });
 
-  const chartData = useMemo(() => {
-    if (!data || !data.getProcessedTransactions?.records) {
-      return [];
-    }
-
-    const today = new Date();
-    const dates = eachDayOfInterval({
-      start: subDays(today, 6),
-      end: today,
-    });
-
-    return dates.map((date) => ({
-      date: format(date, 'EEE, MMM d'),
-      transactions:
-        data.getProcessedTransactions?.records.filter(
-          (transaction) => transaction.createdAt && isSameDay(new Date(transaction.createdAt), date)
-        ).length ?? 0,
-    }));
-  }, [data]);
-
-  if (chartData.length === 0) {
-    return <ChartSkeleton title="Transactions" variant="noData" />;
-  }
+  const formatted =
+    data.getProcessedTransactions?.records
+      .filter((record) => record.createdAt)
+      .map((record) => ({
+        timestamp: new Date(record.createdAt!).getTime() * 1000,
+        transactions: 1,
+      })) ?? [];
 
   return (
     <AreaChartComponent
-      data={chartData}
+      data={createTimeSeries(formatted, ['transactions'], {
+        intervalType: 'day',
+        intervalLength: 7,
+        granularity: 'day',
+        aggregation: 'count',
+      })}
       config={TRANSACTIONS_CHART_CONFIG}
       title="Transactions"
       description="Showing transactions over the last 7 days"
-      xAxis={{ key: 'date' }}
+      xAxis={{ key: 'timestamp' }}
+      showYAxis={true}
     />
   );
 }

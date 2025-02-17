@@ -30,6 +30,7 @@ export function TotalSupplyClient({ queryKey, asset }: TotalSupplyClientProps) {
     intervalType: 'day',
     intervalLength: 1,
     total: true,
+    aggregation: 'first',
   });
 
   return (

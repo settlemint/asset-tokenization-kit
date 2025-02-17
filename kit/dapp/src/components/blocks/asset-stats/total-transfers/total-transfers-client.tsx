@@ -30,6 +30,7 @@ export function TotalTransfersClient({ queryKey, asset }: TotalTransfersClientPr
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (

@@ -34,6 +34,7 @@ export function TotalSupplyChangedClient({ queryKey, asset }: TotalSupplyChanged
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (
