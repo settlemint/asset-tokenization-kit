@@ -137,6 +137,8 @@ export function AssetForm<
         onClose?.();
       },
       onError: (data) => {
+        // biome-ignore lint/suspicious/noConsole: debug purposes
+        console.error(data);
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           const serverErrorWithContext = data.error.serverError as
