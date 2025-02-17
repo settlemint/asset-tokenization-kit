@@ -15,6 +15,7 @@ export const user = pgTable('user', {
   normalizedEmail: text('normalized_email').unique(),
   wallet: text('wallet').notNull().unique(),
   kycVerifiedAt: timestamp('kyc_verified'),
+  lastLoginAt: timestamp('last_login'),
 });
 
 export const session = pgTable('session', {
@@ -29,7 +30,6 @@ export const session = pgTable('session', {
     .notNull()
     .references(() => user.id),
   impersonatedBy: text('impersonated_by'),
-  activeOrganizationId: text('active_organization_id'),
 });
 
 export const account = pgTable('account', {
