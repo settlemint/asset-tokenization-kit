@@ -17,7 +17,7 @@ interface AdminUser {
 
 export const signUpData: SignUpData = {
   name: 'Test User',
-  email: `test-${date}${randomValue}@settlemint.com`,
+  email: `test-${date}-${randomValue}@settlemint.com`,
   password: 'TestPassword123!',
   pincode: '123456',
 } as const;

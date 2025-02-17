@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test';
 import { BasePage } from './base-page';
 
 export class AdminPage extends BasePage {
@@ -19,8 +20,6 @@ export class AdminPage extends BasePage {
     }
 
     await this.page.waitForSelector('table[aria-labelledby*="react-day-picker"]');
-
-    // First locate the table cell containing our target date
     const dateCell = this.page.locator('td[role="presentation"]', {
       has: this.page.locator(`button:text("${day}")`),
     });
@@ -28,7 +27,13 @@ export class AdminPage extends BasePage {
     await dateCell.locator('button').click();
   }
 
-  async createAsset(options: {
+  private normalizeNumber(str: string): string {
+    const withoutCommas = str.replace(/,/g, '');
+    const [wholeNumber] = withoutCommas.split('.');
+    return wholeNumber;
+  }
+
+  async createBond(options: {
     assetType: string;
     name: string;
     symbol: string;
@@ -65,5 +70,126 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('button', { name: 'Go to next step' }).click();
     await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
     await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async createCryptocurrency(options: {
+    assetType: string;
+    name: string;
+    symbol: string;
+    initialSupply: string;
+    pincode: string;
+  }) {
+    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
+    await this.page.getByRole('menuitem', { name: options.assetType }).click();
+    await this.page.getByLabel('Name').fill(options.name);
+    await this.page.getByLabel('Symbol').fill(options.symbol);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.getByLabel('Initial supply').fill(options.initialSupply);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async createEquity(options: {
+    assetType: string;
+    name: string;
+    symbol: string;
+    isin: string;
+    equityClass: string;
+    equityCategory: string;
+    pincode: string;
+  }) {
+    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
+    await this.page.getByRole('menuitem', { name: options.assetType }).click();
+    await this.page.getByLabel('Name').fill(options.name);
+    await this.page.getByLabel('Symbol').fill(options.symbol);
+    await this.page.getByLabel('ISIN').fill(options.isin);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.getByLabel('Equity class').fill(options.equityClass);
+    await this.page.getByLabel('Equity category').fill(options.equityCategory);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async createFund(options: {
+    assetType: string;
+    name: string;
+    symbol: string;
+    isin: string;
+    fundCategory: string;
+    fundClass: string;
+    managementFee: string;
+    pincode: string;
+  }) {
+    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
+    await this.page.getByRole('menuitem', { name: options.assetType }).click();
+    await this.page.getByLabel('Name').fill(options.name);
+    await this.page.getByLabel('Symbol').fill(options.symbol);
+    await this.page.getByLabel('ISIN').fill(options.isin);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.getByRole('combobox', { name: 'Fund category' }).click();
+    await this.page.getByRole('option', { name: options.fundCategory }).click();
+    await this.page.getByRole('combobox', { name: 'Fund class' }).click();
+    await this.page.getByRole('option', { name: options.fundClass }).click();
+    await this.page.getByLabel('Management fee').fill(options.managementFee);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async createStablecoin(options: {
+    assetType: string;
+    name: string;
+    symbol: string;
+    isin: string;
+    collateralThreshold: string;
+    collateralProofValidityDuration: string;
+    pincode: string;
+  }) {
+    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
+    await this.page.getByRole('menuitem', { name: options.assetType }).click();
+    await this.page.getByLabel('Name').fill(options.name);
+    await this.page.getByLabel('Symbol').fill(options.symbol);
+    await this.page.getByLabel('ISIN').fill(options.isin);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.getByLabel('Collateral threshold').fill(options.collateralThreshold);
+    await this.page.getByRole('combobox', { name: 'Collateral proof validity duration' }).click();
+    await this.page.getByRole('option', { name: options.collateralProofValidityDuration }).click();
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {
+    await this.page.getByRole('button', { name: options.sidebarAssetTypes }).click();
+    await this.page
+      .locator('a[data-sidebar="menu-sub-button"]', {
+        hasText: 'View all',
+      })
+      .click();
+    await this.page.waitForSelector('table tbody');
+
+    const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
+      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+    });
+
+    const supplyColumnIndex = await this.page.locator('th', { hasText: 'Total Supply' }).evaluate((el) => {
+      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+    });
+
+    const row = this.page.locator('tbody tr', {
+      has: this.page.locator(`td:nth-child(${nameColumnIndex}) .flex`, { hasText: options.name }),
+    });
+
+    await row.waitFor();
+    const nameCell = row.locator(`td:nth-child(${nameColumnIndex}) .flex`);
+    const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex}) .flex`);
+
+    const actualName = await nameCell.textContent();
+    const actualTotalSupply = await totalSupplyCell.textContent();
+
+    expect(actualName?.trim()).toBe(options.name);
+    expect(this.normalizeNumber(actualTotalSupply?.trim() ?? '')).toBe(options.totalSupply);
   }
 }
