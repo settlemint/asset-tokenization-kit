@@ -1,6 +1,5 @@
 'use client';
-
-import type { ListUser } from '@/app/(private)/admin/users/(table)/_components/data';
+import type { DetailUser } from '@/app/(private)/admin/users/[id]/(details)/_components/data';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onComplete?: () => void }) {
+export function ChangeRoleAction({ user, onComplete }: { user: DetailUser; onComplete?: () => void }) {
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>(user.role || 'user');
   const [isLoading, setIsLoading] = useState(false);

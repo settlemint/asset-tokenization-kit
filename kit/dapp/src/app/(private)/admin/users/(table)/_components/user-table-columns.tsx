@@ -10,11 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatDate } from '@/lib/date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { BadgeCheck, BadgePlus, BadgeX, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
 import { type ComponentType, Suspense } from 'react';
 import { BanUserAction } from './actions/ban-user-action';
 import { ChangeRoleAction } from './actions/change-role-action';
+import { UpdateKycStatusAction } from './actions/update-kyc-status-action';
 
 const columnHelper = createColumnHelper<ListUser>();
 
@@ -70,6 +72,7 @@ export const columns = [
         </DataTableColumnCell>
       );
     },
+    enableColumnFilter: true,
   }),
   columnHelper.accessor('banned', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
@@ -89,7 +92,7 @@ export const columns = [
   columnHelper.accessor('kyc_verified', {
     header: ({ column }) => <DataTableColumnHeader column={column}>KYC Status</DataTableColumnHeader>,
     cell: ({ getValue }) => {
-      const verified = getValue();
+      const verified = getValue() as string | undefined;
       const status = verified ? 'verified' : 'notVerified';
       const Icon = icons[status];
       return (
@@ -101,13 +104,28 @@ export const columns = [
     },
     enableColumnFilter: false,
   }),
+  columnHelper.accessor('lastActivity', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
+    cell: ({ getValue }) => {
+      const lastActivity = getValue();
+      return (
+        <DataTableColumnCell>{lastActivity ? formatDate(lastActivity, { type: 'distance' }) : '-'}</DataTableColumnCell>
+      );
+    },
+    enableColumnFilter: false,
+  }),
   columnHelper.display({
     id: 'actions',
     header: () => '',
     cell: ({ row }) => (
       <DataTableRowActions detailUrl={`/admin/users/${row.original.id}`}>
-        <BanUserAction user={row.original} />
-        <ChangeRoleAction user={row.original} />
+        {({ close }) => (
+          <>
+            <BanUserAction user={row.original} onComplete={close} />
+            <ChangeRoleAction user={row.original} onComplete={close} />
+            <UpdateKycStatusAction user={row.original} onComplete={close} />
+          </>
+        )}
       </DataTableRowActions>
     ),
     meta: {

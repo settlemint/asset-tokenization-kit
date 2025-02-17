@@ -50,6 +50,7 @@ interface DataTableProps<TData> {
   rowActions?: DataTableRowAction<TData>[];
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
+  initialSorting?: SortingState;
 }
 
 declare module '@tanstack/table-core' {
@@ -84,9 +85,10 @@ export function DataTable<TData>({
   toolbar,
   pagination,
   rowActions,
+  initialSorting,
 }: DataTableProps<TData>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
