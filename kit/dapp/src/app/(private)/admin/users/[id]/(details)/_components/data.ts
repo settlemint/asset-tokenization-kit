@@ -42,10 +42,13 @@ const UserActivity = theGraphGraphqlStarterkits(
         value
       }
     }
-    stats: portfolioStats_collection(interval: hour, where: { account_: { id: $id } }, first: 1) {
+    stats: portfolioStats_collection(interval: hour, where: { account_: { id: $id } }, first: 5) {
       totalBalance
     }
-    assetEvents(orderBy: timestamp, orderDirection: desc, where: { emitter_: { id: $id } }) {
+    transferEvents(orderBy: timestamp, orderDirection: desc, where: { from_: { id: $id } }) {
+      id
+    }
+    mintEvents(orderBy: timestamp, orderDirection: desc, where: { sender_: { id: $id } }) {
       id
     }
   }
@@ -74,6 +77,6 @@ export async function getUser(id: string): Promise<DetailUser> {
     lastActivity: userData.accounts[0].lastActivity,
     totalBalance: userData.stats[0].totalBalance,
     assetCount: userData.stats.length,
-    transactionCount: userData.assetEvents.length,
+    transactionCount: userData.transferEvents.length + userData.mintEvents.length,
   };
 }
