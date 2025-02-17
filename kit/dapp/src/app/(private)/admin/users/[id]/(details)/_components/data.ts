@@ -34,21 +34,15 @@ const UserQuery = hasuraGraphql(
 
 const UserActivity = theGraphGraphqlStarterkits(
   `
-  query UserData($id: Bytes!) {
-    accounts(where: { id: $id }){
+  query UserData($accountId: ID!, $senderIdFilter: Bytes!) {
+    account(id: $accountId) {
       id
       lastActivity
       balances {
-        value
+        id
       }
     }
-    stats: portfolioStats_collection(interval: hour, where: { account_: { id: $id } }, first: 5) {
-      totalBalance
-    }
-    transferEvents(orderBy: timestamp, orderDirection: desc, where: { from_: { id: $id } }) {
-      id
-    }
-    mintEvents(orderBy: timestamp, orderDirection: desc, where: { sender_: { id: $id } }) {
+    assetEvents(orderBy: timestamp, orderDirection: desc, where: { sender_: { id: $senderIdFilter } }) {
       id
     }
   }
@@ -58,7 +52,6 @@ const UserActivity = theGraphGraphqlStarterkits(
 
 export type DetailUser = FragmentOf<typeof UserFragment> & {
   lastActivity: string | undefined;
-  totalBalance: string;
   assetCount: number;
   transactionCount: number;
 };
@@ -70,13 +63,13 @@ export async function getUser(id: string): Promise<DetailUser> {
     throw new Error(`User with id ${id} not found`);
   }
   const userData = await theGraphClientStarterkits.request(UserActivity, {
-    id: user.wallet,
+    accountId: user.wallet,
+    senderIdFilter: user.wallet,
   });
   return {
     ...user,
-    lastActivity: userData.accounts[0].lastActivity,
-    totalBalance: userData.stats[0].totalBalance,
-    assetCount: userData.stats.length,
-    transactionCount: userData.transferEvents.length + userData.mintEvents.length,
+    lastActivity: userData.account?.lastActivity,
+    assetCount: userData.account?.balances.length ?? 0,
+    transactionCount: userData.assetEvents.length,
   };
 }
