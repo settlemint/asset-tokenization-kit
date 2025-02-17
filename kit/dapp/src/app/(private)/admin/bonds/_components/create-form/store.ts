@@ -3,11 +3,11 @@
 import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/create-form/schema';
 import { handleChallenge } from '@/lib/challenge';
 import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
+import { formatDate } from '@/lib/date';
 import { db } from '@/lib/db';
 import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { getUnixTimestampSeconds } from '@/lib/timestamp';
 import { type Address, parseEther } from 'viem';
 import { CreateBondFormSchema } from './schema';
 
@@ -69,7 +69,7 @@ export const createBond = actionClient
         sender: user.wallet,
         decimals,
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: getUnixTimestampSeconds(maturityDate).toString(),
+        maturityDate: formatDate(maturityDate, { type: 'unixSeconds' }),
         underlyingAsset,
         cap: cap ? parseEther(cap.toString()).toString() : '0',
         name: assetName,
@@ -96,7 +96,7 @@ export const createBond = actionClient
         decimals,
         isin: isin ?? '',
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: getUnixTimestampSeconds(maturityDate).toString(),
+        maturityDate: formatDate(maturityDate, { type: 'unixSeconds' }),
         underlyingAsset,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',

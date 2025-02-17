@@ -6,8 +6,8 @@ const NUMERIC_REGEX = /^\d+$/;
  * Options for date formatting
  */
 export interface DateFormatOptions {
-  /** Format type: absolute (default), relative, or distance */
-  readonly type?: 'absolute' | 'relative' | 'distance';
+  /** Format type: absolute (default), relative, distance, or unix */
+  readonly type?: 'absolute' | 'relative' | 'distance' | 'unixSeconds';
   /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
   readonly formatStr?: string;
 }
@@ -41,6 +41,10 @@ export function formatDate(date: string | Date, options: DateFormatOptions = {})
 
     if (type === 'relative') {
       return formatRelative(dateObj, new Date());
+    }
+
+    if (type === 'unixSeconds') {
+      return (dateObj.getTime() / 1000).toString();
     }
 
     return format(dateObj, formatStr);
