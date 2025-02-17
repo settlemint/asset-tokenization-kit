@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { formatDate } from '@/lib/date';
 import { shortHex } from '@/lib/hex';
+import { formatNumber } from '@/lib/number';
 import { Ban, Check } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import { getUser } from './data';
@@ -35,10 +36,10 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
             )}
           </Badge>
         </DetailsGridItem>
-        <DetailsGridItem label="Created At">
+        <DetailsGridItem label="Created at">
           {formatDate(user.created_at as string, { type: 'distance' })}
         </DetailsGridItem>
-        <DetailsGridItem label="Verified At">
+        <DetailsGridItem label="Verified at">
           {user.kyc_verified ? formatDate(user.kyc_verified as string, { type: 'distance' }) : 'Not Verified'}
         </DetailsGridItem>
         <DetailsGridItem label="Wallet">
@@ -50,12 +51,14 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
             />
           </div>
         </DetailsGridItem>
-        <DetailsGridItem label="Token Supply">500</DetailsGridItem>
-        <DetailsGridItem label="Transactions">500</DetailsGridItem>
-        <DetailsGridItem label="Last Activity">
+        <DetailsGridItem label="Asset supply">{formatNumber(user.assetCount, { decimals: 0 })}</DetailsGridItem>
+        <DetailsGridItem label="Transactions">{formatNumber(user.transactionCount, { decimals: 0 })}</DetailsGridItem>
+        <DetailsGridItem label="Last activity">
           {user.lastActivity ? formatDate(user.lastActivity, { type: 'distance' }) : 'Never'}
         </DetailsGridItem>
-        <DetailsGridItem label="Last login">500</DetailsGridItem>
+        <DetailsGridItem label="Last login">
+          {user.last_login ? formatDate(user.last_login as string, { type: 'distance' }) : 'Never'}
+        </DetailsGridItem>
       </CardContent>
     </Card>
   );
