@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import type { HTMLAttributes, PropsWithChildren } from 'react';
+import { type HTMLAttributes, type ReactNode, useState } from 'react';
 
 const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
   variants: {
@@ -19,10 +19,15 @@ const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
   },
 });
 
+interface DataTableColumnCellRenderProps {
+  close: () => void;
+}
+
 interface DataTableColumnCellProps
-  extends HTMLAttributes<HTMLDivElement>,
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'children'>,
     VariantProps<typeof dataTableRowActionsVariants> {
   detailUrl?: string;
+  children?: ReactNode | undefined | ((renderProps: DataTableColumnCellRenderProps) => ReactNode);
 }
 
 export function DataTableRowActions({
@@ -31,7 +36,9 @@ export function DataTableRowActions({
   children,
   detailUrl,
   ...props
-}: PropsWithChildren<DataTableColumnCellProps>) {
+}: DataTableColumnCellProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (!children && !detailUrl) {
     return null;
   }
@@ -51,7 +58,7 @@ export function DataTableRowActions({
         </Button>
       )}
       {children && (
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -62,7 +69,7 @@ export function DataTableRowActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px] dark:bg-theme-accent-background ">
-            {children}
+            {typeof children === 'function' ? children({ close: () => setIsOpen(false) }) : children}
           </DropdownMenuContent>
         </DropdownMenu>
       )}

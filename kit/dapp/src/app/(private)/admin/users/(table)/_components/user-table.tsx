@@ -5,5 +5,13 @@ import { columns, icons } from './user-table-columns';
 export async function UserTable() {
   const users = await getUsers();
 
-  return <DataTable columns={columns} data={users} icons={icons} name="users" />;
+  return (
+    <DataTable
+      columns={columns}
+      data={users}
+      icons={icons}
+      name="users"
+      initialSorting={[{ id: 'name', desc: false }]}
+    />
+  );
 }
