@@ -1,4 +1,5 @@
 import { ChangeRoleAction } from '@/app/(private)/admin/users/(table)/_components/actions/change-role-action';
+import { UpdateKycStatusAction } from '@/app/(private)/admin/users/(table)/_components/actions/update-kyc-status-action';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
@@ -64,6 +65,7 @@ export default async function UserDetailLayout({ children, params }: LayoutProps
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
               <DropdownMenuItem asChild className="dropdown-menu-item">
                 <ChangeRoleAction user={user} />
+                <UpdateKycStatusAction user={user} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
