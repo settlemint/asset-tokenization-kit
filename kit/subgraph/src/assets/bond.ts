@@ -484,6 +484,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetActivity.frozenEventCount = assetActivity.frozenEventCount + 1;
   assetActivity.save();
 
+  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
+
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
@@ -512,6 +516,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
 
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);
   assetStats.unfrozen = toDecimals(event.params.amount, bond.decimals);
@@ -546,6 +554,10 @@ export function handleUserBlocked(event: UserBlocked): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
+  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
+  balance.blocked = true;
+  balance.save();
+
   log.info('Bond user blocked event: user={}, sender={}, bond={}', [
     user.id.toHexString(),
     sender.id.toHexString(),
@@ -564,6 +576,10 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   bond.lastActivity = event.block.timestamp;
   bond.save();
+
+  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
+  balance.blocked = false;
+  balance.save();
 
   log.info('Bond user unblocked event: user={}, sender={}, bond={}', [
     user.id.toHexString(),
