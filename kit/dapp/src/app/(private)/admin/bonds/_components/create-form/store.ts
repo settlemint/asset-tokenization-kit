@@ -3,6 +3,7 @@
 import { CreateBondOutputSchema } from '@/app/(private)/admin/bonds/_components/create-form/schema';
 import { handleChallenge } from '@/lib/challenge';
 import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
+import { formatDate } from '@/lib/date';
 import { db } from '@/lib/db';
 import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
@@ -49,7 +50,18 @@ export const createBond = actionClient
   .outputSchema(CreateBondOutputSchema)
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, faceValue, maturityDate, cap },
+      parsedInput: {
+        assetName,
+        symbol,
+        decimals,
+        pincode,
+        isin,
+        private: isPrivate,
+        faceValue,
+        maturityDate,
+        cap,
+        faceValueCurrency: underlyingAsset,
+      },
       ctx: { user },
     }) => {
       const predictedAddress = await portalClient.request(CreateBondPredictAddress, {
@@ -57,8 +69,8 @@ export const createBond = actionClient
         sender: user.wallet,
         decimals,
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: maturityDate.toISOString(),
-        underlyingAsset: '',
+        maturityDate: formatDate(maturityDate, { type: 'unixSeconds' }),
+        underlyingAsset,
         cap: cap ? parseEther(cap.toString()).toString() : '0',
         name: assetName,
         symbol,
@@ -84,8 +96,8 @@ export const createBond = actionClient
         decimals,
         isin: isin ?? '',
         faceValue: parseEther(faceValue.toString()).toString(),
-        maturityDate: maturityDate.toISOString(),
-        underlyingAsset: '',
+        maturityDate: formatDate(maturityDate, { type: 'unixSeconds' }),
+        underlyingAsset,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
         gasLimit: '5000000',
         cap: cap ? parseEther(cap.toString()).toString() : '0',
