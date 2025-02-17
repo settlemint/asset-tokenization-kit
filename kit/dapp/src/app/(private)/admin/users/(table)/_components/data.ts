@@ -48,11 +48,11 @@ export type ListUser = FragmentOf<typeof ListUserFragment> & {
 };
 
 export async function getUsers(): Promise<ListUser[]> {
-  const [{ user }, { accounts }] = await Promise.all([
+  const [{ user: users }, { accounts }] = await Promise.all([
     hasuraClient.request(UsersQuery),
     theGraphClientStarterkits.request(UserActivity),
   ]);
-  return user.map((user) => {
+  return users.map((user) => {
     return {
       ...user,
       lastActivity: accounts.find((account) => account.id.toLowerCase() === user.wallet.toLowerCase())?.lastActivity,
