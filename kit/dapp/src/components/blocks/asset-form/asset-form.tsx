@@ -137,6 +137,8 @@ export function AssetForm<
         onClose?.();
       },
       onError: (data) => {
+        // biome-ignore lint/suspicious/noConsole: debug purposes
+        console.error(data);
         if (data.error.serverError) {
           let errorMessage = 'Unknown server error';
           const serverErrorWithContext = data.error.serverError as
@@ -175,6 +177,8 @@ export function AssetForm<
       joinBy: '\n',
     },
   });
+
+  const { errors } = form.formState;
 
   const handleNext = async () => {
     const CurrentStep = Array.isArray(children) ? children[currentStep].type : children.type;
@@ -259,6 +263,7 @@ export function AssetForm<
                   onNextStep={handleNext}
                   isLastStep={isLastStep}
                   isSubmitting={form.formState.isSubmitting}
+                  hasErrors={Object.keys(errors).length > 0}
                   submitLabel={submitLabel}
                   submittingLabel={submittingLabel}
                   processingLabel={processingLabel}

@@ -1,16 +1,13 @@
 'use server';
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
+import { convertDurationToSeconds } from '@/lib/date';
 import { db } from '@/lib/db';
 import { asset } from '@/lib/db/schema-asset-tokenization';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
-import {
-  type CollateralProofValidityDuration,
-  CreateStablecoinFormSchema,
-  CreateStablecoinOutputSchema,
-} from './schema';
+import { CreateStablecoinFormSchema, CreateStablecoinOutputSchema } from './schema';
 
 const CreateStablecoin = portalGraphql(`
   mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
@@ -42,28 +39,6 @@ const CreateStablecoinPredictAddress = portalGraphql(`
     }
   }
 `);
-
-/**
- * Converts CollateralProofValidityDuration enum values to seconds
- * @param duration - The duration value from CollateralProofValidityDuration enum
- * @returns The duration in seconds
- */
-function convertDurationToSeconds(duration: keyof typeof CollateralProofValidityDuration): number {
-  switch (duration) {
-    case 'OneHour':
-      return 60 * 60;
-    case 'OneDay':
-      return 24 * 60 * 60;
-    case 'OneWeek':
-      return 7 * 24 * 60 * 60;
-    case 'OneMonth':
-      return 30 * 24 * 60 * 60;
-    case 'OneYear':
-      return 365 * 24 * 60 * 60;
-    default:
-      return 365 * 24 * 60 * 60;
-  }
-}
 
 export const createStablecoin = actionClient
   .schema(CreateStablecoinFormSchema)
