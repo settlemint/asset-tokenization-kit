@@ -34,7 +34,7 @@ const UsersQuery = hasuraGraphql(
 const UserActivity = theGraphGraphqlStarterkits(
   `
   query UserActivity {
-    accounts(where: {isContract: false }){
+    accounts(where: { isContract: false }){
       id
       lastActivity
     }

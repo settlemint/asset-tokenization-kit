@@ -1,4 +1,5 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const UserFragment = hasuraGraphql(`
@@ -30,7 +31,21 @@ const UserQuery = hasuraGraphql(
   [UserFragment]
 );
 
-export type DetailUser = FragmentOf<typeof UserFragment>;
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserActivity($id: Bytes!) {
+    accounts(where: { id: $id }){
+      id
+      lastActivity
+    }
+  }
+`,
+  []
+);
+
+export type DetailUser = FragmentOf<typeof UserFragment> & {
+  lastActivity: string | undefined;
+};
 
 export async function getUser(id: string): Promise<DetailUser> {
   const result = await hasuraClient.request(UserQuery, { id });
@@ -38,5 +53,9 @@ export async function getUser(id: string): Promise<DetailUser> {
   if (!user) {
     throw new Error(`User with id ${id} not found`);
   }
-  return user;
+  const activity = await theGraphClientStarterkits.request(UserActivity, { id: user.wallet });
+  return {
+    ...user,
+    lastActivity: activity.accounts[0].lastActivity,
+  };
 }
