@@ -24,17 +24,9 @@ export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClien
     refetchInterval: 1000 * 5,
   });
 
-  const formatted =
-    data.getProcessedTransactions?.records
-      .filter((record) => record.createdAt)
-      .map((record) => ({
-        timestamp: record.createdAt!,
-        transactions: 1,
-      })) ?? [];
-
   return (
     <AreaChartComponent
-      data={createTimeSeries(formatted, ['transactions'], {
+      data={createTimeSeries(data, ['transactions'], {
         intervalType: 'day',
         intervalLength: 7,
         granularity: 'day',
