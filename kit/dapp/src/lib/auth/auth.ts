@@ -104,15 +104,10 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session) => {
-          const user = await db.query.user.findFirst({
-            where: eq(authSchema.user.id, session.userId),
-          });
-          if (user) {
-            await db
-              .update(authSchema.user)
-              .set({ lastLoginAt: new Date() })
-              .where(eq(authSchema.user.id, session.userId));
-          }
+          await db
+            .update(authSchema.user)
+            .set({ lastLoginAt: new Date() })
+            .where(eq(authSchema.user.id, session.userId));
           return {
             data: session,
           };
