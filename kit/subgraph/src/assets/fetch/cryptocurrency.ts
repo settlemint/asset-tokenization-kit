@@ -30,9 +30,6 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.lastActivity = BigInt.zero();
     cryptoCurrency.creator = Address.zero();
 
-    // Stats
-    cryptoCurrency.amountOfHolders = BigInt.zero();
-
     cryptoCurrency.save();
 
     account.asAsset = cryptoCurrency.id;

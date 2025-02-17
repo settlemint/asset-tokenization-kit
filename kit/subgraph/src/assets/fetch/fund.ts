@@ -33,9 +33,6 @@ export function fetchFund(address: Address): Fund {
     fund.lastActivity = BigInt.zero();
     fund.creator = Address.zero();
 
-    // Stats
-    fund.amountOfHolders = BigInt.zero();
-
     // Fund-specific fields
     fund.isin = isin.reverted ? '' : isin.value;
     fund.fundClass = fundClass.reverted ? '' : fundClass.value;

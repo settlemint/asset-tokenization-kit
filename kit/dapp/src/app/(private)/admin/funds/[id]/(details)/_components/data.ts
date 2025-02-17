@@ -13,6 +13,9 @@ const FundDetails = theGraphGraphqlStarterkits(
       totalSupplyExact
       fundCategory
       fundClass
+      creator {
+        id
+      }
       paused
       isin
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {

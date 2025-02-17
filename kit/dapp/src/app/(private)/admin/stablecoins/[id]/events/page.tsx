@@ -19,7 +19,7 @@ export default async function StablecoinEventsPage({ params }: { params: Promise
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getTransactionsList(),
+    queryFn: () => getTransactionsList(undefined, id),
   });
 
   return (
