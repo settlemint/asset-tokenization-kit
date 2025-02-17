@@ -13,12 +13,13 @@ interface TransactionsTableClientProps {
   first?: number;
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
+  asset?: string;
 }
 
-export function TransactionsTableClient({ queryKey, first, toolbar, pagination }: TransactionsTableClientProps) {
+export function TransactionsTableClient({ queryKey, first, toolbar, pagination, asset }: TransactionsTableClientProps) {
   const { data } = useSuspenseQuery<NormalizedTransactionListItem[]>({
     queryKey,
-    queryFn: () => getTransactionsList(first),
+    queryFn: () => getTransactionsList(first, asset),
     refetchInterval: 5000,
   });
 
