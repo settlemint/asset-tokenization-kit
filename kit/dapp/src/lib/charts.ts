@@ -6,7 +6,6 @@ import {
   isSameDay,
   isSameHour,
   isSameMonth,
-  parse,
   startOfDay,
   startOfHour,
   subDays,
@@ -68,22 +67,13 @@ export function createTimeSeries<T extends DataPoint>(
   }
 
   return ticks.map((tick) => {
-    const matchingDataForTick = data.filter((d) => {
-      const timestamp = getDateFromMicroseconds(d.timestamp);
-      return granularity === 'hour'
-        ? isSameHour(timestamp, tick)
-        : granularity === 'month'
-          ? isSameMonth(timestamp, tick)
-          : isSameDay(timestamp, tick);
-    });
-
+    const matchingDataForTick = data.filter((d) => isInTick(tick, d.timestamp, granularity));
     const aggregatedData = aggregateData(matchingDataForTick, valueKeys, aggregation);
 
     const result = {
       timestamp: formatDate(tick, granularity),
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
-    // Add each value key to the result
     for (const key of valueKeys) {
       const value = aggregatedData?.[key];
       if (value !== undefined) {
@@ -110,8 +100,19 @@ export function startOfInterval(date: Date, intervalType: IntervalType, interval
   }
 }
 
-function getDateFromMicroseconds(timestampMicroseconds: string | number): Date {
-  return parse((Number(timestampMicroseconds) / 1000).toString(), 'T', new Date());
+function isInTick(tick: Date, timestamp: number | string, granularity: TimeGranularity): boolean {
+  switch (granularity) {
+    case 'hour':
+      return isSameHour(timestamp, tick);
+    case 'month':
+      return isSameMonth(timestamp, tick);
+    case 'day':
+      return isSameDay(timestamp, tick);
+    default: {
+      const _exhaustiveCheck: never = granularity;
+      throw new Error(`Invalid granularity: ${_exhaustiveCheck}`);
+    }
+  }
 }
 
 function formatDate(date: Date, granularity: TimeGranularity): string {

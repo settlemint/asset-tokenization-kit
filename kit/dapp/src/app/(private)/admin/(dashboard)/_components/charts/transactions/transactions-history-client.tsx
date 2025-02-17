@@ -28,7 +28,7 @@ export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClien
     data.getProcessedTransactions?.records
       .filter((record) => record.createdAt)
       .map((record) => ({
-        timestamp: new Date(record.createdAt!).getTime() * 1000,
+        timestamp: record.createdAt!,
         transactions: 1,
       })) ?? [];
 

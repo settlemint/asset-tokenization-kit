@@ -75,3 +75,37 @@ export function convertDurationToSeconds(duration: keyof typeof CollateralProofV
       return 365 * 24 * 60 * 60;
   }
 }
+
+export function getDateFromTimestamp(timestampInput: string | number): Date {
+  // Handle string timestamps
+  if (typeof timestampInput === 'string') {
+    // Try parsing as ISO string first
+    const isoDate = new Date(timestampInput);
+    if (!Number.isNaN(isoDate.getTime())) {
+      return isoDate;
+    }
+    // If not ISO, convert to number
+    const numericTimestamp = Number(timestampInput);
+    return getDateFromTimestamp(numericTimestamp);
+  }
+
+  // Now handle numeric timestamps
+  const timestampStr = timestampInput.toString();
+
+  // Microseconds (16 digits)
+  if (timestampStr.length >= 16) {
+    return new Date(timestampInput / 1000);
+  }
+
+  // Milliseconds (13 digits)
+  if (timestampStr.length >= 13) {
+    return new Date(timestampInput);
+  }
+
+  // Seconds (10 digits)
+  if (timestampStr.length >= 10) {
+    return new Date(timestampInput * 1000);
+  }
+
+  throw new Error(`Invalid timestamp format: ${timestampInput}`);
+}
