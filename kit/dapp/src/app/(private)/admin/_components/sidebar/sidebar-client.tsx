@@ -11,9 +11,10 @@ import { bottomItems, tokenItems, topItems } from './items';
 
 type SidebarClientProps = {
   queryKey: QueryKey;
+  role: 'admin' | 'issuer' | 'user';
 };
 
-export function SidebarClient({ queryKey }: SidebarClientProps) {
+export function SidebarClient({ queryKey, role }: SidebarClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getSidebarAssets,
@@ -72,7 +73,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
         <NavMain items={bottomItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavFooter />
+        <NavFooter role={role} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

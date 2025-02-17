@@ -1,3 +1,4 @@
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { assetConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -14,6 +15,7 @@ export async function Sidebar() {
     assetConfig.stablecoin.queryKey,
     assetConfig.cryptocurrency.queryKey,
   ];
+  const user = await getAuthenticatedUser();
 
   await queryClient.prefetchQuery({
     queryKey: queryKey,
@@ -23,7 +25,7 @@ export async function Sidebar() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <SidebarClient queryKey={queryKey} />
+        <SidebarClient queryKey={queryKey} role={user?.role as 'admin' | 'issuer' | 'user'} />
       </Suspense>
     </HydrationBoundary>
   );
