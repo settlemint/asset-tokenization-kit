@@ -70,14 +70,14 @@
     },
     "contracts#deploy:local": {
       "dependsOn": ["genesis", "contracts#compile:hardhat"],
-      "outputs": ["kit/contracts/ignition/deployments/**"]
+      "outputs": ["ignition/deployments/**"]
     },
     "subgraph#deploy:local": {
       "dependsOn": ["contracts#deploy:local"]
     },
     "deploy:local": {
       "dependsOn": ["contracts#deploy:local", "subgraph#deploy:local"],
-      "outputs": ["kit/contracts/ignition/deployments/**"]
+      "outputs": ["ignition/deployments/**"]
     },
     "deploy:remote": {
       "dependsOn": ["contracts#compile:hardhat", "^deploy:remote"],
