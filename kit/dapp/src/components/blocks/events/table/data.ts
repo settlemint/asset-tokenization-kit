@@ -98,10 +98,26 @@ query TransactionsList($first: Int) {
   [TransactionListFragment]
 );
 
-export async function getTransactionsList(first?: number): Promise<NormalizedTransactionListItem[]> {
-  const theGraphData = await theGraphClientStarterkits.request(TransactionsList, {
-    first,
-  });
+const AssetTransactionsList = theGraphGraphqlStarterkits(
+  `
+query AssetTransactionsList($first: Int, $asset: String) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, where: { emitter: $asset }) {
+    ...TransactionListFragment
+  }
+}
+`,
+  [TransactionListFragment]
+);
+
+export async function getTransactionsList(first?: number, asset?: string): Promise<NormalizedTransactionListItem[]> {
+  const theGraphData = asset
+    ? await theGraphClientStarterkits.request(AssetTransactionsList, {
+        first,
+        asset,
+      })
+    : await theGraphClientStarterkits.request(TransactionsList, {
+        first,
+      });
 
   return theGraphData.assetEvents.map((event) => {
     return {
