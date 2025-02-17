@@ -58,7 +58,7 @@ export class AdminPage extends BasePage {
     paymentFrequency: string;
     pincode: string;
   }) {
-    this.startAssetCreation(options.assetType, options.name, options.symbol);
+    await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('Decimals').fill(options.decimals);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByLabel('Cap').fill(options.cap);
@@ -89,7 +89,7 @@ export class AdminPage extends BasePage {
     initialSupply: string;
     pincode: string;
   }) {
-    this.startAssetCreation(options.assetType, options.name, options.symbol);
+    await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Initial supply').fill(options.initialSupply);
     await this.page.getByRole('button', { name: 'Next' }).click();
@@ -105,7 +105,7 @@ export class AdminPage extends BasePage {
     equityCategory: string;
     pincode: string;
   }) {
-    this.startAssetCreation(options.assetType, options.name, options.symbol);
+    await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Equity class').fill(options.equityClass);
@@ -124,7 +124,7 @@ export class AdminPage extends BasePage {
     managementFee: string;
     pincode: string;
   }) {
-    this.startAssetCreation(options.assetType, options.name, options.symbol);
+    await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByRole('combobox', { name: 'Fund category' }).click();
@@ -145,7 +145,7 @@ export class AdminPage extends BasePage {
     collateralProofValidityDuration: string;
     pincode: string;
   }) {
-    this.startAssetCreation(options.assetType, options.name, options.symbol);
+    await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Collateral threshold').fill(options.collateralThreshold);
