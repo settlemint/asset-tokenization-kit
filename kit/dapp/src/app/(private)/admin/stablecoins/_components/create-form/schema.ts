@@ -22,11 +22,6 @@ export const CreateStablecoinFormSchema = z.object({
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
   isin: z.string().length(12, { message: 'ISIN must be exact 12 characters' }).optional(),
-  collateralThreshold: z
-    .number()
-    .min(0, { message: 'Collateral threshold must be at least 0' })
-    .max(100, { message: 'Collateral threshold must be between 0 and 100 %' })
-    .default(100),
   collateralProofValidityDuration: z
     .enum(Object.keys(CollateralProofValidityDuration) as [keyof typeof CollateralProofValidityDuration])
     .default('OneYear'),

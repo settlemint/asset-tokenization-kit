@@ -1,5 +1,6 @@
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { convertDurationToSeconds } from '@/lib/date';
 import { DollarSign, Lock, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateStablecoinFormType } from '../schema';
@@ -65,11 +66,9 @@ export function Summary() {
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-              <dd className="font-medium">{values.collateralProofValidityDuration} seconds</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Collateral Threshold:</dt>
-              <dd className="font-medium">{values.collateralThreshold}%</dd>
+              <dd className="font-medium">
+                {convertDurationToSeconds(values.collateralProofValidityDuration ?? 'OneYear')} seconds
+              </dd>
             </div>
           </dl>
         </div>

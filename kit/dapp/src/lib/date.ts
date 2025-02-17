@@ -1,3 +1,4 @@
+import type { CollateralProofValidityDuration } from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
 import { format, formatDistance, formatRelative, fromUnixTime, parseISO } from 'date-fns';
 
 const NUMERIC_REGEX = /^\d+$/;
@@ -50,5 +51,27 @@ export function formatDate(date: string | Date, options: DateFormatOptions = {})
     return format(dateObj, formatStr);
   } catch {
     return 'Invalid Date';
+  }
+}
+
+/**
+ * Converts CollateralProofValidityDuration enum values to seconds
+ * @param duration - The duration value from CollateralProofValidityDuration enum
+ * @returns The duration in seconds
+ */
+export function convertDurationToSeconds(duration: keyof typeof CollateralProofValidityDuration): number {
+  switch (duration) {
+    case 'OneHour':
+      return 60 * 60;
+    case 'OneDay':
+      return 24 * 60 * 60;
+    case 'OneWeek':
+      return 7 * 24 * 60 * 60;
+    case 'OneMonth':
+      return 30 * 24 * 60 * 60;
+    case 'OneYear':
+      return 365 * 24 * 60 * 60;
+    default:
+      return 365 * 24 * 60 * 60;
   }
 }

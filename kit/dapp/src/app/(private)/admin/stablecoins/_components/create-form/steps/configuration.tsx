@@ -1,4 +1,3 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
 import { useFormContext } from 'react-hook-form';
 import { CollateralProofValidityDuration, type CreateStablecoinFormType } from '../schema';
@@ -15,16 +14,6 @@ export function Configuration() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <AssetFormInput
-          control={control}
-          name="collateralThreshold"
-          label="Collateral threshold"
-          type="number"
-          postfix="%"
-          min={0}
-          max={100}
-          defaultValue={100}
-        />
         <AssetFormSelect
           control={control}
           name="collateralProofValidityDuration"
