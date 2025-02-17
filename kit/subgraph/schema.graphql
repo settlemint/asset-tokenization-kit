@@ -714,6 +714,16 @@ type AssetActivityData @entity {
 }
 
 # --------------------------------------------------
+# Asset count
+# --------------------------------------------------
+
+type AssetCount @entity {
+  id: String!
+  assetType: String! @unique
+  count: Int!
+}
+
+# --------------------------------------------------
 # Portfolio Statistics
 # --------------------------------------------------
 
