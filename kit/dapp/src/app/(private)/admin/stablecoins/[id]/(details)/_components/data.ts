@@ -13,6 +13,12 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
       totalSupplyExact
       collateral
       isin
+      amountOfHolders
+      lastCollateralUpdate
+      liveness
+      creator{
+        id
+      }
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {
         valueExact
       }
