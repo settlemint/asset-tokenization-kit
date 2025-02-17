@@ -2,6 +2,7 @@ import { EquityCreated } from '../../generated/EquityFactory/EquityFactory';
 import { Equity } from '../../generated/templates';
 import { accountActivityEvent } from '../assets/events/accountactivity';
 import { assetCreatedEvent } from '../assets/events/assetcreated';
+import { fetchAssetCount } from '../assets/fetch/asset-count';
 import { fetchEquity } from '../assets/fetch/equity';
 import { fetchAccount } from '../fetch/account';
 import { AssetType, EventName, FactoryType } from '../utils/enums';
@@ -14,6 +15,10 @@ export function handleEquityCreated(event: EquityCreated): void {
   const asset = fetchEquity(event.params.token);
   asset.creator = sender.id;
   asset.save();
+
+  const assetCount = fetchAssetCount(AssetType.equity);
+  assetCount.count = assetCount.count + 1;
+  assetCount.save();
 
   assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
   accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
