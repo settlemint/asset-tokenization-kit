@@ -230,7 +230,7 @@ interface AssetEvent {
   eventName: String! # Name of the event
   timestamp: BigInt! # Timestamp of the event
   emitter: Asset! # The contract that emitted the event
-  sender: Account! # The account that sent the event
+  sender: Account! # The account that sent the transaction
 }
 
 # --------------------------------------------------
