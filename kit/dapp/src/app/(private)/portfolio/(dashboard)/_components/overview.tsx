@@ -3,7 +3,7 @@ import { MyAssets } from './my-assets/my-assets';
 
 export function PortfolioOverview() {
   return (
-    <div>
+    <div className="space-y-4">
       <Greeting />
       <MyAssets />
     </div>

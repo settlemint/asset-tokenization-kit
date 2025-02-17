@@ -19,7 +19,7 @@ export function MyAssetsClient({ queryKey }: MyAssetsClientProps) {
   const totalValue = data.reduce((acc, asset) => acc + Number(asset.value), 0);
 
   return (
-    <div className="mt-4 flex items-center justify-between">
+    <div className="flex items-center justify-between">
       <div>
         <span className="mr-1 font-bold text-4xl">{totalValue}</span>
         <span>assets</span>
