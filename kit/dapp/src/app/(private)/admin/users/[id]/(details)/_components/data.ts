@@ -17,6 +17,7 @@ const UserFragment = hasuraGraphql(`
     updated_at
     image
     kyc_verified
+    last_login
   }
 `);
 
@@ -33,10 +34,19 @@ const UserQuery = hasuraGraphql(
 
 const UserActivity = theGraphGraphqlStarterkits(
   `
-  query UserActivity($id: Bytes!) {
+  query UserData($id: Bytes!) {
     accounts(where: { id: $id }){
       id
       lastActivity
+      balances {
+        value
+      }
+    }
+    stats: portfolioStats_collection(interval: hour, where: { account_: { id: $id } }, first: 1) {
+      totalBalance
+    }
+    assetEvents(orderBy: timestamp, orderDirection: desc, where: { emitter_: { id: $id } }) {
+      id
     }
   }
 `,
@@ -45,6 +55,9 @@ const UserActivity = theGraphGraphqlStarterkits(
 
 export type DetailUser = FragmentOf<typeof UserFragment> & {
   lastActivity: string | undefined;
+  totalBalance: string;
+  assetCount: number;
+  transactionCount: number;
 };
 
 export async function getUser(id: string): Promise<DetailUser> {
@@ -53,9 +66,14 @@ export async function getUser(id: string): Promise<DetailUser> {
   if (!user) {
     throw new Error(`User with id ${id} not found`);
   }
-  const activity = await theGraphClientStarterkits.request(UserActivity, { id: user.wallet });
+  const userData = await theGraphClientStarterkits.request(UserActivity, {
+    id: user.wallet,
+  });
   return {
     ...user,
-    lastActivity: activity.accounts[0].lastActivity,
+    lastActivity: userData.accounts[0].lastActivity,
+    totalBalance: userData.stats[0].totalBalance,
+    assetCount: userData.stats.length,
+    transactionCount: userData.assetEvents.length,
   };
 }

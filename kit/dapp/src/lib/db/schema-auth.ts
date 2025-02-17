@@ -15,7 +15,7 @@ export const user = pgTable('user', {
   normalizedEmail: text('normalized_email').unique(),
   wallet: text('wallet').notNull().unique(),
   kycVerifiedAt: timestamp('kyc_verified'),
-  lastLoginAt: timestamp('last_login'),
+  lastLoginAt: timestamp('last_login', { withTimezone: true }),
 });
 
 export const session = pgTable('session', {

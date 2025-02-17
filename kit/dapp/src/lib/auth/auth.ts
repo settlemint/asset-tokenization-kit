@@ -108,7 +108,6 @@ export const auth = betterAuth({
             where: eq(authSchema.user.id, session.userId),
           });
           if (user) {
-            user.lastLoginAt = new Date();
             await db
               .update(authSchema.user)
               .set({ lastLoginAt: new Date() })
