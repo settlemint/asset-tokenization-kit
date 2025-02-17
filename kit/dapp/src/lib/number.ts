@@ -43,7 +43,7 @@ export function formatNumber(amount: string | bigint | number | BigNumber, optio
     }
 
     return new Intl.NumberFormat(locale, {
-      style: 'percent',
+      style: value.isFinite() ? 'percent' : undefined,
       maximumFractionDigits: decimals,
       minimumFractionDigits: decimals,
     }).format(percentageValue.toNumber());
