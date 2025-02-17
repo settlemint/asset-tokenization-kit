@@ -37,6 +37,7 @@ const devLog = {
 };
 
 const handleServerError = (error: Error) => {
+  console.error('Error:', error);
   if (error instanceof z.ZodError) {
     // Handle known error types
     devLog.error('Server action validation error:', error);
