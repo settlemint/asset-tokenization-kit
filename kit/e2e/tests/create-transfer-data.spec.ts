@@ -45,15 +45,15 @@ test.describe('Create assets', () => {
       name: fundData.name,
       totalSupply: fundData.initialSupply,
     });
-    test('Create Stablecoin asset', async ({ page }) => {
-      const pages = Pages(page);
-      await pages.adminPage.goto();
-      await pages.adminPage.createStablecoin(stablecoinData);
-      await pages.adminPage.checkIfAssetExists({
-        sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-        name: stablecoinData.name,
-        totalSupply: stablecoinData.initialSupply,
-      });
+  });
+  test('Create Stablecoin asset', async ({ page }) => {
+    const pages = Pages(page);
+    await pages.adminPage.goto();
+    await pages.adminPage.createStablecoin(stablecoinData);
+    await pages.adminPage.checkIfAssetExists({
+      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
+      name: stablecoinData.name,
+      totalSupply: stablecoinData.initialSupply,
     });
   });
 });
