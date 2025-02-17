@@ -13,9 +13,21 @@ const BalanceFragmentMyAsset = theGraphGraphqlStarterkits(`
       type
       totalSupply
       ... on StableCoin {
-        isin
+        stableCoinIsin: isin
         paused
         collateral
+      }
+      ... on Bond {
+        bondIsin: isin
+        paused
+      }
+      ... on Fund {
+        fundIsin: isin
+        paused
+      }
+      ... on Equity {
+        equityIsin: isin
+        paused
       }
     }
   }

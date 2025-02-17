@@ -19,6 +19,7 @@ export function Basics() {
         <AssetFormInput control={control} name="symbol" label="Symbol" placeholder="BOND007" />
         <AssetFormInput control={control} type="number" name="decimals" label="Decimals" defaultValue={18} />
         <AssetFormInput control={control} name="isin" label="ISIN" placeholder="MI6007BOND007" />
+        <AssetFormInput control={control} type="number" name="cap" label="Cap" placeholder="10,000,000" />
       </div>
       <AssetFormSwitch
         control={control}
@@ -31,4 +32,4 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = ['assetName', 'symbol', 'decimals', 'private', 'isin'] as const;
+Basics.validatedFields = ['assetName', 'symbol', 'decimals', 'private', 'isin', 'cap'] as const;

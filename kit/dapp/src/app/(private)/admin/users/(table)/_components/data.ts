@@ -1,4 +1,5 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const ListUserFragment = hasuraGraphql(`
@@ -30,9 +31,31 @@ const UsersQuery = hasuraGraphql(
   [ListUserFragment]
 );
 
-export type ListUser = FragmentOf<typeof ListUserFragment>;
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserActivity {
+    accounts(where: { isContract: false }){
+      id
+      lastActivity
+    }
+  }
+`,
+  []
+);
+
+export type ListUser = FragmentOf<typeof ListUserFragment> & {
+  lastActivity: string | undefined;
+};
 
 export async function getUsers(): Promise<ListUser[]> {
-  const { user } = await hasuraClient.request(UsersQuery);
-  return user;
+  const [{ user: users }, { accounts }] = await Promise.all([
+    hasuraClient.request(UsersQuery),
+    theGraphClientStarterkits.request(UserActivity),
+  ]);
+  return users.map((user) => {
+    return {
+      ...user,
+      lastActivity: accounts.find((account) => account.id.toLowerCase() === user.wallet.toLowerCase())?.lastActivity,
+    };
+  });
 }

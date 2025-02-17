@@ -6,6 +6,7 @@ import { APIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
+import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { metadata } from '../config/metadata';
@@ -61,6 +62,10 @@ export const auth = betterAuth({
         type: 'date',
         required: false,
       },
+      lastLoginAt: {
+        type: 'date',
+        required: false,
+      },
     },
   },
   databaseHooks: {
@@ -93,6 +98,19 @@ export const auth = betterAuth({
               cause: error instanceof Error ? error : undefined,
             });
           }
+        },
+      },
+    },
+    session: {
+      create: {
+        before: async (session) => {
+          await db
+            .update(authSchema.user)
+            .set({ lastLoginAt: new Date() })
+            .where(eq(authSchema.user.id, session.userId));
+          return {
+            data: session,
+          };
         },
       },
     },

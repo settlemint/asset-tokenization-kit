@@ -15,6 +15,15 @@ const BalanceFragment = theGraphGraphqlStarterkits(`
       ... on StableCoin {
         paused
       }
+      ... on Bond {
+        paused
+      }
+      ... on Fund {
+        paused
+      }
+      ... on Equity {
+        paused
+      }
     }
   }
 `);

@@ -1,10 +1,10 @@
 'use client';
 
 import type { MyAsset } from '@/app/(private)/portfolio/_components/my-assets/data';
+import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
-import { Badge } from '@/components/ui/badge';
 import { formatNumber } from '@/lib/number';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -40,21 +40,7 @@ export const columns = [
     header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
     cell: ({ getValue }) => {
       const value = getValue() as boolean;
-      if (value === true) {
-        return (
-          <DataTableColumnCell>
-            <Badge className="pointer-events-none bg-yellow-500 text-white">Paused</Badge>
-          </DataTableColumnCell>
-        );
-      }
-      if (value === false) {
-        return (
-          <DataTableColumnCell>
-            <Badge className="pointer-events-none bg-green-600 text-white">Active</Badge>
-          </DataTableColumnCell>
-        );
-      }
-      return null;
+      return <ActivePill paused={value} />;
     },
     enableColumnFilter: false,
   }),
