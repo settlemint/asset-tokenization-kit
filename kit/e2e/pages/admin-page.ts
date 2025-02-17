@@ -33,24 +33,35 @@ export class AdminPage extends BasePage {
     return wholeNumber;
   }
 
+  private async startAssetCreation(assetType: string, name: string, symbol: string) {
+    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
+    await this.page.getByRole('menuitem', { name: assetType }).click();
+    await this.page.getByLabel('Name').fill(name);
+    await this.page.getByLabel('Symbol').fill(symbol);
+  }
+
+  private async completeAssetCreation(pincode: string) {
+    await this.page.locator('[data-input-otp="true"]').fill(pincode);
+    await this.page.getByRole('button', { name: 'Create' }).click();
+  }
+
   async createBond(options: {
     assetType: string;
     name: string;
     symbol: string;
     decimals: string;
     isin: string;
+    cap: string;
     faceValueCurrency: string;
     faceValue: string;
     couponRate: string;
     paymentFrequency: string;
     pincode: string;
   }) {
-    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
-    await this.page.getByRole('menuitem', { name: options.assetType }).click();
-    await this.page.getByLabel('Name').fill(options.name);
-    await this.page.getByLabel('Symbol').fill(options.symbol);
+    this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('Decimals').fill(options.decimals);
     await this.page.getByLabel('ISIN').fill(options.isin);
+    await this.page.getByLabel('Cap').fill(options.cap);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByRole('combobox', { name: 'Face value currency' }).click();
     await this.page.getByRole('option', { name: options.faceValueCurrency }).click();
@@ -68,8 +79,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel('First payment date').click();
     await this.selectTomorrowDate();
     await this.page.getByRole('button', { name: 'Go to next step' }).click();
-    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    this.completeAssetCreation(options.pincode);
   }
 
   async createCryptocurrency(options: {
@@ -79,15 +89,11 @@ export class AdminPage extends BasePage {
     initialSupply: string;
     pincode: string;
   }) {
-    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
-    await this.page.getByRole('menuitem', { name: options.assetType }).click();
-    await this.page.getByLabel('Name').fill(options.name);
-    await this.page.getByLabel('Symbol').fill(options.symbol);
+    this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Initial supply').fill(options.initialSupply);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    this.completeAssetCreation(options.pincode);
   }
 
   async createEquity(options: {
@@ -99,17 +105,13 @@ export class AdminPage extends BasePage {
     equityCategory: string;
     pincode: string;
   }) {
-    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
-    await this.page.getByRole('menuitem', { name: options.assetType }).click();
-    await this.page.getByLabel('Name').fill(options.name);
-    await this.page.getByLabel('Symbol').fill(options.symbol);
+    this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Equity class').fill(options.equityClass);
     await this.page.getByLabel('Equity category').fill(options.equityCategory);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    this.completeAssetCreation(options.pincode);
   }
 
   async createFund(options: {
@@ -122,10 +124,7 @@ export class AdminPage extends BasePage {
     managementFee: string;
     pincode: string;
   }) {
-    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
-    await this.page.getByRole('menuitem', { name: options.assetType }).click();
-    await this.page.getByLabel('Name').fill(options.name);
-    await this.page.getByLabel('Symbol').fill(options.symbol);
+    this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByRole('combobox', { name: 'Fund category' }).click();
@@ -134,8 +133,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('option', { name: options.fundClass }).click();
     await this.page.getByLabel('Management fee').fill(options.managementFee);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    this.completeAssetCreation(options.pincode);
   }
 
   async createStablecoin(options: {
@@ -147,18 +145,14 @@ export class AdminPage extends BasePage {
     collateralProofValidityDuration: string;
     pincode: string;
   }) {
-    await this.page.getByRole('button', { name: 'Asset Designer' }).click();
-    await this.page.getByRole('menuitem', { name: options.assetType }).click();
-    await this.page.getByLabel('Name').fill(options.name);
-    await this.page.getByLabel('Symbol').fill(options.symbol);
+    this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Collateral threshold').fill(options.collateralThreshold);
     await this.page.getByRole('combobox', { name: 'Collateral proof validity duration' }).click();
     await this.page.getByRole('option', { name: options.collateralProofValidityDuration }).click();
     await this.page.getByRole('button', { name: 'Next' }).click();
-    await this.page.locator('input[name="pincode"][data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    this.completeAssetCreation(options.pincode);
   }
 
   async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {

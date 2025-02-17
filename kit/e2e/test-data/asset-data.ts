@@ -7,6 +7,7 @@ export const bondData = {
   symbol: 'TBOND',
   decimals: '18',
   isin: 'US1234567890',
+  cap: '1000',
   faceValueCurrency: 'JBC',
   faceValue: '100',
   couponRate: '10',
