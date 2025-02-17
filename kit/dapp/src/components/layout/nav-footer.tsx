@@ -44,13 +44,13 @@ export function NavFooter() {
             <DropdownMenuItem asChild>
               <Link href="/admin" className={cn(menuItemStyles, isAdmin && 'bg-sidebar-accent font-medium')}>
                 Admin
-                {isAdmin && <Check className="ml-2 h-4 w-4 text-green-500" />}
+                {isAdmin && <Check />}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/portfolio" className={cn(menuItemStyles, !isAdmin && 'bg-sidebar-accent font-medium')}>
                 Portfolio
-                {!isAdmin && <Check className="ml-2 h-4 w-4 text-green-500" />}
+                {!isAdmin && <Check />}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>

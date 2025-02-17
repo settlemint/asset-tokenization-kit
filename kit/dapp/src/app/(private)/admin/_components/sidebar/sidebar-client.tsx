@@ -4,14 +4,7 @@ import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
 import { TokenDesignerButton } from '@/components/layout/token-designer-button';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getSidebarAssets } from './data';
 import { bottomItems, tokenItems, topItems } from './items';
@@ -65,7 +58,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent className="mx-4 pt-0">
+      <SidebarContent>
         <TokenDesignerButton />
         <NavMain items={topItems} />
         <NavMain
@@ -78,7 +71,6 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
         />
         <NavMain items={bottomItems} />
       </SidebarContent>
-      <SidebarSeparator />
       <SidebarFooter>
         <NavFooter />
       </SidebarFooter>
