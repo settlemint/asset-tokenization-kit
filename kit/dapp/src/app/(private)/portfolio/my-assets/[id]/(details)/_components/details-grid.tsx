@@ -35,9 +35,18 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
             <ActivePill paused={myAsset.asset.paused} />
           </DetailsGridItem>
         )}
+        {myAsset.asset.__typename === 'Bond' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.bondIsin ?? '-'}</DetailsGridItem>
+        )}
+        {myAsset.asset.__typename === 'Equity' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.equityIsin ?? '-'}</DetailsGridItem>
+        )}
+        {myAsset.asset.__typename === 'Fund' && (
+          <DetailsGridItem label="ISIN">{myAsset.asset.fundIsin ?? '-'}</DetailsGridItem>
+        )}
         {myAsset.asset.__typename === 'StableCoin' && (
           <>
-            <DetailsGridItem label="ISIN">{myAsset.asset.isin}</DetailsGridItem>
+            <DetailsGridItem label="ISIN">{myAsset.asset.stableCoinIsin ?? '-'}</DetailsGridItem>
             <DetailsGridItem label="Contract address">
               <div className="flex items-center">
                 <EvmAddress address={myAsset.asset.id}>
