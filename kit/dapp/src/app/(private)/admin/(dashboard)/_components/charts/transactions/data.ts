@@ -10,12 +10,9 @@ const ProcessedTransactionsHistory = portalGraphql(`
   }
 `);
 
-export async function getTransactionsHistoryData() {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
+export async function getTransactionsHistoryData({ processedAfter }: { processedAfter: Date }) {
   const data = await portalClient.request(ProcessedTransactionsHistory, {
-    processedAfter: sevenDaysAgo.toISOString(),
+    processedAfter: processedAfter.toISOString(),
   });
 
   return (
