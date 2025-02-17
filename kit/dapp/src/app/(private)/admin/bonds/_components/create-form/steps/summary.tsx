@@ -1,5 +1,6 @@
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateBondFormType } from '../schema';
@@ -44,6 +45,10 @@ export function Summary() {
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground">ISIN:</dt>
               <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground">Cap:</dt>
+              <dd className="font-medium">{values.cap ? formatNumber(values.cap, { token: values.symbol }) : '-'}</dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Private</dt>
