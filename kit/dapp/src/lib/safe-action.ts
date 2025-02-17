@@ -29,15 +29,12 @@ const devLog = {
     }
   },
   error: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === 'development') {
-      // biome-ignore lint/suspicious/noConsole: <explanation>
-      console.error(...args);
-    }
+    // biome-ignore lint/suspicious/noConsole: <explanation>
+    console.error(...args);
   },
 };
 
 const handleServerError = (error: Error) => {
-  console.error('Error:', error);
   if (error instanceof z.ZodError) {
     // Handle known error types
     devLog.error('Server action validation error:', error);
