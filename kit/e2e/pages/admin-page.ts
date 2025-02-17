@@ -79,7 +79,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel('First payment date').click();
     await this.selectTomorrowDate();
     await this.page.getByRole('button', { name: 'Go to next step' }).click();
-    this.completeAssetCreation(options.pincode);
+    await this.completeAssetCreation(options.pincode);
   }
 
   async createCryptocurrency(options: {
@@ -93,7 +93,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Initial supply').fill(options.initialSupply);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    this.completeAssetCreation(options.pincode);
+    await this.completeAssetCreation(options.pincode);
   }
 
   async createEquity(options: {
@@ -111,7 +111,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel('Equity class').fill(options.equityClass);
     await this.page.getByLabel('Equity category').fill(options.equityCategory);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    this.completeAssetCreation(options.pincode);
+    await this.completeAssetCreation(options.pincode);
   }
 
   async createFund(options: {
@@ -133,7 +133,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('option', { name: options.fundClass }).click();
     await this.page.getByLabel('Management fee').fill(options.managementFee);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    this.completeAssetCreation(options.pincode);
+    await this.completeAssetCreation(options.pincode);
   }
 
   async createStablecoin(options: {
@@ -152,7 +152,7 @@ export class AdminPage extends BasePage {
     await this.page.getByRole('combobox', { name: 'Collateral proof validity duration' }).click();
     await this.page.getByRole('option', { name: options.collateralProofValidityDuration }).click();
     await this.page.getByRole('button', { name: 'Next' }).click();
-    this.completeAssetCreation(options.pincode);
+    await this.completeAssetCreation(options.pincode);
   }
 
   async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {
