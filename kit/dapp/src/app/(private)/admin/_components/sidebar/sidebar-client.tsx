@@ -80,7 +80,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
       </SidebarContent>
       <SidebarSeparator />
       <SidebarFooter>
-        <NavFooter mode="admin" />
+        <NavFooter />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

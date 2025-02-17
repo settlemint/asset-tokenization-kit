@@ -1,22 +1,61 @@
 'use client';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth/client';
-import { NavFooterPortfolioAdmin } from './nav-footer-portfolio-admin';
-import { NavFooterPortfolioUser } from './nav-footer-portfolio-user';
+import { cn } from '@/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export function NavFooter({ mode }: { mode: 'admin' | 'portfolio' }) {
+const menuItemStyles =
+  'flex items-center justify-between px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
+
+export function NavFooter() {
   const session = authClient.useSession();
+  const pathname = usePathname();
 
-  if (!session) {
+  if (!session || !['admin', 'issuer'].includes(session.data?.user.role ?? 'user')) {
     return null;
   }
 
-  if (mode === 'portfolio') {
-    if (['admin', 'issuer'].includes(session.data?.user.role ?? 'user')) {
-      return <NavFooterPortfolioAdmin />;
-    }
-    return <NavFooterPortfolioUser />;
-  }
+  const isAdmin = pathname.startsWith('/admin');
+  const currentSection = isAdmin ? 'Admin' : 'Portfolio';
 
-  return null;
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton>
+              <span className="flex-1">{currentSection}</span>
+              <ChevronsUpDown />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="w-[--radix-dropdown-menu-trigger-width] rounded-xl p-0 shadow-dropdown"
+          >
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className={cn(menuItemStyles, isAdmin && 'bg-sidebar-accent font-medium')}>
+                Admin
+                {isAdmin && <Check className="ml-2 h-4 w-4 text-green-500" />}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/portfolio" className={cn(menuItemStyles, !isAdmin && 'bg-sidebar-accent font-medium')}>
+                Portfolio
+                {!isAdmin && <Check className="ml-2 h-4 w-4 text-green-500" />}
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
 }
