@@ -1,6 +1,6 @@
 'use client';
 
-import type { MyAsset } from '@/app/(private)/portfolio/my-assets/data';
+import type { MyAsset } from '@/app/(private)/portfolio/_components/my-assets/data';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
