@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -69,7 +69,9 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.2.0",
-  "workspaces": ["kit/*"],
+  "workspaces": [
+    "kit/*"
+  ],
   "overrides": {
     "react-is": "19.0.0",
     "graphql": "16.10.0",
