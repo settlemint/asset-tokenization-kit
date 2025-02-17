@@ -1,13 +1,32 @@
-import { getStablecoinBalances } from './_components/data';
-import { HoldersTable } from './_components/holders-table';
+import { columns } from '@/app/(private)/admin/stablecoins/(table)/_components/columns';
+import { AssetTableSkeleton } from '@/components/blocks/asset-table/asset-table-skeleton';
+import { getQueryClient } from '@/lib/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { getHolders } from './_components/data';
+import { HoldersTableClient } from './_components/holders-table-client';
 
-export default async function StableCoinHoldersPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export const metadata: Metadata = {
+  title: 'Holders',
+  description: 'Inspect all holders of the stablecoin.',
+};
+
+export default async function StablecoinHoldersPage({ params }: { params: Promise<{ id: string }> }) {
+  const queryClient = getQueryClient();
   const { id } = await params;
-  const balances = await getStablecoinBalances(id);
+  const queryKey = ['stablecoin-holders', id];
 
-  return <HoldersTable id={id} balances={balances} />;
+  await queryClient.prefetchQuery({
+    queryKey,
+    queryFn: () => getHolders(id),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
+        <HoldersTableClient queryKey={queryKey} asset={id} />
+      </Suspense>
+    </HydrationBoundary>
+  );
 }

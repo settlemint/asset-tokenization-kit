@@ -1,6 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { AssetBalance, TokensUnfrozenEvent } from '../../../generated/schema';
-import { assetBalanceId } from '../../fetch/balance';
+import { TokensUnfrozenEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 
@@ -22,14 +21,6 @@ export function tokensUnfrozenEvent(
   event.amount = toDecimals(amount, decimals);
   event.amountExact = amount;
   event.save();
-
-  // Update the user's asset balance frozen amount
-  const balanceId = assetBalanceId(emitter, user);
-  const balance = AssetBalance.load(balanceId);
-  if (balance !== null) {
-    balance.frozen = balance.frozen.minus(amount);
-    balance.save();
-  }
 
   return event;
 }
