@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { EvmAddress } from '../../evm-address/evm-address';
-import type { NormalizedEventsListItem } from '../assets-events-fragments';
+import type { NormalizedEventsListItem } from '../asset-events-fragments';
 import { ApprovalDetails } from './approval';
 import { BondRedeemedDetails } from './bond-redeemed';
 import { BurnDetails } from './burn';

@@ -12,7 +12,7 @@ import type { Infer, Schema } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import type { Path, Resolver } from 'react-hook-form';
+import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
@@ -73,6 +73,7 @@ export type AssetFormProps<
   submittingLabel?: string;
   processingLabel?: string;
   messages?: Partial<AssetFormMessages<Infer<S>>>;
+  defaultValues?: DefaultValues<Infer<S>>;
 };
 
 export function AssetForm<
@@ -92,6 +93,7 @@ export function AssetForm<
   submittingLabel,
   processingLabel,
   messages: customMessages = {},
+  defaultValues,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const defaultMessageHandlers = defaultMessages<Infer<S>>();
   const messages = {
@@ -172,6 +174,7 @@ export function AssetForm<
     formProps: {
       mode: 'onSubmit',
       criteriaMode: 'all',
+      defaultValues,
     },
     errorMapProps: {
       joinBy: '\n',

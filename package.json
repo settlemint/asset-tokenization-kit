@@ -1,7 +1,7 @@
 {
   "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "private": false,
   "license": "FSL-1.1-MIT",
   "author": {
@@ -50,7 +50,7 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@settlemint/sdk-cli": "1.1.8",
+    "@settlemint/sdk-cli": "1.1.9",
     "turbo": "2.4.2",
     "typescript": "5.7.3",
     "ultracite": "4.1.19",

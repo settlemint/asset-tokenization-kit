@@ -1,4 +1,3 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -7,11 +6,7 @@ import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { BlockUserFormType } from '../schema';
 
-export function Summary({
-  address,
-  userAddress,
-  blocked,
-}: { address: Address; userAddress: Address; blocked: boolean }) {
+export function Summary({ userAddress, blocked }: { userAddress: Address; blocked: boolean }) {
   const { control } = useFormContext<BlockUserFormType>();
   const action = blocked ? 'Unblock' : 'Block';
 
@@ -63,10 +58,6 @@ export function Summary({
               <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
             </div>
           </div>
-
-          <AssetFormInput name="address" type="hidden" value={address} />
-          <AssetFormInput name="userAddress" type="hidden" value={userAddress} />
-          <AssetFormInput name="blocked" type="hidden" value={blocked ? 'true' : 'false'} />
 
           <FormField
             control={control}

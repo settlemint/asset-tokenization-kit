@@ -2,8 +2,8 @@
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import type { NormalizedEventsListItem } from './assets-events-fragments';
-import { getEventsList } from './assets-events-table-data';
+import type { NormalizedEventsListItem } from './asset-events-fragments';
+import { getEventsList } from './asset-events-table-data';
 import { columns, icons } from './table/columns';
 
 interface AssetEventsTableClientProps {

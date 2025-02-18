@@ -4,18 +4,17 @@ import { bondData, cryptocurrencyData, equityData, fundData, stablecoinData } fr
 import { adminUser } from '../test-data/user-data';
 
 test.describe('Create assets', () => {
+  test.describe.configure({ mode: 'serial' });
   test.beforeEach('Sign in', async ({ page }) => {
     const pages = Pages(page);
     await pages.signInPage.signInAsAdmin(adminUser);
   });
-
   test('Create Bond asset', async ({ page }) => {
     const pages = Pages(page);
 
     await pages.adminPage.goto();
     await pages.adminPage.createBond(bondData);
   });
-
   test('Create Cryptocurrency asset', async ({ page }) => {
     const pages = Pages(page);
     await pages.adminPage.goto();

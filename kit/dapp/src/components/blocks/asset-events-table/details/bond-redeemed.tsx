@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { formatNumber } from '@/lib/number';
-import type { BondRedeemedEvent } from '../assets-events-fragments';
+import type { BondRedeemedEvent } from '../asset-events-fragments';
 
 interface BondRedeemedDetailsProps {
   details: BondRedeemedEvent;

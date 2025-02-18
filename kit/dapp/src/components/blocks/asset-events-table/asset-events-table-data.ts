@@ -1,4 +1,4 @@
-import type { NormalizedEventsListItem } from '@/components/blocks/assets-events-table/assets-events-fragments';
+import type { NormalizedEventsListItem } from '@/components/blocks/asset-events-table/asset-events-fragments';
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
@@ -27,7 +27,7 @@ import {
   UnpausedEventFragment,
   UserBlockedEventFragment,
   UserUnblockedEventFragment,
-} from './assets-events-fragments';
+} from './asset-events-fragments';
 
 const TransactionListFragment = theGraphGraphqlStarterkits(
   `
