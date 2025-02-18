@@ -38,7 +38,7 @@ const UserActivity = theGraphGraphqlStarterkits(
     account(id: $accountId) {
       id
       lastActivity
-      balances(first: 1) {
+      balances(first: 1000) {
         id
       }
     }
