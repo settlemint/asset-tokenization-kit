@@ -2,12 +2,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Info } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 
-interface DetailsGridItemProps extends PropsWithChildren {
+interface AssetDetailGridItemProps extends PropsWithChildren {
   label: string;
   info?: string;
 }
 
-export function DetailsGridItem({ label, children, info }: DetailsGridItemProps) {
+export function AssetDetailGridItem({ label, children, info }: AssetDetailGridItemProps) {
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1">
