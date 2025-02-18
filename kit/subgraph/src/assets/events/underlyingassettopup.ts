@@ -16,7 +16,7 @@ export function underlyingAssetTopUpEvent(
   event.eventName = EventName.UnderlyingAssetTopUp;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender
+  event.sender = sender;
   event.from = from;
   event.amount = toDecimals(amount, decimals);
   event.amountExact = amount;

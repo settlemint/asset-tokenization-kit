@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { Account, UnderlyingAssetWithdrawnEvent } from '../../../generated/schema';
+import { UnderlyingAssetWithdrawnEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 

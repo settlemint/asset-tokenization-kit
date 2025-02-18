@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { Account, PausedEvent } from '../../../generated/schema';
+import { PausedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
 
 export function pausedEvent(id: Bytes, timestamp: BigInt, emitter: Bytes, sender: Bytes): PausedEvent {
