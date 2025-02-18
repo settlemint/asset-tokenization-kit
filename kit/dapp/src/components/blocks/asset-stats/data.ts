@@ -1,7 +1,7 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import BigNumber from 'bignumber.js';
 import { getUnixTime, startOfDay } from 'date-fns';
-import { fetchAllTheGraphPages } from '../../../lib/utils/pagination';
 
 const AssetDetailStats = theGraphGraphqlStarterkits(`
 query AssetDetailStats($asset: String!, $timestamp_gte: Timestamp!, $first: Int, $skip: Int) {

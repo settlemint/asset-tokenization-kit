@@ -41,12 +41,12 @@ const EvmAddressUser = hasuraGraphql(`
 `);
 
 const EvmAddressAsset = theGraphGraphqlStarterkits(`
-query EvmAddressAsset($id: ID = "") {
-  asset(id: $id) {
-    name
-    symbol
+  query EvmAddressAsset($id: ID = "") {
+    asset(id: $id) {
+      name
+      symbol
+    }
   }
-}
 `);
 
 /**

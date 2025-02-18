@@ -1,7 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from '../../../../../../lib/utils/pagination';
 
 const ListUserFragment = hasuraGraphql(`
   fragment ListUserFields on user {

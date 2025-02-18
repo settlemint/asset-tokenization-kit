@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { fetchAllTheGraphPages } from '../../../../lib/utils/pagination';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {

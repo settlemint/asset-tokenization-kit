@@ -1,6 +1,6 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
-import { fetchAllTheGraphPages } from '../../../lib/utils/pagination';
 
 const HolderFragment = theGraphGraphqlStarterkits(`
   fragment HolderFragment on AssetBalance {

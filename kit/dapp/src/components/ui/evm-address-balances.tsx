@@ -3,7 +3,7 @@
 import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { fetchAllTheGraphPages } from '../../lib/utils/pagination';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
   query AddressBalances($account: String!, $first: Int, $skip: Int) {

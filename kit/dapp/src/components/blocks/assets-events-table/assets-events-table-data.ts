@@ -2,7 +2,7 @@ import type { NormalizedEventsListItem } from '@/components/blocks/assets-events
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
-import { fetchAllTheGraphPages } from '../../../lib/utils/pagination';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
