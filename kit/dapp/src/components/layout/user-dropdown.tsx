@@ -2,7 +2,6 @@
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { ThemeMenuItem } from '@/components/blocks/theme/theme-menu-item';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +16,7 @@ import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
-import { BringToFront, ChevronDown, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronDown, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback } from 'react';
 import type { Address } from 'viem';
@@ -103,7 +101,7 @@ export function UserDropdown() {
         align="end"
         sideOffset={4}
       >
-        <DropdownMenuGroup>
+        {/* <DropdownMenuGroup>
           <DropdownMenuItem className="dropdown-menu-item">
             <BringToFront className="mr-2 size-4" />
             <Link href="/issuer/pending-transactions" prefetch>
@@ -115,7 +113,7 @@ export function UserDropdown() {
               )}
             </Link>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
+        </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <ThemeMenuItem />

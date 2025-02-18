@@ -1,8 +1,6 @@
 import type { NavElement, NavItem } from '@/components/layout/nav-main';
 import { ActivityIcon } from '@/components/ui/animated-icons/activity';
-import { BellIcon } from '@/components/ui/animated-icons/bell';
 import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
-import { SettingsGearIcon } from '@/components/ui/animated-icons/settings-gear';
 import { UsersIcon } from '@/components/ui/animated-icons/users';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { assetConfig } from '@/lib/config/assets';
@@ -13,12 +11,12 @@ export const topItems: NavElement[] = [
     icon: <ChartScatterIcon className="h-4 w-4" />,
     path: '/admin',
   },
-  {
-    label: 'Actions',
-    icon: <BellIcon className="h-4 w-4" />,
-    path: '/admin/actions',
-    badge: '12',
-  },
+  // {
+  //   label: 'Actions',
+  //   icon: <BellIcon className="h-4 w-4" />,
+  //   path: '/admin/actions',
+  //   badge: '12',
+  // },
 ];
 
 export const bottomItems: NavElement[] = [
@@ -32,11 +30,11 @@ export const bottomItems: NavElement[] = [
     icon: <ActivityIcon className="h-4 w-4" />,
     path: '/admin/transactions',
   },
-  {
-    label: 'Settings',
-    icon: <SettingsGearIcon className="h-4 w-4" />,
-    path: '/admin/settings',
-  },
+  // {
+  //   label: 'Settings',
+  //   icon: <SettingsGearIcon className="h-4 w-4" />,
+  //   path: '/admin/settings',
+  // },
 ];
 
 export const tokenItems: NavItem[] = [
