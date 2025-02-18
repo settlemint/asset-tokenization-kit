@@ -2,7 +2,6 @@ import { EquityCreated } from '../../generated/EquityFactory/EquityFactory';
 import { Equity } from '../../generated/templates';
 import { accountActivityEvent } from '../assets/events/accountactivity';
 import { assetCreatedEvent } from '../assets/events/assetcreated';
-import { fetchAssetCount } from '../assets/fetch/asset-count';
 import { fetchEquity } from '../assets/fetch/equity';
 import { fetchAccount } from '../fetch/account';
 import { AssetType, EventName, FactoryType } from '../utils/enums';
