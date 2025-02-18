@@ -3,10 +3,11 @@
 import { formatNumber } from '@/lib/number';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 
 const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
-  query AddressBalances($account: String!) {
-    assetBalances(where: {account: $account}) {
+  query AddressBalances($account: String!, $first: Int, $skip: Int) {
+    assetBalances(where: {account: $account}, first: $first, skip: $skip) {
       id
       value
       asset {
@@ -26,14 +27,15 @@ const EvmAddressBalancesQuery = theGraphGraphqlStarterkits(`
 export function EvmAddressBalances({ address }: { address: string }) {
   const { data: balances } = useSuspenseQuery({
     queryKey: ['evm-address-balances', address],
-    queryFn: async () => {
-      const response = await theGraphClientStarterkits.request(EvmAddressBalancesQuery, {
-        account: address,
+    queryFn: () => {
+      return fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientStarterkits.request(EvmAddressBalancesQuery, {
+          account: address,
+          first,
+          skip,
+        });
+        return result.assetBalances;
       });
-      if (!response?.assetBalances) {
-        return [];
-      }
-      return response.assetBalances;
     },
     refetchInterval: 10000,
     staleTime: 5000,

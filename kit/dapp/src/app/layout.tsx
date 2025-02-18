@@ -7,7 +7,6 @@ import '@fontsource/figtree/400.css';
 import '@fontsource/figtree/700.css';
 import '@fontsource/figtree/900.css';
 import type { Viewport } from 'next';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import './globals.css';
@@ -30,20 +29,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('min-h-screen font-sans antialiased')}>
-        <NuqsAdapter>
-          <ThemeProvider
-            attribute="class"
-            enableColorScheme
-            disableTransitionOnChange
-            enableSystem
-            value={{
-              light: themeConfig.variant === 'settlemint' ? 'settlemint-light' : 'light',
-              dark: themeConfig.variant === 'settlemint' ? 'settlemint-dark' : 'dark',
-            }}
-          >
-            <QueryClientProvider>{children}</QueryClientProvider>
-          </ThemeProvider>
-        </NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          enableColorScheme
+          enableSystem
+          value={{
+            light: themeConfig.variant === 'settlemint' ? 'settlemint-light' : 'light',
+            dark: themeConfig.variant === 'settlemint' ? 'settlemint-dark' : 'dark',
+          }}
+        >
+          <QueryClientProvider>{children}</QueryClientProvider>
+        </ThemeProvider>
         <Toaster richColors />
       </body>
     </html>

@@ -10,12 +10,11 @@ import type { Address } from 'viem';
 import { CreateStablecoinFormSchema, CreateStablecoinOutputSchema } from './schema';
 
 const CreateStablecoin = portalGraphql(`
-  mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $gasLimit: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
+  mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
     StableCoinFactoryCreate(
       address: $address
       from: $from
       input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals, isin: $isin}
-      gasLimit: $gasLimit
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -78,7 +77,6 @@ export const createStablecoin = actionClient
         isin: isin ?? '',
         collateralLivenessSeconds: convertDurationToSeconds(collateralProofValidityDuration),
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        gasLimit: '5000000',
         metadata: {
           private: isPrivate,
         },

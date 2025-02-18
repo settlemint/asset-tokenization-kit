@@ -1,5 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const ListUserFragment = hasuraGraphql(`
@@ -22,8 +23,8 @@ const ListUserFragment = hasuraGraphql(`
 
 const UsersQuery = hasuraGraphql(
   `
-  query UsersQuery {
-    user {
+  query UsersQuery($limit: Int, $offset: Int) {
+    user(limit: $limit, offset: $offset) {
       ...ListUserFields
     }
   }
@@ -33,8 +34,8 @@ const UsersQuery = hasuraGraphql(
 
 const UserActivity = theGraphGraphqlStarterkits(
   `
-  query UserActivity {
-    accounts(where: { isContract: false }){
+  query UserActivity($first: Int, $skip: Int) {
+    accounts(where: { isContract: false }, first: $first, skip: $skip) {
       id
       lastActivity
     }
@@ -48,9 +49,15 @@ export type ListUser = FragmentOf<typeof ListUserFragment> & {
 };
 
 export async function getUsers(): Promise<ListUser[]> {
-  const [{ user: users }, { accounts }] = await Promise.all([
-    hasuraClient.request(UsersQuery),
-    theGraphClientStarterkits.request(UserActivity),
+  const [users, accounts] = await Promise.all([
+    fetchAllHasuraPages(async (limit, offset) => {
+      const result = await hasuraClient.request(UsersQuery, { limit, offset });
+      return result.user;
+    }),
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(UserActivity, { first, skip });
+      return result.accounts;
+    }),
   ]);
   return users.map((user) => {
     return {

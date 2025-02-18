@@ -160,11 +160,13 @@ type Account @entity {
   id: Bytes!
   isContract: Boolean!
   asAsset: Asset
+  balancesCount: Int!
   balances: [AssetBalance!]! @derivedFrom(field: "account")
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
   activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
+  activityEventsCount: Int!
 }
 
 type AssetBalance @entity {

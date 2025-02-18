@@ -74,14 +74,14 @@ const tabs = (id: string): TabItemProps[] => [
     name: 'Events',
     href: `/admin/equities/${id}/events`,
   },
-  {
-    name: 'Block list',
-    href: `/admin/equities/${id}/blocklist`,
-  },
-  {
-    name: 'Token permissions',
-    href: `/admin/equities/${id}/token-permissions`,
-  },
+  // {
+  //   name: 'Block list',
+  //   href: `/admin/equities/${id}/blocklist`,
+  // },
+  // {
+  //   name: 'Token permissions',
+  //   href: `/admin/equities/${id}/token-permissions`,
+  // },
 ];
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {

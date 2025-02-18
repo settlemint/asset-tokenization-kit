@@ -41,12 +41,12 @@ const EvmAddressUser = hasuraGraphql(`
 `);
 
 const EvmAddressAsset = theGraphGraphqlStarterkits(`
-query MyQuery($id: ID = "") {
-  asset(id: $id) {
-    name
-    symbol
+  query EvmAddressAsset($id: ID = "") {
+    asset(id: $id) {
+      name
+      symbol
+    }
   }
-}
 `);
 
 /**
@@ -84,10 +84,14 @@ export function EvmAddress({
   const asset = useSuspenseQuery({
     queryKey: ['asset', address],
     queryFn: async () => {
-      const asset = await theGraphClientStarterkits.request(EvmAddressAsset, {
-        id: getAddress(address),
-      });
-      return asset.asset;
+      try {
+        const asset = await theGraphClientStarterkits.request(EvmAddressAsset, {
+          id: getAddress(address),
+        });
+        return asset.asset;
+      } catch {
+        return null;
+      }
     },
   });
 

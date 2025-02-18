@@ -12,10 +12,12 @@ export class SignUpPage extends BasePage {
     await this.page.getByLabel('Name').fill(options.name);
     await this.page.getByLabel('Email').fill(options.email);
     await this.page.getByLabel('Password').fill(options.password);
-    await this.page.getByLabel('Choose a secure wallet PIN code').fill(options.pincode);
-    await this.page.getByLabel('Confirm wallet PIN code').fill(options.pincode);
+    await this.page.waitForSelector('label:has-text("Choose a secure wallet PIN code")', { state: 'visible' });
+    await this.page.locator('[data-input-otp="true"]').first().fill(options.pincode);
+    await this.page.locator('[data-input-otp="true"]').last().fill(options.pincode);
 
     await this.page.getByRole('button', { name: 'Create Account' }).click();
-    await expect(this.page.getByText(options.name)).toBeVisible({ timeout: 10000 });
+    await this.page.waitForURL('**/admin');
+    await expect(this.page.locator('div.grid span.truncate.font-semibold', { hasText: options.name })).toBeVisible();
   }
 }

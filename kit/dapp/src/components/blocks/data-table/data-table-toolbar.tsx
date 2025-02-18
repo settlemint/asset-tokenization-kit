@@ -59,6 +59,7 @@ export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTab
       <div className="flex flex-1 items-center space-x-2">
         {globalFilterColumn && (
           <Input
+            data-testid="data-table-search-input"
             placeholder="Search..."
             value={table.getState().globalFilter ?? ''}
             onChange={(event) => table.setGlobalFilter(event.target.value)}

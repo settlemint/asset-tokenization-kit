@@ -22,19 +22,19 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
     }
 
     const assetsOfSection = data[section.assetType];
-    const subItems = assetsOfSection.slice(0, 10).map<NavItem>((asset) => ({
+    const subItems = assetsOfSection.records.map<NavItem>((asset) => ({
       id: asset.id,
       label: `${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
       icon: <AddressAvatar address={asset.id} variant="tiny" />,
     }));
-    if (assetsOfSection.length > 0) {
+    if (assetsOfSection.count > 0) {
       subItems.push({
         id: 'view-all',
         label: 'View all',
         path: section.path,
         icon: <span>→</span>,
-        badge: assetsOfSection.length.toString(),
+        badge: assetsOfSection.count.toString(),
       });
     }
 
@@ -42,7 +42,7 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
       ...section,
       label: section.label,
       path: section.path,
-      badge: assetsOfSection.length.toString(),
+      badge: assetsOfSection.count.toString(),
       subItems,
     });
 

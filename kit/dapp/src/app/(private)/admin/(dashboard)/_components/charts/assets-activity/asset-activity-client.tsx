@@ -33,7 +33,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
     refetchInterval: 1000 * 5,
   });
 
-  const isEmpty = data.assetActivityDatas.every(
+  const isEmpty = data.every(
     (asset) => asset.mintEventCount === 0 && asset.burnEventCount === 0 && asset.transferEventCount === 0
   );
 
@@ -43,7 +43,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
 
   return (
     <BarChartComponent
-      data={data.assetActivityDatas}
+      data={data}
       config={chartConfig}
       title="Activity"
       description="Showing events for each asset type"

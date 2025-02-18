@@ -2,7 +2,6 @@
 
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
-import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { AssetDetailConfig } from '@/lib/config/assets';
@@ -11,7 +10,6 @@ import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { Address } from 'viem';
-import { BlockButton } from './actions/block-form/button';
 import type { Holder } from './asset-holders-table-data';
 
 const columnHelper = createColumnHelper<Holder>();
@@ -83,26 +81,26 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
     ),
     enableColumnFilter: false,
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: ({ column }) => <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>,
-    cell: ({ row }) => {
-      return (
-        <DataTableRowActions>
-          {assetConfig.features.ERC20Blocklist && (
-            <BlockButton
-              address={address}
-              blocked={row.original.blocked}
-              userAddress={row.original.account.id as Address}
-            />
-          )}
-        </DataTableRowActions>
-      );
-    },
-    meta: {
-      enableCsvExport: false,
-    },
-  }),
+  // columnHelper.display({
+  //   id: 'actions',
+  //   header: ({ column }) => <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>,
+  //   cell: ({ row }) => {
+  //     return (
+  //       <DataTableRowActions>
+  //         {assetConfig.features.ERC20Blocklist && (
+  //           <BlockButton
+  //             address={address}
+  //             blocked={row.original.blocked}
+  //             userAddress={row.original.account.id as Address}
+  //           />
+  //         )}
+  //       </DataTableRowActions>
+  //     );
+  //   },
+  //   meta: {
+  //     enableCsvExport: false,
+  //   },
+  // }),
 ];
 
 export const icons = {

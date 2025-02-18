@@ -1,11 +1,5 @@
-import createMDX from '@next/mdx';
 import { withSettleMint } from '@settlemint/sdk-next/config/with-settlemint';
 import type { NextConfig } from 'next';
-import rehypeMermaid from 'rehype-mermaid';
-import rehypePrettyCode from 'rehype-pretty-code';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
@@ -27,23 +21,4 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 };
 
-const withMDX = createMDX({
-  options: {
-    remarkPlugins: [remarkGfm, remarkFrontmatter, [remarkMdxFrontmatter, { name: 'metadata' }]],
-    rehypePlugins: [
-      [rehypeMermaid, { strategy: 'img-svg', dark: true }],
-      [
-        rehypePrettyCode,
-        {
-          theme: {
-            dark: 'catppuccin-macchiato',
-            light: 'catppuccin-latte',
-          },
-          keepBackground: false,
-        },
-      ],
-    ],
-  },
-});
-
-export default withSettleMint(withMDX(nextConfig));
+export default withSettleMint(nextConfig);

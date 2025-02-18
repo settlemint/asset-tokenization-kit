@@ -33,13 +33,17 @@ export function BlockUserForm({ address, userAddress, blocked, assetConfig, onCl
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}
       messages={{
-        onCreate: () => `${actionSubmittingLabel} ${assetConfig.name.toLowerCase()}...`,
-        onSuccess: () => `Successfully ${actionSuccessLabel} ${assetConfig.name.toLowerCase()} on chain`,
-        onError: (_, error) =>
-          `Failed to ${actionLabel.toLowerCase()} ${assetConfig.name.toLowerCase()}: ${error.message}`,
+        onCreate: () => `${actionSubmittingLabel} user...`,
+        onSuccess: () => `Successfully ${actionSuccessLabel.toLowerCase()} user`,
+        onError: (_, error) => `Failed to ${actionLabel.toLowerCase()} user: ${error.message}`,
+      }}
+      defaultValues={{
+        address,
+        userAddress,
+        blocked,
       }}
     >
-      <Summary address={address} userAddress={userAddress} blocked={blocked} />
+      <Summary userAddress={userAddress} blocked={blocked} />
     </AssetForm>
   );
 }

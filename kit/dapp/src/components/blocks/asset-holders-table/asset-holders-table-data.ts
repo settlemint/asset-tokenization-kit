@@ -1,4 +1,5 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 
 const HolderFragment = theGraphGraphqlStarterkits(`
@@ -16,8 +17,8 @@ const HolderFragment = theGraphGraphqlStarterkits(`
 
 const HoldersQuery = theGraphGraphqlStarterkits(
   `
-  query Holders($asset: String!) {
-    assetBalances(where: {asset: $asset}) {
+  query Holders($asset: String!, $first: Int, $skip: Int) {
+    assetBalances(where: {asset: $asset}, first: $first, skip: $skip) {
       ...HolderFragment
     }
   }
@@ -25,9 +26,11 @@ const HoldersQuery = theGraphGraphqlStarterkits(
   [HolderFragment]
 );
 
-export async function getHolders(id: string) {
-  const data = await theGraphClientStarterkits.request(HoldersQuery, { asset: id });
-  return data.assetBalances;
+export function getHolders(id: string) {
+  return fetchAllTheGraphPages(async (first, skip) => {
+    const result = await theGraphClientStarterkits.request(HoldersQuery, { asset: id, first, skip });
+    return result.assetBalances;
+  });
 }
 
 export type Holder = FragmentOf<typeof HolderFragment>;

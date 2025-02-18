@@ -1,4 +1,4 @@
-import { AssetsEventsTable } from '@/components/blocks/assets-events-table/assets-events-table';
+import { AssetsEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 import Link from 'next/link';
 
 export default function LatestTransactions() {
@@ -6,7 +6,7 @@ export default function LatestTransactions() {
 
   return (
     <>
-      <AssetsEventsTable first={first} />
+      <AssetsEventsTable first={first} disableToolbarAndPagination={true} />
       <div className="mt-4">
         <Link href="/admin/transactions" className="text-muted-foreground text-sm hover:text-primary">
           View all transactions →

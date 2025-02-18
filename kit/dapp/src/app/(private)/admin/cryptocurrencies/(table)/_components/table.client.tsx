@@ -8,7 +8,7 @@ import { getCryptocurrencies } from './data';
 export function CryptocurrenciesTableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5000}
+      refetchInterval={5_000}
       assetConfig={assetConfig.cryptocurrency}
       dataAction={getCryptocurrencies}
       columns={columns}

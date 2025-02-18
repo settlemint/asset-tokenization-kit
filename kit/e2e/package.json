@@ -11,7 +11,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "test:e2e": "NODE_NO_WARNINGS=1 playwright test --timeout 10000",
+    "test:e2e": "NODE_NO_WARNINGS=1 playwright test",
     "test:e2e:ui": "NODE_NO_WARNINGS=1 playwright test --ui"
   }
 }
