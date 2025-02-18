@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChartComponent } from '@/components/blocks/charts/bar-chart';
+import { HorizontalBarChartComponent } from '@/components/blocks/charts/bar-charts/horizontal-bar-chart';
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
@@ -42,7 +42,7 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
   }
 
   return (
-    <BarChartComponent
+    <HorizontalBarChartComponent
       data={data.assetActivityDatas}
       config={chartConfig}
       title="Activity"

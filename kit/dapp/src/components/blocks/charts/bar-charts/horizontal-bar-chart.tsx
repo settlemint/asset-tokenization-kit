@@ -10,30 +10,27 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import type { AxisConfig, BarChartData } from './types';
 
-export interface BarChartData {
-  [key: string]: string | number;
-}
-
-interface XAxisConfig {
-  key: string;
-  tickFormatter?: (value: string) => string;
-  tickMargin?: number;
-}
-
-interface BarChartProps {
-  data: BarChartData[];
+interface BarChartProps<T extends BarChartData> {
+  data: T[];
   config: ChartConfig;
   title: string;
   description?: string;
-  xAxis: XAxisConfig;
+  xAxis: AxisConfig<T>;
   className?: string;
 }
 
 const defaultTickFormatter = (value: string) => value.slice(0, 3);
 const defaultTickMargin = 10;
 
-export function BarChartComponent({ data, config, title, description, xAxis, className }: BarChartProps) {
+export function HorizontalBarChartComponent<T extends BarChartData>({
+  data,
+  config,
+  title,
+  description,
+  xAxis,
+}: BarChartProps<T>) {
   const dataKeys = Object.keys(config);
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
 
