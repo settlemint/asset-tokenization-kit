@@ -1,6 +1,6 @@
+import { TransactionsHistory } from '@/components/blocks/transactions-history/transactions-history';
 import { AssetActivity } from './_components/charts/assets-activity/asset-activity';
 import { AssetsSupply } from './_components/charts/assets-supply/assets-supply';
-import { TransactionsHistory } from './_components/charts/transactions/transactions-history';
 import { UsersHistory } from './_components/charts/users/users-history';
 import LatestTransactions from './_components/table/latest-transactions/latest-transactions';
 import { AssetsWidget } from './_components/widgets/assets/assets';
