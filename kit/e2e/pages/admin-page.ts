@@ -162,7 +162,12 @@ export class AdminPage extends BasePage {
         hasText: 'View all',
       })
       .click();
-    await this.page.waitForSelector('table tbody');
+    await this.page.waitForURL(`**/${options.sidebarAssetTypes.toLowerCase()}`);
+    await Promise.all([
+      this.page.waitForSelector('table tbody'),
+      this.page.waitForSelector('[data-testid="data-table-search-input"]'),
+    ]);
+    await this.page.getByPlaceholder('Search...').fill(options.name);
 
     const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
       return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;

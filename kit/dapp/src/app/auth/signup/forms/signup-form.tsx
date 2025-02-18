@@ -179,10 +179,10 @@ export function SignUpForm({
             control={form.control}
             name="walletPincode"
             render={({ field }) => (
-              <FormItem>
+              <FormItem data-testid="wallet-pin-field">
                 <FormLabel>Choose a secure wallet PIN code</FormLabel>
                 <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
+                  <OTPInput value={field.value} onChange={field.onChange} data-testid="wallet-pin-input" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -192,10 +192,10 @@ export function SignUpForm({
             control={form.control}
             name="walletPincodeConfirm"
             render={({ field }) => (
-              <FormItem>
+              <FormItem data-testid="wallet-pin-confirm-field">
                 <FormLabel>Confirm wallet PIN code</FormLabel>
                 <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
+                  <OTPInput value={field.value} onChange={field.onChange} data-testid="wallet-pin-confirm-input" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
