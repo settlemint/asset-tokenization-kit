@@ -2,10 +2,10 @@ import { assetsSidebarQueryKey } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import { AssetManagementClient } from './asset-management-client';
 import { getSidebarAssets } from './data';
-import { TokenManagementClient } from './token-management-client';
 
-export async function TokenManagement() {
+export async function AssetManagement() {
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
@@ -16,7 +16,7 @@ export async function TokenManagement() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <TokenManagementClient queryKey={assetsSidebarQueryKey} />
+        <AssetManagementClient queryKey={assetsSidebarQueryKey} />
       </Suspense>
     </HydrationBoundary>
   );

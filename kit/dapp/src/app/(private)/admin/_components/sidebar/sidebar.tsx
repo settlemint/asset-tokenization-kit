@@ -3,8 +3,8 @@ import { NavHeader } from '@/components/layout/nav-header';
 import { NavMain } from '@/components/layout/nav-main';
 import { TokenDesignerButton } from '@/components/layout/token-designer-button';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import { AssetManagement } from './items/asset-management/asset-management';
 import { bottomItems } from './items/bottom';
-import { TokenManagement } from './items/token-management/token-management';
 import { topItems } from './items/top';
 
 export function NavSidebar() {
@@ -16,7 +16,7 @@ export function NavSidebar() {
       <SidebarContent>
         <TokenDesignerButton />
         <NavMain items={topItems} />
-        <TokenManagement />
+        <AssetManagement />
         <NavMain items={bottomItems} />
       </SidebarContent>
       <SidebarFooter>

@@ -2,7 +2,7 @@ import type { NavItem } from '@/components/layout/nav-main';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { assetConfig } from '@/lib/config/assets';
 
-export const tokenItems: NavItem[] = [
+export const assetItems: NavItem[] = [
   {
     assetType: 'bond',
     label: assetConfig.bond.pluralName,

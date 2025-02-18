@@ -2,21 +2,21 @@
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import { assetItems } from './assets';
 import { getSidebarAssets } from './data';
-import { tokenItems } from './tokens';
 
-type TokenManagementClientProps = {
+type AssetManagementClientProps = {
   queryKey: QueryKey;
 };
 
-export function TokenManagementClient({ queryKey }: TokenManagementClientProps) {
+export function AssetManagementClient({ queryKey }: AssetManagementClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getSidebarAssets,
     refetchInterval: 60 * 1000,
   });
 
-  const processedTokenItems = tokenItems.reduce((acc, section) => {
+  const processedTokenItems = assetItems.reduce((acc, section) => {
     if (!section.assetType) {
       return acc;
     }
