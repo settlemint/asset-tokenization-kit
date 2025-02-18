@@ -12,6 +12,7 @@ import {
   subMonths,
   subWeeks,
 } from 'date-fns';
+import { getDateFromTimestamp } from './date';
 
 export type TimeGranularity = 'hour' | 'day' | 'month';
 export type IntervalType = 'month' | 'week' | 'day';
@@ -103,13 +104,14 @@ export function startOfInterval(date: Date, intervalType: IntervalType, interval
 }
 
 function isInTick(tick: Date, timestamp: number | string | Date, granularity: TimeGranularity): boolean {
+  const timestampDate = getDateFromTimestamp(timestamp);
   switch (granularity) {
     case 'hour':
-      return isSameHour(timestamp, tick);
+      return isSameHour(timestampDate, tick);
     case 'month':
-      return isSameMonth(timestamp, tick);
+      return isSameMonth(timestampDate, tick);
     case 'day':
-      return isSameDay(timestamp, tick);
+      return isSameDay(timestampDate, tick);
     default: {
       const _exhaustiveCheck: never = granularity;
       throw new Error(`Invalid granularity: ${_exhaustiveCheck}`);
