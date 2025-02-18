@@ -75,9 +75,13 @@ export function createTimeSeries<T extends DataPoint>(
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {
-      const processedValue = processTimeSeriesValue(aggregatedData?.[key], lastValidValues.get(key) ?? 0, total);
+      const processedValue = processTimeSeriesValue(
+        Number(aggregatedData?.[key]),
+        lastValidValues.get(key) ?? 0,
+        total
+      );
 
-      updateLastValidValue(lastValidValues, key, aggregatedData?.[key]);
+      updateLastValidValue(lastValidValues, key, processedValue);
       Object.assign(result, { [key]: processedValue });
     }
 
@@ -149,12 +153,11 @@ function aggregateData<T extends DataPoint>(
   }
 }
 
-function processTimeSeriesValue(value: unknown, lastValidValue: number, isTotal: boolean): number {
-  if (!value) {
+function processTimeSeriesValue(currentValue: number | null, lastValidValue: number, isTotal: boolean): number {
+  if (!currentValue) {
     return isTotal ? lastValidValue : 0;
   }
 
-  const currentValue = Number(value);
   return isTotal ? currentValue + lastValidValue : currentValue;
 }
 
