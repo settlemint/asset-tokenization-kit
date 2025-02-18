@@ -37,9 +37,6 @@ export function fetchBond(address: Address): Bond {
     bond.lastActivity = BigInt.zero();
     bond.creator = Address.zero();
 
-    // Stats
-    bond.amountOfHolders = BigInt.zero();
-
     // Bond-specific fields
     bond.capExact = cap.reverted ? BigInt.zero() : cap.value;
     bond.cap = toDecimals(bond.capExact, bond.decimals);

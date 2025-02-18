@@ -430,6 +430,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.address.toHexString(),
   ]);
 
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
+
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
   assetStats.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   assetStats.frozenExact = event.params.amount;
@@ -465,6 +469,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
   assetStats.unfrozen = toDecimals(event.params.amount, stableCoin.decimals);
@@ -504,6 +512,10 @@ export function handleUserBlocked(event: UserBlocked): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.blocked = true;
+  balance.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -522,6 +534,10 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
+
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.blocked = false;
+  balance.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);

@@ -420,6 +420,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.address.toHexString(),
   ]);
 
+  const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
+
   const assetStats = newAssetStatsData(equity.id, AssetType.equity, equity.equityCategory, equity.equityClass);
   assetStats.frozen = toDecimals(event.params.amount, equity.decimals);
   assetStats.frozenExact = event.params.amount;
@@ -462,6 +466,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   assetStats.unfrozenExact = event.params.amount;
   assetStats.save();
 
+  const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
+
   const assetActivity = fetchAssetActivity(AssetType.equity);
   assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
   assetActivity.save();
@@ -497,6 +505,10 @@ export function handleUserBlocked(event: UserBlocked): void {
   equity.lastActivity = event.block.timestamp;
   equity.save();
 
+  const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
+  balance.blocked = true;
+  balance.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.equity, equity.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.equity, equity.id);
@@ -515,6 +527,10 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   equity.lastActivity = event.block.timestamp;
   equity.save();
+
+  const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
+  balance.blocked = false;
+  balance.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.equity, equity.id);

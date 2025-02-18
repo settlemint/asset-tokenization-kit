@@ -13,7 +13,6 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
       totalSupplyExact
       collateral
       isin
-      amountOfHolders
       lastCollateralUpdate
       liveness
       creator{
@@ -26,6 +25,8 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
   }
 `
 );
+
+export type StableCoin = Awaited<ReturnType<typeof getStableCoin>>;
 
 export async function getStableCoin(id: string) {
   const data = await theGraphClientStarterkits.request(StableCoinDetails, { id });
@@ -41,6 +42,6 @@ export async function getStableCoin(id: string) {
 
   return {
     ...data.stableCoin,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
