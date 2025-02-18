@@ -1,5 +1,4 @@
 import { BondCreated } from '../../generated/BondFactory/BondFactory';
-import { AssetCount } from '../../generated/schema';
 import { Bond } from '../../generated/templates';
 import { accountActivityEvent } from '../assets/events/accountactivity';
 import { assetCreatedEvent } from '../assets/events/assetcreated';
