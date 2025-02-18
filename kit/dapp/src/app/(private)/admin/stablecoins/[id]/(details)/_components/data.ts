@@ -15,7 +15,7 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
       isin
       lastCollateralUpdate
       liveness
-      creator{
+      creator {
         id
       }
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {
