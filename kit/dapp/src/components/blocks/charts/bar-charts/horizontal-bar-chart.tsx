@@ -3,34 +3,27 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import type { AxisConfig, BarChartData } from './types';
+import {
+  type AxisConfig,
+  type BarChartData,
+  type BarChartProps,
+  defaultTickFormatter,
+  defaultTickMargin,
+} from './types';
 
-interface BarChartProps<T extends BarChartData> {
-  data: T[];
-  config: ChartConfig;
-  title: string;
-  description?: string;
-  xAxis: AxisConfig<T>;
-  className?: string;
-}
-
-const defaultTickFormatter = (value: string) => value.slice(0, 3);
-const defaultTickMargin = 10;
-
-export function HorizontalBarChartComponent<T extends BarChartData>({
+export function BarChartComponent<T extends BarChartData>({
   data,
   config,
   title,
   description,
   xAxis,
-}: BarChartProps<T>) {
+}: BarChartProps<T> & { xAxis: AxisConfig<T> }) {
   const dataKeys = Object.keys(config);
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
 
