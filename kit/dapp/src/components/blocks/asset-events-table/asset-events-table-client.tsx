@@ -10,15 +10,21 @@ interface AssetEventsTableClientProps {
   queryKey: QueryKey;
   first?: number;
   asset?: string;
+  disableToolbarAndPagination?: boolean;
 }
 
-export function AssetEventsTableClient({ queryKey, first, asset }: AssetEventsTableClientProps) {
+export function AssetEventsTableClient({
+  queryKey,
+  first,
+  asset,
+  disableToolbarAndPagination = false,
+}: AssetEventsTableClientProps) {
   const { data } = useSuspenseQuery<NormalizedEventsListItem[]>({
     queryKey,
     queryFn: () => getEventsList({ first, asset }),
     refetchInterval: 5000,
   });
-  const disableToolbarAndPagination = typeof first === 'number';
+
   return (
     <DataTable
       columns={columns}

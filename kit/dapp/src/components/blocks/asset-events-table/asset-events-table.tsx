@@ -18,18 +18,25 @@ export type AssetsEventsTableProps =
       asset: Address;
       assetConfig: AssetDetailConfig;
       first?: number;
+      disableToolbarAndPagination?: boolean;
     }
   | {
       asset?: undefined;
       assetConfig?: undefined;
       first?: number;
+      disableToolbarAndPagination?: boolean;
     };
 
 /**
  * Server component that renders a table of assets with data fetching capabilities
  * @template Asset The type of asset data being displayed
  */
-export async function AssetsEventsTable({ asset, assetConfig, first }: AssetsEventsTableProps) {
+export async function AssetsEventsTable({
+  asset,
+  assetConfig,
+  first,
+  disableToolbarAndPagination,
+}: AssetsEventsTableProps) {
   const queryClient = getQueryClient();
   const queryKey = asset ? [...assetConfig.queryKey, asset, `first-${first}`] : allAssetQueryKeys;
   try {
@@ -41,7 +48,12 @@ export async function AssetsEventsTable({ asset, assetConfig, first }: AssetsEve
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-          <AssetEventsTableClient queryKey={queryKey} asset={asset} first={first} />
+          <AssetEventsTableClient
+            queryKey={queryKey}
+            asset={asset}
+            first={first}
+            disableToolbarAndPagination={disableToolbarAndPagination}
+          />
         </Suspense>
       </HydrationBoundary>
     );
