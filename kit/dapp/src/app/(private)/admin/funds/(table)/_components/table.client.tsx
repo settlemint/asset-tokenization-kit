@@ -7,6 +7,6 @@ import { getFunds } from './data';
 
 export function FundsTableClient() {
   return (
-    <AssetTableClient refetchInterval={60_000} assetConfig={assetConfig.fund} dataAction={getFunds} columns={columns} />
+    <AssetTableClient refetchInterval={5_000} assetConfig={assetConfig.fund} dataAction={getFunds} columns={columns} />
   );
 }

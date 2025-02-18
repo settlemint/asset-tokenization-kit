@@ -1,6 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { fetchAllPages } from '@/lib/utils/pagination';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { type Prettify, getAddress } from 'viem';
 
@@ -38,8 +38,8 @@ const OffchainStableCoinFragment = hasuraGraphql(`
 
 const OffchainStableCoins = hasuraGraphql(
   `
-  query OffchainStableCoins {
-    asset_aggregate {
+  query OffchainStableCoins($limit: Int, $offset: Int) {
+    asset_aggregate(limit: $limit, offset: $offset) {
       ...OffchainStableCoinsFields
     }
   }
@@ -53,14 +53,17 @@ export type StableCoinAsset = Prettify<
 
 export async function getStableCoins(): Promise<StableCoinAsset[]> {
   const [theGraphStableCoins, dbAssets] = await Promise.all([
-    fetchAllPages(async (first, skip) => {
+    fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientStarterkits.request(StableCoins, { first, skip });
       return result.stableCoins;
-    }, 999),
-    hasuraClient.request(OffchainStableCoins),
+    }),
+    fetchAllHasuraPages(async (limit, offset) => {
+      const result = await hasuraClient.request(OffchainStableCoins, { limit, offset });
+      return result.asset_aggregate.nodes;
+    }),
   ]);
 
-  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
+  const assetsById = new Map(dbAssets.map((asset) => [getAddress(asset.id), asset]));
 
   const stableCoins = theGraphStableCoins.map((stableCoin) => {
     const dbAsset = assetsById.get(getAddress(stableCoin.id));

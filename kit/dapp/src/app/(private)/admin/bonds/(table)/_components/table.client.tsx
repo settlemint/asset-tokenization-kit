@@ -8,7 +8,7 @@ import { getBonds } from './data';
 export function BondsTableClient() {
   return (
     <AssetTableClient
-      refetchInterval={60_000}
+      refetchInterval={5_000}
       assetConfig={assetConfig.bond}
       dataAction={getBonds}
       columns={columns}

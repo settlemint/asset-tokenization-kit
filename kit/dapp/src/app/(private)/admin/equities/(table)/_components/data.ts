@@ -1,5 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { type Prettify, getAddress } from 'viem';
 
@@ -18,8 +19,8 @@ const EquityFragment = theGraphGraphqlStarterkits(`
 
 const Equities = theGraphGraphqlStarterkits(
   `
-  query Equities {
-    equities {
+  query Equities($first: Int, $skip: Int) {
+    equities(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
       ...EquityFields
     }
   }
@@ -38,8 +39,8 @@ const OffchainEquityFragment = hasuraGraphql(`
 
 const OffchainEquities = hasuraGraphql(
   `
-  query OffchainEquities {
-    asset_aggregate {
+  query OffchainEquities($limit: Int, $offset: Int) {
+    asset_aggregate(limit: $limit, offset: $offset) {
       ...OffchainEquitiesFields
     }
   }
@@ -52,13 +53,18 @@ export type EquityAsset = Prettify<
 >;
 
 export async function getEquities(): Promise<EquityAsset[]> {
-  const [theGraphData, dbAssets] = await Promise.all([
-    theGraphClientStarterkits.request(Equities),
-    hasuraClient.request(OffchainEquities),
+  const [theGraphEquities, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(Equities, { first, skip });
+      return result.equities;
+    }),
+    fetchAllHasuraPages(async (limit, offset) => {
+      const result = await hasuraClient.request(OffchainEquities, { limit, offset });
+      return result.asset_aggregate.nodes;
+    }),
   ]);
 
-  const theGraphEquities = theGraphData.equities;
-  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
+  const assetsById = new Map(dbAssets.map((asset) => [getAddress(asset.id), asset]));
 
   const equities = theGraphEquities.map((equity) => {
     const dbAsset = assetsById.get(getAddress(equity.id));
