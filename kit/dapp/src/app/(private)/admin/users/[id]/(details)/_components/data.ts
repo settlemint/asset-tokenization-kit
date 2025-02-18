@@ -38,11 +38,11 @@ const UserActivity = theGraphGraphqlStarterkits(
     account(id: $accountId) {
       id
       lastActivity
-      balances {
+      balances(first: 1000) {
         id
       }
     }
-    assetEvents(orderBy: timestamp, orderDirection: desc, where: { sender_: { id: $senderIdFilter } }) {
+    transferEvents(where: { sender_: { id: $senderIdFilter } }) {
       id
     }
   }
@@ -70,6 +70,6 @@ export async function getUser(id: string): Promise<DetailUser> {
     ...user,
     lastActivity: userData.account?.lastActivity,
     assetCount: userData.account?.balances.length ?? 0,
-    transactionCount: userData.assetEvents.length,
+    transactionCount: userData.transferEvents.length,
   };
 }
