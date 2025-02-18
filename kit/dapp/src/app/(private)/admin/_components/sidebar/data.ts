@@ -28,6 +28,10 @@ const SidebarAssets = theGraphGraphqlStarterkits(
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
       ...SidebarAssetsFragment
     }
+    assetCounts {
+      assetType
+      count
+    }
   }
 `,
   [SidebarAssetsFragment]
@@ -38,26 +42,29 @@ export async function getSidebarAssets(): Promise<
 > {
   const assets = await theGraphClientStarterkits.request(SidebarAssets);
 
+  const getCount = (assetType: keyof typeof assetConfig) =>
+    assets.assetCounts.find((asset) => asset.assetType === assetType)?.count ?? 0;
+
   return {
     stablecoin: {
       records: assets.stableCoins,
-      count: assets.stableCoins.length,
+      count: getCount('stablecoin'),
     },
     equity: {
       records: assets.equities,
-      count: assets.equities.length,
+      count: getCount('equity'),
     },
     bond: {
       records: assets.bonds,
-      count: assets.bonds.length,
+      count: getCount('bond'),
     },
     fund: {
       records: assets.funds,
-      count: assets.funds.length,
+      count: getCount('fund'),
     },
     cryptocurrency: {
       records: assets.cryptoCurrencies,
-      count: assets.cryptoCurrencies.length,
+      count: getCount('cryptocurrency'),
     },
   };
 }
