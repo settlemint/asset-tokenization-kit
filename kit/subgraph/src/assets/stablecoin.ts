@@ -407,7 +407,7 @@ export function handlePaused(event: Paused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 

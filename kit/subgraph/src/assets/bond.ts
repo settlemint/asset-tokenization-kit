@@ -408,7 +408,7 @@ export function handleBondMatured(event: BondMatured): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
-  bondMaturedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  bondMaturedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.BondMatured, event.block.timestamp, AssetType.bond, bond.id);
 }
 
@@ -455,7 +455,7 @@ export function handlePaused(event: Paused): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.bond, bond.id);
 }
 

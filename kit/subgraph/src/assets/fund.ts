@@ -405,7 +405,7 @@ export function handlePaused(event: Paused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.fund, fund.id);
 }
 

@@ -400,7 +400,7 @@ export function handlePaused(event: Paused): void {
   equity.lastActivity = event.block.timestamp;
   equity.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.equity, equity.id);
 }
 

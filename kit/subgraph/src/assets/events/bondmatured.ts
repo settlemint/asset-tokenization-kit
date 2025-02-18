@@ -1,13 +1,13 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { Account, BondMaturedEvent } from '../../../generated/schema';
+import { BondMaturedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
 
-export function bondMaturedEvent(id: Bytes, timestamp: BigInt, emitter: Bytes, sender: Account): BondMaturedEvent {
+export function bondMaturedEvent(id: Bytes, timestamp: BigInt, emitter: Bytes, sender: Bytes): BondMaturedEvent {
   const event = new BondMaturedEvent(id);
   event.eventName = EventName.BondMatured;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender.id;
+  event.sender = sender;
   event.save();
   return event;
 }
