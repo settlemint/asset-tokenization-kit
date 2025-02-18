@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { assetConfig } from '@/lib/config/assets';
+import { assetConfig, assetsSidebarQueryKey } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateEquityFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -18,7 +18,7 @@ export function CreateEquityForm({
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onCloseAction}
       cacheInvalidation={{
-        clientCacheKeys: [assetConfig.equity.queryKey, ['transactions']],
+        clientCacheKeys: [assetConfig.equity.queryKey, ['transactions'], assetsSidebarQueryKey],
       }}
       submitLabel="Create"
       submittingLabel="Creating..."
