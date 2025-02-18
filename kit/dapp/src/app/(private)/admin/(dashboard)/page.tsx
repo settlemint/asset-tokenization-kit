@@ -22,7 +22,13 @@ export default function AdminDashboard() {
         <AssetsSupply />
         <AssetActivity />
         <UsersHistory />
-        <TransactionsHistory />
+        <TransactionsHistory
+          chartOptions={{
+            intervalType: 'day',
+            intervalLength: 7,
+            granularity: 'day',
+          }}
+        />
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">Latest Transactions</p>
       <LatestTransactions />

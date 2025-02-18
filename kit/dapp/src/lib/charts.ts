@@ -51,14 +51,8 @@ export function createTimeSeries<T extends DataPoint>(
 ): TimeSeriesResult<Pick<T, keyof T>>[] {
   const { granularity, intervalType, intervalLength, total = false, aggregation = 'first' } = options;
 
-  const now = new Date();
-
-  // First round the current time based on granularity
-  const roundedNow = granularity === 'hour' ? startOfHour(now) : startOfDay(now);
-  const start = startOfInterval(roundedNow, intervalType, intervalLength);
-
   // Generate ticks based on granularity
-  const interval: Interval = { start, end: roundedNow };
+  const interval: Interval = getInterval(granularity, intervalType, intervalLength);
   const ticks = granularity === 'hour' ? eachHourOfInterval(interval) : eachDayOfInterval(interval);
 
   // Initialize last valid values for each key
@@ -90,17 +84,32 @@ export function createTimeSeries<T extends DataPoint>(
   });
 }
 
-export function startOfInterval(date: Date, intervalType: IntervalType, intervalLength: number): Date {
+export function getInterval(
+  granularity: TimeGranularity,
+  intervalType: IntervalType,
+  intervalLength: number
+): Interval<Date> {
+  const now = new Date();
+
+  // First round the current time based on granularity
+  const roundedNow = granularity === 'hour' ? startOfHour(now) : startOfDay(now);
+
+  let start: Date;
   switch (intervalType) {
     case 'month':
-      return subMonths(date, intervalLength);
+      start = subMonths(roundedNow, intervalLength);
+      break;
     case 'week':
-      return subWeeks(date, intervalLength);
+      start = subWeeks(roundedNow, intervalLength);
+      break;
     case 'day':
-      return subDays(date, intervalLength);
+      start = subDays(roundedNow, intervalLength);
+      break;
     default:
       throw new Error(`Invalid interval type: ${intervalType}`);
   }
+
+  return { start, end: roundedNow };
 }
 
 function isInTick(tick: Date, timestamp: number | string | Date, granularity: TimeGranularity): boolean {
