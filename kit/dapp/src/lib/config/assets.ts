@@ -15,6 +15,12 @@ export interface AssetDetailConfig {
   queryKey: QueryKey;
   urlSegment: string;
   color: string;
+  features: {
+    ERC20Blocklist: boolean;
+    ERC20Custodian: boolean;
+    ERC20Pausable: boolean;
+    ERC20Burnable: boolean;
+  };
 }
 
 /**
@@ -37,6 +43,12 @@ export const assetConfig = {
     queryKey: ['bonds'],
     urlSegment: 'bonds',
     color: '#8b5cf6',
+    features: {
+      ERC20Blocklist: true,
+      ERC20Custodian: true,
+      ERC20Pausable: true,
+      ERC20Burnable: true,
+    },
   },
   cryptocurrency: {
     name: 'Cryptocurrency',
@@ -46,6 +58,12 @@ export const assetConfig = {
     queryKey: ['cryptocurrencies'],
     urlSegment: 'cryptocurrencies',
     color: '#2563eb',
+    features: {
+      ERC20Blocklist: false,
+      ERC20Custodian: false,
+      ERC20Pausable: false,
+      ERC20Burnable: false,
+    },
   },
   equity: {
     name: 'Equity',
@@ -55,6 +73,12 @@ export const assetConfig = {
     queryKey: ['equities'],
     urlSegment: 'equities',
     color: '#4ade80',
+    features: {
+      ERC20Blocklist: true,
+      ERC20Custodian: true,
+      ERC20Pausable: true,
+      ERC20Burnable: true,
+    },
   },
   fund: {
     name: 'Fund',
@@ -64,6 +88,12 @@ export const assetConfig = {
     queryKey: ['funds'],
     urlSegment: 'funds',
     color: '#10b981',
+    features: {
+      ERC20Blocklist: true,
+      ERC20Custodian: true,
+      ERC20Pausable: true,
+      ERC20Burnable: true,
+    },
   },
   stablecoin: {
     name: 'Stablecoin',
@@ -73,6 +103,12 @@ export const assetConfig = {
     queryKey: ['stablecoins'],
     urlSegment: 'stablecoins',
     color: '#0ea5e9',
+    features: {
+      ERC20Blocklist: true,
+      ERC20Custodian: true,
+      ERC20Pausable: true,
+      ERC20Burnable: true,
+    },
   },
 } as const satisfies AssetConfig;
 

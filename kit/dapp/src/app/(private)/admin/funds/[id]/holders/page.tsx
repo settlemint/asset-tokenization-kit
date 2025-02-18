@@ -1,13 +1,15 @@
-import { getFundBalances } from './_components/data';
-import { HoldersTable } from './_components/holders-table';
+import { AssetHoldersTable } from '@/components/blocks/asset-holders-table/asset-holders-table';
+import { assetConfig } from '@/lib/config/assets';
+import type { Metadata } from 'next';
+import type { Address } from 'viem';
 
-export default async function FundsHoldersPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export const metadata: Metadata = {
+  title: 'Holders',
+  description: 'Inspect all holders of the fund.',
+};
+
+export default async function FundHoldersPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const balances = await getFundBalances(id);
 
-  return <HoldersTable id={id as `0x${string}`} balances={balances} />;
+  return <AssetHoldersTable assetConfig={assetConfig.fund} asset={id as Address} />;
 }
