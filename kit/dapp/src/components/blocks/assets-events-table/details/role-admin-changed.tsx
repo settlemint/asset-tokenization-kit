@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { roles } from '@/lib/roles';
-import type { RoleAdminChangedEvent } from '../fragments';
+import type { RoleAdminChangedEvent } from '../assets-events-fragments';
 
 interface RoleAdminChangedDetailsProps {
   details: RoleAdminChangedEvent;

@@ -1,32 +1,15 @@
-import { columns } from '@/app/(private)/admin/stablecoins/(table)/_components/columns';
-import { AssetTableSkeleton } from '@/components/blocks/asset-table/asset-table-skeleton';
-import { getTransactionsList } from '@/components/blocks/events/table/data';
-import { TransactionsTableClient } from '@/components/blocks/events/table/table.client';
-import { getQueryClient } from '@/lib/react-query';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { AssetsEventsTable } from '@/components/blocks/assets-events-table/assets-events-table';
+import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import type { Address } from 'viem';
 
 export const metadata: Metadata = {
   title: 'Transactions',
   description: 'Inspect all transactions on the network.',
 };
 
-export default async function StablecoinEventsPage({ params }: { params: Promise<{ id: string }> }) {
-  const queryClient = getQueryClient();
+export default async function FundsEventsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const queryKey = ['stablecoin-events', id];
 
-  await queryClient.prefetchQuery({
-    queryKey,
-    queryFn: () => getTransactionsList(),
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-        <TransactionsTableClient queryKey={queryKey} asset={id} />
-      </Suspense>
-    </HydrationBoundary>
-  );
+  return <AssetsEventsTable asset={id as Address} assetConfig={assetConfig.fund} />;
 }

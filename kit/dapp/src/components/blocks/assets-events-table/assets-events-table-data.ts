@@ -1,3 +1,4 @@
+import type { NormalizedEventsListItem } from '@/components/blocks/assets-events-table/assets-events-fragments';
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
@@ -11,7 +12,6 @@ import {
   CollateralUpdatedEventFragment,
   ManagementFeeCollectedEventFragment,
   MintEventFragment,
-  type NormalizedTransactionListItem,
   PausedEventFragment,
   PerformanceFeeCollectedEventFragment,
   RoleAdminChangedEventFragment,
@@ -26,7 +26,7 @@ import {
   UnpausedEventFragment,
   UserBlockedEventFragment,
   UserUnblockedEventFragment,
-} from '../fragments';
+} from './assets-events-fragments';
 
 const TransactionListFragment = theGraphGraphqlStarterkits(
   `
@@ -109,7 +109,10 @@ query AssetTransactionsList($first: Int, $asset: String) {
   [TransactionListFragment]
 );
 
-export async function getTransactionsList(first?: number, asset?: string): Promise<NormalizedTransactionListItem[]> {
+export async function getEventsList({
+  first,
+  asset,
+}: { first?: number; asset?: string }): Promise<NormalizedEventsListItem[]> {
   const theGraphData = asset
     ? await theGraphClientStarterkits.request(AssetTransactionsList, {
         first,

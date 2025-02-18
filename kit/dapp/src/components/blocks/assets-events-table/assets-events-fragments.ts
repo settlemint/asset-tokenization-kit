@@ -313,7 +313,7 @@ export type AssetEvent =
   | UnderlyingAssetTopUpEvent
   | UnderlyingAssetWithdrawnEvent;
 
-export interface NormalizedTransactionListItem {
+export interface NormalizedEventsListItem {
   event: string;
   timestamp: string;
   asset: string;
