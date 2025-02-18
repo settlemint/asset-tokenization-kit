@@ -34,16 +34,12 @@ const UserQuery = hasuraGraphql(
 
 const UserActivity = theGraphGraphqlStarterkits(
   `
-  query UserData($accountId: ID!, $senderIdFilter: Bytes!) {
+  query UserData($accountId: ID!) {
     account(id: $accountId) {
       id
       lastActivity
-      balances(first: 1000) {
-        id
-      }
-    }
-    transferEvents(where: { sender_: { id: $senderIdFilter } }) {
-      id
+      balancesCount
+      activityEventsCount
     }
   }
 `,
@@ -64,12 +60,11 @@ export async function getUser(id: string): Promise<DetailUser> {
   }
   const userData = await theGraphClientStarterkits.request(UserActivity, {
     accountId: user.wallet,
-    senderIdFilter: user.wallet,
   });
   return {
     ...user,
     lastActivity: userData.account?.lastActivity,
-    assetCount: userData.account?.balances.length ?? 0,
-    transactionCount: userData.transferEvents.length,
+    assetCount: userData.account?.balancesCount ?? 0,
+    transactionCount: userData.account?.activityEventsCount ?? 0,
   };
 }
