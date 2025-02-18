@@ -121,6 +121,9 @@ export default {
       boxShadow: {
         button: '0 -3px 3px 0 rgb(0 0 0 / 21%) inset',
       },
+      transitionProperty: {
+        theme: 'background-image, background-color, color, border-color, text-decoration-color, fill, stroke',
+      },
     },
   },
   plugins: [animate],
