@@ -2,6 +2,7 @@ import type { NormalizedEventsListItem } from '@/components/blocks/assets-events
 import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
+import { fetchAllTheGraphPages } from '../../../lib/utils/pagination';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -89,8 +90,8 @@ const TransactionListFragment = theGraphGraphqlStarterkits(
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList($first: Int) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first) {
+query TransactionsList($first: Int, $skip: Int) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
     ...TransactionListFragment
   }
 }
@@ -100,8 +101,8 @@ query TransactionsList($first: Int) {
 
 const AssetTransactionsList = theGraphGraphqlStarterkits(
   `
-query AssetTransactionsList($first: Int, $asset: String) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, where: { emitter: $asset }) {
+query AssetTransactionsList( $asset: String, $first: Int, $skip: Int) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset }) {
     ...TransactionListFragment
   }
 }
@@ -113,16 +114,9 @@ export async function getEventsList({
   first,
   asset,
 }: { first?: number; asset?: string }): Promise<NormalizedEventsListItem[]> {
-  const theGraphData = asset
-    ? await theGraphClientStarterkits.request(AssetTransactionsList, {
-        first,
-        asset,
-      })
-    : await theGraphClientStarterkits.request(TransactionsList, {
-        first,
-      });
+  const assetEvents = await fetchData({ first, asset });
 
-  return theGraphData.assetEvents.map((event) => {
+  return assetEvents.map((event) => {
     return {
       event: event.eventName,
       timestamp: formatDate(event.timestamp, { type: 'relative' }),
@@ -131,5 +125,38 @@ export async function getEventsList({
       details: event as unknown as AssetEvent,
       transactionHash: getTransactionHashFromEventId(event.id),
     };
+  });
+}
+
+async function fetchData({ first, asset }: { first?: number; asset?: string }) {
+  if (typeof first === 'number') {
+    if (asset) {
+      const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
+        first,
+        asset,
+      });
+      return result.assetEvents;
+    }
+    const result = await theGraphClientStarterkits.request(TransactionsList, {
+      first,
+    });
+    return result.assetEvents;
+  }
+  if (asset) {
+    return fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
+        first,
+        skip,
+        asset,
+      });
+      return result.assetEvents;
+    });
+  }
+  return fetchAllTheGraphPages(async (first, skip) => {
+    const result = await theGraphClientStarterkits.request(TransactionsList, {
+      first,
+      skip,
+    });
+    return result.assetEvents;
   });
 }

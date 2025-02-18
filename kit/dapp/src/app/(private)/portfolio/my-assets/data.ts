@@ -1,6 +1,7 @@
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
+import { fetchAllTheGraphPages } from '../../../../lib/utils/pagination';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
   fragment BalancesField on AssetBalance {
@@ -28,9 +29,9 @@ const BalanceFragment = theGraphGraphqlStarterkits(`
 
 const MyAssets = theGraphGraphqlStarterkits(
   `
-  query MyAssets($accountId: ID!) {
+  query MyAssets($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
-      balances {
+      balances(first: $first, skip: $skip) {
         ...BalancesField
       }
     }
@@ -43,6 +44,9 @@ export type MyAsset = FragmentOf<typeof BalanceFragment>;
 
 export async function getMyAssets() {
   const user = await getAuthenticatedUser();
-  const { account } = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet });
-  return account?.balances ?? [];
+  const balances = await fetchAllTheGraphPages(async (first, skip) => {
+    const result = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
+    return result.account?.balances ?? [];
+  });
+  return balances;
 }

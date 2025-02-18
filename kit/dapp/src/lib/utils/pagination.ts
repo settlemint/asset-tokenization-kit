@@ -37,12 +37,12 @@ export function fetchAllTheGraphPages<T>(
 /**
  * Fetches all pages of data from the Hasura API.
  * @param fetch - The function to fetch the data.
- * @param pageSize - The number of items to fetch per page (default 1000).
+ * @param pageSize - The number of items to fetch per page (default 10,000).
  * @returns All the data from the API.
  */
 export function fetchAllHasuraPages<T>(
   fetch: (limit: number, offset: number) => Promise<T[]>,
-  pageSize = 1000
+  pageSize = 10_000
 ): Promise<T[]> {
   return fetchAllPages(fetch, pageSize);
 }

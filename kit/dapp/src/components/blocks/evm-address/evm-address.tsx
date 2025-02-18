@@ -41,7 +41,7 @@ const EvmAddressUser = hasuraGraphql(`
 `);
 
 const EvmAddressAsset = theGraphGraphqlStarterkits(`
-query MyQuery($id: ID = "") {
+query EvmAddressAsset($id: ID = "") {
   asset(id: $id) {
     name
     symbol
