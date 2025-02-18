@@ -67,7 +67,7 @@ export function handleTransfer(event: Transfer): void {
     equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
 
     if (!hasBalance(equity.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 
@@ -150,7 +150,7 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(equity.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 

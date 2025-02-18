@@ -69,7 +69,7 @@ export function handleTransfer(event: Transfer): void {
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 
@@ -158,7 +158,7 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 

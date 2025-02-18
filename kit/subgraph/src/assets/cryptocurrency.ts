@@ -55,7 +55,7 @@ export function handleTransfer(event: Transfer): void {
     cryptoCurrency.totalSupply = toDecimals(cryptoCurrency.totalSupplyExact, cryptoCurrency.decimals);
 
     if (!hasBalance(cryptoCurrency.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 
@@ -138,7 +138,7 @@ export function handleTransfer(event: Transfer): void {
     ]);
 
     if (!hasBalance(cryptoCurrency.id, to.id)) {
-      to.assetCount = to.assetCount + 1;
+      to.balancesCount = to.balancesCount + 1;
       to.save();
     }
 
