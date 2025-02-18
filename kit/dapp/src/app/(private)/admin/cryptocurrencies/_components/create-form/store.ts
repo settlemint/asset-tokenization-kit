@@ -10,13 +10,12 @@ import { parseEther, parseUnits } from 'viem';
 import { CreateCryptoCurrencyFormSchema, CreateCryptoCurrencyOutputSchema } from './schema';
 
 const CreateCryptocurrency = portalGraphql(`
-  mutation CreateCryptocurrency($address: String!, $challengeResponse: String!, $from: String!, $gasLimit: String!, $decimals: Int!, $name: String!, $symbol: String!, $initialSupply: String!) {
+  mutation CreateCryptocurrency($address: String!, $challengeResponse: String!, $from: String!, $decimals: Int!, $name: String!, $symbol: String!, $initialSupply: String!) {
     CryptoCurrencyFactoryCreate(
       address: $address
       from: $from
       input: {decimals: $decimals, initialSupply: $initialSupply, symbol: $symbol, name: $name}
       challengeResponse: $challengeResponse
-      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -74,7 +73,6 @@ export const createCryptocurrency = actionClient
         symbol,
         decimals,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        gasLimit: '5000000',
         initialSupply: parseUnits(initialSupply.toString(), decimals).toString(),
       });
 

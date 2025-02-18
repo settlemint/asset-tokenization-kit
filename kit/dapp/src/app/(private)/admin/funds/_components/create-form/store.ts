@@ -9,13 +9,12 @@ import type { Address } from 'viem';
 import { CreateFundFormSchema, CreateFundOutputSchema } from './schema';
 
 const CreateFund = portalGraphql(`
-  mutation CreateFund($address: String!, $challengeResponse: String!, $from: String!, $gasLimit: String!, $decimals: Int!, $fundCategory: String!, $fundClass: String!, $isin: String!, $name: String!, $symbol: String!, $managementFeeBps: Int!) {
+  mutation CreateFund($address: String!, $challengeResponse: String!, $from: String!, $decimals: Int!, $fundCategory: String!, $fundClass: String!, $isin: String!, $name: String!, $symbol: String!, $managementFeeBps: Int!) {
     FundFactoryCreate(
       address: $address
       from: $from
       input: {decimals: $decimals, fundCategory: $fundCategory, fundClass: $fundClass, isin: $isin, name: $name, symbol: $symbol, managementFeeBps: $managementFeeBps}
       challengeResponse: $challengeResponse
-      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -92,7 +91,6 @@ export const createFund = actionClient
         fundClass,
         fundCategory,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        gasLimit: '5000000',
         managementFeeBps,
       });
 
