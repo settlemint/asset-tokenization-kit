@@ -2,21 +2,21 @@ import { TransactionHash } from '@/components/blocks/transaction-hash/transactio
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { EvmAddress } from '../evm-address/evm-address';
-import { ApprovalDetails } from './details/approval';
-import { BondRedeemedDetails } from './details/bond-redeemed';
-import { BurnDetails } from './details/burn';
-import { CollateralUpdatedDetails } from './details/collateral-updated';
-import { FeeCollectedDetails } from './details/fee-collected';
-import { MintDetails } from './details/mint';
-import { RoleAdminChangedDetails } from './details/role-admin-changed';
-import { RoleGrantedDetails } from './details/role-granted';
-import { RoleRevokedDetails } from './details/role-revoked';
-import { TokenWithdrawnDetails } from './details/token-withdrawn';
-import { TokensFrozenDetails } from './details/tokens-frozen';
-import { TransferDetails } from './details/transfer';
-import { UserBlockedDetails } from './details/user-blocked';
-import type { NormalizedTransactionListItem } from './fragments';
+import { EvmAddress } from '../../evm-address/evm-address';
+import type { NormalizedEventsListItem } from '../assets-events-fragments';
+import { ApprovalDetails } from './approval';
+import { BondRedeemedDetails } from './bond-redeemed';
+import { BurnDetails } from './burn';
+import { CollateralUpdatedDetails } from './collateral-updated';
+import { FeeCollectedDetails } from './fee-collected';
+import { MintDetails } from './mint';
+import { RoleAdminChangedDetails } from './role-admin-changed';
+import { RoleGrantedDetails } from './role-granted';
+import { RoleRevokedDetails } from './role-revoked';
+import { TokenWithdrawnDetails } from './token-withdrawn';
+import { TokensFrozenDetails } from './tokens-frozen';
+import { TransferDetails } from './transfer';
+import { UserBlockedDetails } from './user-blocked';
 
 export function EventDetailSheet({
   event,
@@ -25,7 +25,7 @@ export function EventDetailSheet({
   timestamp,
   details,
   transactionHash,
-}: NormalizedTransactionListItem) {
+}: NormalizedEventsListItem) {
   return (
     <Sheet>
       <SheetTrigger asChild>

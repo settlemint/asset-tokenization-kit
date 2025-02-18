@@ -4,11 +4,11 @@ import { DataTable } from '@/components/blocks/data-table/data-table';
 import type { DataTablePaginationOptions } from '@/components/blocks/data-table/data-table-pagination';
 import type { DataTableToolbarOptions } from '@/components/blocks/data-table/data-table-toolbar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import type { NormalizedTransactionListItem } from '../fragments';
-import { columns, icons } from './columns';
-import { getTransactionsList } from './data';
+import type { NormalizedEventsListItem } from './assets-events-fragments';
+import { getEventsList } from './assets-events-table-data';
+import { columns, icons } from './table/columns';
 
-interface TransactionsTableClientProps {
+interface AssetEventsTableClientProps {
   queryKey: QueryKey;
   first?: number;
   toolbar?: DataTableToolbarOptions;
@@ -16,10 +16,10 @@ interface TransactionsTableClientProps {
   asset?: string;
 }
 
-export function TransactionsTableClient({ queryKey, first, toolbar, pagination, asset }: TransactionsTableClientProps) {
-  const { data } = useSuspenseQuery<NormalizedTransactionListItem[]>({
+export function AssetEventsTableClient({ queryKey, first, toolbar, pagination, asset }: AssetEventsTableClientProps) {
+  const { data } = useSuspenseQuery<NormalizedEventsListItem[]>({
     queryKey,
-    queryFn: () => getTransactionsList(first, asset),
+    queryFn: () => getEventsList({ first, asset }),
     refetchInterval: 5000,
   });
 

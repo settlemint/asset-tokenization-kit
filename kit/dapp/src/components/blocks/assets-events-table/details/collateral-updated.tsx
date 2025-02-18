@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { formatNumber } from '@/lib/number';
-import type { CollateralUpdatedEvent } from '../fragments';
+import type { CollateralUpdatedEvent } from '../assets-events-fragments';
 
 interface CollateralUpdatedDetailsProps {
   details: CollateralUpdatedEvent;
