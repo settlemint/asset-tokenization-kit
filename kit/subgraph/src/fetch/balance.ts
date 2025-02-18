@@ -22,6 +22,12 @@ export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number
   return balance;
 }
 
+export function hasBalance(asset: Bytes, account: Bytes): boolean {
+  const id = assetBalanceId(asset, account);
+  const balance = AssetBalance.load(id);
+  return balance != null;
+}
+
 export function assetBalanceId(asset: Bytes, account: Bytes): Bytes {
   return asset.concat(account);
 }

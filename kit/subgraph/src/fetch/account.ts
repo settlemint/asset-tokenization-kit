@@ -8,6 +8,8 @@ export function fetchAccount(address: Address): Account {
   if (!account) {
     account = new Account(address);
     account.lastActivity = BigInt.zero();
+    account.balancesCount = 0;
+    account.activityEventsCount = 0;
     if (ethereum.hasCode(address).inner) {
       account.isContract = true;
     } else {
