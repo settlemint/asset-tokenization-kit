@@ -51,7 +51,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       to.id,
       event.params.value,
       stableCoin.decimals
@@ -98,7 +98,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       event.params.value,
       stableCoin.decimals
@@ -142,7 +142,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       to.id,
       event.params.value,
@@ -211,7 +211,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -281,7 +281,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -349,7 +349,7 @@ export function handleApproval(event: Approval): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     owner.id,
     spender.id,
     event.params.value,
@@ -378,7 +378,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
@@ -407,7 +407,7 @@ export function handlePaused(event: Paused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
@@ -424,7 +424,7 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
-  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender);
   accountActivityEvent(sender, EventName.Unpaused, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
@@ -459,7 +459,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     user.id,
     event.params.amount,
     stableCoin.decimals
@@ -499,7 +499,7 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     user.id,
     event.params.amount,
     stableCoin.decimals
@@ -526,7 +526,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   balance.blocked = true;
   balance.save();
 
-  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
@@ -549,7 +549,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   balance.blocked = false;
   balance.save();
 
-  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(user, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
@@ -583,7 +583,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.oldAmount,
     event.params.newAmount,
     stableCoin.decimals

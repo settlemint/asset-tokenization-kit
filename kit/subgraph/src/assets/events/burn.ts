@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { BurnEvent } from '../../../generated/schema';
+import { Account, BurnEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 import { assetEvent } from './asset';
@@ -8,7 +8,7 @@ export function burnEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
+  sender: Account,
   from: Bytes,
   value: BigInt,
   decimals: number
@@ -18,7 +18,7 @@ export function burnEvent(
   burnEvent.eventName = EventName.Burn;
   burnEvent.timestamp = timestamp;
   burnEvent.emitter = emitter;
-  burnEvent.sender = sender;
+  burnEvent.sender = sender.id;
   burnEvent.from = from;
   burnEvent.value = toDecimals(value, decimals);
   burnEvent.valueExact = value;

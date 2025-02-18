@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { MintEvent } from '../../../generated/schema';
+import { Account, MintEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 import { assetEvent } from './asset';
@@ -8,7 +8,7 @@ export function mintEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
+  sender: Account,
   to: Bytes,
   value: BigInt,
   decimals: number
@@ -18,7 +18,7 @@ export function mintEvent(
   mintEvent.eventName = EventName.Mint;
   mintEvent.timestamp = timestamp;
   mintEvent.emitter = emitter;
-  mintEvent.sender = sender;
+  mintEvent.sender = sender.id;
   mintEvent.to = to;
   mintEvent.value = toDecimals(value, decimals);
   mintEvent.valueExact = value;

@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { ApprovalEvent } from '../../../generated/schema';
+import { Account, ApprovalEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 import { assetEvent } from './asset';
@@ -8,7 +8,7 @@ export function approvalEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
+  sender: Account,
   owner: Bytes,
   spender: Bytes,
   value: BigInt,
@@ -19,7 +19,7 @@ export function approvalEvent(
   event.eventName = EventName.Approval;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender;
+  event.sender = sender.id;
   event.owner = owner;
   event.spender = spender;
   event.valueExact = value;

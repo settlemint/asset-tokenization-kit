@@ -55,7 +55,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       to.id,
       event.params.value,
       fund.decimals
@@ -99,7 +99,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       event.params.value,
       fund.decimals
@@ -140,7 +140,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       to.id,
       event.params.value,
@@ -209,7 +209,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -279,7 +279,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -346,7 +346,7 @@ export function handleApproval(event: Approval): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     owner.id,
     spender.id,
     event.params.value,
@@ -376,7 +376,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
@@ -405,7 +405,7 @@ export function handlePaused(event: Paused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+  pausedEvent(eventId(event), event.block.timestamp, event.address, sender);
   accountActivityEvent(sender, EventName.Paused, event.block.timestamp, AssetType.fund, fund.id);
 }
 
@@ -419,7 +419,7 @@ export function handleUnpaused(event: Unpaused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
-  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender);
   accountActivityEvent(sender, EventName.Unpaused, event.block.timestamp, AssetType.fund, fund.id);
 }
 
@@ -455,7 +455,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     user.id,
     event.params.amount,
     fund.decimals
@@ -496,7 +496,7 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     user.id,
     event.params.amount,
     fund.decimals
@@ -523,7 +523,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   balance.blocked = true;
   balance.save();
 
-  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.fund, fund.id);
 }
@@ -546,7 +546,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   balance.blocked = false;
   balance.save();
 
-  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
   accountActivityEvent(user, EventName.UserUnblocked, event.block.timestamp, AssetType.fund, fund.id);
 }
@@ -569,7 +569,7 @@ export function handleManagementFeeCollected(event: ManagementFeeCollected): voi
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.amount,
     fund.decimals
   );
@@ -594,7 +594,7 @@ export function handlePerformanceFeeCollected(event: PerformanceFeeCollected): v
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.amount,
     fund.decimals
   );
@@ -622,7 +622,7 @@ export function handleTokenWithdrawn(event: TokenWithdrawn): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     token.id,
     to.id,
     event.params.amount,

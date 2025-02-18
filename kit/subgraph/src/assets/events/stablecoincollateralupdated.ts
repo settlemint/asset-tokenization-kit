@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { CollateralUpdatedEvent } from "../../../generated/schema";
+import { Account, CollateralUpdatedEvent } from "../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
 import { EventName } from '../../utils/enums';
 import { assetEvent } from './asset';
@@ -8,7 +8,7 @@ export function stablecoinCollateralUpdatedEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
+  sender: Account,
   oldAmount: BigInt,
   newAmount: BigInt,
   decimals: i32
@@ -18,7 +18,7 @@ export function stablecoinCollateralUpdatedEvent(
   event.eventName = EventName.CollateralUpdated;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender;
+  event.sender = sender.id;
   event.oldAmount = toDecimals(oldAmount, decimals);
   event.oldAmountExact = oldAmount;
   event.newAmount = toDecimals(newAmount, decimals);

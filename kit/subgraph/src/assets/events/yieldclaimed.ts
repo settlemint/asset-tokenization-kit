@@ -1,5 +1,5 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { YieldClaimedEvent } from '../../../generated/schema';
+import { Account, YieldClaimedEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
 import { assetEvent } from './asset';
@@ -8,7 +8,7 @@ export function yieldClaimedEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
-  sender: Bytes,
+  sender: Account,
   holder: Bytes,
   totalAmount: BigInt,
   fromPeriod: BigInt,
@@ -22,7 +22,7 @@ export function yieldClaimedEvent(
   event.eventName = EventName.YieldClaimed;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender;
+  event.sender = sender.id;
   event.holder = holder;
   event.totalAmount = toDecimals(totalAmount, decimals);
   event.totalAmountExact = totalAmount;

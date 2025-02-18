@@ -20,7 +20,7 @@ export function handleBondCreated(event: BondCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
+  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender);
   accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.bond, asset.id);
 
   Bond.create(event.params.token);

@@ -37,7 +37,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       to.id,
       event.params.value,
       cryptoCurrency.decimals
@@ -81,7 +81,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       event.params.value,
       cryptoCurrency.decimals
@@ -122,7 +122,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender.id,
+      sender,
       from.id,
       to.id,
       event.params.value,
@@ -191,7 +191,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -261,7 +261,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     account.id
   );
@@ -329,7 +329,7 @@ export function handleApproval(event: Approval): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     owner.id,
     spender.id,
     event.params.value,
@@ -359,7 +359,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
