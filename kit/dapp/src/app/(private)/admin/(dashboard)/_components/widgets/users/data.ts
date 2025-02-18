@@ -2,7 +2,7 @@ import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { fetchAllHasuraPages } from '@/lib/utils/pagination';
 
 const RecentUsersQuery = hasuraGraphql(`
-  query UsersQuery($createdAfter: timestamp!) {
+  query UsersQuery($createdAfter: timestamptz!) {
     recent_users_aggregate: user_aggregate(
       where: { created_at: { _gt: $createdAfter } }
     ) {
