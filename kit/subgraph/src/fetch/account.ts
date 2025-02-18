@@ -10,7 +10,6 @@ export function fetchAccount(address: Address): Account {
     account.lastActivity = BigInt.zero();
     account.assetCount = 0;
     account.activityEventsCount = 0;
-    account.assetActivityEventsCount = 0;
     if (ethereum.hasCode(address).inner) {
       account.isContract = true;
     } else {

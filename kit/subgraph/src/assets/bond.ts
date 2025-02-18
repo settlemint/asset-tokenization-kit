@@ -57,7 +57,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender,
+      sender.id,
       to.id,
       event.params.value,
       bond.decimals
@@ -101,7 +101,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender,
+      sender.id,
       from.id,
       event.params.value,
       bond.decimals
@@ -142,7 +142,7 @@ export function handleTransfer(event: Transfer): void {
       eventId(event),
       event.block.timestamp,
       event.address,
-      sender,
+      sender.id,
       from.id,
       to.id,
       event.params.value,
@@ -211,7 +211,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     event.params.role,
     account.id
   );
@@ -281,7 +281,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     event.params.role,
     account.id
   );
@@ -352,7 +352,7 @@ export function handleApproval(event: Approval): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     owner.id,
     spender.id,
     event.params.value,
@@ -382,7 +382,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
@@ -434,7 +434,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     holder.id,
     event.params.bondAmount,
     event.params.underlyingAmount,
@@ -469,7 +469,7 @@ export function handleUnpaused(event: Unpaused): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
-  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender);
+  unpausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(sender, EventName.Unpaused, event.block.timestamp, AssetType.bond, bond.id);
 }
 
@@ -505,7 +505,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     user.id,
     event.params.amount,
     bond.decimals
@@ -547,7 +547,7 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     user.id,
     event.params.amount,
     bond.decimals
@@ -574,7 +574,7 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.address.toHexString(),
   ]);
 
-  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
+  userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.bond, bond.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.bond, bond.id);
 }
@@ -597,7 +597,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     event.address.toHexString(),
   ]);
 
-  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender, user.id);
+  userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.bond, bond.id);
   accountActivityEvent(user, EventName.UserUnblocked, event.block.timestamp, AssetType.bond, bond.id);
 }
@@ -622,7 +622,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     from.id,
     event.params.amount,
     bond.decimals
@@ -651,7 +651,7 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn):
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     to.id,
     event.params.amount,
     bond.decimals

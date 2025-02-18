@@ -165,8 +165,6 @@ type Account @entity {
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
   assetCount: Int!
-  assetActivityEvents: [AssetActivityEvent!]! @derivedFrom(field: "sender")
-  assetActivityEventsCount: Int!
   activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
   activityEventsCount: Int!
 }
@@ -238,14 +236,6 @@ type AccountActivityEvent @entity(immutable: true) {
   timestamp: BigInt!
   asset: Asset
   account: Account!
-}
-
-type AssetActivityEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
 }
 
 # --------------------------------------------------

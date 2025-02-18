@@ -32,7 +32,7 @@ export function handleYieldClaimed(event: YieldClaimedEvent): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     holder.id,
     event.params.totalAmount,
     event.params.fromPeriod,
@@ -85,7 +85,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUpEvent): vo
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     from.id,
     event.params.amount,
     token.decimals
@@ -116,7 +116,7 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawnEv
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender,
+    sender.id,
     to.id,
     event.params.amount,
     token.decimals

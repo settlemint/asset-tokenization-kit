@@ -20,7 +20,7 @@ export function handleEquityCreated(event: EquityCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender);
+  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, sender.id);
   accountActivityEvent(sender, EventName.AssetCreated, event.block.timestamp, AssetType.equity, asset.id);
 
   Equity.create(event.params.token);

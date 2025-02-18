@@ -1,15 +1,13 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { Account, UnpausedEvent } from '../../../generated/schema';
+import { UnpausedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
-import { assetActivityEvent } from './assetactivity';
 
-export function unpausedEvent(id: Bytes, timestamp: BigInt, emitter: Bytes, sender: Account): UnpausedEvent {
-  assetActivityEvent(id, timestamp, emitter, sender, EventName.Unpaused);
+export function unpausedEvent(id: Bytes, timestamp: BigInt, emitter: Bytes, sender: Bytes): UnpausedEvent {
   const event = new UnpausedEvent(id);
   event.eventName = EventName.Unpaused;
   event.timestamp = timestamp;
   event.emitter = emitter;
-  event.sender = sender.id;
+  event.sender = sender;
   event.save();
   return event;
 }
