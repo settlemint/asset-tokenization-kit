@@ -11,13 +11,12 @@ import type { Address } from 'viem';
 import { CreateEquityFormSchema } from './schema';
 
 const CreateEquity = portalGraphql(`
-  mutation CreateEquity($address: String!, $challengeResponse: String!, $from: String!, $gasLimit: String!, $decimals: Int!, $equityCategory: String!, $equityClass: String!, $isin: String!, $name: String!, $symbol: String!) {
+  mutation CreateEquity($address: String!, $challengeResponse: String!, $from: String!, $decimals: Int!, $equityCategory: String!, $equityClass: String!, $isin: String!, $name: String!, $symbol: String!) {
     EquityFactoryCreate(
       address: $address
       from: $from
       input: {decimals: $decimals, equityCategory: $equityCategory, equityClass: $equityClass, isin: $isin, name: $name, symbol: $symbol}
       challengeResponse: $challengeResponse
-      gasLimit: $gasLimit
     ) {
       transactionHash
     }
@@ -82,7 +81,6 @@ export const createEquity = actionClient
         equityClass,
         equityCategory,
         challengeResponse: await handleChallenge(user.wallet as Address, pincode),
-        gasLimit: '5000000',
       });
 
       const transactionHash = data.EquityFactoryCreate?.transactionHash;
