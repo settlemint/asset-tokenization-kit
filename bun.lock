@@ -5,7 +5,7 @@
       "name": "@settlemint/starterkit-asset-tokenization",
       "devDependencies": {
         "@biomejs/biome": "1.9.4",
-        "@settlemint/sdk-cli": "1.1.8",
+        "@settlemint/sdk-cli": "1.1.9",
         "lefthook": "1.10.10",
         "turbo": "2.4.2",
         "typescript": "5.7.3",
@@ -52,13 +52,13 @@
         "@radix-ui/react-switch": "1.1.3",
         "@radix-ui/react-tabs": "1.1.3",
         "@radix-ui/react-tooltip": "1.1.8",
-        "@settlemint/sdk-blockscout": "1.1.8",
-        "@settlemint/sdk-hasura": "1.1.8",
-        "@settlemint/sdk-ipfs": "1.1.8",
-        "@settlemint/sdk-minio": "1.1.8",
-        "@settlemint/sdk-next": "1.1.8",
-        "@settlemint/sdk-portal": "1.1.8",
-        "@settlemint/sdk-thegraph": "1.1.8",
+        "@settlemint/sdk-blockscout": "1.1.9",
+        "@settlemint/sdk-hasura": "1.1.9",
+        "@settlemint/sdk-ipfs": "1.1.9",
+        "@settlemint/sdk-minio": "1.1.9",
+        "@settlemint/sdk-next": "1.1.9",
+        "@settlemint/sdk-portal": "1.1.9",
+        "@settlemint/sdk-thegraph": "1.1.9",
         "@tanstack/query-sync-storage-persister": "5.66.4",
         "@tanstack/react-query": "5.66.5",
         "@tanstack/react-query-devtools": "5.66.5",
@@ -107,8 +107,8 @@
         "@types/mdx": "2.0.13",
         "@types/node": "22.13.4",
         "@types/pg": "8.11.11",
-        "@types/react": "19.0.9",
-        "@types/react-dom": "19.0.3",
+        "@types/react": "19.0.10",
+        "@types/react-dom": "19.0.4",
         "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
         "drizzle-kit": "0.30.4",
         "eslint": "9.20.1",
@@ -843,23 +843,23 @@
 
     "@sentry/utils": ["@sentry/utils@5.30.0", "", { "dependencies": { "@sentry/types": "5.30.0", "tslib": "^1.9.3" } }, "sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww=="],
 
-    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-PIgX8vBbeTuNEMnDwpdMy+mFHJ7MJEuR+yLEpWiEuoelE0dSv+4+Iaa/WuT2kYp+cqlQznhAiuThsEvQMOVbug=="],
+    "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-9wcrO1MlPjPXYQIko7fA+j+USKZzNQdGsdY5XIkjBSoNUAZMzjfegYz6bRyJwnbl6ABBrzJXpRNsJlkhb7wDWg=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.1.8", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.18" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-TYj9IQL2rPWZPM9g8P06JOIwe22A1h9fmhPbC8MidtRpejaoAazf/HKbH2WRl7fWOroARAoUAuT3MvqlE7xhhg=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.1.9", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.18" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-elwpgxTrpJF0MSV31+QaIT3kcuVTi3NAOEkBf4ipHz5SF75rwJ8DCe+sl57RyBhUmuT5TSHoD6hpcMCCnrS5JQ=="],
 
-    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "drizzle-kit": "^0.30", "drizzle-orm": "^0.39.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-7mBSZf//Gz5NBTgMzETOXvI9peB5nimVuFqUWJkXBvnzA7iQrKbo3+XD4i4XHu6vX3beSkkT8oWL/gIi4QZNTQ=="],
+    "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "drizzle-kit": "^0.30", "drizzle-orm": "^0.39.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-EsIVMQ0aNwnzkW+48vqFaVVy1yQtcRq0CGDWeMshsSBOZMEjp07sTk+4u9RUw+3JEkMiPvXnwzDzIpETVz8nzw=="],
 
-    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-YjYdzLG0UAus0U292ZJzparHaqUGXVaHwC+lIz34yD5RWgxgxbtyb8dNlu2pHjFA14PeNKQE+pgOZ/Ks0IlQGw=="],
+    "@settlemint/sdk-ipfs": ["@settlemint/sdk-ipfs@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "kubo-rpc-client": "^5", "zod": "^3" } }, "sha512-typXt11dvwqR6l5S+vDf653EcFVE0nl2y1okJVrL+F7wptWmu9GmPfJ8B0/JfDJxN8nWCYYdKYNfQsU1se6/Bg=="],
 
-    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "minio": "^8", "zod": "^3" } }, "sha512-2bikka/pYgfE6A3kzNuvyNoWUqGMfrBP23/MZFj4yTjVNonxDbeqZDhwuKAWKr0qcVYFdYaazGl82CC1S9oEsA=="],
+    "@settlemint/sdk-minio": ["@settlemint/sdk-minio@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "minio": "^8", "zod": "^3" } }, "sha512-QX+GQdvOlk8mjb+A+pWMUKa4j9MpYtORb30v8yLW7YRQaaEhJTNL3bfu/5M6+2MGJmrOxzsL48leCxsbhEz9ew=="],
 
-    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-xvWAjveGLDbywLWQuasI+2CUTwF7O2XuseLsaNMkqu4twFLptgJ2/m47msSpUKaDjClI3fpTxqfY9iI7xvHoSg=="],
+    "@settlemint/sdk-next": ["@settlemint/sdk-next@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "path-to-regexp": "^8" }, "peerDependencies": { "next": ">=15", "react": ">=18" } }, "sha512-vll5IS9XdJ8lxv+DEKnFqVSJ5Cj85dSHoBL0eSrH80JYaxEWGBfmJTTtipeXBUvvWfdISwpHK97+uI50SNx8mA=="],
 
-    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-yQj2fo8s/QYI/vPvq0HEP4WGjokEuXI6oYNI+VFPvRBT8Doz+uZqCY8kMpyk18yhW5F8Ym8EnZ1qV995Bhrdrw=="],
+    "@settlemint/sdk-portal": ["@settlemint/sdk-portal@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-JcYuQTfvbLHGTBnMyI0I/E56xevEoxp+IDFGUC+6CG+JGKq2XFfcZfZqbJ039g2Mf4z7yA4M2HQCz7YVAUJOYw=="],
 
-    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.1.8", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.8", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-24rwQHMnlJrDjDS727KHrqm+yXf0Iqv/c5CYADLSn+r7hebnRmh3XHiFvL/AagjwjMX8/NTu7FeS1alaXAFfmQ=="],
+    "@settlemint/sdk-thegraph": ["@settlemint/sdk-thegraph@1.1.9", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.9", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-+xzbQpoyOd7NQaTjM98tAWZ8/d9Sv5D8a6WBlHS+TUlVKZ+/wdrBP1UXBtj8VwfSnaVBptBF4vEyX9t3b7bNJg=="],
 
-    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.1.8", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "^1", "nano-spawn": "^0.2", "package-manager-detector": "^0.2", "yocto-spinner": "^0.2.0", "yoctocolors": "^2" } }, "sha512-dPrY7Ucwi3BRGYXjI61Rf6Kdcl1yqKD/pmJo45h0hTCYABd0LjF0+JLCv28sXvDnSwi/fv5gK+9xOCNYwj5B3A=="],
+    "@settlemint/sdk-utils": ["@settlemint/sdk-utils@1.1.9", "", { "dependencies": { "@antfu/install-pkg": "^1", "@dotenvx/dotenvx": "^1", "@manypkg/find-root": "^2", "@npmcli/package-json": "^6", "console-table-printer": "^2", "deepmerge-ts": "^7", "environment": "^1", "find-up": "^7", "is-in-ci": "^1", "nano-spawn": "^0.2", "package-manager-detector": "^0.2", "yocto-spinner": "^0.2.0", "yoctocolors": "^2" } }, "sha512-EV6OEDrAYYU7YH4YB66gU8BuMrUGV0Eh+Pc9xZUzNidXRo97Or0S+P2t9yCx9cczVdX5l6fGk7YSJ8tCcpSFSg=="],
 
     "@shikijs/core": ["@shikijs/core@2.4.2", "", { "dependencies": { "@shikijs/engine-javascript": "2.4.2", "@shikijs/engine-oniguruma": "2.4.2", "@shikijs/types": "2.4.2", "@shikijs/vscode-textmate": "^10.0.2", "@types/hast": "^3.0.4", "hast-util-to-html": "^9.0.4" } }, "sha512-V0kXYB/70xA3CO+b2Pz9kcSThaOUfObOEkGeHsKSFqV6rultaWPfeyZPpBlKHMUXO9Bt1ZGINDCctN90pQvnTg=="],
 
@@ -1041,9 +1041,9 @@
 
     "@types/qs": ["@types/qs@6.9.18", "", {}, "sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA=="],
 
-    "@types/react": ["@types/react@19.0.9", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-FedNTYgmMwSZmD1Sru/W1gJKuiYCN/3SuBkmZkcxX+FpO5zL76B22A9YNfAKg4HQO3Neh/30AiynP6BELdU0qQ=="],
+    "@types/react": ["@types/react@19.0.10", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-JuRQ9KXLEjaUNjTWpzuR231Z2WpIwczOkBEIvbHNCzQefFIT0L8IqE6NV6ULLyC1SI/i234JnDoMkfg+RjQj2g=="],
 
-    "@types/react-dom": ["@types/react-dom@19.0.3", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-0Knk+HJiMP/qOZgMyNFamlIjw9OFCsyC2ZbigmEEyXXixgre6IQpm/4V+r3qH4GC1JPvRJKInw+on2rV6YZLeA=="],
+    "@types/react-dom": ["@types/react-dom@19.0.4", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-4fSQ8vWFkg+TGhePfUzVmat3eC14TXYSsiiDSLI0dVLsrm9gZFABjPy/Qu6TKgl1tq1Bu1yDsuQgY3A3DOjCcg=="],
 
     "@types/secp256k1": ["@types/secp256k1@4.0.6", "", { "dependencies": { "@types/node": "*" } }, "sha512-hHxJU6PAEUn0TP4S/ZOzuTUvJWuZ6eIKeNKb5RBpODvSl6hp1Wrw4s7ATY50rklRCScUDpHzVA/DQdSjJ3UoYQ=="],
 
