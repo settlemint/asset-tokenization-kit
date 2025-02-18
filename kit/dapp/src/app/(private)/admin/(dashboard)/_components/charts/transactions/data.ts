@@ -1,8 +1,8 @@
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 
 const ProcessedTransactionsHistory = portalGraphql(`
-  query ProcessedTransactionsHistory($processedAfter: String) {
-    getProcessedTransactions(processedAfter: $processedAfter) {
+  query ProcessedTransactionsHistory($processedAfter: String, $from: String) {
+    getProcessedTransactions(processedAfter: $processedAfter, from: $from) {
       records {
         createdAt
       }
@@ -10,9 +10,10 @@ const ProcessedTransactionsHistory = portalGraphql(`
   }
 `);
 
-export async function getTransactionsHistoryData({ processedAfter }: { processedAfter: Date }) {
+export async function getTransactionsHistoryData({ processedAfter, from }: { processedAfter: Date; from?: string }) {
   const data = await portalClient.request(ProcessedTransactionsHistory, {
     processedAfter: processedAfter.toISOString(),
+    from: from,
   });
 
   return (

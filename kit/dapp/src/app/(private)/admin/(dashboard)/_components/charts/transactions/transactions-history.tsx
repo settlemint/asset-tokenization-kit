@@ -6,7 +6,11 @@ import { Suspense } from 'react';
 import { getTransactionsHistoryData } from './data';
 import { TransactionsHistoryClient } from './transactions-history-client';
 
-export async function TransactionsHistory() {
+interface TransactionsHistoryProps {
+  from?: string;
+}
+
+export async function TransactionsHistory({ from }: TransactionsHistoryProps) {
   const queryClient = getQueryClient();
   const queryKey: QueryKey = ['TransactionsHistory'];
   const now = new Date();
@@ -14,13 +18,13 @@ export async function TransactionsHistory() {
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getTransactionsHistoryData({ processedAfter: sevenDaysAgo }),
+    queryFn: () => getTransactionsHistoryData({ processedAfter: sevenDaysAgo, from }),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<ChartSkeleton title="Transactions" variant="loading" />}>
-        <TransactionsHistoryClient queryKey={queryKey} processedAfter={sevenDaysAgo} />
+        <TransactionsHistoryClient queryKey={queryKey} processedAfter={sevenDaysAgo} from={from} />
       </Suspense>
     </HydrationBoundary>
   );

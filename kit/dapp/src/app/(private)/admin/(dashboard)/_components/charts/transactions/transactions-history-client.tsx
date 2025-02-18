@@ -8,6 +8,7 @@ import { getTransactionsHistoryData } from './data';
 interface TransactionsHistoryClientProps {
   queryKey: QueryKey;
   processedAfter: Date;
+  from?: string;
 }
 
 export const TRANSACTIONS_CHART_CONFIG = {
@@ -17,10 +18,10 @@ export const TRANSACTIONS_CHART_CONFIG = {
   },
 } satisfies ChartConfig;
 
-export function TransactionsHistoryClient({ queryKey, processedAfter }: TransactionsHistoryClientProps) {
+export function TransactionsHistoryClient({ queryKey, processedAfter, from }: TransactionsHistoryClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
-    queryFn: () => getTransactionsHistoryData({ processedAfter }),
+    queryFn: () => getTransactionsHistoryData({ processedAfter, from }),
     refetchInterval: 1000 * 5,
   });
 
