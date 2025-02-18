@@ -6,8 +6,8 @@ import { Suspense } from 'react';
 import type { Address } from 'viem';
 import { AssetTableError } from '../asset-table/asset-table-error';
 import { AssetTableSkeleton } from '../asset-table/asset-table-skeleton';
-import { AssetEventsTableClient } from './assets-events-table-client';
-import { getEventsList } from './assets-events-table-data';
+import { AssetEventsTableClient } from './asset-events-table-client';
+import { getEventsList } from './asset-events-table-data';
 
 /**
  * Props for the AssetTable component

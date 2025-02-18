@@ -6,7 +6,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
-import type { NormalizedEventsListItem } from '../assets-events-fragments';
+import type { NormalizedEventsListItem } from '../asset-events-fragments';
 import { EventDetailSheet } from '../details/detail-sheet';
 
 const columnHelper = createColumnHelper<NormalizedEventsListItem>();

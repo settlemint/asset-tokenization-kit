@@ -1,4 +1,4 @@
-import { AssetsEventsTable } from '@/components/blocks/assets-events-table/assets-events-table';
+import { AssetsEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

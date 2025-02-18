@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { formatNumber } from '@/lib/number';
-import type { ApprovalEvent } from '../assets-events-fragments';
+import type { ApprovalEvent } from '../asset-events-fragments';
 
 interface ApprovalDetailsProps {
   details: ApprovalEvent;

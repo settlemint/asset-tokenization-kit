@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { roles } from '@/lib/roles';
-import type { RoleGrantedEvent } from '../assets-events-fragments';
+import type { RoleGrantedEvent } from '../asset-events-fragments';
 
 interface RoleGrantedDetailsProps {
   details: RoleGrantedEvent;
