@@ -44,9 +44,8 @@ export type MyAsset = FragmentOf<typeof BalanceFragment>;
 
 export async function getMyAssets() {
   const user = await getAuthenticatedUser();
-  const balances = await fetchAllTheGraphPages(async (first, skip) => {
+  return fetchAllTheGraphPages(async (first, skip) => {
     const result = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
     return result.account?.balances ?? [];
   });
-  return balances;
 }

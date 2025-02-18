@@ -128,20 +128,21 @@ export async function getEventsList({
   });
 }
 
-async function fetchData({ first, asset }: { first?: number; asset?: string }) {
-  if (typeof first === 'number') {
-    if (asset) {
-      const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
-        first,
-        asset,
-      });
-      return result.assetEvents;
-    }
-    const result = await theGraphClientStarterkits.request(TransactionsList, {
+async function fetchDirect({ first, asset }: { first: number; asset?: string }) {
+  if (asset) {
+    const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
       first,
+      asset,
     });
     return result.assetEvents;
   }
+  const result = await theGraphClientStarterkits.request(TransactionsList, {
+    first,
+  });
+  return result.assetEvents;
+}
+
+function fetchPaginated({ asset }: { asset?: string }) {
   if (asset) {
     return fetchAllTheGraphPages(async (first, skip) => {
       const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
@@ -159,4 +160,8 @@ async function fetchData({ first, asset }: { first?: number; asset?: string }) {
     });
     return result.assetEvents;
   });
+}
+
+async function fetchData({ first, asset }: { first?: number; asset?: string }) {
+  return typeof first === 'number' ? await fetchDirect({ first, asset }) : await fetchPaginated({ asset });
 }
