@@ -8,7 +8,7 @@ import { getEquities } from './data';
 export function EquitiesTableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5000}
+      refetchInterval={5_000}
       assetConfig={assetConfig.equity}
       dataAction={getEquities}
       columns={columns}

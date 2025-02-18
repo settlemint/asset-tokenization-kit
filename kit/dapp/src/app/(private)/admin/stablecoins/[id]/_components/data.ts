@@ -14,6 +14,9 @@ const StableCoinTitle = theGraphGraphqlStarterkits(
       paused
       collateral
       totalSupply
+      creator {
+        id
+      }
       holders(where: {account_: {id: $account}}) {
         value
       }

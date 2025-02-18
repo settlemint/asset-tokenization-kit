@@ -1,8 +1,6 @@
 'use client';
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
-import type { DataTablePaginationOptions } from '@/components/blocks/data-table/data-table-pagination';
-import type { DataTableToolbarOptions } from '@/components/blocks/data-table/data-table-toolbar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import type { NormalizedEventsListItem } from './asset-events-fragments';
 import { getEventsList } from './asset-events-table-data';
@@ -11,12 +9,16 @@ import { columns, icons } from './table/columns';
 interface AssetEventsTableClientProps {
   queryKey: QueryKey;
   first?: number;
-  toolbar?: DataTableToolbarOptions;
-  pagination?: DataTablePaginationOptions;
   asset?: string;
+  disableToolbarAndPagination?: boolean;
 }
 
-export function AssetEventsTableClient({ queryKey, first, toolbar, pagination, asset }: AssetEventsTableClientProps) {
+export function AssetEventsTableClient({
+  queryKey,
+  first,
+  asset,
+  disableToolbarAndPagination = false,
+}: AssetEventsTableClientProps) {
   const { data } = useSuspenseQuery<NormalizedEventsListItem[]>({
     queryKey,
     queryFn: () => getEventsList({ first, asset }),
@@ -29,8 +31,8 @@ export function AssetEventsTableClient({ queryKey, first, toolbar, pagination, a
       data={data}
       icons={icons ?? {}}
       name={'Transactions'}
-      toolbar={toolbar}
-      pagination={pagination}
+      toolbar={{ enableToolbar: !disableToolbarAndPagination }}
+      pagination={{ enablePagination: !disableToolbarAndPagination }}
     />
   );
 }

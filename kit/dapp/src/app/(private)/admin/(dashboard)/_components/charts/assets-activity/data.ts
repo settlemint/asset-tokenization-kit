@@ -1,8 +1,9 @@
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 
 const AssetsEventsQuery = theGraphGraphqlStarterkits(`
-  query AssetActivityData {
-    assetActivityDatas {
+  query AssetActivityData($first: Int, $skip: Int) {
+    assetActivityDatas(first: $first, skip: $skip) {
       id
       assetType
       burnEventCount
@@ -13,5 +14,8 @@ const AssetsEventsQuery = theGraphGraphqlStarterkits(`
 `);
 
 export function getAssetsEventsData() {
-  return theGraphClientStarterkits.request(AssetsEventsQuery);
+  return fetchAllTheGraphPages(async (first, skip) => {
+    const result = await theGraphClientStarterkits.request(AssetsEventsQuery, { first, skip });
+    return result.assetActivityDatas;
+  });
 }

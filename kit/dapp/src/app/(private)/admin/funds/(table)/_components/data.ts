@@ -1,5 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import { type Prettify, getAddress } from 'viem';
 
@@ -18,8 +19,8 @@ const FundFragment = theGraphGraphqlStarterkits(`
 
 const Funds = theGraphGraphqlStarterkits(
   `
-  query Funds {
-    funds {
+  query Funds($first: Int, $skip: Int) {
+    funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
       ...FundFields
     }
   }
@@ -38,8 +39,8 @@ const OffchainFundFragment = hasuraGraphql(`
 
 const OffchainFunds = hasuraGraphql(
   `
-  query OffchainFunds {
-    asset_aggregate {
+  query OffchainFunds($limit: Int, $offset: Int) {
+    asset_aggregate(limit: $limit, offset: $offset) {
       ...OffchainFundsFields
     }
   }
@@ -52,13 +53,18 @@ export type FundAsset = Prettify<
 >;
 
 export async function getFunds(): Promise<FundAsset[]> {
-  const [theGraphData, dbAssets] = await Promise.all([
-    theGraphClientStarterkits.request(Funds),
-    hasuraClient.request(OffchainFunds),
+  const [theGraphFunds, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(Funds, { first, skip });
+      return result.funds;
+    }),
+    fetchAllHasuraPages(async (limit, offset) => {
+      const result = await hasuraClient.request(OffchainFunds, { limit, offset });
+      return result.asset_aggregate.nodes;
+    }),
   ]);
 
-  const theGraphFunds = theGraphData.funds;
-  const assetsById = new Map(dbAssets.asset_aggregate.nodes.map((asset) => [getAddress(asset.id), asset]));
+  const assetsById = new Map(dbAssets.map((asset) => [getAddress(asset.id), asset]));
 
   const funds = theGraphFunds.map((fund) => {
     const dbAsset = assetsById.get(getAddress(fund.id));

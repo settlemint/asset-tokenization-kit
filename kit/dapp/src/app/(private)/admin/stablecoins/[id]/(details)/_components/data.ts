@@ -42,6 +42,6 @@ export async function getStableCoin(id: string) {
 
   return {
     ...data.stableCoin,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
+    concentration: totalSupplyExact.eq(0) ? 0 : topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
