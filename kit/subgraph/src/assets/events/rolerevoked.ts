@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, RoleRevokedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function roleRevokedEvent(
   id: Bytes,
@@ -11,7 +11,7 @@ export function roleRevokedEvent(
   role: Bytes,
   account: Bytes
 ): RoleRevokedEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.RoleRevoked);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.RoleRevoked);
   const roleRevokedEvent = new RoleRevokedEvent(id);
   roleRevokedEvent.eventName = EventName.RoleRevoked;
   roleRevokedEvent.timestamp = timestamp;

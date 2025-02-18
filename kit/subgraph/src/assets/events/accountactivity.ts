@@ -21,6 +21,7 @@ export function accountActivityEvent(
   }
   event.save();
 
+  account.activityEventsCount = account.activityEventsCount + 1;
   account.lastActivity = timestamp;
   account.save();
 

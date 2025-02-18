@@ -2,7 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, PerformanceFeeCollectedEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function performanceFeeCollectedEvent(
   id: Bytes,
@@ -12,7 +12,7 @@ export function performanceFeeCollectedEvent(
   amount: BigInt,
   decimals: i32
 ): PerformanceFeeCollectedEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.PerformanceFeeCollected);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.PerformanceFeeCollected);
   const event = new PerformanceFeeCollectedEvent(id);
   event.eventName = EventName.PerformanceFeeCollected;
   event.timestamp = timestamp;

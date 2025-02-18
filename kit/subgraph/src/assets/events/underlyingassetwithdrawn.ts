@@ -2,7 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, UnderlyingAssetWithdrawnEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function underlyingAssetWithdrawnEvent(
   id: Bytes,
@@ -13,7 +13,7 @@ export function underlyingAssetWithdrawnEvent(
   amount: BigInt,
   decimals: i32
 ): UnderlyingAssetWithdrawnEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.UnderlyingAssetWithdrawn);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.UnderlyingAssetWithdrawn);
   const event = new UnderlyingAssetWithdrawnEvent(id);
   event.eventName = EventName.UnderlyingAssetWithdrawn;
   event.timestamp = timestamp;

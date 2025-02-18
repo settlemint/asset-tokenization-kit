@@ -165,8 +165,10 @@ type Account @entity {
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
   assetCount: Int!
-  assetEventsCount: Int!
+  assetActivityEvents: [AssetActivityEvent!]! @derivedFrom(field: "sender")
+  assetActivityEventsCount: Int!
   activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
+  activityEventsCount: Int!
 }
 
 type AssetBalance @entity {
@@ -217,7 +219,7 @@ type YieldPeriod @entity {
 # Grouping Events by Contract Type
 # --------------------------------------------------
 
-type AssetEvent @entity(immutable: true) {
+interface AssetEvent {
   id: Bytes! # Unique identifier for the event
   eventName: String! # Name of the event
   timestamp: BigInt! # Timestamp of the event
@@ -238,6 +240,14 @@ type AccountActivityEvent @entity(immutable: true) {
   account: Account!
 }
 
+type AssetActivityEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+}
+
 # --------------------------------------------------
 # Common Events for All Tokens (StableCoin, Fund, Equity, CryptoCurrency, Bond)
 # --------------------------------------------------
@@ -246,7 +256,7 @@ type AccountActivityEvent @entity(immutable: true) {
 Entity for ERC20 Transfer events.
 Emitted on every token transfer (excluding minting and burning).
 """
-type TransferEvent @entity(immutable: true) {
+type TransferEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -262,7 +272,7 @@ type TransferEvent @entity(immutable: true) {
 Entity for ERC20 Mint events.
 Emitted on every token mint (transfer from zero address).
 """
-type MintEvent @entity(immutable: true) {
+type MintEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -277,7 +287,7 @@ type MintEvent @entity(immutable: true) {
 Entity for ERC20 Burn events.
 Emitted on every token burn (transfer to zero address).
 """
-type BurnEvent @entity(immutable: true) {
+type BurnEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -292,7 +302,7 @@ type BurnEvent @entity(immutable: true) {
 Entity for ERC20 Approval events.
 Emitted when an approval is set for a spender.
 """
-type ApprovalEvent @entity(immutable: true) {
+type ApprovalEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -308,7 +318,7 @@ type ApprovalEvent @entity(immutable: true) {
 Entity for pause events.
 Emitted when a token is paused.
 """
-type PausedEvent @entity(immutable: true) {
+type PausedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -320,7 +330,7 @@ type PausedEvent @entity(immutable: true) {
 Entity for unpause events.
 Emitted when a token is unpaused.
 """
-type UnpausedEvent @entity(immutable: true) {
+type UnpausedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -332,7 +342,7 @@ type UnpausedEvent @entity(immutable: true) {
 Entity for tokens frozen events.
 Emitted when tokens are frozen (a custodian operation).
 """
-type TokensFrozenEvent @entity(immutable: true) {
+type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -347,7 +357,7 @@ type TokensFrozenEvent @entity(immutable: true) {
 Entity for tokens unfrozen events.
 Emitted when tokens are unfrozen (a custodian operation).
 """
-type TokensUnfrozenEvent @entity(immutable: true) {
+type TokensUnfrozenEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -362,7 +372,7 @@ type TokensUnfrozenEvent @entity(immutable: true) {
 Entity for role granted events.
 Emitted when a role is granted.
 """
-type RoleGrantedEvent @entity(immutable: true) {
+type RoleGrantedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -376,7 +386,7 @@ type RoleGrantedEvent @entity(immutable: true) {
 Entity for role revoked events.
 Emitted when a role is revoked.
 """
-type RoleRevokedEvent @entity(immutable: true) {
+type RoleRevokedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -390,7 +400,7 @@ type RoleRevokedEvent @entity(immutable: true) {
 Entity for role admin changed events.
 Emitted when a role's admin role is changed.
 """
-type RoleAdminChangedEvent @entity(immutable: true) {
+type RoleAdminChangedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -405,7 +415,7 @@ type RoleAdminChangedEvent @entity(immutable: true) {
 Entity for blocklist events.
 Emitted when a user is blocked from token operations.
 """
-type UserBlockedEvent @entity(immutable: true) {
+type UserBlockedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -418,7 +428,7 @@ type UserBlockedEvent @entity(immutable: true) {
 Entity for blocklist events.
 Emitted when a user is unblocked from token operations.
 """
-type UserUnblockedEvent @entity(immutable: true) {
+type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -431,7 +441,7 @@ type UserUnblockedEvent @entity(immutable: true) {
 Entity for blocklist events.
 Emitted when a user is unblocked from token operations.
 """
-type AssetCreatedEvent @entity(immutable: true) {
+type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -447,7 +457,7 @@ type AssetCreatedEvent @entity(immutable: true) {
 Entity for collateral update events in StableCoin.
 Emitted when the collateral is updated via updateCollateral.
 """
-type CollateralUpdatedEvent @entity(immutable: true) {
+type CollateralUpdatedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -467,7 +477,7 @@ type CollateralUpdatedEvent @entity(immutable: true) {
 Entity for management fee collection events in Fund.
 Emitted when the management fee is collected.
 """
-type ManagementFeeCollectedEvent
+type ManagementFeeCollectedEvent implements AssetEvent
  @entity(immutable: true)
 {
   id: Bytes!
@@ -483,7 +493,7 @@ type ManagementFeeCollectedEvent
 Entity for performance fee collection events in Fund.
 Emitted when the performance fee is collected.
 """
-type PerformanceFeeCollectedEvent
+type PerformanceFeeCollectedEvent implements AssetEvent
  @entity(immutable: true)
 {
   id: Bytes!
@@ -499,7 +509,7 @@ type PerformanceFeeCollectedEvent
 Entity for token withdrawal events in Fund.
 Emitted when tokens are withdrawn from the fund.
 """
-type TokenWithdrawnEvent @entity(immutable: true) {
+type TokenWithdrawnEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -527,7 +537,7 @@ type TokenWithdrawnEvent @entity(immutable: true) {
 Entity for bond maturity events.
 Emitted when the bond reaches maturity and is closed.
 """
-type BondMaturedEvent @entity(immutable: true) {
+type BondMaturedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -539,7 +549,7 @@ type BondMaturedEvent @entity(immutable: true) {
 Entity for bond redemption events.
 Emitted when a bond is redeemed for underlying assets.
 """
-type BondRedeemedEvent @entity(immutable: true) {
+type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -560,7 +570,7 @@ type BondRedeemedEvent @entity(immutable: true) {
 Entity for underlying asset top-up events.
 Emitted when underlying assets are added (topped up) to the Bond contract.
 """
-type UnderlyingAssetTopUpEvent @entity(immutable: true) {
+type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -575,7 +585,7 @@ type UnderlyingAssetTopUpEvent @entity(immutable: true) {
 Entity for underlying asset withdrawal events.
 Emitted when underlying assets are withdrawn from the Bond contract.
 """
-type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
+type UnderlyingAssetWithdrawnEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -590,7 +600,7 @@ type UnderlyingAssetWithdrawnEvent @entity(immutable: true) {
 # FixedYield-Specific Custom Event
 # --------------------------------------------------
 
-type FixedYieldCreatedEvent @entity {
+type FixedYieldCreatedEvent implements AssetEvent @entity {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -603,7 +613,7 @@ type FixedYieldCreatedEvent @entity {
 Entity for yield claimed events in FixedYield.
 Emitted when yield is claimed.
 """
-type YieldClaimedEvent @entity(immutable: true) {
+type YieldClaimedEvent implements AssetEvent @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!

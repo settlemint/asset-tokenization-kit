@@ -2,7 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, TokensUnfrozenEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function tokensUnfrozenEvent(
   id: Bytes,
@@ -13,7 +13,7 @@ export function tokensUnfrozenEvent(
   amount: BigInt,
   decimals: i32
 ): TokensUnfrozenEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.TokensUnfrozen);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.TokensUnfrozen);
   const event = new TokensUnfrozenEvent(id);
   event.eventName = EventName.TokensUnfrozen;
   event.timestamp = timestamp;

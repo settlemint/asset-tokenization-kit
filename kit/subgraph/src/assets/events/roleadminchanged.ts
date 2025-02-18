@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, RoleAdminChangedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function roleAdminChangedEvent(
   id: Bytes,
@@ -12,7 +12,7 @@ export function roleAdminChangedEvent(
   previousAdminRole: Bytes,
   newAdminRole: Bytes
 ): RoleAdminChangedEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.RoleAdminChanged);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.RoleAdminChanged);
   const event = new RoleAdminChangedEvent(id);
   event.eventName = EventName.RoleAdminChanged;
   event.timestamp = timestamp;

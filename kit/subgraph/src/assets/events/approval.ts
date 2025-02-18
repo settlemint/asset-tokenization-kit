@@ -2,7 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, ApprovalEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function approvalEvent(
   id: Bytes,
@@ -14,7 +14,7 @@ export function approvalEvent(
   value: BigInt,
   decimals: i32
 ): ApprovalEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.Approval);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.Approval);
   const event = new ApprovalEvent(id);
   event.eventName = EventName.Approval;
   event.timestamp = timestamp;

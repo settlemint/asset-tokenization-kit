@@ -2,7 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { Account, TransferEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
-import { assetEvent } from './asset';
+import { assetActivityEvent } from './assetactivity';
 
 export function transferEvent(
   id: Bytes,
@@ -14,7 +14,7 @@ export function transferEvent(
   value: BigInt,
   decimals: number
 ): TransferEvent {
-  assetEvent(id, timestamp, emitter, sender, EventName.Transfer);
+  assetActivityEvent(id, timestamp, emitter, sender, EventName.Transfer);
   const transferEvent = new TransferEvent(id);
   transferEvent.eventName = EventName.Transfer;
   transferEvent.timestamp = timestamp;
