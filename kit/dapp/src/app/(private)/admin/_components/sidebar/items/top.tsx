@@ -1,5 +1,4 @@
 import type { NavElement } from '@/components/layout/nav-main';
-import { BellIcon } from '@/components/ui/animated-icons/bell';
 import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
 
 export const topItems: NavElement[] = [
@@ -8,10 +7,10 @@ export const topItems: NavElement[] = [
     icon: <ChartScatterIcon className="h-4 w-4" />,
     path: '/admin',
   },
-  {
-    label: 'Actions',
-    icon: <BellIcon className="h-4 w-4" />,
-    path: '/admin/actions',
-    badge: '12',
-  },
+  // {
+  //   label: 'Actions',
+  //   icon: <BellIcon className="h-4 w-4" />,
+  //   path: '/admin/actions',
+  //   badge: '12',
+  // },
 ];
