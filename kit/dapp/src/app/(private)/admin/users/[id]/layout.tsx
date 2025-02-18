@@ -5,12 +5,7 @@ import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
@@ -63,12 +58,8 @@ export default async function UserDetailLayout({ children, params }: LayoutProps
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
-              <DropdownMenuItem asChild className="dropdown-menu-item">
-                <ChangeRoleAction user={user} />
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="dropdown-menu-item">
-                <UpdateKycStatusAction user={user} />
-              </DropdownMenuItem>
+              <ChangeRoleAction user={user} />
+              <UpdateKycStatusAction user={user} />
             </DropdownMenuContent>
           </DropdownMenu>
         }
