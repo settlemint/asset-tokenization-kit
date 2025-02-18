@@ -1,7 +1,7 @@
 'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
-import { createTimeSeries } from '@/lib/charts';
+import { createTimeSeries, formatInterval } from '@/lib/charts';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getTransactionsHistoryData } from './data';
 import type { TransactionsHistoryProps } from './transactions-history';
@@ -38,7 +38,7 @@ export function TransactionsHistoryClient({
       })}
       config={TRANSACTIONS_CHART_CONFIG}
       title="Transactions"
-      description={`Showing transactions over the last ${chartOptions.intervalLength} ${chartOptions.intervalLength === 1 ? chartOptions.intervalType : `${chartOptions.intervalType}s`}`}
+      description={`Showing transactions over the last ${formatInterval(chartOptions.intervalLength, chartOptions.intervalType)}`}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
     />

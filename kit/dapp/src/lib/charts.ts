@@ -13,6 +13,7 @@ import {
   subWeeks,
 } from 'date-fns';
 import { getDateFromTimestamp } from './date';
+import { pluralize } from './pluralize';
 
 export type TimeGranularity = 'hour' | 'day' | 'month';
 export type IntervalType = 'month' | 'week' | 'day';
@@ -130,6 +131,10 @@ function isInTick(tick: Date, timestamp: number | string | Date, granularity: Ti
 
 function formatDate(date: Date, granularity: TimeGranularity): string {
   return format(date, granularity === 'hour' ? 'HH:mm, MMM d' : 'EEE, MMM d'); // Eg. Tue, Feb 12
+}
+
+export function formatInterval(intervalLength: number, intervalType: IntervalType): string {
+  return `${intervalLength} ${pluralize(intervalLength, intervalType)}`;
 }
 
 function aggregateData<T extends DataPoint>(

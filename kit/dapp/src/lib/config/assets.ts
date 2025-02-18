@@ -112,9 +112,6 @@ export const assetConfig = {
   },
 } as const satisfies AssetConfig;
 
-export const pluralize = (count: number, config: AssetDetailConfig): string =>
-  count === 1 ? config.name : config.pluralName;
-
 export const allAssetQueryKeys = Object.values(assetConfig).map((asset) => asset.queryKey);
 
 export const assetsSidebarQueryKey = ['all-assets'];
