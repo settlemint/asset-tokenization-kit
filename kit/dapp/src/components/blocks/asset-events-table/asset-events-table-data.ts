@@ -101,7 +101,7 @@ query TransactionsList($first: Int, $skip: Int) {
 
 const AssetTransactionsList = theGraphGraphqlStarterkits(
   `
-query AssetTransactionsList( $asset: String, $first: Int, $skip: Int) {
+query AssetTransactionsList($asset: String, $first: Int, $skip: Int) {
   assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset }) {
     ...TransactionListFragment
   }
