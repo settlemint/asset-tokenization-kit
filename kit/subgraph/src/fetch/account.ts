@@ -8,6 +8,7 @@ export function fetchAccount(address: Address): Account {
   if (!account) {
     account = new Account(address);
     account.lastActivity = BigInt.zero();
+    account.assetCount = 0;
     account.activityEventsCount = 0;
     account.assetActivityEventsCount = 0;
     if (ethereum.hasCode(address).inner) {
