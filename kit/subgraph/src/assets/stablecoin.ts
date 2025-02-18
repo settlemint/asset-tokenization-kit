@@ -14,7 +14,7 @@ import {
   UserUnblocked,
 } from '../../generated/templates/StableCoin/StableCoin';
 import { fetchAccount } from '../fetch/account';
-import { fetchAssetBalance } from '../fetch/balance';
+import { fetchAssetBalance, hasBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
@@ -67,6 +67,11 @@ export function handleTransfer(event: Transfer): void {
     // increase total supply
     stableCoin.totalSupplyExact = stableCoin.totalSupplyExact.plus(mint.valueExact);
     stableCoin.totalSupply = toDecimals(stableCoin.totalSupplyExact, stableCoin.decimals);
+
+    if (!hasBalance(stableCoin.id, to.id)) {
+      to.assetCount = to.assetCount + 1;
+      to.save();
+    }
 
     const balance = fetchAssetBalance(stableCoin.id, to.id, stableCoin.decimals);
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
@@ -151,6 +156,11 @@ export function handleTransfer(event: Transfer): void {
       transfer.sender.toHexString(),
       event.address.toHexString(),
     ]);
+
+    if (!hasBalance(stableCoin.id, to.id)) {
+      to.assetCount = to.assetCount + 1;
+      to.save();
+    }
 
     const fromBalance = fetchAssetBalance(stableCoin.id, from.id, stableCoin.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);

@@ -16,7 +16,7 @@ import {
   UserUnblocked,
 } from '../../generated/templates/Fund/Fund';
 import { fetchAccount } from '../fetch/account';
-import { fetchAssetBalance } from '../fetch/balance';
+import { fetchAssetBalance, hasBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
 import { AssetType, EventName } from '../utils/enums';
 import { eventId } from '../utils/events';
@@ -71,6 +71,11 @@ export function handleTransfer(event: Transfer): void {
     // increase total supply
     fund.totalSupplyExact = fund.totalSupplyExact.plus(mint.valueExact);
     fund.totalSupply = toDecimals(fund.totalSupplyExact, fund.decimals);
+
+    if (!hasBalance(fund.id, to.id)) {
+      to.assetCount = to.assetCount + 1;
+      to.save();
+    }
 
     const balance = fetchAssetBalance(fund.id, to.id, fund.decimals);
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
@@ -149,6 +154,11 @@ export function handleTransfer(event: Transfer): void {
       transfer.sender.toHexString(),
       event.address.toHexString(),
     ]);
+
+    if (!hasBalance(fund.id, to.id)) {
+      to.assetCount = to.assetCount + 1;
+      to.save();
+    }
 
     const fromBalance = fetchAssetBalance(fund.id, from.id, fund.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);

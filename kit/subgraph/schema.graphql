@@ -164,6 +164,8 @@ type Account @entity {
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
   lastActivity: BigInt!
+  assetCount: Int!
+  assetEventsCount: Int!
   activityEvents: [AccountActivityEvent!]! @derivedFrom(field: "account")
 }
 
