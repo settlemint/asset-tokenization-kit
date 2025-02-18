@@ -65,6 +65,8 @@ export default async function UserDetailLayout({ children, params }: LayoutProps
             <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
               <DropdownMenuItem asChild className="dropdown-menu-item">
                 <ChangeRoleAction user={user} />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="dropdown-menu-item">
                 <UpdateKycStatusAction user={user} />
               </DropdownMenuItem>
             </DropdownMenuContent>
