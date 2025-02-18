@@ -38,7 +38,7 @@ export function TransactionsHistoryClient({
       })}
       config={TRANSACTIONS_CHART_CONFIG}
       title="Transactions"
-      description="Showing transactions over the last 7 days"
+      description={`Showing transactions over the last ${chartOptions.intervalLength} ${chartOptions.intervalLength === 1 ? chartOptions.intervalType : `${chartOptions.intervalType}s`}`}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
     />
