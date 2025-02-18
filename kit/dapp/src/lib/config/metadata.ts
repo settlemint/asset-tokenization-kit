@@ -1,4 +1,3 @@
-import type { QueryKey } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import StandardOGImage from './metadata/standard-og.png';
 import { siteConfig } from './site';
@@ -55,12 +54,3 @@ export const metadata = {
     'darkreader-lock': '',
   },
 } as const satisfies Metadata;
-
-export interface AssetDetailConfig {
-  name: string;
-  pluralName: string;
-  description: string;
-  factoryAddress: string;
-  queryKey: QueryKey;
-  urlSegment: string;
-}
