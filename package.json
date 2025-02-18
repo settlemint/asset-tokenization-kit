@@ -50,7 +50,7 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@settlemint/sdk-cli": "1.1.8",
+    "@settlemint/sdk-cli": "1.1.9",
     "turbo": "2.4.2",
     "typescript": "5.7.3",
     "ultracite": "4.1.19",
@@ -69,9 +69,7 @@
     "secp256k1"
   ],
   "packageManager": "bun@1.2.0",
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "overrides": {
     "react-is": "19.0.0",
     "graphql": "16.10.0",
