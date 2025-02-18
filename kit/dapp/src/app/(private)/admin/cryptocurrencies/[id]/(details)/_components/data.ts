@@ -36,6 +36,8 @@ export async function getCryptocurrency(id: string) {
 
   return {
     ...data.cryptoCurrency,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
+
+export type Cryptocurrency = Awaited<ReturnType<typeof getCryptocurrency>>;

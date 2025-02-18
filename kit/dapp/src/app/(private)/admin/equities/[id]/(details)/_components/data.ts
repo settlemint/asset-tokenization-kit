@@ -39,6 +39,8 @@ export async function getEquity(id: string) {
 
   return {
     ...data.equity,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
+
+export type Equity = Awaited<ReturnType<typeof getEquity>>;

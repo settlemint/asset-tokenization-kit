@@ -26,6 +26,8 @@ const StableCoinDetails = theGraphGraphqlStarterkits(
 `
 );
 
+export type StableCoin = Awaited<ReturnType<typeof getStableCoin>>;
+
 export async function getStableCoin(id: string) {
   const data = await theGraphClientStarterkits.request(StableCoinDetails, { id });
   if (!data.stableCoin) {
@@ -40,6 +42,6 @@ export async function getStableCoin(id: string) {
 
   return {
     ...data.stableCoin,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
