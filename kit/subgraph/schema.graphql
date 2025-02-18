@@ -42,8 +42,6 @@ type Bond implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
-  # Stats
-  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -74,8 +72,6 @@ type Equity implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
-  # Stats
-  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -99,8 +95,6 @@ type Fund implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
-  # Stats
-  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -126,8 +120,6 @@ type StableCoin implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
-  # Stats
-  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -153,8 +145,6 @@ type CryptoCurrency implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
-  # Stats
-  amountOfHolders: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -660,6 +650,7 @@ type AssetStatsData @entity(timeseries: true) {
   ## Collateral
   collateral: BigDecimal!
   collateralExact: BigInt!
+  collateralRatio: BigDecimal!
 }
 
 type AssetStats
@@ -722,7 +713,6 @@ type AssetCount @entity {
   assetType: String! @unique
   count: Int!
 }
-
 
 # --------------------------------------------------
 # Portfolio Statistics

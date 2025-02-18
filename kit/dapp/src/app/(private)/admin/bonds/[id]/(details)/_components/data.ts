@@ -14,6 +14,9 @@ const BondDetails = theGraphGraphqlStarterkits(
       underlyingAsset
       redeemedAmount
       paused
+      creator {
+        id
+      }
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {
         valueExact
       }
@@ -36,6 +39,8 @@ export async function getBond(id: string) {
 
   return {
     ...data.bond,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
+
+export type Bond = Awaited<ReturnType<typeof getBond>>;

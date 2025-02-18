@@ -1,4 +1,4 @@
-import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
 import {
   Approval,
   CollateralUpdated,
@@ -80,6 +80,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
     accountActivityEvent(sender, EventName.Mint, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -119,6 +122,9 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
     accountActivityEvent(sender, EventName.Burn, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -424,6 +430,10 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.address.toHexString(),
   ]);
 
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
+
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
   assetStats.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   assetStats.frozenExact = event.params.amount;
@@ -459,6 +469,10 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
     sender.id.toHexString(),
     event.address.toHexString(),
   ]);
+
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.frozen = event.params.amount;
+  balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
   assetStats.unfrozen = toDecimals(event.params.amount, stableCoin.decimals);
@@ -498,6 +512,10 @@ export function handleUserBlocked(event: UserBlocked): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.blocked = true;
+  balance.save();
+
   userBlockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(user, EventName.UserBlocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -516,6 +534,10 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
+
+  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
+  balance.blocked = false;
+  balance.save();
 
   userUnblockedEvent(eventId(event), event.block.timestamp, event.address, sender.id, user.id);
   accountActivityEvent(sender, EventName.UserUnblocked, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
@@ -538,6 +560,14 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.lastCollateralUpdate = event.block.timestamp;
   stableCoin.save();
+
+  const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
+  assetStats.collateral = stableCoin.collateral;
+  assetStats.collateralExact = stableCoin.collateralExact;
+  assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
+    ? BigDecimal.zero()
+    : stableCoin.collateral.div(stableCoin.totalSupply);
+  assetStats.save();
 
   stablecoinCollateralUpdatedEvent(
     eventId(event),

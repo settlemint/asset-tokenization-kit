@@ -36,3 +36,8 @@ services:
       postgres_db: graph-node
       ipfs: "https://ipfs.console.settlemint.com"
       ethereum: 'settlemint:http://anvil:8545'
+      GRAPH_ETHEREUM_REQUEST_RETRIES: 10
+      ETHEREUM_POLLING_INTERVAL: 1000
+      GRAPH_IPFS_TIMEOUT: 60
+      GRAPH_MAX_IPFS_FILE_BYTES: 52428800
+      GRAPH_IPFS_REQUEST_RETRIES: 10

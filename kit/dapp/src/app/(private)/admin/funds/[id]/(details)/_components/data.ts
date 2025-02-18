@@ -13,6 +13,9 @@ const FundDetails = theGraphGraphqlStarterkits(
       totalSupplyExact
       fundCategory
       fundClass
+      creator {
+        id
+      }
       paused
       isin
       holders(first: 5, orderBy: valueExact, orderDirection: desc) {
@@ -36,6 +39,8 @@ export async function getFund(id: string) {
 
   return {
     ...data.fund,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100),
+    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
   };
 }
+
+export type Fund = Awaited<ReturnType<typeof getFund>>;

@@ -39,6 +39,7 @@ export function newAssetStatsData(
   // Collateral
   assetStats.collateral = BigDecimal.zero();
   assetStats.collateralExact = BigInt.zero();
+  assetStats.collateralRatio = BigDecimal.zero();
 
   return assetStats;
 }

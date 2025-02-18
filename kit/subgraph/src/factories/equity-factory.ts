@@ -8,6 +8,7 @@ import { fetchAccount } from '../fetch/account';
 import { AssetType, EventName, FactoryType } from '../utils/enums';
 import { eventId } from '../utils/events';
 import { fetchFactory } from './fetch/factory';
+import { fetchAssetCount } from '../assets/fetch/asset-count';
 
 export function handleEquityCreated(event: EquityCreated): void {
   fetchFactory(event.address, FactoryType.equity);

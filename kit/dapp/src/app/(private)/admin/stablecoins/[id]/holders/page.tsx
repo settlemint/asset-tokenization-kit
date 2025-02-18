@@ -1,13 +1,15 @@
-import { getStablecoinBalances } from './_components/data';
-import { HoldersTable } from './_components/holders-table';
+import { AssetHoldersTable } from '@/components/blocks/asset-holders-table/asset-holders-table';
+import { assetConfig } from '@/lib/config/assets';
+import type { Metadata } from 'next';
+import type { Address } from 'viem';
 
-export default async function StableCoinHoldersPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export const metadata: Metadata = {
+  title: 'Holders',
+  description: 'Inspect all holders of the stablecoin.',
+};
+
+export default async function StablecoinHoldersPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const balances = await getStablecoinBalances(id);
 
-  return <HoldersTable id={id} balances={balances} />;
+  return <AssetHoldersTable assetConfig={assetConfig.stablecoin} asset={id as Address} />;
 }

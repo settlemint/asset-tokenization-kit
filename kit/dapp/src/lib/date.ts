@@ -1,5 +1,12 @@
 import type { CollateralProofValidityDuration } from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
-import { format, formatDistance, formatRelative, fromUnixTime, parseISO } from 'date-fns';
+import {
+  format,
+  formatDistance,
+  formatDuration as formatDurationFns,
+  formatRelative,
+  fromUnixTime,
+  parseISO,
+} from 'date-fns';
 
 const NUMERIC_REGEX = /^\d+$/;
 
@@ -74,4 +81,15 @@ export function convertDurationToSeconds(duration: keyof typeof CollateralProofV
     default:
       return 365 * 24 * 60 * 60;
   }
+}
+
+export function formatDuration(duration: number | string) {
+  return formatDurationFns({
+    years: Math.floor(Number(duration) / 31536000),
+    months: Math.floor((Number(duration) % 31536000) / 2592000),
+    days: Math.floor(((Number(duration) % 31536000) % 2592000) / 86400),
+    hours: Math.floor((((Number(duration) % 31536000) % 2592000) % 86400) / 3600),
+    minutes: Math.floor(((((Number(duration) % 31536000) % 2592000) % 86400) % 3600) / 60),
+    seconds: ((((Number(duration) % 31536000) % 2592000) % 86400) % 3600) % 60,
+  });
 }
