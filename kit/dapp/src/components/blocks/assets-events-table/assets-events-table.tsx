@@ -41,7 +41,7 @@ export async function AssetsEventsTable({ asset, assetConfig, first }: AssetsEve
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-          <AssetEventsTableClient queryKey={queryKey} asset={asset} />
+          <AssetEventsTableClient queryKey={queryKey} asset={asset} first={first} />
         </Suspense>
       </HydrationBoundary>
     );
