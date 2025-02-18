@@ -34,7 +34,6 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             enableColorScheme
-            disableTransitionOnChange
             enableSystem
             value={{
               light: themeConfig.variant === 'settlemint' ? 'settlemint-light' : 'light',
