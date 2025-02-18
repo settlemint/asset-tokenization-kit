@@ -17,7 +17,7 @@ import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
 const UpdateKycStatusMutation = hasuraGraphql(`
-  mutation UpdateKycStatus($userId: String!, $kycVerified: timestamp) {
+  mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
     update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified: $kycVerified}) {
       id
       kyc_verified
