@@ -26,12 +26,11 @@ const HoldersQuery = theGraphGraphqlStarterkits(
   [HolderFragment]
 );
 
-export async function getHolders(id: string) {
-  const data = await fetchAllTheGraphPages(async (first, skip) => {
+export function getHolders(id: string) {
+  return fetchAllTheGraphPages(async (first, skip) => {
     const result = await theGraphClientStarterkits.request(HoldersQuery, { asset: id, first, skip });
     return result.assetBalances;
   });
-  return data;
 }
 
 export type Holder = FragmentOf<typeof HolderFragment>;
