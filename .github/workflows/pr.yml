@@ -59,7 +59,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo dependencies lint build test genesis deploy:local
+        run: bunx turbo dependencies lint build test genesis
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
@@ -70,6 +70,9 @@ jobs:
             kit/subgraph/subgraph-output.txt
             kit/contracts/artifacts/contracts/**/*.json
             !kit/contracts/artifacts/contracts/**/*.dbg.json
+
+      - name: Turbo!
+        run: bunx turbo deploy:local
 
   security:
     name: Security
