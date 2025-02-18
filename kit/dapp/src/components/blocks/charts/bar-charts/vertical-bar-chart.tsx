@@ -44,7 +44,7 @@ export function VerticalBarChartComponent<T extends BarChartData>({
             <XAxis dataKey={valueKey} type="number" hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
             <Bar dataKey={valueKey} layout="vertical" radius={4}>
-              <LabelList dataKey={key} position="insideLeft" className="fill-[black]" fontSize={12} />
+              <LabelList dataKey={key} position="insideLeft" className="fill-white" fontSize={12} />
               <LabelList dataKey={valueKey} position="right" fontSize={12} />
             </Bar>
           </BarChart>
