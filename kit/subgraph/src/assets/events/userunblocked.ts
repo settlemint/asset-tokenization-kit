@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { UserUnblockedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
+import { assetEvent } from './asset';
 
 export function userUnblockedEvent(
   id: Bytes,
@@ -9,6 +10,7 @@ export function userUnblockedEvent(
   sender: Bytes,
   user: Bytes
 ): UserUnblockedEvent {
+  assetEvent(id, timestamp, emitter, sender, EventName.UserUnblocked);
   const event = new UserUnblockedEvent(id);
   event.eventName = EventName.UserUnblocked;
   event.timestamp = timestamp;

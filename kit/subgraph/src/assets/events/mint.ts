@@ -2,6 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { MintEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
+import { assetEvent } from './asset';
 
 export function mintEvent(
   id: Bytes,
@@ -12,6 +13,7 @@ export function mintEvent(
   value: BigInt,
   decimals: number
 ): MintEvent {
+  assetEvent(id, timestamp, emitter, sender, EventName.Mint);
   const mintEvent = new MintEvent(id);
   mintEvent.eventName = EventName.Mint;
   mintEvent.timestamp = timestamp;

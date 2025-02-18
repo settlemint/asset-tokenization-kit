@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { RoleGrantedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
+import { assetEvent } from './asset';
 
 export function roleGrantedEvent(
   id: Bytes,
@@ -10,6 +11,7 @@ export function roleGrantedEvent(
   role: Bytes,
   account: Bytes
 ): RoleGrantedEvent {
+  assetEvent(id, timestamp, emitter, sender, EventName.RoleGranted);
   const roleGrantedEvent = new RoleGrantedEvent(id);
   roleGrantedEvent.eventName = EventName.RoleGranted;
   roleGrantedEvent.timestamp = timestamp;

@@ -1,6 +1,7 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { AssetCreatedEvent } from '../../../generated/schema';
 import { EventName } from '../../utils/enums';
+import { assetEvent } from './asset';
 
 export function assetCreatedEvent(
   id: Bytes,
@@ -8,6 +9,7 @@ export function assetCreatedEvent(
   asset: Bytes,
   sender: Bytes,
 ): AssetCreatedEvent {
+  assetEvent(id, timestamp, asset, sender, EventName.AssetCreated);
   const assetCreatedEvent = new AssetCreatedEvent(id);
   assetCreatedEvent.eventName = EventName.AssetCreated;
   assetCreatedEvent.timestamp = timestamp;

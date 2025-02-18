@@ -2,6 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { TokenWithdrawnEvent } from '../../../generated/schema';
 import { toDecimals } from '../../utils/decimals';
 import { EventName } from '../../utils/enums';
+import { assetEvent } from './asset';
 
 export function tokenWithdrawnEvent(
   id: Bytes,
@@ -13,6 +14,7 @@ export function tokenWithdrawnEvent(
   amount: BigInt,
   decimals: i32
 ): TokenWithdrawnEvent {
+  assetEvent(id, timestamp, emitter, sender, EventName.TokenWithdrawn);
   const event = new TokenWithdrawnEvent(id);
   event.eventName = EventName.TokenWithdrawn;
   event.timestamp = timestamp;
