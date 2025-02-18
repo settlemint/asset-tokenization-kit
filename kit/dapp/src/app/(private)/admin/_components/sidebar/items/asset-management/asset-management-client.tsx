@@ -53,7 +53,7 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
     <NavMain
       items={[
         {
-          groupTitle: 'Token management',
+          groupTitle: 'Asset management',
           items: processedTokenItems,
         },
       ]}

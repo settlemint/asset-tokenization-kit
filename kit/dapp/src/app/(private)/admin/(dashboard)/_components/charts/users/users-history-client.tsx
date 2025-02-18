@@ -3,7 +3,6 @@ import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries } from '@/lib/charts';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import {} from 'date-fns';
 import { getRecentUsers } from './data';
 
 interface UsersHistoryClientProps {

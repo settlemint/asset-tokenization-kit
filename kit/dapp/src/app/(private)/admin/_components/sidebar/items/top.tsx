@@ -1,7 +1,6 @@
 import type { NavElement } from '@/components/layout/nav-main';
 import { BellIcon } from '@/components/ui/animated-icons/bell';
 import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
-import {} from '@/components/ui/avatar';
 
 export const topItems: NavElement[] = [
   {

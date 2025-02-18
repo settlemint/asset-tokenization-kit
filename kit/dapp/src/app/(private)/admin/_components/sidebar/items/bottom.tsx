@@ -2,7 +2,6 @@ import type { NavElement } from '@/components/layout/nav-main';
 import { ActivityIcon } from '@/components/ui/animated-icons/activity';
 import { SettingsGearIcon } from '@/components/ui/animated-icons/settings-gear';
 import { UsersIcon } from '@/components/ui/animated-icons/users';
-import {} from '@/components/ui/avatar';
 
 export const bottomItems: NavElement[] = [
   {
