@@ -1,7 +1,7 @@
 import { TransactionsHistory } from '@/components/blocks/transactions-history/transactions-history';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { Greeting } from './greeting';
-import { MyAssets } from './my-assets/my-assets';
+import { MyAssets } from './my-assets/count/count';
 
 export async function PortfolioOverview() {
   const user = await getAuthenticatedUser();
