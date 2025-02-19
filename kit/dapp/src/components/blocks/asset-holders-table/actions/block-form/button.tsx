@@ -8,13 +8,13 @@ import { BlockUserForm } from './form';
 
 interface BlockButtonProps {
   address: Address;
-  blocked: boolean;
+  currentlyBlocked: boolean;
   userAddress: Address;
 }
 
-export function BlockButton({ address, blocked, userAddress }: BlockButtonProps) {
+export function BlockButton({ address, currentlyBlocked, userAddress }: BlockButtonProps) {
   const [open, setOpen] = useState(false);
-  const action = blocked ? 'Unblock' : 'Block';
+  const action = currentlyBlocked ? 'Unblock' : 'Block';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -33,13 +33,13 @@ export function BlockButton({ address, blocked, userAddress }: BlockButtonProps)
         <SheetHeader>
           <SheetTitle>{action}</SheetTitle>
           <SheetDescription>
-            {action} to {blocked ? 'enable' : 'prevent'} transfers.
+            {action} to {currentlyBlocked ? 'enable' : 'prevent'} transfers.
           </SheetDescription>
         </SheetHeader>
         <BlockUserForm
           address={address}
           userAddress={userAddress}
-          blocked={blocked}
+          currentlyBlocked={currentlyBlocked}
           assetConfig={assetConfig.stablecoin}
           onCloseAction={() => setOpen(false)}
         />

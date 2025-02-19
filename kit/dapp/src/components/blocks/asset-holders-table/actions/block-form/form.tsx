@@ -11,19 +11,25 @@ import { blockUser } from './store';
 interface BlockUserFormProps {
   address: Address;
   userAddress: Address;
-  blocked: boolean;
+  currentlyBlocked: boolean;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
 }
 
-export function BlockUserForm({ address, userAddress, blocked, assetConfig, onCloseAction }: BlockUserFormProps) {
-  const actionLabel = blocked ? 'Unblock' : 'Block';
-  const actionSubmittingLabel = actionLabel === 'Block' ? 'Blocking' : 'Unblocking';
-  const actionSuccessLabel = actionLabel === 'Block' ? 'Blocked' : 'Unblocked';
+export function BlockUserForm({
+  address,
+  userAddress,
+  currentlyBlocked,
+  assetConfig,
+  onCloseAction,
+}: BlockUserFormProps) {
+  const actionLabel = currentlyBlocked ? 'Unblock' : 'Block';
+  const actionSubmittingLabel = currentlyBlocked ? 'Unblocking' : 'Blocking';
+  const actionSuccessLabel = currentlyBlocked ? 'Unblocked' : 'Blocked';
 
   return (
     <AssetForm
-      storeAction={(formData) => blockUser({ ...formData, address, userAddress, blocked: !!blocked })}
+      storeAction={(formData) => blockUser({ ...formData, address, userAddress })}
       resolverAction={zodResolver(BlockUserFormSchema)}
       onClose={onCloseAction}
       assetConfig={assetConfig}
@@ -38,10 +44,10 @@ export function BlockUserForm({ address, userAddress, blocked, assetConfig, onCl
       defaultValues={{
         address,
         userAddress,
-        blocked,
+        blocked: !currentlyBlocked,
       }}
     >
-      <Summary userAddress={userAddress} blocked={blocked} />
+      <Summary userAddress={userAddress} blocked={currentlyBlocked} />
     </AssetForm>
   );
 }
