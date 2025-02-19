@@ -24,7 +24,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new fund token is created
     /// @param token The address of the newly created token
-    event FundCreated(address indexed token);
+    event FundCreated(address indexed token, address indexed creator);
 
     /// @notice Deploys a new FundFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -70,7 +70,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         token = address(newToken);
         isFactoryFund[token] = true;
 
-        emit FundCreated(token);
+        emit FundCreated(token, _msgSender());
     }
 
     /// @notice Predicts the address where a token would be deployed

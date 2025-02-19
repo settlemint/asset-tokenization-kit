@@ -88,6 +88,7 @@ export function EvmAddress({
       const result = await hasuraClient.request(EvmAddressUser, {
         id: getAddress(address),
       });
+      console.log(11, result, { id: getAddress(address) });
       return result.user[0] ?? null;
     },
   });
@@ -105,6 +106,8 @@ export function EvmAddress({
       }
     },
   });
+
+  console.log(user);
 
   const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
   const displayEmail = prettyNames ? user?.email : undefined;
