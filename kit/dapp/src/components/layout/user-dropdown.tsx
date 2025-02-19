@@ -110,11 +110,12 @@ export function UserDropdown() {
             <BringToFront className="mr-2 size-4" />
             <Link href="/admin/activity" prefetch>
               Pending Transactions
-              {(pendingCount ?? 0) > 0 && (
-                <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
-                  {pendingCount}
-                </Badge>
-              )}
+              <Badge
+                className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
+                hidden={(pendingCount ?? 0) === 0}
+              >
+                {pendingCount}
+              </Badge>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
