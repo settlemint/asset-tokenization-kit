@@ -1,22 +1,9 @@
-import Header from '@/components/layout/header';
-import { NavFooter } from '@/components/layout/nav-footer';
-import { NavHeader } from '@/components/layout/nav-header';
-import { type NavElement, NavMain } from '@/components/layout/nav-main';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarInset,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
-import { getAuthenticatedUser } from '@/lib/auth/auth';
+import NavInset from '@/components/layout/nav-inset';
+import NavProvider from '@/components/layout/nav-provider';
 import { metadata as baseMetadata } from '@/lib/config/metadata';
-import { ArrowLeftRight, LayoutDashboard, Users, Wallet } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
+import { PortfolioSidebar } from './_components/sidebar/sidebar';
 
 export const metadata: Metadata = {
   title: 'Portfolio',
@@ -51,56 +38,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PortfolioLayout({ children }: PropsWithChildren) {
-  const user = await getAuthenticatedUser();
-  const role = (user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
-
-  const sidebarData: NavElement[] = [
-    {
-      label: 'Portfolio',
-      icon: <LayoutDashboard />,
-      path: '/portfolio',
-    },
-    {
-      label: 'My Assets',
-      icon: <Wallet />,
-      path: '/portfolio/my-assets',
-    },
-    {
-      label: 'Transactions',
-      icon: <ArrowLeftRight />,
-      path: '/portfolio/transactions',
-    },
-    {
-      label: 'My Contacts',
-      icon: <Users />,
-      path: '/portfolio/contacts',
-    },
-  ];
-
+export default function PortfolioLayout({ children }: PropsWithChildren) {
   return (
-    <SidebarProvider>
-      <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
-        <SidebarHeader>
-          <NavHeader />
-        </SidebarHeader>
-        <SidebarContent className="pt-4">
-          <NavMain items={sidebarData} />
-        </SidebarContent>
-        {['admin', 'issuer'].includes(role) && (
-          <>
-            <SidebarSeparator />
-            <SidebarFooter>
-              <NavFooter />
-            </SidebarFooter>
-          </>
-        )}
-        <SidebarRail />
-      </Sidebar>
-      <SidebarInset>
-        <Header />
-        <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-6">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <NavProvider>
+      <PortfolioSidebar />
+      <NavInset>{children}</NavInset>
+    </NavProvider>
   );
 }

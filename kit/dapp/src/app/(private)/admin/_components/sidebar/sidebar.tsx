@@ -1,15 +1,16 @@
 import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { NavMain } from '@/components/layout/nav-main';
+import NavSidebar from '@/components/layout/nav-sidebar';
 import { TokenDesignerButton } from '@/components/layout/token-designer-button';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import { SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
 import { AssetManagement } from './items/asset-management/asset-management';
 import { bottomItems } from './items/bottom';
 import { topItems } from './items/top';
 
-export function NavSidebar() {
+export function AdminSidebar() {
   return (
-    <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
+    <NavSidebar>
       <SidebarHeader>
         <NavHeader />
       </SidebarHeader>
@@ -19,10 +20,11 @@ export function NavSidebar() {
         <AssetManagement />
         <NavMain items={bottomItems} />
       </SidebarContent>
+      <SidebarSeparator />
       <SidebarFooter>
         <NavFooter />
       </SidebarFooter>
       <SidebarRail />
-    </Sidebar>
+    </NavSidebar>
   );
 }
