@@ -1,5 +1,5 @@
 'use client';
-import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
+import { BriefcaseIcon } from '@/components/ui/animated-icons/briefcase';
 import { SettingsGearIcon } from '@/components/ui/animated-icons/settings-gear';
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ export function NavFooter() {
 
   const isAdmin = pathname.startsWith('/admin');
   const currentSection = isAdmin ? 'Admin' : 'Portfolio';
-  const currentIcon = isAdmin ? <SettingsGearIcon className="h-4 w-4" /> : <ChartScatterIcon className="h-4 w-4" />;
+  const currentIcon = isAdmin ? <SettingsGearIcon className="h-4 w-4" /> : <BriefcaseIcon className="h-4 w-4" />;
 
   return (
     <SidebarMenu>
@@ -58,7 +58,7 @@ export function NavFooter() {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/portfolio" className={cn(menuItemStyles, !isAdmin && 'bg-sidebar-accent font-medium')}>
-                <ChartScatterIcon className="h-4 w-4" />
+                <BriefcaseIcon className="h-4 w-4" />
                 Portfolio
                 {!isAdmin && <Check />}
               </Link>
