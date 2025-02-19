@@ -17,9 +17,17 @@ interface HoldersTableClientProps {
   pagination?: DataTablePaginationOptions;
   asset: Address;
   assetConfig: AssetDetailConfig;
+  decimals: number;
 }
 
-export function HoldersTableClient({ queryKey, toolbar, pagination, asset, assetConfig }: HoldersTableClientProps) {
+export function HoldersTableClient({
+  queryKey,
+  toolbar,
+  decimals,
+  pagination,
+  asset,
+  assetConfig,
+}: HoldersTableClientProps) {
   const { data } = useSuspenseQuery<Holder[]>({
     queryKey,
     queryFn: () => getHolders(asset),
@@ -27,7 +35,7 @@ export function HoldersTableClient({ queryKey, toolbar, pagination, asset, asset
 
   return (
     <DataTable
-      columns={columns(asset as Address, assetConfig)}
+      columns={columns(asset as Address, decimals, assetConfig)}
       data={data}
       icons={icons}
       name={'Holders'}

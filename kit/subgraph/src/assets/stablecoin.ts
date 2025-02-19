@@ -441,7 +441,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   ]);
 
   const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
@@ -481,7 +482,8 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   ]);
 
   const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);

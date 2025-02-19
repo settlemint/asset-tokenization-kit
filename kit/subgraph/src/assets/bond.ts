@@ -495,7 +495,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetActivity.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, bond.decimals);
   balance.save();
 
   bond.lastActivity = event.block.timestamp;
@@ -528,7 +529,8 @@ export function handleTokensUnfrozen(event: TokensUnfrozen): void {
   ]);
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, bond.decimals);
   balance.save();
 
   const assetStats = newAssetStatsData(bond.id, AssetType.bond);

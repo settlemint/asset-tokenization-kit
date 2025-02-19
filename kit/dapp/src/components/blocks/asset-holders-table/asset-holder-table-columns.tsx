@@ -12,11 +12,12 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import type { Address } from 'viem';
 import { DataTableRowActions } from '../data-table/data-table-row-actions';
 import { BlockButton } from './actions/block-form/button';
+import { FreezeButton } from './actions/freeze-form/button';
 import type { Holder } from './asset-holders-table-data';
 
 const columnHelper = createColumnHelper<Holder>();
 
-export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
+export const columns = (address: Address, decimals: number, assetConfig: AssetDetailConfig) => [
   columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => {
@@ -94,6 +95,17 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
               address={address}
               currentlyBlocked={row.original.blocked}
               userAddress={row.original.account.id as Address}
+              assetConfig={assetConfig}
+            />
+          )}
+          {assetConfig.features.ERC20Custodian && (
+            <FreezeButton
+              address={address}
+              decimals={decimals}
+              currentFrozen={Number(row.original.frozen)}
+              currentBalance={Number(row.original.value)}
+              userAddress={row.original.account.id as Address}
+              assetConfig={assetConfig}
             />
           )}
         </DataTableRowActions>

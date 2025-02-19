@@ -4,18 +4,26 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BlockUserForm } from './form';
+import { FreezeForm } from './form';
 
-interface BlockButtonProps {
+interface FreezeButtonProps {
   address: Address;
-  currentlyBlocked: boolean;
+  decimals: number;
   userAddress: Address;
+  currentFrozen: number;
+  currentBalance: number;
   assetConfig: AssetDetailConfig;
 }
 
-export function BlockButton({ address, currentlyBlocked, userAddress, assetConfig }: BlockButtonProps) {
+export function FreezeButton({
+  address,
+  decimals,
+  currentFrozen,
+  currentBalance,
+  userAddress,
+  assetConfig,
+}: FreezeButtonProps) {
   const [open, setOpen] = useState(false);
-  const action = currentlyBlocked ? 'Unblock' : 'Block';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -27,20 +35,20 @@ export function BlockButton({ address, currentlyBlocked, userAddress, assetConfi
             setOpen(true);
           }}
         >
-          {action}
+          Freeze
         </DropdownMenuItem>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
-          <SheetTitle>{action}</SheetTitle>
-          <SheetDescription>
-            {action} to {currentlyBlocked ? 'enable' : 'prevent'} transfers.
-          </SheetDescription>
+          <SheetTitle>Freeze</SheetTitle>
+          <SheetDescription>Freeze an amount of assets.</SheetDescription>
         </SheetHeader>
-        <BlockUserForm
+        <FreezeForm
           address={address}
+          decimals={decimals}
           userAddress={userAddress}
-          currentlyBlocked={currentlyBlocked}
+          currentlyFrozen={currentFrozen}
+          currentBalance={currentBalance}
           assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}
         />

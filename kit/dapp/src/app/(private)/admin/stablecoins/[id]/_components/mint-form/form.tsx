@@ -39,6 +39,9 @@ export function MintForm({
         onSuccess: () => `${name} (${symbol}) minted successfully on chain`,
         onError: (_input, error) => `Failed to mint ${name} (${symbol}): ${error.message}`,
       }}
+      defaultValues={{
+        decimals,
+      }}
     >
       <Recipients />
       <Amount collateralAvailable={collateralAvailable} />
