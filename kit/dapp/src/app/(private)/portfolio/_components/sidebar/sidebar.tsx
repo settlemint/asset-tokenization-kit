@@ -11,7 +11,7 @@ import { SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSepar
 export function PortfolioSidebar() {
   const sidebarData: NavElement[] = [
     {
-      label: 'Portfolio',
+      label: 'Dashboard',
       icon: <ChartScatterIcon className="h-4 w-4" />,
       path: '/portfolio',
     },
