@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { defaultRefetchInterval } from '@/lib/react-query';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getAssetsWidgetData } from '../../common/assets/data';
 import { StatLabel } from '../stat/stat-label';
@@ -15,7 +16,7 @@ export function AssetsWidgetClient({ queryKey }: DashboardWidgetClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
-    refetchInterval: 1000 * 10,
+    refetchInterval: defaultRefetchInterval,
   });
 
   return (

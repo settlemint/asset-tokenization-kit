@@ -27,7 +27,6 @@ export function TransactionsHistoryClient({
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: () => getTransactionsHistoryData({ processedAfter, from }),
-    refetchInterval: 1000 * 5,
   });
 
   return (

@@ -30,7 +30,6 @@ export function AssetActivityClient({ queryKey }: AssetActivityClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsEventsData,
-    refetchInterval: 1000 * 5,
   });
 
   const isEmpty = data.every(

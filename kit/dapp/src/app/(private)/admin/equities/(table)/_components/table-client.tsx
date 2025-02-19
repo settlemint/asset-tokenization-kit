@@ -11,7 +11,6 @@ export function TableClient() {
     <AssetTableClient
       dataAction={getEquities}
       assetConfig={assetConfig.equity}
-      refetchInterval={5000}
       columns={columns}
       icons={icons}
       queryKey={queryKeys.asset.all(assetConfig.equity.queryKey)}

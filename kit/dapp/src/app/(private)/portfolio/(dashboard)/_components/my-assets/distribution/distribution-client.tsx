@@ -29,7 +29,6 @@ export function DistributionClient({ queryKey }: DistributionClientProps) {
   const { data } = useSuspenseQuery({
     queryKey,
     queryFn: getMyAssets,
-    refetchInterval: 5000,
   });
 
   const chartData = data.map((item) => {

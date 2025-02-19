@@ -36,7 +36,6 @@ export function GridClient({ asset }: { asset: Address }) {
         );
       }}
       dataAction={getStableCoin}
-      refetchInterval={5000}
     />
   );
 }
