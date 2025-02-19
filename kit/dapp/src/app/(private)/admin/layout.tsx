@@ -3,7 +3,7 @@ import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { redirect } from 'next/navigation';
 import type { CSSProperties, PropsWithChildren } from 'react';
 import Header from '../../../components/layout/header';
-import { Sidebar } from './_components/sidebar/sidebar';
+import { NavSidebar } from './_components/sidebar/sidebar';
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
   const user = await getAuthenticatedUser();
@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider className="SidebarProvider" style={{ '--sidebar-width-icon': '4.5rem' } as CSSProperties}>
-      <Sidebar />
+      <NavSidebar />
       <SidebarInset className="bg-sidebar">
         <Header />
         <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col gap-4 rounded-tl-xl bg-background p-10">

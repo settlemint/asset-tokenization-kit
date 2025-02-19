@@ -1,43 +1,8 @@
-import type { NavElement, NavItem } from '@/components/layout/nav-main';
-import { ActivityIcon } from '@/components/ui/animated-icons/activity';
-import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
-import { UsersIcon } from '@/components/ui/animated-icons/users';
+import type { NavItem } from '@/components/layout/nav-main';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { assetConfig } from '@/lib/config/assets';
 
-export const topItems: NavElement[] = [
-  {
-    label: 'Dashboard',
-    icon: <ChartScatterIcon className="h-4 w-4" />,
-    path: '/admin',
-  },
-  // {
-  //   label: 'Actions',
-  //   icon: <BellIcon className="h-4 w-4" />,
-  //   path: '/admin/actions',
-  //   badge: '12',
-  // },
-];
-
-export const bottomItems: NavElement[] = [
-  {
-    label: 'User management',
-    icon: <UsersIcon className="h-4 w-4" />,
-    path: '/admin/users',
-  },
-  {
-    label: 'Transactions',
-    icon: <ActivityIcon className="h-4 w-4" />,
-    path: '/admin/transactions',
-  },
-  // {
-  //   label: 'Settings',
-  //   icon: <SettingsGearIcon className="h-4 w-4" />,
-  //   path: '/admin/settings',
-  // },
-];
-
-export const tokenItems: NavItem[] = [
+export const assetItems: NavItem[] = [
   {
     assetType: 'bond',
     label: assetConfig.bond.pluralName,

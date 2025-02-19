@@ -13,5 +13,8 @@ export async function getRecentUsers() {
 
   const recentUsers = await db.select().from(user).where(gt(user.createdAt, sevenDaysAgo));
 
-  return recentUsers;
+  return recentUsers.map((user) => ({
+    timestamp: user.createdAt,
+    users: 1, // Each entry represents a single user
+  }));
 }

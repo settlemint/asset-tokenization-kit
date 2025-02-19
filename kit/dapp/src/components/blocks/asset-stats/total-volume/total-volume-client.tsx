@@ -30,6 +30,7 @@ export function TotalVolumeClient({ queryKey, asset }: TotalVolumeClientProps) {
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (

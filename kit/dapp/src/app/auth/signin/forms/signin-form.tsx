@@ -109,7 +109,7 @@ export function SignInForm({
                 <FormControl>
                   <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
-                <FormLabel className="font-normal text-sm">Remember me</FormLabel>
+                <FormLabel className="pb-2 font-normal text-sm">Remember me</FormLabel>
               </FormItem>
             )}
           />

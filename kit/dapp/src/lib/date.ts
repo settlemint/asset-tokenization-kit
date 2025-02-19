@@ -93,3 +93,50 @@ export function formatDuration(duration: number | string) {
     seconds: ((((Number(duration) % 31536000) % 2592000) % 86400) % 3600) % 60,
   });
 }
+
+/**
+ * Converts any timestamp format to a JavaScript Date object.
+ * Supports:
+ * - Unix seconds (10 digits)
+ * - Unix milliseconds (13 digits)
+ * - Unix microseconds (16 digits)
+ * - ISO date strings
+ * - Date objects
+ *
+ * @param timestamp - The timestamp to convert
+ * @returns A JavaScript Date object
+ * @throws {Error} If the timestamp is invalid or cannot be parsed
+ */
+export function getDateFromTimestamp(timestamp: string | number | Date): Date {
+  if (timestamp instanceof Date) {
+    return timestamp;
+  }
+
+  // Try parsing as ISO string first if it's a string
+  if (typeof timestamp === 'string') {
+    const date = new Date(timestamp);
+    if (!Number.isNaN(date.getTime())) {
+      return date;
+    }
+  }
+
+  const numericTimestamp = Number(timestamp);
+  if (Number.isNaN(numericTimestamp)) {
+    throw new Error('Invalid timestamp format');
+  }
+
+  const timestampStr = String(numericTimestamp);
+
+  // Unix microseconds (16 digits)
+  if (timestampStr.length >= 16) {
+    return new Date(Math.floor(numericTimestamp / 1000));
+  }
+
+  // Unix milliseconds (13 digits)
+  if (timestampStr.length >= 13) {
+    return new Date(numericTimestamp);
+  }
+
+  // Unix seconds (10 digits or less)
+  return new Date(numericTimestamp * 1000);
+}
