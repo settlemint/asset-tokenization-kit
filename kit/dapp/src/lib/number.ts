@@ -28,9 +28,12 @@ export interface FormatOptions {
  * @returns Formatted currency string
  * @throws {Error} If the amount is not a valid number
  */
-export function formatNumber(amount: string | bigint | number | BigNumber, options: FormatOptions = {}): string {
+export function formatNumber(
+  amount?: string | bigint | number | BigNumber | null,
+  options: FormatOptions = {}
+): string {
   const { currency, token, locale = 'en-US', decimals = 2, percentage = false } = options;
-  let value = new BigNumber(amount.toString());
+  let value = new BigNumber(amount?.toString() ?? '0');
 
   if (value.isNaN()) {
     value = new BigNumber(0);
