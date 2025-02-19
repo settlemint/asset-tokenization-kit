@@ -27,7 +27,7 @@ dataSources:
         - name: Bond
           file: ../contracts/artifacts/contracts/Bond.sol/Bond.json
       eventHandlers:
-        - event: BondCreated(indexed address)
+        - event: BondCreated(indexed address,indexed address)
           handler: handleBondCreated
       file: ./src/factories/bond-factory.ts
   - kind: ethereum/contract
@@ -49,7 +49,7 @@ dataSources:
         - name: CryptoCurrency
           file: ../contracts/artifacts/contracts/CryptoCurrency.sol/CryptoCurrency.json
       eventHandlers:
-        - event: CryptoCurrencyCreated(indexed address)
+        - event: CryptoCurrencyCreated(indexed address,indexed address)
           handler: handleCryptoCurrencyCreated
       file: ./src/factories/cryptocurrency-factory.ts
   - kind: ethereum/contract
@@ -71,7 +71,7 @@ dataSources:
         - name: Equity
           file: ../contracts/artifacts/contracts/Equity.sol/Equity.json
       eventHandlers:
-        - event: EquityCreated(indexed address)
+        - event: EquityCreated(indexed address,indexed address)
           handler: handleEquityCreated
       file: ./src/factories/equity-factory.ts
   - kind: ethereum/contract
@@ -93,7 +93,7 @@ dataSources:
         - name: StableCoin
           file: ../contracts/artifacts/contracts/StableCoin.sol/StableCoin.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address)
+        - event: StableCoinCreated(indexed address,indexed address)
           handler: handleStableCoinCreated
       file: ./src/factories/stablecoin-factory.ts
   - kind: ethereum/contract
@@ -115,7 +115,7 @@ dataSources:
         - name: Fund
           file: ../contracts/artifacts/contracts/Fund.sol/Fund.json
       eventHandlers:
-        - event: FundCreated(indexed address)
+        - event: FundCreated(indexed address,indexed address)
           handler: handleFundCreated
       file: ./src/factories/fund-factory.ts
   - kind: ethereum/contract
@@ -137,7 +137,7 @@ dataSources:
         - name: FixedYield
           file: ../contracts/artifacts/contracts/FixedYield.sol/FixedYield.json
       eventHandlers:
-        - event: FixedYieldCreated(indexed address)
+        - event: FixedYieldCreated(indexed address,indexed address)
           handler: handleFixedYieldCreated
       file: ./src/factories/fixedyield-factory.ts
 templates:

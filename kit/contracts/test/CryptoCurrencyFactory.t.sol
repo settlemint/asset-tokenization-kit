@@ -183,9 +183,10 @@ contract CryptoCurrencyFactoryTest is Test {
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
             lastEntry.topics[0],
-            keccak256("CryptoCurrencyCreated(address)"),
+            keccak256("CryptoCurrencyCreated(address,address)"),
             "Wrong event signature for CryptoCurrencyCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
+        assertEq(address(uint160(uint256(lastEntry.topics[2]))), address(this), "Wrong creator address in event");
     }
 }
