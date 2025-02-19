@@ -3,6 +3,7 @@ import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
 export interface AreaChartData {
@@ -26,6 +27,7 @@ interface AreaChartProps {
   footer?: ReactNode;
   showYAxis?: boolean;
   stacked?: boolean;
+  chartContainerClassName?: string;
 }
 
 const defaultTickFormatter = (value: string) => value.split(',')[0];
@@ -40,6 +42,7 @@ export function AreaChartComponent({
   footer,
   showYAxis,
   stacked,
+  chartContainerClassName,
 }: AreaChartProps) {
   const dataKeys = Object.keys(config);
   const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
@@ -51,7 +54,7 @@ export function AreaChartComponent({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="p-0 pr-4 pb-4">
-        <ChartContainer config={config}>
+        <ChartContainer config={config} className={cn(chartContainerClassName)}>
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             {dataKeys.length > 1 && (
