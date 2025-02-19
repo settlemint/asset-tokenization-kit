@@ -65,10 +65,6 @@ const tabs = (id: string): TabItemProps[] => [
     href: `/admin/stablecoins/${id}/events`,
   },
   // {
-  //   name: 'Block list',
-  //   href: `/admin/stablecoins/${id}/blocklist`,
-  // },
-  // {
   //   name: 'Token permissions',
   //   href: `/admin/stablecoins/${id}/token-permissions`,
   // },
