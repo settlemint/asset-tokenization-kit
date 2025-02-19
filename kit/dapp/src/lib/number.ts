@@ -46,7 +46,7 @@ export function formatNumber(
     }
 
     return new Intl.NumberFormat(locale, {
-      style: 'percent',
+      style: value.isFinite() ? 'percent' : undefined,
       maximumFractionDigits: decimals,
       minimumFractionDigits: decimals,
     }).format(percentageValue.toNumber());

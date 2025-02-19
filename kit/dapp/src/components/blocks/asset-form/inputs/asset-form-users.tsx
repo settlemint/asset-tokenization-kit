@@ -4,7 +4,7 @@ import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@
 import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { sanitizeSearchTerm } from '@/lib/react-query';
+import { queryKeys, sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { cn } from '@/lib/utils';
 import type { ResultOf } from '@settlemint/sdk-hasura';
@@ -89,7 +89,7 @@ export function AssetFormUsers<T extends FieldValues>({
               </PopoverTrigger>
               <PopoverContent className="w-[419px] p-0">
                 <Command shouldFilter={false}>
-                  <CommandInput placeholder="Search framework..." className="h-9" />
+                  <CommandInput placeholder="Search for a user..." className="h-9" />
                   <AssetFormUsersList onValueChange={field.onChange} setOpen={setOpen} value={field.value} />
                 </Command>
               </PopoverContent>
@@ -131,7 +131,7 @@ function AssetFormUsersList({
   return (
     <CommandList>
       {isLoading && <CommandLoading>Searching...</CommandLoading>}
-      <CommandEmpty>No user found.</CommandEmpty>
+      <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">No user found.</CommandEmpty>
       <CommandGroup>
         {data?.map((user) => (
           <CommandItem

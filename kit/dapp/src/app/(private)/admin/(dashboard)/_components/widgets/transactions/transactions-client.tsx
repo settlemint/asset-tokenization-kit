@@ -16,7 +16,6 @@ export function TransactionsWidgetClient({ queryKey }: TransactionsWidgetClientP
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getTransactionsWidgetData,
-    refetchInterval: 1000 * 10,
   });
 
   return (

@@ -22,7 +22,6 @@ export function TotalTransfersClient({ queryKey, asset }: TotalTransfersClientPr
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: async () => getAssetDetailStats(asset),
-    refetchInterval: 1000 * 5,
   });
 
   const timeseries = createTimeSeries(data, ['totalTransfers'], {
@@ -30,6 +29,7 @@ export function TotalTransfersClient({ queryKey, asset }: TotalTransfersClientPr
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (

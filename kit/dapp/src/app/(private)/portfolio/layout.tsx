@@ -91,7 +91,7 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
           <>
             <SidebarSeparator />
             <SidebarFooter>
-              <NavFooter mode="portfolio" />
+              <NavFooter />
             </SidebarFooter>
           </>
         )}

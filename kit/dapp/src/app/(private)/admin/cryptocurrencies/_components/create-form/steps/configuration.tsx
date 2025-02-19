@@ -14,7 +14,7 @@ export function Configuration() {
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput control={control} name="initialSupply" label="Initial supply" defaultValue={0} />
+        <AssetFormInput control={control} name="initialSupply" label="Initial supply" />
       </div>
     </div>
   );

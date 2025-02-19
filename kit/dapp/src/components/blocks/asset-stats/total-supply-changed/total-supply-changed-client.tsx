@@ -26,7 +26,6 @@ export function TotalSupplyChangedClient({ queryKey, asset }: TotalSupplyChanged
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: async () => getAssetDetailStats(asset),
-    refetchInterval: 1000 * 5,
   });
 
   const timeseries = createTimeSeries(data, ['totalMinted', 'totalBurned'], {
@@ -34,6 +33,7 @@ export function TotalSupplyChangedClient({ queryKey, asset }: TotalSupplyChanged
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (

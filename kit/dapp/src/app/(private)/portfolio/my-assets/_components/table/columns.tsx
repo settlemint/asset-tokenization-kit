@@ -1,6 +1,6 @@
 'use client';
 
-import type { MyAsset } from '@/app/(private)/portfolio/my-assets/data';
+import type { MyAsset } from '@/app/(private)/portfolio/_components/my-assets/data';
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';

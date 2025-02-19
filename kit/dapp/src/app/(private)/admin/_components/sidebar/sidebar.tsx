@@ -1,24 +1,28 @@
-import { getQueryClient, queryKeys } from '@/lib/react-query';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
-import { getSidebarAssets } from './data';
-import { SidebarClient } from './sidebar-client';
+import { NavFooter } from '@/components/layout/nav-footer';
+import { NavHeader } from '@/components/layout/nav-header';
+import { NavMain } from '@/components/layout/nav-main';
+import { TokenDesignerButton } from '@/components/layout/token-designer-button';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import { AssetManagement } from './items/asset-management/asset-management';
+import { bottomItems } from './items/bottom';
+import { topItems } from './items/top';
 
-export async function Sidebar() {
-  const queryClient = getQueryClient();
-
-  const queryKey = queryKeys.asset.all();
-
-  await queryClient.prefetchQuery({
-    queryKey: queryKey,
-    queryFn: getSidebarAssets,
-  });
-
+export function NavSidebar() {
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
-        <SidebarClient queryKey={queryKey} />
-      </Suspense>
-    </HydrationBoundary>
+    <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
+      <SidebarHeader>
+        <NavHeader />
+      </SidebarHeader>
+      <SidebarContent>
+        <TokenDesignerButton />
+        <NavMain items={topItems} />
+        <AssetManagement />
+        <NavMain items={bottomItems} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavFooter />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
   );
 }

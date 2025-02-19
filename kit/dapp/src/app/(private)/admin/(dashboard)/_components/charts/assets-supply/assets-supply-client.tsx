@@ -18,7 +18,6 @@ export function AssetsSupplyClient({ queryKey }: AssetsSupplyClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getAssetsWidgetData,
-    refetchInterval: 1000 * 5,
   });
 
   const chartData = data.breakdown

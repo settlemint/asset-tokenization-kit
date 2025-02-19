@@ -56,7 +56,6 @@ export function AddressAvatar({
         } catch {
           //ignore
         }
-        return `https://effigy.im/a/${validAddress}.svg`;
       }
 
       return getGravatarUrl(email ?? address ?? 'anonymous', {

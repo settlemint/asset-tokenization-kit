@@ -64,7 +64,7 @@ export function AreaChartComponent({
               tickMargin={tickMargin}
               tickFormatter={tickFormatter}
             />
-            {showYAxis && <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />}
+            <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} hide={!showYAxis} />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}

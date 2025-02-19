@@ -1,5 +1,5 @@
 import type { AssetDetailConfig } from '@/lib/config/assets';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';

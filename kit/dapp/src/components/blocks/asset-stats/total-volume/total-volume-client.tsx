@@ -22,7 +22,6 @@ export function TotalVolumeClient({ queryKey, asset }: TotalVolumeClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: async () => getAssetDetailStats(asset),
-    refetchInterval: 1000 * 5,
   });
 
   const timeseries = createTimeSeries(data, ['totalVolume'], {
@@ -30,6 +29,7 @@ export function TotalVolumeClient({ queryKey, asset }: TotalVolumeClientProps) {
     intervalType: 'day',
     intervalLength: 1,
     total: false,
+    aggregation: 'first',
   });
 
   return (

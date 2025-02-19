@@ -18,7 +18,7 @@ export const columns = [
     header: ({ column }) => <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
-        <EvmAddress address={getValue() as Address}>
+        <EvmAddress address={getValue() as Address} prettyNames={false}>
           <EvmAddressBalances address={getValue() as Address} />
         </EvmAddress>
       </DataTableColumnCell>
