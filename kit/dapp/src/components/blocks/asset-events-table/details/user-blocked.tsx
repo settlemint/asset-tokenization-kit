@@ -1,6 +1,7 @@
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import type { Address } from 'viem';
 import type { UserBlockedEvent } from '../asset-events-fragments';
 
 interface UserBlockedDetailsProps {
@@ -15,8 +16,8 @@ export function UserBlockedDetails({ details }: UserBlockedDetailsProps) {
         <dl className="grid grid-cols-[1fr_2fr] gap-4">
           <dt className="text-muted-foreground text-sm">User:</dt>
           <dd className="text-sm">
-            <EvmAddress address={details.user.id}>
-              <EvmAddressBalances address={details.user.id} />
+            <EvmAddress address={details.user.id as Address}>
+              <EvmAddressBalances address={details.user.id as Address} />
             </EvmAddress>
           </dd>
         </dl>

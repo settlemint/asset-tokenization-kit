@@ -23,8 +23,8 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
         <DataTableColumnCell>
           {wallet && (
             <div className="flex items-center">
-              <EvmAddress address={wallet} copyToClipboard={true} verbose={true}>
-                <EvmAddressBalances address={wallet} />
+              <EvmAddress address={wallet as Address} copyToClipboard={true} verbose={true}>
+                <EvmAddressBalances address={wallet as Address} />
               </EvmAddress>
             </div>
           )}

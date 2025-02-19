@@ -1,48 +1,64 @@
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
-import type { PropsWithChildren } from 'react';
-import { Suspense } from 'react';
-import { AssetTableError } from './asset-table-error';
+import type { LucideIcon } from 'lucide-react';
+import { type ComponentType, Suspense } from 'react';
+import { AssetTableClient } from './asset-table-client';
 import { AssetTableSkeleton } from './asset-table-skeleton';
+
+type AssetUrlSegment = 'bonds' | 'equities' | 'funds' | 'stablecoins' | 'cryptocurrencies';
 
 /**
  * Props for the AssetTable component
  * @template Asset The type of asset data being displayed
  */
 export interface AssetTableProps<Asset extends Record<string, unknown>> {
-  assetConfig: AssetDetailConfig;
   /** Function to fetch the asset data */
   dataAction: () => Promise<Asset[]>;
+  /** Asset configuration for the table */
+  assetConfig: AssetDetailConfig & { urlSegment: AssetUrlSegment };
+  /** Optional refetch interval in milliseconds */
+  refetchInterval?: number;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
+  /** Icons for the table */
+  icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
 }
 
 /**
- * Server component that renders a table of assets with data fetching capabilities
+ * Server component for displaying asset data in a table
  * @template Asset The type of asset data being displayed
  */
 export async function AssetTable<Asset extends Record<string, unknown>>({
   dataAction,
   assetConfig,
+  refetchInterval,
   columns,
-  children,
-}: PropsWithChildren<AssetTableProps<Asset>>) {
+  icons,
+}: AssetTableProps<Asset>) {
   const queryClient = getQueryClient();
+  const { keys } = useQueryKeys();
+  const queryKey = keys.assets.all(assetConfig.urlSegment);
 
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: assetConfig.queryKey,
-      queryFn: () => dataAction(),
-    });
+  await queryClient.prefetchQuery({
+    queryKey,
+    queryFn: dataAction,
+  });
 
-    return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>{children}</Suspense>
-      </HydrationBoundary>
-    );
-  } catch (error) {
-    return <AssetTableError error={error} />;
-  }
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
+        <AssetTableClient<Asset>
+          dataAction={dataAction}
+          assetConfig={assetConfig}
+          refetchInterval={refetchInterval}
+          columns={columns}
+          icons={icons}
+          queryKey={queryKey}
+        />
+      </Suspense>
+    </HydrationBoundary>
+  );
 }

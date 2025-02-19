@@ -8,6 +8,7 @@ import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { assetConfig } from '@/lib/config/assets';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import type { Address } from 'viem';
 import type { BondAsset } from './data';
 
 const columnHelper = createColumnHelper<BondAsset>();
@@ -17,8 +18,8 @@ export const columns = [
     header: ({ column }) => <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
-        <EvmAddress address={getValue()}>
-          <EvmAddressBalances address={getValue()} />
+        <EvmAddress address={getValue() as Address}>
+          <EvmAddressBalances address={getValue() as Address} />
         </EvmAddress>
       </DataTableColumnCell>
     ),

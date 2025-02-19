@@ -7,6 +7,7 @@ import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { formatNumber } from '@/lib/number';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
 import { getMyAsset } from '../../_components/data';
 
 type DetailsGridProps = {
@@ -49,8 +50,8 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
             <DetailsGridItem label="ISIN">{myAsset.asset.stableCoinIsin ?? '-'}</DetailsGridItem>
             <DetailsGridItem label="Contract address">
               <div className="flex items-center">
-                <EvmAddress address={myAsset.asset.id}>
-                  <EvmAddressBalances address={myAsset.asset.id} />
+                <EvmAddress address={myAsset.asset.id as Address}>
+                  <EvmAddressBalances address={myAsset.asset.id as Address} />
                 </EvmAddress>
                 <CopyToClipboard value={myAsset.asset.id} className="ml-2" />
               </div>

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePollingInterval } from '@/hooks/use-polling-interval';
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
@@ -33,13 +34,14 @@ export function UserDropdown() {
   const { data: userSession } = authClient.useSession();
   const interval = usePollingInterval(5000);
   const router = useRouter();
+  const { keys } = useQueryKeys();
 
   const wallet = userSession?.user.wallet as Address | undefined;
   const email = userSession?.user.email;
   const name = userSession?.user.name;
 
   const { data: pendingCount } = useQuery({
-    queryKey: ['pendingtx', email, wallet],
+    queryKey: keys.users.pendingTransactions(email, wallet),
     queryFn: async () => {
       const response = await portalClient.request(GetPendingTransactions, {
         from: wallet,

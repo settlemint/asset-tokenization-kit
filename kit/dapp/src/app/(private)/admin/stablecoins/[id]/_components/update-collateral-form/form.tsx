@@ -27,10 +27,8 @@ export function UpdateCollateralStablecoinForm({
       storeAction={updateCollateral}
       resolverAction={zodResolver(UpdateCollateralFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
-        serverCachePath: () => `/admin/stablecoins/${address}`,
-      }}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel="Update collateral"
       submittingLabel="Updating collateral..."
       messages={{

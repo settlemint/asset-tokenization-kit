@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { PauseFormSchema } from './schema';
 import { Summary } from './steps/summary';
-import { pauseEquity } from './store';
+import { pauseBond } from './store';
 
 interface PauseStablecoinFormProps {
   address: Address;
@@ -22,13 +22,11 @@ export function PauseStablecoinForm({ address, paused, assetConfig, onCloseActio
 
   return (
     <AssetForm
-      storeAction={(formData) => pauseEquity({ ...formData, address, paused })}
+      storeAction={(formData) => pauseBond({ ...formData, address, paused })}
       resolverAction={zodResolver(PauseFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
-        serverCachePath: () => `/admin/stablecoins/${address}`,
-      }}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}
       messages={{

@@ -4,7 +4,6 @@ import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import { columns } from './_components/columns';
 import { getFunds } from './_components/data';
-import { FundsTableClient } from './_components/table.client';
 
 export const metadata: Metadata = {
   title: 'Funds',
@@ -15,9 +14,7 @@ export default function FundsPage() {
   return (
     <>
       <PageHeader title="Funds" />
-      <AssetTable assetConfig={assetConfig.fund} dataAction={getFunds} columns={columns}>
-        <FundsTableClient />
-      </AssetTable>
+      <AssetTable assetConfig={assetConfig.fund} dataAction={getFunds} columns={columns} />
     </>
   );
 }

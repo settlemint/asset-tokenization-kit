@@ -17,9 +17,7 @@ export function CreateCryptocurrencyForm({
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.cryptocurrency.queryKey, ['transactions']],
-      }}
+      assetConfig={assetConfig.cryptocurrency}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

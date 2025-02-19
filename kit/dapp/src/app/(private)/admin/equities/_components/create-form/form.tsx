@@ -17,9 +17,7 @@ export function CreateEquityForm({
       storeAction={createEquity}
       resolverAction={zodResolver(CreateEquityFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.equity.queryKey, ['transactions']],
-      }}
+      assetConfig={assetConfig.equity}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

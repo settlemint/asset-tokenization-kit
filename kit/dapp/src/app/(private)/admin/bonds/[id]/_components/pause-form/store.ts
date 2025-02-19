@@ -30,7 +30,7 @@ const UnpauseEquity = portalGraphql(`
   }
 `);
 
-export const pauseEquity = actionClient
+export const pauseBond = actionClient
   .schema(PauseFormSchema)
   .outputSchema(PauseOutputSchema)
   .action(async ({ parsedInput: { pincode, address, paused }, ctx: { user } }) => {

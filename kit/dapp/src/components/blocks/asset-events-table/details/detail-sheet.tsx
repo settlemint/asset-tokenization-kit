@@ -2,6 +2,7 @@ import { TransactionHash } from '@/components/blocks/transaction-hash/transactio
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import type { Address } from 'viem';
 import { EvmAddress } from '../../evm-address/evm-address';
 import type { NormalizedEventsListItem } from '../asset-events-fragments';
 import { ApprovalDetails } from './approval';
@@ -17,7 +18,6 @@ import { TokenWithdrawnDetails } from './token-withdrawn';
 import { TokensFrozenDetails } from './tokens-frozen';
 import { TransferDetails } from './transfer';
 import { UserBlockedDetails } from './user-blocked';
-
 export function EventDetailSheet({
   event,
   sender,
@@ -41,11 +41,11 @@ export function EventDetailSheet({
               <dl className="grid grid-cols-[1fr_2fr] gap-4">
                 <dt className="text-muted-foreground text-sm">Sender:</dt>
                 <dd className="text-sm">
-                  <EvmAddress address={sender} />
+                  <EvmAddress address={sender as Address} />
                 </dd>
                 <dt className="text-muted-foreground text-sm">Asset:</dt>
                 <dd className="text-sm">
-                  <EvmAddress address={asset} />
+                  <EvmAddress address={asset as Address} />
                 </dd>
                 <dt className="text-muted-foreground text-sm">Date:</dt>
                 <dd className="text-sm [&:first-letter]:uppercase">{timestamp}</dd>

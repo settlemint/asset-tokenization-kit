@@ -95,8 +95,8 @@ export default async function MyAssetDetailLayout({ children, params }: LayoutPr
         <span className="text-muted-foreground">({myAsset?.asset.symbol})</span>
       </h1>
       <div className="flex justify-between text-muted-foreground text-sm">
-        <EvmAddress address={id}>
-          <EvmAddressBalances address={id} />
+        <EvmAddress address={id as Address}>
+          <EvmAddressBalances address={id as Address} />
         </EvmAddress>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

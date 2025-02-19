@@ -14,10 +14,10 @@ import { formatDate } from '@/lib/date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { BadgeCheck, BadgePlus, BadgeX, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
 import { type ComponentType, Suspense } from 'react';
+import type { Address } from 'viem';
 import { BanUserAction } from './actions/ban-user-action';
 import { ChangeRoleAction } from './actions/change-role-action';
 import { UpdateKycStatusAction } from './actions/update-kyc-status-action';
-
 const columnHelper = createColumnHelper<ListUser>();
 
 export const columns = [
@@ -28,7 +28,7 @@ export const columns = [
         <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
           <AddressAvatar
             email={row.original.email}
-            address={row.original.wallet}
+            address={row.original.wallet as Address}
             imageUrl={row.original.image}
             variant="small"
           />
@@ -45,8 +45,8 @@ export const columns = [
       <DataTableColumnCell>
         {getValue() && (
           <div className="flex items-center">
-            <EvmAddress address={getValue()} prettyNames={false}>
-              <EvmAddressBalances address={getValue()} />
+            <EvmAddress address={getValue() as Address} prettyNames={false}>
+              <EvmAddressBalances address={getValue() as Address} />
             </EvmAddress>
             <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
           </div>

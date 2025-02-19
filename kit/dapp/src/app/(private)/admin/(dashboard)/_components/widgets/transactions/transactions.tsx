@@ -1,3 +1,4 @@
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
@@ -6,10 +7,11 @@ import { TransactionsWidgetClient } from './transactions-client';
 
 export async function TransactionsWidget() {
   const queryClient = getQueryClient();
-  const queryKey = ['TransactionsWidget', 'transactions'];
+  const { keys } = useQueryKeys();
+  const queryKey = keys.dashboard.widgets.transactions;
 
   await queryClient.prefetchQuery({
-    queryKey: queryKey,
+    queryKey,
     queryFn: getTransactionsWidgetData,
   });
 

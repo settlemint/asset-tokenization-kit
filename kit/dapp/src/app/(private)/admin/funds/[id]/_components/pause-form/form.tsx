@@ -25,10 +25,8 @@ export function PauseStablecoinForm({ address, paused, assetConfig, onCloseActio
       storeAction={(formData) => pauseFund({ ...formData, address, paused })}
       resolverAction={zodResolver(PauseFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
-        serverCachePath: () => `/admin/stablecoins/${address}`,
-      }}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}
       messages={{
