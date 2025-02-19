@@ -345,21 +345,6 @@ type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
 }
 
 """
-Entity for tokens unfrozen events.
-Emitted when tokens are unfrozen (a custodian operation).
-"""
-type TokensUnfrozenEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  user: Account! # The user whose tokens were unfrozen
-  amount: BigDecimal! # The amount unfrozen
-  amountExact: BigInt! # The amount unfrozen in exact precision
-}
-
-"""
 Entity for role granted events.
 Emitted when a role is granted.
 """
