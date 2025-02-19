@@ -68,10 +68,10 @@ const tabs = (id: string): TabItemProps[] => [
   //   name: 'Block list',
   //   href: `/admin/stablecoins/${id}/blocklist`,
   // },
-  // {
-  //   name: 'Token permissions',
-  //   href: `/admin/stablecoins/${id}/token-permissions`,
-  // },
+  {
+    name: 'Token permissions',
+    href: `/admin/stablecoins/${id}/token-permissions`,
+  },
 ];
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
