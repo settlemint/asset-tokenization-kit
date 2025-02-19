@@ -1,12 +1,11 @@
-import { MyAssetsTable } from '@/app/(private)/portfolio/my-assets/_components/table';
+import { PageHeader } from '@/components/layout/page-header';
+import { MyAssets } from './(table)/table';
 
 export default function MyAssetsPage() {
   return (
     <>
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="mb-6font-bold text-3xl tracking-tight">My Assets</h2>
-      </div>
-      <MyAssetsTable />
+      <PageHeader title="My Assets" />
+      <MyAssets />
     </>
   );
 }

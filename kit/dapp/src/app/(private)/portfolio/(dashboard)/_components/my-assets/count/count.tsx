@@ -1,24 +1,24 @@
-import { getMyAssets } from '@/app/(private)/portfolio/_components/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets/data';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { MyAssetsClient } from './count-client';
+import { MyAssetsCountClient } from './count-client';
 
-export async function MyAssets() {
+export async function MyAssetsCount() {
   const queryClient = getQueryClient();
   const user = await getAuthenticatedUser();
   const queryKey: QueryKey = ['my-assets', user.wallet];
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: getMyAssets,
+    queryFn: () => getMyAssets(),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <MyAssetsClient queryKey={queryKey} />
+        <MyAssetsCountClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
   );
