@@ -25,6 +25,7 @@ export function MyAssetsTableClient({ queryKey, active }: MyAssetsTableClientPro
       name="My Assets"
       pagination={{ enablePagination: false }}
       toolbar={{ enableToolbar: false }}
+      initialSorting={[{ id: 'value', desc: true }]}
     />
   );
 }

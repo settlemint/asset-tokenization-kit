@@ -3,6 +3,7 @@
 import { getMyAssets } from '@/components/blocks/my-assets/data';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { formatNumber } from '@/lib/number';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { ArrowUpFromLine } from 'lucide-react';
 
@@ -21,7 +22,7 @@ export function MyAssetsCountClient({ queryKey }: MyAssetsClientProps) {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <span className="mr-1 font-bold text-4xl">{totalValue}</span>
+        <span className="mr-1 font-bold text-4xl">{formatNumber(totalValue)}</span>
         <span>assets</span>
       </div>
       <Sheet>
