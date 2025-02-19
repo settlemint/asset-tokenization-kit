@@ -1,6 +1,7 @@
 'use client';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { numericSortingFn } from '@/components/blocks/data-table/sorting';
 import type { MyAsset } from '@/components/blocks/my-assets/data';
 import { Badge } from '@/components/ui/badge';
 import { assetConfig } from '@/lib/config/assets';
@@ -41,5 +42,6 @@ export const columns = [
     ),
     cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
+    sortingFn: numericSortingFn<MyAsset>('value'),
   }),
 ];
