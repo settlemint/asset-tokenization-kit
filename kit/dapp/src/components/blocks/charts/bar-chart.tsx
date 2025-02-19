@@ -28,7 +28,14 @@ interface BarChartProps {
   showYAxis?: boolean;
 }
 
-const defaultTickFormatter = (value: string) => value.split(',')[0];
+const defaultTickFormatter = (value: string) => {
+  if (!value) return '';
+  // Try comma split first
+  const commaSplit = value.split(',')[0];
+  if (commaSplit !== value) return commaSplit;
+  // If no comma, truncate to first 3 chars
+  return value.slice(0, 3);
+};
 const defaultTickMargin = 8;
 
 export function BarChartComponent({ data, config, title, description, xAxis, footer, showYAxis }: BarChartProps) {
