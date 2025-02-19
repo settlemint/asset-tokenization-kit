@@ -77,7 +77,7 @@ contract FixedYieldFactoryTest is Test {
         // Verify the event signature and address
         assertEq(lastEntry.topics[0], keccak256("FixedYieldCreated(address,address)"), "Event signature mismatch");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), scheduleAddr, "Schedule address mismatch");
-        assertEq(address(uint160(uint256(lastEntry.topics[2]))), address(this), "Creator address mismatch");
+        assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Creator address mismatch");
 
         // Get the schedule and verify its parameters
         FixedYield schedule = FixedYield(scheduleAddr);
@@ -138,7 +138,7 @@ contract FixedYieldFactoryTest is Test {
         // Verify the event signature and address
         assertEq(lastEntry.topics[0], keccak256("FixedYieldCreated(address,address)"), "Event signature mismatch");
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), scheduleAddr, "Schedule address mismatch");
-        assertEq(address(uint160(uint256(lastEntry.topics[2]))), address(this), "Creator address mismatch");
+        assertEq(address(uint160(uint256(lastEntry.topics[2]))), owner, "Creator address mismatch");
 
         vm.stopPrank();
     }
