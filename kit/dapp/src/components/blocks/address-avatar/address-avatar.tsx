@@ -3,7 +3,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useQueryKeys } from '@/hooks/use-query-keys';
 import { useQuery } from '@tanstack/react-query';
-import { type Address, getAddress } from 'viem';
+import { getGravatarUrl } from 'react-awesome-gravatar';
+import { http, type Address, createPublicClient, getAddress } from 'viem';
+import { mainnet } from 'viem/chains';
+
+// Create a singleton viem client for ENS lookups
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http('https://ethereum-rpc.publicnode.com'),
+});
 
 interface AddressAvatarProps {
   address?: Address;
@@ -27,17 +35,34 @@ export function AddressAvatar({
 
   const { data: avatarUrl } = useQuery({
     queryKey: keys.users.avatar(validAddress, imageUrl, email),
-    queryFn: () => {
+    queryFn: async () => {
       if (imageUrl) {
         return imageUrl;
       }
+
       if (email) {
-        return `https://www.gravatar.com/avatar/${email}?d=mp`;
+        return getGravatarUrl(email, {
+          default: 'identicon',
+          size: 400,
+        });
       }
+
       if (validAddress) {
+        try {
+          const ensName = await publicClient.getEnsName({ address: validAddress });
+          if (ensName) {
+            return `https://metadata.ens.domains/mainnet/avatar/${ensName}`;
+          }
+        } catch {
+          //ignore
+        }
         return `https://effigy.im/a/${validAddress}.svg`;
       }
-      return null;
+
+      return getGravatarUrl(email ?? address ?? 'anonymous', {
+        default: 'identicon',
+        size: 400,
+      });
     },
   });
 
