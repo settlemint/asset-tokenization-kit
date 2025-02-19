@@ -7,7 +7,7 @@ import { getAssetsEventsData } from './data';
 
 export async function AssetActivity() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.charts.assetsActivity;
+  const queryKey = queryKeys.dashboard.chart('activity');
 
   await queryClient.prefetchQuery({
     queryKey,

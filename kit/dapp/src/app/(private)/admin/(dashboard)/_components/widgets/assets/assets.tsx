@@ -6,7 +6,7 @@ import { AssetsWidgetClient } from './assets-client';
 
 export async function AssetsWidget() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.widgets.assets;
+  const queryKey = queryKeys.dashboard.widget('asset');
 
   await queryClient.prefetchQuery({
     queryKey,

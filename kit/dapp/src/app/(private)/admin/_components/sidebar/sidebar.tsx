@@ -7,7 +7,7 @@ import { SidebarClient } from './sidebar-client';
 export async function Sidebar() {
   const queryClient = getQueryClient();
 
-  const queryKey = queryKeys.assets.root;
+  const queryKey = queryKeys.asset.all();
 
   await queryClient.prefetchQuery({
     queryKey: queryKey,

@@ -3,6 +3,7 @@ import { AssetFormDate } from '@/components/blocks/asset-form/inputs/asset-form-
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
 import { assetConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { type CreateBondFormType, PaymentFrequency } from '../schema';
@@ -11,7 +12,7 @@ export function Configuration() {
   const { control } = useFormContext<CreateBondFormType>();
 
   const { data: stableCoins } = useSuspenseQuery({
-    queryKey: assetConfig.stablecoin.queryKey,
+    queryKey: queryKeys.asset.all(assetConfig.stablecoin.queryKey),
     queryFn: () => getStableCoins(),
   });
 

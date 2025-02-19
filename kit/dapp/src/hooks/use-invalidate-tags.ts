@@ -32,7 +32,9 @@ export function useInvalidateTags() {
       queryClient.invalidateQueries({
         predicate: (query) => {
           const key = query.queryKey;
-          if (matcher.length > key.length) return false;
+          if (matcher.length > key.length) {
+            return false;
+          }
           return matcher.every((segment, index) => key[index] === segment);
         },
         refetchType: 'active',

@@ -34,7 +34,7 @@ export function AddressAvatar({
   const { keys } = useQueryKeys();
 
   const { data: avatarUrl } = useQuery({
-    queryKey: keys.users.avatar(validAddress, imageUrl, email),
+    queryKey: keys.user.profile({ address: validAddress, email }),
     queryFn: async () => {
       if (imageUrl) {
         return imageUrl;

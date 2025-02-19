@@ -1,48 +1,54 @@
 import { QueryClient, type QueryKey } from '@tanstack/react-query';
 import { cache } from 'react';
-import type { Address } from 'viem';
+import { type Address, getAddress } from 'viem';
+import type { assetConfig } from './config/assets';
+
+type AssetType = keyof typeof assetConfig;
+type Category = 'asset' | 'user' | 'transaction';
+type StatType = 'supply' | 'volume' | 'transfers' | 'holders';
+type ChartType = 'supply' | 'history' | 'activity' | 'transaction';
 
 /**
  * Type-safe query key factory for the application
  */
 export const queryKeys = {
-  assets: {
-    root: ['assets'] as const,
-    all: (type: 'bonds' | 'equities' | 'funds' | 'stablecoins' | 'cryptocurrencies') => ['assets', type] as const,
-    detail: (type: string, address: Address) => ['assets', type, address] as const,
-    stats: {
-      supply: (address: Address) => ['assets', 'stats', 'supply', address] as const,
-      volume: (address: Address) => ['assets', 'stats', 'volume', address] as const,
-      transfers: (address: Address) => ['assets', 'stats', 'transfers', address] as const,
-      holders: (address: Address) => ['assets', 'stats', 'holders', address] as const,
-    },
-    events: (address?: Address) =>
-      address ? (['assets', 'events', address] as const) : (['assets', 'events'] as const),
+  // Asset queries
+  asset: {
+    all: (type?: AssetType) => (type ? (['asset', type] as const) : (['asset'] as const)),
+    detail: (params: { type?: AssetType; address: Address }) =>
+      params.type
+        ? (['asset', 'detail', params.type, getAddress(params.address)] as const)
+        : (['asset', 'detail', getAddress(params.address)] as const),
+    stats: (params: { address: Address; type: StatType }) =>
+      ['asset', 'stats', params.type, getAddress(params.address)] as const,
+    events: (address?: Address) => ['asset', 'events', address ?? '*'] as const,
   },
-  users: {
-    root: ['users'] as const,
-    detail: (id: string) => ['users', id] as const,
-    stats: ['users', 'stats'] as const,
-    avatar: (address?: Address, imageUrl?: string | null, email?: string) =>
-      ['users', 'avatar', address ?? '', imageUrl ?? '', email ?? ''] as const,
-    balances: (address: Address) => ['users', 'balances', address] as const,
-    search: (term: string) => ['users', 'search', term] as const,
-    pendingTransactions: (email?: string, wallet?: Address) =>
-      ['users', 'pending-transactions', email ?? '', wallet ?? ''] as const,
+
+  // User queries
+  user: {
+    all: () => ['user'] as const,
+    detail: (id: string) => ['user', id] as const,
+    stats: () => ['user', 'stats'] as const,
+    profile: (params: { address?: Address; email?: string; imageUrl?: string }) =>
+      [
+        'user',
+        'profile',
+        params.address ? getAddress(params.address) : '*',
+        params.email ?? '*',
+        params.imageUrl ?? '*',
+      ] as const,
+    balances: (address: Address) => ['user', 'balances', getAddress(address)] as const,
+    transactions: (params: { email?: string; wallet?: Address }) =>
+      ['user', 'transactions', params.email ?? '*', params.wallet ? getAddress(params.wallet) : '*'] as const,
   },
+
+  // Dashboard queries
   dashboard: {
-    widgets: {
-      assets: ['dashboard', 'widgets', 'assets'] as const,
-      users: ['dashboard', 'widgets', 'users'] as const,
-      transactions: ['dashboard', 'widgets', 'transactions'] as const,
-    },
-    charts: {
-      assetsSupply: ['dashboard', 'charts', 'assets-supply'] as const,
-      usersHistory: ['dashboard', 'charts', 'users-history'] as const,
-      assetsActivity: ['dashboard', 'charts', 'assets-activity'] as const,
-      transactionsHistory: ['dashboard', 'charts', 'transactions-history'] as const,
-    },
+    widget: (type: Category) => ['dashboard', 'widget', type] as const,
+    chart: (type: ChartType) => ['dashboard', 'chart', type] as const,
   },
+
+  // Search queries
   search: (term: string) => ['search', term] as const,
 } as const;
 
@@ -52,95 +58,68 @@ export const queryKeys = {
 export type QueryKeys = typeof queryKeys;
 
 /**
- * Helper to create a partial query key for invalidation
+ * Predicate function to determine if a query key should be invalidated based on an asset address
+ * @param address The asset address to check against
+ * @returns A function that tests if a query key should be invalidated
  */
-function createInvalidationKey(segments: string[]): QueryKey {
-  return segments as QueryKey;
-}
-
-/**
- * Type representing all possible data categories
- */
-type DataCategory = 'assets' | 'users' | 'transactions';
-
-/**
- * Helper to get dependent query keys for dashboard updates
- */
-function getDependentDashboardKeys(category: DataCategory): QueryKey[] {
-  const keys: QueryKey[] = [];
-
-  // Always include the specific widget
-  keys.push(createInvalidationKey(['dashboard', 'widgets', category]));
-
-  // Add chart dependencies based on category
-  if (category === 'assets') {
-    keys.push(
-      createInvalidationKey(['dashboard', 'charts', 'assets-supply']),
-      createInvalidationKey(['dashboard', 'charts', 'assets-activity'])
+function assetAffectsPredicate(address: string) {
+  return (queryKey: QueryKey) => {
+    const [category, subcategory] = queryKey;
+    return (
+      // Invalidate all details for this asset
+      (category === 'asset' && queryKey.includes(address)) ||
+      // Invalidate all stats for this asset
+      (category === 'asset' && subcategory === 'stats' && queryKey.includes(address)) ||
+      // Invalidate events for this asset
+      (category === 'asset' && subcategory === 'events' && queryKey.includes(address)) ||
+      // Invalidate dashboard widgets and charts related to assets
+      (category === 'dashboard' && (queryKey.includes('asset') || queryKey.includes('transaction')))
     );
-  } else if (category === 'users') {
-    keys.push(createInvalidationKey(['dashboard', 'charts', 'users-history']));
-  } else if (category === 'transactions') {
-    keys.push(createInvalidationKey(['dashboard', 'charts', 'transactions-history']));
-  }
-
-  return keys;
+  };
 }
 
 /**
- * Helper to get dependent query keys for asset-related updates
+ * Predicate function to determine if a query key should be invalidated based on a user ID
+ * @param id The user ID to check against
+ * @returns A function that tests if a query key should be invalidated
  */
-function getDependentAssetKeys(address: Address): QueryKey[] {
-  return [
-    createInvalidationKey(['assets', 'stats', 'supply', address]),
-    createInvalidationKey(['assets', 'stats', 'volume', address]),
-    createInvalidationKey(['assets', 'stats', 'transfers', address]),
-    createInvalidationKey(['assets', 'stats', 'holders', address]),
-    createInvalidationKey(['assets', 'events', address]),
-  ];
+function userAffectsPredicate(id: string) {
+  return (queryKey: QueryKey) => {
+    const [category, subcategory] = queryKey;
+    return (
+      // Invalidate user's balances
+      (category === 'user' && subcategory === 'balances' && queryKey.includes(id)) ||
+      // Invalidate user's transactions
+      (category === 'user' && subcategory === 'transactions' && queryKey.includes(id)) ||
+      // Invalidate dashboard widgets and charts related to users
+      (category === 'dashboard' && (queryKey.includes('user') || queryKey.includes('transaction')))
+    );
+  };
 }
 
 /**
- * Helper to get dependent query keys for user-related updates
+ * Automatic dependency rules for query invalidation
  */
-function getDependentUserKeys(address: Address): QueryKey[] {
-  return [
-    createInvalidationKey(['users', 'balances', address]),
-    createInvalidationKey(['users', 'pending-transactions', '', address]),
-  ];
-}
-
-/**
- * Helper to get all dependent keys that should be invalidated
- */
-function getDependentKeys(queryKey: QueryKey): QueryKey[] {
-  const [category, subCategory, id] = queryKey;
-  const keys: QueryKey[] = [];
-
-  // Add dashboard dependencies
-  if (category === 'assets' || category === 'users' || category === 'transactions') {
-    keys.push(...getDependentDashboardKeys(category));
-  }
-
-  // Add asset-specific dependencies
-  if (category === 'assets' && id) {
-    keys.push(...getDependentAssetKeys(id as Address));
-  }
-
-  // Add user-specific dependencies
-  if (category === 'users' && id) {
-    keys.push(...getDependentUserKeys(id as Address));
-  }
-
-  // Handle special cases for transactions
-  if (category === 'transactions') {
-    // Transactions might affect both assets and users involved
-    // We'll need the specific transaction data to know which ones to invalidate
-    // This would be handled by the mutation function directly
-  }
-
-  return keys;
-}
+const dependencyRules = {
+  asset: {
+    affects: (key: QueryKey) => {
+      const address = key.at(-1)?.toString(); // Ensure we get a string
+      if (!address || typeof address !== 'string') {
+        return false;
+      }
+      return assetAffectsPredicate(address);
+    },
+  },
+  user: {
+    affects: (key: QueryKey) => {
+      const [, id] = key;
+      if (!id || typeof id !== 'string') {
+        return false;
+      }
+      return userAffectsPredicate(id);
+    },
+  },
+} as const;
 
 /**
  * Creates a QueryClient with automatic invalidation support
@@ -160,16 +139,21 @@ function createQueryClient(): QueryClient {
 
   const originalInvalidateQueries = queryClient.invalidateQueries.bind(queryClient);
 
-  // Override the invalidateQueries method to handle all dependencies
+  // Override the invalidateQueries method to handle automatic dependency invalidation
   queryClient.invalidateQueries = async (filters, options) => {
     // Call original invalidation
     await originalInvalidateQueries(filters, options);
 
-    // If we have a query key, check for dependencies
+    // Handle automatic dependency invalidation
     if (filters?.queryKey) {
-      const dependentKeys = getDependentKeys(filters.queryKey);
-      for (const key of dependentKeys) {
-        await originalInvalidateQueries({ ...filters, queryKey: key }, options);
+      const [category] = filters.queryKey;
+      const rule = dependencyRules[category as keyof typeof dependencyRules];
+
+      if (rule) {
+        const predicate = rule.affects(filters.queryKey);
+        if (predicate) {
+          await originalInvalidateQueries({ ...filters, predicate }, options);
+        }
       }
     }
   };
@@ -178,7 +162,7 @@ function createQueryClient(): QueryClient {
 }
 
 /**
- * Cached QueryClient instance with automatic dashboard invalidation
+ * Cached QueryClient instance with automatic dependency invalidation
  */
 export const getQueryClient = cache(() => createQueryClient());
 
@@ -186,14 +170,28 @@ export const getQueryClient = cache(() => createQueryClient());
  * Common invalidation patterns for the application
  */
 export const invalidationPatterns = {
-  allAssets: createInvalidationKey(['assets']),
-  allUsers: createInvalidationKey(['users']),
-  allDashboard: createInvalidationKey(['dashboard']),
-  assetsByType: (type: string) => createInvalidationKey(['assets', type]),
-  assetDetail: (type: string, address: Address) => createInvalidationKey(['assets', type, address]),
-  assetStats: (address: Address) => createInvalidationKey(['assets', 'stats', address]),
-  assetEvents: (address?: Address) =>
-    address ? createInvalidationKey(['assets', 'events', address]) : createInvalidationKey(['assets', 'events']),
+  asset: {
+    all: (type?: AssetType) => ({ queryKey: queryKeys.asset.all(type) }),
+    byAddress: (address: Address, type?: AssetType) =>
+      type
+        ? { queryKey: queryKeys.asset.detail({ type, address }) }
+        : { predicate: (queryKey: QueryKey) => queryKey[0] === 'asset' && queryKey.includes(address) },
+    byAddressAndType: (address: Address, type: StatType) => ({
+      queryKey: queryKeys.asset.stats({ address, type }),
+    }),
+  },
+  user: {
+    all: () => ({ queryKey: queryKeys.user.all() }),
+    byId: (id: string) => ({
+      predicate: (queryKey: QueryKey) => queryKey[0] === 'user' && queryKey.includes(id),
+    }),
+  },
+  dashboard: {
+    all: () => ({ queryKey: ['dashboard'] as const }),
+    byCategory: (category: Category) => ({
+      predicate: (queryKey: QueryKey) => queryKey[0] === 'dashboard' && queryKey.includes(category),
+    }),
+  },
 } as const;
 
 /**

@@ -1,4 +1,4 @@
-import { AssetsEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
+import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function TransactionsPage() {
-  return <AssetsEventsTable />;
+  return <AssetEventsTable />;
 }

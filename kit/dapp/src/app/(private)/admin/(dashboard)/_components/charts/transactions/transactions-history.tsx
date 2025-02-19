@@ -7,10 +7,10 @@ import { TransactionsHistoryClient } from './transactions-history-client';
 
 export async function TransactionsHistory() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.charts.transactionsHistory;
+  const queryKey = queryKeys.dashboard.chart('transaction');
 
   await queryClient.prefetchQuery({
-    queryKey: queryKey,
+    queryKey,
     queryFn: getTransactionsHistoryData,
   });
 

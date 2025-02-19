@@ -33,7 +33,7 @@ const GetBalances = theGraphGraphqlStarterkits(`
 export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   const { keys } = useQueryKeys();
   const { data } = useSuspenseQuery<{ assetBalances: Balance[] }>({
-    queryKey: keys.users.balances(address),
+    queryKey: keys.user.balances(address),
     queryFn: async () => {
       const result = await theGraphClientStarterkits.request(GetBalances, {
         address: getAddress(address),

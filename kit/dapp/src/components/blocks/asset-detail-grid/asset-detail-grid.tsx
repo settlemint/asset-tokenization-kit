@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AssetDetailConfig } from '@/lib/config/assets';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { type PropsWithChildren, Suspense } from 'react';
@@ -42,7 +42,7 @@ export async function AssetDetailGrid<Asset extends Record<string, unknown>>({
   className,
 }: PropsWithChildren<AssetDetailGridProps<Asset>>) {
   const queryClient = getQueryClient();
-  const queryKey = [...assetConfig.queryKey, asset];
+  const queryKey = queryKeys.asset.detail({ type: assetConfig.queryKey, address: asset });
 
   await queryClient.prefetchQuery({
     queryKey,

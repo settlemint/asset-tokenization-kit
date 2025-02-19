@@ -12,7 +12,7 @@ interface TransactionsHistoryClientProps {
 }
 
 export const TRANSACTIONS_CHART_CONFIG = {
-  transactions: {
+  transaction: {
     label: 'Transactions',
     color: '#3B9E99',
   },
@@ -38,7 +38,7 @@ export function TransactionsHistoryClient({ queryKey }: TransactionsHistoryClien
 
     return dates.map((date) => ({
       date: format(date, 'EEE, MMM d'),
-      transactions:
+      transaction:
         data.getProcessedTransactions?.records.filter(
           (transaction) => transaction.createdAt && isSameDay(new Date(transaction.createdAt), date)
         ).length ?? 0,
