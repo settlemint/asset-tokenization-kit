@@ -124,7 +124,7 @@ export function AssetForm<
   const cacheInvalidation = {
     clientCacheKey: address
       ? queryKeys.asset.detail({ type: assetConfig.queryKey, address })
-      : [...queryKeys.asset.all(assetConfig.queryKey), ...queryKeys.asset.sidebar()],
+      : [queryKeys.asset.all(assetConfig.queryKey), queryKeys.asset.any()],
     serverCachePath: address
       ? () => `/admin/${assetConfig.urlSegment}/${address}`
       : () => `/admin/${assetConfig.urlSegment}`,

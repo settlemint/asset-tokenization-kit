@@ -16,7 +16,7 @@ export const defaultRefetchInterval = 1000 * 5; // 5 seconds (block time is 2 or
 export const queryKeys = {
   // Asset queries
   asset: {
-    sidebar: () => ['asset', 'sidebar'] as const,
+    any: () => ['asset', 'any'] as const,
     all: (type?: AssetType) => (type ? (['asset', type] as const) : (['asset'] as const)),
     detail: (params: { type?: AssetType; address: Address }) =>
       params.type
@@ -75,6 +75,8 @@ function assetAffectsPredicate(address: string) {
       (category === 'asset' && subcategory === 'stats' && queryKey.includes(address)) ||
       // Invalidate events for this asset
       (category === 'asset' && subcategory === 'events' && queryKey.includes(address)) ||
+      // Invalidate all asset queries when any asset changes
+      (category === 'asset' && subcategory === 'any') ||
       // Invalidate dashboard widgets and charts related to assets
       (category === 'dashboard' && (queryKey.includes('asset') || queryKey.includes('transaction')))
     );
