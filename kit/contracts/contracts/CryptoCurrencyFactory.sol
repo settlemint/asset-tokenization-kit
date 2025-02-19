@@ -23,7 +23,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new cryptocurrency token is created
     /// @param token The address of the newly created token
-    event CryptoCurrencyCreated(address indexed token);
+    event CryptoCurrencyCreated(address indexed token, address indexed creator);
 
     /// @notice Deploys a new CryptoCurrencyFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -60,7 +60,7 @@ contract CryptoCurrencyFactory is ReentrancyGuard, ERC2771Context {
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit CryptoCurrencyCreated(token);
+        emit CryptoCurrencyCreated(token, _msgSender());
     }
 
     /// @notice Predicts the address where a token would be deployed

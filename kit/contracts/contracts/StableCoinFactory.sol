@@ -24,7 +24,7 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new stablecoin is created
     /// @param token The address of the newly created token
-    event StableCoinCreated(address indexed token);
+    event StableCoinCreated(address indexed token, address indexed creator);
 
     /// @notice Deploys a new StableCoinFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -65,7 +65,7 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit StableCoinCreated(token);
+        emit StableCoinCreated(token, _msgSender());
     }
 
     /// @notice Predicts the address where a token would be deployed
