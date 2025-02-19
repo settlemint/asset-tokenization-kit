@@ -1,3 +1,4 @@
+import { getBlockExplorerAllTxUrl } from '@/lib/block-explorer';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { TransactionsTable } from './_components/transactions-table';
@@ -8,14 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default function TransactionsPage() {
+  const explorerUrl = getBlockExplorerAllTxUrl();
   return (
     <>
       <TransactionsTable />
-      {process.env.NEXT_PUBLIC_EXPLORER_URL && (
+      {explorerUrl && (
         <div className="mt-2 flex flex-col gap-4 text-right text-muted-foreground text-sm">
-          <Link href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/transactions`}>
-            View all transactions in the explorer
-          </Link>
+          <Link href={explorerUrl}>View all transactions in the explorer</Link>
         </div>
       )}
     </>
