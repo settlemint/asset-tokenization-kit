@@ -10,13 +10,15 @@ import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { Address } from 'viem';
-import { DataTableRowActions } from '../data-table/data-table-row-actions';
+
+import type { Holder } from '@/components/blocks/asset-holders-table/asset-holders-table-data';
+import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { BlockButton } from './actions/block-form/button';
-import type { Holder } from './asset-holders-table-data';
+import { FreezeButton } from './actions/freeze-form/button';
 
 const columnHelper = createColumnHelper<Holder>();
 
-export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
+export const columns = (address: Address, decimals: number, assetConfig: AssetDetailConfig) => [
   columnHelper.accessor('account.id', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
     cell: ({ getValue }) => {
@@ -44,38 +46,29 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
     cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
     enableColumnFilter: false,
   }),
-  ...(assetConfig.features.ERC20Custodian
-    ? [
-        columnHelper.accessor('frozen', {
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} variant="numeric">
-              Frozen
-            </DataTableColumnHeader>
-          ),
-          cell: ({ getValue }) => (
-            <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>
-          ),
-          enableColumnFilter: false,
-        }),
-      ]
-    : []),
-  ...(assetConfig.features.ERC20Blocklist
-    ? [
-        columnHelper.accessor('blocked', {
-          header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
-          cell: ({ getValue }) => {
-            const blocked = getValue();
-            const Icon = icons[blocked ? 'blocked' : 'unblocked'];
-            return (
-              <DataTableColumnCell>
-                {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{blocked ? 'Blocked' : 'Active'}</span>
-              </DataTableColumnCell>
-            );
-          },
-        }),
-      ]
-    : []),
+
+  columnHelper.accessor('frozen', {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} variant="numeric">
+        Frozen
+      </DataTableColumnHeader>
+    ),
+    cell: ({ getValue }) => <DataTableColumnCell variant="numeric">{formatNumber(getValue())}</DataTableColumnCell>,
+    enableColumnFilter: false,
+  }),
+  columnHelper.accessor('blocked', {
+    header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
+    cell: ({ getValue }) => {
+      const blocked = getValue();
+      const Icon = icons[blocked ? 'blocked' : 'unblocked'];
+      return (
+        <DataTableColumnCell>
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <span>{blocked ? 'Blocked' : 'Active'}</span>
+        </DataTableColumnCell>
+      );
+    },
+  }),
   columnHelper.accessor('account.lastActivity', {
     header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
     cell: ({ getValue }) => (
@@ -89,13 +82,20 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
     cell: ({ row }) => {
       return (
         <DataTableRowActions>
-          {assetConfig.features.ERC20Blocklist && (
-            <BlockButton
-              address={address}
-              currentlyBlocked={row.original.blocked}
-              userAddress={row.original.account.id as Address}
-            />
-          )}
+          <BlockButton
+            address={address}
+            currentlyBlocked={row.original.blocked}
+            userAddress={row.original.account.id as Address}
+            assetConfig={assetConfig}
+          />
+          <FreezeButton
+            address={address}
+            decimals={decimals}
+            currentFrozen={Number(row.original.frozen)}
+            currentBalance={Number(row.original.value)}
+            userAddress={row.original.account.id as Address}
+            assetConfig={assetConfig}
+          />
         </DataTableRowActions>
       );
     },

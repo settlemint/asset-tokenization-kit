@@ -1,7 +1,7 @@
 'use client';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { assetConfig } from '@/lib/config/assets';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { BlockUserForm } from './form';
@@ -10,9 +10,10 @@ interface BlockButtonProps {
   address: Address;
   currentlyBlocked: boolean;
   userAddress: Address;
+  assetConfig: AssetDetailConfig;
 }
 
-export function BlockButton({ address, currentlyBlocked, userAddress }: BlockButtonProps) {
+export function BlockButton({ address, currentlyBlocked, userAddress, assetConfig }: BlockButtonProps) {
   const [open, setOpen] = useState(false);
   const action = currentlyBlocked ? 'Unblock' : 'Block';
 
@@ -40,7 +41,7 @@ export function BlockButton({ address, currentlyBlocked, userAddress }: BlockBut
           address={address}
           userAddress={userAddress}
           currentlyBlocked={currentlyBlocked}
-          assetConfig={assetConfig.stablecoin}
+          assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
