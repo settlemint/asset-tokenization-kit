@@ -1,6 +1,10 @@
 'use client';
 
-import type { BaseFormInputProps, WithPostfixProps } from '@/components/blocks/asset-form/asset-form-types';
+import type {
+  BaseFormInputProps,
+  WithPostfixProps,
+  WithTextOnlyProps,
+} from '@/components/blocks/asset-form/asset-form-types';
 import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -9,12 +13,14 @@ import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
 type AssetFormInputProps<T extends FieldValues> = Omit<InputProps, keyof BaseFormInputProps<T>> &
   BaseFormInputProps<T> &
-  WithPostfixProps;
+  WithPostfixProps &
+  WithTextOnlyProps;
 
 /**
  * A form input component that wraps shadcn's Input component with form field functionality.
@@ -37,6 +43,7 @@ export function AssetFormInput<T extends FieldValues>({
   description,
   postfix,
   className,
+  textOnly,
   ...props
 }: AssetFormInputProps<T>) {
   return (
@@ -46,6 +53,9 @@ export function AssetFormInput<T extends FieldValues>({
         ...rules,
         ...(props.type === 'email' && {
           pattern: { value: EMAIL_PATTERN, message: 'Please enter a valid email address' },
+        }),
+        ...(textOnly && {
+          pattern: { value: TEXT_ONLY_PATTERN, message: 'Please enter letters only' },
         }),
       }}
       render={({ field, fieldState }) => {
