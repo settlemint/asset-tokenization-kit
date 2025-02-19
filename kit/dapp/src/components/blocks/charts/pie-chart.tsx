@@ -22,45 +22,6 @@ interface PieChartProps {
   footer?: React.ReactNode;
 }
 
-function PieGradientDefinitions({ config }: { config: ChartConfig }) {
-  const dataKeys = Object.keys(config);
-  return (
-    <>
-      {dataKeys.map((key) => (
-        <radialGradient key={key} id={`pieGradient${key}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" stopColor={config[key].color} stopOpacity={0.9} />
-          <stop offset="100%" stopColor={config[key].color} stopOpacity={0.3} />
-        </radialGradient>
-      ))}
-      <radialGradient id="pieGradientDefault" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-        <stop offset="0%" stopColor="#888888" stopOpacity={0.9} />
-        <stop offset="100%" stopColor="#888888" stopOpacity={0.3} />
-      </radialGradient>
-    </>
-  );
-}
-
-function PieCells({
-  data,
-  config,
-  nameKey,
-}: {
-  data: Array<Record<string, string | number>>;
-  config: ChartConfig;
-  nameKey: string;
-}) {
-  return (
-    <>
-      {data.map((entry, index) => {
-        const configEntry = config[entry[nameKey] as string];
-        const gradientId = configEntry ? `pieGradient${entry[nameKey]}` : 'pieGradientDefault';
-        const strokeColor = configEntry?.color ?? '#000000';
-        return <Cell key={`cell-${index}`} fill={`url(#${gradientId})`} stroke={strokeColor} />;
-      })}
-    </>
-  );
-}
-
 export function PieChartComponent({
   title,
   description,
@@ -71,6 +32,8 @@ export function PieChartComponent({
   className,
   footer,
 }: PieChartProps) {
+  const dataKeys = Object.keys(config);
+
   return (
     <Card>
       <CardHeader>
@@ -82,10 +45,21 @@ export function PieChartComponent({
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <defs>
-              <PieGradientDefinitions config={config} />
+              {dataKeys.map((key) => (
+                <radialGradient key={key} id={`pieGradient${key}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                  <stop offset="0%" stopColor={config[key].color} stopOpacity={0.9} />
+                  <stop offset="100%" stopColor={config[key].color} stopOpacity={0.3} />
+                </radialGradient>
+              ))}
             </defs>
             <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1.5}>
-              <PieCells data={data} config={config} nameKey={nameKey} />
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={`url(#pieGradient${entry[nameKey]})`}
+                  stroke={config[entry[nameKey]].color}
+                />
+              ))}
             </Pie>
             <ChartLegend
               content={<ChartLegendContent />}
