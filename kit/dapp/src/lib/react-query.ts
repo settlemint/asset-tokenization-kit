@@ -14,6 +14,7 @@ type ChartType = 'supply' | 'history' | 'activity' | 'transaction';
 export const queryKeys = {
   // Asset queries
   asset: {
+    sidebar: () => ['asset', 'sidebar'] as const,
     all: (type?: AssetType) => (type ? (['asset', type] as const) : (['asset'] as const)),
     detail: (params: { type?: AssetType; address: Address }) =>
       params.type
