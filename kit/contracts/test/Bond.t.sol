@@ -340,11 +340,11 @@ contract BondTest is Test {
         vm.startPrank(user1);
         bond.transfer(user2, 100);
 
-        // Unfreeze and verify
+        // Set frozen amount to 0 and verify
         vm.stopPrank();
 
         vm.startPrank(owner);
-        bond.unfreeze(user1, 100);
+        bond.freeze(user1, 0);
         assertEq(bond.frozen(user1), 0);
 
         // Now transfer should work
