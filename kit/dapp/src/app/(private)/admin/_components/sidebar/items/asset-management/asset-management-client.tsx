@@ -14,7 +14,6 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getSidebarAssets,
-    refetchInterval: 60 * 1000,
   });
 
   const processedTokenItems = assetItems.reduce((acc, section) => {

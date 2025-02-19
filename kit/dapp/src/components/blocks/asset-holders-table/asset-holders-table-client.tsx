@@ -23,7 +23,6 @@ export function HoldersTableClient({ queryKey, toolbar, pagination, asset, asset
   const { data } = useSuspenseQuery<Holder[]>({
     queryKey,
     queryFn: () => getHolders(asset),
-    refetchInterval: 5000,
   });
 
   return (

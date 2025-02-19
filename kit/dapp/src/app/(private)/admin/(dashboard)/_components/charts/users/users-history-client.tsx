@@ -20,7 +20,6 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getRecentUsers,
-    refetchInterval: 1000 * 5,
   });
 
   return (

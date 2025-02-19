@@ -8,6 +8,8 @@ type Category = 'asset' | 'user' | 'transaction';
 type StatType = 'supply' | 'volume' | 'transfers' | 'holders';
 type ChartType = 'supply' | 'history' | 'activity' | 'transaction';
 
+export const defaultRefetchInterval = 1000 * 5; // 5 seconds (block time is 2 or 60 if there is no usage)
+
 /**
  * Type-safe query key factory for the application
  */
@@ -129,6 +131,7 @@ function createQueryClient(): QueryClient {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
+        refetchInterval: defaultRefetchInterval,
         refetchOnWindowFocus: true,
         refetchIntervalInBackground: false,
         networkMode: 'online',

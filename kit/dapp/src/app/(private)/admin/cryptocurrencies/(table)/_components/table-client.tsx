@@ -11,7 +11,6 @@ export function TableClient() {
     <AssetTableClient
       dataAction={getCryptocurrencies}
       assetConfig={assetConfig.cryptocurrency}
-      refetchInterval={5000}
       columns={columns}
       queryKey={queryKeys.asset.all(assetConfig.cryptocurrency.queryKey)}
     />
