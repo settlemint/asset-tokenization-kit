@@ -1,4 +1,5 @@
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 
 const TransactionListFragment = portalGraphql(
   `
@@ -50,7 +51,7 @@ const TransactionList = portalGraphql(
 
 export type TransactionListItem = Awaited<ReturnType<typeof getTransactionsList>>[number];
 
-export async function getTransactionsList(from?: string) {
+export async function getTransactionsList(from?: Address) {
   const data = await portalClient.request(TransactionList, { from });
   return (
     data.getPendingAndRecentlyProcessedTransactions?.records.map((record) => ({

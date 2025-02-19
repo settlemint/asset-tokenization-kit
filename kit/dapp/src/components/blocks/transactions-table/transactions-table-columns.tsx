@@ -48,6 +48,7 @@ export const columns = [
     cell: ({ getValue }) => <DataTableColumnCell className="capitalize">{getValue()}</DataTableColumnCell>,
   }),
   columnHelper.accessor('from', {
+    id: 'from',
     header: ({ column }) => <DataTableColumnHeader column={column}>From</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>

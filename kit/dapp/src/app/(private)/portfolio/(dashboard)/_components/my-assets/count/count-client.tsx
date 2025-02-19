@@ -1,6 +1,6 @@
 'use client';
 
-import { getMyAssets } from '@/components/blocks/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { formatNumber } from '@/lib/number';

@@ -2,7 +2,7 @@
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { numericSortingFn } from '@/components/blocks/data-table/sorting';
-import type { MyAsset } from '@/components/blocks/my-assets/data';
+import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Badge } from '@/components/ui/badge';
 import { assetConfig } from '@/lib/config/assets';
 import { formatNumber } from '@/lib/number';

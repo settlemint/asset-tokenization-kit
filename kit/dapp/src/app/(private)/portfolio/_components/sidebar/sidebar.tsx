@@ -21,9 +21,9 @@ export function PortfolioSidebar() {
       path: '/portfolio/my-assets',
     },
     {
-      label: 'Transactions',
+      label: 'Activity',
       icon: <ActivityIcon className="h-4 w-4" />,
-      path: '/portfolio/transactions',
+      path: '/portfolio/activity',
     },
     {
       label: 'My Contacts',

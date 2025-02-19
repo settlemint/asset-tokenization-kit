@@ -2,11 +2,12 @@ import { AssetTableSkeleton } from '@/components/blocks/asset-table/asset-table-
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import type { Address } from 'viem';
 import { TransactionsTableClient } from './transactions-table-client';
 import { getTransactionsList } from './transactions-table-data';
 
 interface TransactionsTableProps {
-  from?: string;
+  from?: Address;
 }
 
 /**
@@ -26,7 +27,7 @@ export async function TransactionsTable({ from }: TransactionsTableProps) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-        <TransactionsTableClient queryKey={queryKey} />
+        <TransactionsTableClient queryKey={queryKey} from={from} />
       </Suspense>
     </HydrationBoundary>
   );
