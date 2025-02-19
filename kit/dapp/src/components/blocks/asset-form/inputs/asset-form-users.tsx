@@ -114,7 +114,7 @@ function AssetFormUsersList({
   const { keys } = useQueryKeys();
 
   const { data, isLoading } = useQuery({
-    queryKey: keys.users.search(debounced),
+    queryKey: keys.search(debounced),
     enabled: debounced.trim() !== '',
     queryFn: async () => {
       const sanitizedSearch = sanitizeSearchTerm(debounced);

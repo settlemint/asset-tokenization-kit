@@ -12,7 +12,7 @@ interface TotalTransfersProps {
 
 export async function TotalTransfers({ asset }: TotalTransfersProps) {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.assets.stats.transfers(asset);
+  const queryKey = queryKeys.asset.stats({ address: asset, type: 'transfers' });
 
   await queryClient.prefetchQuery({
     queryKey,

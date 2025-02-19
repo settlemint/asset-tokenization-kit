@@ -12,7 +12,7 @@ interface TotalSupplyProps {
 
 export async function TotalSupply({ asset }: TotalSupplyProps) {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.assets.stats.supply(asset);
+  const queryKey = queryKeys.asset.stats({ address: asset, type: 'supply' });
 
   await queryClient.prefetchQuery({
     queryKey,

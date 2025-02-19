@@ -7,7 +7,7 @@ import { UsersHistoryClient } from './users-history-client';
 
 export async function UsersHistory() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.charts.usersHistory;
+  const queryKey = queryKeys.dashboard.chart('history');
 
   await queryClient.prefetchQuery({
     queryKey,

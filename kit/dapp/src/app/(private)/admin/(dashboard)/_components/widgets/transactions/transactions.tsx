@@ -6,7 +6,7 @@ import { TransactionsWidgetClient } from './transactions-client';
 
 export async function TransactionsWidget() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.widgets.transactions;
+  const queryKey = queryKeys.dashboard.widget('transaction');
 
   await queryClient.prefetchQuery({
     queryKey,

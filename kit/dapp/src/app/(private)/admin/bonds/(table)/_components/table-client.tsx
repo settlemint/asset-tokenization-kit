@@ -14,7 +14,7 @@ export function TableClient() {
       refetchInterval={5000}
       columns={columns}
       icons={icons}
-      queryKey={queryKeys.assets.all('bonds')}
+      queryKey={queryKeys.asset.all(assetConfig.bond.queryKey)}
     />
   );
 }

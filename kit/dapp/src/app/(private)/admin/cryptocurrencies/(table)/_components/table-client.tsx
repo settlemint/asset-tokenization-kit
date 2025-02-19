@@ -13,7 +13,7 @@ export function TableClient() {
       assetConfig={assetConfig.cryptocurrency}
       refetchInterval={5000}
       columns={columns}
-      queryKey={queryKeys.assets.all('cryptocurrencies')}
+      queryKey={queryKeys.asset.all(assetConfig.cryptocurrency.queryKey)}
     />
   );
 }

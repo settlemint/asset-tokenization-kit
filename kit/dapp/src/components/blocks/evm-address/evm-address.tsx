@@ -83,18 +83,17 @@ export function EvmAddress({
 }: EvmAddressProps) {
   const { keys } = useQueryKeys();
   const { data: user } = useSuspenseQuery<User | null>({
-    queryKey: keys.users.detail(address),
+    queryKey: keys.user.profile({ address: getAddress(address) }),
     queryFn: async () => {
       const result = await hasuraClient.request(EvmAddressUser, {
         id: getAddress(address),
       });
-      console.log(11, result, { id: getAddress(address) });
       return result.user[0] ?? null;
     },
   });
 
   const { data: asset } = useSuspenseQuery<Asset | null>({
-    queryKey: keys.assets.detail('all', address),
+    queryKey: keys.asset.detail({ address }),
     queryFn: async () => {
       try {
         const result = await theGraphClientStarterkits.request(EvmAddressAsset, {
@@ -106,8 +105,6 @@ export function EvmAddress({
       }
     },
   });
-
-  console.log(user);
 
   const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
   const displayEmail = prettyNames ? user?.email : undefined;

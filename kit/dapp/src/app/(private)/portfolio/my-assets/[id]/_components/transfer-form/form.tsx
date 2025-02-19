@@ -55,7 +55,7 @@ export function TransferForm({
 }
 
 function getAssetConfig(assetType: TransferFormAssetType) {
-  const config = assetConfig[assetType];
+  const config = assetConfig[assetType as keyof typeof assetConfig];
   if (!config) {
     throw new Error(`Asset config not found for asset type: ${assetType}`);
   }

@@ -104,7 +104,7 @@ function getQuery(assetType: TransferFormAssetType) {
     case 'cryptocurrency':
       return TransferCryptoCurrency;
     default: {
-      const _exhaustiveCheck: never = assetType;
+      const _exhaustiveCheck: never = assetType as never;
       throw new Error(`Unsupported asset type: ${_exhaustiveCheck}`);
     }
   }

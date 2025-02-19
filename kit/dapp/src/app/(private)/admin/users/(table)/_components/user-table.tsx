@@ -10,7 +10,7 @@ export async function UserTable() {
       columns={columns}
       data={users}
       icons={icons}
-      name="users"
+      name="user"
       initialSorting={[{ id: 'name', desc: false }]}
     />
   );
