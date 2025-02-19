@@ -1,5 +1,5 @@
 {
-  "name": "@settlemint/asset-tokenization-kit",
+  "name": "@settlemint/starterkit-asset-tokenization",
   "description": "SettleMint Starter Kit - Asset Tokenization",
   "version": "0.1.13",
   "private": false,
@@ -9,13 +9,13 @@
     "email": "support@settlemint.com",
     "url": "https://settlemint.com"
   },
-  "homepage": "https://github.com/settlemint/asset-tokenization-kit/blob/main/apps/dapp/README.md",
+  "homepage": "https://github.com/settlemint/starterkit-asset-tokenization/blob/main/apps/dapp/README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/settlemint/asset-tokenization-kit.git"
+    "url": "git+https://github.com/settlemint/starterkit-asset-tokenization.git"
   },
   "bugs": {
-    "url": "https://github.com/settlemint/asset-tokenization-kit/issues",
+    "url": "https://github.com/settlemint/starterkit-asset-tokenization/issues",
     "email": "support@settlemint.com"
   },
   "files": [
