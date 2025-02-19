@@ -1,6 +1,5 @@
-import { useQueryKeys } from '@/hooks/use-query-keys';
 import type { AssetDetailConfig } from '@/lib/config/assets';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
@@ -8,10 +7,6 @@ import { AssetTableSkeleton } from '../asset-table/asset-table-skeleton';
 import { AssetEventsTableClient } from './asset-events-table-client';
 import { getEventsList } from './asset-events-table-data';
 
-/**
- * Props for the AssetTable component
- * @template Asset The type of asset data being displayed
- */
 export type AssetEventsTableProps =
   | {
       asset: Address;
@@ -32,9 +27,8 @@ export type AssetEventsTableProps =
  */
 export async function AssetEventsTable({ asset, first, disableToolbarAndPagination }: AssetEventsTableProps) {
   const queryClient = getQueryClient();
-  const { keys } = useQueryKeys();
 
-  const queryKey = keys.asset.events(asset);
+  const queryKey = queryKeys.asset.events(asset);
 
   await queryClient.prefetchQuery({
     queryKey,

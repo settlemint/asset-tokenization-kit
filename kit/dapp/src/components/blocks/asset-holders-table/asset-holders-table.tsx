@@ -1,4 +1,3 @@
-import { useQueryKeys } from '@/hooks/use-query-keys';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -28,9 +27,8 @@ export interface AssetHoldersTableProps {
  */
 export async function AssetHoldersTable({ asset, assetConfig, first, toolbar, pagination }: AssetHoldersTableProps) {
   const queryClient = getQueryClient();
-  const { keys } = useQueryKeys();
 
-  const queryKey = keys.asset.stats({ address: asset, type: 'holders' });
+  const queryKey = queryKeys.asset.stats({ address: asset, type: 'holders' });
 
   await queryClient.prefetchQuery({
     queryKey,
