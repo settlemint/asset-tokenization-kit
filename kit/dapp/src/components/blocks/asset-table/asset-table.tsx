@@ -3,8 +3,7 @@ import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
-import { type ComponentType, Suspense } from 'react';
-import { AssetTableClient } from './asset-table-client';
+import { type ComponentType, type PropsWithChildren, Suspense } from 'react';
 import { AssetTableSkeleton } from './asset-table-skeleton';
 
 type AssetUrlSegment = 'bonds' | 'equities' | 'funds' | 'stablecoins' | 'cryptocurrencies';
@@ -33,10 +32,9 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
 export async function AssetTable<Asset extends Record<string, unknown>>({
   dataAction,
   assetConfig,
-  refetchInterval,
   columns,
-  icons,
-}: AssetTableProps<Asset>) {
+  children,
+}: PropsWithChildren<AssetTableProps<Asset>>) {
   const queryClient = getQueryClient();
   const queryKey = queryKeys.assets.all(assetConfig.urlSegment);
 
@@ -47,16 +45,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>
-        <AssetTableClient<Asset>
-          dataAction={dataAction}
-          assetConfig={assetConfig}
-          refetchInterval={refetchInterval}
-          columns={columns}
-          icons={icons}
-          queryKey={queryKey}
-        />
-      </Suspense>
+      <Suspense fallback={<AssetTableSkeleton columns={columns.length} />}>{children}</Suspense>
     </HydrationBoundary>
   );
 }

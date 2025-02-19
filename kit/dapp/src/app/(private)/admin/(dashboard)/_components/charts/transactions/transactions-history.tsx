@@ -1,15 +1,16 @@
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
-import { getQueryClient } from '@/lib/react-query';
-import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { getTransactionsHistoryData } from './data';
 import { TransactionsHistoryClient } from './transactions-history-client';
 
 export async function TransactionsHistory() {
   const queryClient = getQueryClient();
-  const queryKey: QueryKey = ['TransactionsHistory'];
+  const queryKey = queryKeys.dashboard.charts.transactionsHistory;
+
   await queryClient.prefetchQuery({
-    queryKey,
+    queryKey: queryKey,
     queryFn: getTransactionsHistoryData,
   });
 
