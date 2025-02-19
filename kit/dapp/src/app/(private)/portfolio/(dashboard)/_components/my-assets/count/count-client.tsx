@@ -10,10 +10,10 @@ interface MyAssetsClientProps {
   queryKey: QueryKey;
 }
 
-export function MyAssetsClient({ queryKey }: MyAssetsClientProps) {
+export function MyAssetsCountClient({ queryKey }: MyAssetsClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
-    queryFn: getMyAssets,
+    queryFn: () => getMyAssets(),
   });
 
   const totalValue = data.balances.reduce((acc, asset) => acc + Number(asset.value), 0);

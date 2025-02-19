@@ -1,26 +1,24 @@
-import { getAuthenticatedUser } from '@/lib/auth/auth';
-import { getQueryClient, queryKeys } from '@/lib/react-query';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
-import type { Address } from 'viem';
+import { getQueryClient } from '@/lib/react-query';
+import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
+import { type PropsWithChildren, Suspense } from 'react';
 import { getMyAssets } from './data';
-import { MyAssetsTableClient } from './my-assets-client';
 
-export async function MyAssetsTable() {
+interface MyAssetsTableProps extends PropsWithChildren {
+  active?: boolean;
+  queryKey: QueryKey;
+}
+
+export async function MyAssetsTable({ active, children, queryKey }: MyAssetsTableProps) {
   const queryClient = getQueryClient();
-  const user = await getAuthenticatedUser();
-  const queryKey = queryKeys.user.balances(user.wallet as Address);
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: getMyAssets,
+    queryFn: () => getMyAssets(active),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
-        <MyAssetsTableClient queryKey={queryKey} />
-      </Suspense>
+      <Suspense>{children}</Suspense>
     </HydrationBoundary>
   );
 }

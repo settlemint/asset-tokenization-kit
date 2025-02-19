@@ -13,7 +13,7 @@ export async function Distribution() {
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: getMyAssets,
+    queryFn: () => getMyAssets(),
   });
 
   return (

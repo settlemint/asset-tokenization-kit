@@ -1,27 +1,20 @@
 'use client';
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
+import { getMyAssets } from '@/components/blocks/my-assets/data';
 import { defaultRefetchInterval } from '@/lib/react-query';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { columns } from './columns';
-import { getMyAssets } from './data';
 
 interface MyAssetsTableClientProps {
   queryKey: QueryKey;
-  first?: number;
-  asset?: string;
-  disableToolbarAndPagination?: boolean;
+  active?: boolean;
 }
 
-export function MyAssetsTableClient({
-  queryKey,
-  first,
-  asset,
-  disableToolbarAndPagination = false,
-}: MyAssetsTableClientProps) {
+export function MyAssetsTableClient({ queryKey, active }: MyAssetsTableClientProps) {
   const { data } = useSuspenseQuery({
     queryKey,
-    queryFn: getMyAssets,
+    queryFn: () => getMyAssets(active),
     refetchInterval: defaultRefetchInterval,
   });
 
@@ -30,8 +23,8 @@ export function MyAssetsTableClient({
       columns={columns}
       data={data.balances}
       name="My Assets"
-      toolbar={{ enableToolbar: !disableToolbarAndPagination }}
-      pagination={{ enablePagination: !disableToolbarAndPagination }}
+      pagination={{ enablePagination: false }}
+      toolbar={{ enableToolbar: false }}
     />
   );
 }

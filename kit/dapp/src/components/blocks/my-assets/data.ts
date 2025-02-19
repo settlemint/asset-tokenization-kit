@@ -61,9 +61,21 @@ interface MyAssetsResponse {
   distribution: Distribution[];
 }
 
-export async function getMyAssets(): Promise<MyAssetsResponse> {
+type PausableAsset = MyAsset['asset'] & {
+  paused: boolean;
+};
+
+function isPausableAsset(asset: MyAsset['asset']): asset is PausableAsset {
+  if (!asset.__typename) {
+    return false;
+  }
+  const pausableAssetTypes: NonNullable<MyAsset['asset']['__typename']>[] = ['StableCoin', 'Bond', 'Fund', 'Equity'];
+  return pausableAssetTypes.includes(asset.__typename);
+}
+
+export async function getMyAssets(active?: boolean): Promise<MyAssetsResponse> {
   const user = await getAuthenticatedUser();
-  const result = await fetchAllTheGraphPages(async (first, skip) => {
+  let result = await fetchAllTheGraphPages(async (first, skip) => {
     const pageResult = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
     return pageResult.account?.balances ?? [];
   });
@@ -73,6 +85,16 @@ export async function getMyAssets(): Promise<MyAssetsResponse> {
       balances: [],
       distribution: [],
     };
+  }
+
+  if (active) {
+    result = result.filter((balance) => {
+      const asset = balance.asset;
+      if (!isPausableAsset(asset)) {
+        return true;
+      }
+      return !asset.paused;
+    });
   }
 
   // Group and sum balances by asset type
