@@ -17,7 +17,8 @@ import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown, LogOut } from 'lucide-react';
+import { BookOpenText, ChevronDown, LogOut } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback } from 'react';
 import type { Address } from 'viem';
@@ -119,6 +120,10 @@ export function UserDropdown() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <ThemeMenuItem />
+          <DropdownMenuItem className="dropdown-menu-item">
+            <BookOpenText className="mr-2 size-4" />
+            <Link href="/docs">Documentation</Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={handleSignOut} className="dropdown-menu-item">
