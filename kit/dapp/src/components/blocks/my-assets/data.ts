@@ -1,7 +1,7 @@
 'use server';
 
 import { getAuthenticatedUser } from '@/lib/auth/auth';
-import type { assetConfig } from '@/lib/config/assets';
+import { assetConfig } from '@/lib/config/assets';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
@@ -59,6 +59,7 @@ interface Distribution {
 interface MyAssetsResponse {
   balances: MyAsset[];
   distribution: Distribution[];
+  total: string;
 }
 
 type PausableAsset = MyAsset['asset'] & {
@@ -69,8 +70,10 @@ function isPausableAsset(asset: MyAsset['asset']): asset is PausableAsset {
   if (!asset.__typename) {
     return false;
   }
-  const pausableAssetTypes: NonNullable<MyAsset['asset']['__typename']>[] = ['StableCoin', 'Bond', 'Fund', 'Equity'];
-  return pausableAssetTypes.includes(asset.__typename);
+  const pausableAssetTypeNames = Object.values(assetConfig)
+    .filter((asset) => asset.features.ERC20Pausable)
+    .map((asset) => asset.theGraphTypename);
+  return pausableAssetTypeNames.includes(asset.__typename);
 }
 
 export async function getMyAssets(active?: boolean): Promise<MyAssetsResponse> {
@@ -84,6 +87,7 @@ export async function getMyAssets(active?: boolean): Promise<MyAssetsResponse> {
     return {
       balances: [],
       distribution: [],
+      total: '0',
     };
   }
 
@@ -123,5 +127,6 @@ export async function getMyAssets(active?: boolean): Promise<MyAssetsResponse> {
   return {
     balances: result,
     distribution,
+    total: total.toString(),
   };
 }

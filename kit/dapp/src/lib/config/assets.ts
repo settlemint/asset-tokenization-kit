@@ -14,6 +14,7 @@ export interface AssetDetailConfig {
   queryKey: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin';
   urlSegment: string;
   color: string;
+  theGraphTypename: 'Bond' | 'CryptoCurrency' | 'Equity' | 'Fund' | 'StableCoin';
   features: {
     ERC20Blocklist: boolean;
     ERC20Custodian: boolean;
@@ -33,6 +34,7 @@ export const assetConfig = {
     queryKey: 'bond',
     urlSegment: 'bonds',
     color: '#8b5cf6',
+    theGraphTypename: 'Bond',
     features: {
       ERC20Blocklist: true,
       ERC20Custodian: true,
@@ -48,6 +50,7 @@ export const assetConfig = {
     queryKey: 'cryptocurrency',
     urlSegment: 'cryptocurrencies',
     color: '#2563eb',
+    theGraphTypename: 'CryptoCurrency',
     features: {
       ERC20Blocklist: false,
       ERC20Custodian: false,
@@ -63,6 +66,7 @@ export const assetConfig = {
     queryKey: 'equity',
     urlSegment: 'equities',
     color: '#4ade80',
+    theGraphTypename: 'Equity',
     features: {
       ERC20Blocklist: true,
       ERC20Custodian: true,
@@ -78,6 +82,7 @@ export const assetConfig = {
     queryKey: 'fund',
     urlSegment: 'funds',
     color: '#10b981',
+    theGraphTypename: 'Fund',
     features: {
       ERC20Blocklist: true,
       ERC20Custodian: true,
@@ -93,6 +98,7 @@ export const assetConfig = {
     queryKey: 'stablecoin',
     urlSegment: 'stablecoins',
     color: '#0ea5e9',
+    theGraphTypename: 'StableCoin',
     features: {
       ERC20Blocklist: true,
       ERC20Custodian: true,

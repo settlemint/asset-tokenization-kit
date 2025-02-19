@@ -17,12 +17,10 @@ export function MyAssetsCountClient({ queryKey }: MyAssetsClientProps) {
     queryFn: () => getMyAssets(),
   });
 
-  const totalValue = data.balances.reduce((acc, asset) => acc + Number(asset.value), 0);
-
   return (
     <div className="flex items-center justify-between">
       <div>
-        <span className="mr-1 font-bold text-4xl">{formatNumber(totalValue)}</span>
+        <span className="mr-1 font-bold text-4xl">{formatNumber(data.total)}</span>
         <span>assets</span>
       </div>
       <Sheet>

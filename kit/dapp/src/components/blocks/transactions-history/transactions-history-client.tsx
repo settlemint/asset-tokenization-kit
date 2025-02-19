@@ -2,7 +2,6 @@
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries, formatInterval } from '@/lib/charts';
-import { cn } from '@/lib/utils';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { getTransactionsHistoryData } from './data';
 import type { TransactionsHistoryProps } from './transactions-history';
@@ -41,7 +40,7 @@ export function TransactionsHistoryClient({
       description={`Showing transactions over the last ${formatInterval(chartOptions.intervalLength, chartOptions.intervalType)}`}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
-      chartContainerClassName={cn(chartOptions.chartContainerClassName)}
+      chartContainerClassName={chartOptions.chartContainerClassName}
     />
   );
 }

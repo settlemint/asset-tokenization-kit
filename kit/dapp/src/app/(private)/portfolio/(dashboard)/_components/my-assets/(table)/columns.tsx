@@ -21,7 +21,7 @@ export const columns = [
       return (
         <DataTableColumnCell>
           <div className="flex items-center gap-2">
-            <Badge className="h-2 w-2 rounded-full p-0" style={{ backgroundColor: assetColor, border: 'none' }} />
+            <Badge className="h-2 w-2 rounded-full p-0" style={{ backgroundColor: assetColor }} />
             {`${asset.name} (${asset.symbol})`}
           </div>
         </DataTableColumnCell>
