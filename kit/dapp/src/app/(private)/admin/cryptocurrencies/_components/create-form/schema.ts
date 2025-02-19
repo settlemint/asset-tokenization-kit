@@ -13,7 +13,7 @@ export const CreateCryptoCurrencyFormSchema = z.object({
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
-  initialSupply: z.string().min(0, { message: 'Initial supply must be at least 0' }).default('0'),
+  initialSupply: z.string().min(0, { message: 'Initial supply must be at least 0' }),
 });
 
 export type CreateCryptoCurrencyFormType = z.infer<typeof CreateCryptoCurrencyFormSchema>;

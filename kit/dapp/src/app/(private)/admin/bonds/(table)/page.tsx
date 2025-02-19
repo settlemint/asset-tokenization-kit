@@ -4,6 +4,7 @@ import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import { columns } from './_components/columns';
 import { getBonds } from './_components/data';
+import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
   title: 'Bonds',
@@ -14,7 +15,9 @@ export default function BondsPage() {
   return (
     <>
       <PageHeader title="Bonds" />
-      <AssetTable assetConfig={assetConfig.bond} dataAction={getBonds} columns={columns} />
+      <AssetTable assetConfig={assetConfig.bond} dataAction={getBonds} columns={columns}>
+        <TableClient />
+      </AssetTable>
     </>
   );
 }

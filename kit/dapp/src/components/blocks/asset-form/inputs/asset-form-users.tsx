@@ -4,7 +4,7 @@ import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@
 import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { sanitizeSearchTerm } from '@/lib/react-query';
+import { queryKeys, sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { cn } from '@/lib/utils';
 import type { ResultOf } from '@settlemint/sdk-hasura';
