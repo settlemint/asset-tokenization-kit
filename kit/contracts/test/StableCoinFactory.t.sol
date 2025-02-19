@@ -199,8 +199,11 @@ contract StableCoinFactoryTest is Test {
         // Fourth event should be StableCoinCreated
         VmSafe.Log memory lastEntry = entries[3];
         assertEq(
-            lastEntry.topics[0], keccak256("StableCoinCreated(address)"), "Wrong event signature for StableCoinCreated"
+            lastEntry.topics[0],
+            keccak256("StableCoinCreated(address,address)"),
+            "Wrong event signature for StableCoinCreated"
         );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), tokenAddress, "Wrong token address in event");
+        assertEq(address(uint160(uint256(lastEntry.topics[2]))), address(this), "Wrong creator address in event");
     }
 }
