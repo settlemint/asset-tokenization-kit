@@ -1,20 +1,18 @@
 // These need to match the keys of the assetConfig object in the dapp
-import { assetConfig } from '../../../dapp/src/lib/config/assets';
-
 export class AssetType {
-  static bond: string = assetConfig.bond.queryKey;
-  static equity: string = assetConfig.equity.queryKey;
-  static stablecoin: string = assetConfig.stablecoin.queryKey;
-  static cryptocurrency: string = assetConfig.cryptocurrency.queryKey;
-  static fund: string = assetConfig.fund.queryKey;
+  static bond: string = 'bond';
+  static equity: string = 'equity';
+  static stablecoin: string = 'stablecoin';
+  static cryptocurrency: string = 'cryptocurrency';
+  static fund: string = 'fund';
 }
 
 export class FactoryType {
-  static bond: string = assetConfig.bond.queryKey;
-  static equity: string = assetConfig.equity.queryKey;
-  static stablecoin: string = assetConfig.stablecoin.queryKey;
-  static cryptocurrency: string = assetConfig.cryptocurrency.queryKey;
-  static fund: string = assetConfig.fund.queryKey;
+  static bond: string = 'bond';
+  static equity: string = 'equity';
+  static stablecoin: string = 'stablecoin';
+  static cryptocurrency: string = 'cryptocurrency';
+  static fund: string = 'fund';
   static fixedyield: string = 'fixedyield';
 }
 
