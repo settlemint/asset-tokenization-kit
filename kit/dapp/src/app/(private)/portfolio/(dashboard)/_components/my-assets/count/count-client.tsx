@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { formatNumber } from '@/lib/number';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
-import { ArrowUpFromLine } from 'lucide-react';
+import { ArrowLeftRight } from 'lucide-react';
 
 interface MyAssetsClientProps {
   queryKey: QueryKey;
@@ -26,7 +26,7 @@ export function MyAssetsCountClient({ queryKey }: MyAssetsClientProps) {
       <Sheet>
         <SheetTrigger asChild>
           <Button className="w-1/6">
-            <ArrowUpFromLine className="mr-2 h-4 w-4" />
+            <ArrowLeftRight className="mr-2 h-4 w-4" />
             Transfer
           </Button>
         </SheetTrigger>
