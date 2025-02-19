@@ -58,49 +58,65 @@ export const queryKeys = {
 export type QueryKeys = typeof queryKeys;
 
 /**
+ * Predicate function to determine if a query key should be invalidated based on an asset address
+ * @param address The asset address to check against
+ * @returns A function that tests if a query key should be invalidated
+ */
+function assetAffectsPredicate(address: string) {
+  return (queryKey: QueryKey) => {
+    const [category, subcategory] = queryKey;
+    return (
+      // Invalidate all details for this asset
+      (category === 'asset' && queryKey.includes(address)) ||
+      // Invalidate all stats for this asset
+      (category === 'asset' && subcategory === 'stats' && queryKey.includes(address)) ||
+      // Invalidate events for this asset
+      (category === 'asset' && subcategory === 'events' && queryKey.includes(address)) ||
+      // Invalidate dashboard widgets and charts related to assets
+      (category === 'dashboard' && (queryKey.includes('asset') || queryKey.includes('transaction')))
+    );
+  };
+}
+
+/**
+ * Predicate function to determine if a query key should be invalidated based on a user ID
+ * @param id The user ID to check against
+ * @returns A function that tests if a query key should be invalidated
+ */
+function userAffectsPredicate(id: string) {
+  return (queryKey: QueryKey) => {
+    const [category, subcategory] = queryKey;
+    return (
+      // Invalidate user's balances
+      (category === 'user' && subcategory === 'balances' && queryKey.includes(id)) ||
+      // Invalidate user's transactions
+      (category === 'user' && subcategory === 'transactions' && queryKey.includes(id)) ||
+      // Invalidate dashboard widgets and charts related to users
+      (category === 'dashboard' && (queryKey.includes('user') || queryKey.includes('transaction')))
+    );
+  };
+}
+
+/**
  * Automatic dependency rules for query invalidation
  */
 const dependencyRules = {
   asset: {
     affects: (key: QueryKey) => {
-      const address = key.at(-1); // Address is always the last segment
+      const address = key.at(-1)?.toString(); // Ensure we get a string
       if (!address || typeof address !== 'string') {
         return false;
       }
-
-      return (queryKey: QueryKey) => {
-        const [category, subcategory] = queryKey;
-        return (
-          // Invalidate all details for this asset
-          (category === 'asset' && queryKey.includes(address)) ||
-          // Invalidate all stats for this asset
-          (category === 'asset' && subcategory === 'stats' && queryKey.includes(address)) ||
-          // Invalidate events for this asset
-          (category === 'asset' && subcategory === 'events' && queryKey.includes(address)) ||
-          // Invalidate dashboard widgets and charts related to assets
-          (category === 'dashboard' && (queryKey.includes('asset') || queryKey.includes('transaction')))
-        );
-      };
+      return assetAffectsPredicate(address);
     },
   },
   user: {
     affects: (key: QueryKey) => {
       const [, id] = key;
-      if (!id) {
+      if (!id || typeof id !== 'string') {
         return false;
       }
-
-      return (queryKey: QueryKey) => {
-        const [category, subcategory] = queryKey;
-        return (
-          // Invalidate user's balances
-          (category === 'user' && subcategory === 'balances' && queryKey.includes(id)) ||
-          // Invalidate user's transactions
-          (category === 'user' && subcategory === 'transactions' && queryKey.includes(id)) ||
-          // Invalidate dashboard widgets and charts related to users
-          (category === 'dashboard' && (queryKey.includes('user') || queryKey.includes('transaction')))
-        );
-      };
+      return userAffectsPredicate(id);
     },
   },
 } as const;
