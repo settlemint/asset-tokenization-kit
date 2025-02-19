@@ -54,7 +54,6 @@ export function GridClientCollateral({ asset }: { asset: Address }) {
         );
       }}
       dataAction={getStableCoin}
-      refetchInterval={5000}
     />
   );
 }

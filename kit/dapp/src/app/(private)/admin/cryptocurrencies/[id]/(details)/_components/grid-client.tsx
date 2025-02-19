@@ -34,7 +34,6 @@ export function GridClient({ asset }: { asset: Address }) {
         );
       }}
       dataAction={getCryptocurrency}
-      refetchInterval={5000}
     />
   );
 }

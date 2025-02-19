@@ -14,7 +14,6 @@ export function MyAssetsClient({ queryKey }: MyAssetsClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getMyAssets,
-    refetchInterval: 1000 * 5,
   });
 
   const totalValue = data.reduce((acc, asset) => acc + Number(asset.value), 0);
