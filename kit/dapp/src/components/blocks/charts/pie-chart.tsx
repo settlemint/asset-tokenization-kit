@@ -49,8 +49,6 @@ export function PieChartComponent({
   className,
   footer,
 }: PieChartProps) {
-  const dataKeys = Object.keys(config);
-
   return (
     <Card>
       <CardHeader>
