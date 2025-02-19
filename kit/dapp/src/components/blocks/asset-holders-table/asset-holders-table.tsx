@@ -1,12 +1,8 @@
-import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
 import { AssetTableSkeleton } from '../asset-table/asset-table-skeleton';
-import type { DataTablePaginationOptions } from '../data-table/data-table-pagination';
-import type { DataTableToolbarOptions } from '../data-table/data-table-toolbar';
-import { HoldersTableClient } from './asset-holders-table-client';
 import { getHolders } from './asset-holders-table-data';
 
 /**
@@ -15,25 +11,13 @@ import { getHolders } from './asset-holders-table-data';
  */
 export interface AssetHoldersTableProps {
   asset: Address;
-  assetConfig: AssetDetailConfig;
-  first?: number;
-  toolbar?: DataTableToolbarOptions;
-  pagination?: DataTablePaginationOptions;
-  decimals: number;
 }
 
 /**
  * Server component that renders a table of assets with data fetching capabilities
  * @template Asset The type of asset data being displayed
  */
-export async function AssetHoldersTable({
-  asset,
-  assetConfig,
-  first,
-  toolbar,
-  pagination,
-  decimals,
-}: AssetHoldersTableProps) {
+export async function AssetHoldersTable({ asset, children }: PropsWithChildren<AssetHoldersTableProps>) {
   const queryClient = getQueryClient();
 
   const queryKey = queryKeys.asset.stats({ address: asset, type: 'holders' });
@@ -45,17 +29,7 @@ export async function AssetHoldersTable({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-        <HoldersTableClient
-          queryKey={queryKey}
-          first={first}
-          toolbar={toolbar}
-          pagination={pagination}
-          asset={asset}
-          assetConfig={assetConfig}
-          decimals={decimals}
-        />
-      </Suspense>
+      <Suspense fallback={<AssetTableSkeleton columns={4} />}>{children}</Suspense>
     </HydrationBoundary>
   );
 }
