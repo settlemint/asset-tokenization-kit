@@ -11,7 +11,6 @@
 		"shardulm94.trailing-spaces",
 		"nomicfoundation.hardhat-solidity",
 		"bruceyuhb.hsl-preview",
-		"vercel.turbo-vsc",
-		"specstory.specstory-vscode"
+		"vercel.turbo-vsc"
 	]
 }

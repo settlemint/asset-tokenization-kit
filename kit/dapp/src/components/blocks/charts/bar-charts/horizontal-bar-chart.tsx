@@ -29,10 +29,14 @@ interface BarChartProps {
 }
 
 const defaultTickFormatter = (value: string) => {
-  if (!value) return '';
+  if (!value) {
+    return '';
+  }
   // Try comma split first
   const commaSplit = value.split(',')[0];
-  if (commaSplit !== value) return commaSplit;
+  if (commaSplit !== value) {
+    return commaSplit;
+  }
   // If no comma, truncate to first 3 chars
   return value.slice(0, 3);
 };
@@ -67,8 +71,8 @@ export function BarChartComponent({ data, config, title, description, xAxis, foo
             <defs>
               {dataKeys.map((key) => (
                 <linearGradient key={key} id={`barGradient${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={config[key].color} stopOpacity={0.2} />
-                  <stop offset="100%" stopColor={config[key].color} stopOpacity={0.8} />
+                  <stop offset="5%" stopColor={config[key].color} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={config[key].color} stopOpacity={0.4} />
                 </linearGradient>
               ))}
             </defs>
@@ -79,7 +83,7 @@ export function BarChartComponent({ data, config, title, description, xAxis, foo
                 stackId="a"
                 fill={`url(#barGradient${key})`}
                 stroke={config[key].color}
-                strokeWidth={1.5}
+                strokeWidth={1}
                 radius={[2, 2, 0, 0]}
               />
             ))}

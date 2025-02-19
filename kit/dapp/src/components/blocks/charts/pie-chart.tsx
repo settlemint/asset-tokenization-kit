@@ -9,46 +9,21 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import type { ReactNode } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
 
 interface PieChartProps {
   title: string;
   description?: string;
-  data: Array<Record<string, string | number>>;
+  data: Record<string, string | number>[];
   config: ChartConfig;
   dataKey: string;
   nameKey: string;
   className?: string;
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 }
 
-function PieGradientDefinitions({ config }: { config: ChartConfig }) {
-  return (
-    <>
-      {Object.entries(config).map(([key, value]) => (
-        <radialGradient key={key} id={`pieGradient${key}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-          <stop offset="0%" stopColor={value.color} stopOpacity={0.9} />
-          <stop offset="100%" stopColor={value.color} stopOpacity={0.3} />
-        </radialGradient>
-      ))}
-      <radialGradient id="pieGradientDefault" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-        <stop offset="0%" stopColor="#888888" stopOpacity={0.9} />
-        <stop offset="100%" stopColor="#888888" stopOpacity={0.3} />
-      </radialGradient>
-    </>
-  );
-}
-
-export function PieChartComponent({
-  title,
-  description,
-  data,
-  config,
-  dataKey,
-  nameKey,
-  className,
-  footer,
-}: PieChartProps) {
+export function PieChartComponent({ title, description, data, config, dataKey, nameKey, footer }: PieChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -59,14 +34,12 @@ export function PieChartComponent({
         <ChartContainer config={config}>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <defs>
-              <PieGradientDefinitions config={config} />
-            </defs>
-            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1.5}>
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1}>
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={`url(#pieGradient${entry[nameKey]})`}
+                  fill={config[entry[nameKey]].color}
+                  fillOpacity={0.8}
                   stroke={config[entry[nameKey]].color}
                 />
               ))}
