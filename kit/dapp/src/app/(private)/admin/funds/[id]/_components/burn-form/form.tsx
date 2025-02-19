@@ -26,12 +26,11 @@ export function BurnForm({
 }) {
   return (
     <AssetForm
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
-      }}
       storeAction={burnFunds}
       resolverAction={zodResolver(BurnFormSchema)}
       onClose={onCloseAction}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel="Burn"
       submittingLabel="Burning..."
       messages={{

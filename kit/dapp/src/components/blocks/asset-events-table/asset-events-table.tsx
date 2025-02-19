@@ -38,7 +38,7 @@ export async function AssetsEventsTable({
   disableToolbarAndPagination,
 }: AssetsEventsTableProps) {
   const queryClient = getQueryClient();
-  const queryKey = asset ? [...assetConfig.queryKey, asset, `first-${first}`] : allAssetQueryKeys;
+  const queryKey = asset ? [...assetConfig.queryKey, { asset, first }] : allAssetQueryKeys;
   try {
     await queryClient.prefetchQuery({
       queryKey,

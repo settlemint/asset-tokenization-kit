@@ -1,3 +1,4 @@
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
@@ -5,9 +6,23 @@ import type { PropsWithChildren } from 'react';
 interface AssetDetailGridItemProps extends PropsWithChildren {
   label: string;
   info?: string;
+  isLoading?: boolean;
 }
 
-export function AssetDetailGridItem({ label, children, info }: AssetDetailGridItemProps) {
+export function AssetDetailGridItemSkeleton() {
+  return (
+    <div className="space-y-1">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-full" />
+    </div>
+  );
+}
+
+export function AssetDetailGridItem({ label, children, info, isLoading }: AssetDetailGridItemProps) {
+  if (isLoading) {
+    return <AssetDetailGridItemSkeleton />;
+  }
+
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1">

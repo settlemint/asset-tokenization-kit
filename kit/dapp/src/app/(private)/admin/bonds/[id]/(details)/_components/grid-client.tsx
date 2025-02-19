@@ -18,10 +18,10 @@ export function GridClient({ asset }: { asset: Address }) {
             <AssetDetailGridItem label="Name">{asset.name}</AssetDetailGridItem>
             <AssetDetailGridItem label="Symbol">{asset.symbol}</AssetDetailGridItem>
             <AssetDetailGridItem label="Contract address">
-              <EvmAddress address={asset.id} prettyNames={false} hoverCard={false} copyToClipboard={true} />
+              <EvmAddress address={asset.id as Address} prettyNames={false} hoverCard={false} copyToClipboard={true} />
             </AssetDetailGridItem>
             <AssetDetailGridItem label="Creator">
-              <EvmAddress address={asset.creator.id} hoverCard={false} copyToClipboard={true} />
+              <EvmAddress address={asset.creator.id as Address} hoverCard={false} copyToClipboard={true} />
             </AssetDetailGridItem>
             <AssetDetailGridItem label="Decimals">{asset.decimals}</AssetDetailGridItem>
             <AssetDetailGridItem label="Total supply" info="The total supply of the token">

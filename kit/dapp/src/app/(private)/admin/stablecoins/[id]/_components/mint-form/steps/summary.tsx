@@ -43,7 +43,9 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Recipient</dt>
-              <dd className="font-medium text-sm">{values.to ? <EvmAddress address={values.to} /> : 'N/A'}</dd>
+              <dd className="font-medium text-sm">
+                {values.to ? <EvmAddress address={values.to as Address} /> : 'N/A'}
+              </dd>
             </div>
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Amount</dt>

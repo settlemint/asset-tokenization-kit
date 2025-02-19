@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { shortHex } from '@/lib/hex';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
@@ -12,11 +13,12 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 import { useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { type FC, type PropsWithChildren, Suspense } from 'react';
+import type { Address } from 'viem';
 import { getAddress } from 'viem';
 
 interface EvmAddressProps extends PropsWithChildren {
   /** The EVM address to display. */
-  address: string;
+  address: Address;
   name?: string;
   symbol?: string;
   /** The URL of the blockchain explorer (optional). */
@@ -28,6 +30,17 @@ interface EvmAddressProps extends PropsWithChildren {
   verbose?: boolean;
   hoverCard?: boolean;
   copyToClipboard?: boolean;
+}
+
+interface User {
+  name: string;
+  image: string | null;
+  email: string;
+}
+
+interface Asset {
+  name: string;
+  symbol: string;
 }
 
 const EvmAddressUser = hasuraGraphql(`
@@ -68,42 +81,40 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
-  const user = useSuspenseQuery({
-    queryKey: ['user-name', address],
+  const { keys } = useQueryKeys();
+  const { data: user } = useSuspenseQuery<User | null>({
+    queryKey: keys.users.detail(address),
     queryFn: async () => {
-      const user = await hasuraClient.request(EvmAddressUser, {
+      const result = await hasuraClient.request(EvmAddressUser, {
         id: getAddress(address),
       });
-      if (user.user.length === 0) {
-        return null;
-      }
-      return user.user[0];
+      return result.user[0] ?? null;
     },
   });
 
-  const asset = useSuspenseQuery({
-    queryKey: ['asset', address],
+  const { data: asset } = useSuspenseQuery<Asset | null>({
+    queryKey: keys.assets.detail('all', address),
     queryFn: async () => {
       try {
-        const asset = await theGraphClientStarterkits.request(EvmAddressAsset, {
+        const result = await theGraphClientStarterkits.request(EvmAddressAsset, {
           id: getAddress(address),
         });
-        return asset.asset;
+        return result.asset ?? null;
       } catch {
         return null;
       }
     },
   });
 
-  const displayName = prettyNames ? (name ?? asset.data?.name ?? user.data?.name) : undefined;
-  const displayEmail = prettyNames ? user.data?.email : undefined;
+  const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
+  const displayEmail = prettyNames ? user?.email : undefined;
   const explorerLink = getBlockExplorerAddressUrl(address, explorerUrl);
 
   const MainView: FC = () => {
     return (
       <div className="flex items-center space-x-2">
         <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-          <AddressAvatar address={address} variant={iconSize} imageUrl={user.data?.image} email={displayEmail} />
+          <AddressAvatar address={getAddress(address)} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
         </Suspense>
         {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
         {displayName && (
@@ -111,7 +122,7 @@ export function EvmAddress({
             {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
             {verbose && (
               <Badge variant="secondary" className="font-mono">
-                {shortHex(address, { prefixLength, suffixLength })}
+                {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
             )}
           </span>
@@ -134,12 +145,7 @@ export function EvmAddress({
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
             <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
-              <AddressAvatar
-                address={address}
-                imageUrl={user.data?.image}
-                email={displayEmail}
-                className="row-span-2"
-              />
+              <AddressAvatar address={address} imageUrl={user?.image} email={displayEmail} className="row-span-2" />
             </Suspense>
             <div className="flex flex-col">
               <span className="font-mono">{address}</span>

@@ -2,16 +2,18 @@
 
 import { AssetTableClient } from '@/components/blocks/asset-table/asset-table-client';
 import { assetConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { columns } from './columns';
 import { getCryptocurrencies } from './data';
 
-export function CryptocurrenciesTableClient() {
+export function TableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5_000}
-      assetConfig={assetConfig.cryptocurrency}
       dataAction={getCryptocurrencies}
+      assetConfig={assetConfig.cryptocurrency}
+      refetchInterval={5000}
       columns={columns}
+      queryKey={queryKeys.assets.all('cryptocurrencies')}
     />
   );
 }

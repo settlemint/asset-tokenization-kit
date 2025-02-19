@@ -2,17 +2,19 @@
 
 import { AssetTableClient } from '@/components/blocks/asset-table/asset-table-client';
 import { assetConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { columns, icons } from './columns';
-import { getBonds } from './data';
+import { getFunds } from './data';
 
-export function BondsTableClient() {
+export function TableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5_000}
-      assetConfig={assetConfig.bond}
-      dataAction={getBonds}
+      dataAction={getFunds}
+      assetConfig={assetConfig.fund}
+      refetchInterval={5000}
       columns={columns}
       icons={icons}
+      queryKey={queryKeys.assets.all('funds')}
     />
   );
 }

@@ -25,12 +25,11 @@ export function MintForm({
 }) {
   return (
     <AssetForm
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
-      }}
       storeAction={mintFund}
       resolverAction={zodResolver(MintFormSchema)}
       onClose={onCloseAction}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel="Mint"
       submittingLabel="Minting..."
       messages={{

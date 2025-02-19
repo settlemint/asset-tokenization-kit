@@ -6,9 +6,9 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import type { Address } from 'viem';
 import type { NormalizedEventsListItem } from '../asset-events-fragments';
 import { EventDetailSheet } from '../details/detail-sheet';
-
 const columnHelper = createColumnHelper<NormalizedEventsListItem>();
 
 export const columns = [
@@ -28,8 +28,8 @@ export const columns = [
 
       return (
         <DataTableColumnCell>
-          <EvmAddress address={asset}>
-            <EvmAddressBalances address={asset} />
+          <EvmAddress address={asset as Address}>
+            <EvmAddressBalances address={asset as Address} />
           </EvmAddress>
         </DataTableColumnCell>
       );
@@ -48,8 +48,8 @@ export const columns = [
 
       return (
         <DataTableColumnCell>
-          <EvmAddress address={senderId}>
-            <EvmAddressBalances address={senderId} />
+          <EvmAddress address={senderId as Address}>
+            <EvmAddressBalances address={senderId as Address} />
           </EvmAddress>
         </DataTableColumnCell>
       );

@@ -13,6 +13,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import type { Address } from 'viem';
 import { getSidebarAssets } from './data';
 import { bottomItems, tokenItems, topItems } from './items';
 
@@ -37,7 +38,7 @@ export function SidebarClient({ queryKey }: SidebarClientProps) {
       id: asset.id,
       label: `${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
-      icon: <AddressAvatar address={asset.id} variant="tiny" />,
+      icon: <AddressAvatar address={asset.id as Address} variant="tiny" />,
     }));
     if (assetsOfSection.count > 0) {
       subItems.push({

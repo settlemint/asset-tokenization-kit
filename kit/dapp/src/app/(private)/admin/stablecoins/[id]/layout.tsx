@@ -88,8 +88,8 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           </>
         }
         subtitle={
-          <EvmAddress address={id} prettyNames={false}>
-            <EvmAddressBalances address={id} />
+          <EvmAddress address={id as Address} prettyNames={false}>
+            <EvmAddressBalances address={id as Address} />
           </EvmAddress>
         }
         pill={<ActivePill paused={stableCoin?.paused ?? false} />}

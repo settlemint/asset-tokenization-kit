@@ -17,9 +17,7 @@ export function CreateFundForm({
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.fund.queryKey, ['transactions']],
-      }}
+      assetConfig={assetConfig.fund}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

@@ -2,17 +2,19 @@
 
 import { AssetTableClient } from '@/components/blocks/asset-table/asset-table-client';
 import { assetConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { columns, icons } from './columns';
 import { getStableCoins } from './data';
 
-export function StableCoinsTableClient() {
+export function TableClient() {
   return (
     <AssetTableClient
-      refetchInterval={5_000}
-      assetConfig={assetConfig.stablecoin}
       dataAction={getStableCoins}
+      assetConfig={assetConfig.stablecoin}
+      refetchInterval={5000}
       columns={columns}
       icons={icons}
+      queryKey={queryKeys.assets.all('stablecoins')}
     />
   );
 }

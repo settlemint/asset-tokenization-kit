@@ -4,6 +4,7 @@ import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-pro
 import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { revalidatePaths } from '@/lib/revalidate';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
@@ -14,6 +15,7 @@ import type { ComponentType, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
+import type { Address } from 'viem';
 import { AssetFormButton } from './asset-form-button';
 import { AssetFormSkeleton } from './asset-form-skeleton';
 
@@ -31,18 +33,18 @@ const defaultMessages = <T,>(): AssetFormMessages<T> => ({
 
 export type CacheInvalidationConfig<S extends Schema> = {
   /**
-   * Array of React Query keys to invalidate in the client-side cache.
-   * Use this for refreshing client-side data fetched with React Query.
-   * @example ['users', 'userList']
+   * Primary query key to invalidate in the client-side cache.
+   * Related data will be automatically invalidated based on dependencies.
+   * @example ['assets', 'bonds']
    */
-  clientCacheKeys: QueryKey[];
+  clientCacheKey: QueryKey;
 
   /**
    * Function to generate the server-side cache path that should be revalidated.
    * Use this for refreshing Next.js server-side rendered (SSR) or statically generated pages.
-   * @example (input) => `/users/${input.id}`
+   * @example () => `/admin/bonds`
    */
-  serverCachePath?: (input: Infer<S>) => string;
+  serverCachePath?: () => string;
 };
 
 type FormStepComponent<S extends Schema> = ComponentType & {
@@ -65,10 +67,15 @@ export type AssetFormProps<
   resolverAction: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
   onClose?: () => void;
   /**
-   * Configuration for cache invalidation after successful form submission.
-   * Handles both client-side and server-side cache updates.
+   * Asset configuration for automatic cache invalidation.
+   * The form will handle both client-side and server-side cache updates.
    */
-  cacheInvalidation: CacheInvalidationConfig<S>;
+  assetConfig: AssetDetailConfig;
+  /**
+   * Optional address for detail forms (e.g., pause, burn, mint).
+   * If provided, the form will invalidate the specific asset's cache.
+   */
+  address?: Address;
   submitLabel?: string;
   submittingLabel?: string;
   processingLabel?: string;
@@ -88,7 +95,8 @@ export function AssetForm<
   storeAction,
   resolverAction,
   onClose,
-  cacheInvalidation,
+  assetConfig,
+  address,
   submitLabel,
   submittingLabel,
   processingLabel,
@@ -111,6 +119,14 @@ export function AssetForm<
     setMounted(true);
   }, []);
 
+  // Build cache invalidation config based on whether this is a detail form or not
+  const cacheInvalidation = {
+    clientCacheKey: address ? [...assetConfig.queryKey, address] : assetConfig.queryKey,
+    serverCachePath: address
+      ? () => `/admin/${assetConfig.urlSegment}/${address}`
+      : () => `/admin/${assetConfig.urlSegment}`,
+  } satisfies CacheInvalidationConfig<S>;
+
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
       onSuccess: async ({ data, input }) => {
@@ -125,9 +141,9 @@ export function AssetForm<
           success: async () => {
             // Invalidate both client and server caches
             await Promise.all([
-              invalidateTags(cacheInvalidation.clientCacheKeys),
+              invalidateTags.invalidateQueries(cacheInvalidation.clientCacheKey),
               cacheInvalidation.serverCachePath
-                ? revalidatePaths([cacheInvalidation.serverCachePath(input as Infer<S>)])
+                ? revalidatePaths([cacheInvalidation.serverCachePath()])
                 : Promise.resolve(),
             ]);
             return messages.onSuccess(input as Infer<S>);
