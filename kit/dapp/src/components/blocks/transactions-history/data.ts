@@ -21,7 +21,7 @@ export async function getTransactionsHistoryData({ processedAfter, from }: { pro
       .filter((record) => record.createdAt)
       .map((record) => ({
         timestamp: record.createdAt!,
-        transactions: 1, // Each entry represents a single transaction
+        transaction: 1, // Each entry represents a single transaction
       })) ?? []
   );
 }

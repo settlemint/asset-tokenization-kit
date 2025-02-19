@@ -12,7 +12,7 @@ interface TransactionsHistoryClientProps extends NonNullable<TransactionsHistory
 }
 
 export const TRANSACTIONS_CHART_CONFIG = {
-  transactions: {
+  transaction: {
     label: 'Transactions',
     color: '#3B9E99',
   },
@@ -32,7 +32,7 @@ export function TransactionsHistoryClient({
 
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ['transactions'], {
+      data={createTimeSeries(data, ['transaction'], {
         ...chartOptions,
         aggregation: 'count',
       })}

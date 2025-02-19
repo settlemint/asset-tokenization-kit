@@ -6,16 +6,16 @@ import { getSidebarAssets } from './data';
 
 export async function AssetManagement() {
   const queryClient = getQueryClient();
-
+  const queryKey = queryKeys.asset.all();
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.assets.root,
+    queryKey,
     queryFn: getSidebarAssets,
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <AssetManagementClient queryKey={queryKeys.assets.root} />
+        <AssetManagementClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
   );

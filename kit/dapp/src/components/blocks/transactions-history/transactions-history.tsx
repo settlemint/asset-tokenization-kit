@@ -13,7 +13,7 @@ export interface TransactionsHistoryProps {
 
 export async function TransactionsHistory({ from, chartOptions }: TransactionsHistoryProps) {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.charts.transactionsHistory;
+  const queryKey = queryKeys.dashboard.chart('transaction');
 
   const processedAfter = new Date(
     getInterval(chartOptions.granularity, chartOptions.intervalType, chartOptions.intervalLength).start
