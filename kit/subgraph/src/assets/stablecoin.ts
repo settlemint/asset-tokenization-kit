@@ -7,11 +7,10 @@ import {
   RoleGranted,
   RoleRevoked,
   TokensFrozen,
-  TokensUnfrozen,
   Transfer,
   Unpaused,
   UserBlocked,
-  UserUnblocked,
+  UserUnblocked
 } from '../../generated/templates/StableCoin/StableCoin';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance, hasBalance } from '../fetch/balance';
@@ -28,7 +27,6 @@ import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
 import { stablecoinCollateralUpdatedEvent } from './events/stablecoincollateralupdated';
 import { tokensFrozenEvent } from './events/tokensfrozen';
-import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
 import { unpausedEvent } from './events/unpaused';
 import { userBlockedEvent } from './events/userblocked';
@@ -441,7 +439,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   ]);
 
   const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, stableCoin.decimals);
   balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
@@ -466,46 +465,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   );
   accountActivityEvent(sender, EventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
   accountActivityEvent(user, EventName.TokensFrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-}
-
-export function handleTokensUnfrozen(event: TokensUnfrozen): void {
-  const stableCoin = fetchStableCoin(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  log.info('StableCoin tokens unfrozen event: amount={}, user={}, sender={}, stablecoin={}', [
-    event.params.amount.toString(),
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  const balance = fetchAssetBalance(stableCoin.id, user.id, stableCoin.decimals);
-  balance.frozen = event.params.amount;
-  balance.save();
-
-  const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
-  assetStats.unfrozen = toDecimals(event.params.amount, stableCoin.decimals);
-  assetStats.unfrozenExact = event.params.amount;
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.stablecoin);
-  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
-  assetActivity.save();
-  stableCoin.lastActivity = event.block.timestamp;
-  stableCoin.save();
-
-  tokensUnfrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    user.id,
-    event.params.amount,
-    stableCoin.decimals
-  );
-  accountActivityEvent(sender, EventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
-  accountActivityEvent(user, EventName.TokensUnfrozen, event.block.timestamp, AssetType.stablecoin, stableCoin.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {

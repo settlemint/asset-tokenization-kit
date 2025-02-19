@@ -36,6 +36,9 @@ export function UpdateCollateralStablecoinForm({
         onSuccess: () => `${name} (${symbol}) collateral updated successfully on chain`,
         onError: (_input, error) => `Failed to update collateral ${name} (${symbol}) failed: ${error.message}`,
       }}
+      defaultValues={{
+        decimals,
+      }}
     >
       <Amount />
       <Summary address={address} decimals={decimals} />

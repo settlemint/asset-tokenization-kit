@@ -163,7 +163,6 @@ templates:
         - BondRedeemedEvent
         - PausedEvent
         - TokensFrozenEvent
-        - TokensUnfrozenEvent
         - TransferEvent
         - UnpausedEvent
         - UserBlockedEvent
@@ -201,8 +200,6 @@ templates:
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
           handler: handleTokensFrozen
-        - event: TokensUnfrozen(indexed address,uint256)
-          handler: handleTokensUnfrozen
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
         - event: Unpaused(address)
@@ -242,7 +239,6 @@ templates:
         - ApprovalEvent
         - PausedEvent
         - TokensFrozenEvent
-        - TokensUnfrozenEvent
         - TransferEvent
         - UnpausedEvent
         - UserBlockedEvent
@@ -299,7 +295,6 @@ templates:
         - ApprovalEvent
         - PausedEvent
         - TokensFrozenEvent
-        - TokensUnfrozenEvent
         - TransferEvent
         - UnpausedEvent
         - UserBlockedEvent
@@ -331,8 +326,6 @@ templates:
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
           handler: handleTokensFrozen
-        - event: TokensUnfrozen(indexed address,uint256)
-          handler: handleTokensUnfrozen
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
         - event: Unpaused(address)
@@ -368,7 +361,6 @@ templates:
         - ApprovalEvent
         - PausedEvent
         - TokensFrozenEvent
-        - TokensUnfrozenEvent
         - TransferEvent
         - UnpausedEvent
         - UserBlockedEvent
@@ -402,8 +394,6 @@ templates:
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
           handler: handleTokensFrozen
-        - event: TokensUnfrozen(indexed address,uint256)
-          handler: handleTokensUnfrozen
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
         - event: Unpaused(address)
@@ -462,7 +452,6 @@ templates:
         - ApprovalEvent
         - PausedEvent
         - TokensFrozenEvent
-        - TokensUnfrozenEvent
         - TransferEvent
         - UnpausedEvent
         - UserBlockedEvent
@@ -495,8 +484,6 @@ templates:
           handler: handlePaused
         - event: TokensFrozen(indexed address,uint256)
           handler: handleTokensFrozen
-        - event: TokensUnfrozen(indexed address,uint256)
-          handler: handleTokensUnfrozen
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
         - event: Unpaused(address)

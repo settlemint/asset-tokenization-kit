@@ -178,7 +178,8 @@ type AssetBalance @entity {
   approved: BigDecimal!
   approvedExact: BigInt!
   blocked: Boolean!
-  frozen: BigInt!
+  frozen: BigDecimal!
+  frozenExact: BigInt!
 }
 
 # --------------------------------------------------
@@ -341,21 +342,6 @@ type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
   user: Account! # The user whose tokens were frozen
   amount: BigDecimal! # The amount frozen
   amountExact: BigInt! # The amount frozen in exact precision
-}
-
-"""
-Entity for tokens unfrozen events.
-Emitted when tokens are unfrozen (a custodian operation).
-"""
-type TokensUnfrozenEvent implements AssetEvent @entity(immutable: true) {
-  id: Bytes!
-  eventName: String!
-  timestamp: BigInt!
-  emitter: Asset!
-  sender: Account!
-  user: Account! # The user whose tokens were unfrozen
-  amount: BigDecimal! # The amount unfrozen
-  amountExact: BigInt! # The amount unfrozen in exact precision
 }
 
 """

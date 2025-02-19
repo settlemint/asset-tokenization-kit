@@ -297,6 +297,12 @@ contract EquityTest is Test {
         vm.expectRevert();
         equity.transfer(user2, 100);
         vm.stopPrank();
+
+        vm.startPrank(owner);
+        equity.freeze(user1, 0);
+        vm.stopPrank();
+
+        assertEq(equity.frozen(user1), 0);
     }
 
     // Voting Tests

@@ -19,13 +19,21 @@ export interface AssetHoldersTableProps {
   first?: number;
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
+  decimals: number;
 }
 
 /**
  * Server component that renders a table of assets with data fetching capabilities
  * @template Asset The type of asset data being displayed
  */
-export async function AssetHoldersTable({ asset, assetConfig, first, toolbar, pagination }: AssetHoldersTableProps) {
+export async function AssetHoldersTable({
+  asset,
+  assetConfig,
+  first,
+  toolbar,
+  pagination,
+  decimals,
+}: AssetHoldersTableProps) {
   const queryClient = getQueryClient();
 
   const queryKey = queryKeys.asset.stats({ address: asset, type: 'holders' });
@@ -45,6 +53,7 @@ export async function AssetHoldersTable({ asset, assetConfig, first, toolbar, pa
           pagination={pagination}
           asset={asset}
           assetConfig={assetConfig}
+          decimals={decimals}
         />
       </Suspense>
     </HydrationBoundary>

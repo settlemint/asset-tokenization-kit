@@ -227,15 +227,6 @@ contract Equity is
         return super._unblockUser(user);
     }
 
-    /// @notice Unfreezes all tokens for a user
-    /// @dev Only callable by addresses with USER_MANAGEMENT_ROLE
-    /// @param user Address to unfreeze tokens for
-    /// @param amount Amount of tokens to unfreeze
-    function unfreeze(address user, uint256 amount) public onlyRole(USER_MANAGEMENT_ROLE) {
-        _frozen[user] = _frozen[user] - amount;
-        emit TokensUnfrozen(user, amount);
-    }
-
     /// @notice Approves spending of tokens
     /// @dev Internal function that handles allowance updates across inherited features
     /// @param owner The token owner
