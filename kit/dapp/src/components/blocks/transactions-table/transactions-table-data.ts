@@ -37,8 +37,8 @@ const TransactionListFragment = portalGraphql(
 
 const TransactionList = portalGraphql(
   `
-  query TransactionList {
-    getPendingAndRecentlyProcessedTransactions {
+  query TransactionList($from: String) {
+    getPendingAndRecentlyProcessedTransactions(from: $from) {
       records {
         ...TransactionListFragment
       }
@@ -50,8 +50,8 @@ const TransactionList = portalGraphql(
 
 export type TransactionListItem = Awaited<ReturnType<typeof getTransactionsList>>[number];
 
-export async function getTransactionsList() {
-  const data = await portalClient.request(TransactionList);
+export async function getTransactionsList(from?: string) {
+  const data = await portalClient.request(TransactionList, { from });
   return (
     data.getPendingAndRecentlyProcessedTransactions?.records.map((record) => ({
       ...record,

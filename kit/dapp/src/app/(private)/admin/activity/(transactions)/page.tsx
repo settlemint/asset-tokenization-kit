@@ -1,7 +1,7 @@
+import { TransactionsTable } from '@/components/blocks/transactions-table/transactions-table';
 import { getBlockExplorerAllTxUrl } from '@/lib/block-explorer';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { TransactionsTable } from './_components/transactions-table';
 
 export const metadata: Metadata = {
   title: 'Transactions',

@@ -95,6 +95,10 @@ export const columns = [
   }),
 ];
 
+export const getColumns = (hideFromAddress?: boolean) => {
+  return columns.filter((column) => !hideFromAddress || column.id !== 'from');
+};
+
 export const icons = {
   success: CheckCircle,
   failed: XCircle,
