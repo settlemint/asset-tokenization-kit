@@ -22,6 +22,23 @@ interface PieChartProps {
   footer?: React.ReactNode;
 }
 
+function PieGradientDefinitions({ config }: { config: ChartConfig }) {
+  return (
+    <>
+      {Object.entries(config).map(([key, value]) => (
+        <radialGradient key={key} id={`pieGradient${key}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stopColor={value.color} stopOpacity={0.9} />
+          <stop offset="100%" stopColor={value.color} stopOpacity={0.3} />
+        </radialGradient>
+      ))}
+      <radialGradient id="pieGradientDefault" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <stop offset="0%" stopColor="#888888" stopOpacity={0.9} />
+        <stop offset="100%" stopColor="#888888" stopOpacity={0.3} />
+      </radialGradient>
+    </>
+  );
+}
+
 export function PieChartComponent({
   title,
   description,
@@ -45,24 +62,9 @@ export function PieChartComponent({
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <defs>
-              {dataKeys.map((key) => (
-                <radialGradient key={key} id={`pieGradient${key}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                  <stop offset="0%" stopColor={config[key].color} stopOpacity={0.9} />
-                  <stop offset="100%" stopColor={config[key].color} stopOpacity={0.3} />
-                </radialGradient>
-              ))}
+              <PieGradientDefinitions config={config} />
             </defs>
-            <Pie
-              data={data}
-              dataKey={dataKey}
-              nameKey={nameKey}
-              cx="50%"
-              cy="50%"
-              innerRadius={0}
-              outerRadius="80%"
-              fill="#8884d8"
-              strokeWidth={1.5}
-            >
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1.5}>
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
