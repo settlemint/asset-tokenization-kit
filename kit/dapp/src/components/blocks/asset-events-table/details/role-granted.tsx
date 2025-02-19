@@ -2,6 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { roles } from '@/lib/roles';
+import type { Address } from 'viem';
 import type { RoleGrantedEvent } from '../asset-events-fragments';
 
 interface RoleGrantedDetailsProps {
@@ -16,8 +17,8 @@ export function RoleGrantedDetails({ details }: RoleGrantedDetailsProps) {
         <dl className="grid grid-cols-[1fr_2fr] gap-4">
           <dt className="text-muted-foreground text-sm">Account:</dt>
           <dd className="text-sm">
-            <EvmAddress address={details.account.id}>
-              <EvmAddressBalances address={details.account.id} />
+            <EvmAddress address={details.account.id as Address}>
+              <EvmAddressBalances address={details.account.id as Address} />
             </EvmAddress>
           </dd>
           <dt className="text-muted-foreground text-sm">Role:</dt>

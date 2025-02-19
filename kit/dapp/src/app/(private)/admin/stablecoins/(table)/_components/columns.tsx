@@ -11,8 +11,8 @@ import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import BigNumber from 'bignumber.js';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import type { Address } from 'viem';
 import type { StableCoinAsset } from './data';
-
 const columnHelper = createColumnHelper<StableCoinAsset>();
 
 export const columns = [
@@ -20,8 +20,8 @@ export const columns = [
     header: ({ column }) => <DataTableColumnHeader column={column}>Address</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
-        <EvmAddress address={getValue()}>
-          <EvmAddressBalances address={getValue()} />
+        <EvmAddress address={getValue() as Address}>
+          <EvmAddressBalances address={getValue() as Address} />
         </EvmAddress>
       </DataTableColumnCell>
     ),

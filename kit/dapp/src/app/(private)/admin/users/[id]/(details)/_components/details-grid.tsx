@@ -7,6 +7,7 @@ import { shortHex } from '@/lib/hex';
 import { formatNumber } from '@/lib/number';
 import { Ban, Check } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
 import { getUser } from './data';
 
 type DetailsGridProps = {
@@ -44,7 +45,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         </DetailsGridItem>
         <DetailsGridItem label="Wallet">
           <div className="flex items-center gap-2 text-md">
-            <AddressAvatar address={user.wallet} variant="small" />
+            <AddressAvatar address={user.wallet as Address} variant="small" />
             <CopyToClipboard
               value={user.wallet}
               displayText={shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 }) ?? ''}

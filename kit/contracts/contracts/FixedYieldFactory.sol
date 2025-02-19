@@ -24,7 +24,7 @@ contract FixedYieldFactory is ERC2771Context {
 
     /// @notice Emitted when a new fixed yield schedule is created
     /// @param schedule The address of the newly created fixed yield schedule
-    event FixedYieldCreated(address indexed schedule);
+    event FixedYieldCreated(address indexed schedule, address indexed creator);
 
     /// @notice Array of all fixed yield schedules created by this factory
     /// @dev Stores references to all created schedules for tracking and enumeration
@@ -74,7 +74,7 @@ contract FixedYieldFactory is ERC2771Context {
         // Set the yield schedule on the token
         token.setYieldSchedule(schedule);
 
-        emit FixedYieldCreated(schedule);
+        emit FixedYieldCreated(schedule, _msgSender());
         allSchedules.push(FixedYield(schedule));
         return schedule;
     }

@@ -7,6 +7,7 @@
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import type { QueryKey } from '@tanstack/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
@@ -20,6 +21,7 @@ export type AssetTableClientProps<Asset> = {
   icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
   /** Column definitions for the table */
   columns: Parameters<typeof useReactTable<Asset>>[0]['columns'];
+  queryKey: QueryKey;
 };
 
 /**
@@ -32,9 +34,10 @@ export function AssetTableClient<Asset extends Record<string, unknown>>({
   refetchInterval,
   columns,
   icons,
+  queryKey,
 }: AssetTableClientProps<Asset>) {
   const { data } = useSuspenseQuery<Asset[]>({
-    queryKey: assetConfig.queryKey,
+    queryKey,
     queryFn: () => dataAction(),
     refetchInterval,
   });

@@ -107,7 +107,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
       },
       description = 'This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.',
       ctaText = 'bunx @settlemint/sdk-cli@latest create',
-      ctaHref = 'https://github.com/settlemint/asset-tokenization-kit',
+      ctaHref = 'https://github.com/settlemint/starterkit-asset-tokenization',
       bottomImage = {
         light: HeroLight,
         dark: HeroDark,

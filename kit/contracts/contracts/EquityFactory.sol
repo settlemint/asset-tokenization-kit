@@ -23,7 +23,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Emitted when a new equity token is created
     /// @param token The address of the newly created token
-    event EquityCreated(address indexed token);
+    event EquityCreated(address indexed token, address indexed creator);
 
     /// @notice Deploys a new EquityFactory contract
     /// @dev Sets up the factory with meta-transaction support
@@ -66,7 +66,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         token = address(newToken);
         isFactoryToken[token] = true;
 
-        emit EquityCreated(token);
+        emit EquityCreated(token, _msgSender());
     }
 
     /// @notice Predicts the address where a token would be deployed

@@ -1,3 +1,5 @@
+'use client';
+
 import { getTransferFormSchema } from '@/app/(private)/portfolio/my-assets/[id]/_components/transfer-form/schema';
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import { assetConfig } from '@/lib/config/assets';
@@ -30,12 +32,11 @@ export function TransferForm({
   const assetConfig = getAssetConfig(assetType);
   return (
     <AssetForm
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.queryKey, ['transactions']],
-      }}
       storeAction={transfer}
       resolverAction={zodResolver(getTransferFormSchema(balance))}
       onClose={onCloseAction}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel="Transfer"
       messages={{
         onCreate: (input) =>

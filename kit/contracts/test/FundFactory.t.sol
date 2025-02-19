@@ -24,7 +24,7 @@ contract FundFactoryTest is Test {
     string constant FUND_CLASS = "Hedge Fund";
     string constant FUND_CATEGORY = "Long/Short Equity";
 
-    event FundCreated(address indexed token);
+    event FundCreated(address indexed token, address indexed creator);
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -43,8 +43,8 @@ contract FundFactoryTest is Test {
         address predictedAddress =
             factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
-        vm.expectEmit(true, false, false, false);
-        emit FundCreated(predictedAddress);
+        vm.expectEmit(true, true, false, false);
+        emit FundCreated(predictedAddress, owner);
 
         address fundAddress =
             factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);

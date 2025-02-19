@@ -4,6 +4,7 @@ import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@
 import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import { sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,7 @@ import { CommandEmpty, CommandLoading, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import type { FieldValues } from 'react-hook-form';
+import type { Address } from 'viem';
 import { EvmAddress } from '../../evm-address/evm-address';
 
 type AssetFormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
@@ -82,7 +84,7 @@ export function AssetFormUsers<T extends FieldValues>({
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" aria-expanded={open} className="w-full justify-between">
-                  {field.value ? <EvmAddress address={field.value} /> : placeholder}
+                  {field.value ? <EvmAddress address={field.value as Address} /> : placeholder}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -109,9 +111,10 @@ function AssetFormUsersList({
 }: { onValueChange: (value: string) => void; setOpen: (open: boolean) => void; value: string }) {
   const search = useCommandState((state) => state.search);
   const debounced = useDebounce<string>(search, 250);
+  const { keys } = useQueryKeys();
 
   const { data, isLoading } = useQuery({
-    queryKey: [`search-users-${debounced}`],
+    queryKey: keys.users.search(debounced),
     enabled: debounced.trim() !== '',
     queryFn: async () => {
       const sanitizedSearch = sanitizeSearchTerm(debounced);
@@ -141,7 +144,7 @@ function AssetFormUsersList({
               setOpen(false);
             }}
           >
-            <EvmAddress address={user.wallet} hoverCard={false} />
+            <EvmAddress address={user.wallet as Address} hoverCard={false} />
             <Check className={cn('ml-auto', value === user.wallet ? 'opacity-100' : 'opacity-0')} />
           </CommandItem>
         ))}

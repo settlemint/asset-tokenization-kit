@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { assetConfig, assetsSidebarQueryKey } from '@/lib/config/assets';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateFundFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -17,9 +17,7 @@ export function CreateFundForm({
       storeAction={createFund}
       resolverAction={zodResolver(CreateFundFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.fund.queryKey, ['transactions'], assetsSidebarQueryKey],
-      }}
+      assetConfig={assetConfig.fund}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

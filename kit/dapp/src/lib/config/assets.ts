@@ -40,7 +40,7 @@ export const assetConfig = {
     pluralName: 'Bonds',
     description: 'Digital assets representing a debt obligation',
     factoryAddress: BOND_FACTORY_ADDRESS,
-    queryKey: ['bonds'],
+    queryKey: ['assets', 'bonds'] as const,
     urlSegment: 'bonds',
     color: '#8b5cf6',
     features: {
@@ -55,7 +55,7 @@ export const assetConfig = {
     pluralName: 'Cryptocurrencies',
     description: 'Digital assets representing a fully decentralized currency',
     factoryAddress: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-    queryKey: ['cryptocurrencies'],
+    queryKey: ['assets', 'cryptocurrencies'] as const,
     urlSegment: 'cryptocurrencies',
     color: '#2563eb',
     features: {
@@ -70,7 +70,7 @@ export const assetConfig = {
     pluralName: 'Equities',
     description: 'Digital assets representing ownership in a company',
     factoryAddress: EQUITY_FACTORY_ADDRESS,
-    queryKey: ['equities'],
+    queryKey: ['assets', 'equities'] as const,
     urlSegment: 'equities',
     color: '#4ade80',
     features: {
@@ -85,7 +85,7 @@ export const assetConfig = {
     pluralName: 'Funds',
     description: 'Digital assets representing a fund',
     factoryAddress: FUND_FACTORY_ADDRESS,
-    queryKey: ['funds'],
+    queryKey: ['assets', 'funds'] as const,
     urlSegment: 'funds',
     color: '#10b981',
     features: {
@@ -100,7 +100,7 @@ export const assetConfig = {
     pluralName: 'Stablecoins',
     description: 'Digital assets pegged to a stable asset like USD',
     factoryAddress: STABLE_COIN_FACTORY_ADDRESS,
-    queryKey: ['stablecoins'],
+    queryKey: ['assets', 'stablecoins'] as const,
     urlSegment: 'stablecoins',
     color: '#0ea5e9',
     features: {

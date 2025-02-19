@@ -4,7 +4,7 @@ import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import { columns } from './_components/columns';
 import { getEquities } from './_components/data';
-import { EquitiesTableClient } from './_components/table.client';
+import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
   title: 'Equities',
@@ -16,7 +16,7 @@ export default function EquitiesPage() {
     <>
       <PageHeader title="Equities" />
       <AssetTable assetConfig={assetConfig.equity} dataAction={getEquities} columns={columns}>
-        <EquitiesTableClient />
+        <TableClient />
       </AssetTable>
     </>
   );

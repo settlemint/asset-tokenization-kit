@@ -4,6 +4,7 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useQueryKeys } from '@/hooks/use-query-keys';
 import { assetConfig } from '@/lib/config/assets';
 import { sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
@@ -12,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
-import { getAddress, isHex } from 'viem';
+import { type Address, getAddress, isHex } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 
 const SearchUsers = hasuraGraphql(`
@@ -52,6 +53,7 @@ const SearchAssets = theGraphGraphqlStarterkits(`
 `);
 
 export const Search = () => {
+  const { keys } = useQueryKeys();
   const form = useForm({
     defaultValues: {
       search: '',
@@ -66,7 +68,7 @@ export const Search = () => {
   const debounced = useDebounce(search, 250);
 
   const { data } = useQuery({
-    queryKey: [`search-${debounced}`],
+    queryKey: keys.search(debounced),
     queryFn: async () => {
       if (!debounced || debounced.length < 2) {
         return { assets: [], users: [] };
@@ -168,7 +170,7 @@ export const Search = () => {
                         });
                       }}
                     >
-                      <EvmAddress address={asset.id} verbose hoverCard={false} />
+                      <EvmAddress address={asset.id as Address} verbose hoverCard={false} />
                     </Link>
                   </div>
                 ))}
@@ -193,7 +195,7 @@ export const Search = () => {
                         });
                       }}
                     >
-                      <EvmAddress address={user.wallet} verbose hoverCard={false} />
+                      <EvmAddress address={user.wallet as Address} verbose hoverCard={false} />
                     </Link>
                   </div>
                 ))}

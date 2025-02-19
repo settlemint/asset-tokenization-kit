@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
 import { getUser } from './(details)/_components/data';
 
 interface LayoutProps extends PropsWithChildren {
@@ -45,8 +46,8 @@ export default async function UserDetailLayout({ children, params }: LayoutProps
       <PageHeader
         title={user?.name}
         subtitle={
-          <EvmAddress address={user?.wallet} prettyNames={false}>
-            <EvmAddressBalances address={user?.wallet} />
+          <EvmAddress address={user.wallet as Address} prettyNames={false}>
+            <EvmAddressBalances address={user.wallet as Address} />
           </EvmAddress>
         }
         button={

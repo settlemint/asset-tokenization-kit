@@ -1,5 +1,5 @@
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { assetConfig, assetsSidebarQueryKey } from '@/lib/config/assets';
+import { assetConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCryptoCurrencyFormSchema } from './schema';
 import { Basics } from './steps/basics';
@@ -17,9 +17,7 @@ export function CreateCryptocurrencyForm({
       storeAction={createCryptocurrency}
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [assetConfig.cryptocurrency.queryKey, ['transactions'], assetsSidebarQueryKey],
-      }}
+      assetConfig={assetConfig.cryptocurrency}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

@@ -1,22 +1,26 @@
-import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
-import { getQueryClient } from '@/lib/react-query';
-import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 import { getAssetDetailStats } from '../data';
 import { TotalVolumeClient } from './total-volume-client';
 
-export async function TotalVolume({ asset }: { asset: Address }) {
+interface TotalVolumeProps {
+  asset: Address;
+}
+
+export async function TotalVolume({ asset }: TotalVolumeProps) {
   const queryClient = getQueryClient();
-  const queryKey: QueryKey = [`stats-${asset}`];
+  const queryKey = queryKeys.assets.stats.volume(asset);
+
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: async () => getAssetDetailStats(asset),
+    queryFn: () => getAssetDetailStats(asset),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<ChartSkeleton title="Total volume" variant="loading" />}>
+      <Suspense>
         <TotalVolumeClient queryKey={queryKey} asset={asset} />
       </Suspense>
     </HydrationBoundary>

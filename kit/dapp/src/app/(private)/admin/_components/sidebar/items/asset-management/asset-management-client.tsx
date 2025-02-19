@@ -2,6 +2,7 @@
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import type { Address } from 'viem';
 import { assetItems } from './assets';
 import { getSidebarAssets } from './data';
 
@@ -26,7 +27,7 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
       id: asset.id,
       label: `${asset.name} (${asset.symbol ?? asset.id})`,
       path: `${section.path}/${asset.id}`,
-      icon: <AddressAvatar address={asset.id} variant="tiny" />,
+      icon: <AddressAvatar address={asset.id as Address} variant="tiny" />,
     }));
     if (assetsOfSection.count > 0) {
       subItems.push({

@@ -208,8 +208,11 @@ contract BondFactoryTest is Test {
 
         // Fourth event should be BondCreated
         Vm.Log memory lastEntry = entries[3];
-        assertEq(lastEntry.topics[0], keccak256("BondCreated(address)"), "Wrong event signature for BondCreated");
+        assertEq(
+            lastEntry.topics[0], keccak256("BondCreated(address,address)"), "Wrong event signature for BondCreated"
+        );
         assertEq(address(uint160(uint256(lastEntry.topics[1]))), bondAddress, "Wrong bond address in event");
+        assertEq(address(uint160(uint256(lastEntry.topics[2]))), address(this), "Wrong creator address in event");
     }
 
     function test_BondMaturity() public {

@@ -1,4 +1,4 @@
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { getUserWidgetData } from './data';
@@ -6,7 +6,7 @@ import { UsersWidgetClient } from './users-client';
 
 export async function UsersWidget() {
   const queryClient = getQueryClient();
-  const queryKey = ['users'];
+  const queryKey = queryKeys.dashboard.widgets.users;
 
   await queryClient.prefetchQuery({
     queryKey: queryKey,

@@ -26,10 +26,8 @@ export function BlockUserForm({ address, userAddress, blocked, assetConfig, onCl
       storeAction={(formData) => blockUser({ ...formData, address, userAddress, blocked: !!blocked })}
       resolverAction={zodResolver(BlockUserFormSchema)}
       onClose={onCloseAction}
-      cacheInvalidation={{
-        clientCacheKeys: [[...assetConfig.queryKey, { id: address }]],
-        serverCachePath: () => `/admin/stablecoins/${address}`,
-      }}
+      assetConfig={assetConfig}
+      address={address}
       submitLabel={actionLabel}
       submittingLabel={actionSubmittingLabel}
       messages={{
