@@ -1,6 +1,6 @@
 'use client';
 
-import { getMyAssets } from '@/app/(private)/portfolio/_components/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets/data';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';

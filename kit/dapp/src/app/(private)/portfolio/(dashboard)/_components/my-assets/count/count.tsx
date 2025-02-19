@@ -1,4 +1,4 @@
-import { getMyAssets } from '@/app/(private)/portfolio/_components/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets/data';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { getQueryClient } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
