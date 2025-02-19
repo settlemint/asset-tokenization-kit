@@ -1,24 +1,9 @@
-import Header from '@/components/layout/header';
-import { NavFooter } from '@/components/layout/nav-footer';
-import { NavHeader } from '@/components/layout/nav-header';
-import { type NavElement, NavMain } from '@/components/layout/nav-main';
-import { ActivityIcon } from '@/components/ui/animated-icons/activity';
-import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
-import { UsersIcon } from '@/components/ui/animated-icons/users';
-import { WalletIcon } from '@/components/ui/animated-icons/wallet';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarInset,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-} from '@/components/ui/sidebar';
+import NavInset from '@/components/layout/nav-inset';
+import NavProvider from '@/components/layout/nav-provider';
 import { metadata as baseMetadata } from '@/lib/config/metadata';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
+import { PortfolioSidebar } from './_components/sidebar/sidebar';
 
 export const metadata: Metadata = {
   title: 'Portfolio',
@@ -54,48 +39,10 @@ export const metadata: Metadata = {
 };
 
 export default function PortfolioLayout({ children }: PropsWithChildren) {
-  const sidebarData: NavElement[] = [
-    {
-      label: 'Portfolio',
-      icon: <ChartScatterIcon className="h-4 w-4" />,
-      path: '/portfolio',
-    },
-    {
-      label: 'My Assets',
-      icon: <WalletIcon className="h-4 w-4" />,
-      path: '/portfolio/my-assets',
-    },
-    {
-      label: 'Transactions',
-      icon: <ActivityIcon className="h-4 w-4" />,
-      path: '/portfolio/transactions',
-    },
-    {
-      label: 'My Contacts',
-      icon: <UsersIcon className="h-4 w-4" />,
-      path: '/portfolio/contacts',
-    },
-  ];
-
   return (
-    <SidebarProvider>
-      <Sidebar collapsible="icon" className="group-data-[side=left]:border-0">
-        <SidebarHeader>
-          <NavHeader />
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain items={sidebarData} />
-        </SidebarContent>
-        <SidebarSeparator />
-        <SidebarFooter>
-          <NavFooter />
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
-      <SidebarInset>
-        <Header />
-        <main className="flex min-h-screen flex-1 flex-col gap-4 rounded-tl-xl bg-background p-6">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <NavProvider>
+      <PortfolioSidebar />
+      <NavInset>{children}</NavInset>
+    </NavProvider>
   );
 }
