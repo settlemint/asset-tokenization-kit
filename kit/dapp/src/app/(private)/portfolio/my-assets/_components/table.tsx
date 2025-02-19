@@ -5,5 +5,5 @@ import { columns } from './table/columns';
 export async function MyAssetsTable() {
   const myAssets = await getMyAssets();
 
-  return <DataTable columns={columns} data={myAssets} name="my-assets" />;
+  return <DataTable columns={columns} data={myAssets.balances} name="my-assets" />;
 }

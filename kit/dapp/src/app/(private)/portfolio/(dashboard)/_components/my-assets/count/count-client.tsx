@@ -16,7 +16,7 @@ export function MyAssetsClient({ queryKey }: MyAssetsClientProps) {
     queryFn: getMyAssets,
   });
 
-  const totalValue = data.reduce((acc, asset) => acc + Number(asset.value), 0);
+  const totalValue = data.balances.reduce((acc, asset) => acc + Number(asset.value), 0);
 
   return (
     <div className="flex items-center justify-between">

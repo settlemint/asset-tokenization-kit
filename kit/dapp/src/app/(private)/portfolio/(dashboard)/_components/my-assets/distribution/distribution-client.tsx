@@ -31,8 +31,8 @@ export function DistributionClient({ queryKey }: DistributionClientProps) {
     queryFn: getMyAssets,
   });
 
-  const chartData = data.map((item) => {
-    const assetPluralName = assetConfig[item.asset.type as keyof typeof assetConfig].pluralName;
+  const chartData = data.distribution.map((item) => {
+    const assetPluralName = assetConfig[item.asset.type].pluralName;
     return {
       assetType: assetPluralName,
       percentage: item.percentage,

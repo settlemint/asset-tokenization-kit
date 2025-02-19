@@ -1,6 +1,7 @@
 'use server';
 
 import { getAuthenticatedUser } from '@/lib/auth/auth';
+import type { assetConfig } from '@/lib/config/assets';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
@@ -45,20 +46,60 @@ const MyAssets = theGraphGraphqlStarterkits(
 
 export type MyAsset = FragmentOf<typeof BalanceFragment>;
 
-export async function getMyAssets() {
+type AssetType = keyof typeof assetConfig;
+
+interface Distribution {
+  asset: {
+    type: AssetType;
+  };
+  value: string;
+  percentage: number;
+}
+
+interface MyAssetsResponse {
+  balances: MyAsset[];
+  distribution: Distribution[];
+}
+
+export async function getMyAssets(): Promise<MyAssetsResponse> {
   const user = await getAuthenticatedUser();
-  return fetchAllTheGraphPages(async (first, skip) => {
-    const result = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
-    const { account } = result;
-
-    const total =
-      account?.balances.reduce((acc, balance) => acc.plus(BigNumber(balance.value)), BigNumber(0)) ?? BigNumber(0);
-
-    return (
-      account?.balances.map((balance) => ({
-        ...balance,
-        percentage: total.gt(0) ? BigNumber(balance.value).div(total).multipliedBy(100).toNumber() : 0,
-      })) ?? []
-    );
+  const result = await fetchAllTheGraphPages(async (first, skip) => {
+    const pageResult = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
+    return pageResult.account?.balances ?? [];
   });
+
+  if (!result.length) {
+    return {
+      balances: [],
+      distribution: [],
+    };
+  }
+
+  // Group and sum balances by asset type
+  const assetTypeBalances = result.reduce<Record<AssetType, BigNumber>>(
+    (acc, balance) => {
+      const assetType = balance.asset.type as AssetType;
+      if (!acc[assetType]) {
+        acc[assetType] = BigNumber(0);
+      }
+      acc[assetType] = acc[assetType].plus(BigNumber(balance.value));
+      return acc;
+    },
+    {} as Record<AssetType, BigNumber>
+  );
+
+  // Calculate total across all types
+  const total = Object.values(assetTypeBalances).reduce((acc, value) => acc.plus(value), BigNumber(0));
+
+  // Calculate distribution percentages by type
+  const distribution = Object.entries(assetTypeBalances).map(([type, value]) => ({
+    asset: { type: type as AssetType },
+    value: value.toString(),
+    percentage: total.gt(0) ? value.div(total).multipliedBy(100).toNumber() : 0,
+  }));
+
+  return {
+    balances: result,
+    distribution,
+  };
 }
