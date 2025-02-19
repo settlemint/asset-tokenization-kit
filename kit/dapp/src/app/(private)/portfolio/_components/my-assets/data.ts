@@ -95,7 +95,7 @@ export async function getMyAssets(): Promise<MyAssetsResponse> {
   const distribution = Object.entries(assetTypeBalances).map(([type, value]) => ({
     asset: { type: type as AssetType },
     value: value.toString(),
-    percentage: total.gt(0) ? value.div(total).multipliedBy(100).toNumber() : 0,
+    percentage: total.gt(0) ? Number.parseFloat(value.div(total).multipliedBy(100).toFixed(2)) : 0,
   }));
 
   return {
