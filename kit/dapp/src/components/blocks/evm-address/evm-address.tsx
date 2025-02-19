@@ -114,7 +114,7 @@ export function EvmAddress({
     return (
       <div className="flex items-center space-x-2">
         <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-          <AddressAvatar address={address} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
+          <AddressAvatar address={getAddress(address)} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
         </Suspense>
         {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
         {displayName && (
@@ -122,7 +122,7 @@ export function EvmAddress({
             {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
             {verbose && (
               <Badge variant="secondary" className="font-mono">
-                {shortHex(address, { prefixLength, suffixLength })}
+                {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
             )}
           </span>

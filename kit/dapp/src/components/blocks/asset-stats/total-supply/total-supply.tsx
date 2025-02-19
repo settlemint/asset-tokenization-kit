@@ -1,6 +1,5 @@
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
-import { useQueryKeys } from '@/hooks/use-query-keys';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
@@ -13,8 +12,7 @@ interface TotalSupplyProps {
 
 export async function TotalSupply({ asset }: TotalSupplyProps) {
   const queryClient = getQueryClient();
-  const { keys } = useQueryKeys();
-  const queryKey = keys.assets.stats.supply(asset);
+  const queryKey = queryKeys.assets.stats.supply(asset);
 
   await queryClient.prefetchQuery({
     queryKey,

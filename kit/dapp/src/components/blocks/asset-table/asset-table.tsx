@@ -1,6 +1,5 @@
-import { useQueryKeys } from '@/hooks/use-query-keys';
 import type { AssetDetailConfig } from '@/lib/config/assets';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { useReactTable } from '@tanstack/react-table';
 import type { LucideIcon } from 'lucide-react';
@@ -39,8 +38,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
   icons,
 }: AssetTableProps<Asset>) {
   const queryClient = getQueryClient();
-  const { keys } = useQueryKeys();
-  const queryKey = keys.assets.all(assetConfig.urlSegment);
+  const queryKey = queryKeys.assets.all(assetConfig.urlSegment);
 
   await queryClient.prefetchQuery({
     queryKey,

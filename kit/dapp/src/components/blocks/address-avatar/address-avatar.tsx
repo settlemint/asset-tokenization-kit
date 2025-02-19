@@ -27,10 +27,16 @@ export function AddressAvatar({
 
   const { data: avatarUrl } = useQuery({
     queryKey: keys.users.avatar(validAddress, imageUrl, email),
-    queryFn: async () => {
-      if (imageUrl) return imageUrl;
-      if (email) return `https://www.gravatar.com/avatar/${email}?d=mp`;
-      if (validAddress) return `https://effigy.im/a/${validAddress}.svg`;
+    queryFn: () => {
+      if (imageUrl) {
+        return imageUrl;
+      }
+      if (email) {
+        return `https://www.gravatar.com/avatar/${email}?d=mp`;
+      }
+      if (validAddress) {
+        return `https://effigy.im/a/${validAddress}.svg`;
+      }
       return null;
     },
   });

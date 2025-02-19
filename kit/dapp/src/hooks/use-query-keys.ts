@@ -1,6 +1,6 @@
 'use client';
 
-import { queryKeys } from '@/lib/query-keys';
+import { queryKeys } from '@/lib/react-query';
 import type { QueryKey } from '@tanstack/react-query';
 
 type QueryKeyValue = readonly string[] | QueryKey;
