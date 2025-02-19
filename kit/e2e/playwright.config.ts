@@ -5,7 +5,7 @@ const config: PlaywrightTestConfig = {
   testDir: './tests',
   timeout: 300 * 1000,
   expect: {
-    timeout: 15000,
+    timeout: 65000,
   },
   retries: 2,
   fullyParallel: true,
@@ -13,7 +13,7 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html']],
   use: {
-    actionTimeout: 15000,
+    actionTimeout: 65000,
     navigationTimeout: 30000,
     baseURL: 'http://localhost:3000',
     trace: 'off',

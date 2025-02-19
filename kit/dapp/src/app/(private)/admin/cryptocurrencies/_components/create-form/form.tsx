@@ -18,6 +18,9 @@ export function CreateCryptocurrencyForm({
       resolverAction={zodResolver(CreateCryptoCurrencyFormSchema)}
       onClose={onCloseAction}
       assetConfig={assetConfig.cryptocurrency}
+      defaultValues={{
+        initialSupply: '0',
+      }}
       submitLabel="Create"
       submittingLabel="Creating..."
       messages={{

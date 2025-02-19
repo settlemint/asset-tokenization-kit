@@ -5,16 +5,36 @@ import { adminUser } from '../test-data/user-data';
 
 test.describe('Create assets', () => {
   test.describe.configure({ mode: 'serial' });
+  let createdStablecoinName: string;
+
   test.beforeEach('Sign in', async ({ page }) => {
     const pages = Pages(page);
     await pages.signInPage.signInAsAdmin(adminUser);
   });
+
+  test('Create Stablecoin asset', async ({ page }) => {
+    const pages = Pages(page);
+    await pages.adminPage.goto();
+    await pages.adminPage.createStablecoin(stablecoinData);
+    createdStablecoinName = stablecoinData.name;
+    await pages.adminPage.checkIfAssetExists({
+      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
+      name: stablecoinData.name,
+      totalSupply: stablecoinData.initialSupply,
+    });
+  });
+
   test('Create Bond asset', async ({ page }) => {
     const pages = Pages(page);
+    const bondDataWithStablecoin = {
+      ...bondData,
+      faceValueCurrency: createdStablecoinName,
+    };
 
     await pages.adminPage.goto();
-    await pages.adminPage.createBond(bondData);
+    await pages.adminPage.createBond(bondDataWithStablecoin);
   });
+
   test('Create Cryptocurrency asset', async ({ page }) => {
     const pages = Pages(page);
     await pages.adminPage.goto();
@@ -43,16 +63,6 @@ test.describe('Create assets', () => {
       sidebarAssetTypes: fundData.sidebarAssetTypes,
       name: fundData.name,
       totalSupply: fundData.initialSupply,
-    });
-  });
-  test('Create Stablecoin asset', async ({ page }) => {
-    const pages = Pages(page);
-    await pages.adminPage.goto();
-    await pages.adminPage.createStablecoin(stablecoinData);
-    await pages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-      name: stablecoinData.name,
-      totalSupply: stablecoinData.initialSupply,
     });
   });
 });

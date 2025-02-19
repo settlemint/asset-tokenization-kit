@@ -6,10 +6,10 @@ import { UsersWidgetClient } from './users-client';
 
 export async function UsersWidget() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.widgets.users;
+  const queryKey = queryKeys.dashboard.widget('user');
 
   await queryClient.prefetchQuery({
-    queryKey: queryKey,
+    queryKey,
     queryFn: getUserWidgetData,
   });
 

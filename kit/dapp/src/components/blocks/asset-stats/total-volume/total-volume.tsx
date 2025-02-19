@@ -11,7 +11,7 @@ interface TotalVolumeProps {
 
 export async function TotalVolume({ asset }: TotalVolumeProps) {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.assets.stats.volume(asset);
+  const queryKey = queryKeys.asset.stats({ address: asset, type: 'volume' });
 
   await queryClient.prefetchQuery({
     queryKey,

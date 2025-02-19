@@ -7,10 +7,10 @@ import { AssetsSupplyClient } from './assets-supply-client';
 
 export async function AssetsSupply() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.dashboard.charts.assetsSupply;
+  const queryKey = queryKeys.dashboard.chart('supply');
 
   await queryClient.prefetchQuery({
-    queryKey: queryKey,
+    queryKey,
     queryFn: getAssetsWidgetData,
   });
 

@@ -4,8 +4,7 @@ import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@
 import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { useQueryKeys } from '@/hooks/use-query-keys';
-import { sanitizeSearchTerm } from '@/lib/react-query';
+import { queryKeys, sanitizeSearchTerm } from '@/lib/react-query';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { cn } from '@/lib/utils';
 import type { ResultOf } from '@settlemint/sdk-hasura';
@@ -111,10 +110,9 @@ function AssetFormUsersList({
 }: { onValueChange: (value: string) => void; setOpen: (open: boolean) => void; value: string }) {
   const search = useCommandState((state) => state.search);
   const debounced = useDebounce<string>(search, 250);
-  const { keys } = useQueryKeys();
 
   const { data, isLoading } = useQuery({
-    queryKey: keys.users.search(debounced),
+    queryKey: queryKeys.search(debounced),
     enabled: debounced.trim() !== '',
     queryFn: async () => {
       const sanitizedSearch = sanitizeSearchTerm(debounced);

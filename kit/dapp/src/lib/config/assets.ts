@@ -1,4 +1,3 @@
-import type { QueryKey } from '@tanstack/react-query';
 import {
   BOND_FACTORY_ADDRESS,
   CRYPTO_CURRENCY_FACTORY_ADDRESS,
@@ -12,7 +11,7 @@ export interface AssetDetailConfig {
   pluralName: string;
   description: string;
   factoryAddress: string;
-  queryKey: QueryKey;
+  queryKey: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin';
   urlSegment: string;
   color: string;
   features: {
@@ -23,16 +22,7 @@ export interface AssetDetailConfig {
   };
 }
 
-/**
- * Interface defining the site's theme configuration
- */
-interface AssetConfig {
-  bond: AssetDetailConfig;
-  cryptocurrency: AssetDetailConfig;
-  equity: AssetDetailConfig;
-  fund: AssetDetailConfig;
-  stablecoin: AssetDetailConfig;
-}
+type AssetConfig = Record<string, AssetDetailConfig>;
 
 export const assetConfig = {
   bond: {
@@ -40,7 +30,7 @@ export const assetConfig = {
     pluralName: 'Bonds',
     description: 'Digital assets representing a debt obligation',
     factoryAddress: BOND_FACTORY_ADDRESS,
-    queryKey: ['assets', 'bonds'] as const,
+    queryKey: 'bond',
     urlSegment: 'bonds',
     color: '#8b5cf6',
     features: {
@@ -55,7 +45,7 @@ export const assetConfig = {
     pluralName: 'Cryptocurrencies',
     description: 'Digital assets representing a fully decentralized currency',
     factoryAddress: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-    queryKey: ['assets', 'cryptocurrencies'] as const,
+    queryKey: 'cryptocurrency',
     urlSegment: 'cryptocurrencies',
     color: '#2563eb',
     features: {
@@ -70,7 +60,7 @@ export const assetConfig = {
     pluralName: 'Equities',
     description: 'Digital assets representing ownership in a company',
     factoryAddress: EQUITY_FACTORY_ADDRESS,
-    queryKey: ['assets', 'equities'] as const,
+    queryKey: 'equity',
     urlSegment: 'equities',
     color: '#4ade80',
     features: {
@@ -85,7 +75,7 @@ export const assetConfig = {
     pluralName: 'Funds',
     description: 'Digital assets representing a fund',
     factoryAddress: FUND_FACTORY_ADDRESS,
-    queryKey: ['assets', 'funds'] as const,
+    queryKey: 'fund',
     urlSegment: 'funds',
     color: '#10b981',
     features: {
@@ -100,7 +90,7 @@ export const assetConfig = {
     pluralName: 'Stablecoins',
     description: 'Digital assets pegged to a stable asset like USD',
     factoryAddress: STABLE_COIN_FACTORY_ADDRESS,
-    queryKey: ['assets', 'stablecoins'] as const,
+    queryKey: 'stablecoin',
     urlSegment: 'stablecoins',
     color: '#0ea5e9',
     features: {

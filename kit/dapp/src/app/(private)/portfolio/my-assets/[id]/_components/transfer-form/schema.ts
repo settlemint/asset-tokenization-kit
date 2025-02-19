@@ -1,6 +1,10 @@
+import { assetConfig } from '@/lib/config/assets';
 import { z } from 'zod';
 
 const PIN_CODE_REGEX = /^\d+$/;
+
+// Get all asset query keys from the config as a tuple with at least one element
+const assetTypes = Object.values(assetConfig).map((asset) => asset.queryKey) as [string, ...string[]];
 
 export const getTransferFormSchema = (balance?: string) => {
   return z.object({
@@ -12,7 +16,7 @@ export const getTransferFormSchema = (balance?: string) => {
           .min(1, { message: 'Amount is required' })
           .max(Number(balance), { message: `Amount cannot be greater than balance ${balance}` })
       : z.number().min(1, { message: 'Amount is required' }),
-    assetType: z.enum(['stablecoin', 'fund', 'equity', 'cryptocurrency', 'bond']),
+    assetType: z.enum(assetTypes),
     pincode: z
       .string()
       .length(6, { message: 'PIN code must be exactly 6 digits' })

@@ -6,8 +6,6 @@ import type { LucideIcon } from 'lucide-react';
 import { type ComponentType, type PropsWithChildren, Suspense } from 'react';
 import { AssetTableSkeleton } from './asset-table-skeleton';
 
-type AssetUrlSegment = 'bonds' | 'equities' | 'funds' | 'stablecoins' | 'cryptocurrencies';
-
 /**
  * Props for the AssetTable component
  * @template Asset The type of asset data being displayed
@@ -16,7 +14,7 @@ export interface AssetTableProps<Asset extends Record<string, unknown>> {
   /** Function to fetch the asset data */
   dataAction: () => Promise<Asset[]>;
   /** Asset configuration for the table */
-  assetConfig: AssetDetailConfig & { urlSegment: AssetUrlSegment };
+  assetConfig: AssetDetailConfig;
   /** Optional refetch interval in milliseconds */
   refetchInterval?: number;
   /** Column definitions for the table */
@@ -36,7 +34,7 @@ export async function AssetTable<Asset extends Record<string, unknown>>({
   children,
 }: PropsWithChildren<AssetTableProps<Asset>>) {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.assets.all(assetConfig.urlSegment);
+  const queryKey = queryKeys.asset.all(assetConfig.queryKey);
 
   await queryClient.prefetchQuery({
     queryKey,

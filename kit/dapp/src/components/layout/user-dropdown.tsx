@@ -41,7 +41,7 @@ export function UserDropdown() {
   const name = userSession?.user.name;
 
   const { data: pendingCount } = useQuery({
-    queryKey: keys.users.pendingTransactions(email, wallet),
+    queryKey: keys.user.transactions({ email, wallet }),
     queryFn: async () => {
       const response = await portalClient.request(GetPendingTransactions, {
         from: wallet,

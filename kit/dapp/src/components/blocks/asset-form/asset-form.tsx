@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useInvalidateTags } from '@/hooks/use-invalidate-tags';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { revalidatePaths } from '@/lib/revalidate';
 import { waitForTransactionMining } from '@/lib/wait-for-transaction';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
@@ -121,7 +122,9 @@ export function AssetForm<
 
   // Build cache invalidation config based on whether this is a detail form or not
   const cacheInvalidation = {
-    clientCacheKey: address ? [...assetConfig.queryKey, address] : assetConfig.queryKey,
+    clientCacheKey: address
+      ? queryKeys.asset.detail({ type: assetConfig.queryKey, address })
+      : queryKeys.asset.all(assetConfig.queryKey),
     serverCachePath: address
       ? () => `/admin/${assetConfig.urlSegment}/${address}`
       : () => `/admin/${assetConfig.urlSegment}`,

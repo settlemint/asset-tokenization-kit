@@ -1,5 +1,6 @@
 'use client';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import { queryKeys } from '@/lib/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Children, Fragment, type ReactElement, type ReactNode, Suspense, isValidElement } from 'react';
 import type { Address } from 'viem';
@@ -22,7 +23,7 @@ export function AssetDetailGridClient<Asset extends Record<string, unknown>>({
   itemsAction,
   refetchInterval,
 }: AssetDetailGridClientProps<Asset>) {
-  const queryKey = [...assetConfig.queryKey, asset];
+  const queryKey = queryKeys.asset.detail({ type: assetConfig.queryKey, address: asset });
 
   const { data } = useSuspenseQuery<Asset>({
     queryKey,
