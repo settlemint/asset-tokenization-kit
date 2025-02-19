@@ -113,5 +113,3 @@ export const assetConfig = {
 } as const satisfies AssetConfig;
 
 export const allAssetQueryKeys = Object.values(assetConfig).map((asset) => asset.queryKey);
-
-export const assetsSidebarQueryKey = ['all-assets'];
