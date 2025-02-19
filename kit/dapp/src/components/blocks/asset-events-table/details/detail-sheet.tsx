@@ -36,72 +36,72 @@ export function EventDetailSheet({
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{event}</SheetTitle>
-          <Card>
-            <CardContent className="pt-6">
-              <dl className="grid grid-cols-[1fr_2fr] gap-4">
-                <dt className="text-muted-foreground text-sm">Sender:</dt>
-                <dd className="text-sm">
-                  <EvmAddress address={sender as Address} />
-                </dd>
-                <dt className="text-muted-foreground text-sm">Asset:</dt>
-                <dd className="text-sm">
-                  <EvmAddress address={asset as Address} />
-                </dd>
-                <dt className="text-muted-foreground text-sm">Date:</dt>
-                <dd className="text-sm [&:first-letter]:uppercase">{timestamp}</dd>
-                <dt className="text-muted-foreground text-sm">Transaction Hash:</dt>
-                <dd className="text-sm">
-                  <TransactionHash hash={transactionHash} />
-                </dd>
-              </dl>
-            </CardContent>
-          </Card>
-          {(() => {
-            switch (details.__typename) {
-              case 'ApprovalEvent':
-                return <ApprovalDetails details={details} />;
-              case 'BondRedeemedEvent':
-                return <BondRedeemedDetails details={details} />;
-              case 'BurnEvent':
-                return <BurnDetails details={details} />;
-              case 'CollateralUpdatedEvent':
-                return <CollateralUpdatedDetails details={details} />;
-              case 'ManagementFeeCollectedEvent':
-              case 'PerformanceFeeCollectedEvent':
-                return <FeeCollectedDetails details={details} />;
-              case 'MintEvent':
-                return <MintDetails details={details} />;
-              case 'RoleAdminChangedEvent':
-                return <RoleAdminChangedDetails details={details} />;
-              case 'RoleGrantedEvent':
-                return <RoleGrantedDetails details={details} />;
-              case 'RoleRevokedEvent':
-                return <RoleRevokedDetails details={details} />;
-              case 'TokenWithdrawnEvent':
-                return <TokenWithdrawnDetails details={details} />;
-              case 'TokensFrozenEvent':
-                return <TokensFrozenDetails details={details} />;
-              case 'TransferEvent':
-                return <TransferDetails details={details} />;
-              case 'UserBlockedEvent':
-                return <UserBlockedDetails details={details} />;
-              case 'AssetCreatedEvent':
-              case 'BondMaturedEvent':
-              case 'PausedEvent':
-              case 'TokensUnfrozenEvent':
-              case 'UnpausedEvent':
-              case 'UserUnblockedEvent':
-              case 'UnderlyingAssetTopUpEvent':
-              case 'UnderlyingAssetWithdrawnEvent':
-                // These events don't have additional details to display
-                return null;
-              default: {
-                const _exhaustiveCheck: never = details;
-                return _exhaustiveCheck;
-              }
-            }
-          })()}
         </SheetHeader>
+        <Card>
+          <CardContent className="pt-6">
+            <dl className="grid grid-cols-[1fr_2fr] gap-4">
+              <dt className="text-muted-foreground text-sm">Sender:</dt>
+              <dd className="text-sm">
+                <EvmAddress address={sender as Address} />
+              </dd>
+              <dt className="text-muted-foreground text-sm">Asset:</dt>
+              <dd className="text-sm">
+                <EvmAddress address={asset as Address} />
+              </dd>
+              <dt className="text-muted-foreground text-sm">Date:</dt>
+              <dd className="text-sm [&:first-letter]:uppercase">{timestamp}</dd>
+              <dt className="text-muted-foreground text-sm">Transaction Hash:</dt>
+              <dd className="text-sm">
+                <TransactionHash hash={transactionHash} />
+              </dd>
+            </dl>
+          </CardContent>
+        </Card>
+        {(() => {
+          switch (details.__typename) {
+            case 'ApprovalEvent':
+              return <ApprovalDetails details={details} />;
+            case 'BondRedeemedEvent':
+              return <BondRedeemedDetails details={details} />;
+            case 'BurnEvent':
+              return <BurnDetails details={details} />;
+            case 'CollateralUpdatedEvent':
+              return <CollateralUpdatedDetails details={details} />;
+            case 'ManagementFeeCollectedEvent':
+            case 'PerformanceFeeCollectedEvent':
+              return <FeeCollectedDetails details={details} />;
+            case 'MintEvent':
+              return <MintDetails details={details} />;
+            case 'RoleAdminChangedEvent':
+              return <RoleAdminChangedDetails details={details} />;
+            case 'RoleGrantedEvent':
+              return <RoleGrantedDetails details={details} />;
+            case 'RoleRevokedEvent':
+              return <RoleRevokedDetails details={details} />;
+            case 'TokenWithdrawnEvent':
+              return <TokenWithdrawnDetails details={details} />;
+            case 'TokensFrozenEvent':
+              return <TokensFrozenDetails details={details} />;
+            case 'TransferEvent':
+              return <TransferDetails details={details} />;
+            case 'UserBlockedEvent':
+              return <UserBlockedDetails details={details} />;
+            case 'AssetCreatedEvent':
+            case 'BondMaturedEvent':
+            case 'PausedEvent':
+            case 'TokensUnfrozenEvent':
+            case 'UnpausedEvent':
+            case 'UserUnblockedEvent':
+            case 'UnderlyingAssetTopUpEvent':
+            case 'UnderlyingAssetWithdrawnEvent':
+              // These events don't have additional details to display
+              return null;
+            default: {
+              const _exhaustiveCheck: never = details;
+              return _exhaustiveCheck;
+            }
+          }
+        })()}
       </SheetContent>
     </Sheet>
   );

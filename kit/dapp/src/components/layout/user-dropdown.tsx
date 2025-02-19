@@ -17,11 +17,12 @@ import { authClient } from '@/lib/auth/client';
 import { shortHex } from '@/lib/hex';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { useQuery } from '@tanstack/react-query';
-import { BookOpenText, ChevronDown, LogOut } from 'lucide-react';
+import { BookOpenText, BringToFront, ChevronDown, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback } from 'react';
 import type { Address } from 'viem';
+import { Badge } from '../ui/badge';
 
 const GetPendingTransactions = portalGraphql(`
   query GetPendingTransactions($from: String) {
@@ -104,10 +105,10 @@ export function UserDropdown() {
         align="end"
         sideOffset={4}
       >
-        {/* <DropdownMenuGroup>
+        <DropdownMenuGroup>
           <DropdownMenuItem className="dropdown-menu-item">
             <BringToFront className="mr-2 size-4" />
-            <Link href="/issuer/pending-transactions" prefetch>
+            <Link href="/admin/activity" prefetch>
               Pending Transactions
               {(pendingCount ?? 0) > 0 && (
                 <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
@@ -116,7 +117,7 @@ export function UserDropdown() {
               )}
             </Link>
           </DropdownMenuItem>
-        </DropdownMenuGroup> */}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <ThemeMenuItem />

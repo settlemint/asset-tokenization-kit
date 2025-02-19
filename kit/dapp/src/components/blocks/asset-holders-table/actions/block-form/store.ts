@@ -36,7 +36,7 @@ export const blockUser = actionClient
   .schema(BlockUserFormSchema)
   .outputSchema(BlockUserOutputSchema)
   .action(async ({ parsedInput: { pincode, address, blocked, userAddress }, ctx: { user } }) => {
-    if (!blocked) {
+    if (blocked) {
       const { StableCoinBlockUser } = await portalClient.request(BlockUser, {
         address,
         from: user.wallet,

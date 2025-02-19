@@ -16,7 +16,7 @@ export function Basics() {
       </div>
       <div className="grid grid-cols-2 gap-6">
         <AssetFormInput control={control} name="assetName" label="Name" placeholder="Wolf of Wall Street Inc." />
-        <AssetFormInput control={control} name="symbol" label="Symbol" placeholder="WOLF" />
+        <AssetFormInput control={control} name="symbol" label="Symbol" placeholder="WOLF" textOnly />
         <AssetFormInput control={control} type="number" name="decimals" label="Decimals" defaultValue={18} />
         <AssetFormInput control={control} name="isin" label="ISIN" placeholder="TO0THE0MOON42" />
       </div>

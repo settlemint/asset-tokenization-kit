@@ -40,6 +40,11 @@ export type WithPostfixProps = {
   postfix?: string;
 };
 
+export type WithTextOnlyProps = {
+  /** Whether the input is text only */
+  textOnly?: boolean;
+};
+
 /**
  * Error state for form inputs
  */

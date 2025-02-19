@@ -75,10 +75,6 @@ const tabs = (id: string): TabItemProps[] => [
     href: `/admin/bonds/${id}/events`,
   },
   // {
-  //   name: 'Block list',
-  //   href: `/admin/bonds/${id}/blocklist`,
-  // },
-  // {
   //   name: 'Token permissions',
   //   href: `/admin/bonds/${id}/token-permissions`,
   // },

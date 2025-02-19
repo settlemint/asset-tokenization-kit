@@ -9,9 +9,9 @@ export const bottomItems: NavElement[] = [
     path: '/admin/users',
   },
   {
-    label: 'Transactions',
+    label: 'Activity',
     icon: <ActivityIcon className="h-4 w-4" />,
-    path: '/admin/transactions',
+    path: '/admin/activity',
   },
   // {
   //   label: 'Settings',

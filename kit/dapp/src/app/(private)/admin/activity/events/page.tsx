@@ -2,10 +2,10 @@ import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-e
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Transactions',
-  description: 'Inspect all transactions on the network.',
+  title: 'Events',
+  description: 'Inspect all events on the network.',
 };
 
-export default function TransactionsPage() {
+export default function EventsPage() {
   return <AssetEventsTable />;
 }
