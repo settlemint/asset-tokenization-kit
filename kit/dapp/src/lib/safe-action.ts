@@ -34,6 +34,31 @@ const devLog = {
   },
 };
 
+/**
+ * Redacts sensitive fields in an object by replacing their values with asterisks
+ */
+function redactSensitiveFields(obj: unknown): unknown {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(redactSensitiveFields);
+  }
+
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => {
+      if (key === 'pincode') {
+        return [key, '******'];
+      }
+      if (typeof value === 'object' && value !== null) {
+        return [key, redactSensitiveFields(value)];
+      }
+      return [key, value];
+    })
+  );
+}
+
 const handleServerError = (error: Error) => {
   if (error instanceof z.ZodError) {
     // Handle known error types
@@ -63,7 +88,7 @@ export const actionClient = createSafeActionClient({
 })
   .use(async ({ next, clientInput, metadata }) => {
     const result = await next({ ctx: undefined });
-    devLog.debug('Input ->', clientInput);
+    devLog.debug('Input ->', redactSensitiveFields(clientInput));
     devLog.debug('Result ->', result.data);
     devLog.debug('Metadata ->', metadata);
     return result;
@@ -82,7 +107,7 @@ export const publicActionClient = createSafeActionClient({
   handleServerError,
 }).use(async ({ next, clientInput, metadata }) => {
   const result = await next({ ctx: undefined });
-  devLog.debug('Input ->', clientInput);
+  devLog.debug('Input ->', redactSensitiveFields(clientInput));
   devLog.debug('Result ->', result.data);
   devLog.debug('Metadata ->', metadata);
   return result;

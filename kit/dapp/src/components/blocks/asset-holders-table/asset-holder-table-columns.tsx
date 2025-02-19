@@ -90,7 +90,7 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
   //         {assetConfig.features.ERC20Blocklist && (
   //           <BlockButton
   //             address={address}
-  //             blocked={row.original.blocked}
+  //             currentlyBlocked={row.original.blocked}
   //             userAddress={row.original.account.id as Address}
   //           />
   //         )}

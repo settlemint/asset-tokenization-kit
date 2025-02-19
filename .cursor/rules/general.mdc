@@ -8,3 +8,6 @@ globs: *
   - bun add
   - bunx
   - bun run
+
+- always fix all linter warnings too, not only errors. We have a ZERO WARNING policy.
+  - we especially require block statements, even for simple if and switch statements
