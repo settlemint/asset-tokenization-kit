@@ -2,6 +2,10 @@ import Header from '@/components/layout/header';
 import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { type NavElement, NavMain } from '@/components/layout/nav-main';
+import { ActivityIcon } from '@/components/ui/animated-icons/activity';
+import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
+import { UsersIcon } from '@/components/ui/animated-icons/users';
+import { WalletIcon } from '@/components/ui/animated-icons/wallet';
 import {
   Sidebar,
   SidebarContent,
@@ -12,9 +16,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { metadata as baseMetadata } from '@/lib/config/metadata';
-import { ArrowLeftRight, LayoutDashboard, Users, Wallet } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 
@@ -51,29 +53,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PortfolioLayout({ children }: PropsWithChildren) {
-  const user = await getAuthenticatedUser();
-  const role = (user?.role ?? 'user') as 'admin' | 'issuer' | 'user';
-
+export default function PortfolioLayout({ children }: PropsWithChildren) {
   const sidebarData: NavElement[] = [
     {
       label: 'Portfolio',
-      icon: <LayoutDashboard />,
+      icon: <ChartScatterIcon className="h-4 w-4" />,
       path: '/portfolio',
     },
     {
       label: 'My Assets',
-      icon: <Wallet />,
+      icon: <WalletIcon className="h-4 w-4" />,
       path: '/portfolio/my-assets',
     },
     {
       label: 'Transactions',
-      icon: <ArrowLeftRight />,
+      icon: <ActivityIcon className="h-4 w-4" />,
       path: '/portfolio/transactions',
     },
     {
       label: 'My Contacts',
-      icon: <Users />,
+      icon: <UsersIcon className="h-4 w-4" />,
       path: '/portfolio/contacts',
     },
   ];
@@ -84,17 +83,13 @@ export default async function PortfolioLayout({ children }: PropsWithChildren) {
         <SidebarHeader>
           <NavHeader />
         </SidebarHeader>
-        <SidebarContent className="pt-4">
+        <SidebarContent>
           <NavMain items={sidebarData} />
         </SidebarContent>
-        {['admin', 'issuer'].includes(role) && (
-          <>
-            <SidebarSeparator />
-            <SidebarFooter>
-              <NavFooter />
-            </SidebarFooter>
-          </>
-        )}
+        <SidebarSeparator />
+        <SidebarFooter>
+          <NavFooter />
+        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
