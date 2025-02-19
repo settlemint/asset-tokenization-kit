@@ -19,7 +19,7 @@ RUN rm -Rf .next/standalone/.env
 # RUN
 FROM node:22.14.0-slim
 
-LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
+LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
