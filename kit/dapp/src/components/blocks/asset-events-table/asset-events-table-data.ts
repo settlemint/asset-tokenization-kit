@@ -29,9 +29,9 @@ import {
   UserUnblockedEventFragment,
 } from './asset-events-fragments';
 
-const TransactionListFragment = theGraphGraphqlStarterkits(
+const EventListFragment = theGraphGraphqlStarterkits(
   `
-  fragment TransactionListFragment on AssetEvent {
+  fragment EventListFragment on AssetEvent {
     id
     emitter {
       id
@@ -92,22 +92,22 @@ const TransactionsList = theGraphGraphqlStarterkits(
   `
 query TransactionsList($first: Int, $skip: Int) {
   assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
-    ...TransactionListFragment
+    ...EventListFragment
   }
 }
 `,
-  [TransactionListFragment]
+  [EventListFragment]
 );
 
 const AssetTransactionsList = theGraphGraphqlStarterkits(
   `
 query AssetTransactionsList($asset: String, $first: Int, $skip: Int) {
   assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset }) {
-    ...TransactionListFragment
+    ...EventListFragment
   }
 }
 `,
-  [TransactionListFragment]
+  [EventListFragment]
 );
 
 export async function getEventsList({

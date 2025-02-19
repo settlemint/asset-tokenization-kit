@@ -131,7 +131,7 @@ function AssetFormUsersList({
   return (
     <CommandList>
       {isLoading && <CommandLoading>Searching...</CommandLoading>}
-      <CommandEmpty className="text-center text-muted-foreground text-sm">No user found.</CommandEmpty>
+      <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">No user found.</CommandEmpty>
       <CommandGroup>
         {data?.map((user) => (
           <CommandItem

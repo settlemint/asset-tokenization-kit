@@ -10,6 +10,8 @@ import { formatNumber } from '@/lib/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { Address } from 'viem';
+import { DataTableRowActions } from '../data-table/data-table-row-actions';
+import { BlockButton } from './actions/block-form/button';
 import type { Holder } from './asset-holders-table-data';
 
 const columnHelper = createColumnHelper<Holder>();
@@ -57,17 +59,17 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
         }),
       ]
     : []),
-  ...(assetConfig.features.ERC20Custodian
+  ...(assetConfig.features.ERC20Blocklist
     ? [
         columnHelper.accessor('blocked', {
           header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
           cell: ({ getValue }) => {
-            const frozen = getValue();
-            const Icon = icons[frozen ? 'blocked' : 'unblocked'];
+            const blocked = getValue();
+            const Icon = icons[blocked ? 'blocked' : 'unblocked'];
             return (
               <DataTableColumnCell>
                 {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{frozen ? 'Frozen' : 'Active'}</span>
+                <span>{blocked ? 'Blocked' : 'Active'}</span>
               </DataTableColumnCell>
             );
           },
@@ -81,26 +83,26 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
     ),
     enableColumnFilter: false,
   }),
-  // columnHelper.display({
-  //   id: 'actions',
-  //   header: ({ column }) => <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>,
-  //   cell: ({ row }) => {
-  //     return (
-  //       <DataTableRowActions>
-  //         {assetConfig.features.ERC20Blocklist && (
-  //           <BlockButton
-  //             address={address}
-  //             currentlyBlocked={row.original.blocked}
-  //             userAddress={row.original.account.id as Address}
-  //           />
-  //         )}
-  //       </DataTableRowActions>
-  //     );
-  //   },
-  //   meta: {
-  //     enableCsvExport: false,
-  //   },
-  // }),
+  columnHelper.display({
+    id: 'actions',
+    header: ({ column }) => <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>,
+    cell: ({ row }) => {
+      return (
+        <DataTableRowActions>
+          {assetConfig.features.ERC20Blocklist && (
+            <BlockButton
+              address={address}
+              currentlyBlocked={row.original.blocked}
+              userAddress={row.original.account.id as Address}
+            />
+          )}
+        </DataTableRowActions>
+      );
+    },
+    meta: {
+      enableCsvExport: false,
+    },
+  }),
 ];
 
 export const icons = {
