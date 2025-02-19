@@ -64,6 +64,7 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel('Cap').fill(options.cap);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByRole('combobox', { name: 'Face value currency' }).click();
+    await this.page.getByRole('option', { name: options.faceValueCurrency }).waitFor({ state: 'visible' });
     await this.page.getByRole('option', { name: options.faceValueCurrency }).click();
     await this.page.getByRole('spinbutton', { name: 'Face value' }).fill(options.faceValue);
     const datepicker = await this.page
@@ -75,6 +76,7 @@ export class AdminPage extends BasePage {
     await this.selectTomorrowDate();
     await this.page.getByLabel('Coupon rate').fill(options.couponRate);
     await this.page.getByLabel('Payment frequency').click();
+    await this.page.getByRole('option', { name: options.paymentFrequency }).waitFor({ state: 'visible' });
     await this.page.getByRole('option', { name: options.paymentFrequency }).click();
     await this.page.getByLabel('First payment date').click();
     await this.selectTomorrowDate();
@@ -128,8 +130,10 @@ export class AdminPage extends BasePage {
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByRole('combobox', { name: 'Fund category' }).click();
+    await this.page.getByRole('option', { name: options.fundCategory }).waitFor({ state: 'visible' });
     await this.page.getByRole('option', { name: options.fundCategory }).click();
     await this.page.getByRole('combobox', { name: 'Fund class' }).click();
+    await this.page.getByRole('option', { name: options.fundClass }).waitFor({ state: 'visible' });
     await this.page.getByRole('option', { name: options.fundClass }).click();
     await this.page.getByLabel('Management fee').fill(options.managementFee);
     await this.page.getByRole('button', { name: 'Next' }).click();
@@ -148,8 +152,10 @@ export class AdminPage extends BasePage {
     await this.startAssetCreation(options.assetType, options.name, options.symbol);
     await this.page.getByLabel('ISIN').fill(options.isin);
     await this.page.getByRole('button', { name: 'Next' }).click();
-    await this.page.getByLabel('Collateral threshold').fill(options.collateralThreshold);
     await this.page.getByRole('combobox', { name: 'Collateral proof validity duration' }).click();
+    await this.page
+      .getByRole('option', { name: options.collateralProofValidityDuration })
+      .waitFor({ state: 'visible' });
     await this.page.getByRole('option', { name: options.collateralProofValidityDuration }).click();
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.completeAssetCreation(options.pincode);
