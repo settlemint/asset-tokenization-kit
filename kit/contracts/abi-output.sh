@@ -13,7 +13,7 @@ for contract in contracts/*.sol; do
     base_name=$(basename "$contract" .sol)
 
     # Check if metadata file exists
-    metadata_file="out/$base_name.sol/$base_name.metadata.json"
+    metadata_file="out/$base_name.sol/$base_name.json"
     if [ -f "$metadata_file" ]; then
         # Copy to portal directory with new name
         cp "$metadata_file" "portal/$base_name.json"
