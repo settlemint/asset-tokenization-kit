@@ -31,7 +31,9 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
         {selectedAsset ? (
           <>
             <SheetHeader>
-              <SheetTitle>Transfer</SheetTitle>
+              <SheetTitle>
+                Transfer {selectedAsset?.asset.name} ({selectedAsset?.asset.symbol})
+              </SheetTitle>
               <SheetDescription>
                 Transfer {selectedAsset?.asset.name} securely by selecting a recipient and specifying the amount. Ensure
                 you have sufficient balance for the transfer.

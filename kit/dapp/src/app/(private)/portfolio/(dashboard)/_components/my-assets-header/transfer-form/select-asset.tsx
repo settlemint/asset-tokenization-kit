@@ -1,7 +1,7 @@
 import { AssetsSearchSelect } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/search-asset';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
-import {} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 
@@ -24,17 +24,19 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
   };
 
   return (
-    <div className="mt-6">
-      <div className="space-y-2">
-        <Label>Asset</Label>
-        <AssetsSearchSelect assets={assets} selectedAsset={selectedAsset} onSelect={handleAssetClick} />
-      </div>
+    <Card className="mt-6">
+      <CardContent className="pt-6">
+        <div className="space-y-2">
+          <Label>Asset</Label>
+          <AssetsSearchSelect assets={assets} selectedAsset={selectedAsset} onSelect={handleAssetClick} />
+        </div>
 
-      <div className="mt-6 text-right">
-        <Button onClick={handleConfirm} disabled={!selectedAsset}>
-          Confirm
-        </Button>
-      </div>
-    </div>
+        <div className="mt-6 text-right">
+          <Button onClick={handleConfirm} disabled={!selectedAsset}>
+            Confirm
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
