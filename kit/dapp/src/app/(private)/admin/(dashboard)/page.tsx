@@ -30,7 +30,7 @@ export default function AdminDashboard() {
           }}
         />
       </div>
-      <p className="mt-8 mb-4 font-semibold text-2xl">Latest Transactions</p>
+      <p className="mt-8 mb-4 font-semibold text-2xl">Latest Events</p>
       <LatestEvents />
     </div>
   );
