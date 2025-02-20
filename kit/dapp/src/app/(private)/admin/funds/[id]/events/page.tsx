@@ -1,5 +1,4 @@
 import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
-import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import type { Address } from 'viem';
 
@@ -11,5 +10,5 @@ export const metadata: Metadata = {
 export default async function FundsEventsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  return <AssetEventsTable asset={id as Address} assetConfig={assetConfig.fund} />;
+  return <AssetEventsTable variables={{ asset: id as Address }} />;
 }
