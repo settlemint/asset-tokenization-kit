@@ -1,5 +1,5 @@
+import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import type { assetConfig } from '@/lib/config/assets';
 import { formatNumber } from '@/lib/number';
@@ -20,11 +20,7 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
         >
           <CardContent className="flex p-4">
             <div className="flex items-center">
-              <Avatar className="h-6 w-6 border border-foreground-muted">
-                <AvatarFallback className="text-[7px]">
-                  {getAssetInitials(asset.asset.type as keyof typeof assetConfig)}
-                </AvatarFallback>
-              </Avatar>
+              <AssetTypeIcon type={asset.asset.type as keyof typeof assetConfig} size="md" />
             </div>
             <div className="ml-4 flex flex-col">
               <span>
@@ -37,21 +33,4 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
       ))}
     </div>
   );
-}
-
-function getAssetInitials(type: keyof typeof assetConfig): string {
-  switch (type) {
-    case 'bond':
-      return 'BN';
-    case 'cryptocurrency':
-      return 'CC';
-    case 'equity':
-      return 'EQ';
-    case 'fund':
-      return 'FN';
-    case 'stablecoin':
-      return 'SC';
-    default:
-      return 'NA';
-  }
 }
