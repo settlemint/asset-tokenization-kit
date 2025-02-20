@@ -61,7 +61,7 @@ export interface TransactionMonitoringOptions {
 }
 
 /**
- * Result of a successful transaction mining operation
+ * Result of a transaction mining operation
  */
 export interface TransactionMiningResult {
   receipt: FragmentOf<typeof ReceiptFragment>;
@@ -69,26 +69,19 @@ export interface TransactionMiningResult {
 }
 
 /**
- * Waits for a transaction to be mined and returns the receipt and metadata
- *
- * @param transactionHash - The hash of the transaction to monitor
- * @param options - Optional configuration for the monitoring process
- * @returns Promise resolving to the transaction receipt and metadata
- * @throws {TransactionError} If the transaction fails, times out, or encounters other issues
- *
- * @example
- * ```typescript
- * try {
- *   const result = await waitForTransactionMining(txHash);
- *   console.log('Transaction successful:', result);
- * } catch (error) {
- *   if (error instanceof TransactionError) {
- *     console.error('Transaction failed:', error.message);
- *   }
- * }
- * ```
+ * Result of multiple transaction mining operations
  */
-export async function waitForTransactionMining(
+export interface MultiTransactionMiningResult {
+  receipts: TransactionMiningResult[];
+  /** The last transaction's result, useful for UI updates */
+  lastTransaction: TransactionMiningResult;
+}
+
+/**
+ * Waits for a single transaction to be mined
+ * @internal Use waitForTransactions for external calls
+ */
+async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
 ): Promise<TransactionMiningResult> {
@@ -130,3 +123,32 @@ export async function waitForTransactionMining(
 
   return { receipt, metadata: metadata ?? {} };
 }
+
+/**
+ * Waits for one or more transactions to be mined
+ *
+ * @param transactionHashes - Single hash or array of transaction hashes to monitor
+ * @param options - Optional configuration for the monitoring process
+ * @returns Promise resolving to transaction results
+ * @throws {TransactionError} If any transaction fails, times out, or encounters other issues
+ */
+export async function waitForTransactions(
+  transactionHashes: string | string[],
+  options: TransactionMonitoringOptions = {}
+): Promise<TransactionMiningResult | MultiTransactionMiningResult> {
+  const hashes = Array.isArray(transactionHashes) ? transactionHashes : [transactionHashes];
+
+  if (hashes.length === 1) {
+    return waitForSingleTransaction(hashes[0], options);
+  }
+
+  const results = await Promise.all(hashes.map((hash) => waitForSingleTransaction(hash, options)));
+
+  return {
+    receipts: results,
+    lastTransaction: results.at(-1)!,
+  };
+}
+
+// For backward compatibility
+export const waitForTransactionMining = waitForTransactions;
