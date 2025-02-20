@@ -47,7 +47,7 @@ export function TransferForm({
       }}
     >
       <Recipients />
-      <Amount />
+      <Amount balance={balance} />
       <Summary address={address} assetType={assetType} decimals={decimals} />
     </AssetForm>
   );
