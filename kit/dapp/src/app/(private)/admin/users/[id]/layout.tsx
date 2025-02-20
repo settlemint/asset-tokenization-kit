@@ -32,7 +32,7 @@ const tabs = (id: string): TabItemProps[] => [
     href: `/admin/users/${id}/last-transactions`,
   },
   {
-    name: 'Token permissions',
+    name: 'Permissions',
     href: `/admin/users/${id}/token-permissions`,
   },
 ];

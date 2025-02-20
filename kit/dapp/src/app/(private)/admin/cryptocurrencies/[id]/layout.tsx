@@ -72,7 +72,7 @@ const tabs = (id: string): TabItemProps[] => [
     href: `/admin/cryptocurrencies/${id}/events`,
   },
   // {
-  //   name: 'Token permissions',
+  //   name: 'Permissions',
   //   href: `/admin/cryptocurrencies/${id}/token-permissions`,
   // },
 ];
