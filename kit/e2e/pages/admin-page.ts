@@ -179,31 +179,50 @@ export class AdminPage extends BasePage {
         async () => {
           await searchInput.clear();
           await searchInput.fill(options.name);
-          await this.page.waitForTimeout(500);
+          await this.page.waitForSelector('tbody tr', { state: 'visible', timeout: 120000 });
 
-          const row = this.page.locator('tbody tr', {
-            has: this.page.locator(`td:nth-child(${nameColumnIndex}) .flex`, { hasText: options.name }),
-          });
+          const rows = this.page.locator('tbody tr');
+          const count = await rows.count();
 
-          const isVisible = await row.isVisible();
-          if (!isVisible) {
+          if (count === 0) {
+            console.log('No rows found in table');
             return false;
           }
 
-          const nameCell = row.locator(`td:nth-child(${nameColumnIndex}) .flex`);
-          const actualName = await nameCell.textContent();
+          for (let i = 0; i < count; i++) {
+            const row = rows.nth(i);
+            const nameCell = row.locator(`td:nth-child(${nameColumnIndex})`);
+            await nameCell.waitFor({ state: 'visible', timeout: 120000 });
 
-          if (actualName?.trim() !== options.name) {
-            return false;
+            const nameFlex = nameCell.locator('.flex');
+            const isFlexVisible = await nameFlex.isVisible();
+
+            if (!isFlexVisible) {
+              console.log(`Flex element not visible in row ${i}`);
+              continue;
+            }
+
+            const actualName = await nameFlex.textContent();
+            console.log(`Found name in row ${i}: ${actualName}`);
+
+            if (actualName?.trim() === options.name) {
+              if (options.totalSupply !== undefined) {
+                const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex})`);
+                await totalSupplyCell.waitFor({ state: 'visible', timeout: 120000 });
+
+                const supplyFlex = totalSupplyCell.locator('.flex');
+                const actualTotalSupply = await supplyFlex.textContent();
+
+                if (this.normalizeNumber(actualTotalSupply?.trim() ?? '') === options.totalSupply) {
+                  return true;
+                }
+              } else {
+                return true;
+              }
+            }
           }
 
-          if (options.totalSupply !== undefined) {
-            const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex}) .flex`);
-            const actualTotalSupply = await totalSupplyCell.textContent();
-            return this.normalizeNumber(actualTotalSupply?.trim() ?? '') === options.totalSupply;
-          }
-
-          return true;
+          return false;
         },
         {
           message: `Waiting for asset ${options.name} to appear in the table`,
