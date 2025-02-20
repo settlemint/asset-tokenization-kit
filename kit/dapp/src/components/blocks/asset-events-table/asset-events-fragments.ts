@@ -184,19 +184,6 @@ export const TokensFrozenEventFragment = theGraphGraphqlStarterkits(`
   }
 `);
 
-export const TokensUnfrozenEventFragment = theGraphGraphqlStarterkits(`
-  fragment TokensUnfrozenEventFragment on TokensUnfrozenEvent {
-    __typename
-    sender {
-      id
-    }
-    amount
-    user {
-      id
-    }
-  }
-`);
-
 export const TransferEventFragment = theGraphGraphqlStarterkits(`
   fragment TransferEventFragment on TransferEvent {
     __typename
@@ -280,7 +267,6 @@ export type RoleGrantedEvent = FragmentOf<typeof RoleGrantedEventFragment>;
 export type RoleRevokedEvent = FragmentOf<typeof RoleRevokedEventFragment>;
 export type TokenWithdrawnEvent = FragmentOf<typeof TokenWithdrawnEventFragment>;
 export type TokensFrozenEvent = FragmentOf<typeof TokensFrozenEventFragment>;
-export type TokensUnfrozenEvent = FragmentOf<typeof TokensUnfrozenEventFragment>;
 export type TransferEvent = FragmentOf<typeof TransferEventFragment>;
 export type UnpausedEvent = FragmentOf<typeof UnpausedEventFragment>;
 export type UserBlockedEvent = FragmentOf<typeof UserBlockedEventFragment>;
@@ -305,7 +291,6 @@ export type AssetEvent =
   | RoleRevokedEvent
   | TokenWithdrawnEvent
   | TokensFrozenEvent
-  | TokensUnfrozenEvent
   | TransferEvent
   | UnpausedEvent
   | UserBlockedEvent

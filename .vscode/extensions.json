@@ -10,7 +10,6 @@
 		"bradlc.vscode-tailwindcss",
 		"shardulm94.trailing-spaces",
 		"nomicfoundation.hardhat-solidity",
-		"bruceyuhb.hsl-preview",
-		"vercel.turbo-vsc"
+		"bruceyuhb.hsl-preview"
 	]
 }
