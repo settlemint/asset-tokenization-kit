@@ -1,7 +1,7 @@
 'use client';
 
 import { DataTable } from '@/components/blocks/data-table/data-table';
-import { getMyAssets } from '@/components/blocks/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import { defaultRefetchInterval } from '@/lib/react-query';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import { columns } from './columns';
