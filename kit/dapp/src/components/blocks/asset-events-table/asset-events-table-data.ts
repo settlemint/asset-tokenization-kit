@@ -3,6 +3,7 @@ import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
+import type { VariablesOf } from '@settlemint/sdk-thegraph';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -90,8 +91,8 @@ const EventListFragment = theGraphGraphqlStarterkits(
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList($first: Int, $skip: Int) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+query TransactionsList($first: Int, $skip: Int, $asset: String, $sender: String) {
+  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset, sender: $sender }) {
     ...EventListFragment
   }
 }
@@ -99,22 +100,10 @@ query TransactionsList($first: Int, $skip: Int) {
   [EventListFragment]
 );
 
-const AssetTransactionsList = theGraphGraphqlStarterkits(
-  `
-query AssetTransactionsList($asset: String, $first: Int, $skip: Int) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset }) {
-    ...EventListFragment
-  }
-}
-`,
-  [EventListFragment]
-);
+type TransactionsListVariables = VariablesOf<typeof TransactionsList>;
 
-export async function getEventsList({
-  first,
-  asset,
-}: { first?: number; asset?: string }): Promise<NormalizedEventsListItem[]> {
-  const assetEvents = await fetchData({ first, asset });
+export async function getEventsList(variables: TransactionsListVariables): Promise<NormalizedEventsListItem[]> {
+  const assetEvents = await fetchData(variables);
 
   return assetEvents.map((event) => {
     return {
@@ -128,40 +117,18 @@ export async function getEventsList({
   });
 }
 
-async function fetchDirect({ first, asset }: { first: number; asset?: string }) {
-  if (asset) {
-    const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
-      first,
-      asset,
-    });
-    return result.assetEvents;
-  }
-  const result = await theGraphClientStarterkits.request(TransactionsList, {
-    first,
-  });
+async function fetchDirect(variables: TransactionsListVariables) {
+  const result = await theGraphClientStarterkits.request(TransactionsList, variables);
   return result.assetEvents;
 }
 
-function fetchPaginated({ asset }: { asset?: string }) {
-  if (asset) {
-    return fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
-        first,
-        skip,
-        asset,
-      });
-      return result.assetEvents;
-    });
-  }
-  return fetchAllTheGraphPages(async (first, skip) => {
-    const result = await theGraphClientStarterkits.request(TransactionsList, {
-      first,
-      skip,
-    });
+function fetchPaginated(variables: TransactionsListVariables) {
+  return fetchAllTheGraphPages(async () => {
+    const result = await theGraphClientStarterkits.request(TransactionsList, variables);
     return result.assetEvents;
   });
 }
 
-async function fetchData({ first, asset }: { first?: number; asset?: string }) {
-  return typeof first === 'number' ? await fetchDirect({ first, asset }) : await fetchPaginated({ asset });
+async function fetchData(variables: TransactionsListVariables) {
+  return typeof variables.first === 'number' ? await fetchDirect(variables) : await fetchPaginated(variables);
 }
