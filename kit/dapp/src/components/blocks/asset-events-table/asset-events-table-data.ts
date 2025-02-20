@@ -90,9 +90,9 @@ const EventListFragment = theGraphGraphqlStarterkits(
   ]
 );
 
-const TransactionsList = theGraphGraphqlStarterkits(
+const AssetEventsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
+query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
   assetEvents(
     orderBy: timestamp,
     orderDirection: desc,
@@ -107,7 +107,7 @@ query TransactionsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
   [EventListFragment]
 );
 
-type TransactionsListVariables = VariablesOf<typeof TransactionsList>;
+type EventsListGqlVariables = VariablesOf<typeof AssetEventsList>;
 
 export type EventsListVariables = {
   first?: number;
@@ -118,7 +118,7 @@ export type EventsListVariables = {
 
 export async function getEventsList(variables?: EventsListVariables): Promise<NormalizedEventsListItem[]> {
   const { first, skip, asset, sender } = variables ?? {};
-  const where: TransactionsListVariables['where'] = {};
+  const where: EventsListGqlVariables['where'] = {};
   if (asset) {
     where.emitter = asset;
   }
@@ -140,18 +140,18 @@ export async function getEventsList(variables?: EventsListVariables): Promise<No
   });
 }
 
-async function fetchDirect(variables: TransactionsListVariables) {
-  const result = await theGraphClientStarterkits.request(TransactionsList, variables);
+async function fetchDirect(variables: EventsListGqlVariables) {
+  const result = await theGraphClientStarterkits.request(AssetEventsList, variables);
   return result.assetEvents;
 }
 
-function fetchPaginated(variables: TransactionsListVariables) {
+function fetchPaginated(variables: EventsListGqlVariables) {
   return fetchAllTheGraphPages(async () => {
-    const result = await theGraphClientStarterkits.request(TransactionsList, variables);
+    const result = await theGraphClientStarterkits.request(AssetEventsList, variables);
     return result.assetEvents;
   });
 }
 
-async function fetchData(variables: TransactionsListVariables) {
+async function fetchData(variables: EventsListGqlVariables) {
   return typeof variables.first === 'number' ? await fetchDirect(variables) : await fetchPaginated(variables);
 }
