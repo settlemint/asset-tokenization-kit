@@ -4,6 +4,7 @@ import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/set
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { VariablesOf } from '@settlemint/sdk-thegraph';
+import type { Address } from 'viem';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -91,8 +92,14 @@ const EventListFragment = theGraphGraphqlStarterkits(
 
 const TransactionsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList($first: Int, $skip: Int, $asset: String, $sender: String) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset, sender: $sender }) {
+query TransactionsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
+  assetEvents(
+    orderBy: timestamp,
+    orderDirection: desc,
+    first: $first,
+    skip: $skip,
+    where: $where
+  ) {
     ...EventListFragment
   }
 }
@@ -102,8 +109,26 @@ query TransactionsList($first: Int, $skip: Int, $asset: String, $sender: String)
 
 type TransactionsListVariables = VariablesOf<typeof TransactionsList>;
 
-export async function getEventsList(variables: TransactionsListVariables): Promise<NormalizedEventsListItem[]> {
-  const assetEvents = await fetchData(variables);
+export async function getEventsList({
+  first,
+  skip,
+  asset,
+  sender,
+}: {
+  first?: number;
+  skip?: number;
+  asset?: Address;
+  sender?: Address;
+}): Promise<NormalizedEventsListItem[]> {
+  const where: TransactionsListVariables['where'] = {};
+  if (asset) {
+    where.emitter = asset;
+  }
+  if (sender) {
+    where.sender = sender;
+  }
+
+  const assetEvents = await fetchData({ first, skip, where });
 
   return assetEvents.map((event) => {
     return {
