@@ -9,7 +9,7 @@
         "lefthook": "1.10.10",
         "turbo": "2.4.2",
         "typescript": "5.7.3",
-        "ultracite": "4.1.19",
+        "ultracite": "4.1.20",
       },
     },
     "kit/contracts": {
@@ -2694,7 +2694,7 @@
 
     "uint8arrays": ["uint8arrays@5.1.0", "", { "dependencies": { "multiformats": "^13.0.0" } }, "sha512-vA6nFepEmlSKkMBnLBaUMVvAC4G3CTmO58C12y4sq6WPDOR7mOFYOi7GlrQ4djeSbP6JG9Pv9tJDM97PedRSww=="],
 
-    "ultracite": ["ultracite@4.1.19", "", { "dependencies": { "commander": "^12.1.0" }, "bin": { "ultracite": "scripts/run.mjs" } }, "sha512-7Pa8U4g6dREL6WeNl+AM5I+wNZ/3YFws82B6hdmEin5HowmNQ90t4+jOySFJdbB4kKd88XZ/s80cHHU5QqwUXg=="],
+    "ultracite": ["ultracite@4.1.20", "", { "dependencies": { "commander": "^12.1.0" }, "bin": { "ultracite": "scripts/run.mjs" } }, "sha512-3vS8st0hUa2ui9RicTepFlnh2SIdZ2dCkLq0QU6HPt0KdU19iSLak3shKm83cG3Dka2sLYNerNlWoqbKHwtphg=="],
 
     "unbox-primitive": ["unbox-primitive@1.1.0", "", { "dependencies": { "call-bound": "^1.0.3", "has-bigints": "^1.0.2", "has-symbols": "^1.1.0", "which-boxed-primitive": "^1.1.1" } }, "sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw=="],
 
