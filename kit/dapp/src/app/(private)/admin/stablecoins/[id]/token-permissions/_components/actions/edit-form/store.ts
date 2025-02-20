@@ -43,7 +43,6 @@ export const editRoles = actionClient
     const rolesToGrant = newRolesArray.filter((role) => !currentRoles.includes(role));
     const rolesToRevoke = currentRoles.filter((role) => !newRolesArray.includes(role));
 
-    const challengeResponse = await handleChallenge(user.wallet as Address, pincode);
     const transactions: string[] = [];
 
     // Grant new roles
@@ -55,7 +54,7 @@ export const editRoles = actionClient
           role: getRoleIdentifier(role),
           account: userAddress,
         },
-        challengeResponse,
+        challengeResponse: await handleChallenge(user.wallet as Address, pincode),
       });
 
       if (!StableCoinGrantRole?.transactionHash) {
@@ -73,7 +72,7 @@ export const editRoles = actionClient
           role: getRoleIdentifier(role),
           account: userAddress,
         },
-        challengeResponse,
+        challengeResponse: await handleChallenge(user.wallet as Address, pincode),
       });
 
       if (!StableCoinRevokeRole?.transactionHash) {
