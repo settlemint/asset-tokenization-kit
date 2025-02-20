@@ -1,4 +1,5 @@
 'use client';
+'use no memo'; // fixes rerendering with react compiler
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';

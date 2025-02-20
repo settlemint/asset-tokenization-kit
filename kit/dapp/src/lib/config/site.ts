@@ -15,7 +15,7 @@ interface SiteConfig {
  */
 export const siteConfig = {
   name: 'Asset Tokenization',
-  description: 'SettleMint Asset Tokenization Starter Kit',
+  description: 'SettleMint Asset Tokenization Kit',
   url:
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.BETTER_AUTH_URL ??
