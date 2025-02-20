@@ -12,17 +12,16 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import { type Address, isHex } from 'viem';
 
-// Shared utility function to sort assets with selected asset at top
+// Place selected asset first
 export function sortAssetsWithSelected(assets: MyAsset[], selectedId?: string | null) {
-  return [...assets].sort((a, b) => {
-    if (a.asset.id === selectedId) {
-      return -1;
-    }
-    if (b.asset.id === selectedId) {
-      return 1;
-    }
-    return 0;
-  });
+  if (!selectedId) {
+    return assets;
+  }
+
+  const selected = assets.find((a) => a.asset.id === selectedId);
+  const others = assets.filter((a) => a.asset.id !== selectedId);
+
+  return selected ? [selected, ...others] : assets;
 }
 
 interface AssetsSearchSelectProps {
@@ -85,7 +84,7 @@ function AssetSearchList({
           return (
             asset.asset.name.toLowerCase().includes(searchLower) ||
             asset.asset.symbol.toLowerCase().includes(searchLower) ||
-            (isHex(sanitizedSearch) && asset.asset.id.toLowerCase() === sanitizedSearch.toLowerCase())
+            (isHex(sanitizedSearch) && asset.asset.id.toLowerCase().includes(sanitizedSearch.toLowerCase()))
           );
         })
       : assets;
