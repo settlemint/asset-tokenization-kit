@@ -89,7 +89,6 @@ export function EventDetailSheet({
             case 'AssetCreatedEvent':
             case 'BondMaturedEvent':
             case 'PausedEvent':
-            case 'TokensUnfrozenEvent':
             case 'UnpausedEvent':
             case 'UserUnblockedEvent':
             case 'UnderlyingAssetTopUpEvent':

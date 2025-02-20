@@ -20,7 +20,6 @@ import {
   RoleRevokedEventFragment,
   TokenWithdrawnEventFragment,
   TokensFrozenEventFragment,
-  TokensUnfrozenEventFragment,
   TransferEventFragment,
   UnderlyingAssetTopUpEventFragment,
   UnderlyingAssetWithdrawnEventFragment,
@@ -53,7 +52,6 @@ const EventListFragment = theGraphGraphqlStarterkits(
     ...RoleRevokedEventFragment
     ...TokenWithdrawnEventFragment
     ...TokensFrozenEventFragment
-    ...TokensUnfrozenEventFragment
     ...TransferEventFragment
     ...UnpausedEventFragment
     ...UserBlockedEventFragment
@@ -78,7 +76,6 @@ const EventListFragment = theGraphGraphqlStarterkits(
     RoleRevokedEventFragment,
     TokenWithdrawnEventFragment,
     TokensFrozenEventFragment,
-    TokensUnfrozenEventFragment,
     TransferEventFragment,
     UnpausedEventFragment,
     UserBlockedEventFragment,
