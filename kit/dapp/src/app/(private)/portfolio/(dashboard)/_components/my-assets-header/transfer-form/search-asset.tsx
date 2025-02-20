@@ -1,5 +1,5 @@
+import type { MyAsset } from '@/app/(private)/portfolio/_components/data';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

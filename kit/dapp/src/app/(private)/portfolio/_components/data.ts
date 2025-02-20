@@ -1,14 +1,12 @@
-'use server';
-
-import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { assetConfig } from '@/lib/config/assets';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
 import BigNumber from 'bignumber.js';
+import type { Address } from 'viem';
 
 const BalanceFragment = theGraphGraphqlStarterkits(`
-  fragment BalancesField on AssetBalance {
+  fragment BalanceFragment on AssetBalance {
     value
     asset {
       id
@@ -37,7 +35,7 @@ const MyAssets = theGraphGraphqlStarterkits(
   query MyAssets($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
       balances(first: $first, skip: $skip) {
-        ...BalancesField
+        ...BalanceFragment
       }
     }
   }
@@ -45,29 +43,17 @@ const MyAssets = theGraphGraphqlStarterkits(
   [BalanceFragment]
 );
 
-export type MyAsset = FragmentOf<typeof BalanceFragment>;
+export type BalanceFragment = FragmentOf<typeof BalanceFragment>;
 
 type AssetType = keyof typeof assetConfig;
 
-interface Distribution {
-  asset: {
-    type: AssetType;
-  };
-  value: string;
-  percentage: number;
-}
-
-interface MyAssetsResponse {
-  balances: MyAsset[];
-  distribution: Distribution[];
-  total: string;
-}
-
-type PausableAsset = MyAsset['asset'] & {
+type PausableAsset = BalanceFragment['asset'] & {
   paused: boolean;
 };
 
-function isPausableAsset(asset: MyAsset['asset']): asset is PausableAsset {
+function isPausableAsset(asset: {
+  __typename?: 'StableCoin' | 'Bond' | 'Fund' | 'Equity' | 'CryptoCurrency';
+}): asset is PausableAsset {
   if (!asset.__typename) {
     return false;
   }
@@ -77,10 +63,17 @@ function isPausableAsset(asset: MyAsset['asset']): asset is PausableAsset {
   return pausableAssetTypeNames.includes(asset.__typename);
 }
 
-export async function getMyAssets(active?: boolean): Promise<MyAssetsResponse> {
-  const user = await getAuthenticatedUser();
+export type MyAsset = Awaited<ReturnType<typeof getMyAssets>>['balances'][number];
+
+export async function getMyAssets({
+  active,
+  wallet,
+}: {
+  active?: boolean;
+  wallet: Address;
+}) {
   let result = await fetchAllTheGraphPages(async (first, skip) => {
-    const pageResult = await theGraphClientStarterkits.request(MyAssets, { accountId: user.wallet, first, skip });
+    const pageResult = await theGraphClientStarterkits.request(MyAssets, { accountId: wallet, first, skip });
     return pageResult.account?.balances ?? [];
   });
 

@@ -4,10 +4,10 @@ import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
-import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { formatNumber } from '@/lib/number';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { createColumnHelper } from '@tanstack/react-table';
+import type { MyAsset } from '../../../_components/data';
 
 const columnHelper = createColumnHelper<MyAsset>();
 
@@ -48,7 +48,9 @@ export const columns = [
     id: 'actions',
     header: () => 'Action',
     cell: ({ row }) => {
-      return <DataTableRowActions detailUrl={`/portfolio/my-assets/${row.original.asset.id}`} />;
+      return (
+        <DataTableRowActions detailUrl={`/portfolio/my-assets/${row.original.asset.type}/${row.original.asset.id}`} />
+      );
     },
     meta: {
       enableCsvExport: false,

@@ -1,13 +1,15 @@
 'use client';
 
+import { getMyAssets } from '@/app/(private)/portfolio/_components/data';
 import { VerticalBarChartComponent } from '@/components/blocks/charts/bar-charts/vertical-bar-chart';
-import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import type { Address } from 'viem';
 
 interface DistributionClientProps {
   queryKey: QueryKey;
+  wallet: Address;
 }
 
 const chartConfig = {
@@ -25,10 +27,10 @@ const chartConfig = {
   ),
 } satisfies ChartConfig;
 
-export function DistributionClient({ queryKey }: DistributionClientProps) {
+export function DistributionClient({ queryKey, wallet }: DistributionClientProps) {
   const { data } = useSuspenseQuery({
     queryKey,
-    queryFn: () => getMyAssets(),
+    queryFn: () => getMyAssets({ active: true, wallet }),
   });
 
   const chartData = data.distribution.map((item) => {
