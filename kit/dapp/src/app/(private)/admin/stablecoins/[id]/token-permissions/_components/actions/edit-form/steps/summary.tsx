@@ -1,3 +1,4 @@
+import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -6,16 +7,15 @@ import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { BlockUserFormType } from '../schema';
 
-export function Summary({ userAddress, blocked }: { userAddress: Address; blocked: boolean }) {
+export function Summary({ userAddress, roles }: { userAddress: Address; roles: PermissionRole[] }) {
   const { control } = useFormContext<BlockUserFormType>();
-  const action = blocked ? 'Unblock' : 'Block';
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm {action}</h2>
+        <h2 className="font-semibold text-base">Review and confirm new roles.</h2>
         <p className="text-muted-foreground text-xs">
-          Verify the details before proceeding. This action will {blocked ? 'enable' : 'prevent'} token transfers.
+          Verify the details before proceeding. This action will change the roles for the user.
         </p>
       </div>
 
@@ -38,12 +38,16 @@ export function Summary({ userAddress, blocked }: { userAddress: Address; blocke
               </dd>
             </div>
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Blocked' : 'Active'}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Target State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Active' : 'Blocked'}</dd>
+              <dt className="text-muted-foreground text-sm">Roles</dt>
+              <dd className="font-medium text-sm">
+                <div className="flex flex-wrap gap-1">
+                  {roles.map((role: PermissionRole) => (
+                    <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                      {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
+                    </span>
+                  ))}
+                </div>
+              </dd>
             </div>
           </dl>
         </div>

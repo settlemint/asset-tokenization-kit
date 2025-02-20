@@ -1,21 +1,21 @@
 'use client';
+import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BlockUserForm } from './form';
+import { EditRolesForm } from './form';
 
-interface BlockButtonProps {
+interface EditButtonProps {
   address: Address;
-  currentlyBlocked: boolean;
+  currentRoles: PermissionRole[];
   userAddress: Address;
   assetConfig: AssetDetailConfig;
 }
 
-export function BlockButton({ address, currentlyBlocked, userAddress, assetConfig }: BlockButtonProps) {
+export function EditButton({ address, currentRoles, userAddress, assetConfig }: EditButtonProps) {
   const [open, setOpen] = useState(false);
-  const action = currentlyBlocked ? 'Unblock' : 'Block';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -27,20 +27,18 @@ export function BlockButton({ address, currentlyBlocked, userAddress, assetConfi
             setOpen(true);
           }}
         >
-          {action}
+          Edit
         </DropdownMenuItem>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
-          <SheetTitle>{action}</SheetTitle>
-          <SheetDescription>
-            {action} to {currentlyBlocked ? 'enable' : 'prevent'} transfers.
-          </SheetDescription>
+          <SheetTitle>Edit roles</SheetTitle>
+          <SheetDescription>Edit roles for {assetConfig.name}.</SheetDescription>
         </SheetHeader>
-        <BlockUserForm
+        <EditRolesForm
           address={address}
           userAddress={userAddress}
-          currentlyBlocked={currentlyBlocked}
+          currentRoles={currentRoles}
           assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}
         />
