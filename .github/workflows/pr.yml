@@ -59,7 +59,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo dependencies lint build test genesis
+        run: bunx turbo dependencies lint build test genesis abi-output
 
       - name: Store predeployed output
         uses: actions/upload-artifact@v4
