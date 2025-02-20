@@ -1,7 +1,7 @@
 'use client';
 
 import { VerticalBarChartComponent } from '@/components/blocks/charts/bar-charts/vertical-bar-chart';
-import { getMyAssets } from '@/components/blocks/my-assets/data';
+import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';

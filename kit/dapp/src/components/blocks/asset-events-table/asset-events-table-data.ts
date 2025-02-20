@@ -3,6 +3,8 @@ import { formatDate } from '@/lib/date';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getTransactionHashFromEventId } from '@/lib/transaction-hash';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
+import type { VariablesOf } from '@settlemint/sdk-thegraph';
+import type { Address } from 'viem';
 import {
   ApprovalEventFragment,
   AssetCreatedEventFragment,
@@ -85,10 +87,16 @@ const EventListFragment = theGraphGraphqlStarterkits(
   ]
 );
 
-const TransactionsList = theGraphGraphqlStarterkits(
+const AssetEventsList = theGraphGraphqlStarterkits(
   `
-query TransactionsList($first: Int, $skip: Int) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip) {
+query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
+  assetEvents(
+    orderBy: timestamp,
+    orderDirection: desc,
+    first: $first,
+    skip: $skip,
+    where: $where
+  ) {
     ...EventListFragment
   }
 }
@@ -96,22 +104,26 @@ query TransactionsList($first: Int, $skip: Int) {
   [EventListFragment]
 );
 
-const AssetTransactionsList = theGraphGraphqlStarterkits(
-  `
-query AssetTransactionsList($asset: String, $first: Int, $skip: Int) {
-  assetEvents(orderBy: timestamp, orderDirection: desc, first: $first, skip: $skip, where: { emitter: $asset }) {
-    ...EventListFragment
-  }
-}
-`,
-  [EventListFragment]
-);
+type EventsListGqlVariables = VariablesOf<typeof AssetEventsList>;
 
-export async function getEventsList({
-  first,
-  asset,
-}: { first?: number; asset?: string }): Promise<NormalizedEventsListItem[]> {
-  const assetEvents = await fetchData({ first, asset });
+export type EventsListVariables = {
+  first?: number;
+  skip?: number;
+  asset?: Address;
+  sender?: Address;
+};
+
+export async function getEventsList(variables?: EventsListVariables): Promise<NormalizedEventsListItem[]> {
+  const { first, skip, asset, sender } = variables ?? {};
+  const where: EventsListGqlVariables['where'] = {};
+  if (asset) {
+    where.emitter = asset;
+  }
+  if (sender) {
+    where.sender = sender;
+  }
+
+  const assetEvents = await fetchData({ first, skip, where });
 
   return assetEvents.map((event) => {
     return {
@@ -125,40 +137,18 @@ export async function getEventsList({
   });
 }
 
-async function fetchDirect({ first, asset }: { first: number; asset?: string }) {
-  if (asset) {
-    const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
-      first,
-      asset,
-    });
-    return result.assetEvents;
-  }
-  const result = await theGraphClientStarterkits.request(TransactionsList, {
-    first,
-  });
+async function fetchDirect(variables: EventsListGqlVariables) {
+  const result = await theGraphClientStarterkits.request(AssetEventsList, variables);
   return result.assetEvents;
 }
 
-function fetchPaginated({ asset }: { asset?: string }) {
-  if (asset) {
-    return fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetTransactionsList, {
-        first,
-        skip,
-        asset,
-      });
-      return result.assetEvents;
-    });
-  }
-  return fetchAllTheGraphPages(async (first, skip) => {
-    const result = await theGraphClientStarterkits.request(TransactionsList, {
-      first,
-      skip,
-    });
+function fetchPaginated(variables: EventsListGqlVariables) {
+  return fetchAllTheGraphPages(async () => {
+    const result = await theGraphClientStarterkits.request(AssetEventsList, variables);
     return result.assetEvents;
   });
 }
 
-async function fetchData({ first, asset }: { first?: number; asset?: string }) {
-  return typeof first === 'number' ? await fetchDirect({ first, asset }) : await fetchPaginated({ asset });
+async function fetchData(variables: EventsListGqlVariables) {
+  return typeof variables.first === 'number' ? await fetchDirect(variables) : await fetchPaginated(variables);
 }

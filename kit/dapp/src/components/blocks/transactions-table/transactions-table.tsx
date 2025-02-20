@@ -1,28 +1,33 @@
-import { getTransactionsList } from '@/app/(private)/admin/activity/(transactions)/_components/transactions-table-data';
 import { AssetTableSkeleton } from '@/components/blocks/asset-table/asset-table-skeleton';
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import type { Address } from 'viem';
 import { TransactionsTableClient } from './transactions-table-client';
+import { getTransactionsList } from './transactions-table-data';
+
+interface TransactionsTableProps {
+  from?: Address;
+}
 
 /**
  * Server component that renders a table of assets with data fetching capabilities
  * @template Asset The type of asset data being displayed
  */
-export async function TransactionsTable() {
+export async function TransactionsTable({ from }: TransactionsTableProps) {
   const queryClient = getQueryClient();
 
-  const queryKey = queryKeys.pendingTransactions();
+  const queryKey = queryKeys.pendingTransactions(from);
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getTransactionsList(),
+    queryFn: () => getTransactionsList(from),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-        <TransactionsTableClient queryKey={queryKey} />
+        <TransactionsTableClient queryKey={queryKey} from={from} />
       </Suspense>
     </HydrationBoundary>
   );

@@ -1,4 +1,4 @@
-import { MyAssetsTable } from '@/components/blocks/my-assets/my-assets';
+import { MyAssetsTable } from '@/components/blocks/my-assets-table/my-assets-table';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { queryKeys } from '@/lib/react-query';
 import type { Address } from 'viem';
