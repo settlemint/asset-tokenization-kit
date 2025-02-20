@@ -20,7 +20,7 @@ export function ManageDropdown({ id, stableCoin }: { id: Address; stableCoin: St
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="default">
-          Manage Stablecoin
+          Manage
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

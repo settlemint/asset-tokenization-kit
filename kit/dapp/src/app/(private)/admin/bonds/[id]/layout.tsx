@@ -103,7 +103,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="default">
-                Mint tokens
+                Manage
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
