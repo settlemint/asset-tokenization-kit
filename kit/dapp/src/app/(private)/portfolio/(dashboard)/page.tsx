@@ -24,12 +24,12 @@ export default async function PortfolioPage() {
           }}
         />
       </div>
-      <PageHeader title="My Assets" className="mt-6" />
+      <PageHeader title="My Assets" className="mt-8" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Distribution />
         <MyAssets />
       </div>
-      <PageHeader title="Latest Events" className="mt-6" />
+      <PageHeader title="Latest Events" className="mt-8" />
       <LatestEvents />
     </>
   );

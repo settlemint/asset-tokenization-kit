@@ -7,7 +7,7 @@ export function LatestEvents() {
   return (
     <>
       <AssetEventsTable variables={{ first }} disableToolbarAndPagination={true} />
-      <Link href="/admin/activity/events" className="text-muted-foreground text-sm hover:text-primary">
+      <Link href="/admin/activity/events" className="mt-4 text-muted-foreground text-sm hover:text-primary">
         View all events →
       </Link>
     </>
