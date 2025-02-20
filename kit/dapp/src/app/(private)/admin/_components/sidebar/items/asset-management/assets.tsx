@@ -23,7 +23,6 @@ export const assetItems: NavItem[] = [
       </Avatar>
     ),
   },
-
   {
     assetType: 'equity',
     label: assetConfig.equity.pluralName,

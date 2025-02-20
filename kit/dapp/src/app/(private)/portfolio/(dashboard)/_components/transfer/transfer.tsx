@@ -1,0 +1,62 @@
+'use client';
+
+import type { MyAsset } from '@/components/blocks/my-assets-table/data';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ArrowLeftRight } from 'lucide-react';
+import { useState } from 'react';
+import type { Address } from 'viem';
+import { TransferForm } from '../../../_components/transfer-form/form';
+import { SelectAsset } from './select-asset';
+
+interface TransferFormProps {
+  assets: MyAsset[];
+}
+
+export function DashboardTransferForm({ assets }: TransferFormProps) {
+  const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
+  return (
+    <Sheet
+      onOpenChange={() => {
+        setSelectedAsset(null);
+      }}
+    >
+      <SheetTrigger asChild>
+        <Button className="w-1/6">
+          <ArrowLeftRight className="mr-2 h-4 w-4" />
+          Transfer
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="min-w-[34rem]">
+        {selectedAsset ? (
+          <>
+            <SheetHeader>
+              <SheetTitle>Transfer</SheetTitle>
+              <SheetDescription>
+                Transfer {selectedAsset?.asset.name} securely by selecting a recipient and specifying the amount. Ensure
+                you have sufficient balance for the transfer.
+              </SheetDescription>
+            </SheetHeader>
+            <TransferForm
+              address={selectedAsset?.asset.id as Address}
+              name={selectedAsset?.asset.name}
+              symbol={selectedAsset?.asset.symbol}
+              assetType={selectedAsset?.asset.type}
+              balance={selectedAsset?.value}
+              decimals={selectedAsset?.asset.decimals}
+              onCloseAction={() => setSelectedAsset(null)}
+            />
+          </>
+        ) : (
+          <>
+            <SheetHeader>
+              <SheetTitle>Transfer</SheetTitle>
+              <SheetDescription>Which asset do you want to transfer?</SheetDescription>
+            </SheetHeader>
+            <SelectAsset assets={assets} onSelect={setSelectedAsset} />
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}
