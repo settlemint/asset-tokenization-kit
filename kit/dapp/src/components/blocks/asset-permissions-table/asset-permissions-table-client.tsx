@@ -7,7 +7,7 @@ import type { AssetDetailConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import type { Address } from 'viem';
 import { columns } from './asset-permissions-table-columns';
-import type { Permission } from './asset-permissions-table-data';
+import type { PermissionWithRoles } from './asset-permissions-table-data';
 import { getPermissions } from './asset-permissions-table-data';
 
 interface PermissionsTableClientProps {
@@ -26,13 +26,11 @@ export function PermissionsTableClient({
   asset,
   assetConfig,
 }: PermissionsTableClientProps) {
-  const { data } = useSuspenseQuery<Permission[]>({
+  const { data } = useSuspenseQuery<PermissionWithRoles[]>({
     queryKey,
     queryFn: () => getPermissions(asset),
     refetchInterval: 5000,
   });
-
-  console.log(data);
 
   return (
     <DataTable

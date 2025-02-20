@@ -22,6 +22,10 @@ export const queryKeys = {
     stats: (params: { address: Address; type: StatType }) =>
       ['asset', 'stats', params.type, getAddress(params.address)] as const,
     events: (address?: Address) => ['asset', 'events', address ?? '*'] as const,
+    permissions: (params: { type?: AssetType; address: Address }) =>
+      params.type
+        ? (['asset', 'permissions', params.type, getAddress(params.address)] as const)
+        : (['asset', 'permissions', getAddress(params.address)] as const),
   },
 
   // User queries

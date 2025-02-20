@@ -34,7 +34,7 @@ export async function AssetPermissionsTable({
 }: AssetHoldersTableProps) {
   const queryClient = getQueryClient();
 
-  const queryKey = queryKeys.asset.stats({ address: asset, type: 'permissions' });
+  const queryKey = queryKeys.asset.permissions({ type: assetConfig.queryKey, address: asset });
 
   await queryClient.prefetchQuery({
     queryKey,
