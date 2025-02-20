@@ -6,6 +6,7 @@ import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { EditRolesFormSchema } from './schema';
+import { RolesForm } from './steps/roles';
 import { Summary } from './steps/summary';
 import { editRoles } from './store';
 
@@ -41,11 +42,11 @@ export function EditRolesForm({
       defaultValues={{
         address,
         userAddress,
-        newRoles: currentRoles,
+        currentRoles,
       }}
     >
-      {/* TODO: form */}
-      <Summary userAddress={userAddress} roles={currentRoles} />
+      <RolesForm currentRoles={currentRoles} />
+      <Summary userAddress={userAddress} currentRoles={currentRoles} />
     </AssetForm>
   );
 }

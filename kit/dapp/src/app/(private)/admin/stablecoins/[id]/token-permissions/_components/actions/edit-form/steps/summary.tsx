@@ -3,12 +3,18 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Lock } from 'lucide-react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { BlockUserFormType } from '../schema';
+import type { EditRolesFormType } from '../schema';
 
-export function Summary({ userAddress, roles }: { userAddress: Address; roles: PermissionRole[] }) {
-  const { control } = useFormContext<BlockUserFormType>();
+export function Summary({
+  userAddress,
+  currentRoles: roles,
+}: { userAddress: Address; currentRoles: PermissionRole[] }) {
+  const { control } = useFormContext<EditRolesFormType>();
+  const values = useWatch({
+    control: control,
+  });
 
   return (
     <div className="space-y-6">
@@ -38,7 +44,7 @@ export function Summary({ userAddress, roles }: { userAddress: Address; roles: P
               </dd>
             </div>
             <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Roles</dt>
+              <dt className="text-muted-foreground text-sm">Current roles</dt>
               <dd className="font-medium text-sm">
                 <div className="flex flex-wrap gap-1">
                   {roles.map((role: PermissionRole) => (
@@ -46,6 +52,20 @@ export function Summary({ userAddress, roles }: { userAddress: Address; roles: P
                       {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
                     </span>
                   ))}
+                </div>
+              </dd>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <dt className="text-muted-foreground text-sm">New roles</dt>
+              <dd className="font-medium text-sm">
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(values.newRoles ?? {})
+                    .filter(([_, isEnabled]) => isEnabled)
+                    .map(([role]) => (
+                      <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                        {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
+                      </span>
+                    ))}
                 </div>
               </dd>
             </div>

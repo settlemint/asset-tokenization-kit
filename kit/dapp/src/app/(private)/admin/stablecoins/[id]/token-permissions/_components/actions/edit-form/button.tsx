@@ -33,7 +33,7 @@ export function EditButton({ address, currentRoles, userAddress, assetConfig }: 
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>Edit roles</SheetTitle>
-          <SheetDescription>Edit roles for {assetConfig.name}.</SheetDescription>
+          <SheetDescription>Manage which actions users are permitted to perform on the asset.</SheetDescription>
         </SheetHeader>
         <EditRolesForm
           address={address}

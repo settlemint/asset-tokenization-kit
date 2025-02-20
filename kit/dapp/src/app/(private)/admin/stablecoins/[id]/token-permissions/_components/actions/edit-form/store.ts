@@ -1,9 +1,10 @@
 'use server';
 
+import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { type Address, stringToHex } from 'viem';
 import { EditRolesFormSchema, EditRolesOutputSchema } from './schema';
 
 const GrantRole = portalGraphql(`
@@ -36,8 +37,11 @@ export const editRoles = actionClient
   .schema(EditRolesFormSchema)
   .outputSchema(EditRolesOutputSchema)
   .action(async ({ parsedInput: { pincode, address, currentRoles, newRoles, userAddress }, ctx: { user } }) => {
-    const rolesToGrant = newRoles.filter((role) => !currentRoles.includes(role));
-    const rolesToRevoke = currentRoles.filter((role) => !newRoles.includes(role));
+    const newRolesArray = Object.entries(newRoles)
+      .filter(([_, enabled]) => enabled)
+      .map(([role]) => role as PermissionRole);
+    const rolesToGrant = newRolesArray.filter((role) => !currentRoles.includes(role));
+    const rolesToRevoke = currentRoles.filter((role) => !newRolesArray.includes(role));
 
     const challengeResponse = await handleChallenge(user.wallet as Address, pincode);
     const transactions: string[] = [];
@@ -48,7 +52,7 @@ export const editRoles = actionClient
         address,
         from: user.wallet,
         input: {
-          role,
+          role: stringToHex(role, { size: 32 }),
           account: userAddress,
         },
         challengeResponse,
@@ -66,7 +70,7 @@ export const editRoles = actionClient
         address,
         from: user.wallet,
         input: {
-          role,
+          role: stringToHex(role, { size: 32 }),
           account: userAddress,
         },
         challengeResponse,
@@ -77,6 +81,8 @@ export const editRoles = actionClient
       }
       transactions.push(StableCoinRevokeRole.transactionHash);
     }
+
+    console.log(transactions);
 
     return transactions;
   });

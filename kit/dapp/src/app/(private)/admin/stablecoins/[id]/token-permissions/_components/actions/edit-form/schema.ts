@@ -6,12 +6,11 @@ export const EditRolesFormSchema = z.object({
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, { message: 'PIN code must contain only numbers' }),
-  newRoles: z
-    .array(
-      // We must provide literal values for Zod's runtime validation since PermissionRole type is not available at runtime
-      z.enum(['admin', 'supplyManager', 'userManager'] as const satisfies readonly PermissionRole[])
-    )
-    .min(1, { message: 'At least one role must be selected' }),
+  newRoles: z.object({
+    admin: z.boolean(),
+    supplyManager: z.boolean(),
+    userManager: z.boolean(),
+  }),
   currentRoles: z
     .array(
       // We must provide literal values for Zod's runtime validation since PermissionRole type is not available at runtime
