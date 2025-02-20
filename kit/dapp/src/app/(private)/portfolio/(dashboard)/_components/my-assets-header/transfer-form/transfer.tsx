@@ -1,19 +1,19 @@
 'use client';
 
+import { TransferForm } from '@/app/(private)/portfolio/_components/transfer-form/form';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ArrowLeftRight } from 'lucide-react';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { TransferForm } from '../../../_components/transfer-form/form';
 import { SelectAsset } from './select-asset';
 
 interface TransferFormProps {
   assets: MyAsset[];
 }
 
-export function DashboardTransferForm({ assets }: TransferFormProps) {
+export function MyAssetsTransferForm({ assets }: TransferFormProps) {
   const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
   return (
     <Sheet

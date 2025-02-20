@@ -1,25 +1,20 @@
 import { Greeting } from '@/app/(private)/portfolio/(dashboard)/_components/greeting';
-import { MyAssetsCount } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets/count/count';
 import { Distribution } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets/distribution/distribution';
-import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import { TransactionsHistory } from '@/components/blocks/transactions-history/transactions-history';
 import { PageHeader } from '@/components/layout/page-header';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { LatestEvents } from './_components/latest-events/latest-events';
+import { MyAssetsHeader } from './_components/my-assets-header/my-assets-header';
 import { MyAssets } from './_components/my-assets/(table)/table';
-import { DashboardTransferForm } from './_components/transfer/transfer';
 
 export default async function PortfolioPage() {
   const user = await getAuthenticatedUser();
-  const myAssets = await getMyAssets();
+
   return (
     <>
       <div className="space-y-4">
         <Greeting />
-        <div className="flex items-center justify-between">
-          <MyAssetsCount />
-          <DashboardTransferForm assets={myAssets.balances} />
-        </div>
+        <MyAssetsHeader />
         <TransactionsHistory
           from={user.wallet}
           chartOptions={{
