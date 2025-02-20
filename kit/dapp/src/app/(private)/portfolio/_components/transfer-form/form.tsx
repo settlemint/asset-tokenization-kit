@@ -1,12 +1,11 @@
 'use client';
 
-import { getTransferFormSchema } from '@/app/(private)/portfolio/my-assets/[id]/_components/transfer-form/schema';
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import { assetConfig } from '@/lib/config/assets';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import type { TransferFormAssetType } from './schema';
+import { type TransferFormAssetType, getTransferFormSchema } from './schema';
 import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
 import { Amount } from './steps/value';

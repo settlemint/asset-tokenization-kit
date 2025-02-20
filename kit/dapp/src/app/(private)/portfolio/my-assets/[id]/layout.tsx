@@ -14,9 +14,9 @@ import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
+import { TransferButton } from '../../_components/transfer-form/button';
+import type { TransferFormAssetType } from '../../_components/transfer-form/schema';
 import { getMyAsset } from './_components/data';
-import { TransferButton } from './_components/transfer-form/button';
-import type { TransferFormAssetType } from './_components/transfer-form/schema';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
