@@ -2,6 +2,7 @@ import { AssetPermissionsTable } from '@/components/blocks/asset-permissions-tab
 import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import type { Address } from 'viem';
+import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
   title: 'Token permissions',
@@ -11,5 +12,9 @@ export const metadata: Metadata = {
 export default async function StablecoinTokenPermissionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  return <AssetPermissionsTable assetConfig={assetConfig.stablecoin} asset={id as Address} />;
+  return (
+    <AssetPermissionsTable assetConfig={assetConfig.stablecoin} asset={id as Address}>
+      <TableClient asset={id as Address} />
+    </AssetPermissionsTable>
+  );
 }

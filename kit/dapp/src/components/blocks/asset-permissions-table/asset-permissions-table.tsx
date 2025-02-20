@@ -1,37 +1,27 @@
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
 import { AssetTableSkeleton } from '../asset-table/asset-table-skeleton';
-import type { DataTablePaginationOptions } from '../data-table/data-table-pagination';
-import type { DataTableToolbarOptions } from '../data-table/data-table-toolbar';
-import { PermissionsTableClient } from './asset-permissions-table-client';
 import { getPermissions } from './asset-permissions-table-data';
 
 /**
- * Props for the AssetTable component
- * @template Asset The type of asset data being displayed
+ * Props for the AssetPermissionsTable component
  */
-export interface AssetHoldersTableProps {
+export interface AssetPermissionsTableProps {
   asset: Address;
   assetConfig: AssetDetailConfig;
-  first?: number;
-  toolbar?: DataTableToolbarOptions;
-  pagination?: DataTablePaginationOptions;
 }
 
 /**
  * Server component that renders a table of asset permissions with data fetching capabilities
- * @template Asset The type of asset data being displayed
  */
 export async function AssetPermissionsTable({
   asset,
   assetConfig,
-  first,
-  toolbar,
-  pagination,
-}: AssetHoldersTableProps) {
+  children,
+}: PropsWithChildren<AssetPermissionsTableProps>) {
   const queryClient = getQueryClient();
 
   const queryKey = queryKeys.asset.permissions({ type: assetConfig.queryKey, address: asset });
@@ -43,16 +33,7 @@ export async function AssetPermissionsTable({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-        <PermissionsTableClient
-          queryKey={queryKey}
-          first={first}
-          toolbar={toolbar}
-          pagination={pagination}
-          asset={asset}
-          assetConfig={assetConfig}
-        />
-      </Suspense>
+      <Suspense fallback={<AssetTableSkeleton columns={4} />}>{children}</Suspense>
     </HydrationBoundary>
   );
 }

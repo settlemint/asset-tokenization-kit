@@ -1,14 +1,18 @@
 'use client';
 
+import type {
+  PermissionRole,
+  PermissionWithRoles,
+} from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { formatDate } from '@/lib/date';
 import { createColumnHelper } from '@tanstack/react-table';
+import {} from 'lucide-react';
 import type { Address } from 'viem';
-import { DataTableColumnCell } from '../data-table/data-table-column-cell';
-import { DataTableColumnHeader } from '../data-table/data-table-column-header';
-import { EvmAddress } from '../evm-address/evm-address';
-import type { PermissionRole, PermissionWithRoles } from './asset-permissions-table-data';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 

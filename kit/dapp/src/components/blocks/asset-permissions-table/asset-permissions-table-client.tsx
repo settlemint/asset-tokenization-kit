@@ -3,10 +3,11 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import type { DataTablePaginationOptions } from '@/components/blocks/data-table/data-table-pagination';
 import type { DataTableToolbarOptions } from '@/components/blocks/data-table/data-table-toolbar';
-import type { AssetDetailConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
+import type { useReactTable } from '@tanstack/react-table';
+import type { LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
 import type { Address } from 'viem';
-import { columns } from './asset-permissions-table-columns';
 import type { PermissionWithRoles } from './asset-permissions-table-data';
 import { getPermissions } from './asset-permissions-table-data';
 
@@ -16,7 +17,10 @@ interface PermissionsTableClientProps {
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
   asset: Address;
-  assetConfig: AssetDetailConfig;
+  /** Map of icon components to be used in the table */
+  icons?: Record<string, ComponentType<{ className?: string }> | LucideIcon>;
+  /** Column definitions for the table */
+  columns: Parameters<typeof useReactTable<PermissionWithRoles>>[0]['columns'];
 }
 
 export function PermissionsTableClient({
@@ -24,7 +28,8 @@ export function PermissionsTableClient({
   toolbar,
   pagination,
   asset,
-  assetConfig,
+  columns,
+  icons,
 }: PermissionsTableClientProps) {
   const { data } = useSuspenseQuery<PermissionWithRoles[]>({
     queryKey,
@@ -34,8 +39,9 @@ export function PermissionsTableClient({
 
   return (
     <DataTable
-      columns={columns(asset, assetConfig)}
+      columns={columns}
       data={data}
+      icons={icons}
       name={'Permissions'}
       toolbar={toolbar}
       pagination={pagination}
