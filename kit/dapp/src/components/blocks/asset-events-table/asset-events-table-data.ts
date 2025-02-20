@@ -109,17 +109,15 @@ query TransactionsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
 
 type TransactionsListVariables = VariablesOf<typeof TransactionsList>;
 
-export async function getEventsList({
-  first,
-  skip,
-  asset,
-  sender,
-}: {
+export type EventsListVariables = {
   first?: number;
   skip?: number;
   asset?: Address;
   sender?: Address;
-}): Promise<NormalizedEventsListItem[]> {
+};
+
+export async function getEventsList(variables?: EventsListVariables): Promise<NormalizedEventsListItem[]> {
+  const { first, skip, asset, sender } = variables ?? {};
   const where: TransactionsListVariables['where'] = {};
   if (asset) {
     where.emitter = asset;

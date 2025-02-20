@@ -6,10 +6,10 @@ export default function LatestTransactions() {
 
   return (
     <>
-      <AssetEventsTable first={first} disableToolbarAndPagination={true} />
+      <AssetEventsTable variables={{ first }} disableToolbarAndPagination={true} />
       <div className="mt-4">
-        <Link href="/admin/transactions" className="text-muted-foreground text-sm hover:text-primary">
-          View all transactions →
+        <Link href="/admin/activity" className="text-muted-foreground text-sm hover:text-primary">
+          View all activity →
         </Link>
       </div>
     </>
