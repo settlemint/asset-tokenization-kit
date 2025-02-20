@@ -48,7 +48,6 @@ export const columns = [
     cell: ({ getValue }) => <DataTableColumnCell className="capitalize">{getValue()}</DataTableColumnCell>,
   }),
   columnHelper.accessor('from', {
-    id: 'from',
     header: ({ column }) => <DataTableColumnHeader column={column}>From</DataTableColumnHeader>,
     cell: ({ getValue }) => (
       <DataTableColumnCell>
@@ -95,10 +94,6 @@ export const columns = [
     },
   }),
 ];
-
-export const getColumns = (hideFromAddress?: boolean) => {
-  return columns.filter((column) => !hideFromAddress || column.id !== 'from');
-};
 
 export const icons = {
   success: CheckCircle,

@@ -37,7 +37,7 @@ export function EventDetailSheet({
         <SheetHeader>
           <SheetTitle>{event}</SheetTitle>
         </SheetHeader>
-        <Card>
+        <Card className="my-6">
           <CardContent className="pt-6">
             <dl className="grid grid-cols-[1fr_2fr] gap-4">
               <dt className="text-muted-foreground text-sm">Sender:</dt>
