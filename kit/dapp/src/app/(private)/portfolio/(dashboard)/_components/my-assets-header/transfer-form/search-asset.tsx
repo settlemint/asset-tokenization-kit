@@ -1,10 +1,10 @@
-import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import type { assetConfig } from '@/lib/config/assets';
+import { formatNumber } from '@/lib/number';
 import { sanitizeSearchTerm } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 import { CommandEmpty, useCommandState } from 'cmdk';
@@ -38,14 +38,7 @@ export function AssetsSearchSelect({ assets, selectedAsset, onSelect }: AssetsSe
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" aria-expanded={open} className="w-full justify-between">
-          {selectedAsset ? (
-            <span className="flex items-center gap-2">
-              <AssetTypeIcon type={selectedAsset.asset.type as keyof typeof assetConfig} size="md" />
-              {selectedAsset.asset.name} ({selectedAsset.asset.symbol})
-            </span>
-          ) : (
-            'Select an asset'
-          )}
+          {selectedAsset ? <AssetItem asset={selectedAsset} /> : 'Select an asset'}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -112,14 +105,20 @@ function AssetSearchList({
               setOpen(false);
             }}
           >
-            <span className="flex items-center gap-2">
-              <AssetTypeIcon type={asset.asset.type as keyof typeof assetConfig} size="md" />
-              {asset.asset.name} ({asset.asset.symbol})
-            </span>
+            <AssetItem asset={asset} />
             <Check className={cn('ml-auto', value === asset.asset.id ? 'opacity-100' : 'opacity-0')} />
           </CommandItem>
         ))}
       </CommandGroup>
     </CommandList>
+  );
+}
+
+function AssetItem({ asset }: { asset: MyAsset }) {
+  return (
+    <div className="flex items-center gap-2">
+      <EvmAddress address={asset.asset.id as Address} hoverCard={false} />
+      <span className="text-muted-foreground text-sm">(Balance: {formatNumber(asset.value)})</span>
+    </div>
   );
 }
