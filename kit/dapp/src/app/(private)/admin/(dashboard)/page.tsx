@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default function AdminDashboard() {
   return (
-    <div>
+    <>
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-3 lg:divide-x lg:divide-y-0">
         <AssetsWidget />
         <TransactionsWidget />
@@ -32,6 +32,6 @@ export default function AdminDashboard() {
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">Latest Events</p>
       <LatestEvents />
-    </div>
+    </>
   );
 }
