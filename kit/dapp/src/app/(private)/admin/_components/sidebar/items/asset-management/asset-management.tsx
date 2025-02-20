@@ -6,7 +6,7 @@ import { getSidebarAssets } from './data';
 
 export async function AssetManagement() {
   const queryClient = getQueryClient();
-  const queryKey = queryKeys.asset.all();
+  const queryKey = queryKeys.asset.any();
   await queryClient.prefetchQuery({
     queryKey,
     queryFn: getSidebarAssets,

@@ -272,15 +272,6 @@ contract Bond is
         return super._unblockUser(user);
     }
 
-    /// @notice Unfreezes all tokens for a user
-    /// @dev Only callable by addresses with USER_MANAGEMENT_ROLE
-    /// @param user Address to unfreeze tokens for
-    /// @param amount Amount of tokens to unfreeze
-    function unfreeze(address user, uint256 amount) public onlyRole(USER_MANAGEMENT_ROLE) {
-        _frozen[user] = _frozen[user] - amount;
-        emit TokensUnfrozen(user, amount);
-    }
-
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient underlying assets for all potential redemptions

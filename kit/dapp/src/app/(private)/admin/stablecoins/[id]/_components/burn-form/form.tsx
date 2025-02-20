@@ -38,6 +38,9 @@ export function BurnForm({
         onSuccess: () => `${name} (${symbol}) burned successfully on chain`,
         onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
       }}
+      defaultValues={{
+        decimals,
+      }}
     >
       <Amount balance={balance} />
       <Summary address={address} decimals={decimals} />

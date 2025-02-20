@@ -9,29 +9,21 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Pie, PieChart } from 'recharts';
+import type { ReactNode } from 'react';
+import { Cell, Pie, PieChart } from 'recharts';
 
 interface PieChartProps {
   title: string;
   description?: string;
-  data: Array<Record<string, string | number>>;
+  data: Record<string, string | number>[];
   config: ChartConfig;
   dataKey: string;
   nameKey: string;
   className?: string;
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 }
 
-export function PieChartComponent({
-  title,
-  description,
-  data,
-  config,
-  dataKey,
-  nameKey,
-  className,
-  footer,
-}: PieChartProps) {
+export function PieChartComponent({ title, description, data, config, dataKey, nameKey, footer }: PieChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -42,7 +34,16 @@ export function PieChartComponent({
         <ChartContainer config={config}>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={data} dataKey={dataKey} nameKey={nameKey} />
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={config[entry[nameKey]].color}
+                  fillOpacity={0.8}
+                  stroke={config[entry[nameKey]].color}
+                />
+              ))}
+            </Pie>
             <ChartLegend
               content={<ChartLegendContent />}
               className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"

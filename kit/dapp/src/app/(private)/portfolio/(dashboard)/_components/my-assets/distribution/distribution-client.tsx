@@ -1,7 +1,7 @@
 'use client';
 
-import { getMyAssets } from '@/app/(private)/portfolio/_components/my-assets/data';
 import { VerticalBarChartComponent } from '@/components/blocks/charts/bar-charts/vertical-bar-chart';
+import { getMyAssets } from '@/components/blocks/my-assets/data';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
@@ -28,12 +28,11 @@ const chartConfig = {
 export function DistributionClient({ queryKey }: DistributionClientProps) {
   const { data } = useSuspenseQuery({
     queryKey,
-    queryFn: getMyAssets,
-    refetchInterval: 5000,
+    queryFn: () => getMyAssets(),
   });
 
-  const chartData = data.map((item) => {
-    const assetPluralName = assetConfig[item.asset.type as keyof typeof assetConfig].pluralName;
+  const chartData = data.distribution.map((item) => {
+    const assetPluralName = assetConfig[item.asset.type].pluralName;
     return {
       assetType: assetPluralName,
       percentage: item.percentage,

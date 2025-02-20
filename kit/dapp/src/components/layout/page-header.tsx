@@ -10,7 +10,7 @@ export interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, pill, button }: PageHeaderProps) {
   return (
-    <div className="relative flex justify-between pb-8">
+    <div className="relative flex justify-between pb-6">
       <div>
         <CollapsedBreadcrumbs hideRoot={true} />
         <h1 className="flex items-center font-bold text-2xl">

@@ -6,11 +6,10 @@ import {
   RoleGranted,
   RoleRevoked,
   TokensFrozen,
-  TokensUnfrozen,
   Transfer,
   Unpaused,
   UserBlocked,
-  UserUnblocked,
+  UserUnblocked
 } from '../../generated/templates/Equity/Equity';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance, hasBalance } from '../fetch/balance';
@@ -26,7 +25,6 @@ import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
 import { tokensFrozenEvent } from './events/tokensfrozen';
-import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
 import { unpausedEvent } from './events/unpaused';
 import { userBlockedEvent } from './events/userblocked';
@@ -431,7 +429,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   ]);
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, equity.decimals);
   balance.save();
 
   const assetStats = newAssetStatsData(equity.id, AssetType.equity, equity.equityCategory, equity.equityClass);
@@ -457,48 +456,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
 
   accountActivityEvent(sender, EventName.TokensFrozen, event.block.timestamp, AssetType.equity, equity.id);
   accountActivityEvent(user, EventName.TokensFrozen, event.block.timestamp, AssetType.equity, equity.id);
-}
-
-export function handleTokensUnfrozen(event: TokensUnfrozen): void {
-  const equity = fetchEquity(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  log.info('Equity tokens unfrozen event: amount={}, user={}, sender={}, equity={}', [
-    event.params.amount.toString(),
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  const assetStats = newAssetStatsData(equity.id, AssetType.equity, equity.equityCategory, equity.equityClass);
-  assetStats.unfrozen = toDecimals(event.params.amount, equity.decimals);
-  assetStats.unfrozenExact = event.params.amount;
-  assetStats.save();
-
-  const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
-  balance.frozen = event.params.amount;
-  balance.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.equity);
-  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
-  assetActivity.save();
-
-  equity.lastActivity = event.block.timestamp;
-  equity.save();
-
-  tokensUnfrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    user.id,
-    event.params.amount,
-    equity.decimals
-  );
-
-  accountActivityEvent(sender, EventName.TokensUnfrozen, event.block.timestamp, AssetType.equity, equity.id);
-  accountActivityEvent(user, EventName.TokensUnfrozen, event.block.timestamp, AssetType.equity, equity.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {

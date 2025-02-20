@@ -37,7 +37,6 @@ export function GridClient({ asset }: { asset: Address }) {
         );
       }}
       dataAction={getEquity}
-      refetchInterval={5000}
     />
   );
 }

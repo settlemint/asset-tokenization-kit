@@ -1,7 +1,8 @@
 import { AssetHoldersTable } from '@/components/blocks/asset-holders-table/asset-holders-table';
-import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
 import type { Address } from 'viem';
+import { getStableCoin } from '../(details)/_components/data';
+import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
   title: 'Holders',
@@ -10,6 +11,10 @@ export const metadata: Metadata = {
 
 export default async function StablecoinHoldersPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
-  return <AssetHoldersTable assetConfig={assetConfig.stablecoin} asset={id as Address} />;
+  const { decimals } = await getStableCoin(id);
+  return (
+    <AssetHoldersTable asset={id as Address}>
+      <TableClient asset={id as Address} decimals={decimals} />
+    </AssetHoldersTable>
+  );
 }

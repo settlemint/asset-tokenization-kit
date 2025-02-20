@@ -1,6 +1,7 @@
 'use client';
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
+import { defaultRefetchInterval } from '@/lib/react-query';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import type { Address } from 'viem';
 import { assetItems } from './assets';
@@ -14,10 +15,10 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getSidebarAssets,
-    refetchInterval: 60 * 1000,
+    refetchInterval: defaultRefetchInterval,
   });
 
-  const processedTokenItems = assetItems.reduce((acc, section) => {
+  const processedAssetItems = assetItems.reduce((acc, section) => {
     if (!section.assetType) {
       return acc;
     }
@@ -55,7 +56,7 @@ export function AssetManagementClient({ queryKey }: AssetManagementClientProps) 
       items={[
         {
           groupTitle: 'Asset management',
-          items: processedTokenItems,
+          items: processedAssetItems,
         },
       ]}
     />

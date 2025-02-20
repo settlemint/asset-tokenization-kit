@@ -22,7 +22,6 @@ export function AssetEventsTableClient({
   const { data } = useSuspenseQuery<NormalizedEventsListItem[]>({
     queryKey,
     queryFn: () => getEventsList({ first, asset }),
-    refetchInterval: 5000,
   });
 
   return (

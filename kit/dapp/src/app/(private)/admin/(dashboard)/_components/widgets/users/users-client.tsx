@@ -16,7 +16,6 @@ export function UsersWidgetClient({ queryKey }: UsersWidgetClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: getUserWidgetData,
-    refetchInterval: 1000 * 10,
   });
 
   return (

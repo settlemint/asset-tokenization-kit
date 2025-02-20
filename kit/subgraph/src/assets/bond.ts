@@ -8,13 +8,12 @@ import {
   RoleGranted,
   RoleRevoked,
   TokensFrozen,
-  TokensUnfrozen,
   Transfer,
   UnderlyingAssetTopUp,
   UnderlyingAssetWithdrawn,
   Unpaused,
   UserBlocked,
-  UserUnblocked,
+  UserUnblocked
 } from '../../generated/templates/Bond/Bond';
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance, hasBalance } from '../fetch/balance';
@@ -32,7 +31,6 @@ import { roleAdminChangedEvent } from './events/roleadminchanged';
 import { roleGrantedEvent } from './events/rolegranted';
 import { roleRevokedEvent } from './events/rolerevoked';
 import { tokensFrozenEvent } from './events/tokensfrozen';
-import { tokensUnfrozenEvent } from './events/tokensunfrozen';
 import { transferEvent } from './events/transfer';
 import { underlyingAssetTopUpEvent } from './events/underlyingassettopup';
 import { underlyingAssetWithdrawnEvent } from './events/underlyingassetwithdrawn';
@@ -495,7 +493,8 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   assetActivity.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
-  balance.frozen = event.params.amount;
+  balance.frozenExact = event.params.amount;
+  balance.frozen = toDecimals(event.params.amount, bond.decimals);
   balance.save();
 
   bond.lastActivity = event.block.timestamp;
@@ -513,47 +512,6 @@ export function handleTokensFrozen(event: TokensFrozen): void {
 
   accountActivityEvent(sender, EventName.TokensFrozen, event.block.timestamp, AssetType.bond, bond.id);
   accountActivityEvent(user, EventName.TokensFrozen, event.block.timestamp, AssetType.bond, bond.id);
-}
-
-export function handleTokensUnfrozen(event: TokensUnfrozen): void {
-  const bond = fetchBond(event.address);
-  const sender = fetchAccount(event.transaction.from);
-  const user = fetchAccount(event.params.user);
-
-  log.info('Bond tokens unfrozen event: amount={}, user={}, sender={}, bond={}', [
-    event.params.amount.toString(),
-    user.id.toHexString(),
-    sender.id.toHexString(),
-    event.address.toHexString(),
-  ]);
-
-  const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
-  balance.frozen = event.params.amount;
-  balance.save();
-
-  const assetStats = newAssetStatsData(bond.id, AssetType.bond);
-  assetStats.unfrozen = toDecimals(event.params.amount, bond.decimals);
-  assetStats.unfrozenExact = event.params.amount;
-  assetStats.save();
-
-  const assetActivity = fetchAssetActivity(AssetType.bond);
-  assetActivity.unfrozenEventCount = assetActivity.unfrozenEventCount + 1;
-  assetActivity.save();
-
-  bond.lastActivity = event.block.timestamp;
-  bond.save();
-
-  tokensUnfrozenEvent(
-    eventId(event),
-    event.block.timestamp,
-    event.address,
-    sender.id,
-    user.id,
-    event.params.amount,
-    bond.decimals
-  );
-  accountActivityEvent(sender, EventName.TokensUnfrozen, event.block.timestamp, AssetType.bond, bond.id);
-  accountActivityEvent(user, EventName.TokensUnfrozen, event.block.timestamp, AssetType.bond, bond.id);
 }
 
 export function handleUserBlocked(event: UserBlocked): void {

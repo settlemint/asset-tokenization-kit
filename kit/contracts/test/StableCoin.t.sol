@@ -249,7 +249,7 @@ contract StableCoinTest is Test {
         vm.stopPrank();
 
         vm.startPrank(owner);
-        stableCoin.unfreeze(user1, 100);
+        stableCoin.freeze(user1, 0);
         vm.stopPrank();
 
         assertEq(stableCoin.frozen(user1), 0);

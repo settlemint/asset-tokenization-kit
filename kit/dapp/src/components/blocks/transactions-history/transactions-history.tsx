@@ -8,7 +8,9 @@ import { TransactionsHistoryClient } from './transactions-history-client';
 
 export interface TransactionsHistoryProps {
   from?: string;
-  chartOptions: Pick<TimeSeriesOptions, 'intervalType' | 'intervalLength' | 'granularity'>;
+  chartOptions: Pick<TimeSeriesOptions, 'intervalType' | 'intervalLength' | 'granularity'> & {
+    chartContainerClassName?: string;
+  };
 }
 
 export async function TransactionsHistory({ from, chartOptions }: TransactionsHistoryProps) {

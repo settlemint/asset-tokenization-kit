@@ -22,7 +22,6 @@ export function TotalSupplyClient({ queryKey, asset }: TotalSupplyClientProps) {
   const { data } = useSuspenseQuery({
     queryKey: queryKey,
     queryFn: async () => getAssetDetailStats(asset),
-    refetchInterval: 1000 * 5,
   });
 
   const timeseries = createTimeSeries(data, ['totalSupply'], {
