@@ -1,4 +1,7 @@
-import { AssetsSearchSelect } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/search-asset';
+import {
+  AssetsSearchSelect,
+  sortAssetsWithSelected,
+} from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/search-asset';
 import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
@@ -25,6 +28,8 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
     }
   };
 
+  const sortedAssets = sortAssetsWithSelected(assets, selectedAsset?.asset.id);
+
   return (
     <div className="mt-6 flex h-[calc(100vh-8rem)] flex-col">
       <div className="mb-4">
@@ -33,7 +38,7 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-2 pb-4">
-          {assets.map((asset) => (
+          {sortedAssets.map((asset) => (
             <Card
               key={asset.asset.id}
               className={`cursor-pointer transition-colors hover:bg-accent ${

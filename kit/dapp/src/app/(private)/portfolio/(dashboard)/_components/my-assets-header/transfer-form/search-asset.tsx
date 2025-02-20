@@ -12,6 +12,19 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import { type Address, isHex } from 'viem';
 
+// Shared utility function to sort assets with selected asset at top
+export function sortAssetsWithSelected(assets: MyAsset[], selectedId?: string | null) {
+  return [...assets].sort((a, b) => {
+    if (a.asset.id === selectedId) {
+      return -1;
+    }
+    if (b.asset.id === selectedId) {
+      return 1;
+    }
+    return 0;
+  });
+}
+
 interface AssetsSearchSelectProps {
   assets: MyAsset[];
   onSelect: (asset: MyAsset) => void;
@@ -84,11 +97,13 @@ function AssetSearchList({
         })
       : assets;
 
+  const sortedAssets = sortAssetsWithSelected(filteredAssets, value);
+
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">No assets found.</CommandEmpty>
       <CommandGroup>
-        {filteredAssets.map((asset) => (
+        {sortedAssets.map((asset) => (
           <CommandItem
             key={asset.asset.id}
             value={asset.asset.id}
