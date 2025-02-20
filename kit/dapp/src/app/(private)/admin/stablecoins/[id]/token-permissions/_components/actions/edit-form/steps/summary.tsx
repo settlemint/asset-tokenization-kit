@@ -1,16 +1,13 @@
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { type Role, getRoleDisplayName } from '@/lib/config/roles';
 import { Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { EditRolesFormType } from '../schema';
 
-export function Summary({
-  userAddress,
-  currentRoles: roles,
-}: { userAddress: Address; currentRoles: PermissionRole[] }) {
+export function Summary({ userAddress, currentRoles: roles }: { userAddress: Address; currentRoles: Role[] }) {
   const { control } = useFormContext<EditRolesFormType>();
   const values = useWatch({
     control: control,
@@ -47,9 +44,9 @@ export function Summary({
               <dt className="text-muted-foreground text-sm">Current roles</dt>
               <dd className="font-medium text-sm">
                 <div className="flex flex-wrap gap-1">
-                  {roles.map((role: PermissionRole) => (
+                  {roles.map((role: Role) => (
                     <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                      {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {getRoleDisplayName(role)}
                     </span>
                   ))}
                 </div>
@@ -63,7 +60,7 @@ export function Summary({
                     .filter(([_, isEnabled]) => isEnabled)
                     .map(([role]) => (
                       <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                        {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
+                        {getRoleDisplayName(role as Role)}
                       </span>
                     ))}
                 </div>

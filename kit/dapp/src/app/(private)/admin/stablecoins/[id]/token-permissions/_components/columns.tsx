@@ -1,15 +1,13 @@
 'use client';
 
-import type {
-  PermissionRole,
-  PermissionWithRoles,
-} from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
+import type { PermissionWithRoles } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import { type Role, getRoleDisplayName } from '@/lib/config/roles';
 import { formatDate } from '@/lib/date';
 import { createColumnHelper } from '@tanstack/react-table';
 import {} from 'lucide-react';
@@ -42,9 +40,9 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
     cell: ({ getValue }) => (
       <DataTableColumnCell>
         <div className="flex flex-wrap gap-1">
-          {getValue()?.map((role: PermissionRole) => (
+          {getValue()?.map((role: Role) => (
             <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-              {role.charAt(0).toUpperCase() + role.slice(1).replace(/([A-Z])/g, ' $1')}
+              {getRoleDisplayName(role)}
             </span>
           ))}
         </div>

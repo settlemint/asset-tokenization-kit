@@ -1,4 +1,4 @@
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
+import type { Role } from '@/lib/config/roles';
 import { z } from 'zod';
 
 export const EditRolesFormSchema = z.object({
@@ -7,14 +7,18 @@ export const EditRolesFormSchema = z.object({
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, { message: 'PIN code must contain only numbers' }),
   newRoles: z.object({
-    admin: z.boolean(),
-    supplyManager: z.boolean(),
-    userManager: z.boolean(),
+    DEFAULT_ADMIN_ROLE: z.boolean(),
+    SUPPLY_MANAGEMENT_ROLE: z.boolean(),
+    USER_MANAGEMENT_ROLE: z.boolean(),
   }),
   currentRoles: z
     .array(
-      // We must provide literal values for Zod's runtime validation since PermissionRole type is not available at runtime
-      z.enum(['admin', 'supplyManager', 'userManager'] as const satisfies readonly PermissionRole[])
+      // We must provide literal values for Zod's runtime validation since Role type is not available at runtime
+      z.enum([
+        'DEFAULT_ADMIN_ROLE',
+        'SUPPLY_MANAGEMENT_ROLE',
+        'USER_MANAGEMENT_ROLE',
+      ] as const satisfies readonly Role[])
     )
     .min(1, { message: 'At least one role must be selected' }),
   address: z.string().min(1, { message: 'Address is required' }),

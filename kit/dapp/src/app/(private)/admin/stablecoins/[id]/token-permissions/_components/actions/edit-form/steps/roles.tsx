@@ -1,25 +1,10 @@
 import { AssetFormCheckbox } from '@/components/blocks/asset-form/inputs/asset-form-checkbox';
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
+import { ROLES, type Role, type RoleKey } from '@/lib/config/roles';
 import { useFormContext } from 'react-hook-form';
 
-const ROLE_DEFINITIONS = {
-  admin: {
-    label: 'Admin',
-    description: 'Grants full administrative privileges, including the ability to assign and manage all other roles',
-  },
-  supplyManager: {
-    label: 'Supply Manager',
-    description: 'Permits the account to mint new tokens, increasing the supply of the asset',
-  },
-  userManager: {
-    label: 'User Manager',
-    description: 'Allows the account to block and unblock users and to freeze and unfreeze accounts.',
-  },
-} as const satisfies Record<PermissionRole, { label: string; description: string }>;
-
 interface RolesFormProps {
-  currentRoles?: PermissionRole[];
-  onRolesChange?: (newRoles: PermissionRole[]) => void;
+  currentRoles?: Role[];
+  onRolesChange?: (newRoles: Role[]) => void;
 }
 
 export function RolesForm({ currentRoles = [], onRolesChange }: RolesFormProps) {
@@ -31,7 +16,7 @@ export function RolesForm({ currentRoles = [], onRolesChange }: RolesFormProps) 
     if (formValues.newRoles && onRolesChange) {
       const selectedRoles = Object.entries(formValues.newRoles)
         .filter(([_, isSelected]) => isSelected)
-        .map(([role]) => role as PermissionRole);
+        .map(([role]) => role as Role);
 
       onRolesChange(selectedRoles);
     }
@@ -41,19 +26,14 @@ export function RolesForm({ currentRoles = [], onRolesChange }: RolesFormProps) 
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-3">
-          {(
-            Object.entries(ROLE_DEFINITIONS) as [
-              PermissionRole,
-              (typeof ROLE_DEFINITIONS)[keyof typeof ROLE_DEFINITIONS],
-            ][]
-          ).map(([role, def]) => (
+          {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(([key, role]) => (
             <AssetFormCheckbox
-              key={role}
-              name={`newRoles.${role}`}
+              key={key}
+              name={`newRoles.${role.contractRole}`}
               control={control}
-              label={def.label}
-              description={def.description}
-              defaultValue={currentRoles.includes(role)}
+              label={role.displayName}
+              description={role.description}
+              defaultValue={currentRoles.includes(role.contractRole)}
               onChange={() => {
                 handleChange();
               }}

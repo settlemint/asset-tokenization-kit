@@ -1,15 +1,15 @@
 'use client';
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import type { Role } from '@/lib/config/roles';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { EditRolesForm } from './form';
 
 interface EditButtonProps {
   address: Address;
-  currentRoles: PermissionRole[];
+  currentRoles: Role[];
   userAddress: Address;
   assetConfig: AssetDetailConfig;
 }

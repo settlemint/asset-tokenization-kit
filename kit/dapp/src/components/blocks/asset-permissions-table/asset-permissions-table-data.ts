@@ -1,3 +1,4 @@
+import type { Role } from '@/lib/config/roles';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { fetchAllTheGraphPages } from '@/lib/utils/pagination';
 import type { FragmentOf } from '@settlemint/sdk-thegraph';
@@ -32,17 +33,11 @@ const PermissionsQuery = theGraphGraphqlStarterkits(
   [PermissionFragment]
 );
 
-export type PermissionRole = 'admin' | 'supplyManager' | 'userManager';
-
 export interface PermissionWithRoles extends Permission {
-  roles: PermissionRole[];
+  roles: Role[];
 }
 
-function addPermission(
-  permissionsMap: Map<string, PermissionWithRoles>,
-  permission: Permission,
-  role: PermissionRole
-): void {
+function addPermission(permissionsMap: Map<string, PermissionWithRoles>, permission: Permission, role: Role): void {
   if (permissionsMap.has(permission.id)) {
     const existing = permissionsMap.get(permission.id)!;
     if (!existing.roles.includes(role)) {
@@ -65,13 +60,13 @@ export async function getPermissions(assetId: string): Promise<PermissionWithRol
 
     if (result?.asset) {
       for (const admin of result.asset.admins ?? []) {
-        addPermission(permissionsMap, admin, 'admin');
+        addPermission(permissionsMap, admin, 'DEFAULT_ADMIN_ROLE');
       }
       for (const manager of result.asset.supplyManagers ?? []) {
-        addPermission(permissionsMap, manager, 'supplyManager');
+        addPermission(permissionsMap, manager, 'SUPPLY_MANAGEMENT_ROLE');
       }
       for (const manager of result.asset.userManagers ?? []) {
-        addPermission(permissionsMap, manager, 'userManager');
+        addPermission(permissionsMap, manager, 'USER_MANAGEMENT_ROLE');
       }
     }
 

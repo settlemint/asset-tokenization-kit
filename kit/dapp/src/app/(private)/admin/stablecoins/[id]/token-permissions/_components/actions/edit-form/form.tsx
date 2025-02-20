@@ -1,8 +1,8 @@
 'use client';
 
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import type { Role } from '@/lib/config/roles';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
 import { EditRolesFormSchema } from './schema';
@@ -13,7 +13,7 @@ import { editRoles } from './store';
 interface EditPermissionsFormProps {
   address: Address;
   userAddress: Address;
-  currentRoles: PermissionRole[];
+  currentRoles: Role[];
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
 }

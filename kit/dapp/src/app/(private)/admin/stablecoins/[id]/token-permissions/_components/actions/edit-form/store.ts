@@ -1,10 +1,10 @@
 'use server';
 
-import type { PermissionRole } from '@/components/blocks/asset-permissions-table/asset-permissions-table-data';
 import { handleChallenge } from '@/lib/challenge';
+import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { type Address, stringToHex } from 'viem';
+import type { Address } from 'viem';
 import { EditRolesFormSchema, EditRolesOutputSchema } from './schema';
 
 const GrantRole = portalGraphql(`
@@ -39,7 +39,7 @@ export const editRoles = actionClient
   .action(async ({ parsedInput: { pincode, address, currentRoles, newRoles, userAddress }, ctx: { user } }) => {
     const newRolesArray = Object.entries(newRoles)
       .filter(([_, enabled]) => enabled)
-      .map(([role]) => role as PermissionRole);
+      .map(([role]) => role as Role);
     const rolesToGrant = newRolesArray.filter((role) => !currentRoles.includes(role));
     const rolesToRevoke = currentRoles.filter((role) => !newRolesArray.includes(role));
 
@@ -52,7 +52,7 @@ export const editRoles = actionClient
         address,
         from: user.wallet,
         input: {
-          role: stringToHex(role, { size: 32 }),
+          role: getRoleIdentifier(role),
           account: userAddress,
         },
         challengeResponse,
@@ -70,7 +70,7 @@ export const editRoles = actionClient
         address,
         from: user.wallet,
         input: {
-          role: stringToHex(role, { size: 32 }),
+          role: getRoleIdentifier(role),
           account: userAddress,
         },
         challengeResponse,
