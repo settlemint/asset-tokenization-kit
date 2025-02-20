@@ -1,3 +1,4 @@
+import { AssetsSearchSelect } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/search-asset';
 import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,26 +12,29 @@ interface SelectAssetProps {
 
 export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
   return (
-    <div className="mt-6 space-y-2">
-      {assets.map((asset) => (
-        <Card
-          key={asset.asset.id}
-          className="cursor-pointer transition-colors hover:bg-accent"
-          onClick={() => onSelect(asset)}
-        >
-          <CardContent className="flex p-4">
-            <div className="flex items-center">
-              <AssetTypeIcon type={asset.asset.type as keyof typeof assetConfig} size="md" />
-            </div>
-            <div className="ml-4 flex flex-col">
-              <span>
-                {asset.asset.name} ({asset.asset.symbol})
-              </span>
-              <span className="text-muted-foreground text-sm">Current balance: {formatNumber(asset.value)}</span>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="mt-6 space-y-4">
+      <AssetsSearchSelect assets={assets} onSelect={onSelect} />
+      <div className="space-y-2">
+        {assets.map((asset) => (
+          <Card
+            key={asset.asset.id}
+            className="cursor-pointer transition-colors hover:bg-accent"
+            onClick={() => onSelect(asset)}
+          >
+            <CardContent className="flex p-4">
+              <div className="flex items-center">
+                <AssetTypeIcon type={asset.asset.type as keyof typeof assetConfig} size="md" />
+              </div>
+              <div className="ml-4 flex flex-col">
+                <span>
+                  {asset.asset.name} ({asset.asset.symbol})
+                </span>
+                <span className="text-muted-foreground text-sm">Current balance: {formatNumber(asset.value)}</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
