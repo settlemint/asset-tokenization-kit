@@ -1,6 +1,7 @@
 import { type BrowserContext, test } from '@playwright/test';
 import { Pages } from '../pages/pages';
 import { bondData, cryptocurrencyData, equityData, fundData, stablecoinData } from '../test-data/asset-data';
+import { assetMessage } from '../test-data/success-msg-data';
 import { adminUser } from '../test-data/user-data';
 
 const testData = {
@@ -27,6 +28,7 @@ test.describe('Create assets', () => {
   test('Create Stablecoin asset', async () => {
     await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
+    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: stablecoinData.name,
@@ -40,10 +42,12 @@ test.describe('Create assets', () => {
       faceValueCurrency: testData.stablecoinName,
     };
     await adminPages.adminPage.createBond(bondDataWithStablecoin);
+    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
   });
 
   test('Create Cryptocurrency asset', async () => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
+    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
       name: cryptocurrencyData.name,
@@ -52,6 +56,7 @@ test.describe('Create assets', () => {
   });
   test('Create Equity asset', async () => {
     await adminPages.adminPage.createEquity(equityData);
+    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: equityData.sidebarAssetTypes,
       name: equityData.name,
@@ -60,6 +65,7 @@ test.describe('Create assets', () => {
   });
   test('Create Fund asset', async () => {
     await adminPages.adminPage.createFund(fundData);
+    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: fundData.sidebarAssetTypes,
       name: fundData.name,

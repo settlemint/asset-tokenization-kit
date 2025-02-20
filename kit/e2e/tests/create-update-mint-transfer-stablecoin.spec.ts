@@ -6,11 +6,7 @@ import {
   stableCoinUpdateProvenCollateralData,
   stablecoinData,
 } from '../test-data/asset-data';
-import {
-  stableCoinMintTokenMessage,
-  stableCoinTransferMessage,
-  stableCoinUpdateMessage,
-} from '../test-data/success-msg-data';
+import { assetMessage, stableCoinMintTokenMessage, stableCoinTransferMessage } from '../test-data/success-msg-data';
 import { adminUser, signUpTransferUserData, signUpUserData } from '../test-data/user-data';
 import { fetchWalletAddressFromDB } from '../utils/db-utils';
 
@@ -72,6 +68,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
       await adminPages.adminPage.goto();
       await adminPages.adminPage.createStablecoin(stablecoinData);
       testData.stablecoinName = stablecoinData.name;
+      await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
       await adminPages.adminPage.checkIfAssetExists({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
         name: testData.stablecoinName,
@@ -82,7 +79,8 @@ test.describe('Update collateral, mint and transfer assets', () => {
         name: testData.stablecoinName,
         ...stableCoinUpdateProvenCollateralData,
       });
-      await adminPages.adminPage.verifySuccessMessage(stableCoinUpdateMessage.successMessage);
+      await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+      await adminPages.adminPage.verifyProvenCollateral(stableCoinUpdateProvenCollateralData.amount);
       await adminPages.adminPage.mintToken({
         sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
         name: testData.stablecoinName,
@@ -90,7 +88,6 @@ test.describe('Update collateral, mint and transfer assets', () => {
         ...stableCoinMintTokenData,
       });
       await adminPages.adminPage.verifySuccessMessage(stableCoinMintTokenMessage.successMessage);
-      await adminPages.adminPage.verifyProvenCollateral(stableCoinUpdateProvenCollateralData.amount);
       await adminPages.adminPage.verifyTotalSupply(stableCoinMintTokenData.amount);
     } finally {
       await adminContext.close();
@@ -111,7 +108,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
     const mintAmount = Number.parseFloat(stableCoinMintTokenData.amount);
     const transferAmount = Number.parseFloat(stableCoinTransferData.transferAmount);
     const expectedBalance = (mintAmount - transferAmount).toString();
-    await userPages.portfolioPage.verifyAssetBalance(expectedBalance);
+    await userPages.portfolioPage.verifyAssetBalance(stableCoinMintTokenData.amount, expectedBalance);
   });
   test('Verify transfer user received the assets', async () => {
     await transferUserPages.portfolioPage.goto();

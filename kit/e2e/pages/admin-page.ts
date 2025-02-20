@@ -163,9 +163,9 @@ export class AdminPage extends BasePage {
     await this.completeAssetCreation(options.pincode);
   }
 
-  async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {
+  async checkIfAssetExists(options: { name: string; sidebarAssetTypes: string; totalSupply?: string }) {
     await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
-    await this.page.getByPlaceholder('Search...').fill(options.name);
+    const searchInput = this.page.getByPlaceholder('Search...');
 
     const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
       return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
@@ -174,19 +174,44 @@ export class AdminPage extends BasePage {
       return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
     });
 
-    const row = this.page.locator('tbody tr', {
-      has: this.page.locator(`td:nth-child(${nameColumnIndex}) .flex`, { hasText: options.name }),
-    });
+    await expect
+      .poll(
+        async () => {
+          await searchInput.clear();
+          await searchInput.fill(options.name);
+          await this.page.waitForTimeout(500);
 
-    await row.waitFor();
-    const nameCell = row.locator(`td:nth-child(${nameColumnIndex}) .flex`);
-    const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex}) .flex`);
+          const row = this.page.locator('tbody tr', {
+            has: this.page.locator(`td:nth-child(${nameColumnIndex}) .flex`, { hasText: options.name }),
+          });
 
-    const actualName = await nameCell.textContent();
-    const actualTotalSupply = await totalSupplyCell.textContent();
+          const isVisible = await row.isVisible();
+          if (!isVisible) {
+            return false;
+          }
 
-    expect(actualName?.trim()).toBe(options.name);
-    expect(this.normalizeNumber(actualTotalSupply?.trim() ?? '')).toBe(options.totalSupply);
+          const nameCell = row.locator(`td:nth-child(${nameColumnIndex}) .flex`);
+          const actualName = await nameCell.textContent();
+
+          if (actualName?.trim() !== options.name) {
+            return false;
+          }
+
+          if (options.totalSupply !== undefined) {
+            const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex}) .flex`);
+            const actualTotalSupply = await totalSupplyCell.textContent();
+            return this.normalizeNumber(actualTotalSupply?.trim() ?? '') === options.totalSupply;
+          }
+
+          return true;
+        },
+        {
+          message: `Waiting for asset ${options.name} to appear in the table`,
+          timeout: 120000,
+          intervals: [1000],
+        }
+      )
+      .toBe(true);
   }
 
   async updateProvenCollateral(options: { sidebarAssetTypes: string; name: string; amount: string; pincode: string }) {
@@ -208,6 +233,7 @@ export class AdminPage extends BasePage {
   }
 
   async verifyProvenCollateral(expectedAmount: string) {
+    await this.page.reload();
     const collateralElement = this.page
       .locator('div.space-y-1')
       .filter({
@@ -217,7 +243,22 @@ export class AdminPage extends BasePage {
       })
       .locator('div.text-md');
 
-    await collateralElement.waitFor({ state: 'visible', timeout: 30000 });
+    await expect(collateralElement).toBeVisible();
+
+    await expect
+      .poll(
+        async () => {
+          const text = await collateralElement.textContent();
+          return text ? this.formatAmount(text) : '0';
+        },
+        {
+          message: 'Waiting for proven collateral to be updated from 0',
+          timeout: 30000,
+          intervals: [1000],
+        }
+      )
+      .not.toBe('0');
+
     const actualAmount = await collateralElement.textContent();
 
     if (!actualAmount) {
@@ -227,14 +268,11 @@ export class AdminPage extends BasePage {
     const formattedActual = this.formatAmount(actualAmount);
     const formattedExpected = this.formatAmount(expectedAmount);
 
-    if (formattedActual !== formattedExpected) {
-      throw new Error(`Expected proven collateral to be ${formattedExpected} but found ${formattedActual}`);
-    }
+    await expect(formattedActual).toBe(formattedExpected);
   }
 
   async mintToken(options: { sidebarAssetTypes: string; name: string; user: string; amount: string; pincode: string }) {
-    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
-    await this.chooseAssetFromTable({ name: options.name, sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.page.reload();
     await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
     const mintTokensButton = this.page.getByRole('button', { name: 'Mint tokens' });
     await mintTokensButton.waitFor({ state: 'visible' });
@@ -263,16 +301,30 @@ export class AdminPage extends BasePage {
 
     await expect(totalSupplyElement).toBeVisible();
 
+    await expect
+      .poll(
+        async () => {
+          const text = await totalSupplyElement.textContent();
+          return text ? this.formatAmount(text) : '0';
+        },
+        {
+          message: 'Waiting for total supply to be updated from 0',
+          timeout: 30000,
+          intervals: [1000],
+        }
+      )
+      .not.toBe('0');
+
     const actualAmount = await totalSupplyElement.textContent();
 
     if (!actualAmount) {
       throw new Error('Could not find total supply amount');
     }
 
-    const normalizedActual = this.formatAmount(actualAmount);
-    const normalizedExpected = expectedAmount;
+    const formattedActual = this.formatAmount(actualAmount);
+    const formattedExpected = this.formatAmount(expectedAmount);
 
-    await expect(normalizedActual).toBe(normalizedExpected);
+    await expect(formattedActual).toBe(formattedExpected);
   }
 
   async verifySuccessMessage(partialMessage: string) {

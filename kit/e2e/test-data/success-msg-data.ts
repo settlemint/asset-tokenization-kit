@@ -1,4 +1,4 @@
-export const stableCoinUpdateMessage = {
+export const assetMessage = {
   successMessage: 'successfully on chain',
 };
 
