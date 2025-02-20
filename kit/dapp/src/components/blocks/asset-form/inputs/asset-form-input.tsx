@@ -63,7 +63,7 @@ export function AssetFormInput<T extends FieldValues>({
           const value = e.target.value;
           if (props.type === 'number') {
             // Ensure we always pass a number or empty string, never undefined
-            field.onChange(value === '' ? '' : Number(value));
+            field.onChange(value === '' ? 0 : Number(value));
           } else {
             // Ensure we always pass a string, never undefined
             field.onChange(value ?? '');

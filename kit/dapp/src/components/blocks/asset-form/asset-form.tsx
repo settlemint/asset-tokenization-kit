@@ -191,7 +191,7 @@ export function AssetForm<
       },
     },
     formProps: {
-      mode: 'onSubmit',
+      mode: 'onChange',
       criteriaMode: 'all',
       defaultValues,
     },
