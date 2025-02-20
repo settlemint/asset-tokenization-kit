@@ -1,7 +1,7 @@
 import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 import Link from 'next/link';
 
-export default function LatestTransactions() {
+export function LatestEvents() {
   const first = 5;
 
   return (
