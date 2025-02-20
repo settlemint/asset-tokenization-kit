@@ -5,8 +5,8 @@ import type { Address } from 'viem';
 import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
-  title: 'Token permissions',
-  description: 'Manage token permissions for the stablecoin.',
+  title: 'Permissions',
+  description: 'Manage Permissions for the stablecoin.',
 };
 
 export default async function StablecoinTokenPermissionsPage({ params }: { params: Promise<{ id: string }> }) {
