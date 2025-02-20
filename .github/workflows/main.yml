@@ -68,8 +68,7 @@ jobs:
           path: |
             kit/contracts/genesis-output.json
             kit/subgraph/subgraph-output.txt
-            kit/contracts/artifacts/contracts/**/*.json
-            !kit/contracts/artifacts/contracts/**/*.dbg.json
+            kit/contracts/portal/*.json
 
       - name: Turbo!
         run: bunx turbo deploy:local
