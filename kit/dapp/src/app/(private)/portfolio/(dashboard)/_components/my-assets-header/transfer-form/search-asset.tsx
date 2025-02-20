@@ -1,4 +1,3 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -13,18 +12,24 @@ import { type Address, isHex } from 'viem';
 
 interface AssetsSearchSelectProps {
   assets: MyAsset[];
-  onSelect?: (asset: MyAsset) => void;
+  onSelect: (asset: MyAsset) => void;
+  selectedAsset?: MyAsset | null;
 }
 
-export function AssetsSearchSelect({ assets, onSelect }: AssetsSearchSelectProps) {
+export function AssetsSearchSelect({ assets, selectedAsset, onSelect }: AssetsSearchSelectProps) {
   const [open, setOpen] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<Address | undefined>(undefined);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" aria-expanded={open} className="w-full justify-between">
-          {selectedAsset ? <EvmAddress address={selectedAsset} /> : 'Select an asset'}
+          {selectedAsset ? (
+            <span>
+              {selectedAsset.asset.name} ({selectedAsset.asset.symbol})
+            </span>
+          ) : (
+            'Select an asset'
+          )}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -34,14 +39,13 @@ export function AssetsSearchSelect({ assets, onSelect }: AssetsSearchSelectProps
           <AssetSearchList
             assets={assets}
             onValueChange={(address) => {
-              setSelectedAsset(address);
               const asset = assets.find((a) => a.asset.id === address);
-              if (asset && onSelect) {
+              if (asset) {
                 onSelect(asset);
               }
             }}
             setOpen={setOpen}
-            value={selectedAsset}
+            value={selectedAsset?.asset.id as Address | undefined}
           />
         </Command>
       </PopoverContent>
@@ -90,7 +94,9 @@ function AssetSearchList({
               setOpen(false);
             }}
           >
-            <EvmAddress address={asset.asset.id as Address} hoverCard={false} />
+            <span className="flex-1">
+              {asset.asset.name} ({asset.asset.symbol})
+            </span>
             <Check className={cn('ml-auto', value === asset.asset.id ? 'opacity-100' : 'opacity-0')} />
           </CommandItem>
         ))}

@@ -28,7 +28,7 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
   return (
     <div className="mt-6 flex h-[calc(100vh-8rem)] flex-col">
       <div className="mb-4">
-        <AssetsSearchSelect assets={assets} onSelect={handleAssetClick} />
+        <AssetsSearchSelect assets={assets} selectedAsset={selectedAsset} onSelect={handleAssetClick} />
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
