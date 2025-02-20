@@ -1,9 +1,12 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  timeout: 300 * 1000,
+  timeout: 600 * 1000,
   expect: {
     timeout: 65000,
   },

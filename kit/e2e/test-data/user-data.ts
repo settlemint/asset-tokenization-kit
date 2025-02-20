@@ -22,6 +22,20 @@ export const signUpData: SignUpData = {
   pincode: '123456',
 } as const;
 
+export const signUpUserData: SignUpData = {
+  name: 'Test Regular User',
+  email: `test-user-${date}-${randomValue}@settlemint.com`,
+  password: 'TestPassword123!',
+  pincode: '123456',
+} as const;
+
+export const signUpTransferUserData: SignUpData = {
+  name: 'Test Transfer User',
+  email: `test-transfer-user-${date}-${randomValue}@settlemint.com`,
+  password: 'TestPassword123!',
+  pincode: '123456',
+} as const;
+
 export const adminUser: AdminUser = {
   email: 'test@example.com',
   password: 'TestPassword123!',

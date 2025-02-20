@@ -2,6 +2,9 @@ import { expect } from '@playwright/test';
 import { BasePage } from './base-page';
 
 export class AdminPage extends BasePage {
+  private static readonly CURRENCY_CODE_REGEX = /[A-Z]+$/;
+  private static readonly COMMA_REGEX = /,/g;
+
   async goto() {
     await this.page.goto('/admin');
   }
@@ -145,7 +148,6 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
-    collateralThreshold: string;
     collateralProofValidityDuration: string;
     pincode: string;
   }) {
@@ -162,23 +164,12 @@ export class AdminPage extends BasePage {
   }
 
   async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {
-    await this.page.getByRole('button', { name: options.sidebarAssetTypes }).click();
-    await this.page
-      .locator('a[data-sidebar="menu-sub-button"]', {
-        hasText: 'View all',
-      })
-      .click();
-    await this.page.waitForURL(`**/${options.sidebarAssetTypes.toLowerCase()}`);
-    await Promise.all([
-      this.page.waitForSelector('table tbody'),
-      this.page.waitForSelector('[data-testid="data-table-search-input"]'),
-    ]);
+    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
     await this.page.getByPlaceholder('Search...').fill(options.name);
 
     const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
       return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
     });
-
     const supplyColumnIndex = await this.page.locator('th', { hasText: 'Total Supply' }).evaluate((el) => {
       return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
     });
@@ -196,5 +187,127 @@ export class AdminPage extends BasePage {
 
     expect(actualName?.trim()).toBe(options.name);
     expect(this.normalizeNumber(actualTotalSupply?.trim() ?? '')).toBe(options.totalSupply);
+  }
+
+  async updateProvenCollateral(options: { sidebarAssetTypes: string; name: string; amount: string; pincode: string }) {
+    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.chooseAssetFromTable({ name: options.name, sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    const updateCollateralButton = this.page.getByRole('button', { name: 'Update proven collateral' });
+
+    await updateCollateralButton.waitFor({ state: 'visible' });
+    await updateCollateralButton.click();
+    await this.page.getByLabel('Amount').fill(options.amount);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Update collateral' }).click();
+  }
+
+  private formatAmount(amount: string): string {
+    return amount.replace(AdminPage.CURRENCY_CODE_REGEX, '').replace(AdminPage.COMMA_REGEX, '').trim().split('.')[0];
+  }
+
+  async verifyProvenCollateral(expectedAmount: string) {
+    const collateralElement = this.page
+      .locator('div.space-y-1')
+      .filter({
+        has: this.page.locator('span.font-medium.text-muted-foreground.text-sm', {
+          hasText: 'Proven collateral',
+        }),
+      })
+      .locator('div.text-md');
+
+    await collateralElement.waitFor({ state: 'visible', timeout: 30000 });
+    const actualAmount = await collateralElement.textContent();
+
+    if (!actualAmount) {
+      throw new Error('Could not find proven collateral amount');
+    }
+
+    const formattedActual = this.formatAmount(actualAmount);
+    const formattedExpected = this.formatAmount(expectedAmount);
+
+    if (formattedActual !== formattedExpected) {
+      throw new Error(`Expected proven collateral to be ${formattedExpected} but found ${formattedActual}`);
+    }
+  }
+
+  async mintToken(options: { sidebarAssetTypes: string; name: string; user: string; amount: string; pincode: string }) {
+    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.chooseAssetFromTable({ name: options.name, sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    const mintTokensButton = this.page.getByRole('button', { name: 'Mint tokens' });
+    await mintTokensButton.waitFor({ state: 'visible' });
+    await mintTokensButton.click();
+    await this.page.getByRole('button', { name: 'Search for a user' }).click();
+    await this.page.getByPlaceholder('Search for a user...').click();
+    await this.page.getByPlaceholder('Search for a user...').fill(options.user);
+    await this.page.getByRole('option', { name: `Avatar ${options.user}` }).click();
+    await this.page.getByRole('button', { name: 'Go to next step' }).click();
+    await this.page.getByLabel('Amount').fill(options.amount);
+    await this.page.getByRole('button', { name: 'Go to next step' }).click();
+    await this.page.getByRole('textbox').click();
+    await this.page.getByRole('textbox').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Mint' }).click();
+  }
+
+  async verifyTotalSupply(expectedAmount: string) {
+    const totalSupplyElement = this.page
+      .locator('div.space-y-1')
+      .filter({
+        has: this.page.locator('span.font-medium.text-muted-foreground.text-sm', {
+          hasText: 'Total supply',
+        }),
+      })
+      .locator('div.text-md');
+
+    await expect(totalSupplyElement).toBeVisible();
+
+    const actualAmount = await totalSupplyElement.textContent();
+
+    if (!actualAmount) {
+      throw new Error('Could not find total supply amount');
+    }
+
+    const normalizedActual = this.formatAmount(actualAmount);
+    const normalizedExpected = expectedAmount;
+
+    await expect(normalizedActual).toBe(normalizedExpected);
+  }
+
+  async verifySuccessMessage(partialMessage: string) {
+    await this.page.waitForSelector(
+      `[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"] [data-title]`,
+      { state: 'visible' }
+    );
+    const toastTitle = await this.page.locator('[data-sonner-toast][data-type="success"] [data-title]').textContent();
+
+    if (!toastTitle?.toLowerCase().includes(partialMessage.toLowerCase())) {
+      throw new Error(`Expected successmessage to contain "${partialMessage}" but found "${toastTitle}"`);
+    }
+  }
+
+  async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
+    await this.page.getByRole('button', { name: options.sidebarAssetTypes }).click();
+    const viewAllLink = this.page
+      .locator(`a[data-sidebar="menu-sub-button"][href="/admin/${options.sidebarAssetTypes.toLowerCase()}"]`)
+      .filter({ hasText: 'View all' });
+    await viewAllLink.click();
+    await this.page.waitForURL(`**/${options.sidebarAssetTypes.toLowerCase()}`);
+    await Promise.all([
+      this.page.waitForSelector('table tbody'),
+      this.page.waitForSelector('[data-testid="data-table-search-input"]'),
+    ]);
+  }
+
+  async chooseAssetFromTable(options: { name: string; sidebarAssetTypes: string }) {
+    await this.page.getByPlaceholder('Search...').fill(options.name);
+    const detailsLink = this.page
+      .locator('tr')
+      .filter({ has: this.page.getByText(options.name, { exact: true }) })
+      .getByRole('link', { name: 'Details' });
+
+    await detailsLink.click();
+    await this.page.waitForURL(new RegExp(`.*/${options.sidebarAssetTypes.toLowerCase()}/0x[a-fA-F0-9]{40}`));
   }
 }
