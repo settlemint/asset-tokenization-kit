@@ -87,7 +87,7 @@ export function AssetFormUsers<T extends FieldValues>({
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[419px] p-0">
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput placeholder="Search for a user..." className="h-9" />
                   <AssetFormUsersList onValueChange={field.onChange} setOpen={setOpen} value={field.value} />
