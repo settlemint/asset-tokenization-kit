@@ -5,7 +5,7 @@ import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
 import { queryKeys, sanitizeSearchTerm } from '@/lib/react-query';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { hasuraClient } from '@/lib/settlemint/hasura';
 import { cn } from '@/lib/utils';
 import type { ResultOf } from '@settlemint/sdk-hasura';
 import { useQuery } from '@tanstack/react-query';
@@ -15,6 +15,7 @@ import { useState } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import type { Address } from 'viem';
 import { EvmAddress } from '../../evm-address/evm-address';
+import { SearchUsers } from '../../search/search-query';
 
 type AssetFormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -22,33 +23,6 @@ type AssetFormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     defaultValue?: string;
   };
 
-const SearchUsers = hasuraGraphql(`
-  query SearchUsers($search: String!) {
-    user(limit: 10, where: {_or: [{name: {_ilike: $search}}, {wallet: {_ilike: $search}}, {email: {_like: $search}}]}) {
-      wallet
-      id
-    }
-  }
-`);
-
-/**
- * A form select component that wraps shadcn's Select component with form field functionality.
- * Provides a dropdown selection with support for default values and custom options.
- *
- * @example
- * ```tsx
- * <AssetFormSelect
- *   name="category"
- *   control={form.control}
- *   label="Category"
- *   options={[
- *     { label: 'Option 1', value: '1' },
- *     { label: 'Option 2', value: '2' },
- *   ]}
- *   required
- * />
- * ```
- */
 export function AssetFormUsers<T extends FieldValues>({
   label,
   description,
@@ -87,7 +61,7 @@ export function AssetFormUsers<T extends FieldValues>({
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[419px] p-0">
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput placeholder="Search for a user..." className="h-9" />
                   <AssetFormUsersList onValueChange={field.onChange} setOpen={setOpen} value={field.value} />

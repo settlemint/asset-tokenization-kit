@@ -10,9 +10,7 @@ export function Recipients() {
       <div className="space-y-8">
         <div className="mb-2">
           <h2 className="font-semibold text-foreground text-lg">Select Recipient</h2>
-          <p className="text-muted-foreground text-sm">
-            Enter a wallet address to send tokens directly, or search for a user by their name or email.
-          </p>
+          <p className="text-muted-foreground text-sm">Enter a wallet address to send tokens directly.</p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">

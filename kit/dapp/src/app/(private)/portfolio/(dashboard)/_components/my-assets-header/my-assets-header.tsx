@@ -1,14 +1,15 @@
 import { getMyAssets } from '@/components/blocks/my-assets-table/data';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
-import { getQueryClient } from '@/lib/react-query';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, type QueryKey, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { MyAssetsCountClient } from './count-client';
+import type { Address } from 'viem';
+import { MyAssetsHeaderClient } from './my-assets-header-client';
 
-export async function MyAssetsCount() {
+export async function MyAssetsHeader() {
   const queryClient = getQueryClient();
   const user = await getAuthenticatedUser();
-  const queryKey: QueryKey = ['my-assets', user.wallet];
+  const queryKey: QueryKey = queryKeys.user.balances(user.wallet as Address);
 
   await queryClient.prefetchQuery({
     queryKey,
@@ -18,7 +19,7 @@ export async function MyAssetsCount() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <MyAssetsCountClient queryKey={queryKey} />
+        <MyAssetsHeaderClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>
   );

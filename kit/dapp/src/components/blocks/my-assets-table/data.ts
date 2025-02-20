@@ -15,6 +15,7 @@ const BalanceFragment = theGraphGraphqlStarterkits(`
       name
       symbol
       type
+      decimals
       ... on StableCoin {
         paused
       }

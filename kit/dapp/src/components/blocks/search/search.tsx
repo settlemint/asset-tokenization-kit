@@ -7,50 +7,15 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useQueryKeys } from '@/hooks/use-query-keys';
 import { assetConfig } from '@/lib/config/assets';
 import { sanitizeSearchTerm } from '@/lib/react-query';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import { hasuraClient } from '@/lib/settlemint/hasura';
+import { theGraphClientStarterkits } from '@/lib/settlemint/the-graph';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
 import { type Address, getAddress, isHex } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
-
-const SearchUsers = hasuraGraphql(`
-  query SearchUsers($search: String!) {
-    user(
-      where: {
-        _or: [
-          { name: { _ilike: $search } },
-          { wallet: { _ilike: $search } },
-          { email: { _like: $search } }
-        ]
-      },
-      limit: 10
-    ) {
-      wallet
-      id
-    }
-  }
-`);
-
-const SearchAssets = theGraphGraphqlStarterkits(`
-  query SearchAssets($searchAddress: Bytes!, $search: String!) {
-    assets(
-      where: {
-        or: [
-          { name_contains_nocase: $search },
-          { symbol_contains_nocase: $search },
-          { id: $searchAddress }
-        ]
-      },
-      first: 10
-    ) {
-      id
-      type
-    }
-  }
-`);
+import { SearchAssets, SearchUsers } from './search-query';
 
 export const Search = () => {
   const { keys } = useQueryKeys();
