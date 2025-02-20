@@ -1,8 +1,10 @@
+import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
+import type { assetConfig } from '@/lib/config/assets';
 import { sanitizeSearchTerm } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 import { CommandEmpty, useCommandState } from 'cmdk';
@@ -24,7 +26,8 @@ export function AssetsSearchSelect({ assets, selectedAsset, onSelect }: AssetsSe
       <PopoverTrigger asChild>
         <Button variant="outline" aria-expanded={open} className="w-full justify-between">
           {selectedAsset ? (
-            <span>
+            <span className="flex items-center gap-2">
+              <AssetTypeIcon type={selectedAsset.asset.type as keyof typeof assetConfig} size="md" />
               {selectedAsset.asset.name} ({selectedAsset.asset.symbol})
             </span>
           ) : (
@@ -94,7 +97,8 @@ function AssetSearchList({
               setOpen(false);
             }}
           >
-            <span className="flex-1">
+            <span className="flex items-center gap-2">
+              <AssetTypeIcon type={asset.asset.type as keyof typeof assetConfig} size="md" />
               {asset.asset.name} ({asset.asset.symbol})
             </span>
             <Check className={cn('ml-auto', value === asset.asset.id ? 'opacity-100' : 'opacity-0')} />
