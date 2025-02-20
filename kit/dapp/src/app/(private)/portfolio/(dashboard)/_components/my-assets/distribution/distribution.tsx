@@ -1,4 +1,4 @@
-import { getMyAssets } from '@/components/blocks/my-assets-table/data';
+import { getMyAssets } from '@/app/(private)/portfolio/_components/data';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -13,13 +13,13 @@ export async function Distribution() {
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getMyAssets(),
+    queryFn: () => getMyAssets({ active: true, wallet: user.wallet as Address }),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense>
-        <DistributionClient queryKey={queryKey} />
+        <DistributionClient queryKey={queryKey} wallet={user.wallet as Address} />
       </Suspense>
     </HydrationBoundary>
   );

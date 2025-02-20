@@ -1,12 +1,13 @@
-import { getMyAssets } from '@/app/(private)/portfolio/_components/data';
+import { MyAssetsTableClient } from '@/app/(private)/portfolio/my-assets/(table)/_components/table-client';
+import { PageHeader } from '@/components/layout/page-header';
 import { getAuthenticatedUser } from '@/lib/auth/auth';
 import { getQueryClient, queryKeys } from '@/lib/react-query';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
-import { SmallMyAssetsTableClient } from './table-client';
+import { getMyAssets } from '../../_components/data';
 
-export async function MyAssets() {
+export default async function MyAssetsPage() {
   const user = await getAuthenticatedUser();
   const queryKey = queryKeys.user.balances(user.wallet as Address);
   const queryClient = getQueryClient();
@@ -16,10 +17,13 @@ export async function MyAssets() {
     queryFn: () => getMyAssets({ active: true, wallet: user.wallet as Address }),
   });
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
-        <SmallMyAssetsTableClient queryKey={queryKey} wallet={user.wallet as Address} />
-      </Suspense>
-    </HydrationBoundary>
+    <>
+      <PageHeader title="My Assets" />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense>
+          <MyAssetsTableClient queryKey={queryKey} wallet={user.wallet as Address} />
+        </Suspense>
+      </HydrationBoundary>
+    </>
   );
 }
