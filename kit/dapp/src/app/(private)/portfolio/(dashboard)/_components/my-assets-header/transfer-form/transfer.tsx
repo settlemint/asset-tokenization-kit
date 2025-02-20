@@ -15,10 +15,14 @@ interface TransferFormProps {
 
 export function MyAssetsTransferForm({ assets }: TransferFormProps) {
   const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
+  const [open, setOpen] = useState(false);
+
   return (
     <Sheet
-      onOpenChange={() => {
+      open={open}
+      onOpenChange={(open) => {
         setSelectedAsset(null);
+        setOpen(open);
       }}
     >
       <SheetTrigger asChild>
@@ -46,7 +50,10 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
               assetType={selectedAsset?.asset.type}
               balance={selectedAsset?.value}
               decimals={selectedAsset?.asset.decimals}
-              onCloseAction={() => setSelectedAsset(null)}
+              onCloseAction={() => {
+                setSelectedAsset(null);
+                setOpen(false);
+              }}
             />
           </>
         ) : (
