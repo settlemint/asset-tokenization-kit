@@ -26,10 +26,13 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
   };
 
   return (
-    <div className="mt-6 flex h-[500px] flex-col">
-      <AssetsSearchSelect assets={assets} onSelect={handleAssetClick} />
-      <div className="mt-4 flex-1 overflow-y-auto pr-2">
-        <div className="space-y-2">
+    <div className="mt-6 flex h-[calc(100vh-8rem)] flex-col">
+      <div className="mb-4">
+        <AssetsSearchSelect assets={assets} onSelect={handleAssetClick} />
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-2 pb-4">
           {assets.map((asset) => (
             <Card
               key={asset.asset.id}
@@ -53,8 +56,9 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
           ))}
         </div>
       </div>
-      <div className="mt-4 border-t pt-4">
-        <Button className="w-full" size="lg" onClick={handleConfirm} disabled={!selectedAsset}>
+
+      <div className="pt-6 text-right">
+        <Button size="lg" onClick={handleConfirm} disabled={!selectedAsset}>
           Confirm
         </Button>
       </div>
