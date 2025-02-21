@@ -1,8 +1,9 @@
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
 import type { FreezeFormType } from '../schema';
 
-export function Amount({ currentBalance, currentlyFrozen }: { currentBalance: number; currentlyFrozen: number }) {
+export function Amount({ currentBalance, currentlyFrozen }: { currentBalance: string; currentlyFrozen: string }) {
   const { control } = useFormContext<FreezeFormType>();
 
   return (
@@ -20,10 +21,11 @@ export function Amount({ currentBalance, currentlyFrozen }: { currentBalance: nu
           control={control}
           name="amount"
           label="Amount"
-          type="number"
+          type="string"
           min={1}
-          max={currentBalance}
-          description={`${currentBalance} available to freeze. ${currentlyFrozen} already frozen.`}
+          description={`${formatNumber(currentBalance)} available to freeze. ${formatNumber(
+            currentlyFrozen
+          )} already frozen.`}
         />
       </div>
     </div>

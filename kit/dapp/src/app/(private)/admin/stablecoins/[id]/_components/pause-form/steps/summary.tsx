@@ -16,13 +16,13 @@ import type { Address } from 'viem';
 
 export function Summary({ address, paused }: { address: Address; paused: boolean }) {
   const { control } = useFormContext();
-
+  const action = paused ? 'Unpause' : 'Pause';
   return (
     <AssetFormSummary>
       <div>
-        <AssetFormSummaryTitle>Review and confirm pause</AssetFormSummaryTitle>
+        <AssetFormSummaryTitle>Review and confirm {action}</AssetFormSummaryTitle>
         <AssetFormSummarySubTitle>
-          Verify the details of your pause action before proceeding. This will affect all transfers of the asset.
+          Verify the details before proceeding. This action will {paused ? 'enable' : 'prevent'} token transfers.
         </AssetFormSummarySubTitle>
       </div>
 

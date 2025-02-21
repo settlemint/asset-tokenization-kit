@@ -13,8 +13,8 @@ import { freeze } from './store';
 interface FreezeFormProps {
   address: Address;
   decimals: number;
-  currentlyFrozen: number;
-  currentBalance: number;
+  currentlyFrozen: string;
+  currentBalance: string;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
 }

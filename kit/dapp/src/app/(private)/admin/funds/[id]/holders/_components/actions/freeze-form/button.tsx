@@ -10,8 +10,8 @@ interface FreezeButtonProps {
   address: Address;
   decimals: number;
   userAddress: Address;
-  currentFrozen: number;
-  currentBalance: number;
+  currentFrozen: string;
+  currentBalance: string;
   assetConfig: AssetDetailConfig;
 }
 

@@ -91,8 +91,8 @@ export const columns = (address: Address, decimals: number, assetConfig: AssetDe
           <FreezeButton
             address={address}
             decimals={decimals}
-            currentFrozen={Number(row.original.frozen)}
-            currentBalance={Number(row.original.value)}
+            currentFrozen={row.original.frozen}
+            currentBalance={row.original.value}
             userAddress={row.original.account.id as Address}
             assetConfig={assetConfig}
           />

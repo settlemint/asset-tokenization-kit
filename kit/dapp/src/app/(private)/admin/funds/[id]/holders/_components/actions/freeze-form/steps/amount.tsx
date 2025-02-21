@@ -2,7 +2,7 @@ import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form
 import { useFormContext } from 'react-hook-form';
 import type { FreezeFormType } from '../schema';
 
-export function Amount({ currentBalance, currentlyFrozen }: { currentBalance: number; currentlyFrozen: number }) {
+export function Amount({ currentBalance, currentlyFrozen }: { currentBalance: string; currentlyFrozen: string }) {
   const { control } = useFormContext<FreezeFormType>();
 
   return (

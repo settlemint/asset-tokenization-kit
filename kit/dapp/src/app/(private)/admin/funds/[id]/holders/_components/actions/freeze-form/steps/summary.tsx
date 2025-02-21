@@ -21,8 +21,8 @@ export function Summary({
   currentlyFrozen,
 }: {
   userAddress: Address;
-  currentBalance: bigint;
-  currentlyFrozen: bigint;
+  currentBalance: string;
+  currentlyFrozen: string;
 }) {
   const { control } = useFormContext<FreezeFormType>();
   const values = useWatch({
@@ -34,8 +34,7 @@ export function Summary({
       <div>
         <AssetFormSummaryTitle>Review and confirm freeze</AssetFormSummaryTitle>
         <AssetFormSummarySubTitle>
-          Verify the details of your freeze action before proceeding. This will affect the specified amount of user's
-          tokens.
+          Verify the details of your freeze action before proceeding. This action will freeze the amount.
         </AssetFormSummarySubTitle>
       </div>
 

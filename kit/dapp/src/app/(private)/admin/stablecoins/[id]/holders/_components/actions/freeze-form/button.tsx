@@ -9,8 +9,8 @@ import { FreezeForm } from './form';
 interface FreezeButtonProps {
   address: Address;
   decimals: number;
-  currentFrozen: number;
-  currentBalance: number;
+  currentFrozen: string;
+  currentBalance: string;
   assetConfig: AssetDetailConfig;
 }
 

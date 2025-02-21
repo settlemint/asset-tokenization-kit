@@ -20,8 +20,8 @@ export function Summary({
   currentlyFrozen,
 }: {
   userAddress: Address;
-  currentBalance: bigint;
-  currentlyFrozen: bigint;
+  currentBalance: string;
+  currentlyFrozen: string;
 }) {
   const { control } = useFormContext();
   const values = useWatch({
@@ -33,8 +33,7 @@ export function Summary({
       <div>
         <AssetFormSummaryTitle>Review and confirm freeze</AssetFormSummaryTitle>
         <AssetFormSummarySubTitle>
-          Verify the details of your freeze action before proceeding. This will affect the specified amount of user's
-          tokens.
+          Verify the details of your freeze action before proceeding. This action will freeze the amount.
         </AssetFormSummarySubTitle>
       </div>
 
@@ -49,8 +48,8 @@ export function Summary({
 
           <AssetFormSummaryContent>
             <AssetSummaryItem label="User address" value={userAddress} type="address" />
-            <AssetSummaryItem label="Current balance" value={currentBalance.toString()} />
-            <AssetSummaryItem label="Currently frozen" value={currentlyFrozen.toString()} />
+            <AssetSummaryItem label="Current balance" value={currentBalance} type="number" />
+            <AssetSummaryItem label="Currently frozen" value={currentlyFrozen} type="number" />
             <AssetSummaryItem label="Amount to freeze" value={values.amount} type="number" />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
