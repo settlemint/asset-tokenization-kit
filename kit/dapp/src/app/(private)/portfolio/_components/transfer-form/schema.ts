@@ -15,18 +15,12 @@ export const getTransferFormSchema = (balance?: string) => {
       ? z
           .string()
           .min(1, { message: 'Amount is required' })
-          .refine(
-            (val) => {
-              const amount = BigNumber(val);
-              return amount.gt(0) && amount.lte(balance);
-            },
-            (val) => {
-              const amount = BigNumber(val);
-              return {
-                message: amount.eq(0) ? 'Amount must be greater than 0' : 'Amount cannot be greater than balance',
-              };
-            }
-          )
+          .refine((val) => BigNumber(val).gt(0), {
+            message: 'Amount must be greater than 0',
+          })
+          .refine((val) => BigNumber(val).lte(balance), {
+            message: 'Amount cannot be greater than balance',
+          })
       : z.string().min(1, { message: 'Amount is required' }),
     assetType: z.enum(assetTypes),
     pincode: z

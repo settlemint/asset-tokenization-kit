@@ -2,7 +2,7 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { BurnFormSchema } from './schema';
+import { getBurnFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
 import { burnStablecoin } from './store';
@@ -22,12 +22,12 @@ export function BurnForm({
   decimals: number;
   assetConfig: AssetDetailConfig;
   onCloseAction: () => void;
-  balance: number;
+  balance: string;
 }) {
   return (
     <AssetForm
       storeAction={burnStablecoin}
-      resolverAction={zodResolver(BurnFormSchema)}
+      resolverAction={zodResolver(getBurnFormSchema(balance))}
       onClose={onCloseAction}
       assetConfig={assetConfig}
       address={address}

@@ -9,18 +9,12 @@ export const getMintFormSchema = (collateralAvailable?: number) =>
       ? z
           .string()
           .min(1, { message: 'Amount is required' })
-          .refine(
-            (val) => {
-              const amount = BigNumber(val);
-              return amount.gt(0) && amount.lte(collateralAvailable);
-            },
-            (val) => {
-              const amount = BigNumber(val);
-              return {
-                message: amount.eq(0) ? 'Amount must be greater than 0' : 'Amount cannot be greater than collateral',
-              };
-            }
-          )
+          .refine((val) => BigNumber(val).gt(0), {
+            message: 'Amount must be greater than 0',
+          })
+          .refine((val) => BigNumber(val).lte(collateralAvailable), {
+            message: 'Amount cannot be greater than collateral',
+          })
       : z.string().min(1, { message: 'Amount is required' }),
     pincode: z
       .string()

@@ -3,7 +3,7 @@ import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
 import type { BurnFormType } from '../schema';
 
-export function Amount({ balance }: { balance: number }) {
+export function Amount({ balance }: { balance: string }) {
   const { control } = useFormContext<BurnFormType>();
 
   return (
@@ -19,10 +19,9 @@ export function Amount({ balance }: { balance: number }) {
           control={control}
           name="amount"
           label="Amount"
-          type="number"
+          type="string"
           min={1}
           defaultValue={1}
-          max={balance}
           description={`You have ${formatNumber(balance)} in your wallet.`}
         />
       </div>

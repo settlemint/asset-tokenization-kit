@@ -44,17 +44,15 @@ export function Summary({ address }: { address: Address }) {
           <AssetFormSummaryContent>
             <AssetSummaryItem label="Token address" value={address} type="address" />
             <AssetSummaryItem label="New admin address" value={values.userAddress as Address} type="address" />
-            <AssetSummaryItem
-              label="Roles to grant"
-              value={Object.entries(values.roles ?? {})
+            <AssetSummaryItem label="Roles to grant">
+              {Object.entries(values.roles ?? {})
                 .filter(([_, isEnabled]) => isEnabled)
                 .map(([role]) => (
-                  <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                  <span key={role} className="ml-2 rounded bg-muted px-2 py-1 text-xs">
                     {getRoleDisplayName(role as Role)}
                   </span>
-                ))
-                .join(', ')}
-            />
+                ))}
+            </AssetSummaryItem>
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

@@ -1,13 +1,13 @@
 import { type FormatDateOptions, formatDate } from '@/lib/date';
 import { type FormatNumberOptions, formatNumber } from '@/lib/number';
-import type { ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import type { Address } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 
-type ItemValue = string | number | boolean | Date | undefined | null;
+type ItemValue = string | number | boolean | Date | null;
 interface AssetSummaryItemProps {
   label: string;
-  value: ItemValue;
+  value?: ItemValue;
   type?: 'number' | 'address';
   options?: {
     number?: FormatNumberOptions;
@@ -15,7 +15,16 @@ interface AssetSummaryItemProps {
   };
 }
 
-export function AssetSummaryItem({ label, value, type, options }: AssetSummaryItemProps) {
+export function AssetSummaryItem({ label, value, type, options, children }: AssetSummaryItemProps & PropsWithChildren) {
+  if (children) {
+    return (
+      <div className="flex justify-between py-1.5">
+        <dt className="text-muted-foreground text-sm">{label}</dt>
+        <dd className="font-medium text-sm">{children}</dd>
+      </div>
+    );
+  }
+
   if (type === 'address') {
     if (typeof value !== 'string') {
       return 'N/A';
@@ -31,7 +40,7 @@ export function AssetSummaryItem({ label, value, type, options }: AssetSummaryIt
     );
   }
 
-  const formatValue = (val: ItemValue): ReactNode => {
+  const formatValue = (val?: ItemValue): ReactNode => {
     if (val === undefined || val === null || val === '') {
       return '-';
     }

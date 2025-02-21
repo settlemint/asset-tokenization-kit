@@ -13,7 +13,7 @@ export function BurnButton({
   symbol,
   decimals,
   balance,
-}: { name: string; symbol: string; address: Address; decimals: number; balance: number }) {
+}: { name: string; symbol: string; address: Address; decimals: number; balance: string }) {
   const [open, setOpen] = useState(false);
 
   return (

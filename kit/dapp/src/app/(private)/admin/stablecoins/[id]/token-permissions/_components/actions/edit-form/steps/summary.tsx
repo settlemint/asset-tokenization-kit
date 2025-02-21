@@ -39,17 +39,15 @@ export function Summary({ userAddress, currentRoles: roles }: { userAddress: Add
               label="Current roles"
               value={roles.map((role: Role) => getRoleDisplayName(role)).join(', ')}
             />
-            <AssetSummaryItem
-              label="New roles"
-              value={Object.entries(values.newRoles ?? {})
+            <AssetSummaryItem label="New roles">
+              {Object.entries(values.newRoles ?? {})
                 .filter(([_, isEnabled]) => isEnabled)
                 .map(([role]) => (
                   <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
                     {getRoleDisplayName(role as Role)}
                   </span>
-                ))
-                .join(', ')}
-            />
+                ))}
+            </AssetSummaryItem>
           </dl>
         </div>
 
