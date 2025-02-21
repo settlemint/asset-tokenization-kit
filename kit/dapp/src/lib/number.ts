@@ -7,7 +7,7 @@ BigNumber.config({
 /**
  * Options for currency formatting
  */
-export interface FormatOptions {
+export interface FormatNumberOptions {
   /** The currency code (e.g., 'USD', 'EUR') */
   readonly currency?: string;
   /** The token symbol (e.g., 'USDC', 'USDT') */
@@ -30,7 +30,7 @@ export interface FormatOptions {
  */
 export function formatNumber(
   amount?: string | bigint | number | BigNumber | null,
-  options: FormatOptions = {}
+  options: FormatNumberOptions = {}
 ): string {
   const { currency, token, locale = 'en-US', decimals = 2, percentage = false } = options;
   let value = new BigNumber(amount?.toString() ?? '0');

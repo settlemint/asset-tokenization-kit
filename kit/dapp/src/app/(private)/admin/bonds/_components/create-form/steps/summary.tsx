@@ -1,6 +1,6 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateBondFormType } from '../schema';
@@ -30,30 +30,12 @@ export function Summary() {
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Name</dt>
-              <dd className="font-medium text-sm">{values.assetName}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Symbol</dt>
-              <dd className="font-medium text-sm">{values.symbol}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Decimals</dt>
-              <dd className="font-medium text-sm">{values.decimals}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">ISIN:</dt>
-              <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Cap:</dt>
-              <dd className="font-medium">{values.cap ? formatNumber(values.cap, { token: values.symbol }) : '-'}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Private</dt>
-              <dd className="font-medium text-sm">{values.private ? 'Yes' : 'No'}</dd>
-            </div>
+            <AssetProperty label="Name" value={values.assetName} />
+            <AssetProperty label="Symbol" value={values.symbol} />
+            <AssetProperty label="Decimals" value={values.decimals} options={{ number: { decimals: 0 } }} />
+            <AssetProperty label="ISIN" value={values.isin} />
+            <AssetProperty label="Cap" value={values.cap} options={{ number: { token: values.symbol } }} />
+            <AssetProperty label="Private" value={values.private} />
           </dl>
         </div>
 
@@ -68,31 +50,12 @@ export function Summary() {
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Face value currency:</dt>
-              <dd className="font-medium">{values.faceValueCurrency}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Face value:</dt>
-              <dd className="font-medium">{values.faceValue}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Maturity date:</dt>
-              <dd className="font-medium">{values.maturityDate?.toISOString()}</dd>
-            </div>
-
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Coupon rate:</dt>
-              <dd className="font-medium">{values.couponRate}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Payment frequency:</dt>
-              <dd className="font-medium">{values.paymentFrequency}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">First payment date:</dt>
-              <dd className="font-medium">{values.firstCouponDate?.toISOString()}</dd>
-            </div>
+            <AssetProperty label="Face value currency" value={values.faceValueCurrency} />
+            <AssetProperty label="Face value" value={values.faceValue} />
+            <AssetProperty label="Maturity date" value={values.maturityDate} />
+            <AssetProperty label="Coupon rate" value={values.couponRate} />
+            <AssetProperty label="Payment frequency" value={values.paymentFrequency} />
+            <AssetProperty label="First payment date" value={values.firstCouponDate} />
           </dl>
         </div>
 

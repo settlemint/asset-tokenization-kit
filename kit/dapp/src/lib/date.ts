@@ -13,7 +13,7 @@ const NUMERIC_REGEX = /^\d+$/;
 /**
  * Options for date formatting
  */
-export interface DateFormatOptions {
+export interface FormatDateOptions {
   /** Format type: absolute (default), relative, distance, or unix */
   readonly type?: 'absolute' | 'relative' | 'distance' | 'unixSeconds';
   /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
@@ -28,7 +28,7 @@ export interface DateFormatOptions {
  * @param options - Formatting options including locale and format preferences
  * @returns Formatted date string or 'Invalid Date' if the input is invalid
  */
-export function formatDate(date: string | Date, options: DateFormatOptions = {}): string {
+export function formatDate(date: string | Date, options: FormatDateOptions = {}): string {
   const { type = 'absolute', formatStr = 'MMMM d, yyyy HH:mm' } = options;
 
   try {
