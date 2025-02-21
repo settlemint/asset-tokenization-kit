@@ -30,6 +30,14 @@ export function AddTokenAdminForm({
       address={address}
       submitLabel="Add Admin"
       submittingLabel="Adding Admin..."
+      defaultValues={{
+        address,
+        roles: {
+          DEFAULT_ADMIN_ROLE: false,
+          SUPPLY_MANAGEMENT_ROLE: false,
+          USER_MANAGEMENT_ROLE: false,
+        },
+      }}
       messages={{
         onCreate: () => `Adding admin for ${name} (${symbol})`,
         onSuccess: () => `Admin added successfully for ${name} (${symbol})`,
