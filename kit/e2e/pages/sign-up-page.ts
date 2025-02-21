@@ -17,7 +17,7 @@ export class SignUpPage extends BasePage {
     await this.page.locator('[data-input-otp="true"]').last().fill(options.pincode);
 
     await this.page.getByRole('button', { name: 'Create Account' }).click();
-    await this.page.waitForURL('**/admin');
+    await this.page.waitForURL('**/portfolio');
     await expect(this.page.locator('div.grid span.truncate.font-semibold', { hasText: options.name })).toBeVisible();
   }
 }

@@ -59,3 +59,18 @@ export async function getUserRole(email: string): Promise<UserRole | null> {
     await client.end();
   }
 }
+
+export async function fetchWalletAddressFromDB(email: string): Promise<string> {
+  const client = await createDbClient();
+  try {
+    const result = await client.query('SELECT wallet FROM "user" WHERE email = $1', [email]);
+
+    if (!result.rows.length || !result.rows[0].wallet) {
+      throw new Error(`No wallet address found for user with email: ${email}`);
+    }
+
+    return result.rows[0].wallet;
+  } finally {
+    await client.end();
+  }
+}
