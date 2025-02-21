@@ -17,7 +17,7 @@ export async function MyAssetsCount() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
         <MyAssetsCountClient queryKey={queryKey} />
       </Suspense>
     </HydrationBoundary>

@@ -106,7 +106,7 @@ export default async function MyAssetDetailLayout({ children, params }: LayoutPr
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <TransferButton
                 address={id as Address}
                 name={myAsset.asset.name}
@@ -116,18 +116,18 @@ export default async function MyAssetDetailLayout({ children, params }: LayoutPr
                 decimals={myAsset.asset.decimals}
               />
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <Button variant="ghost" className="w-full justify-start">
                 Allow token spending
               </Button>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <Button variant="ghost" className="w-full justify-start">
                 Spend allowance
               </Button>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="dropdown-menu-item">
               <Button variant="ghost" className="w-full justify-start">
                 View transactions
               </Button>
