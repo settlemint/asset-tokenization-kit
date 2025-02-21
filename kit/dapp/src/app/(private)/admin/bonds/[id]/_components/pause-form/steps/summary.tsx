@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { PauseCircle } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
@@ -36,9 +36,9 @@ export function Summary({ address, paused }: { address: Address; paused: boolean
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Contract Address" value={address} type="address" />
-            <AssetProperty label="Current State" value={paused ? 'Paused' : 'Active'} />
-            <AssetProperty label="Target State" value={paused ? 'Active' : 'Paused'} />
+            <AssetSummaryItem label="Contract Address" value={address} type="address" />
+            <AssetSummaryItem label="Current State" value={paused ? 'Paused' : 'Active'} />
+            <AssetSummaryItem label="Target State" value={paused ? 'Active' : 'Paused'} />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

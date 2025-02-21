@@ -4,10 +4,10 @@ import type { ReactNode } from 'react';
 import type { Address } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 
-type AssetPropertyValue = string | number | boolean | Date | undefined | null;
-interface AssetPropertyProps {
+type ItemValue = string | number | boolean | Date | undefined | null;
+interface AssetSummaryItemProps {
   label: string;
-  value: AssetPropertyValue;
+  value: ItemValue;
   type?: 'number' | 'address';
   options?: {
     number?: FormatNumberOptions;
@@ -15,7 +15,7 @@ interface AssetPropertyProps {
   };
 }
 
-export function AssetProperty({ label, value, type, options }: AssetPropertyProps) {
+export function AssetSummaryItem({ label, value, type, options }: AssetSummaryItemProps) {
   if (type === 'address') {
     if (typeof value !== 'string') {
       return 'N/A';
@@ -31,7 +31,7 @@ export function AssetProperty({ label, value, type, options }: AssetPropertyProp
     );
   }
 
-  const formatValue = (val: AssetPropertyValue): ReactNode => {
+  const formatValue = (val: ItemValue): ReactNode => {
     if (val === undefined || val === null || val === '') {
       return '-';
     }

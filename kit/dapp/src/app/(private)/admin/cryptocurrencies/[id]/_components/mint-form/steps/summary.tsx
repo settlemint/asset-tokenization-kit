@@ -1,4 +1,4 @@
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -34,9 +34,9 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <AssetProperty label="Asset" value={address} type="address" />
-            <AssetProperty label="Recipient" value={values.to} type="address" />
-            <AssetProperty label="Amount" value={values.amount} type="number" />
+            <AssetSummaryItem label="Asset" value={address} type="address" />
+            <AssetSummaryItem label="Recipient" value={values.to} type="address" />
+            <AssetSummaryItem label="Amount" value={values.amount} type="number" />
           </dl>
         </div>
 

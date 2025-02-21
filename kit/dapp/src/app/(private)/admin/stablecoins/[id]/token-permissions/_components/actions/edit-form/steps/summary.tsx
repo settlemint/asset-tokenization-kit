@@ -1,4 +1,4 @@
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
@@ -34,12 +34,12 @@ export function Summary({ userAddress, currentRoles: roles }: { userAddress: Add
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <AssetProperty label="User" value={userAddress} type="address" />
-            <AssetProperty
+            <AssetSummaryItem label="User" value={userAddress} type="address" />
+            <AssetSummaryItem
               label="Current roles"
               value={roles.map((role: Role) => getRoleDisplayName(role)).join(', ')}
             />
-            <AssetProperty
+            <AssetSummaryItem
               label="New roles"
               value={Object.entries(values.newRoles ?? {})
                 .filter(([_, isEnabled]) => isEnabled)

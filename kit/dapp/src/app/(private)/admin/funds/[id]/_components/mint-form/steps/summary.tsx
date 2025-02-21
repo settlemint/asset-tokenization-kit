@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { DollarSign } from 'lucide-react';
@@ -41,9 +41,9 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Asset" value={address} type="address" />
-            <AssetProperty label="Recipient" value={values.to} type="address" />
-            <AssetProperty label="Amount" value={values.amount} type="number" />
+            <AssetSummaryItem label="Asset" value={address} type="address" />
+            <AssetSummaryItem label="Recipient" value={values.to} type="address" />
+            <AssetSummaryItem label="Amount" value={values.amount} type="number" />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

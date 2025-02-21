@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import type { Role } from '@/lib/config/roles';
 import { getRoleDisplayName } from '@/lib/config/roles';
@@ -42,9 +42,9 @@ export function Summary({ address }: { address: Address }) {
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Token address" value={address} type="address" />
-            <AssetProperty label="New admin address" value={values.userAddress as Address} type="address" />
-            <AssetProperty
+            <AssetSummaryItem label="Token address" value={address} type="address" />
+            <AssetSummaryItem label="New admin address" value={values.userAddress as Address} type="address" />
+            <AssetSummaryItem
               label="Roles to grant"
               value={Object.entries(values.roles ?? {})
                 .filter(([_, isEnabled]) => isEnabled)

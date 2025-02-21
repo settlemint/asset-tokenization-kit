@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { DollarSign, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -37,11 +37,11 @@ export function Summary() {
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Asset name" value={values.assetName} />
-            <AssetProperty label="Symbol" value={values.symbol} />
-            <AssetProperty label="Decimals" value={values.decimals} type="number" />
-            <AssetProperty label="ISIN" value={values.isin} />
-            <AssetProperty label="Privacy" value={values.private ? 'Private' : 'Public'} />
+            <AssetSummaryItem label="Asset name" value={values.assetName} />
+            <AssetSummaryItem label="Symbol" value={values.symbol} />
+            <AssetSummaryItem label="Decimals" value={values.decimals} type="number" />
+            <AssetSummaryItem label="ISIN" value={values.isin} />
+            <AssetSummaryItem label="Privacy" value={values.private ? 'Private' : 'Public'} />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 
@@ -54,7 +54,7 @@ export function Summary() {
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Collateral proof validity" value={values.collateralProofValidityDuration} />
+            <AssetSummaryItem label="Collateral proof validity" value={values.collateralProofValidityDuration} />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

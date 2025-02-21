@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -42,10 +42,10 @@ export function Summary({
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="User" value={userAddress} type="address" />
-            <AssetProperty label="Current Balance" value={currentBalance} type="number" />
-            <AssetProperty label="Currently Frozen" value={currentlyFrozen} type="number" />
-            <AssetProperty label="Amount to freeze" value={values.amount} type="number" />
+            <AssetSummaryItem label="User" value={userAddress} type="address" />
+            <AssetSummaryItem label="Current Balance" value={currentBalance} type="number" />
+            <AssetSummaryItem label="Currently Frozen" value={currentlyFrozen} type="number" />
+            <AssetSummaryItem label="Amount to freeze" value={values.amount} type="number" />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

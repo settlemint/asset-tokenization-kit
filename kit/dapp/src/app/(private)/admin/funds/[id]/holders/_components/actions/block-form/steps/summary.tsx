@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { Ban } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
@@ -36,9 +36,9 @@ export function Summary({ userAddress, blocked }: { userAddress: Address; blocke
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="User address" value={userAddress} type="address" />
-            <AssetProperty label="Current state" value={blocked ? 'Blocked' : 'Active'} />
-            <AssetProperty label="Target state" value={blocked ? 'Active' : 'Blocked'} />
+            <AssetSummaryItem label="User address" value={userAddress} type="address" />
+            <AssetSummaryItem label="Current state" value={blocked ? 'Blocked' : 'Active'} />
+            <AssetSummaryItem label="Target state" value={blocked ? 'Active' : 'Blocked'} />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 

@@ -8,7 +8,7 @@ import {
   AssetFormSummarySubTitle,
   AssetFormSummaryTitle,
 } from '@/components/blocks/asset-form/asset-form-summary';
-import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
+import { AssetSummaryItem } from '@/components/blocks/asset-form/asset-summary-item';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
@@ -46,10 +46,10 @@ export function Summary({
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetProperty label="Asset type" value={formatAssetType(assetType)} />
-            <AssetProperty label="Asset" value={address} type="address" />
-            <AssetProperty label="Amount" value={values.value} type="number" />
-            <AssetProperty label="Recipient" value={values.to} type="address" />
+            <AssetSummaryItem label="Asset type" value={formatAssetType(assetType)} />
+            <AssetSummaryItem label="Asset" value={address} type="address" />
+            <AssetSummaryItem label="Amount" value={values.value} type="number" />
+            <AssetSummaryItem label="Recipient" value={values.to} type="address" />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 
