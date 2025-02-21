@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 import type { Address } from 'viem';
 
 export const metadata: Metadata = {
-  title: 'Transactions',
-  description: 'Inspect all your transactions on the network.',
+  title: 'My Contacts',
+  description: 'Manage all your contacts.',
 };
 
 export default async function TransactionsPage() {
