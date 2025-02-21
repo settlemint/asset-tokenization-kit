@@ -28,8 +28,9 @@ export function TotalSupplyClient({ queryKey, asset }: TotalSupplyClientProps) {
     granularity: 'hour',
     intervalType: 'day',
     intervalLength: 1,
-    total: true,
+    accumulation: 'max',
     aggregation: 'first',
+    historical: true,
   });
 
   return (

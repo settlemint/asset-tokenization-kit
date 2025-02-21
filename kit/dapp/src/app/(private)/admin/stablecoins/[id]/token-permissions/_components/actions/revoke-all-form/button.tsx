@@ -2,19 +2,20 @@
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import type { AssetDetailConfig } from '@/lib/config/assets';
+import type { Role } from '@/lib/config/roles';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { BlockUserForm } from './form';
+import { RevokeAllForm } from './form';
 
-interface BlockButtonProps {
+interface RevokeAllButtonProps {
   address: Address;
-  currentlyBlocked: boolean;
+  userAddress: Address;
   assetConfig: AssetDetailConfig;
+  currentRoles: Role[];
 }
 
-export function BlockButton({ address, currentlyBlocked, assetConfig }: BlockButtonProps) {
+export function RevokeAllButton({ address, userAddress, assetConfig, currentRoles }: RevokeAllButtonProps) {
   const [open, setOpen] = useState(false);
-  const action = currentlyBlocked ? 'Unblock' : 'Block';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -26,20 +27,19 @@ export function BlockButton({ address, currentlyBlocked, assetConfig }: BlockBut
             setOpen(true);
           }}
         >
-          {action}
+          Revoke All
         </DropdownMenuItem>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
-          <SheetTitle>{action}</SheetTitle>
-          <SheetDescription>
-            {action} to {currentlyBlocked ? 'enable' : 'prevent'} transfers.
-          </SheetDescription>
+          <SheetTitle>Revoke All Permissions</SheetTitle>
+          <SheetDescription>Remove all permissions for this user on the asset.</SheetDescription>
         </SheetHeader>
-        <BlockUserForm
+        <RevokeAllForm
           address={address}
-          currentlyBlocked={currentlyBlocked}
+          userAddress={userAddress}
           assetConfig={assetConfig}
+          currentRoles={currentRoles}
           onCloseAction={() => setOpen(false)}
         />
       </SheetContent>
