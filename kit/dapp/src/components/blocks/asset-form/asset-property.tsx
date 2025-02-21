@@ -5,9 +5,6 @@ import type { ReactNode } from 'react';
 interface AssetPropertyProps {
   label: string;
   value: string | number | boolean | Date | undefined | null;
-  /**
-   * Optional token symbol for formatting numbers
-   */
   options?: {
     number?: FormatNumberOptions;
     date?: FormatDateOptions;
