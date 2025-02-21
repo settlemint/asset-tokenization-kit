@@ -18,7 +18,7 @@ interface AssetPropertyProps {
 export function AssetProperty({ label, value, type, options }: AssetPropertyProps) {
   if (type === 'address') {
     if (typeof value !== 'string') {
-      return null;
+      return 'N/A';
     }
 
     return (

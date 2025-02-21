@@ -53,7 +53,7 @@ export function Summary() {
             <AssetProperty label="Face value currency" value={values.faceValueCurrency} />
             <AssetProperty label="Face value" value={values.faceValue} />
             <AssetProperty label="Maturity date" value={values.maturityDate} />
-            <AssetProperty label="Coupon rate" value={values.couponRate} />
+            <AssetProperty label="Coupon rate" value={values.couponRate} options={{ number: { percentage: true } }} />
             <AssetProperty label="Payment frequency" value={values.paymentFrequency} />
             <AssetProperty label="First payment date" value={values.firstCouponDate} />
           </dl>
