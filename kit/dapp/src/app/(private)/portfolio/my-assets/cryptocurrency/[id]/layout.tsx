@@ -4,7 +4,8 @@ import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { getCryptocurrencyTitle } from './_components/data';
+import { getCryptocurrency } from './_components/data';
+import { ManageDropdown } from './_components/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -14,7 +15,7 @@ interface LayoutProps extends PropsWithChildren {
 
 export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const cryptocurrency = await getCryptocurrencyTitle(id);
+  const cryptocurrency = await getCryptocurrency(id);
 
   if (!cryptocurrency) {
     return {
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const cryptocurrency = await getCryptocurrencyTitle(id);
+  const cryptocurrency = await getCryptocurrency(id);
 
   return (
     <div>
@@ -65,6 +66,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             <EvmAddressBalances address={id as Address} />
           </EvmAddress>
         }
+        button={<ManageDropdown id={id as Address} cryptocurrency={cryptocurrency} />}
       />
 
       {children}
