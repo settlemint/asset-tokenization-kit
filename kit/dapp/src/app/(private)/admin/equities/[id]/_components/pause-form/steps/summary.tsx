@@ -1,3 +1,4 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Lock, PauseCircle } from 'lucide-react';
@@ -30,18 +31,9 @@ export function Summary({ address, paused }: { address: Address; paused: boolean
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Contract Address</dt>
-              <dd className="font-medium text-sm">{address}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current State</dt>
-              <dd className="font-medium text-sm">{paused ? 'Paused' : 'Active'}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Target State</dt>
-              <dd className="font-medium text-sm">{paused ? 'Active' : 'Paused'}</dd>
-            </div>
+            <AssetProperty label="Contract Address" value={address} type="address" />
+            <AssetProperty label="Current State" value={paused ? 'Paused' : 'Active'} />
+            <AssetProperty label="Target State" value={paused ? 'Active' : 'Paused'} />
           </dl>
         </div>
 

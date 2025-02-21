@@ -1,4 +1,4 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Lock } from 'lucide-react';
@@ -31,20 +31,9 @@ export function Summary({ userAddress, blocked }: { userAddress: Address; blocke
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">User</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={userAddress} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Blocked' : 'Active'}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Target State</dt>
-              <dd className="font-medium text-sm">{blocked ? 'Active' : 'Blocked'}</dd>
-            </div>
+            <AssetProperty label="User" value={userAddress} type="address" />
+            <AssetProperty label="Current State" value={blocked ? 'Blocked' : 'Active'} />
+            <AssetProperty label="Target State" value={blocked ? 'Active' : 'Blocked'} />
           </dl>
         </div>
 

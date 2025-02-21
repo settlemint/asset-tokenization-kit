@@ -1,4 +1,4 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import type { Role } from '@/lib/config/roles';
@@ -35,32 +35,19 @@ export function Summary({ address }: { address: Address }) {
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Token Address</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={address} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">New Admin Address</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={values.userAddress as Address} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Roles to Grant</dt>
-              <dd className="font-medium text-sm">
-                <div className="flex flex-wrap gap-1">
-                  {Object.entries(values.roles ?? {})
-                    .filter(([_, isEnabled]) => isEnabled)
-                    .map(([role]) => (
-                      <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                        {getRoleDisplayName(role as Role)}
-                      </span>
-                    ))}
-                </div>
-              </dd>
-            </div>
+            <AssetProperty label="Token Address" value={address} type="address" />
+            <AssetProperty label="New Admin Address" value={values.userAddress as Address} type="address" />
+            <AssetProperty
+              label="Roles to Grant"
+              value={Object.entries(values.roles ?? {})
+                .filter(([_, isEnabled]) => isEnabled)
+                .map(([role]) => (
+                  <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                    {getRoleDisplayName(role as Role)}
+                  </span>
+                ))
+                .join(', ')}
+            />
           </dl>
         </div>
 

@@ -1,8 +1,7 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -35,16 +34,8 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Asset</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={address} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{formatNumber(values.amount ?? 0)}</dd>
-            </div>
+            <AssetProperty label="Asset" value={address} type="address" />
+            <AssetProperty label="Amount" value={values.amount} type="number" />
           </dl>
         </div>
 

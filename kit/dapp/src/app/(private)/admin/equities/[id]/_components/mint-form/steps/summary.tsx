@@ -1,8 +1,7 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -17,7 +16,7 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm Mint</h2>
+        <h2 className="font-semibold text-base">Review and confirm mint</h2>
         <p className="text-muted-foreground text-xs">
           Verify the details of your mint before proceeding. Ensure the recipient and amount are correct.
         </p>
@@ -35,22 +34,9 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Asset</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={address} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Recipient</dt>
-              <dd className="font-medium text-sm">
-                {values.to ? <EvmAddress address={values.to as Address} /> : 'N/A'}
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{formatNumber(values.amount ?? 0)}</dd>
-            </div>
+            <AssetProperty label="Asset" value={address} type="address" />
+            <AssetProperty label="Recipient" value={values.to} type="address" />
+            <AssetProperty label="Amount" value={values.amount} type="number" />
           </dl>
         </div>
 

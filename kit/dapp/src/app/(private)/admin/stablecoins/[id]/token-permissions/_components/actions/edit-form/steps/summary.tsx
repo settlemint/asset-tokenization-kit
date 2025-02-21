@@ -1,4 +1,4 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
@@ -34,38 +34,22 @@ export function Summary({ userAddress, currentRoles: roles }: { userAddress: Add
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">User</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={userAddress} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current roles</dt>
-              <dd className="font-medium text-sm">
-                <div className="flex flex-wrap gap-1">
-                  {roles.map((role: Role) => (
-                    <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                      {getRoleDisplayName(role)}
-                    </span>
-                  ))}
-                </div>
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">New roles</dt>
-              <dd className="font-medium text-sm">
-                <div className="flex flex-wrap gap-1">
-                  {Object.entries(values.newRoles ?? {})
-                    .filter(([_, isEnabled]) => isEnabled)
-                    .map(([role]) => (
-                      <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                        {getRoleDisplayName(role as Role)}
-                      </span>
-                    ))}
-                </div>
-              </dd>
-            </div>
+            <AssetProperty label="User" value={userAddress} type="address" />
+            <AssetProperty
+              label="Current roles"
+              value={roles.map((role: Role) => getRoleDisplayName(role)).join(', ')}
+            />
+            <AssetProperty
+              label="New roles"
+              value={Object.entries(values.newRoles ?? {})
+                .filter(([_, isEnabled]) => isEnabled)
+                .map(([role]) => (
+                  <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                    {getRoleDisplayName(role as Role)}
+                  </span>
+                ))
+                .join(', ')}
+            />
           </dl>
         </div>
 

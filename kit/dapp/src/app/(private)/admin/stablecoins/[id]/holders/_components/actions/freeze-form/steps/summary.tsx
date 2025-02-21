@@ -1,7 +1,6 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { formatNumber } from '@/lib/number';
 import { Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -38,24 +37,10 @@ export function Summary({
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">User</dt>
-              <dd className="font-medium text-sm">
-                <EvmAddress address={userAddress} />
-              </dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Current Balance</dt>
-              <dd className="font-medium text-sm">{formatNumber(currentBalance)}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Currently Frozen</dt>
-              <dd className="font-medium text-sm">{formatNumber(currentlyFrozen)}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Amount to freeze</dt>
-              <dd className="font-medium text-sm">{formatNumber(values.amount)}</dd>
-            </div>
+            <AssetProperty label="User" value={userAddress} type="address" />
+            <AssetProperty label="Current Balance" value={currentBalance} type="number" />
+            <AssetProperty label="Currently Frozen" value={currentlyFrozen} type="number" />
+            <AssetProperty label="Amount to freeze" value={values.amount} type="number" />
           </dl>
         </div>
 
