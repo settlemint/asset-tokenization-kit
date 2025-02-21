@@ -1,19 +1,21 @@
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { cn } from '@/lib/utils';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }
 
-export const OTPInput = ({ value, onChange }: Props) => {
+export const OTPInput = ({ value, onChange, className }: Props) => {
   return (
     <InputOTP
       maxLength={6}
       pattern={REGEXP_ONLY_DIGITS}
       value={value}
       onChange={onChange}
-      className="justify-center gap-1.5"
+      className={cn('justify-center gap-1.5', className)}
       autoComplete="off"
     >
       <InputOTPGroup>

@@ -1,5 +1,5 @@
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { createHash } from 'node:crypto';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
 
 /**
@@ -52,7 +52,7 @@ const CreateWalletVerificationChallengesMutation = portalGraphql(`
  * @param salt - The salt to use in hashing
  * @returns The hashed pincode as a hex string
  */
-function hashPincode(pincode: string, salt: string): string {
+function hashPincode(pincode: number, salt: string): string {
   return createHash('sha256').update(`${salt}${pincode}`).digest('hex');
 }
 
@@ -63,7 +63,7 @@ function hashPincode(pincode: string, salt: string): string {
  * @param challenge - The challenge secret
  * @returns The challenge response as a hex string
  */
-function generateChallengeResponse(pincode: string, salt: string, challenge: string): string {
+function generateChallengeResponse(pincode: number, salt: string, challenge: string): string {
   const hashedPincode = hashPincode(pincode, salt);
   return createHash('sha256').update(`${hashedPincode}_${challenge}`).digest('hex');
 }
@@ -75,7 +75,7 @@ function generateChallengeResponse(pincode: string, salt: string, challenge: str
  * @returns Promise resolving to the challenge response
  * @throws {ChallengeError} If the challenge cannot be created or is invalid
  */
-export async function handleChallenge(userWalletAddress: Address, pincode: string): Promise<string> {
+export async function handleChallenge(userWalletAddress: Address, pincode: number): Promise<string> {
   try {
     const verificationChallenges = await portalClient.request<CreateWalletVerificationChallengesResponse>(
       CreateWalletVerificationChallengesMutation,

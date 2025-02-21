@@ -29,6 +29,9 @@ export const queryKeys = {
       params.type
         ? (['asset', 'permissions', params.type, getAddress(params.address)] as const)
         : (['asset', 'permissions', getAddress(params.address)] as const),
+    balance: (params: { asset: Address; account?: Address }) =>
+      ['asset', 'balance', getAddress(params.asset), params.account ? getAddress(params.account) : 'empty'] as const,
+    balances: (params: { asset: Address }) => ['asset', 'balances', getAddress(params.asset)] as const,
   },
 
   // User queries
@@ -143,6 +146,10 @@ function createQueryClient(): QueryClient {
         refetchIntervalInBackground: false,
         networkMode: 'online',
         staleTime: 1000 * 60, // Consider data stale after 1 minute
+        retry: 3, // Retry failed requests 3 times
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      },
+      mutations: {
         retry: 3, // Retry failed requests 3 times
       },
     },

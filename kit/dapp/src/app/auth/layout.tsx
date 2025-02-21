@@ -13,10 +13,9 @@ export default function AuthLayout({ children }: PropsWithChildren) {
           src={AuthPlaceholder}
           alt="Auth"
           className="absolute inset-0 h-full w-full object-cover object-center dark:brightness-[0.5]"
-          quality={85}
           priority
           placeholder="blur"
-          sizes="(min-width: 1024px) 50vw, 0vw"
+          fill
         />
       </div>
     </div>

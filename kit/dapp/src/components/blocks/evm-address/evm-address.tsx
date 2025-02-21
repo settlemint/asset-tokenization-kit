@@ -1,17 +1,14 @@
 'use client';
-'use no memo'; // fixes rerendering with react compiler
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useQueryKeys } from '@/hooks/use-query-keys';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { shortHex } from '@/lib/hex';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useUserDetail } from '@/lib/queries/asset/user-detail';
+import { useAssetDetail } from '@/lib/queries/user/asset-detail';
 import Link from 'next/link';
 import { type FC, type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
@@ -44,25 +41,6 @@ interface Asset {
   symbol: string;
 }
 
-const EvmAddressUser = hasuraGraphql(`
-  query EvmAddressUser($id: String!) {
-    user(where: { wallet: { _eq: $id } }) {
-      name
-      image
-      email
-    }
-  }
-`);
-
-const EvmAddressAsset = theGraphGraphqlStarterkits(`
-  query EvmAddressAsset($id: ID = "") {
-    asset(id: $id) {
-      name
-      symbol
-    }
-  }
-`);
-
 /**
  * Renders an EVM address with a hover card displaying additional information.
  * @param props - The component props.
@@ -82,36 +60,10 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
-  if (!address) {
-    return null;
-  }
-
   const checksumAddress = getAddress(address);
 
-  const { keys } = useQueryKeys();
-  const { data: user } = useSuspenseQuery<User | null>({
-    queryKey: keys.user.profile({ address: checksumAddress }),
-    queryFn: async () => {
-      const result = await hasuraClient.request(EvmAddressUser, {
-        id: checksumAddress,
-      });
-      return result.user[0] ?? null;
-    },
-  });
-
-  const { data: asset } = useSuspenseQuery<Asset | null>({
-    queryKey: keys.asset.detail({ address: checksumAddress }),
-    queryFn: async () => {
-      try {
-        const result = await theGraphClientStarterkits.request(EvmAddressAsset, {
-          id: checksumAddress,
-        });
-        return result.asset ?? null;
-      } catch {
-        return null;
-      }
-    },
-  });
+  const { data: user } = useUserDetail({ address: checksumAddress });
+  const { data: asset } = useAssetDetail({ address: checksumAddress });
 
   const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
   const displayEmail = prettyNames ? user?.email : undefined;

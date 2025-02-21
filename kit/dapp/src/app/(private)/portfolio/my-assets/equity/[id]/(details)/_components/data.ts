@@ -1,46 +1,54 @@
+import { getAuthenticatedUser } from '@/lib/auth/auth';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import BigNumber from 'bignumber.js';
+import { getAddress } from 'viem';
 
-const FundDetails = theGraphGraphqlStarterkits(
+const EquityTitle = theGraphGraphqlStarterkits(
   `
-  query Fund($id: ID!) {
-    fund(id: $id) {
+  query Equity($id: ID!, $account: Bytes!) {
+    equity(id: $id) {
       id
       name
       symbol
-      decimals
-      totalSupply
-      totalSupplyExact
-      fundCategory
-      fundClass
-      creator {
-        id
-      }
       paused
-      isin
-      holders(first: 5, orderBy: valueExact, orderDirection: desc) {
-        valueExact
+      decimals
+      holders(where: {account_: {id: $account}}) {
+        value
       }
     }
   }
 `
 );
 
-export async function getFund(id: string) {
-  const data = await theGraphClientStarterkits.request(FundDetails, { id });
-  if (!data.fund) {
-    throw new Error('Fund not found');
+const OffchainEquity = hasuraGraphql(`
+  query OffchainEquity($id: String!) {
+    asset(where: {id: {_eq: $id}}, limit: 1) {
+      id
+      private
+    }
   }
-  const totalSupplyExact = new BigNumber(data.fund.totalSupplyExact);
-  const topHoldersSum = data.fund.holders.reduce(
-    (sum, holder) => sum.plus(new BigNumber(holder.valueExact)),
-    new BigNumber(0)
-  );
+`);
+
+export type Equity = Awaited<ReturnType<typeof getEquityTitle>>;
+
+export async function getEquityTitle(id: string) {
+  const normalizedId = getAddress(id);
+  const user = await getAuthenticatedUser();
+  const [data, dbEquity] = await Promise.all([
+    theGraphClientStarterkits.request(EquityTitle, { id, account: user.wallet }),
+    hasuraClient.request(OffchainEquity, { id: normalizedId }),
+  ]);
+
+  if (!data.equity) {
+    throw new Error('Equity not found');
+  }
 
   return {
-    ...data.fund,
-    concentration: topHoldersSum.dividedBy(totalSupplyExact).multipliedBy(100).toNumber(),
+    ...data.equity,
+    ...(dbEquity.asset[0]
+      ? dbEquity.asset[0]
+      : {
+          private: false,
+        }),
   };
 }
-
-export type Fund = Awaited<ReturnType<typeof getFund>>;

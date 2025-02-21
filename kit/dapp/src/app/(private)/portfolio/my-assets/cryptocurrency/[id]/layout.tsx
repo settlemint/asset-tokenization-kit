@@ -1,10 +1,12 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { PageHeader } from '@/components/layout/page-header';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { PageHeaderSkeleton } from '@/components/layout/page-header-skeleton';
+import { assetConfig } from '@/lib/config/assets';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { Metadata } from 'next';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
 import { getCryptocurrencyTitle } from './_components/data';
+import { CryptocurrencyPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -49,25 +51,18 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const cryptocurrency = await getCryptocurrencyTitle(id);
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.asset.detail({ type: assetConfig.cryptocurrency.queryKey, address: id as Address }),
+    queryFn: () => getCryptocurrencyTitle(id as Address),
+  });
 
   return (
-    <div>
-      <PageHeader
-        title={
-          <>
-            <span className="mr-2">{cryptocurrency?.name}</span>
-            <span className="text-muted-foreground">({cryptocurrency?.symbol})</span>
-          </>
-        }
-        subtitle={
-          <EvmAddress address={id as Address} prettyNames={false}>
-            <EvmAddressBalances address={id as Address} />
-          </EvmAddress>
-        }
-      />
-
-      {children}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<PageHeaderSkeleton />}>
+        <CryptocurrencyPageHeader id={id as Address} />
+        {children}
+      </Suspense>
+    </HydrationBoundary>
   );
 }

@@ -68,8 +68,22 @@ const ThemeImage = React.memo(function ThemeImage({
   if (!mounted) {
     return (
       <div className="relative w-full">
-        <Image src={light} className="w-full opacity-0 shadow-lg" alt="Dashboard preview" />
-        <Image src={dark} className="absolute top-0 left-0 w-full opacity-0 shadow-lg" alt="Dashboard preview" />
+        <Image
+          src={light}
+          className="max-w-full opacity-0 shadow-lg"
+          priority
+          placeholder="blur"
+          alt="Dashboard preview"
+          fill
+        />
+        <Image
+          src={dark}
+          className="absolute top-0 left-0 max-w-full opacity-0 shadow-lg"
+          alt="Dashboard preview"
+          priority
+          placeholder="blur"
+          fill
+        />
       </div>
     );
   }
@@ -79,17 +93,25 @@ const ThemeImage = React.memo(function ThemeImage({
       <Image
         src={light}
         className={cn(
-          'w-full shadow-lg transition-opacity duration-300',
+          'max-w-full shadow-lg transition-opacity duration-300',
           resolvedTheme === 'dark' ? 'opacity-0' : 'opacity-100'
         )}
+        sizes="(max-width: 1050px) 100vw, 1050px"
+        width={1050}
+        height={674}
+        quality={75}
         alt="Dashboard preview"
       />
       <Image
         src={dark}
         className={cn(
-          'absolute top-0 left-0 w-full shadow-lg transition-opacity duration-300',
+          'absolute top-0 left-0 max-w-full shadow-lg transition-opacity duration-300',
           resolvedTheme === 'dark' ? 'opacity-100' : 'opacity-0'
         )}
+        sizes="(max-width: 1050px) 100vw, 1050px"
+        width={1050}
+        height={674}
+        quality={75}
         alt="Dashboard preview"
       />
     </div>
@@ -188,7 +210,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               </div>
             </div>
             {bottomImage && (
-              <div className="relative z-10 mx-10 mt-32">
+              <div className="relative z-10 mx-auto mt-32 max-w-[1050px] px-4 md:px-10">
                 <ThemeImage light={bottomImage.light} dark={bottomImage.dark} />
               </div>
             )}

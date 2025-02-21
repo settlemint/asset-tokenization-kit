@@ -1,6 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
+export type ButtonLabels = {
+  label?: string;
+  submittingLabel?: string;
+  processingLabel?: string;
+};
+
 /**
  * Props for the AssetFormButton component
  */
@@ -17,12 +23,7 @@ interface AssetFormButtonProps {
   hasErrors: boolean;
   /** Whether the form is currently submitting */
   isSubmitting?: boolean;
-  /** Label for the submit button in normal state */
-  submitLabel?: string;
-  /** Label for the submit button when submitting */
-  submittingLabel?: string;
-  /** Label for intermediate steps when processing */
-  processingLabel?: string;
+  button?: ButtonLabels;
 }
 
 /**
@@ -36,20 +37,22 @@ export function AssetFormButton({
   onNextStep,
   hasErrors,
   isSubmitting = false,
-  submitLabel = 'Send transaction',
-  submittingLabel = 'Sending transaction...',
-  processingLabel = 'Processing...',
+  button = {
+    label: 'Send transaction',
+    submittingLabel: 'Sending transaction...',
+    processingLabel: 'Processing...',
+  },
 }: AssetFormButtonProps) {
   const getButtonContent = () => {
     if (isSubmitting) {
       return (
         <>
           <Loader2 size={16} className="mr-2 animate-spin" />
-          {isLastStep ? submittingLabel : processingLabel}
+          {isLastStep ? button.submittingLabel : button.processingLabel}
         </>
       );
     }
-    return isLastStep ? submitLabel : 'Next';
+    return isLastStep ? button.label : 'Next';
   };
 
   return (
@@ -70,7 +73,7 @@ export function AssetFormButton({
         type={isLastStep ? 'submit' : 'button'}
         variant="default"
         onClick={isLastStep ? undefined : onNextStep}
-        aria-label={isLastStep ? submitLabel : 'Go to next step'}
+        aria-label={isLastStep ? button.label : 'Go to next step'}
         className={currentStep === 0 ? 'ml-auto' : ''}
         disabled={isSubmitting || (isLastStep && hasErrors)}
       >

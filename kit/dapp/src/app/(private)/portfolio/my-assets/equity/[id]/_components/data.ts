@@ -3,15 +3,15 @@ import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { getAddress } from 'viem';
 
-const FundTitle = theGraphGraphqlStarterkits(
+const EquityTitle = theGraphGraphqlStarterkits(
   `
-  query Fund($id: ID!, $account: Bytes!) {
-    fund(id: $id) {
+  query Equity($id: ID!, $account: Bytes!) {
+    equity(id: $id) {
       id
       name
       symbol
-      decimals
       paused
+      decimals
       holders(where: {account_: {id: $account}}) {
         value
       }
@@ -20,8 +20,8 @@ const FundTitle = theGraphGraphqlStarterkits(
 `
 );
 
-const OffchainFund = hasuraGraphql(`
-  query OffchainFund($id: String!) {
+const OffchainEquity = hasuraGraphql(`
+  query OffchainEquity($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
       id
       private
@@ -29,24 +29,24 @@ const OffchainFund = hasuraGraphql(`
   }
 `);
 
-export type Fund = Awaited<ReturnType<typeof getFundTitle>>;
+export type Equity = Awaited<ReturnType<typeof getEquityTitle>>;
 
-export async function getFundTitle(id: string) {
+export async function getEquityTitle(id: string) {
   const normalizedId = getAddress(id);
   const user = await getAuthenticatedUser();
-  const [data, dbFund] = await Promise.all([
-    theGraphClientStarterkits.request(FundTitle, { id, account: user.wallet }),
-    hasuraClient.request(OffchainFund, { id: normalizedId }),
+  const [data, dbEquity] = await Promise.all([
+    theGraphClientStarterkits.request(EquityTitle, { id, account: user.wallet }),
+    hasuraClient.request(OffchainEquity, { id: normalizedId }),
   ]);
 
-  if (!data.fund) {
-    throw new Error('Fund not found');
+  if (!data.equity) {
+    throw new Error('Equity not found');
   }
 
   return {
-    ...data.fund,
-    ...(dbFund.asset[0]
-      ? dbFund.asset[0]
+    ...data.equity,
+    ...(dbEquity.asset[0]
+      ? dbEquity.asset[0]
       : {
           private: false,
         }),

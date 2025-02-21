@@ -5,14 +5,14 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { assetConfig } from '@/lib/config/assets';
 import { formatNumber } from '@/lib/number';
 import type { Address } from 'viem';
-import { type Fund, getFund } from './data';
+import { type Equity, getEquityTitle } from './data';
 
 export function GridClient({ asset }: { asset: Address }) {
   return (
     <AssetDetailGridClient
       asset={asset}
-      assetConfig={assetConfig.fund}
-      itemsAction={(asset: Fund) => {
+      assetConfig={assetConfig.equity}
+      itemsAction={(asset: Equity) => {
         return (
           <>
             <AssetDetailGridItem label="Name">{asset.name}</AssetDetailGridItem>
@@ -36,7 +36,7 @@ export function GridClient({ asset }: { asset: Address }) {
           </>
         );
       }}
-      dataAction={getFund}
+      dataAction={getEquityTitle}
     />
   );
 }

@@ -1,15 +1,15 @@
-import { ActivePill } from '@/components/blocks/active-pill/active-pill';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { PageHeader } from '@/components/layout/page-header';
+import { PageHeaderSkeleton } from '@/components/layout/page-header-skeleton';
 import {} from '@/components/ui/dropdown-menu';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { assetConfig } from '@/lib/config/assets';
+import { getQueryClient, queryKeys } from '@/lib/react-query';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import type { Metadata } from 'next';
-import type { PropsWithChildren } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
 import { getFund } from './_components/data';
-import { ManageDropdown } from './_components/manage-dropdown';
+import { FundPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -73,30 +73,22 @@ const tabs = (id: string): TabItemProps[] => [
 
 export default async function DetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const fund = await getFund(id);
+
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.asset.detail({ type: assetConfig.fund.queryKey, address: id as Address }),
+    queryFn: () => getFund(id as Address),
+  });
 
   return (
-    <div>
-      <PageHeader
-        title={
-          <>
-            <span className="mr-2">{fund?.name}</span>
-            <span className="text-muted-foreground">({fund?.symbol})</span>
-          </>
-        }
-        subtitle={
-          <EvmAddress address={id as Address} prettyNames={false}>
-            <EvmAddressBalances address={id as Address} />
-          </EvmAddress>
-        }
-        pill={<ActivePill paused={fund?.paused ?? false} />}
-        button={<ManageDropdown id={id as Address} fund={fund} />}
-      />
-
-      <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabs(id)} />
-      </div>
-      {children}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<PageHeaderSkeleton />}>
+        <FundPageHeader id={id as Address} />
+        <div className="relative mt-4 space-y-2">
+          <TabNavigation items={tabs(id)} />
+        </div>
+        {children}
+      </Suspense>
+    </HydrationBoundary>
   );
 }

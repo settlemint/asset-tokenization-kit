@@ -1,6 +1,7 @@
 ---
 description: General rules
 globs: *
+alwaysApply: false
 ---
 # General Rules
 
@@ -11,3 +12,5 @@ globs: *
 
 - always fix all linter warnings too, not only errors. We have a ZERO WARNING policy.
   - we especially require block statements, even for simple if and switch statements
+
+- When debugging a problem, reflect on 5-7 different possible sources of the problem, distill those down to 1-2 most likely sources, and then add logs to validate your assumptions before we move onto implementing the actual code fix

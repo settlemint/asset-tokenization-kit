@@ -5,10 +5,10 @@ import { TotalTransfers } from '@/components/blocks/asset-stats/total-transfers/
 import { TotalVolume } from '@/components/blocks/asset-stats/total-volume/total-volume';
 import { assetConfig } from '@/lib/config/assets';
 import type { Address } from 'viem';
-import { getFund } from './_components/data';
+import { getEquityTitle } from './_components/data';
 import { GridClient } from './_components/grid-client';
 
-export default async function FundDetailPage({
+export default async function EquityDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -17,7 +17,7 @@ export default async function FundDetailPage({
 
   return (
     <>
-      <AssetDetailGrid asset={id as Address} assetConfig={assetConfig.stablecoin} dataAction={getFund}>
+      <AssetDetailGrid asset={id as Address} assetConfig={assetConfig.equity} dataAction={getEquityTitle}>
         <GridClient asset={id as Address} />
       </AssetDetailGrid>
       <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
