@@ -26,3 +26,13 @@ export const authClient = createAuthClient({
   baseURL: getBaseURL(),
   plugins: [inferAdditionalFields<typeof auth>(), adminClient(), passkeyClient()],
 });
+
+export function useAuthenticatedUser() {
+  const session = authClient.useSession();
+
+  if (!session?.data?.user) {
+    return undefined;
+  }
+
+  return session.data.user;
+}

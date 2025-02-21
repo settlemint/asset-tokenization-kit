@@ -9,11 +9,10 @@ import { BlockUserForm } from './form';
 interface BlockButtonProps {
   address: Address;
   currentlyBlocked: boolean;
-  userAddress: Address;
   assetConfig: AssetDetailConfig;
 }
 
-export function BlockButton({ address, currentlyBlocked, userAddress, assetConfig }: BlockButtonProps) {
+export function BlockButton({ address, currentlyBlocked, assetConfig }: BlockButtonProps) {
   const [open, setOpen] = useState(false);
   const action = currentlyBlocked ? 'Unblock' : 'Block';
 
@@ -39,7 +38,6 @@ export function BlockButton({ address, currentlyBlocked, userAddress, assetConfi
         </SheetHeader>
         <BlockUserForm
           address={address}
-          userAddress={userAddress}
           currentlyBlocked={currentlyBlocked}
           assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}

@@ -82,18 +82,12 @@ export const columns = (address: Address, decimals: number, assetConfig: AssetDe
     cell: ({ row }) => {
       return (
         <DataTableRowActions>
-          <BlockButton
-            address={address}
-            currentlyBlocked={row.original.blocked}
-            userAddress={row.original.account.id as Address}
-            assetConfig={assetConfig}
-          />
+          <BlockButton address={address} currentlyBlocked={row.original.blocked} assetConfig={assetConfig} />
           <FreezeButton
             address={address}
             decimals={decimals}
             currentFrozen={Number(row.original.frozen)}
             currentBalance={Number(row.original.value)}
-            userAddress={row.original.account.id as Address}
             assetConfig={assetConfig}
           />
         </DataTableRowActions>
