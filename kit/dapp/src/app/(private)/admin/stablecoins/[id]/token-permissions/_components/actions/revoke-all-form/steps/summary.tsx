@@ -3,15 +3,12 @@ import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
 import { Lock } from 'lucide-react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { EditRolesFormType } from '../schema';
+import type { RevokeAllFormType } from '../schema';
 
 export function Summary({ userAddress, currentRoles: roles }: { userAddress: Address; currentRoles: Role[] }) {
-  const { control } = useFormContext<EditRolesFormType>();
-  const values = useWatch({
-    control: control,
-  });
+  const { control } = useFormContext<RevokeAllFormType>();
 
   return (
     <div className="space-y-6">
