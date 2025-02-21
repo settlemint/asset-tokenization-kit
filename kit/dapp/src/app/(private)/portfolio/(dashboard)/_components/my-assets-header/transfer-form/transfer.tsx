@@ -1,7 +1,7 @@
 'use client';
 
+import type { MyAsset } from '@/app/(private)/portfolio/_components/data';
 import { TransferForm } from '@/app/(private)/portfolio/_components/transfer-form/form';
-import type { MyAsset } from '@/components/blocks/my-assets-table/data';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ArrowLeftRight } from 'lucide-react';

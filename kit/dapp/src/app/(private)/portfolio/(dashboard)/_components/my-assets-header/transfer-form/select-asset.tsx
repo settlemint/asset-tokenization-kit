@@ -1,5 +1,5 @@
 import { AssetsSearchSelect } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/search-asset';
-import type { MyAsset } from '@/components/blocks/my-assets-table/data';
+import type { MyAsset } from '@/app/(private)/portfolio/_components/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
