@@ -2,20 +2,12 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { PageHeader } from '@/components/layout/page-header';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
-import { ChevronDown } from 'lucide-react';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { getCryptocurrencyTitle } from './_components/data';
-import { MintButton } from './_components/mint-form/button';
+import { getCryptocurrency } from './_components/data';
+import { ManageDropdown } from './_components/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -25,7 +17,7 @@ interface LayoutProps extends PropsWithChildren {
 
 export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const cryptocurrency = await getCryptocurrencyTitle(id);
+  const cryptocurrency = await getCryptocurrency(id);
 
   if (!cryptocurrency) {
     return {
@@ -77,9 +69,9 @@ const tabs = (id: string): TabItemProps[] => [
   // },
 ];
 
-export default async function FundsDetailLayout({ children, params }: LayoutProps) {
+export default async function DetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const cryptocurrency = await getCryptocurrencyTitle(id);
+  const cryptocurrency = await getCryptocurrency(id);
 
   return (
     <div>
@@ -95,26 +87,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
             <EvmAddressBalances address={id as Address} />
           </EvmAddress>
         }
-        button={
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="default">
-                Manage
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="relative right-10 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
-              <DropdownMenuItem asChild className="dropdown-menu-item">
-                <MintButton
-                  address={id as Address}
-                  name={cryptocurrency.name}
-                  symbol={cryptocurrency.symbol}
-                  decimals={cryptocurrency.decimals}
-                />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        }
+        button={<ManageDropdown id={id as Address} cryptocurrency={cryptocurrency} />}
       />
 
       <div className="relative mt-4 space-y-2">
