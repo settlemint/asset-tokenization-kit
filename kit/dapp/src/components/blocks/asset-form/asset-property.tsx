@@ -1,12 +1,14 @@
 import { type FormatDateOptions, formatDate } from '@/lib/date';
 import { type FormatNumberOptions, formatNumber } from '@/lib/number';
 import type { ReactNode } from 'react';
+import type { Address } from 'viem';
+import { EvmAddress } from '../evm-address/evm-address';
 
 type AssetPropertyValue = string | number | boolean | Date | undefined | null;
 interface AssetPropertyProps {
   label: string;
   value: AssetPropertyValue;
-  type?: 'number';
+  type?: 'number' | 'address';
   options?: {
     number?: FormatNumberOptions;
     date?: FormatDateOptions;
@@ -14,6 +16,21 @@ interface AssetPropertyProps {
 }
 
 export function AssetProperty({ label, value, type, options }: AssetPropertyProps) {
+  if (type === 'address') {
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    return (
+      <div className="flex justify-between py-1.5">
+        <dt className="text-muted-foreground text-sm">Asset</dt>
+        <dd className="font-medium text-sm">
+          <EvmAddress address={value as Address} />
+        </dd>
+      </div>
+    );
+  }
+
   const formatValue = (val: AssetPropertyValue): ReactNode => {
     if (val === undefined || val === null || val === '') {
       return '-';
