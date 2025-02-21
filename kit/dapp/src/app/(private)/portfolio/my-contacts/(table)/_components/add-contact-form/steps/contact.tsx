@@ -22,6 +22,8 @@ export function Contact() {
           label="Wallet Address"
           placeholder="0x0000000000000000000000000000000000000000"
         />
+        <AssetFormInput control={control} name="firstName" label="First Name" placeholder="John" />
+        <AssetFormInput control={control} name="lastName" label="Last Name" placeholder="Doe" />
       </div>
     </div>
   );
