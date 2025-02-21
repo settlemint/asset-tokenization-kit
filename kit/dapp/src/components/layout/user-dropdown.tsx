@@ -123,7 +123,7 @@ export function UserDropdown() {
           <ThemeMenuItem />
           <DropdownMenuItem className="dropdown-menu-item">
             <BookOpenText className="mr-2 size-4" />
-            <Link href="/docs">Documentation</Link>
+            <Link href="https://console.settlemint.com/documentation">Documentation</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

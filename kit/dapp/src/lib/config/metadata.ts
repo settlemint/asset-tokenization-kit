@@ -12,7 +12,7 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   applicationName: siteConfig.name,
-  generator: 'SettleMint Asset Tokenization Starter Kit',
+  generator: 'SettleMint Asset Tokenization Kit',
   description: siteConfig.description,
   keywords: ['blockchain', 'SettleMint', 'blockchain transformation', 'asset tokenization'],
   authors: [{ name: 'SettleMint', url: 'https://www.settlemint.com' }],

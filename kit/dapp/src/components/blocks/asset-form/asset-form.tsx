@@ -63,7 +63,7 @@ export type AssetFormProps<
   FormContext = unknown,
 > = {
   children: FormStepElement<S> | FormStepElement<S>[]; // Accepts a single component or an array of components
-  storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string>;
+  storeAction: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, string | string[]>;
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   resolverAction: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
   onClose?: () => void;
@@ -139,6 +139,7 @@ export function AssetForm<
           onClose?.();
           return;
         }
+        // Support both single string and array of strings
         toast.promise(waitForTransactionMining(data), {
           loading: messages.onCreate(input as Infer<S>),
           success: async () => {
