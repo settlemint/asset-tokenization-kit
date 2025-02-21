@@ -1,7 +1,16 @@
+import {
+  AssetFormSummary,
+  AssetFormSummaryContent,
+  AssetFormSummarySection,
+  AssetFormSummarySectionHeader,
+  AssetFormSummarySectionSubTitle,
+  AssetFormSummarySectionTitle,
+  AssetFormSummarySubTitle,
+  AssetFormSummaryTitle,
+} from '@/components/blocks/asset-form/asset-form-summary';
 import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
-import { OTPInput } from '@/components/blocks/otp-input/otp-input';
-import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { DollarSign, Lock, Settings } from 'lucide-react';
+import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
+import { DollarSign, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateCryptoCurrencyFormType } from '../schema';
 
@@ -12,72 +21,41 @@ export function Summary() {
   });
 
   return (
-    <div className="space-y-6">
+    <AssetFormSummary>
       <div>
-        <h2 className="font-semibold text-base">Summary</h2>
-        <p className="text-muted-foreground text-xs">Review your asset configuration before deployment.</p>
+        <AssetFormSummaryTitle>Summary</AssetFormSummaryTitle>
+        <AssetFormSummarySubTitle>Review your asset configuration before deployment.</AssetFormSummarySubTitle>
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <DollarSign className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Asset Basics</h3>
-              <p className="text-muted-foreground text-xs">Basic asset information and settings.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
+        <AssetFormSummarySection>
+          <AssetFormSummarySectionHeader icon={<DollarSign className="h-3 w-3 text-primary" />}>
+            <AssetFormSummarySectionTitle>Asset Basics</AssetFormSummarySectionTitle>
+            <AssetFormSummarySectionSubTitle>Basic asset information and settings.</AssetFormSummarySectionSubTitle>
+          </AssetFormSummarySectionHeader>
+
+          <AssetFormSummaryContent>
             <AssetProperty label="Name" value={values.assetName} />
             <AssetProperty label="Symbol" value={values.symbol} />
             <AssetProperty label="Decimals" value={values.decimals} options={{ number: { decimals: 0 } }} />
             <AssetProperty label="Private" value={values.private} />
-          </dl>
-        </div>
+          </AssetFormSummaryContent>
+        </AssetFormSummarySection>
 
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Settings className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Configuration</h3>
-              <p className="text-muted-foreground text-xs">Asset supply and additional settings.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
+        <AssetFormSummarySection>
+          <AssetFormSummarySectionHeader icon={<Settings className="h-3 w-3 text-primary" />}>
+            <AssetFormSummarySectionTitle>Configuration</AssetFormSummarySectionTitle>
+            <AssetFormSummarySectionSubTitle>Asset supply and additional settings.</AssetFormSummarySectionSubTitle>
+          </AssetFormSummarySectionHeader>
+
+          <AssetFormSummaryContent>
             <AssetProperty label="Initial supply" value={values.initialSupply} type="number" />
-          </dl>
-        </div>
+          </AssetFormSummaryContent>
+        </AssetFormSummarySection>
 
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Lock className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Security Confirmation</h3>
-              <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
-            </div>
-          </div>
-
-          <FormField
-            control={control}
-            name="pincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <PincodeConfirmation control={control} />
       </div>
-    </div>
+    </AssetFormSummary>
   );
 }
 
