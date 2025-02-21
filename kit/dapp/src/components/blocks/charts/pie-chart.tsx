@@ -9,21 +9,42 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import type { ReactNode } from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
 
 interface PieChartProps {
   title: string;
   description?: string;
-  data: Record<string, string | number>[];
+  data: Array<Record<string, string | number>>;
   config: ChartConfig;
   dataKey: string;
   nameKey: string;
   className?: string;
-  footer?: ReactNode;
+  footer?: React.ReactNode;
 }
 
-export function PieChartComponent({ title, description, data, config, dataKey, nameKey, footer }: PieChartProps) {
+function PieGradientDefinitions({ config }: { config: ChartConfig }) {
+  return (
+    <>
+      {Object.entries(config).map(([key, value]) => (
+        <linearGradient key={key} id={`pieGradient${key}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={value.color} stopOpacity={0.6} />
+          <stop offset="100%" stopColor={value.color} stopOpacity={0.4} />
+        </linearGradient>
+      ))}
+    </>
+  );
+}
+
+export function PieChartComponent({
+  title,
+  description,
+  data,
+  config,
+  dataKey,
+  nameKey,
+  className,
+  footer,
+}: PieChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -34,12 +55,14 @@ export function PieChartComponent({ title, description, data, config, dataKey, n
         <ChartContainer config={config}>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1}>
+            <defs>
+              <PieGradientDefinitions config={config} />
+            </defs>
+            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1.5}>
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={config[entry[nameKey]].color}
-                  fillOpacity={0.8}
+                  fill={`url(#pieGradient${entry[nameKey]})`}
                   stroke={config[entry[nameKey]].color}
                 />
               ))}

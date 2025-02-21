@@ -6,9 +6,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { formatDate } from '@/lib/date';
 import { formatNumber } from '@/lib/number';
 import { type Address, parseEther } from 'viem';
-import type { TransactionListItem } from './contacts-table-data';
+import type { ContactsListItem } from './contacts-table-data';
 
-export function TransactionDetailSheet({
+export function ContactDetailSheet({
   transactionHash,
   address,
   createdAt,
@@ -16,7 +16,7 @@ export function TransactionDetailSheet({
   functionName,
   metadata,
   receipt,
-}: TransactionListItem) {
+}: ContactsListItem) {
   return (
     <Sheet>
       <SheetTrigger asChild>

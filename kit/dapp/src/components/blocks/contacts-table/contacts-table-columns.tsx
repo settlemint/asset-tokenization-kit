@@ -8,10 +8,10 @@ import { formatDate } from '@/lib/date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { CheckCircle, Clock, XCircle } from 'lucide-react';
 import type { Address } from 'viem';
-import type { TransactionListItem } from './contacts-table-data';
-import { TransactionDetailSheet } from './contacts-table-detail-sheet';
+import type { ContactsListItem } from './contacts-table-data';
+import { ContactDetailSheet } from './contacts-table-detail-sheet';
 
-const columnHelper = createColumnHelper<TransactionListItem>();
+const columnHelper = createColumnHelper<ContactsListItem>();
 
 export const columns = [
   columnHelper.accessor('status', {
@@ -76,7 +76,7 @@ export const columns = [
     header: () => '',
     cell: ({ row }) => (
       <DataTableColumnCell>
-        <TransactionDetailSheet
+        <ContactDetailSheet
           status={row.original.status}
           address={row.original.address}
           createdAt={row.original.createdAt}

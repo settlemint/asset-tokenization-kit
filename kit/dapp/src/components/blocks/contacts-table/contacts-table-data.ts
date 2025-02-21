@@ -49,9 +49,9 @@ const TransactionList = portalGraphql(
   [TransactionListFragment]
 );
 
-export type TransactionListItem = Awaited<ReturnType<typeof getTransactionsList>>[number];
+export type ContactsListItem = Awaited<ReturnType<typeof getContactsList>>[number];
 
-export async function getTransactionsList(from?: Address) {
+export async function getContactsList(from?: Address) {
   const data = await portalClient.request(TransactionList, { from });
   return (
     data.getPendingAndRecentlyProcessedTransactions?.records.map((record) => ({

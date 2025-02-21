@@ -4,7 +4,7 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 import { ContactsTableClient } from './contacts-table-client';
-import { getTransactionsList } from './contacts-table-data';
+import { getContactsList } from './contacts-table-data';
 
 interface ContactsTableProps {
   from?: Address;
@@ -21,7 +21,7 @@ export async function ContactsTable({ from }: ContactsTableProps) {
 
   await queryClient.prefetchQuery({
     queryKey,
-    queryFn: () => getTransactionsList(from),
+    queryFn: () => getContactsList(from),
   });
 
   return (
