@@ -2,7 +2,7 @@ import { AssetForm } from '@/components/blocks/asset-form/asset-form';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { MintFormSchema } from './schema';
+import { getMintFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
@@ -28,7 +28,7 @@ export function MintForm({
   return (
     <AssetForm
       storeAction={mintStablecoin}
-      resolverAction={zodResolver(MintFormSchema)}
+      resolverAction={zodResolver(getMintFormSchema(collateralAvailable))}
       onClose={onCloseAction}
       assetConfig={assetConfig}
       address={address}

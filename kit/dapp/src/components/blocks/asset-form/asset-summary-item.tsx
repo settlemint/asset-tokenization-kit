@@ -23,7 +23,7 @@ export function AssetSummaryItem({ label, value, type, options }: AssetSummaryIt
 
     return (
       <div className="flex justify-between py-1.5">
-        <dt className="text-muted-foreground text-sm">Asset</dt>
+        <dt className="text-muted-foreground text-sm">{label}</dt>
         <dd className="font-medium text-sm">
           <EvmAddress address={value as Address} />
         </dd>

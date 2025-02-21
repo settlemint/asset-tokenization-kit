@@ -20,10 +20,9 @@ export function Amount({ balance }: { balance: string }) {
           control={control}
           name="value"
           label="Amount"
-          type="number"
+          type="string"
           min={1}
           defaultValue={1}
-          max={Number(balance)}
           description={`Balance: ${balance}`}
         />
       </div>

@@ -21,10 +21,9 @@ export function Amount({ collateralAvailable }: { collateralAvailable: number })
           control={control}
           name="amount"
           label="Amount"
-          type="number"
+          type="string"
           min={1}
           defaultValue={1}
-          max={collateralAvailable}
           description={`Collateral available: ${formatNumber(collateralAvailable)}`}
         />
       </div>

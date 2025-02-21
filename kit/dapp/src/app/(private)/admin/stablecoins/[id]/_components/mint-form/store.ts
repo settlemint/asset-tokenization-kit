@@ -3,7 +3,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseUnits } from 'viem';
-import { MintFormSchema, MintOutputSchema } from './schema';
+import { MintOutputSchema, getMintFormSchema } from './schema';
 
 const MintStableCoin = portalGraphql(`
   mutation MintStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
@@ -19,7 +19,7 @@ const MintStableCoin = portalGraphql(`
 `);
 
 export const mintStablecoin = actionClient
-  .schema(MintFormSchema)
+  .schema(getMintFormSchema())
   .outputSchema(MintOutputSchema)
   .action(async ({ parsedInput: { address, to, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(MintStableCoin, {

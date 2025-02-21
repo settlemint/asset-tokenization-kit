@@ -56,7 +56,7 @@ export const queryKeys = {
   },
 
   // Search queries
-  search: (term: string) => ['search', term] as const,
+  search: (term: string, section?: string) => ['search', term, section ?? '*'] as const,
   pendingTransactions: (from?: Address) => ['pendingTransactions', from ?? '*'] as const,
 } as const;
 
