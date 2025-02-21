@@ -68,8 +68,12 @@
       "dependsOn": ["dependencies", "contracts#compile:forge"],
       "outputs": ["genesis-output.json"]
     },
+    "abi-output": {
+      "dependsOn": ["dependencies", "contracts#compile:forge"],
+      "outputs": ["portal/*.json"]
+    },
     "contracts#deploy:local": {
-      "dependsOn": ["genesis", "contracts#compile:hardhat"],
+      "dependsOn": ["genesis", "abi-output", "contracts#compile:hardhat"],
       "outputs": ["ignition/deployments/**"]
     },
     "subgraph#deploy:local": {

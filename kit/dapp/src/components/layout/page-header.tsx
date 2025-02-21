@@ -1,4 +1,5 @@
 import CollapsedBreadcrumbs from '@/components/blocks/collapsed-breadcrumb/collapsed-breadcrumb';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
 export interface PageHeaderProps {
@@ -6,11 +7,12 @@ export interface PageHeaderProps {
   subtitle?: ReactNode;
   pill?: ReactNode;
   button?: ReactNode;
+  className?: string;
 }
 
-export function PageHeader({ title, subtitle, pill, button }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, pill, button, className }: PageHeaderProps) {
   return (
-    <div className="relative flex justify-between pb-6">
+    <div className={cn('relative flex justify-between pb-6', className)}>
       <div>
         <CollapsedBreadcrumbs hideRoot={true} />
         <h1 className="flex items-center font-bold text-2xl">

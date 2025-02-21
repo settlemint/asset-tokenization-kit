@@ -29,9 +29,9 @@ const OffchainFund = hasuraGraphql(`
   }
 `);
 
-export type Fund = Awaited<ReturnType<typeof getFundTitle>>;
+export type Fund = Awaited<ReturnType<typeof getFund>>;
 
-export async function getFundTitle(id: string) {
+export async function getFund(id: string) {
   const normalizedId = getAddress(id);
   const user = await getAuthenticatedUser();
   const [data, dbFund] = await Promise.all([

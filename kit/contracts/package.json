@@ -17,6 +17,7 @@
     "compile:hardhat": "settlemint scs hardhat build",
     "test": "settlemint scs foundry test -vvv",
     "genesis": "bash -ex genesis-output.sh",
+    "abi-output": "bash -ex abi-output.sh",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization",
     "deploy:local": "settlemint scs hardhat deploy local --deployment-id asset-tokenization-local --reset"
   },

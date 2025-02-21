@@ -4,7 +4,6 @@ import { type NavElement, NavMain } from '@/components/layout/nav-main';
 import NavSidebar from '@/components/layout/nav-sidebar';
 import { ActivityIcon } from '@/components/ui/animated-icons/activity';
 import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
-import { UsersIcon } from '@/components/ui/animated-icons/users';
 import { WalletIcon } from '@/components/ui/animated-icons/wallet';
 import { SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
 
@@ -21,14 +20,9 @@ export function PortfolioSidebar() {
       path: '/portfolio/my-assets',
     },
     {
-      label: 'Transactions',
+      label: 'Activity',
       icon: <ActivityIcon className="h-4 w-4" />,
-      path: '/portfolio/transactions',
-    },
-    {
-      label: 'My Contacts',
-      icon: <UsersIcon className="h-4 w-4" />,
-      path: '/portfolio/contacts',
+      path: '/portfolio/activity',
     },
   ];
   return (

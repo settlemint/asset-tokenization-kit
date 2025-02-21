@@ -10,6 +10,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
+import { useFormContext } from 'react-hook-form';
 import type { FieldValues } from 'react-hook-form';
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -46,6 +47,8 @@ export function AssetFormInput<T extends FieldValues>({
   textOnly,
   ...props
 }: AssetFormInputProps<T>) {
+  const form = useFormContext<T>();
+
   return (
     <FormField
       {...props}
@@ -59,15 +62,17 @@ export function AssetFormInput<T extends FieldValues>({
         }),
       }}
       render={({ field, fieldState }) => {
-        const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
           const value = e.target.value;
           if (props.type === 'number') {
             // Ensure we always pass a number or empty string, never undefined
-            field.onChange(value === '' ? '' : Number(value));
+            field.onChange(value === '' ? 0 : Number(value));
           } else {
             // Ensure we always pass a string, never undefined
             field.onChange(value ?? '');
           }
+          // Trigger validation immediately after value change
+          await form.trigger(field.name);
         };
 
         const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);

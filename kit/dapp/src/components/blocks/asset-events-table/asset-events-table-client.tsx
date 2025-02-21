@@ -3,25 +3,23 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { type QueryKey, useSuspenseQuery } from '@tanstack/react-query';
 import type { NormalizedEventsListItem } from './asset-events-fragments';
-import { getEventsList } from './asset-events-table-data';
+import { type EventsListVariables, getEventsList } from './asset-events-table-data';
 import { columns, icons } from './table/columns';
 
 interface AssetEventsTableClientProps {
   queryKey: QueryKey;
-  first?: number;
-  asset?: string;
+  variables?: EventsListVariables;
   disableToolbarAndPagination?: boolean;
 }
 
 export function AssetEventsTableClient({
   queryKey,
-  first,
-  asset,
+  variables,
   disableToolbarAndPagination = false,
 }: AssetEventsTableClientProps) {
   const { data } = useSuspenseQuery<NormalizedEventsListItem[]>({
     queryKey,
-    queryFn: () => getEventsList({ first, asset }),
+    queryFn: () => getEventsList(variables),
   });
 
   return (
