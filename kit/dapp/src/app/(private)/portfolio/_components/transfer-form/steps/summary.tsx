@@ -40,8 +40,9 @@ export function Summary({
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <AssetProperty label="Asset type" value={formatAssetType(assetType)} />
-            <AssetProperty label="Address" value={address} />
+            <AssetProperty label="Asset" value={address} type="address" />
             <AssetProperty label="Amount" value={values.value} type="number" />
+            <AssetProperty label="Recipient" value={values.to} type="address" />
           </dl>
         </div>
 

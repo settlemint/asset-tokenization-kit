@@ -16,7 +16,7 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-base">Review and confirm Burn</h2>
+        <h2 className="font-semibold text-base">Review and confirm burn</h2>
         <p className="text-muted-foreground text-xs">
           Verify the details of your burn before proceeding. Ensure the amount is correct.
         </p>
