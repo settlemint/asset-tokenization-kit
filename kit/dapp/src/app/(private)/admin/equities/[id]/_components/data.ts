@@ -29,7 +29,9 @@ const OffchainEquity = hasuraGraphql(`
   }
 `);
 
-export async function getEquityTitle(id: string) {
+export type Equity = Awaited<ReturnType<typeof getEquity>>;
+
+export async function getEquity(id: string) {
   const normalizedId = getAddress(id);
   const user = await getAuthenticatedUser();
   const [data, dbEquity] = await Promise.all([

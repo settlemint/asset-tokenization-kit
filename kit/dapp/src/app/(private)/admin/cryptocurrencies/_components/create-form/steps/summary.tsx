@@ -1,5 +1,6 @@
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateCryptoCurrencyFormType } from '../schema';
@@ -61,7 +62,7 @@ export function Summary() {
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
             <div className="flex justify-between py-1.5">
               <dt className="text-muted-foreground text-sm">Initial supply</dt>
-              <dd className="font-medium text-sm">{(values.initialSupply ?? 0).toLocaleString()}</dd>
+              <dd className="font-medium text-sm">{values.initialSupply ? formatNumber(values.initialSupply) : '-'}</dd>
             </div>
           </dl>
         </div>
