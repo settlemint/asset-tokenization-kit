@@ -83,7 +83,6 @@ export function EvmAddress({
   copyToClipboard = false,
 }: EvmAddressProps) {
   if (!address) {
-    console.warn('EvmAddress component received undefined address');
     return null;
   }
 
