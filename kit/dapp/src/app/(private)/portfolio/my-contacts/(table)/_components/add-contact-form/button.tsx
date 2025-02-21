@@ -20,8 +20,8 @@ export function AddContactButton() {
       <SheetContent className="min-w-[34rem]">
         <>
           <SheetHeader>
-            <SheetTitle>Transfer</SheetTitle>
-            <SheetDescription>Which asset do you want to transfer?</SheetDescription>
+            <SheetTitle>Add Contact</SheetTitle>
+            <SheetDescription>Quickly save recipient details to your contacts for future transfers.</SheetDescription>
           </SheetHeader>
           <AddContactForm
             onCloseAction={() => {
