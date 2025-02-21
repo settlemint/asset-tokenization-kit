@@ -32,7 +32,7 @@ const defaultMessages = <T,>(): AssetFormMessages<T> => ({
   onError: (_, error: Error) => `Transaction failed: ${error.message}`,
 });
 
-export type CacheInvalidationConfig<S extends Schema> = {
+export type CacheInvalidationConfig = {
   /**
    * Primary query key to invalidate in the client-side cache.
    * Related data will be automatically invalidated based on dependencies.
@@ -128,7 +128,7 @@ export function AssetForm<
     serverCachePath: address
       ? () => `/admin/${assetConfig.urlSegment}/${address}`
       : () => `/admin/${assetConfig.urlSegment}`,
-  } satisfies CacheInvalidationConfig<S>;
+  } satisfies CacheInvalidationConfig;
 
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
