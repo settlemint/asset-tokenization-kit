@@ -10,9 +10,7 @@ export function Amount() {
       <div className="space-y-8">
         <div className="mb-2">
           <h2 className="font-semibold text-foreground text-lg">Enter Amount</h2>
-          <p className="text-muted-foreground text-sm">
-            Input the amount you wish to mint. Ensure the amount stays within the collateral limits.
-          </p>
+          <p className="text-muted-foreground text-sm">Input the amount you wish to mint.</p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">

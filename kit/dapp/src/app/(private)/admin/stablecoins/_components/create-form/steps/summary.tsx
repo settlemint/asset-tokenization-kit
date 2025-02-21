@@ -1,3 +1,4 @@
+import type { CollateralProofValidityDuration } from '@/app/(private)/admin/stablecoins/_components/create-form/schema';
 import {
   AssetFormSummary,
   AssetFormSummaryContent,
@@ -39,7 +40,12 @@ export function Summary() {
           <AssetFormSummaryContent>
             <AssetSummaryItem label="Asset name" value={values.assetName} />
             <AssetSummaryItem label="Symbol" value={values.symbol} />
-            <AssetSummaryItem label="Decimals" value={values.decimals} type="number" />
+            <AssetSummaryItem
+              label="Decimals"
+              value={values.decimals}
+              type="number"
+              options={{ number: { decimals: 0 } }}
+            />
             <AssetSummaryItem label="ISIN" value={values.isin} />
             <AssetSummaryItem label="Privacy" value={values.private ? 'Private' : 'Public'} />
           </AssetFormSummaryContent>
@@ -54,7 +60,10 @@ export function Summary() {
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetSummaryItem label="Collateral proof validity" value={values.collateralProofValidityDuration} />
+            <AssetSummaryItem
+              label="Collateral proof validity"
+              value={formatCollateralProofValidityDuration(values.collateralProofValidityDuration)}
+            />
           </AssetFormSummaryContent>
         </AssetFormSummarySection>
 
@@ -62,6 +71,29 @@ export function Summary() {
       </div>
     </AssetFormSummary>
   );
+}
+
+function formatCollateralProofValidityDuration(duration?: keyof typeof CollateralProofValidityDuration) {
+  if (!duration) {
+    return '-';
+  }
+
+  switch (duration) {
+    case 'OneHour':
+      return '1 hour';
+    case 'OneDay':
+      return '1 day';
+    case 'OneWeek':
+      return '1 week';
+    case 'OneMonth':
+      return '1 month';
+    case 'OneYear':
+      return '1 year';
+    default: {
+      const exhaustiveCheck: never = duration;
+      throw new Error(`Unknown collateral proof validity duration: ${exhaustiveCheck}`);
+    }
+  }
 }
 
 Summary.validatedFields = ['pincode'] as const;

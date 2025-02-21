@@ -51,7 +51,7 @@ export function Summary() {
           </AssetFormSummarySectionHeader>
 
           <AssetFormSummaryContent>
-            <AssetSummaryItem label="Face value currency" value={values.faceValueCurrency} />
+            <AssetSummaryItem label="Face value currency" value={values.faceValueCurrency} type="address" />
             <AssetSummaryItem label="Face value" value={values.faceValue} />
             <AssetSummaryItem label="Maturity date" value={values.maturityDate} />
             <AssetSummaryItem
