@@ -12,20 +12,12 @@ interface AssetPropertyProps {
     number?: FormatNumberOptions;
     date?: FormatDateOptions;
   };
-  /**
-   * Optional format function for custom value formatting
-   */
-  format?: (value: NonNullable<AssetPropertyProps['value']>) => ReactNode;
 }
 
-export function AssetProperty({ label, value, options, format }: AssetPropertyProps) {
+export function AssetProperty({ label, value, options }: AssetPropertyProps) {
   const formatValue = (val: AssetPropertyProps['value']): ReactNode => {
     if (val === undefined || val === null || val === '') {
       return '-';
-    }
-
-    if (format) {
-      return format(val);
     }
 
     if (typeof val === 'boolean') {
