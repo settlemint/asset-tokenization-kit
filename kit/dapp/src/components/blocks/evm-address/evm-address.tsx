@@ -82,23 +82,30 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
+  if (!address) {
+    console.warn('EvmAddress component received undefined address');
+    return null;
+  }
+
+  const checksumAddress = getAddress(address);
+
   const { keys } = useQueryKeys();
   const { data: user } = useSuspenseQuery<User | null>({
-    queryKey: keys.user.profile({ address: getAddress(address) }),
+    queryKey: keys.user.profile({ address: checksumAddress }),
     queryFn: async () => {
       const result = await hasuraClient.request(EvmAddressUser, {
-        id: getAddress(address),
+        id: checksumAddress,
       });
       return result.user[0] ?? null;
     },
   });
 
   const { data: asset } = useSuspenseQuery<Asset | null>({
-    queryKey: keys.asset.detail({ address }),
+    queryKey: keys.asset.detail({ address: checksumAddress }),
     queryFn: async () => {
       try {
         const result = await theGraphClientStarterkits.request(EvmAddressAsset, {
-          id: getAddress(address),
+          id: checksumAddress,
         });
         return result.asset ?? null;
       } catch {
@@ -109,26 +116,26 @@ export function EvmAddress({
 
   const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
   const displayEmail = prettyNames ? user?.email : undefined;
-  const explorerLink = getBlockExplorerAddressUrl(address, explorerUrl);
+  const explorerLink = getBlockExplorerAddressUrl(checksumAddress, explorerUrl);
 
   const MainView: FC = () => {
     return (
       <div className="flex items-center space-x-2">
         <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-          <AddressAvatar address={getAddress(address)} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
+          <AddressAvatar address={checksumAddress} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
         </Suspense>
-        {!displayName && <span className="font-mono">{shortHex(address, { prefixLength, suffixLength })}</span>}
+        {!displayName && <span className="font-mono">{shortHex(checksumAddress, { prefixLength, suffixLength })}</span>}
         {displayName && (
           <span>
             {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
             {verbose && (
               <Badge variant="secondary" className="font-mono">
-                {shortHex(getAddress(address), { prefixLength, suffixLength })}
+                {shortHex(checksumAddress, { prefixLength, suffixLength })}
               </Badge>
             )}
           </span>
         )}
-        {copyToClipboard && <CopyToClipboard value={address} />}
+        {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
       </div>
     );
   };
@@ -146,10 +153,15 @@ export function EvmAddress({
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
             <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
-              <AddressAvatar address={address} imageUrl={user?.image} email={displayEmail} className="row-span-2" />
+              <AddressAvatar
+                address={checksumAddress}
+                imageUrl={user?.image}
+                email={displayEmail}
+                className="row-span-2"
+              />
             </Suspense>
             <div className="flex flex-col">
-              <span className="font-mono">{address}</span>
+              <span className="font-mono">{checksumAddress}</span>
               {displayName && (
                 <span className="text-sm">
                   {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
