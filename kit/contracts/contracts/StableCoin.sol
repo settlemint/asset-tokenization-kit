@@ -5,7 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC20MultiSigAccessControl } from "./extensions/ERC20MultiSigAccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Collateral } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Collateral.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
@@ -25,7 +25,7 @@ contract StableCoin is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
-    AccessControl,
+    ERC20MultiSigAccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Collateral,
@@ -106,9 +106,11 @@ contract StableCoin is
         address initialOwner,
         string memory isin_,
         uint48 collateralLivenessSeconds,
+        uint256 signatureThreshold,
         address forwarder
     )
         ERC20(name, symbol)
+        ERC20MultiSigAccessControl(signatureThreshold)
         ERC20Permit(name)
         ERC20Collateral(collateralLivenessSeconds)
         ERC2771Context(forwarder)
@@ -185,6 +187,28 @@ contract StableCoin is
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
     function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        (uint256 collateralAmount,) = collateral();
+        if (collateralAmount < totalSupply() + amount) revert InsufficientCollateral();
+
+        _mint(to, amount);
+    }
+
+    /// @notice Creates new tokens and assigns them to an address using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires sufficient collateral.
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The quantity of tokens to create in base units
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function mintWithMultisig(
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("MINT", to, amount)))
+    {
         (uint256 collateralAmount,) = collateral();
         if (collateralAmount < totalSupply() + amount) revert InsufficientCollateral();
 
@@ -210,6 +234,27 @@ contract StableCoin is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires collateral >= total supply.
     /// @param amount New collateral amount
     function updateCollateral(uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _updateCollateral(amount);
+    }
+
+    /// @notice Updates the proven collateral amount with a timestamp using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires collateral >= total supply.
+    /// @param amount New collateral amount
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function updateCollateralWithMultisig(
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("UPDATE_COLLATERAL", amount)))
+    {
+        _updateCollateral(amount);
+    }
+
+    function _updateCollateral(uint256 amount) internal {
         if (amount < totalSupply()) revert InsufficientCollateral();
 
         uint256 oldAmount = _collateralProof.amount;

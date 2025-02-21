@@ -50,21 +50,32 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         string memory isin,
         string memory fundClass,
         string memory fundCategory,
-        uint16 managementFeeBps
+        uint16 managementFeeBps,
+        uint256 signatureThreshold
     )
         external
         nonReentrant
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted =
-            predictAddress(_msgSender(), name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps);
+        address predicted = predictAddress(
+            _msgSender(), name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps, signatureThreshold
+        );
         if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         Fund newToken = new Fund{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, managementFeeBps, fundClass, fundCategory, trustedForwarder()
+            name,
+            symbol,
+            decimals,
+            _msgSender(),
+            isin,
+            managementFeeBps,
+            fundClass,
+            fundCategory,
+            signatureThreshold,
+            trustedForwarder()
         );
 
         token = address(newToken);
@@ -93,7 +104,8 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         string memory isin,
         string memory fundClass,
         string memory fundCategory,
-        uint16 managementFeeBps
+        uint16 managementFeeBps,
+        uint256 signatureThreshold
     )
         public
         view
@@ -121,6 +133,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
                                         managementFeeBps,
                                         fundClass,
                                         fundCategory,
+                                        signatureThreshold,
                                         trustedForwarder()
                                     )
                                 )
