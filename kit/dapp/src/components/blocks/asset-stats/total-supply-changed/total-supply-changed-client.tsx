@@ -32,7 +32,6 @@ export function TotalSupplyChangedClient({ queryKey, asset }: TotalSupplyChanged
     granularity: 'hour',
     intervalType: 'day',
     intervalLength: 1,
-    total: false,
     aggregation: 'first',
   });
 

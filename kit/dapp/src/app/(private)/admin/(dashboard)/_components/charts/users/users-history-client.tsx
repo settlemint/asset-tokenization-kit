@@ -29,7 +29,7 @@ export function UsersHistoryClient({ queryKey }: UsersHistoryClientProps) {
         intervalLength: 7,
         granularity: 'day',
         aggregation: 'count',
-        total: true,
+        accumulation: 'total',
       })}
       config={USERS_CHART_CONFIG}
       title="Users"

@@ -18,12 +18,15 @@ import { pluralize } from './pluralize';
 export type TimeGranularity = 'hour' | 'day' | 'month';
 export type IntervalType = 'month' | 'week' | 'day';
 export type AggregationType = 'first' | 'sum' | 'count';
+export type AccumulationType = 'total' | 'max';
+
 export interface TimeSeriesOptions {
   granularity: TimeGranularity;
   intervalType: IntervalType;
   intervalLength: number;
   aggregation: AggregationType;
-  total?: boolean;
+  accumulation?: AccumulationType;
+  historical?: boolean;
 }
 
 type DataPoint = {
@@ -50,7 +53,7 @@ export function createTimeSeries<T extends DataPoint>(
   valueKeys: Array<keyof T>,
   options: TimeSeriesOptions
 ): TimeSeriesResult<Pick<T, keyof T>>[] {
-  const { granularity, intervalType, intervalLength, total = false, aggregation = 'first' } = options;
+  const { granularity, intervalType, intervalLength, accumulation, aggregation = 'first', historical } = options;
 
   // Generate ticks based on granularity
   const interval: Interval = getInterval(granularity, intervalType, intervalLength);
@@ -59,7 +62,8 @@ export function createTimeSeries<T extends DataPoint>(
   // Initialize last valid values for each key
   const lastValidValues = new Map<keyof T, number>();
   for (const key of valueKeys) {
-    lastValidValues.set(key, 0);
+    const initialValue = historical ? findClosestHistoricalValue(data, key, interval.start) : 0;
+    lastValidValues.set(key, initialValue);
   }
 
   return ticks.map((tick) => {
@@ -74,7 +78,7 @@ export function createTimeSeries<T extends DataPoint>(
       const processedValue = processTimeSeriesValue(
         Number(aggregatedData?.[key]),
         lastValidValues.get(key) ?? 0,
-        total
+        accumulation
       );
 
       updateLastValidValue(lastValidValues, key, processedValue);
@@ -169,16 +173,44 @@ function aggregateData<T extends DataPoint>(
   }
 }
 
-function processTimeSeriesValue(currentValue: number | null, lastValidValue: number, isTotal: boolean): number {
+function processTimeSeriesValue(
+  currentValue: number | null,
+  lastValidValue: number,
+  accumulation?: AccumulationType
+): number {
   if (!currentValue) {
-    return isTotal ? lastValidValue : 0;
+    return accumulation ? lastValidValue : 0;
   }
 
-  return isTotal ? currentValue + lastValidValue : currentValue;
+  switch (accumulation) {
+    case 'total':
+      return currentValue + lastValidValue;
+    case 'max':
+      return Math.max(currentValue, lastValidValue);
+    default: {
+      return currentValue;
+    }
+  }
 }
 
 function updateLastValidValue(lastValidValues: Map<unknown, number>, key: unknown, value: unknown): void {
   if (value) {
     lastValidValues.set(key, Number(value));
   }
+}
+
+function findClosestHistoricalValue<T extends DataPoint>(
+  data: T[],
+  key: keyof T,
+  start: string | number | Date
+): number {
+  if (data.length === 0) {
+    return 0;
+  }
+  const startDate = getDateFromTimestamp(start);
+  const closestPoint = data
+    .filter((d) => getDateFromTimestamp(d.timestamp) <= startDate)
+    .sort((a, b) => getDateFromTimestamp(b.timestamp).getTime() - getDateFromTimestamp(a.timestamp).getTime())[0];
+
+  return closestPoint ? Number(closestPoint[key]) : 0;
 }
