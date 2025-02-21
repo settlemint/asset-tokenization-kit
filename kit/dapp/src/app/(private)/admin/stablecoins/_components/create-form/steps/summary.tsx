@@ -1,7 +1,7 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { convertDurationToSeconds } from '@/lib/date';
-import { DollarSign, Lock, Settings } from 'lucide-react';
+import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { CreateStablecoinFormType } from '../schema';
 
@@ -30,46 +30,11 @@ export function Summary() {
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Name</dt>
-              <dd className="font-medium text-sm">{values.assetName}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Symbol</dt>
-              <dd className="font-medium text-sm">{values.symbol}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Decimals</dt>
-              <dd className="font-medium text-sm">{values.decimals}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">ISIN:</dt>
-              <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Private</dt>
-              <dd className="font-medium text-sm">{values.private ? 'Yes' : 'No'}</dd>
-            </div>
-          </dl>
-        </div>
-
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Settings className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Configuration</h3>
-              <p className="text-muted-foreground text-xs">Asset supply and additional settings.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-              <dd className="font-medium">
-                {convertDurationToSeconds(values.collateralProofValidityDuration ?? 'OneYear')} seconds
-              </dd>
-            </div>
+            <AssetProperty label="Name" value={values.assetName} />
+            <AssetProperty label="Symbol" value={values.symbol} />
+            <AssetProperty label="Decimals" value={values.decimals} options={{ number: { decimals: 0 } }} />
+            <AssetProperty label="ISIN" value={values.isin} />
+            <AssetProperty label="Private" value={values.private} />
           </dl>
         </div>
 

@@ -1,3 +1,4 @@
+import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
 import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -38,18 +39,9 @@ export function Summary({
             </div>
           </div>
           <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Asset type</dt>
-              <dd className="font-medium text-sm">{formatAssetType(assetType)}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Address</dt>
-              <dd className="font-medium text-sm">{address}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Amount</dt>
-              <dd className="font-medium text-sm">{values.value}</dd>
-            </div>
+            <AssetProperty label="Asset type" value={formatAssetType(assetType)} />
+            <AssetProperty label="Address" value={address} />
+            <AssetProperty label="Amount" value={values.value} type="number" />
           </dl>
         </div>
 
