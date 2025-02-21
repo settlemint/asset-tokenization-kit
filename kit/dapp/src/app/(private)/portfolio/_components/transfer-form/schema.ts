@@ -1,4 +1,5 @@
 import { assetConfig } from '@/lib/config/assets';
+import { BigNumber } from 'bignumber.js';
 import { z } from 'zod';
 
 const PIN_CODE_REGEX = /^\d+$/;
@@ -12,10 +13,21 @@ export const getTransferFormSchema = (balance?: string) => {
     to: z.string().min(1, { message: 'Recipient is required' }),
     value: balance
       ? z
-          .number()
+          .string()
           .min(1, { message: 'Amount is required' })
-          .max(Number(balance), { message: `Amount cannot be greater than balance ${balance}` })
-      : z.number().min(1, { message: 'Amount is required' }),
+          .refine(
+            (val) => {
+              const amount = BigNumber(val);
+              return amount.gt(0) && amount.lte(balance);
+            },
+            (val) => {
+              const amount = BigNumber(val);
+              return {
+                message: amount.eq(0) ? 'Amount must be greater than 0' : 'Amount cannot be greater than balance',
+              };
+            }
+          )
+      : z.string().min(1, { message: 'Amount is required' }),
     assetType: z.enum(assetTypes),
     pincode: z
       .string()
