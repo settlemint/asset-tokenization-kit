@@ -1,9 +1,18 @@
+import {
+  AssetFormSummary,
+  AssetFormSummaryContent,
+  AssetFormSummarySection,
+  AssetFormSummarySectionHeader,
+  AssetFormSummarySectionSubTitle,
+  AssetFormSummarySectionTitle,
+  AssetFormSummarySubTitle,
+  AssetFormSummaryTitle,
+} from '@/components/blocks/asset-form/asset-form-summary';
 import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
-import { OTPInput } from '@/components/blocks/otp-input/otp-input';
-import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
 import type { Role } from '@/lib/config/roles';
 import { getRoleDisplayName } from '@/lib/config/roles';
-import { Lock } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { AddTokenAdminFormType } from '../schema';
@@ -15,30 +24,28 @@ export function Summary({ address }: { address: Address }) {
   });
 
   return (
-    <div className="space-y-6">
+    <AssetFormSummary>
       <div>
-        <h2 className="font-semibold text-base">Review and confirm new admin roles</h2>
-        <p className="text-muted-foreground text-xs">
+        <AssetFormSummaryTitle>Review and confirm new admin roles</AssetFormSummaryTitle>
+        <AssetFormSummarySubTitle>
           Verify the details before proceeding. This action will grant admin roles to the specified address.
-        </p>
+        </AssetFormSummarySubTitle>
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Lock className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Admin Details</h3>
-              <p className="text-muted-foreground text-xs">Review the new admin address and roles to be granted.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <AssetProperty label="Token Address" value={address} type="address" />
-            <AssetProperty label="New Admin Address" value={values.userAddress as Address} type="address" />
+        <AssetFormSummarySection>
+          <AssetFormSummarySectionHeader icon={<UserPlus className="h-3 w-3 text-primary" />}>
+            <AssetFormSummarySectionTitle>Admin details</AssetFormSummarySectionTitle>
+            <AssetFormSummarySectionSubTitle>
+              Review the new admin address and roles to be granted.
+            </AssetFormSummarySectionSubTitle>
+          </AssetFormSummarySectionHeader>
+
+          <AssetFormSummaryContent>
+            <AssetProperty label="Token address" value={address} type="address" />
+            <AssetProperty label="New admin address" value={values.userAddress as Address} type="address" />
             <AssetProperty
-              label="Roles to Grant"
+              label="Roles to grant"
               value={Object.entries(values.roles ?? {})
                 .filter(([_, isEnabled]) => isEnabled)
                 .map(([role]) => (
@@ -48,35 +55,12 @@ export function Summary({ address }: { address: Address }) {
                 ))
                 .join(', ')}
             />
-          </dl>
-        </div>
+          </AssetFormSummaryContent>
+        </AssetFormSummarySection>
 
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Lock className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Security Confirmation</h3>
-              <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
-            </div>
-          </div>
-
-          <FormField
-            control={control}
-            name="pincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <PincodeConfirmation control={control} />
       </div>
-    </div>
+    </AssetFormSummary>
   );
 }
 

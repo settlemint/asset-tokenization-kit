@@ -1,68 +1,49 @@
+import {
+  AssetFormSummary,
+  AssetFormSummaryContent,
+  AssetFormSummarySection,
+  AssetFormSummarySectionHeader,
+  AssetFormSummarySectionSubTitle,
+  AssetFormSummarySectionTitle,
+  AssetFormSummarySubTitle,
+  AssetFormSummaryTitle,
+} from '@/components/blocks/asset-form/asset-form-summary';
 import { AssetProperty } from '@/components/blocks/asset-form/asset-property';
-import { OTPInput } from '@/components/blocks/otp-input/otp-input';
-import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Lock, PauseCircle } from 'lucide-react';
+import { PincodeConfirmation } from '@/components/blocks/asset-form/pincode-confirmation';
+import { PauseCircle } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { PauseFormType } from '../schema';
 
 export function Summary({ address, paused }: { address: Address; paused: boolean }) {
   const { control } = useFormContext<PauseFormType>();
-  const action = paused ? 'Unpause' : 'Pause';
 
   return (
-    <div className="space-y-6">
+    <AssetFormSummary>
       <div>
-        <h2 className="font-semibold text-base">Review and confirm {action}</h2>
-        <p className="text-muted-foreground text-xs">
-          Verify the details before proceeding. This action will {paused ? 'enable' : 'prevent'} token transfers.
-        </p>
+        <AssetFormSummaryTitle>Review and confirm pause</AssetFormSummaryTitle>
+        <AssetFormSummarySubTitle>
+          Verify the details of your pause action before proceeding. This will affect all transfers of the asset.
+        </AssetFormSummarySubTitle>
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <PauseCircle className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Contract Status</h3>
-              <p className="text-muted-foreground text-xs">Current contract status and target state.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <AssetProperty label="Contract Address" value={address} type="address" />
-            <AssetProperty label="Current State" value={paused ? 'Paused' : 'Active'} />
-            <AssetProperty label="Target State" value={paused ? 'Active' : 'Paused'} />
-          </dl>
-        </div>
+        <AssetFormSummarySection>
+          <AssetFormSummarySectionHeader icon={<PauseCircle className="h-3 w-3 text-primary" />}>
+            <AssetFormSummarySectionTitle>Contract status</AssetFormSummarySectionTitle>
+            <AssetFormSummarySectionSubTitle>Current and target state of the contract.</AssetFormSummarySectionSubTitle>
+          </AssetFormSummarySectionHeader>
 
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Lock className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Security Confirmation</h3>
-              <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
-            </div>
-          </div>
+          <AssetFormSummaryContent>
+            <AssetProperty label="Contract address" value={address} type="address" />
+            <AssetProperty label="Current state" value={paused ? 'Paused' : 'Active'} />
+            <AssetProperty label="Target state" value={paused ? 'Active' : 'Paused'} />
+          </AssetFormSummaryContent>
+        </AssetFormSummarySection>
 
-          <FormField
-            control={control}
-            name="pincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <PincodeConfirmation control={control} />
       </div>
-    </div>
+    </AssetFormSummary>
   );
 }
 
