@@ -5,7 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC20MultiSigAccessControl } from "./extensions/ERC20MultiSigAccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
@@ -27,7 +27,7 @@ contract Fund is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
-    AccessControl,
+    ERC20MultiSigAccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
@@ -114,9 +114,11 @@ contract Fund is
         uint16 managementFeeBps_,
         string memory fundClass_,
         string memory fundCategory_,
+        uint256 signatureThreshold,
         address forwarder
     )
         ERC20(name, symbol)
+        ERC20MultiSigAccessControl(signatureThreshold)
         ERC20Permit(name)
         ERC2771Context(forwarder)
     {
@@ -208,6 +210,25 @@ contract Fund is
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
     function mint(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _mint(to, amount);
+    }
+
+    /// @notice Creates new tokens and assigns them to an address using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Emits a Transfer event.
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The quantity of tokens to create in base units
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function mintWithMultisig(
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("MINT", to, amount)))
+    {
         _mint(to, amount);
     }
 
@@ -309,6 +330,41 @@ contract Fund is
     /// @param to The recipient address
     /// @param amount The amount to withdraw
     function withdrawToken(address token, address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _withdrawToken(token, to, amount);
+    }
+
+    /// @notice Withdraws mistakenly sent tokens from the contract using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Cannot withdraw this token.
+    /// @param token The token to withdraw
+    /// @param to The recipient address
+    /// @param amount The amount to withdraw
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function withdrawTokenWithMultisig(
+        address token,
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(
+            SUPPLY_MANAGEMENT_ROLE,
+            signatures,
+            operationId,
+            keccak256(abi.encode("WITHDRAW_TOKEN", token, to, amount))
+        )
+    {
+        _withdrawToken(token, to, amount);
+    }
+
+    /// @notice Internal function to withdraw mistakenly sent tokens
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Cannot withdraw this token.
+    /// @param token The token to withdraw
+    /// @param to The recipient address
+    /// @param amount The amount to withdraw
+    function _withdrawToken(address token, address to, uint256 amount) internal {
         if (token == address(0)) revert InvalidTokenAddress();
         if (to == address(0)) revert InvalidTokenAddress();
         if (amount == 0) return;

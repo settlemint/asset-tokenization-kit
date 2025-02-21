@@ -47,20 +47,30 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         uint8 decimals,
         string memory isin,
         string memory equityClass,
-        string memory equityCategory
+        string memory equityCategory,
+        uint256 signatureThreshold
     )
         external
         nonReentrant
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(_msgSender(), name, symbol, decimals, isin, equityClass, equityCategory);
+        address predicted =
+            predictAddress(_msgSender(), name, symbol, decimals, isin, equityClass, equityCategory, signatureThreshold);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         Equity newToken = new Equity{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, equityClass, equityCategory, trustedForwarder()
+            name,
+            symbol,
+            decimals,
+            _msgSender(),
+            isin,
+            equityClass,
+            equityCategory,
+            signatureThreshold,
+            trustedForwarder()
         );
 
         token = address(newToken);
@@ -87,7 +97,8 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         uint8 decimals,
         string memory isin,
         string memory equityClass,
-        string memory equityCategory
+        string memory equityCategory,
+        uint256 signatureThreshold
     )
         public
         view
@@ -114,6 +125,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
                                         isin,
                                         equityClass,
                                         equityCategory,
+                                        signatureThreshold,
                                         trustedForwarder()
                                     )
                                 )

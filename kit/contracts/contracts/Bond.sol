@@ -6,7 +6,7 @@ import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ER
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { ERC20Capped } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC20MultiSigAccessControl } from "./extensions/ERC20MultiSigAccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -29,7 +29,7 @@ contract Bond is
     ERC20Capped,
     ERC20Burnable,
     ERC20Pausable,
-    AccessControl,
+    ERC20MultiSigAccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
@@ -154,9 +154,11 @@ contract Bond is
         uint256 _maturityDate,
         uint256 _faceValue,
         address _underlyingAsset,
+        uint256 signatureThreshold,
         address forwarder
     )
         ERC20(name, symbol)
+        ERC20MultiSigAccessControl(signatureThreshold)
         ERC20Permit(name)
         ERC20Capped(_cap)
         ERC2771Context(forwarder)
@@ -245,6 +247,25 @@ contract Bond is
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
     function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _mint(to, amount);
+    }
+
+    /// @notice Creates new tokens and assigns them to an address using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Emits a Transfer event.
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The quantity of tokens to create in base units
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function mintWithMultisig(
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("MINT", to, amount)))
+    {
         _mint(to, amount);
     }
 
@@ -275,7 +296,26 @@ contract Bond is
     /// @notice Closes off the bond at maturity
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
     /// @dev Requires sufficient underlying assets for all potential redemptions
-    function mature() external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+    function mature() public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _mature();
+    }
+
+    /// @notice Closes off the bond at maturity using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE after maturity date
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function matureWithMultisig(
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("MATURITY")))
+    {
+        _mature();
+    }
+
+    function _mature() internal {
         if (block.timestamp < maturityDate) revert BondNotYetMatured();
         if (isMatured) revert BondAlreadyMatured();
 
@@ -303,6 +343,28 @@ contract Bond is
     /// @param to The address to send the underlying assets to
     /// @param amount The amount of underlying assets to withdraw
     function withdrawUnderlyingAsset(address to, uint256 amount) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _withdrawUnderlyingAsset(to, amount);
+    }
+
+    /// @notice Allows withdrawing excess underlying assets using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param to The address to send the underlying assets to
+    /// @param amount The amount of underlying assets to withdraw
+    function withdrawUnderlyingAssetWithMultisig(
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(
+            SUPPLY_MANAGEMENT_ROLE,
+            signatures,
+            operationId,
+            keccak256(abi.encode("WITHDRAW_UNDERLYING_ASSET", to, amount))
+        )
+    {
         _withdrawUnderlyingAsset(to, amount);
     }
 
@@ -310,6 +372,29 @@ contract Bond is
     /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
     /// @param to The address to send the underlying assets to
     function withdrawExcessUnderlyingAssets(address to) external onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        uint256 withdrawable = withdrawableUnderlyingAmount();
+        if (withdrawable == 0) revert InsufficientUnderlyingBalance();
+
+        _withdrawUnderlyingAsset(to, withdrawable);
+    }
+
+    /// @notice Allows withdrawing all excess underlying assets using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param to The address to send the underlying assets to
+    function withdrawExcessUnderlyingAssetsWithMultisig(
+        address to,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(
+            SUPPLY_MANAGEMENT_ROLE,
+            signatures,
+            operationId,
+            keccak256(abi.encode("WITHDRAW_EXCESS_UNDERLYING_ASSETS"))
+        )
+    {
         uint256 withdrawable = withdrawableUnderlyingAmount();
         if (withdrawable == 0) revert InsufficientUnderlyingBalance();
 

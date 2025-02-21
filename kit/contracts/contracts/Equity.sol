@@ -5,7 +5,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ERC20Burnable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC20MultiSigAccessControl } from "./extensions/ERC20MultiSigAccessControl.sol";
 import { ERC20Blocklist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Blocklist.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
@@ -26,7 +26,7 @@ contract Equity is
     ERC20,
     ERC20Burnable,
     ERC20Pausable,
-    AccessControl,
+    ERC20MultiSigAccessControl,
     ERC20Permit,
     ERC20Blocklist,
     ERC20Custodian,
@@ -92,9 +92,11 @@ contract Equity is
         string memory isin_,
         string memory equityClass_,
         string memory equityCategory_,
+        uint256 signatureThreshold,
         address forwarder
     )
         ERC20(name, symbol)
+        ERC20MultiSigAccessControl(signatureThreshold)
         ERC20Permit(name)
         ERC2771Context(forwarder)
     {
@@ -177,6 +179,25 @@ contract Equity is
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
     function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (signatureThreshold > 1) revert MultiSigRequired();
+        _mint(to, amount);
+    }
+
+    /// @notice Creates new tokens and assigns them to an address using a multi-signature mechanism
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Emits a Transfer event.
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The quantity of tokens to create in base units
+    /// @param signatures An array of EIP-712 signatures from role holders
+    /// @param operationId A unique identifier for this operation (prevents replay)
+    function mintWithMultisig(
+        address to,
+        uint256 amount,
+        bytes[] calldata signatures,
+        bytes32 operationId
+    )
+        external
+        withMultisig(SUPPLY_MANAGEMENT_ROLE, signatures, operationId, keccak256(abi.encode("MINT", to, amount)))
+    {
         _mint(to, amount);
     }
 

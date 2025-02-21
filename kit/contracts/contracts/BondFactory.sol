@@ -51,15 +51,26 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
-        address underlyingAsset
+        address underlyingAsset,
+        uint256 signatureThreshold
     )
         external
         nonReentrant
         returns (address bond)
     {
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
-        address predicted =
-            predictAddress(_msgSender(), name, symbol, decimals, isin, cap, maturityDate, faceValue, underlyingAsset);
+        address predicted = predictAddress(
+            _msgSender(),
+            name,
+            symbol,
+            decimals,
+            isin,
+            cap,
+            maturityDate,
+            faceValue,
+            underlyingAsset,
+            signatureThreshold
+        );
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
@@ -72,6 +83,7 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
             maturityDate,
             faceValue,
             underlyingAsset,
+            signatureThreshold,
             trustedForwarder()
         );
 
@@ -103,7 +115,8 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
-        address underlyingAsset
+        address underlyingAsset,
+        uint256 signatureThreshold
     )
         public
         view
@@ -123,6 +136,7 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
                     maturityDate,
                     faceValue,
                     underlyingAsset,
+                    signatureThreshold,
                     trustedForwarder()
                 )
             )

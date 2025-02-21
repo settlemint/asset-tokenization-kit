@@ -46,7 +46,8 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
         string memory symbol,
         uint8 decimals,
         string memory isin,
-        uint48 collateralLivenessSeconds
+        uint48 collateralLivenessSeconds,
+        uint256 signatureThreshold
     )
         external
         nonReentrant
@@ -59,7 +60,14 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
         bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
 
         StableCoin newToken = new StableCoin{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, collateralLivenessSeconds, trustedForwarder()
+            name,
+            symbol,
+            decimals,
+            _msgSender(),
+            isin,
+            collateralLivenessSeconds,
+            signatureThreshold,
+            trustedForwarder()
         );
 
         token = address(newToken);
