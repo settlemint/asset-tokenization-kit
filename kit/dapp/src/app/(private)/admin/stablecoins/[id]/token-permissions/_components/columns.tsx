@@ -13,6 +13,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import {} from 'lucide-react';
 import type { Address } from 'viem';
 import { EditButton } from './actions/edit-form/button';
+import { RevokeAllButton } from './actions/revoke-all-form/button';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
@@ -64,6 +65,12 @@ export const columns = (address: Address, assetConfig: AssetDetailConfig) => [
       return (
         <DataTableRowActions>
           <EditButton
+            address={address}
+            currentRoles={row.original.roles}
+            userAddress={row.original.id as Address}
+            assetConfig={assetConfig}
+          />
+          <RevokeAllButton
             address={address}
             currentRoles={row.original.roles}
             userAddress={row.original.id as Address}
