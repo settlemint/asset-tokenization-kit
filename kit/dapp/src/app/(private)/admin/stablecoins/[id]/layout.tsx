@@ -8,7 +8,7 @@ import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { getStableCoinTitle } from './_components/data';
+import { getStableCoin } from './_components/data';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -18,7 +18,7 @@ interface LayoutProps extends PropsWithChildren {
 
 export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const stableCoin = await getStableCoinTitle(id);
+  const stableCoin = await getStableCoin(id);
 
   if (!stableCoin) {
     return {
@@ -76,7 +76,7 @@ const tabs = (id: string): TabItemProps[] => [
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const stableCoin = await getStableCoinTitle(id);
+  const stableCoin = await getStableCoin(id);
 
   return (
     <div>
