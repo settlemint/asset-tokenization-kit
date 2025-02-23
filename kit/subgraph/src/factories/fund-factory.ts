@@ -1,13 +1,13 @@
-import { FundCreated } from '../../generated/FundFactory/FundFactory';
-import { Fund } from '../../generated/templates';
-import { accountActivityEvent } from '../assets/events/accountactivity';
-import { assetCreatedEvent } from '../assets/events/assetcreated';
-import { fetchAssetCount } from '../assets/fetch/asset-count';
-import { fetchFund } from '../assets/fetch/fund';
-import { fetchAccount } from '../fetch/account';
-import { AssetType, EventName, FactoryType } from '../utils/enums';
-import { eventId } from '../utils/events';
-import { fetchFactory } from './fetch/factory';
+import { FundCreated } from "../../generated/FundFactory/FundFactory";
+import { Fund } from "../../generated/templates";
+import { accountActivityEvent } from "../assets/events/accountactivity";
+import { assetCreatedEvent } from "../assets/events/assetcreated";
+import { fetchAssetCount } from "../assets/fetch/asset-count";
+import { fetchFund } from "../assets/fetch/fund";
+import { fetchAccount } from "../fetch/account";
+import { AssetType, EventName, FactoryType } from "../utils/enums";
+import { eventId } from "../utils/events";
+import { fetchFactory } from "./fetch/factory";
 
 export function handleFundCreated(event: FundCreated): void {
   fetchFactory(event.address, FactoryType.fund);
@@ -20,8 +20,19 @@ export function handleFundCreated(event: FundCreated): void {
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
-  assetCreatedEvent(eventId(event), event.block.timestamp, asset.id, creator.id);
-  accountActivityEvent(creator, EventName.AssetCreated, event.block.timestamp, AssetType.fund, asset.id);
+  assetCreatedEvent(
+    eventId(event),
+    event.block.timestamp,
+    asset.id,
+    creator.id,
+  );
+  accountActivityEvent(
+    creator,
+    EventName.AssetCreated,
+    event.block.timestamp,
+    AssetType.fund,
+    asset.id,
+  );
 
   Fund.create(event.params.token);
 }

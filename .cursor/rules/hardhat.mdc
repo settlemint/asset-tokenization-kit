@@ -1,0 +1,9 @@
+---
+description: Best practices for Hardhat smart contract development and testing
+globs: **/*.{sol,js,ts}
+alwaysApply: false
+---
+- Use Hardhat's built-in gas reporting for optimization
+- Implement proper error handling with custom error types
+- Utilize Hardhat's network management for testing on different environments
+- Leverage Hardhat's task system for custom CLI commands

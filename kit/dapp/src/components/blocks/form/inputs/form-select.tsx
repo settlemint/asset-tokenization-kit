@@ -1,12 +1,28 @@
 'use client';
 
-import type { BaseFormInputProps, WithPlaceholderProps } from '@/components/blocks/asset-form/asset-form-types';
-import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithPlaceholderProps,
+} from './types';
 
 type Option = {
   /** The display text for the option */
@@ -58,7 +74,11 @@ export function FormSelect<T extends FieldValues>({
       {...props}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+        const ariaAttrs = getAriaAttributes(
+          field.name,
+          !!fieldState.error,
+          props.disabled
+        );
 
         return (
           <FormItem>
@@ -85,7 +105,10 @@ export function FormSelect<T extends FieldValues>({
               <FormControl>
                 <SelectTrigger
                   ref={triggerRef}
-                  className={cn(props.disabled && 'cursor-not-allowed opacity-50', className)}
+                  className={cn(
+                    props.disabled && 'cursor-not-allowed opacity-50',
+                    className
+                  )}
                   {...ariaAttrs}
                 >
                   <SelectValue placeholder={placeholder} />
@@ -99,7 +122,11 @@ export function FormSelect<T extends FieldValues>({
                 ))}
               </SelectContent>
             </Select>
-            {description && <FormDescription id={`${field.name}-description`}>{description}</FormDescription>}
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
             <FormMessage id={`${field.name}-error`} aria-live="polite" />
           </FormItem>
         );

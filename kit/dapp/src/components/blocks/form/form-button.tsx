@@ -75,7 +75,9 @@ export function FormButton({
         onClick={isLastStep ? undefined : onNextStep}
         aria-label={isLastStep ? labels.label : 'Go to next step'}
         className={currentStep === 0 ? 'ml-auto' : ''}
-        disabled={isSubmitting || (isLastStep && Object.keys(errors).length > 0)}
+        disabled={
+          isSubmitting || (isLastStep && Object.keys(errors).length > 0)
+        }
       >
         {getButtonContent()}
       </Button>

@@ -1,34 +1,33 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
-import { formatNumber } from '@/lib/number';
+import { FormStep } from '@/components/blocks/form/form-step';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
+import type { Mint } from '@/lib/mutations/stablecoin/mint';
+import { formatNumber } from '@/lib/utils/number';
 import { useFormContext } from 'react-hook-form';
-import type { MintFormType } from '../schema';
 
-export function Amount({ collateralAvailable }: { collateralAvailable: number }) {
-  const { control } = useFormContext<MintFormType>();
+interface AmountProps {
+  collateralAvailable: number;
+}
+
+export function Amount({ collateralAvailable }: AmountProps) {
+  const { control } = useFormContext<Mint>();
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-8">
-        <div className="mb-2">
-          <h2 className="font-semibold text-foreground text-lg">Enter Amount</h2>
-          <p className="text-muted-foreground text-sm">
-            Input the amount you wish to mint. Ensure the amount stays within the collateral limits.
-          </p>
-        </div>
-      </div>
+    <FormStep
+      title="Enter Amount"
+      description="Input the amount you wish to mint."
+    >
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput
+        <FormInput
           control={control}
           name="amount"
           label="Amount"
           type="number"
           min={1}
-          defaultValue={1}
           max={collateralAvailable}
           description={`Collateral available: ${formatNumber(collateralAvailable)}`}
         />
       </div>
-    </div>
+    </FormStep>
   );
 }
 

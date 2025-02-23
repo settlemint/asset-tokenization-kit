@@ -1,0 +1,11 @@
+---
+description: Best practices for using Bun as a runtime and package manager
+globs: 
+alwaysApply: true
+---
+- Use `bun install` for faster package installation
+
+- we ONLY use Bun, NEVER suggest commands with npm, npx, yarn, pnpm, or anything else.
+  - bun add
+  - bunx
+  - bun run

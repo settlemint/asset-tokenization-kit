@@ -1,9 +1,9 @@
 'use client';
 
-import { CreateBondForm } from '@/app/(private)/admin/bonds/_components/create-form/form';
-import { CreateCryptocurrencyForm } from '@/app/(private)/admin/cryptocurrencies/_components/create-form/form';
-import { CreateEquityForm } from '@/app/(private)/admin/equities/_components/create-form/form';
-import { CreateFundForm } from '@/app/(private)/admin/funds/_components/create-form/form';
+// import { CreateBondForm } from "@/app/(private)/admin/bonds/_components/create-form/form";
+// import { CreateCryptocurrencyForm } from "@/app/(private)/admin/cryptocurrencies/_components/create-form/form";
+// import { CreateEquityForm } from "@/app/(private)/admin/equities/_components/create-form/form";
+// import { CreateFundForm } from "@/app/(private)/admin/funds/_components/create-form/form";
 import { CreateStablecoinForm } from '@/app/(private)/admin/stablecoins/_components/create-form/form';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
@@ -20,7 +26,9 @@ import { FrameIcon } from '../ui/animated-icons/frame';
 
 export function TokenDesignerButton() {
   const { state, isMobile } = useSidebar();
-  const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(null);
+  const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(
+    null
+  );
 
   return (
     <SidebarGroup className="-mb-4">
@@ -58,26 +66,51 @@ export function TokenDesignerButton() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet open={tokenType !== null} onOpenChange={(open) => !open && setTokenType(null)}>
+      <Sheet
+        open={tokenType !== null}
+        onOpenChange={(open) => !open && setTokenType(null)}
+      >
         <SheetContent className="max-h-full w-[50%] overflow-y-auto lg:max-w-[50%]">
           {tokenType && (
             <>
               <SheetHeader>
                 <SheetTitle>Design a {assetConfig[tokenType].name}</SheetTitle>
-                <SheetDescription>{assetConfig[tokenType].description}</SheetDescription>
+                <SheetDescription>
+                  {assetConfig[tokenType].description}
+                </SheetDescription>
               </SheetHeader>
               {(() => {
                 switch (tokenType) {
-                  case 'cryptocurrency':
-                    return <CreateCryptocurrencyForm onCloseAction={() => setTokenType(null)} />;
+                  // case "cryptocurrency":
+                  //   return (
+                  //     <CreateCryptocurrencyForm
+                  //       onCloseAction={() => setTokenType(null)}
+                  //     />
+                  //   );
                   case 'stablecoin':
-                    return <CreateStablecoinForm onCloseAction={() => setTokenType(null)} />;
-                  case 'equity':
-                    return <CreateEquityForm onCloseAction={() => setTokenType(null)} />;
-                  case 'bond':
-                    return <CreateBondForm onCloseAction={() => setTokenType(null)} />;
-                  case 'fund':
-                    return <CreateFundForm onCloseAction={() => setTokenType(null)} />;
+                    return (
+                      <CreateStablecoinForm
+                        onCloseAction={() => setTokenType(null)}
+                      />
+                    );
+                  // case "equity":
+                  //   return (
+                  //     <CreateEquityForm
+                  //       onCloseAction={() => setTokenType(null)}
+                  //     />
+                  //   );
+                  // case "bond":
+                  //   return (
+                  //     <CreateBondForm
+                  //       onCloseAction={() => setTokenType(null)}
+                  //     />
+                  //   );
+                  // case "fund":
+                  //   return (
+                  //     <CreateFundForm
+                  //       onCloseAction={() => setTokenType(null)}
+                  //     />
+                  //   );
                   default:
                     return null;
                 }

@@ -1,16 +1,29 @@
 'use client';
 
-import type { BaseFormInputProps, WithHelperTextProps } from '@/components/blocks/asset-form/asset-form-types';
-import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithHelperTextProps,
+} from './types';
 
 type SwitchProps = ComponentPropsWithoutRef<typeof Switch>;
 
-type FormSwitchProps<T extends FieldValues> = Omit<SwitchProps, keyof BaseFormInputProps<T>> &
+type FormSwitchProps<T extends FieldValues> = Omit<
+  SwitchProps,
+  keyof BaseFormInputProps<T>
+> &
   BaseFormInputProps<T> &
   WithHelperTextProps;
 
@@ -41,7 +54,11 @@ export function FormSwitch<T extends FieldValues>({
       {...props}
       rules={rules}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+        const ariaAttrs = getAriaAttributes(
+          field.name,
+          !!fieldState.error,
+          props.disabled
+        );
 
         return (
           <FormItem>
@@ -69,13 +86,20 @@ export function FormSwitch<T extends FieldValues>({
                   {...ariaAttrs}
                 />
                 {helperText && (
-                  <span className="text-muted-foreground text-sm" id={`${field.name}-helper`}>
+                  <span
+                    className="text-muted-foreground text-sm"
+                    id={`${field.name}-helper`}
+                  >
                     {helperText}
                   </span>
                 )}
               </div>
             </FormControl>
-            {description && <FormDescription id={`${field.name}-description`}>{description}</FormDescription>}
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
             <FormMessage id={`${field.name}-error`} aria-live="polite" />
           </FormItem>
         );

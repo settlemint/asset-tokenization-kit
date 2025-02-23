@@ -1,34 +1,54 @@
-import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import { assetConfig } from '@/lib/config/assets';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateStablecoinFormSchema } from './schema';
+'use client';
+
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { useUser } from '@/components/blocks/user-context/user-context';
+import { useCreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import { useState } from 'react';
 import { Basics } from './steps/basics';
 import { Configuration } from './steps/configuration';
 import { Summary } from './steps/summary';
-import { createStablecoin } from './store';
+
+interface CreateStablecoinFormProps {
+  onCloseAction: () => void;
+}
 
 export function CreateStablecoinForm({
   onCloseAction,
-}: {
-  onCloseAction: () => void;
-}) {
+}: CreateStablecoinFormProps) {
+  const createStablecoin = useCreateStablecoin();
+  const user = useUser();
+  const [open, setOpen] = useState(false);
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <AssetForm
-      storeAction={createStablecoin}
-      resolverAction={zodResolver(CreateStablecoinFormSchema)}
-      onClose={onCloseAction}
-      assetConfig={assetConfig.stablecoin}
-      submitLabel="Create"
-      submittingLabel="Creating..."
-      messages={{
-        onCreate: (data) => `Creating ${data.assetName} (${data.symbol})`,
-        onSuccess: (data) => `${data.assetName} (${data.symbol}) created successfully on chain`,
-        onError: (data, error: Error) => `Creation of ${data.assetName} (${data.symbol}) failed: ${error.message}`,
+    <FormSheet
+      open={open}
+      onOpenChange={() => {
+        setOpen(!open);
+        onCloseAction();
       }}
+      triggerLabel="Mint"
+      title="Mint"
+      description="Mint a stablecoin"
     >
-      <Basics />
-      <Configuration />
-      <Summary />
-    </AssetForm>
+      <Form
+        mutation={createStablecoin}
+        buttonLabels={{
+          label: 'Pause',
+        }}
+        defaultValues={{
+          from: user.wallet,
+          collateralLivenessSeconds: 3600 * 24 * 365,
+        }}
+      >
+        <Basics />
+        <Configuration />
+        <Summary />
+      </Form>
+    </FormSheet>
   );
 }

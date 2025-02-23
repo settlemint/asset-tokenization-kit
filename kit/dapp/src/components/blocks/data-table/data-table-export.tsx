@@ -22,6 +22,9 @@ function formatCellValue(value: unknown): string {
     return `"${value.replace(/"/g, '""')}"`;
   }
 
+  // At this point, value can only be number, boolean, bigint, symbol, or function
+  // Functions shouldn't be in table data, and we can safely stringify primitives
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return String(value);
 }
 
@@ -52,11 +55,17 @@ function exportTableToCSV<TData>(table: Table<TData>): void {
     // Build CSV content
     const csvContent = [
       headers.map(({ header }) => `"${header}"`).join(','),
-      ...table.getRowModel().rows.map((row) => headers.map(({ id }) => formatCellValue(row.getValue(id))).join(',')),
+      ...table
+        .getRowModel()
+        .rows.map((row) =>
+          headers.map(({ id }) => formatCellValue(row.getValue(id))).join(',')
+        ),
     ].join('\n');
 
     // Create a Blob with CSV content
-    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([BOM + csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    });
 
     // Create a link and trigger the download
     const url = URL.createObjectURL(blob);
@@ -80,7 +89,12 @@ interface DataTableExportProps<TData> {
 export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
   return (
     <div className="ml-2 flex items-center gap-2">
-      <Button variant="outline" size="sm" onClick={() => exportTableToCSV(table)} className="gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => exportTableToCSV(table)}
+        className="gap-2"
+      >
         <Download className="size-4" aria-hidden="true" />
         Export
       </Button>

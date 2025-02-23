@@ -13,7 +13,9 @@ export default function NotFoundPage() {
         <FileQuestion className="h-6 w-6 text-muted-foreground" />
       </div>
       <h1 className="font-semibold text-2xl tracking-tight">Page not found</h1>
-      <p className="text-muted-foreground">The page you are looking for doesn&apos;t exist or has been moved.</p>
+      <p className="text-muted-foreground">
+        The page you are looking for doesn&apos;t exist or has been moved.
+      </p>
       <div className="flex gap-4">
         <Button onClick={() => router.back()} variant="default">
           Go back

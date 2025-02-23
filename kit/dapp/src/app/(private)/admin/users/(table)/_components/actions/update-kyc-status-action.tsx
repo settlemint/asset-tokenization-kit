@@ -25,7 +25,13 @@ const UpdateKycStatusMutation = hasuraGraphql(`
   }
 `);
 
-export function UpdateKycStatusAction({ user, onComplete }: { user: ListUser; onComplete?: () => void }) {
+export function UpdateKycStatusAction({
+  user,
+  onComplete,
+}: {
+  user: ListUser;
+  onComplete?: () => void;
+}) {
   const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -45,7 +51,9 @@ export function UpdateKycStatusAction({ user, onComplete }: { user: ListUser; on
       router.refresh();
       onComplete?.();
     } catch (error) {
-      toast.error(`Failed to update KYC status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to update KYC status: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +72,15 @@ export function UpdateKycStatusAction({ user, onComplete }: { user: ListUser; on
         {user.kyc_verified ? 'Remove KYC Verification' : 'Verify KYC'}
       </DropdownMenuItem>
 
-      <Dialog open={showDialog} onOpenChange={(open) => !isLoading && setShowDialog(open)}>
+      <Dialog
+        open={showDialog}
+        onOpenChange={(open) => !isLoading && setShowDialog(open)}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{user.kyc_verified ? 'Remove KYC Verification' : 'Verify KYC'}</DialogTitle>
+            <DialogTitle>
+              {user.kyc_verified ? 'Remove KYC Verification' : 'Verify KYC'}
+            </DialogTitle>
             <DialogDescription>
               {user.kyc_verified
                 ? `Are you sure you want to remove KYC verification for ${user.name}?`
@@ -97,7 +110,11 @@ export function UpdateKycStatusAction({ user, onComplete }: { user: ListUser; on
               }}
               disabled={isLoading}
             >
-              {isLoading ? 'Updating...' : user.kyc_verified ? 'Remove Verification' : 'Verify'}
+              {isLoading
+                ? 'Updating...'
+                : user.kyc_verified
+                  ? 'Remove Verification'
+                  : 'Verify'}
             </Button>
           </DialogFooter>
         </DialogContent>

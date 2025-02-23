@@ -2,9 +2,9 @@ import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CopyToClipboard } from '@/components/ui/copy';
-import { formatDate } from '@/lib/date';
-import { shortHex } from '@/lib/hex';
-import { formatNumber } from '@/lib/number';
+import { formatDate } from '@/lib/utils/date';
+import { shortHex } from '@/lib/utils/hex';
+import { formatNumber } from '@/lib/utils/number';
 import { Ban, Check } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
@@ -41,24 +41,37 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
           {formatDate(user.created_at as string, { type: 'distance' })}
         </DetailsGridItem>
         <DetailsGridItem label="Verified at">
-          {user.kyc_verified ? formatDate(user.kyc_verified as string, { type: 'distance' }) : 'Not Verified'}
+          {user.kyc_verified
+            ? formatDate(user.kyc_verified as string, { type: 'distance' })
+            : 'Not Verified'}
         </DetailsGridItem>
         <DetailsGridItem label="Wallet">
           <div className="flex items-center gap-2 text-md">
-            <AddressAvatar address={user.wallet as Address} variant="small" />
+            <AddressAvatar address={user.wallet as Address} size="small" />
             <CopyToClipboard
               value={user.wallet}
-              displayText={shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 }) ?? ''}
+              displayText={
+                shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 }) ??
+                ''
+              }
             />
           </div>
         </DetailsGridItem>
-        <DetailsGridItem label="Asset supply">{formatNumber(user.assetCount, { decimals: 0 })}</DetailsGridItem>
-        <DetailsGridItem label="Transactions">{formatNumber(user.transactionCount, { decimals: 0 })}</DetailsGridItem>
+        <DetailsGridItem label="Asset supply">
+          {formatNumber(user.assetCount, { decimals: 0 })}
+        </DetailsGridItem>
+        <DetailsGridItem label="Transactions">
+          {formatNumber(user.transactionCount, { decimals: 0 })}
+        </DetailsGridItem>
         <DetailsGridItem label="Last activity">
-          {user.lastActivity ? formatDate(user.lastActivity, { type: 'distance' }) : 'Never'}
+          {user.lastActivity
+            ? formatDate(user.lastActivity, { type: 'distance' })
+            : 'Never'}
         </DetailsGridItem>
         <DetailsGridItem label="Last login">
-          {user.last_login ? formatDate(user.last_login as string, { type: 'distance' }) : 'Never'}
+          {user.last_login
+            ? formatDate(user.last_login as string, { type: 'distance' })
+            : 'Never'}
         </DetailsGridItem>
       </CardContent>
     </Card>

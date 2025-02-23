@@ -1,4 +1,3 @@
-import { AssetFormProgress } from '@/components/blocks/asset-form/asset-form-progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form as UIForm } from '@/components/ui/form';
 import type { UseMutationResult } from '@tanstack/react-query';
@@ -6,13 +5,18 @@ import { useState } from 'react';
 import type { DefaultValues, Path } from 'react-hook-form';
 import type { Schema, z } from 'zod';
 import { type ButtonLabels, FormButton } from './form-button';
+import { FormProgress } from './form-progress';
 import type { FormStepElement } from './types';
 import { useForm } from './use-form';
 
 interface FormProps<InputSchema extends Schema, OutputSchema extends Schema> {
   children: FormStepElement<InputSchema> | FormStepElement<InputSchema>[];
   defaultValues?: DefaultValues<z.infer<InputSchema>>;
-  mutation: UseMutationResult<z.infer<OutputSchema>, Error, z.infer<InputSchema>> & {
+  mutation: UseMutationResult<
+    z.infer<OutputSchema>,
+    Error,
+    z.infer<InputSchema>
+  > & {
     inputSchema: InputSchema;
     outputSchema: OutputSchema;
   };
@@ -40,7 +44,9 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
   };
 
   const handleNext = async () => {
-    const CurrentStep = Array.isArray(children) ? children[currentStep].type : children.type;
+    const CurrentStep = Array.isArray(children)
+      ? children[currentStep].type
+      : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
 
     if (!fieldsToValidate?.length) {
@@ -50,20 +56,29 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
 
     // Mark fields as touched
     for (const field of fieldsToValidate) {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      const value = form.getValues(field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>);
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      form.setValue(field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>, value, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
+      const value = form.getValues(
+        field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>
+      );
+
+      form.setValue(
+        field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>,
+        value,
+        {
+          shouldValidate: true,
+          shouldTouch: true,
+        }
+      );
     }
 
     // Validate fields
     const results = await Promise.all(
       fieldsToValidate.map((field) =>
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        form.trigger(field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>, { shouldFocus: true })
+        form.trigger(
+          field as Path<
+            InputSchema extends Schema ? z.infer<InputSchema> : any
+          >,
+          { shouldFocus: true }
+        )
       )
     );
 
@@ -72,25 +87,41 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
     }
   };
 
+  // Create a wrapper function that doesn't return the Promise
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    void form.handleSubmit((data) => {
+      void mutate(data);
+    })(event);
+  };
+
   return (
     <div className="space-y-6">
       <div className="container mt-8">
         <Card className="w-full pt-10">
           <CardContent>
             <UIForm {...form}>
-              <form onSubmit={form.handleSubmit((data) => mutate(data))}>
+              <form onSubmit={handleSubmit}>
                 {/* Step indicator */}
-                {totalSteps > 1 && <AssetFormProgress currentStep={currentStep} totalSteps={totalSteps} />}
+                {totalSteps > 1 && (
+                  <FormProgress
+                    currentStep={currentStep}
+                    totalSteps={totalSteps}
+                  />
+                )}
 
                 {/* Current step content */}
-                <div className="min-h-[400px]">{Array.isArray(children) ? children[currentStep] : children}</div>
+                <div className="min-h-[400px]">
+                  {Array.isArray(children) ? children[currentStep] : children}
+                </div>
 
                 {/* Navigation buttons */}
                 <FormButton
                   currentStep={currentStep}
                   totalSteps={totalSteps}
                   onPreviousStep={handlePrev}
-                  onNextStep={handleNext}
+                  onNextStep={() => {
+                    void handleNext();
+                  }}
                   labels={buttonLabels}
                 />
               </form>

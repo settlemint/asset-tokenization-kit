@@ -1,11 +1,11 @@
-import { AssetFormStep } from '@/components/blocks/asset-form/step/step';
-import { AssetFormSummaryDetailCard } from '@/components/blocks/asset-form/step/summary/card';
-import { AssetFormSummaryDetailItem } from '@/components/blocks/asset-form/step/summary/item';
-import { AssetFormSummarySecurityConfirmation } from '@/components/blocks/asset-form/step/summary/security-confirmation';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { FormStep } from '@/components/blocks/form/form-step';
 import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
+import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
+import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
+import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
 import type { UpdateCollateral } from '@/lib/mutations/stablecoin/update-collateral';
-import { formatNumber } from '@/lib/number';
+import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -21,19 +21,29 @@ export function Summary({ address }: SummaryProps) {
   });
 
   return (
-    <AssetFormStep
+    <FormStep
       title="Review and confirm update proven collateral"
       description="Verify the details of your update proven collateral before proceeding."
     >
-      <AssetFormSummaryDetailCard icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}>
-        <AssetFormSummaryDetailItem label="Asset" value={<EvmAddress address={address} />} />
-        <AssetFormSummaryDetailItem label="Amount" value={formatNumber(values.amount ?? 0)} />
-      </AssetFormSummaryDetailCard>
+      <FormSummaryDetailCard
+        title="Update Collateral"
+        description="Updating collateral operation details"
+        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+      >
+        <FormSummaryDetailItem
+          label="Asset"
+          value={<EvmAddress address={address} />}
+        />
+        <FormSummaryDetailItem
+          label="Amount"
+          value={formatNumber(values.amount ?? 0)}
+        />
+      </FormSummaryDetailCard>
 
-      <AssetFormSummarySecurityConfirmation>
+      <FormSummarySecurityConfirmation>
         <FormOtp control={control} name="pincode" />
-      </AssetFormSummarySecurityConfirmation>
-    </AssetFormStep>
+      </FormSummarySecurityConfirmation>
+    </FormStep>
   );
 }
 

@@ -3,7 +3,14 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
@@ -61,17 +68,21 @@ export function SignInForm({
         className={cn('flex flex-col gap-6', className)}
         onSubmit={(e) => {
           e.preventDefault();
-          form.handleSubmit(onSubmit)(e);
+          void form.handleSubmit(onSubmit)(e);
         }}
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="font-bold text-2xl">Login to your account</h1>
-          <p className="text-balance text-muted-foreground text-sm">Enter your email below to login to your account</p>
+          <p className="text-balance text-muted-foreground text-sm">
+            Enter your email below to login to your account
+          </p>
         </div>
         {form.formState.errors.root && (
           <Alert variant="destructive">
-            <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+            <AlertDescription>
+              {form.formState.errors.root.message}
+            </AlertDescription>
           </Alert>
         )}
         <div className="grid gap-6">
@@ -82,7 +93,13 @@ export function SignInForm({
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="m@example.com" autoComplete="email" required {...field} />
+                  <Input
+                    type="email"
+                    placeholder="m@example.com"
+                    autoComplete="email"
+                    required
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,7 +112,12 @@ export function SignInForm({
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" autoComplete="current-password" required {...field} />
+                  <Input
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -107,13 +129,22 @@ export function SignInForm({
             render={({ field }) => (
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
-                <FormLabel className="pb-2 font-normal text-sm">Remember me</FormLabel>
+                <FormLabel className="pb-2 font-normal text-sm">
+                  Remember me
+                </FormLabel>
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 size={16} className="mr-2 animate-spin" />
@@ -126,7 +157,10 @@ export function SignInForm({
         </div>
         <div className="text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href={`/auth/signup?rd=${decodedRedirectUrl}`} className="underline underline-offset-4">
+          <Link
+            href={`/auth/signup?rd=${decodedRedirectUrl}`}
+            className="underline underline-offset-4"
+          >
             Sign up
           </Link>
         </div>

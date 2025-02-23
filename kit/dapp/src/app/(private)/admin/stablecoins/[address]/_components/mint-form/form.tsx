@@ -1,51 +1,53 @@
-import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { AssetDetailConfig } from '@/lib/config/assets';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { Address } from 'viem';
-import { MintFormSchema } from './schema';
-import { Amount } from './steps/amount';
-import { Recipients } from './steps/recipients';
-import { Summary } from './steps/summary';
-import { mintStablecoin } from './store';
+'use client';
 
-export function MintForm({
-  address,
-  name,
-  symbol,
-  decimals,
-  assetConfig,
-  collateralAvailable,
-  onCloseAction,
-}: {
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { useUser } from '@/components/blocks/user-context/user-context';
+import { useMint } from '@/lib/mutations/stablecoin/mint';
+import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { useState } from 'react';
+import type { Address } from 'viem';
+import { Amount } from './steps/amount';
+import { Summary } from './steps/summary';
+
+interface MintFormProps {
   address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-  assetConfig: AssetDetailConfig;
-  collateralAvailable: number;
-  onCloseAction: () => void;
-}) {
+}
+
+export function MintForm({ address }: MintFormProps) {
+  const mint = useMint();
+  const { data: stableCoin } = useStableCoinDetail({ address });
+  const user = useUser();
+  const [open, setOpen] = useState(false);
+
+  const collateralAvailable =
+    Number(stableCoin?.collateral ?? 0) - Number(stableCoin?.totalSupply ?? 0);
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <AssetForm
-      storeAction={mintStablecoin}
-      resolverAction={zodResolver(MintFormSchema)}
-      onClose={onCloseAction}
-      assetConfig={assetConfig}
-      address={address}
-      submitLabel="Mint"
-      submittingLabel="Minting..."
-      messages={{
-        onCreate: () => `Minting ${name} (${symbol})`,
-        onSuccess: () => `${name} (${symbol}) minted successfully on chain`,
-        onError: (_input, error) => `Failed to mint ${name} (${symbol}): ${error.message}`,
-      }}
-      defaultValues={{
-        decimals,
-      }}
+    <FormSheet
+      open={open}
+      onOpenChange={setOpen}
+      triggerLabel="Mint"
+      title="Mint"
+      description="Mint a stablecoin"
     >
-      <Recipients />
-      <Amount collateralAvailable={collateralAvailable} />
-      <Summary address={address} decimals={decimals} />
-    </AssetForm>
+      <Form
+        mutation={mint}
+        buttonLabels={{
+          label: 'Pause',
+        }}
+        defaultValues={{
+          address,
+          from: user.wallet,
+        }}
+      >
+        <Amount collateralAvailable={collateralAvailable} />
+        <Summary address={address} />
+      </Form>
+    </FormSheet>
   );
 }

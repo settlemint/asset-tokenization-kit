@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import type { Address } from 'viem';
 
@@ -52,8 +51,13 @@ const CreateWalletVerificationChallengesMutation = portalGraphql(`
  * @param salt - The salt to use in hashing
  * @returns The hashed pincode as a hex string
  */
-function hashPincode(pincode: number, salt: string): string {
-  return createHash('sha256').update(`${salt}${pincode}`).digest('hex');
+async function hashPincode(pincode: number, salt: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${salt}${pincode}`);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -63,9 +67,18 @@ function hashPincode(pincode: number, salt: string): string {
  * @param challenge - The challenge secret
  * @returns The challenge response as a hex string
  */
-function generateChallengeResponse(pincode: number, salt: string, challenge: string): string {
-  const hashedPincode = hashPincode(pincode, salt);
-  return createHash('sha256').update(`${hashedPincode}_${challenge}`).digest('hex');
+async function generateChallengeResponse(
+  pincode: number,
+  salt: string,
+  challenge: string
+): Promise<string> {
+  const hashedPincode = await hashPincode(pincode, salt);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${hashedPincode}_${challenge}`);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -75,20 +88,28 @@ function generateChallengeResponse(pincode: number, salt: string, challenge: str
  * @returns Promise resolving to the challenge response
  * @throws {ChallengeError} If the challenge cannot be created or is invalid
  */
-export async function handleChallenge(userWalletAddress: Address, pincode: number): Promise<string> {
+export async function handleChallenge(
+  userWalletAddress: Address,
+  pincode: number
+): Promise<string> {
   try {
-    const verificationChallenges = await portalClient.request<CreateWalletVerificationChallengesResponse>(
-      CreateWalletVerificationChallengesMutation,
-      {
-        userWalletAddress,
-      }
-    );
+    const verificationChallenges =
+      await portalClient.request<CreateWalletVerificationChallengesResponse>(
+        CreateWalletVerificationChallengesMutation,
+        {
+          userWalletAddress,
+        }
+      );
 
     if (!verificationChallenges.createWalletVerificationChallenges?.length) {
-      throw new ChallengeError('No verification challenges received', 'NO_CHALLENGES');
+      throw new ChallengeError(
+        'No verification challenges received',
+        'NO_CHALLENGES'
+      );
     }
 
-    const firstChallenge = verificationChallenges.createWalletVerificationChallenges[0];
+    const firstChallenge =
+      verificationChallenges.createWalletVerificationChallenges[0];
     const challenge = firstChallenge?.challenge;
 
     if (!challenge?.secret || !challenge?.salt) {
@@ -101,6 +122,9 @@ export async function handleChallenge(userWalletAddress: Address, pincode: numbe
     if (error instanceof ChallengeError) {
       throw error;
     }
-    throw new ChallengeError('Failed to process wallet verification challenge', 'CHALLENGE_PROCESSING_ERROR');
+    throw new ChallengeError(
+      'Failed to process wallet verification challenge',
+      'CHALLENGE_PROCESSING_ERROR'
+    );
   }
 }

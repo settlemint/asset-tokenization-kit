@@ -26,13 +26,20 @@ const CAPITAL_LETTER_REGEX = /(?=[A-Z])/;
  */
 function prettifyTitle(identifier: string): string {
   // Split the identifier at capital letters and lowercase everything
-  const words = identifier.split(CAPITAL_LETTER_REGEX).map((word) => word.toLowerCase());
+  const words = identifier
+    .split(CAPITAL_LETTER_REGEX)
+    .map((word) => word.toLowerCase());
 
   // Capitalize the first letter of each word
-  return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
-export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({
+  table,
+  enableToolbar = true,
+}: DataTableToolbarProps<TData>) {
   if (!enableToolbar) {
     return null;
   }
@@ -45,14 +52,18 @@ export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTab
     .map((column) => ({
       column,
       title: prettifyTitle(column.id),
-      options: Array.from(column.getFacetedUniqueValues().entries()).map(([value]) => ({
-        label: String(value),
-        value: String(value),
-        icon: table.options.meta?.icons?.[value],
-      })),
+      options: Array.from(column.getFacetedUniqueValues().entries()).map(
+        ([value]) => ({
+          label: String(value),
+          value: String(value),
+          icon: table.options.meta?.icons?.[value],
+        })
+      ),
     }));
 
-  const globalFilterColumn = table.getAllLeafColumns().find((col) => col.getCanGlobalFilter());
+  const globalFilterColumn = table
+    .getAllLeafColumns()
+    .find((col) => col.getCanGlobalFilter());
 
   return (
     <div className="flex items-center justify-between">
@@ -77,7 +88,11 @@ export function DataTableToolbar<TData>({ table, enableToolbar = true }: DataTab
           );
         })}
         {isFiltered && (
-          <Button variant="ghost" onClick={() => table.resetColumnFilters()} className="h-8 px-2 lg:px-3">
+          <Button
+            variant="ghost"
+            onClick={() => table.resetColumnFilters()}
+            className="h-8 px-2 lg:px-3"
+          >
             Reset
             <X />
           </Button>

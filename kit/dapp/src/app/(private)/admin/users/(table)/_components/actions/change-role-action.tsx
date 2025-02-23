@@ -11,13 +11,25 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onComplete?: () => void }) {
+export function ChangeRoleAction({
+  user,
+  onComplete,
+}: {
+  user: ListUser;
+  onComplete?: () => void;
+}) {
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>(user.role || 'user');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +52,9 @@ export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onCompl
       router.refresh();
       onComplete?.();
     } catch (error) {
-      toast.error(`Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -59,16 +73,24 @@ export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onCompl
         Change Role
       </DropdownMenuItem>
 
-      <Dialog open={showRoleDialog} onOpenChange={(open) => !isLoading && setShowRoleDialog(open)}>
+      <Dialog
+        open={showRoleDialog}
+        onOpenChange={(open) => !isLoading && setShowRoleDialog(open)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Change User Role</DialogTitle>
             <DialogDescription>
-              Select a new role for {user.name}. This will change their permissions in the system.
+              Select a new role for {user.name}. This will change their
+              permissions in the system.
             </DialogDescription>
           </DialogHeader>
 
-          <Select value={selectedRole} onValueChange={setSelectedRole} disabled={isLoading}>
+          <Select
+            value={selectedRole}
+            onValueChange={setSelectedRole}
+            disabled={isLoading}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
@@ -94,7 +116,9 @@ export function ChangeRoleAction({ user, onComplete }: { user: ListUser; onCompl
               variant="default"
               onClick={(e) => {
                 handleRoleChange(e).catch((error) => {
-                  toast.error(`Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                  toast.error(
+                    `Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`
+                  );
                 });
               }}
               disabled={selectedRole === user.role || isLoading}

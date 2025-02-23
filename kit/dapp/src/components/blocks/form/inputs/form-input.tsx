@@ -1,24 +1,34 @@
 'use client';
 
-import type {
-  BaseFormInputProps,
-  WithPostfixProps,
-  WithTextOnlyProps,
-} from '@/components/blocks/asset-form/asset-form-types';
-import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import { useFormContext } from 'react-hook-form';
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithPostfixProps,
+  type WithTextOnlyProps,
+} from './types';
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
-type FormInputProps<T extends FieldValues> = Omit<InputProps, keyof BaseFormInputProps<T>> &
+type FormInputProps<T extends FieldValues> = Omit<
+  InputProps,
+  keyof BaseFormInputProps<T>
+> &
   BaseFormInputProps<T> &
   WithPostfixProps &
   WithTextOnlyProps;
@@ -55,10 +65,16 @@ export function FormInput<T extends FieldValues>({
       rules={{
         ...rules,
         ...(props.type === 'email' && {
-          pattern: { value: EMAIL_PATTERN, message: 'Please enter a valid email address' },
+          pattern: {
+            value: EMAIL_PATTERN,
+            message: 'Please enter a valid email address',
+          },
         }),
         ...(textOnly && {
-          pattern: { value: TEXT_ONLY_PATTERN, message: 'Please enter letters only' },
+          pattern: {
+            value: TEXT_ONLY_PATTERN,
+            message: 'Please enter letters only',
+          },
         }),
       }}
       render={({ field, fieldState }) => {
@@ -75,7 +91,16 @@ export function FormInput<T extends FieldValues>({
           await form.trigger(field.name);
         };
 
-        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+        // Wrapper function that doesn't return the Promise
+        const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+          void handleChange(e);
+        };
+
+        const ariaAttrs = getAriaAttributes(
+          field.name,
+          !!fieldState.error,
+          props.disabled
+        );
 
         return (
           <FormItem>
@@ -93,16 +118,27 @@ export function FormInput<T extends FieldValues>({
               </FormLabel>
             )}
             <FormControl>
-              <div className={cn('flex rounded-lg shadow-black/5 shadow-sm', !postfix && 'shadow-none')}>
+              <div
+                className={cn(
+                  'flex rounded-lg shadow-black/5 shadow-sm',
+                  !postfix && 'shadow-none'
+                )}
+              >
                 <Input
                   {...field}
                   {...props}
-                  className={cn(className, postfix && '-me-px rounded-e-none shadow-none focus:mr-[1px]')}
+                  className={cn(
+                    className,
+                    postfix &&
+                      '-me-px rounded-e-none shadow-none focus:mr-[1px]'
+                  )}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? '')}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                   inputMode={props.type === 'number' ? 'decimal' : 'text'}
-                  pattern={props.type === 'number' ? '[0-9]*.?[0-9]*' : undefined}
+                  pattern={
+                    props.type === 'number' ? '[0-9]*.?[0-9]*' : undefined
+                  }
                   {...ariaAttrs}
                 />
                 {postfix && (
@@ -112,7 +148,11 @@ export function FormInput<T extends FieldValues>({
                 )}
               </div>
             </FormControl>
-            {description && <FormDescription id={`${field.name}-description`}>{description}</FormDescription>}
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
             <FormMessage id={`${field.name}-error`} aria-live="polite" />
           </FormItem>
         );

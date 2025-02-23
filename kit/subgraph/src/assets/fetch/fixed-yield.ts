@@ -1,6 +1,6 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { FixedYield } from '../../../generated/schema';
-import { FixedYield as FixedYieldContract } from '../../../generated/templates/FixedYield/FixedYield';
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { FixedYield } from "../../../generated/schema";
+import { FixedYield as FixedYieldContract } from "../../../generated/templates/FixedYield/FixedYield";
 
 export function fetchFixedYield(address: Address): FixedYield {
   let fixedYield = FixedYield.load(address);
@@ -15,7 +15,9 @@ export function fetchFixedYield(address: Address): FixedYield {
 
     fixedYield = new FixedYield(address);
     fixedYield.token = token.reverted ? Address.zero() : token.value;
-    fixedYield.underlyingAsset = underlyingAsset.reverted ? Address.zero() : underlyingAsset.value;
+    fixedYield.underlyingAsset = underlyingAsset.reverted
+      ? Address.zero()
+      : underlyingAsset.value;
     fixedYield.startDate = startDate.reverted ? BigInt.zero() : startDate.value;
     fixedYield.endDate = endDate.reverted ? BigInt.zero() : endDate.value;
     fixedYield.rate = rate.reverted ? BigInt.zero() : rate.value;

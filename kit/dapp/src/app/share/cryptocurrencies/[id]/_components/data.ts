@@ -1,4 +1,7 @@
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
 
 const OgCryptoCurrency = theGraphGraphqlStarterkits(`
   query OgCryptoCurrency($id: ID!) {
@@ -11,6 +14,9 @@ const OgCryptoCurrency = theGraphGraphqlStarterkits(`
 `);
 
 export async function getOgCryptoCurrency(id: string) {
-  const { cryptoCurrency } = await theGraphClientStarterkits.request(OgCryptoCurrency, { id });
+  const { cryptoCurrency } = await theGraphClientStarterkits.request(
+    OgCryptoCurrency,
+    { id }
+  );
   return cryptoCurrency;
 }

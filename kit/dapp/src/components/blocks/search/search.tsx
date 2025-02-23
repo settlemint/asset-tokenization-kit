@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
 import { assetConfig } from '@/lib/config/assets';
-import { useUserSearch } from '@/lib/queries/asset/user-search';
-import { useAssetSearch } from '@/lib/queries/user/asset-search';
-import { sanitizeSearchTerm } from '@/lib/react-query';
+import { useAssetSearch } from '@/lib/queries/asset/asset-search';
+import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
+import { sanitizeSearchTerm } from '@/lib/utils/string';
 import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
 import { type Address, getAddress } from 'viem';
@@ -27,8 +27,12 @@ export const Search = () => {
     name: 'search',
   });
   const debounced = useDebounce(search, 250);
-  const { data: users } = useUserSearch({ address: sanitizeSearchTerm(debounced) as Address });
-  const { data: assets } = useAssetSearch({ address: sanitizeSearchTerm(debounced) as Address });
+  const { data: users } = useUserSearch({
+    address: sanitizeSearchTerm(debounced) as Address,
+  });
+  const { data: assets } = useAssetSearch({
+    address: sanitizeSearchTerm(debounced) as Address,
+  });
 
   return (
     <Form {...form}>
@@ -78,15 +82,18 @@ export const Search = () => {
               'absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-lg'
             )}
           >
-            {assets.length === 0 && users?.length === 0 && (
+            {(assets ?? []).length === 0 && users?.length === 0 && (
               <div className="py-6 text-center text-sm">
-                <p className="text-muted-foreground text-sm">No results found</p>
+                <p className="text-muted-foreground text-sm">
+                  No results found
+                </p>
               </div>
             )}
-
-            {assets.length > 0 && (
+            {(assets ?? []).length > 0 && (
               <>
-                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">Assets</div>
+                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
+                  Assets
+                </div>
                 {(assets ?? []).map((asset) => (
                   <div
                     key={asset.id}
@@ -102,7 +109,11 @@ export const Search = () => {
                         });
                       }}
                     >
-                      <EvmAddress address={asset.id as Address} verbose hoverCard={false} />
+                      <EvmAddress
+                        address={asset.id}
+                        verbose
+                        hoverCard={false}
+                      />
                     </Link>
                   </div>
                 ))}
@@ -111,7 +122,9 @@ export const Search = () => {
             {users && users.length > 0 && <Separator />}
             {users && users.length > 0 && (
               <>
-                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">Users</div>
+                <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
+                  Users
+                </div>
                 {users.map((user) => (
                   <div
                     key={user.wallet}
@@ -127,7 +140,11 @@ export const Search = () => {
                         });
                       }}
                     >
-                      <EvmAddress address={user.wallet as Address} verbose hoverCard={false} />
+                      <EvmAddress
+                        address={user.wallet}
+                        verbose
+                        hoverCard={false}
+                      />
                     </Link>
                   </div>
                 ))}

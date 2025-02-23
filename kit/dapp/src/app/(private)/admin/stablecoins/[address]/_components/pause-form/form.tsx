@@ -1,42 +1,75 @@
 'use client';
 
-import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { AssetDetailConfig } from '@/lib/config/assets';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { useUser } from '@/components/blocks/user-context/user-context';
+import { usePause } from '@/lib/mutations/stablecoin/pause';
+import { useUnPause } from '@/lib/mutations/stablecoin/unpause';
+import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { useState } from 'react';
 import type { Address } from 'viem';
-import { PauseFormSchema } from './schema';
 import { Summary } from './steps/summary';
-import { pauseStablecoin } from './store';
 
-interface PauseStablecoinFormProps {
+interface PauseFormProps {
   address: Address;
-  paused: boolean;
-  assetConfig: AssetDetailConfig;
-  onCloseAction: () => void;
 }
 
-export function PauseStablecoinForm({ address, paused, assetConfig, onCloseAction }: PauseStablecoinFormProps) {
-  const actionLabel = paused ? 'Unpause' : 'Pause';
-  const actionSubmittingLabel = actionLabel === 'Pause' ? 'Pausing' : 'Unpausing';
-  const actionSuccessLabel = actionLabel === 'Pause' ? 'Paused' : 'Unpaused';
+export function PauseForm({ address }: PauseFormProps) {
+  const unPauseMutation = useUnPause();
+  const pauseMutation = usePause();
+  const { data: stableCoin } = useStableCoinDetail({ address });
+  const user = useUser();
+  const [open, setOpen] = useState(false);
+
+  if (!user) {
+    return null;
+  }
+
+  if (stableCoin?.paused) {
+    return (
+      <FormSheet
+        open={open}
+        onOpenChange={setOpen}
+        triggerLabel="Unpause"
+        title="Unpause"
+        description="Unpause a stablecoin"
+      >
+        <Form
+          mutation={unPauseMutation}
+          buttonLabels={{
+            label: 'Unpause',
+          }}
+          defaultValues={{
+            address,
+            from: user.wallet,
+          }}
+        >
+          <Summary address={address} isCurrentlyPaused={stableCoin.paused} />
+        </Form>
+      </FormSheet>
+    );
+  }
 
   return (
-    <AssetForm
-      storeAction={(formData) => pauseStablecoin({ ...formData, address, paused })}
-      resolverAction={zodResolver(PauseFormSchema)}
-      onClose={onCloseAction}
-      assetConfig={assetConfig}
-      address={address}
-      submitLabel={actionLabel}
-      submittingLabel={actionSubmittingLabel}
-      messages={{
-        onCreate: () => `${actionSubmittingLabel} ${assetConfig.name.toLowerCase()}...`,
-        onSuccess: () => `Successfully ${actionSuccessLabel} ${assetConfig.name.toLowerCase()} on chain`,
-        onError: (_, error) =>
-          `Failed to ${actionLabel.toLowerCase()} ${assetConfig.name.toLowerCase()}: ${error.message}`,
-      }}
+    <FormSheet
+      open={open}
+      onOpenChange={setOpen}
+      triggerLabel="Pause"
+      title="Pause"
+      description="Pause a stablecoin"
     >
-      <Summary address={address} paused={paused} />
-    </AssetForm>
+      <Form
+        mutation={pauseMutation}
+        buttonLabels={{
+          label: 'Pause',
+        }}
+        defaultValues={{
+          address,
+          from: user.wallet,
+        }}
+      >
+        <Summary address={address} isCurrentlyPaused={stableCoin.paused} />
+      </Form>
+    </FormSheet>
   );
 }

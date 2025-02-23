@@ -1,6 +1,9 @@
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/utils/pagination';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const ListUserFragment = hasuraGraphql(`
@@ -55,14 +58,19 @@ export async function getUsers(): Promise<ListUser[]> {
       return result.user;
     }),
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(UserActivity, { first, skip });
+      const result = await theGraphClientStarterkits.request(UserActivity, {
+        first,
+        skip,
+      });
       return result.accounts;
     }),
   ]);
   return users.map((user) => {
     return {
       ...user,
-      lastActivity: accounts.find((account) => account.id.toLowerCase() === user.wallet.toLowerCase())?.lastActivity,
+      lastActivity: accounts.find(
+        (account) => account.id.toLowerCase() === user.wallet.toLowerCase()
+      )?.lastActivity,
     };
   });
 }

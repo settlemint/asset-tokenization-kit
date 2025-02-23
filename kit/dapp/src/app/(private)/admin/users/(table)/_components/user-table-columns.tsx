@@ -6,13 +6,21 @@ import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-c
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatDate } from '@/lib/date';
+import { formatDate } from '@/lib/utils/date';
 import { createColumnHelper } from '@tanstack/react-table';
-import { BadgeCheck, BadgePlus, BadgeX, Ban, Check, ShieldCheck, User2 } from 'lucide-react';
+import {
+  BadgeCheck,
+  BadgePlus,
+  BadgeX,
+  Ban,
+  Check,
+  ShieldCheck,
+  User2,
+} from 'lucide-react';
 import { type ComponentType, Suspense } from 'react';
 import type { Address } from 'viem';
 import { BanUserAction } from './actions/ban-user-action';
@@ -22,7 +30,9 @@ const columnHelper = createColumnHelper<ListUser>();
 
 export const columns = [
   columnHelper.accessor('name', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
+    ),
     cell: ({ renderValue, row }) => (
       <DataTableColumnCell>
         <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
@@ -30,17 +40,23 @@ export const columns = [
             email={row.original.email}
             address={row.original.wallet as Address}
             imageUrl={row.original.image}
-            variant="small"
+            size="small"
           />
         </Suspense>
         <span>{renderValue()}</span>
-        {row.original.banned && <Badge variant="destructive">Banned for {row.original.ban_reason}</Badge>}
+        {row.original.banned && (
+          <Badge variant="destructive">
+            Banned for {row.original.ban_reason}
+          </Badge>
+        )}
       </DataTableColumnCell>
     ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('wallet', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => (
       <DataTableColumnCell>
         {getValue() && (
@@ -48,7 +64,11 @@ export const columns = [
             <EvmAddress address={getValue() as Address} prettyNames={false}>
               <EvmAddressBalances address={getValue() as Address} />
             </EvmAddress>
-            <CopyToClipboard value={getValue()} displayText={''} className="ml-2" />
+            <CopyToClipboard
+              value={getValue()}
+              displayText={''}
+              className="ml-2"
+            />
           </div>
         )}
       </DataTableColumnCell>
@@ -56,12 +76,18 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('email', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>,
-    cell: ({ renderValue }) => <DataTableColumnCell>{renderValue()}</DataTableColumnCell>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>
+    ),
+    cell: ({ renderValue }) => (
+      <DataTableColumnCell>{renderValue()}</DataTableColumnCell>
+    ),
     enableColumnFilter: false,
   }),
   columnHelper.accessor('role', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>
+    ),
     cell: ({ renderValue }) => {
       const role = renderValue();
       const Icon = role ? icons[role] : null;
@@ -75,7 +101,9 @@ export const columns = [
     enableColumnFilter: true,
   }),
   columnHelper.accessor('banned', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => {
       const banned = getValue();
       const status = banned ? 'banned' : 'active';
@@ -90,7 +118,9 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('kyc_verified', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>KYC Status</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>KYC Status</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => {
       const verified = getValue() as string | undefined;
       const status = verified ? 'verified' : 'notVerified';
@@ -105,11 +135,17 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('lastActivity', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Last activity</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>
+        Last activity
+      </DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => {
       const lastActivity = getValue();
       return (
-        <DataTableColumnCell>{lastActivity ? formatDate(lastActivity, { type: 'distance' }) : '-'}</DataTableColumnCell>
+        <DataTableColumnCell>
+          {lastActivity ? formatDate(lastActivity, { type: 'distance' }) : '-'}
+        </DataTableColumnCell>
       );
     },
     enableColumnFilter: false,

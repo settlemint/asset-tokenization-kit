@@ -10,13 +10,25 @@ import {
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { type KeyboardEvent, type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete?: () => void }) {
+export function BanUserAction({
+  user,
+  onComplete,
+}: {
+  user: ListUser;
+  onComplete?: () => void;
+}) {
   const [showBanDialog, setShowBanDialog] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [banDuration, setBanDuration] = useState<string>('forever');
@@ -57,7 +69,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
       router.refresh();
       onComplete?.();
     } catch (error) {
-      toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +88,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
       router.refresh();
       onComplete?.();
     } catch (error) {
-      toast.error(`Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +100,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
     e.preventDefault();
     if (user.banned) {
       handleUnbanUser(e).catch((error) => {
-        toast.error(`Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        toast.error(
+          `Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
       });
     } else {
       setShowBanDialog(true);
@@ -93,16 +111,24 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
 
   return (
     <>
-      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading} className="dropdown-menu-item">
+      <DropdownMenuItem
+        onClick={handleBanClick}
+        disabled={isLoading}
+        className="dropdown-menu-item"
+      >
         {user.banned ? (isLoading ? 'Unbanning...' : 'Unban') : 'Ban'}
       </DropdownMenuItem>
 
-      <Dialog open={showBanDialog} onOpenChange={(open) => !isLoading && setShowBanDialog(open)}>
+      <Dialog
+        open={showBanDialog}
+        onOpenChange={(open) => !isLoading && setShowBanDialog(open)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Ban User</DialogTitle>
             <DialogDescription>
-              Enter a reason for banning {user.name}. This will be recorded and visible to administrators.
+              Enter a reason for banning {user.name}. This will be recorded and
+              visible to administrators.
             </DialogDescription>
           </DialogHeader>
 
@@ -116,13 +142,19 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && banReason.trim()) {
                   handleBanUser(e).catch((error) => {
-                    toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                    toast.error(
+                      `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+                    );
                   });
                 }
               }}
             />
 
-            <Select value={banDuration} onValueChange={setBanDuration} disabled={isLoading}>
+            <Select
+              value={banDuration}
+              onValueChange={setBanDuration}
+              disabled={isLoading}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select ban duration" />
               </SelectTrigger>
@@ -151,7 +183,9 @@ export function BanUserAction({ user, onComplete }: { user: ListUser; onComplete
               variant="destructive"
               onClick={(e) => {
                 handleBanUser(e).catch((error) => {
-                  toast.error(`Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                  toast.error(
+                    `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+                  );
                 });
               }}
               disabled={!banReason.trim() || isLoading}

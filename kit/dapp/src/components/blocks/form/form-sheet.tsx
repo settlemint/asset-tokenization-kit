@@ -1,5 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 interface FormSheetProps {
   children: React.ReactNode;
@@ -10,11 +17,21 @@ interface FormSheetProps {
   description: string;
 }
 
-export function FormSheet({ children, open, onOpenChange, triggerLabel, title, description }: FormSheetProps) {
+export function FormSheet({
+  children,
+  open,
+  onOpenChange,
+  triggerLabel,
+  title,
+  description,
+}: FormSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
+        <Button
+          variant="ghost"
+          className="dropdown-menu-item w-full justify-start"
+        >
           {triggerLabel}
         </Button>
       </SheetTrigger>

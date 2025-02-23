@@ -8,14 +8,14 @@ interface AssetTypeIconProps {
 
 function getAssetInitials(type: keyof typeof assetConfig): string {
   switch (type) {
-    case 'bond':
-      return 'BN';
-    case 'cryptocurrency':
-      return 'CC';
-    case 'equity':
-      return 'EQ';
-    case 'fund':
-      return 'FN';
+    // case "bond":
+    //   return "BN";
+    // case "cryptocurrency":
+    //   return "CC";
+    // case "equity":
+    //   return "EQ";
+    // case "fund":
+    //   return "FN";
     case 'stablecoin':
       return 'SC';
     default:
@@ -28,7 +28,9 @@ export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
 
   return (
     <Avatar className={`${sizeClass} border border-foreground-muted`}>
-      <AvatarFallback className="text-[7px]">{getAssetInitials(type)}</AvatarFallback>
+      <AvatarFallback className="text-[7px]">
+        {getAssetInitials(type)}
+      </AvatarFallback>
     </Avatar>
   );
 }

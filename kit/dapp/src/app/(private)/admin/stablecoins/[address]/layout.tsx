@@ -1,9 +1,10 @@
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { PrefetchStableCoinDetail, getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
+import { StableCoinPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -11,7 +12,9 @@ interface LayoutProps extends PropsWithChildren {
   }>;
 }
 
-export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: LayoutProps): Promise<Metadata> {
   const { address } = await params;
   const stableCoin = await getStableCoinDetail({ address });
   return {
@@ -34,19 +37,24 @@ const tabs = (address: string): TabItemProps[] => [
   },
   {
     name: 'Permissions',
-    href: `/admin/stablecoins/${address}/token-permissions`,
+    href: `/admin/stablecoins/${address}/permissions`,
   },
 ];
 
-export default async function FundsDetailLayout({ children, params }: LayoutProps) {
+export default async function FundsDetailLayout({
+  children,
+  params,
+}: LayoutProps) {
   const { address } = await params;
 
   return (
-    <PrefetchStableCoinDetail address={address}>
+    <>
+      <StableCoinPageHeader address={address} />
+
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabs(address)} />
       </div>
       {children}
-    </PrefetchStableCoinDetail>
+    </>
   );
 }

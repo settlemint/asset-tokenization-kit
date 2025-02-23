@@ -2,7 +2,7 @@ import { OgDataBox } from '@/app/share/_components/og-data-box';
 import { OgImage } from '@/app/share/_components/og-image';
 import { OgNotFound } from '@/app/share/_components/og-not-found';
 import { createOgResponse } from '@/app/share/_components/og-response';
-import { formatNumber } from '@/lib/number';
+import { formatNumber } from '@/lib/utils/number';
 import type { Address } from 'viem';
 import { getOgBond } from '../_components/data';
 

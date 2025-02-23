@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2022",
     "lib": ["es2022", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -67,8 +67,15 @@
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
     "allowSyntheticDefaultImports": true,
-    "preserveConstEnums": true
+    "preserveConstEnums": true,
+    "useDefineForClassFields": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": [
+    "**/*.mjs",
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

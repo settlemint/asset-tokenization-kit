@@ -1,10 +1,6 @@
-import { AssetTable } from '@/components/blocks/asset-table/asset-table';
+import { StableCoinTable } from '@/app/(private)/admin/stablecoins/(table)/_components/table';
 import { PageHeader } from '@/components/layout/page-header';
-import { assetConfig } from '@/lib/config/assets';
 import type { Metadata } from 'next';
-import { columns } from './_components/columns';
-import { getStableCoins } from './_components/data';
-import { TableClient } from './_components/table-client';
 
 export const metadata: Metadata = {
   title: 'Stable Coins',
@@ -15,9 +11,7 @@ export default function StableCoinsPage() {
   return (
     <>
       <PageHeader title="Stable Coins" />
-      <AssetTable assetConfig={assetConfig.stablecoin} dataAction={getStableCoins} columns={columns}>
-        <TableClient />
-      </AssetTable>
+      <StableCoinTable />
     </>
   );
 }

@@ -1,6 +1,6 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { RoleRevokedEvent } from '../../../generated/schema';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { RoleRevokedEvent } from "../../../generated/schema";
+import { EventName } from "../../utils/enums";
 
 export function roleRevokedEvent(
   id: Bytes,
@@ -8,7 +8,7 @@ export function roleRevokedEvent(
   emitter: Bytes,
   sender: Bytes,
   role: Bytes,
-  account: Bytes
+  account: Bytes,
 ): RoleRevokedEvent {
   const roleRevokedEvent = new RoleRevokedEvent(id);
   roleRevokedEvent.eventName = EventName.RoleRevoked;

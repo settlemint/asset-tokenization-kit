@@ -8,7 +8,9 @@ interface SharePageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: SharePageProps): Promise<Metadata> {
   const { id } = await params;
   const stableCoin = await getOgStablecoin(id);
 
@@ -24,7 +26,10 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     openGraph: {
       images: [
         {
-          url: new URL(`/share/stablecoins/${id}/og`, metadata.metadataBase).toString(),
+          url: new URL(
+            `/share/stablecoins/${id}/og`,
+            metadata.metadataBase
+          ).toString(),
           width: 1280,
           height: 640,
           alt: stableCoin?.name,
@@ -34,7 +39,10 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     twitter: {
       images: [
         {
-          url: new URL(`/share/stablecoins/${id}/og`, metadata.metadataBase).toString(),
+          url: new URL(
+            `/share/stablecoins/${id}/og`,
+            metadata.metadataBase
+          ).toString(),
           width: 1280,
           height: 640,
           alt: stableCoin?.name,

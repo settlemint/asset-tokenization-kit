@@ -1,4 +1,8 @@
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 import { cn } from '@/lib/utils';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 

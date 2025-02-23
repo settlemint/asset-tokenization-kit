@@ -38,7 +38,6 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "lint:biome": "biome lint .",
     "format": "turbo format",
     "test": "turbo test",
     "codegen": "turbo codegen",
@@ -47,14 +46,14 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
-  "dependencies": {},
+  "dependencies": {
+    "js-big-decimal": "2.2.0"
+  },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.1.9",
     "turbo": "2.4.2",
     "typescript": "5.7.3",
-    "ultracite": "4.1.20",
-    "lefthook": "1.11.0"
+    "prettier": "3.5.2"
   },
   "trustedDependencies": [
     "@biomejs/biome",
@@ -68,8 +67,10 @@
     "protobufjs",
     "secp256k1"
   ],
-  "packageManager": "bun@1.2.0",
-  "workspaces": ["kit/*"],
+  "packageManager": "bun@1.2.3",
+  "workspaces": [
+    "kit/*"
+  ],
   "overrides": {
     "react-is": "19.0.0",
     "graphql": "16.10.0",

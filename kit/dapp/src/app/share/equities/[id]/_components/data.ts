@@ -1,4 +1,7 @@
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
 
 const OgEquity = theGraphGraphqlStarterkits(`
   query OgEquity($id: ID!) {

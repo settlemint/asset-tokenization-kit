@@ -7,7 +7,13 @@
       "outputs": ["*.d.ts", "src/lib/settlemint/**", "generated/**"]
     },
     "codegen:settlemint": {
-      "outputs": ["*-env.d.ts", "*-schema.graphql", "*-env-*.d.ts", "*-schema-*.graphql", "src/lib/settlemint/**"]
+      "outputs": [
+        "*-env.d.ts",
+        "*-schema.graphql",
+        "*-env-*.d.ts",
+        "*-schema-*.graphql",
+        "src/lib/settlemint/**"
+      ]
     },
     "codegen:gql-tada": {
       "dependsOn": ["codegen:settlemint"],
@@ -20,18 +26,8 @@
     "dependencies": {
       "outputs": ["dependencies/**"]
     },
-    "format": {
-      "dependsOn": ["format:biome", "format:forge"]
-    },
-    "format:biome": {
-      "cache": false
-    },
-    "format:forge": {
-      "cache": false
-    },
-    "lint": {
-      "dependsOn": ["//#lint:biome", "lint:solhint", "lint:eslint"]
-    },
+    "format": {},
+    "lint": {},
     "//#lint:biome": {
       "dependsOn": ["^codegen"]
     },

@@ -13,19 +13,22 @@ export const ROLES = {
     id: '0x0000000000000000000000000000000000000000000000000000000000000000' as Hex,
     contractRole: 'DEFAULT_ADMIN_ROLE',
     displayName: 'Admin',
-    description: 'Grants full administrative privileges, including the ability to assign and manage all other roles',
+    description:
+      'Grants full administrative privileges, including the ability to assign and manage all other roles',
   },
   SUPPLY_MANAGEMENT_ROLE: {
     id: keccak256(stringToBytes('SUPPLY_MANAGEMENT_ROLE')),
     contractRole: 'SUPPLY_MANAGEMENT_ROLE',
     displayName: 'Supply Manager',
-    description: 'Permits the account to mint new tokens, increasing the supply of the asset',
+    description:
+      'Permits the account to mint new tokens, increasing the supply of the asset',
   },
   USER_MANAGEMENT_ROLE: {
     id: keccak256(stringToBytes('USER_MANAGEMENT_ROLE')),
     contractRole: 'USER_MANAGEMENT_ROLE',
     displayName: 'User Manager',
-    description: 'Allows the account to block and unblock users and to freeze and unfreeze accounts.',
+    description:
+      'Allows the account to block and unblock users and to freeze and unfreeze accounts.',
   },
 } as const;
 

@@ -1,20 +1,40 @@
 'use client';
 
-import type { BaseFormInputProps, WithPlaceholderProps } from '@/components/blocks/asset-form/asset-form-types';
-import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { formatDate } from '@/lib/date';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/utils/date';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithPlaceholderProps,
+} from './types';
 
-type CalendarProps = Omit<ComponentPropsWithoutRef<typeof Calendar>, 'mode' | 'selected' | 'onSelect'>;
+type CalendarProps = Omit<
+  ComponentPropsWithoutRef<typeof Calendar>,
+  'mode' | 'selected' | 'onSelect'
+>;
 
-type FormDateProps<T extends FieldValues> = Omit<CalendarProps, keyof BaseFormInputProps<T>> &
+type FormDateProps<T extends FieldValues> = Omit<
+  CalendarProps,
+  keyof BaseFormInputProps<T>
+> &
   BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** Minimum selectable date */
@@ -23,7 +43,9 @@ type FormDateProps<T extends FieldValues> = Omit<CalendarProps, keyof BaseFormIn
     toDate?: Date;
   };
 
-const DEFAULT_TO_DATE = new Date(new Date().setFullYear(new Date().getFullYear() + 10));
+const DEFAULT_TO_DATE = new Date(
+  new Date().setFullYear(new Date().getFullYear() + 10)
+);
 const DEFAULT_PLACEHOLDER = 'Pick a date';
 
 /**
@@ -55,7 +77,11 @@ export function FormDate<T extends FieldValues>({
     <FormField
       {...props}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+        const ariaAttrs = getAriaAttributes(
+          field.name,
+          !!fieldState.error,
+          props.disabled
+        );
 
         return (
           <FormItem className={className}>
@@ -85,7 +111,9 @@ export function FormDate<T extends FieldValues>({
                     {...ariaAttrs}
                   >
                     {field.value ? (
-                      <time dateTime={field.value.toISOString()}>{formatDate(field.value)}</time>
+                      <time dateTime={field.value.toISOString()}>
+                        {formatDate(field.value)}
+                      </time>
                     ) : (
                       <span>{placeholder}</span>
                     )}
@@ -103,7 +131,11 @@ export function FormDate<T extends FieldValues>({
                 </PopoverContent>
               </Popover>
             </FormControl>
-            {description && <FormDescription id={`${field.name}-description`}>{description}</FormDescription>}
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
             <FormMessage id={`${field.name}-error`} aria-live="polite" />
           </FormItem>
         );

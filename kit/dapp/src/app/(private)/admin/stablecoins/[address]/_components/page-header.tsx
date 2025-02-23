@@ -2,8 +2,8 @@
 
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PageHeader } from '@/components/layout/page-header';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
 import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import type { Address } from 'viem';
 import { ManageDropdown } from './manage-dropdown';

@@ -1,6 +1,9 @@
 'use client';
 
-import { NavigationMenu, NavigationMenuList } from '@/components/ui/navigation-menu';
+import {
+  NavigationMenu,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu';
 import { usePathname } from 'next/navigation';
 import { TabItem, type TabItemProps } from './tab-item';
 

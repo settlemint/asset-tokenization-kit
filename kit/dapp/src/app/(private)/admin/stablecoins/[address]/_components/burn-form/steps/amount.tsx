@@ -1,34 +1,33 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
-import { formatNumber } from '@/lib/number';
+import { FormStep } from '@/components/blocks/form/form-step';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
+import type { Burn } from '@/lib/mutations/stablecoin/burn';
+import { formatNumber } from '@/lib/utils/number';
 import { useFormContext } from 'react-hook-form';
-import type { BurnFormType } from '../schema';
 
-export function Amount({ balance }: { balance: number }) {
-  const { control } = useFormContext<BurnFormType>();
+interface AmountProps {
+  balance: number;
+}
+
+export function Amount({ balance }: AmountProps) {
+  const { control } = useFormContext<Burn>();
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-8">
-        <div className="mb-2">
-          <h2 className="font-semibold text-foreground text-lg">Enter Amount</h2>
-          <p className="text-muted-foreground text-sm">
-            Input the amount you wish to burn. Ensure the amount stays within the collateral limits.
-          </p>
-        </div>
-      </div>
+    <FormStep
+      title="Enter Amount"
+      description="Input the amount you wish to mint."
+    >
       <div className="grid grid-cols-1 gap-6">
-        <AssetFormInput
+        <FormInput
           control={control}
           name="amount"
           label="Amount"
           type="number"
           min={1}
-          defaultValue={1}
           max={balance}
-          description={`You have ${formatNumber(balance)} in your wallet.`}
+          description={`Available balance: ${formatNumber(balance)}`}
         />
       </div>
-    </div>
+    </FormStep>
   );
 }
 

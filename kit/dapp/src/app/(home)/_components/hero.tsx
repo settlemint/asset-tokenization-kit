@@ -177,10 +177,14 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
             </div>
             <div className="absolute top-8 right-8 flex items-center gap-3">
               <Button variant="ghost" asChild>
-                <Link href={buttons.tertiary.href}>{buttons.tertiary.text}</Link>
+                <Link href={buttons.tertiary.href}>
+                  {buttons.tertiary.text}
+                </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href={buttons.secondary.href}>{buttons.secondary.text}</Link>
+                <Link href={buttons.secondary.href}>
+                  {buttons.secondary.text}
+                </Link>
               </Button>
               <Button asChild>
                 <Link href={buttons.main.href}>{buttons.main.text}</Link>
@@ -194,7 +198,9 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                   {subtitle.gradient}
                 </span>
               </h2>
-              <p className="mx-auto max-w-2xl text-muted-foreground">{description}</p>
+              <p className="mx-auto max-w-2xl text-muted-foreground">
+                {description}
+              </p>
               <div className="items-center justify-center gap-x-3 space-y-3 sm:flex sm:space-y-0">
                 <span className="relative inline-block overflow-hidden rounded-full p-[1.5px]">
                   <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--accent))_0%,hsl(var(--chart-2))_50%,hsl(var(--accent))_100%)]" />
@@ -228,7 +234,9 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                 {footerLinks.map(({ href, label }) => (
                   <NavigationMenuItem key={href}>
                     <Link href={href} legacyBehavior passHref>
-                      <NavigationMenuLink className={cn(navigationMenuTriggerStyle(), 'text-xs')}>
+                      <NavigationMenuLink
+                        className={cn(navigationMenuTriggerStyle(), 'text-xs')}
+                      >
                         {label}
                       </NavigationMenuLink>
                     </Link>

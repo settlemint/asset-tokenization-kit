@@ -1,8 +1,12 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { AssetBalance } from '../../generated/schema';
-import { toDecimals } from '../utils/decimals';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { AssetBalance } from "../../generated/schema";
+import { toDecimals } from "../utils/decimals";
 
-export function fetchAssetBalance(asset: Bytes, account: Bytes, decimals: number): AssetBalance {
+export function fetchAssetBalance(
+  asset: Bytes,
+  account: Bytes,
+  decimals: number,
+): AssetBalance {
   const id = assetBalanceId(asset, account);
   let balance = AssetBalance.load(id);
 

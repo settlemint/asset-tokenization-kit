@@ -2,11 +2,11 @@ import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-e
 import type { Address } from 'viem';
 
 interface PageProps {
-  params: Promise<{ id: Address }>;
+  params: Promise<{ address: Address }>;
 }
 
 export default async function StablecoinEventsPage({ params }: PageProps) {
-  const { id } = await params;
+  const { address } = await params;
 
-  return <AssetEventsTable variables={{ asset: id }} />;
+  return <AssetEventsTable asset={address} />;
 }

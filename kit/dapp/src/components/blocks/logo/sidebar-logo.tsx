@@ -1,6 +1,10 @@
 'use client';
 
-import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { Logo } from './logo';
 

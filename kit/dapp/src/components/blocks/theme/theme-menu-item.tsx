@@ -14,8 +14,15 @@ export function ThemeMenuItem() {
   }
 
   return (
-    <DropdownMenuItem onSelect={() => setTheme(nextTheme)} className="dropdown-menu-item">
-      {resolvedTheme === 'dark' ? <Sun className="mr-2 size-4" /> : <Moon className="mr-2 size-4" />}
+    <DropdownMenuItem
+      onSelect={() => setTheme(nextTheme)}
+      className="dropdown-menu-item"
+    >
+      {resolvedTheme === 'dark' ? (
+        <Sun className="mr-2 size-4" />
+      ) : (
+        <Moon className="mr-2 size-4" />
+      )}
       Switch to {nextTheme} mode
     </DropdownMenuItem>
   );

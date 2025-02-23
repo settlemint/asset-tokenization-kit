@@ -1,5 +1,8 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
 import type { FragmentOf } from '@settlemint/sdk-hasura';
 
 const UserFragment = hasuraGraphql(`

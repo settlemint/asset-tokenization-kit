@@ -79,7 +79,11 @@ export function DataTableColumnHeader<TData, TValue>({
   children,
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
   if (!column.getCanSort()) {
-    return <div className={cn('text-xs', headerVariants({ variant, className }))}>{children}</div>;
+    return (
+      <div className={cn('text-xs', headerVariants({ variant, className }))}>
+        {children}
+      </div>
+    );
   }
 
   const sortIcon = () => {
@@ -96,7 +100,11 @@ export function DataTableColumnHeader<TData, TValue>({
     <div className={cn(wrapperVariants({ variant, className }))}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className={buttonVariants({ variant })}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={buttonVariants({ variant })}
+          >
             {variant === 'numeric' && column.getIsSorted() && sortIcon()}
             <span className="capitalize">{children}</span>
             {variant !== 'numeric' && column.getIsSorted() && sortIcon()}

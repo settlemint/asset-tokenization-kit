@@ -24,7 +24,9 @@ interface BreadcrumbItemBase {
   href?: string;
 }
 
-type BreadcrumbItemType = BreadcrumbItemBase | (BreadcrumbItemBase & { items: BreadcrumbItemBase[] });
+type BreadcrumbItemType =
+  | BreadcrumbItemBase
+  | (BreadcrumbItemBase & { items: BreadcrumbItemBase[] });
 
 function BreadcrumbItemContent({ item }: { item: BreadcrumbItemType }) {
   if ('items' in item) {
@@ -44,7 +46,11 @@ function BreadcrumbItemContent({ item }: { item: BreadcrumbItemType }) {
 
 const SPLITTER = /[-_]/;
 
-export default function CollapsedBreadcrumbs({ maxVisibleItems = 3, hideRoot = false, className }: BreadcrumbsProps) {
+export default function CollapsedBreadcrumbs({
+  maxVisibleItems = 3,
+  hideRoot = false,
+  className,
+}: BreadcrumbsProps) {
   const _maxVisibleItems = maxVisibleItems + (hideRoot ? 1 : 0);
   const pathname = usePathname();
   const routeSegments = pathname.split('/').filter(Boolean).slice(0, -1);

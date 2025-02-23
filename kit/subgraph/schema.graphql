@@ -454,8 +454,7 @@ Entity for management fee collection events in Fund.
 Emitted when the management fee is collected.
 """
 type ManagementFeeCollectedEvent implements AssetEvent
-  @entity(immutable: true)
-{
+  @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -470,8 +469,7 @@ Entity for performance fee collection events in Fund.
 Emitted when the performance fee is collected.
 """
 type PerformanceFeeCollectedEvent implements AssetEvent
-  @entity(immutable: true)
-{
+  @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -561,7 +559,8 @@ type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
 Entity for underlying asset withdrawal events.
 Emitted when underlying assets are withdrawn from the Bond contract.
 """
-type UnderlyingAssetWithdrawnEvent implements AssetEvent @entity(immutable: true) {
+type UnderlyingAssetWithdrawnEvent implements AssetEvent
+  @entity(immutable: true) {
   id: Bytes!
   eventName: String!
   timestamp: BigInt!
@@ -642,8 +641,7 @@ type AssetStatsData @entity(timeseries: true) {
 }
 
 type AssetStats
-  @aggregation(intervals: ["hour", "day"], source: "AssetStatsData")
-{
+  @aggregation(intervals: ["hour", "day"], source: "AssetStatsData") {
   id: Int8!
   timestamp: Timestamp!
   ## Filters
@@ -722,8 +720,7 @@ type PortfolioStatsData @entity(timeseries: true) {
 }
 
 type PortfolioStats
-  @aggregation(intervals: ["hour", "day"], source: "PortfolioStatsData")
-{
+  @aggregation(intervals: ["hour", "day"], source: "PortfolioStatsData") {
   id: Int8!
   timestamp: Timestamp!
   ## Filters

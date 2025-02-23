@@ -1,12 +1,16 @@
 import { ChangeRoleAction } from '@/app/(private)/admin/users/(table)/_components/actions/change-role-action';
 import { UpdateKycStatusAction } from '@/app/(private)/admin/users/(table)/_components/actions/update-kyc-status-action';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
@@ -37,7 +41,10 @@ const tabs = (id: string): TabItemProps[] => [
   },
 ];
 
-export default async function UserDetailLayout({ children, params }: LayoutProps) {
+export default async function UserDetailLayout({
+  children,
+  params,
+}: LayoutProps) {
   const { id } = await params;
   const user = await getUser(id);
 

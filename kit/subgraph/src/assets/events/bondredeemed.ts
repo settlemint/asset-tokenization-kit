@@ -1,7 +1,7 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { BondRedeemedEvent } from '../../../generated/schema';
-import { toDecimals } from '../../utils/decimals';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BondRedeemedEvent } from "../../../generated/schema";
+import { toDecimals } from "../../utils/decimals";
+import { EventName } from "../../utils/enums";
 
 export function bondRedeemedEvent(
   id: Bytes,
@@ -11,7 +11,7 @@ export function bondRedeemedEvent(
   holder: Bytes,
   bondAmount: BigInt,
   underlyingAmount: BigInt,
-  decimals: i32
+  decimals: i32,
 ): BondRedeemedEvent {
   const event = new BondRedeemedEvent(id);
   event.eventName = EventName.BondRedeemed;

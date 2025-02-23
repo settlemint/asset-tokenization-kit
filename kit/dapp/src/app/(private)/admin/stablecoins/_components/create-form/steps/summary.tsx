@@ -1,104 +1,56 @@
-import { OTPInput } from '@/components/blocks/otp-input/otp-input';
-import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { convertDurationToSeconds } from '@/lib/date';
-import { DollarSign, Lock, Settings } from 'lucide-react';
+import { FormStep } from '@/components/blocks/form/form-step';
+import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
+import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
+import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
+import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
+import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import { DollarSign, Settings } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import type { CreateStablecoinFormType } from '../schema';
 
 export function Summary() {
-  const { control } = useFormContext<CreateStablecoinFormType>();
+  const { control } = useFormContext<CreateStablecoin>();
   const values = useWatch({
     control: control,
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-semibold text-base">Summary</h2>
-        <p className="text-muted-foreground text-xs">Review your asset configuration before deployment.</p>
-      </div>
+    <FormStep
+      title="Review and confirm update proven collateral"
+      description="Verify the details of your update proven collateral before proceeding."
+    >
+      <FormSummaryDetailCard
+        title="Asset Basics"
+        description="Basic asset information and settings."
+        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+      >
+        <FormSummaryDetailItem label="Name" value={values.assetName} />
+        <FormSummaryDetailItem label="Symbol" value={values.symbol} />
+        <FormSummaryDetailItem label="Decimals" value={values.decimals} />
+        <FormSummaryDetailItem
+          label="ISIN"
+          value={values.isin === '' ? '-' : values.isin}
+        />
+        <FormSummaryDetailItem
+          label="Private"
+          value={values.privateAsset ? 'Yes' : 'No'}
+        />
+      </FormSummaryDetailCard>
 
-      <div className="space-y-4">
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <DollarSign className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Asset Basics</h3>
-              <p className="text-muted-foreground text-xs">Basic asset information and settings.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Name</dt>
-              <dd className="font-medium text-sm">{values.assetName}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Symbol</dt>
-              <dd className="font-medium text-sm">{values.symbol}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Decimals</dt>
-              <dd className="font-medium text-sm">{values.decimals}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">ISIN:</dt>
-              <dd className="font-medium">{values.isin === '' ? '-' : values.isin}</dd>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground text-sm">Private</dt>
-              <dd className="font-medium text-sm">{values.private ? 'Yes' : 'No'}</dd>
-            </div>
-          </dl>
-        </div>
+      <FormSummaryDetailCard
+        title="Configuration"
+        description="Asset supply and additional settings."
+        icon={<Settings className="h-3 w-3 text-primary-foreground" />}
+      >
+        <FormSummaryDetailItem
+          label="Collateral Proof Validity"
+          value={`${values.collateralLivenessSeconds} seconds`}
+        />
+      </FormSummaryDetailCard>
 
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Settings className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Configuration</h3>
-              <p className="text-muted-foreground text-xs">Asset supply and additional settings.</p>
-            </div>
-          </div>
-          <dl className="space-y-2 [&>div:last-child]:border-0 [&>div]:border-b">
-            <div className="flex justify-between py-1.5">
-              <dt className="text-muted-foreground">Collateral Proof Validity Duration:</dt>
-              <dd className="font-medium">
-                {convertDurationToSeconds(values.collateralProofValidityDuration ?? 'OneYear')} seconds
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        <div className="rounded-lg border bg-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-              <Lock className="h-3 w-3 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Security Confirmation</h3>
-              <p className="text-muted-foreground text-xs">Enter your pin code to confirm and sign the transaction.</p>
-            </div>
-          </div>
-
-          <FormField
-            control={control}
-            name="pincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <OTPInput value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-    </div>
+      <FormSummarySecurityConfirmation>
+        <FormOtp control={control} name="pincode" />
+      </FormSummarySecurityConfirmation>
+    </FormStep>
   );
 }
 

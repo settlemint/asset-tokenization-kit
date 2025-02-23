@@ -18,7 +18,11 @@ export class TransactionError extends Error {
   readonly code: string;
   readonly context?: Record<string, unknown>;
 
-  constructor(message: string, code: string, context?: Record<string, unknown>) {
+  constructor(
+    message: string,
+    code: string,
+    context?: Record<string, unknown>
+  ) {
     super(message);
     this.name = 'TransactionError';
     this.code = code;
@@ -86,7 +90,8 @@ async function waitForSingleTransaction(
   options: TransactionMonitoringOptions = {}
 ): Promise<TransactionMiningResult> {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
-  const pollingIntervalMs = options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
+  const pollingIntervalMs =
+    options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
   let receipt: FragmentOf<typeof ReceiptFragment> | null = null;
   let metadata: Record<string, unknown> | null = null;
@@ -94,12 +99,18 @@ async function waitForSingleTransaction(
 
   while (!receipt) {
     if (Date.now() - startTime > timeoutMs) {
-      throw new TransactionError(`Transaction mining timed out after ${timeoutMs / 1000} seconds`, 'TIMEOUT', {
-        transactionHash,
-      });
+      throw new TransactionError(
+        `Transaction mining timed out after ${timeoutMs / 1000} seconds`,
+        'TIMEOUT',
+        {
+          transactionHash,
+        }
+      );
     }
 
-    const transaction = await portalClient.request(GetTransaction, { transactionHash });
+    const transaction = await portalClient.request(GetTransaction, {
+      transactionHash,
+    });
     receipt = transaction.getTransaction?.receipt ?? null;
     metadata = transaction.getTransaction?.metadata ?? null;
 
@@ -136,13 +147,17 @@ export async function waitForTransactions(
   transactionHashes: string | string[],
   options: TransactionMonitoringOptions = {}
 ): Promise<TransactionMiningResult | MultiTransactionMiningResult> {
-  const hashes = Array.isArray(transactionHashes) ? transactionHashes : [transactionHashes];
+  const hashes = Array.isArray(transactionHashes)
+    ? transactionHashes
+    : [transactionHashes];
 
   if (hashes.length === 1) {
     return waitForSingleTransaction(hashes[0], options);
   }
 
-  const results = await Promise.all(hashes.map((hash) => waitForSingleTransaction(hash, options)));
+  const results = await Promise.all(
+    hashes.map((hash) => waitForSingleTransaction(hash, options))
+  );
 
   return {
     receipts: results,

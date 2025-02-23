@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { formatNumber } from '@/lib/number';
-import type { ManagementFeeCollectedEvent, PerformanceFeeCollectedEvent } from '../asset-events-fragments';
+import type {
+  ManagementFeeCollectedEvent,
+  PerformanceFeeCollectedEvent,
+} from '@/lib/queries/asset-events/asset-events-fragments';
+import { formatNumber } from '@/lib/utils/number';
 
 interface FeeCollectedDetailsProps {
   details: ManagementFeeCollectedEvent | PerformanceFeeCollectedEvent;

@@ -1,5 +1,9 @@
 'use client';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -22,7 +26,7 @@ import { useState } from 'react';
 export type NavItem = {
   id?: string;
   assetType?: keyof typeof assetConfig;
-  label: string;
+  label: ReactNode;
   path: string;
   icon?: ReactNode;
   badge?: string;
@@ -40,7 +44,11 @@ const isGroup = (item: NavElement): item is NavGroup => {
 
 export type NavElement = NavItem | NavGroup;
 
-function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string) => boolean } }) {
+function NavItemComponent({
+  item,
+}: {
+  item: NavItem & { isActive?: (path: string) => boolean };
+}) {
   const Icon = item.icon ?? undefined;
   const [isOpen, setIsOpen] = useState(false);
   const isActiveFn = item.isActive ?? (() => false);
@@ -50,11 +58,18 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   if (!item.subItems?.length || state !== 'expanded') {
     return (
       <SidebarMenuItem className={isActiveFn(item.path) ? 'active' : undefined}>
-        <SidebarMenuButton asChild className={isActiveFn(item.path) ? 'font-bold' : undefined}>
+        <SidebarMenuButton
+          asChild
+          className={isActiveFn(item.path) ? 'font-bold' : undefined}
+        >
           <Link href={item.path}>
             {Icon ?? null}
             <span className="truncate">{item.label}</span>
-            {item.badge && <span className="ml-auto text-muted-foreground text-xs">{item.badge}</span>}
+            {item.badge && (
+              <span className="ml-auto text-muted-foreground text-xs">
+                {item.badge}
+              </span>
+            )}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -62,18 +77,31 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   }
 
   // Collapsible menu item with subitems
-  const isGroupActive = item.subItems.some((subItem) => isActiveFn(subItem.path));
+  const isGroupActive = item.subItems.some((subItem) =>
+    isActiveFn(subItem.path)
+  );
 
   return (
-    <Collapsible asChild className="group/collapsible" open={isOpen || isGroupActive} onOpenChange={setIsOpen}>
+    <Collapsible
+      asChild
+      className="group/collapsible"
+      open={isOpen || isGroupActive}
+      onOpenChange={setIsOpen}
+    >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton className={isGroupActive ? 'font-bold' : undefined}>
+          <SidebarMenuButton
+            className={isGroupActive ? 'font-bold' : undefined}
+          >
             <div>{Icon ?? null}</div>
             <div className="flex w-full items-center justify-between">
               <div className="truncate">{item.label}</div>
               <div className="flex shrink-0 items-center gap-2">
-                {item.badge && <span className="text-muted-foreground text-xs">{item.badge}</span>}
+                {item.badge && (
+                  <span className="text-muted-foreground text-xs">
+                    {item.badge}
+                  </span>
+                )}
                 <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </div>
             </div>
@@ -81,17 +109,26 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.subItems.map((subItem) => {
+            {item.subItems.map((subItem, index) => {
               const SubIcon = subItem.icon ?? undefined;
 
               return (
-                <SidebarMenuSubItem key={subItem.id ?? subItem.label}>
-                  <SidebarMenuSubButton asChild className={cn(isActiveFn(subItem.path) ? 'font-bold' : undefined)}>
+                <SidebarMenuSubItem key={subItem.id ?? index}>
+                  <SidebarMenuSubButton
+                    asChild
+                    className={cn(
+                      isActiveFn(subItem.path) ? 'font-bold' : undefined
+                    )}
+                  >
                     <Link href={subItem.path} className="flex min-w-0 truncate">
                       {SubIcon ?? null}
                       <span className="truncate">{subItem.label}</span>
                       <div className="flex shrink-0 items-center gap-2">
-                        {subItem.badge && <span className="text-muted-foreground text-xs">{subItem.badge}</span>}
+                        {subItem.badge && (
+                          <span className="text-muted-foreground text-xs">
+                            {subItem.badge}
+                          </span>
+                        )}
                       </div>
                     </Link>
                   </SidebarMenuSubButton>
@@ -105,12 +142,18 @@ function NavItemComponent({ item }: { item: NavItem & { isActive?: (path: string
   );
 }
 
-function NavGroupComponent({ group, isActive }: { group: NavGroup; isActive?: (path: string) => boolean }) {
+function NavGroupComponent({
+  group,
+  isActive,
+}: {
+  group: NavGroup;
+  isActive?: (path: string) => boolean;
+}) {
   return (
     <div className="my-2">
       <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
-      {group.items.map((item) => (
-        <NavItemComponent key={item.id ?? item.label} item={{ ...item, isActive }} />
+      {group.items.map((item, index) => (
+        <NavItemComponent key={item.id ?? index} item={{ ...item, isActive }} />
       ))}
     </div>
   );
@@ -140,7 +183,9 @@ export function NavMain({ items }: { items: NavElement[] }) {
     collectPaths(allItems);
 
     // Normalize paths and find matches
-    const normalizedPathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+    const normalizedPathname = pathname.endsWith('/')
+      ? pathname.slice(0, -1)
+      : pathname;
     const matches = allPaths
       .map((path) => (path.endsWith('/') ? path.slice(0, -1) : path))
       .filter((path) => {
@@ -167,7 +212,9 @@ export function NavMain({ items }: { items: NavElement[] }) {
 
         // Check if all parts match up to the length of this path
         // and if the next part in pathname exists (meaning this is a direct parent)
-        const partsMatch = pathParts.every((part, i) => part === pathnameParts[i]);
+        const partsMatch = pathParts.every(
+          (part, i) => part === pathnameParts[i]
+        );
         const isDirectParent = partsMatch && pathnameParts[pathParts.length];
 
         return isDirectParent;
@@ -187,11 +234,22 @@ export function NavMain({ items }: { items: NavElement[] }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => {
+        {items.map((item, index) => {
           if (isGroup(item)) {
-            return <NavGroupComponent key={item.groupTitle} group={item} isActive={isActive} />;
+            return (
+              <NavGroupComponent
+                key={item.groupTitle}
+                group={item}
+                isActive={isActive}
+              />
+            );
           }
-          return <NavItemComponent key={item.id ?? item.label} item={{ ...item, isActive }} />;
+          return (
+            <NavItemComponent
+              key={item.id ?? index}
+              item={{ ...item, isActive }}
+            />
+          );
         })}
       </SidebarMenu>
     </SidebarGroup>

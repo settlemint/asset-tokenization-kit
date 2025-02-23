@@ -20,7 +20,8 @@ export default async function SignIn({ searchParams }: SignInPageProps) {
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Just created this dAPP?</AlertTitle>
         <AlertDescription>
-          The first user to sign up will be the given the admin role. You can add other admins later.
+          The first user to sign up will be the given the admin role. You can
+          add other admins later.
         </AlertDescription>
       </Alert>
     </>

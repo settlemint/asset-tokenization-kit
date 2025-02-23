@@ -1,49 +1,53 @@
-import { AssetForm } from '@/components/blocks/asset-form/asset-form';
-import type { AssetDetailConfig } from '@/lib/config/assets';
-import { zodResolver } from '@hookform/resolvers/zod';
+'use client';
+
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { useUser } from '@/components/blocks/user-context/user-context';
+import { useBurn } from '@/lib/mutations/stablecoin/burn';
+import { useAssetBalanceDetail } from '@/lib/queries/asset-balance/asset-balance-detail';
+import { useState } from 'react';
 import type { Address } from 'viem';
-import { BurnFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
-import { burnStablecoin } from './store';
 
-export function BurnForm({
-  address,
-  name,
-  symbol,
-  decimals,
-  assetConfig,
-  onCloseAction,
-  balance,
-}: {
+interface BurnFormProps {
   address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-  assetConfig: AssetDetailConfig;
-  onCloseAction: () => void;
-  balance: number;
-}) {
+}
+
+export function BurnForm({ address }: BurnFormProps) {
+  const burn = useBurn();
+  const user = useUser();
+  const [open, setOpen] = useState(false);
+  const balance = useAssetBalanceDetail({
+    address,
+    account: user?.wallet,
+  });
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <AssetForm
-      storeAction={burnStablecoin}
-      resolverAction={zodResolver(BurnFormSchema)}
-      onClose={onCloseAction}
-      assetConfig={assetConfig}
-      address={address}
-      submitLabel="Burn"
-      submittingLabel="Burning..."
-      messages={{
-        onCreate: () => `Burning ${name} (${symbol})`,
-        onSuccess: () => `${name} (${symbol}) burned successfully on chain`,
-        onError: (_input, error) => `Failed to burn ${name} (${symbol}): ${error.message}`,
-      }}
-      defaultValues={{
-        decimals,
-      }}
+    <FormSheet
+      open={open}
+      onOpenChange={setOpen}
+      triggerLabel="Burn"
+      title="Burn"
+      description="Burn a stablecoin"
     >
-      <Amount balance={balance} />
-      <Summary address={address} decimals={decimals} />
-    </AssetForm>
+      <Form
+        mutation={burn}
+        buttonLabels={{
+          label: 'Burn',
+        }}
+        defaultValues={{
+          address,
+          from: user.wallet,
+        }}
+      >
+        <Amount balance={Number(balance?.value ?? 0)} />
+        <Summary address={address} />
+      </Form>
+    </FormSheet>
   );
 }

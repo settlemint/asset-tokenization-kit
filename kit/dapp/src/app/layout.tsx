@@ -34,8 +34,12 @@ export default function RootLayout({
           enableColorScheme
           enableSystem
           value={{
-            light: themeConfig.variant === 'settlemint' ? 'settlemint-light' : 'light',
-            dark: themeConfig.variant === 'settlemint' ? 'settlemint-dark' : 'dark',
+            light:
+              themeConfig.variant === 'settlemint'
+                ? 'settlemint-light'
+                : 'light',
+            dark:
+              themeConfig.variant === 'settlemint' ? 'settlemint-dark' : 'dark',
           }}
         >
           <QueryClientProvider>{children}</QueryClientProvider>

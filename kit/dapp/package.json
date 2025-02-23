@@ -14,7 +14,8 @@
     "build": "next build && rm -Rf ./node_modules/next/dist",
     "start": "next start",
     "test": "bun test",
-    "format:biome": "biome format --write .",
+    "format": "prettier --write .",
+    "lint": "next lint",
     "addresses": "bash contract-addresses.sh",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
@@ -60,13 +61,13 @@
     "@tanstack/react-table": "8.21.2",
     "better-auth": "1.1.19",
     "better-auth-harmony": "1.2.3",
-    "bignumber.js": "9.1.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.0.4",
+    "date-fns": "4.1.0",
     "drizzle-orm": "0.39.3",
     "input-otp": "1.4.2",
-    "little-state-machine": "5.0.1",
+    "js-big-decimal": "2.2.0",
     "lucide-react": "0.475.0",
     "motion": "12.4.7",
     "next": "15.1.7",
@@ -92,6 +93,8 @@
   },
   "devDependencies": {
     "@better-auth/cli": "1.1.19",
+    "@eslint/eslintrc": "3.3.0",
+    "@eslint/js": "9.21.0",
     "@types/mdx": "2.0.13",
     "@types/node": "22.13.5",
     "@types/pg": "8.11.11",
@@ -101,13 +104,15 @@
     "drizzle-kit": "0.30.4",
     "eslint": "9.21.0",
     "eslint-config-next": "15.1.7",
-    "playwright": "1.50.1",
+    "eslint-config-prettier": "10.0.1",
     "postcss": "8.5.3",
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3"
   },
   "peerDependencies": {},
-  "trustedDependencies": ["sharp"],
+  "trustedDependencies": [
+    "sharp"
+  ],
   "overrides": {
     "react-is": "19.0.0"
   }

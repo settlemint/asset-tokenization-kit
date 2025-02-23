@@ -1,32 +1,27 @@
-import { AssetFormSelect } from '@/components/blocks/asset-form/inputs/asset-form-select';
+import { FormStep } from '@/components/blocks/form/form-step';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
+import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
 import { useFormContext } from 'react-hook-form';
-import { CollateralProofValidityDuration, type CreateStablecoinFormType } from '../schema';
 
 export function Configuration() {
-  const { control } = useFormContext<CreateStablecoinFormType>();
+  const { control } = useFormContext<CreateStablecoin>();
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-8">
-        <div className="mb-2">
-          <h2 className="font-semibold text-foreground text-lg">Configuration</h2>
-          <p className="text-muted-foreground text-sm">Set parameters specific to your stable coin.</p>
-        </div>
-      </div>
+    <FormStep
+      title="Configuration"
+      description="Set parameters specific to your stable coin."
+    >
       <div className="grid grid-cols-2 gap-6">
-        <AssetFormSelect
+        <FormInput
           control={control}
-          name="collateralProofValidityDuration"
-          label="Collateral proof validity duration"
-          defaultValue="OneYear"
-          options={Object.entries(CollateralProofValidityDuration).map(([value, label]) => ({
-            label,
-            value,
-          }))}
+          type="number"
+          name="collateralLivenessSeconds"
+          label="Collateral Proof Validity"
+          postfix="seconds"
         />
       </div>
-    </div>
+    </FormStep>
   );
 }
 
-Configuration.validatedFields = ['collateralThreshold', 'collateralProofValidityDuration'] as const;
+Configuration.validatedFields = ['collateralLivenessSeconds'] as const;

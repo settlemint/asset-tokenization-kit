@@ -1,8 +1,10 @@
-import { adminClient, inferAdditionalFields, passkeyClient } from 'better-auth/client/plugins';
+import {
+  adminClient,
+  inferAdditionalFields,
+  passkeyClient,
+} from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
-import type { Address, Prettify } from 'viem';
 import type { auth } from './auth';
-import type { User } from './types';
 
 /**
  * Gets the base URL for the auth client
@@ -26,15 +28,9 @@ const getBaseURL = (): string => {
  */
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
-  plugins: [inferAdditionalFields<typeof auth>(), adminClient(), passkeyClient()],
+  plugins: [
+    inferAdditionalFields<typeof auth>(),
+    adminClient(),
+    passkeyClient(),
+  ],
 });
-
-export function useAuthenticatedUser() {
-  const session = authClient.useSession();
-
-  if (!session?.data?.user) {
-    return undefined;
-  }
-
-  return session.data.user as Prettify<Omit<User, 'wallet'> & { wallet: Address }>;
-}

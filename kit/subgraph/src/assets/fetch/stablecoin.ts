@@ -1,8 +1,8 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { StableCoin } from '../../../generated/schema';
-import { StableCoin as StableCoinContract } from '../../../generated/templates/StableCoin/StableCoin';
-import { fetchAccount } from '../../fetch/account';
-import { AssetType } from '../../utils/enums';
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { StableCoin } from "../../../generated/schema";
+import { StableCoin as StableCoinContract } from "../../../generated/templates/StableCoin/StableCoin";
+import { fetchAccount } from "../../fetch/account";
+import { AssetType } from "../../utils/enums";
 
 export function fetchStableCoin(address: Address): StableCoin {
   let stableCoin = StableCoin.load(address);
@@ -20,8 +20,8 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin = new StableCoin(address);
     stableCoin.type = AssetType.stablecoin;
     stableCoin.asAccount = account.id;
-    stableCoin.name = name.reverted ? '' : name.value;
-    stableCoin.symbol = symbol.reverted ? '' : symbol.value;
+    stableCoin.name = name.reverted ? "" : name.value;
+    stableCoin.symbol = symbol.reverted ? "" : symbol.value;
     stableCoin.decimals = decimals.reverted ? 18 : decimals.value;
     stableCoin.totalSupplyExact = BigInt.zero();
     stableCoin.totalSupply = BigDecimal.zero();
@@ -32,7 +32,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.creator = Address.zero();
 
     // StableCoin-specific fields
-    stableCoin.isin = isin.reverted ? '' : isin.value;
+    stableCoin.isin = isin.reverted ? "" : isin.value;
     stableCoin.collateralExact = BigInt.zero();
     stableCoin.collateral = BigDecimal.zero();
     stableCoin.paused = paused.reverted ? false : paused.value;

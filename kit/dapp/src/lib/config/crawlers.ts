@@ -58,5 +58,7 @@ export type CrawlerUserAgent = (typeof CRAWLER_USER_AGENTS)[number];
  * @returns True if the user agent matches a known crawler pattern
  */
 export function isCrawler(userAgent: string): boolean {
-  return CRAWLER_USER_AGENTS.some((crawler) => userAgent.toLowerCase().includes(crawler.toLowerCase()));
+  return CRAWLER_USER_AGENTS.some((crawler) =>
+    userAgent.toLowerCase().includes(crawler.toLowerCase())
+  );
 }

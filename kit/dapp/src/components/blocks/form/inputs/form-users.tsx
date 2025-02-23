@@ -1,21 +1,34 @@
-import type { BaseFormInputProps, WithPlaceholderProps } from '@/components/blocks/asset-form/asset-form-types';
 import { Button } from '@/components/ui/button';
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { queryKeys, sanitizeSearchTerm } from '@/lib/react-query';
-import { hasuraClient } from '@/lib/settlemint/hasura';
+import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
-import type { ResultOf } from '@settlemint/sdk-hasura';
-import { useQuery } from '@tanstack/react-query';
+import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { CommandEmpty, CommandLoading, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import type { Address } from 'viem';
 import { EvmAddress } from '../../evm-address/evm-address';
-import { SearchUsers } from '../../search/search-query';
+import type { BaseFormInputProps, WithPlaceholderProps } from './types';
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -28,7 +41,6 @@ export function FormUsers<T extends FieldValues>({
   description,
   required,
   placeholder = 'Select an option',
-  className,
   defaultValue,
   ...props
 }: FormSearchSelectProps<T>) {
@@ -56,19 +68,38 @@ export function FormUsers<T extends FieldValues>({
             )}
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <Button variant="outline" aria-expanded={open} className="w-full justify-between">
-                  {field.value ? <EvmAddress address={field.value as Address} /> : placeholder}
+                <Button
+                  variant="outline"
+                  aria-expanded={open}
+                  className="w-full justify-between"
+                >
+                  {field.value ? (
+                    <EvmAddress address={field.value as Address} />
+                  ) : (
+                    placeholder
+                  )}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
-                  <CommandInput placeholder="Search for a user..." className="h-9" />
-                  <FormUsersList onValueChange={field.onChange} setOpen={setOpen} value={field.value} />
+                  <CommandInput
+                    placeholder="Search for a user..."
+                    className="h-9"
+                  />
+                  <FormUsersList
+                    onValueChange={field.onChange}
+                    setOpen={setOpen}
+                    value={field.value}
+                  />
                 </Command>
               </PopoverContent>
             </Popover>
-            {description && <FormDescription id={`${field.name}-description`}>{description}</FormDescription>}
+            {description && (
+              <FormDescription id={`${field.name}-description`}>
+                {description}
+              </FormDescription>
+            )}
             <FormMessage id={`${field.name}-error`} aria-live="polite" />
           </FormItem>
         );
@@ -81,33 +112,25 @@ function FormUsersList({
   onValueChange,
   setOpen,
   value,
-}: { onValueChange: (value: string) => void; setOpen: (open: boolean) => void; value: string }) {
-  const search = useCommandState((state) => state.search);
+}: {
+  onValueChange: (value: string) => void;
+  setOpen: (open: boolean) => void;
+  value: string;
+}) {
+  const search = (useCommandState((state) => state.search) || '') as string;
   const debounced = useDebounce<string>(search, 250);
-
-  const { data, isLoading } = useQuery({
-    queryKey: queryKeys.search(debounced),
-    enabled: debounced.trim() !== '',
-    queryFn: async () => {
-      const sanitizedSearch = sanitizeSearchTerm(debounced);
-
-      const users: ResultOf<typeof SearchUsers>['user'] = [];
-
-      const searchUsers = await hasuraClient.request(SearchUsers, {
-        search: `%${sanitizedSearch}%`,
-      });
-      users.push(...searchUsers.user);
-
-      return users;
-    },
+  const { data: users, isLoading } = useUserSearch({
+    address: sanitizeSearchTerm(debounced) as Address,
   });
 
   return (
     <CommandList>
       {isLoading && <CommandLoading>Searching...</CommandLoading>}
-      <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">No user found.</CommandEmpty>
+      <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
+        No user found.
+      </CommandEmpty>
       <CommandGroup>
-        {data?.map((user) => (
+        {users?.map((user) => (
           <CommandItem
             key={user.wallet}
             value={user.wallet}
@@ -116,8 +139,13 @@ function FormUsersList({
               setOpen(false);
             }}
           >
-            <EvmAddress address={user.wallet as Address} hoverCard={false} />
-            <Check className={cn('ml-auto', value === user.wallet ? 'opacity-100' : 'opacity-0')} />
+            <EvmAddress address={user.wallet} hoverCard={false} />
+            <Check
+              className={cn(
+                'ml-auto',
+                value === user.wallet ? 'opacity-100' : 'opacity-0'
+              )}
+            />
           </CommandItem>
         ))}
       </CommandGroup>

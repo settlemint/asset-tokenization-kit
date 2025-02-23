@@ -1,6 +1,10 @@
 'use client';
 
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,6 +12,7 @@ import { Logo } from '../blocks/logo/logo';
 
 export function NavHeader() {
   const pathname = usePathname();
+
   const content = (
     <div className={cn('flex w-full items-center gap-3')}>
       <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">

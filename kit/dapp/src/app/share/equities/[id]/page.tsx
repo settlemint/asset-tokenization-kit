@@ -8,7 +8,9 @@ interface SharePageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: SharePageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: SharePageProps): Promise<Metadata> {
   const { id } = await params;
   const equity = await getOgEquity(id);
 
@@ -24,7 +26,10 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     openGraph: {
       images: [
         {
-          url: new URL(`/share/equities/${id}/og`, metadata.metadataBase).toString(),
+          url: new URL(
+            `/share/equities/${id}/og`,
+            metadata.metadataBase
+          ).toString(),
           width: 1280,
           height: 640,
           alt: equity?.name,
@@ -34,7 +39,10 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
     twitter: {
       images: [
         {
-          url: new URL(`/share/equities/${id}/og`, metadata.metadataBase).toString(),
+          url: new URL(
+            `/share/equities/${id}/og`,
+            metadata.metadataBase
+          ).toString(),
           width: 1280,
           height: 640,
           alt: equity?.name,

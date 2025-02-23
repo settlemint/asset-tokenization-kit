@@ -5,7 +5,12 @@ import { type Match, match } from 'path-to-regexp';
 import { isCrawler } from './lib/config/crawlers';
 
 const isAssetRoute = match(['/admin/:type/:id', '/admin/:type/:id/*path']);
-const isPrivateRoute = match(['/admin', '/admin/*path', '/proxy', '/proxy/*path']);
+const isPrivateRoute = match([
+  '/admin',
+  '/admin/*path',
+  '/proxy',
+  '/proxy/*path',
+]);
 
 function buildRedirectUrl(request: NextRequest): URL {
   const redirectUrl = new URL('/auth/signin', request.url);
@@ -18,9 +23,15 @@ function buildRedirectUrl(request: NextRequest): URL {
 
 export default function middleware(request: NextRequest) {
   if (isCrawler(request.headers.get('user-agent') || '')) {
-    const assetMatch = isAssetRoute(request.nextUrl.pathname) as Match<{ type: string; id: string }>;
+    const assetMatch = isAssetRoute(request.nextUrl.pathname) as Match<{
+      type: string;
+      id: string;
+    }>;
     if (assetMatch) {
-      const shareUrl = new URL(`/share/${assetMatch.params.type}/${assetMatch.params.id}`, request.url);
+      const shareUrl = new URL(
+        `/share/${assetMatch.params.type}/${assetMatch.params.id}`,
+        request.url
+      );
       return NextResponse.redirect(shareUrl);
     }
   }

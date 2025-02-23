@@ -2,20 +2,20 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useAuthenticatedUser } from '@/lib/auth/client';
+import { useUser } from '@/components/blocks/user-context/user-context';
 import { useUpdateCollateral } from '@/lib/mutations/stablecoin/update-collateral';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
 
-interface UpdateCollateralButtonProps {
+interface UpdateCollateralFormProps {
   address: Address;
 }
 
-export function UpdateCollateralButton({ address }: UpdateCollateralButtonProps) {
+export function UpdateCollateralForm({ address }: UpdateCollateralFormProps) {
   const mutation = useUpdateCollateral();
-  const user = useAuthenticatedUser();
+  const user = useUser();
   const [open, setOpen] = useState(false);
 
   if (!user) {

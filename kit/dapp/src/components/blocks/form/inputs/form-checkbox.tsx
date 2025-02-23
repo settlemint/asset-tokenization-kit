@@ -1,16 +1,25 @@
 'use client';
 
-import type { BaseFormInputProps } from '@/components/blocks/asset-form/asset-form-types';
-import { getAriaAttributes } from '@/components/blocks/asset-form/asset-form-types';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
+import { getAriaAttributes, type BaseFormInputProps } from './types';
 
 type CheckboxProps = ComponentPropsWithoutRef<typeof Checkbox>;
 
-type FormCheckboxProps<T extends FieldValues> = Omit<CheckboxProps, keyof BaseFormInputProps<T>> &
+type FormCheckboxProps<T extends FieldValues> = Omit<
+  CheckboxProps,
+  keyof BaseFormInputProps<T>
+> &
   BaseFormInputProps<T>;
 
 /**
@@ -38,7 +47,11 @@ export function FormCheckbox<T extends FieldValues>({
       {...props}
       rules={rules}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(field.name, !!fieldState.error, props.disabled);
+        const ariaAttrs = getAriaAttributes(
+          field.name,
+          !!fieldState.error,
+          props.disabled
+        );
 
         return (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
@@ -64,11 +77,16 @@ export function FormCheckbox<T extends FieldValues>({
                   id={`${field.name}-label`}
                 >
                   <span>{label}</span>
-                  {props.required && <span className="ml-1 text-red-500">*</span>}
+                  {props.required && (
+                    <span className="ml-1 text-red-500">*</span>
+                  )}
                 </FormLabel>
               )}
               {description && (
-                <FormDescription id={`${field.name}-description`} className="text-sm">
+                <FormDescription
+                  id={`${field.name}-description`}
+                  className="text-sm"
+                >
                   {description}
                 </FormDescription>
               )}

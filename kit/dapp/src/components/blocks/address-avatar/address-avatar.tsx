@@ -1,84 +1,137 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useQueryKeys } from '@/hooks/use-query-keys';
-import { useQuery } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { useMemo } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
-import { http, type Address, createPublicClient, getAddress } from 'viem';
-import { mainnet } from 'viem/chains';
+import { getAddress, type Address } from 'viem';
 
-// Create a singleton viem client for ENS lookups
-const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http('https://ethereum-rpc.publicnode.com'),
+/**
+ * Avatar component variant styles using class-variance-authority
+ */
+const addressAvatarVariants = cva('', {
+  variants: {
+    size: {
+      tiny: 'h-4 w-4',
+      small: 'h-8 w-8',
+      big: 'h-12 w-12',
+    },
+    indicator: {
+      true: 'relative',
+      false: 'relative', // Both use relative for consistency
+    },
+  },
+  defaultVariants: {
+    size: 'small',
+    indicator: false,
+  },
 });
 
-interface AddressAvatarProps {
+/**
+ * Indicator variant styles for the animation dot
+ */
+const indicatorVariants = cva('-top-0.5 -right-0.5 absolute flex h-3 w-3', {
+  variants: {
+    color: {
+      primary: '', // Uses primary color in Tailwind config
+      success: 'bg-success',
+      warning: 'bg-warning',
+      destructive: 'bg-destructive',
+    },
+  },
+  defaultVariants: {
+    color: 'primary',
+  },
+});
+
+/**
+ * Props for the AddressAvatar component
+ */
+export interface AddressAvatarProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof addressAvatarVariants> {
+  /** Ethereum address to generate avatar for */
   address?: Address;
+  /** Optional custom image URL */
   imageUrl?: string | null;
+  /** Optional email address to generate Gravatar from */
   email?: string;
-  variant?: 'tiny' | 'small' | 'big';
-  className?: string;
+  /** Size variant */
+  size?: 'tiny' | 'small' | 'big';
+  /** Whether to show an indicator dot */
   indicator?: boolean;
+  /** Color of the indicator dot */
+  indicatorColor?: 'primary' | 'success' | 'warning' | 'destructive';
+  /** Accessibility label, defaults to "Avatar" */
+  alt?: string;
 }
 
+/**
+ * Avatar component that displays an image based on an Ethereum address, email, or custom URL.
+ * Falls back to address-based or email-based identicon if no image is provided.
+ */
 export function AddressAvatar({
   address,
   imageUrl,
   email,
-  variant = 'small',
+  size = 'small',
+  indicator = false,
+  indicatorColor = 'primary',
+  alt = 'Avatar',
   className,
-  indicator,
+  ...props
 }: AddressAvatarProps) {
-  const validAddress = address ? getAddress(address) : undefined;
-  const { keys } = useQueryKeys();
+  // Use either size or variant prop (for backward compatibility)
+  const sizeValue = size || 'small';
 
-  const { data: avatarUrl } = useQuery({
-    queryKey: keys.user.profile({ address: validAddress, email }),
-    queryFn: async () => {
-      if (imageUrl) {
-        return imageUrl;
-      }
+  // Ensure address is properly checksummed
+  const validAddress = useMemo(
+    () => (address ? getAddress(address) : undefined),
+    [address]
+  );
 
-      if (email) {
-        return getGravatarUrl(email, {
-          default: 'identicon',
-          size: 400,
-        });
-      }
-
-      if (validAddress) {
-        try {
-          const ensName = await publicClient.getEnsName({ address: validAddress });
-          if (ensName) {
-            return `https://metadata.ens.domains/mainnet/avatar/${ensName}`;
-          }
-        } catch {
-          //ignore
-        }
-      }
-
-      return getGravatarUrl(email ?? address ?? 'anonymous', {
+  // Calculate avatar source with fallbacks
+  const avatarSrc = useMemo(() => {
+    return (
+      imageUrl ??
+      getGravatarUrl(email ?? address ?? 'anonymous', {
         default: 'identicon',
-        size: 400,
-      });
-    },
-  });
+        size: sizeValue === 'tiny' ? 200 : 400,
+      })
+    );
+  }, [imageUrl, email, address, sizeValue]);
 
-  const size = variant === 'tiny' ? 'h-4 w-4' : variant === 'small' ? 'h-8 w-8' : 'h-12 w-12';
+  // Calculate fallback text (first 2 chars of email or address)
+  const fallbackText = useMemo(() => {
+    if (email) return email.slice(0, 2).toUpperCase();
+    if (validAddress) return validAddress.slice(2, 4).toUpperCase();
+    return '??';
+  }, [email, validAddress]);
 
   return (
-    <div className="relative">
-      <Avatar className={`${size} ${className ?? ''}`}>
-        <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" />
-        <AvatarFallback>
-          {email?.slice(0, 2).toUpperCase() ?? validAddress?.slice(2, 4).toUpperCase() ?? '??'}
-        </AvatarFallback>
+    <div
+      className={cn(
+        addressAvatarVariants({ size: sizeValue, indicator }),
+        className
+      )}
+      {...props}
+    >
+      <Avatar
+        className={addressAvatarVariants({ size: sizeValue })}
+        aria-label={alt}
+      >
+        <AvatarImage src={avatarSrc} alt={alt} loading="lazy" />
+        <AvatarFallback>{fallbackText}</AvatarFallback>
       </Avatar>
+
       {indicator && (
-        <span className="-top-0.5 -right-0.5 absolute flex h-3 w-3" aria-hidden="true">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-          <span className="relative inline-flex h-3 w-3 rounded-full bg-primary" />
+        <span
+          className={cn(indicatorVariants({ color: indicatorColor }))}
+          aria-hidden="true"
+        >
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
+          <span className="relative inline-flex h-3 w-3 rounded-full bg-current" />
         </span>
       )}
     </div>
