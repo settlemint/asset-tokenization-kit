@@ -1,0 +1,84 @@
+name: Playwright Tests
+on:
+  schedule:
+    - cron: '0 0 * * 1-5' # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    runs-on: namespace-profile-starterkit
+    environment: staging
+    timeout-minutes: 60  # 1 hour maximum runtime
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
+
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Setup caches
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            .turbo
+            ~/.bun/install/cache
+
+      - name: Start Docker Compose
+        run: docker compose up -d
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: kit/e2e
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+        working-directory: kit/e2e
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
+          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          dotEnvFile: ${{ secrets.ENV_FILE }}
+          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+
+      - name: Setup SettleMint CLI
+        run: |
+          bun settlemint login --token ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+          bun settlemint connect --instance ${{ secrets.SETTLEMINT_INSTANCE }}
+
+      - name: Run Playwright tests
+        run: bun playwright test tests/sign-up.spec.ts --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --repeat-each 3 --reporter=html
+        working-directory: kit/e2e
+        env:
+          CI: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report-${{ matrix.shardIndex }}
+          path: |
+            kit/e2e/playwright-report/
+            kit/e2e/test-results/
+          retention-days: 5

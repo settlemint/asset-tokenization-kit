@@ -6,8 +6,14 @@ import postgres from 'pg';
 const { Client } = postgres;
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../');
+
 dotenvConfig({ path: path.join(projectRoot, '.env') });
 dotenvConfig({ path: path.join(projectRoot, '.env.local'), override: true });
+
+const databaseUrl = process.env.SETTLEMINT_HASURA_DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('SETTLEMINT_HASURA_DATABASE_URL not found in environment variables');
+}
 
 export type UserRole = 'admin' | 'user';
 
