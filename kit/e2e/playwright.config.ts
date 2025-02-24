@@ -30,8 +30,8 @@ const config: PlaywrightTestConfig = defineConfig({
   use: {
     actionTimeout: 65000,
     navigationTimeout: 30000,
-    baseURL: process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT,
-    trace: 'off',
+    baseURL: process.env.CI ? process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT : 'http://localhost:3000',
+    trace: 'retain-on-failure',
     viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
