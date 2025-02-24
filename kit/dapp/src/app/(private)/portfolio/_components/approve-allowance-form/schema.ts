@@ -1,5 +1,6 @@
 import { assetConfig } from '@/lib/config/assets';
 import type { NonEmptyArray } from '@/lib/non-empty-array.type';
+import { isAddress, zeroAddress } from 'viem';
 import { z } from 'zod';
 const PIN_CODE_REGEX = /^\d+$/;
 
@@ -8,7 +9,15 @@ const assetKeys = Object.keys(assetConfig) as NonEmptyArray<keyof typeof assetCo
 export const getApproveFormSchema = (amountLimit?: number) =>
   z.object({
     address: z.string().min(1, { message: 'Address is required' }),
-    to: z.string().min(1, { message: 'Recipient is required' }),
+    to: z
+      .string()
+      .min(1, { message: 'Recipient is required' })
+      .refine((val) => isAddress(val), {
+        message: 'Invalid recipient address',
+      })
+      .refine((val) => val !== zeroAddress, {
+        message: 'Recipient cannot be the zero address',
+      }),
     amount: amountLimit ? z.number().min(1).max(amountLimit) : z.number().min(1),
     pincode: z
       .string()

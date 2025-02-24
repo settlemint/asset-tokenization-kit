@@ -40,7 +40,7 @@ export function ApproveAllowanceForm({
       submittingLabel="Approving..."
       messages={{
         onCreate: ({ amount }) => `Approving ${formatNumber(amount, { token: symbol })}...`,
-        onSuccess: ({ to }) => `${to} approved successfully on chain`,
+        onSuccess: ({ amount }) => `${formatNumber(amount, { token: symbol })} successfully approved on chain`,
         onError: ({ amount }, error) =>
           `Failed to approve ${formatNumber(amount, { token: symbol })}: ${error.message}`,
       }}
