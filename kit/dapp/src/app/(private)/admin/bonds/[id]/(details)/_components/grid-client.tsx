@@ -30,7 +30,9 @@ export function GridClient({ asset }: { asset: Address }) {
             <AssetDetailGridItem label="Ownership concentration" info="Percentage owned by the top 5 holders">
               {formatNumber(asset.concentration, { percentage: true, decimals: 2 })}
             </AssetDetailGridItem>
-            <AssetDetailGridItem label="Underlying asset">{asset.underlyingAsset}</AssetDetailGridItem>
+            <AssetDetailGridItem label="Underlying asset">
+              <EvmAddress address={asset.underlyingAsset as Address} hoverCard={false} copyToClipboard={true} />
+            </AssetDetailGridItem>
             <AssetDetailGridItem label="Redeemed amount">{asset.redeemedAmount}</AssetDetailGridItem>
           </>
         );
