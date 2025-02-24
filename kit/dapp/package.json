@@ -24,7 +24,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@better-fetch/fetch": "1.1.13",
+    "@better-fetch/fetch": "1.1.15",
     "@fontsource/figtree": "5.1.2",
     "@hookform/resolvers": "4.1.1",
     "@next-safe-action/adapter-react-hook-form": "1.0.13",
