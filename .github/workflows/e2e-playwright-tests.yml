@@ -63,11 +63,6 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
-      - name: Setup SettleMint CLI
-        run: |
-          bun settlemint login --token ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          bun settlemint connect --instance ${{ secrets.SETTLEMINT_INSTANCE }}
-
       - name: Run Playwright tests
         run: bun playwright test tests/sign-up.spec.ts --repeat-each 3 --reporter=html
         working-directory: kit/e2e
