@@ -24,6 +24,7 @@ const config: PlaywrightTestConfig = {
     timeout: 65000,
   },
   retries: 2,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   workers: process.env.CI ? 2 : undefined,
   reporter: [['html']],
@@ -55,7 +56,6 @@ const config: PlaywrightTestConfig = {
       testIgnore: [],
     },
   ],
-  fullyParallel: false,
   webServer: process.env.CI
     ? undefined
     : {
@@ -68,21 +68,7 @@ const config: PlaywrightTestConfig = {
       },
 };
 
-if (process.env.CI) {
-  console.log('\n=== Test Configuration ===');
-  console.log('Worker Count:', config.workers);
-  console.log('Parallel Execution:', config.fullyParallel);
-  console.log('========================\n');
-}
-
 console.log('\n🌐 Playwright baseURL:', config?.use?.baseURL);
 console.log('🔧 Running in CI:', !!process.env.CI, '\n');
-
-if (process.env.CI) {
-  console.log('\n=== URL Configuration ===');
-  console.log('Base URL:', config.use?.baseURL);
-  console.log('Deployment Endpoint:', process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT);
-  console.log('========================\n');
-}
 
 export default config;

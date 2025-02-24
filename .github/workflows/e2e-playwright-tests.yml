@@ -59,7 +59,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests --retries=2 --reporter=list,html
+        run: bun playwright test tests --retries 2 --reporter=html
         env:
           CI: true
 
