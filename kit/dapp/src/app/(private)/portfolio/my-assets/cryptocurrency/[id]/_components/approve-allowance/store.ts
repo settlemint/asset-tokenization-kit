@@ -1,10 +1,9 @@
 'use server';
-import { ApproveOutputSchema } from '@/components/blocks/asset-approve/schema';
 import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseUnits } from 'viem';
-import { getApproveFormSchema } from './schema';
+import { ApproveOutputSchema, getApproveFormSchema } from './schema';
 
 const CryptoCurrencyApprove = portalGraphql(`
 mutation CryptoCurrencyApprove($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {

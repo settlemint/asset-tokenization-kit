@@ -3,7 +3,7 @@ import { formatNumber } from '@/lib/number';
 import { useFormContext } from 'react-hook-form';
 import type { ApproveFormType } from '../schema';
 
-export function Amount({ amountLimit }: { amountLimit: bigint }) {
+export function Amount({ amountLimit }: { amountLimit: number }) {
   const { control } = useFormContext<ApproveFormType>();
 
   return (
@@ -25,7 +25,7 @@ export function Amount({ amountLimit }: { amountLimit: bigint }) {
           type="number"
           min={1}
           defaultValue={1}
-          max={amountLimit?.toString()}
+          max={amountLimit}
           description={`Available balance: ${formatNumber(amountLimit)}`}
         />
       </div>

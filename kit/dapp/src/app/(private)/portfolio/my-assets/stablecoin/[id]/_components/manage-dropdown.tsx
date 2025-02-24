@@ -1,4 +1,3 @@
-import { ApproveButton } from '@/components/blocks/asset-approve/button';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -21,13 +20,7 @@ export function ManageDropdown({ id, stableCoin }: { id: Address; stableCoin: St
       </DropdownMenuTrigger>
       <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
         <DropdownMenuItem asChild className="dropdown-menu-item">
-          <ApproveButton
-            address={id as Address}
-            name={stableCoin.name}
-            symbol={stableCoin.symbol}
-            decimals={stableCoin.decimals}
-            balance={1000000000000000000n}
-          />
+          <div>TODO</div>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

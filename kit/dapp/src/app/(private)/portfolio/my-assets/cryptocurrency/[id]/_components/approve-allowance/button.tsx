@@ -20,7 +20,7 @@ export function ApproveButton({
   address: Address;
   decimals: number;
   disabled?: boolean;
-  balance: bigint;
+  balance: number;
 }) {
   const [open, setOpen] = useState(false);
 

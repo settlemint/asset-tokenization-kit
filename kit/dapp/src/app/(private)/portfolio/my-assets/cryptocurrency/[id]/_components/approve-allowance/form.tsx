@@ -22,7 +22,7 @@ export function ApproveForm({
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
-  balance: bigint;
+  balance: number;
   onCloseAction: () => void;
 }) {
   return (
