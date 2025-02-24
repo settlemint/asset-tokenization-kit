@@ -29,6 +29,8 @@ const OffchainBond = hasuraGraphql(`
   }
 `);
 
+export type Bond = Awaited<ReturnType<typeof getBondTitle>>;
+
 export async function getBondTitle(id: string) {
   const normalizedId = getAddress(id);
   const user = await getAuthenticatedUser();

@@ -24,9 +24,9 @@ const OffchainCryptocurrency = hasuraGraphql(`
   }
 `);
 
-export type Cryptocurrency = Awaited<ReturnType<typeof getCryptocurrency>>;
+export type Cryptocurrency = Awaited<ReturnType<typeof getCryptocurrencyTitle>>;
 
-export async function getCryptocurrency(id: string) {
+export async function getCryptocurrencyTitle(id: string) {
   const normalizedId = getAddress(id);
   const [data, dbCrypto] = await Promise.all([
     theGraphClientStarterkits.request(CryptocurrencyTitle, { id }),

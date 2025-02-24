@@ -1,3 +1,4 @@
+import { ApproveButton } from '@/app/(private)/portfolio/my-assets/cryptocurrency/[id]/_components/approve-allowance/button';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,10 +8,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
-import { ApproveButton } from './approve-allowance/button';
-import type { StableCoin } from './data';
+import type { Bond } from './data';
 
-export function ManageDropdown({ id, stableCoin, balance }: { id: Address; stableCoin: StableCoin; balance: number }) {
+export function ManageDropdown({ id, bond, balance }: { id: Address; bond: Bond; balance: number }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,9 +23,9 @@ export function ManageDropdown({ id, stableCoin, balance }: { id: Address; stabl
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <ApproveButton
             address={id as Address}
-            name={stableCoin.name}
-            symbol={stableCoin.symbol}
-            decimals={stableCoin.decimals}
+            name={bond.name}
+            symbol={bond.symbol}
+            decimals={bond.decimals}
             balance={balance}
           />
         </DropdownMenuItem>
