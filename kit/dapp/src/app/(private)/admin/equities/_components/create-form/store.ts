@@ -46,7 +46,7 @@ export const createEquity = actionClient
   .outputSchema(CreateEquityOutputSchema)
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, isin, private: isPrivate, equityClass, equityCategory },
+      parsedInput: { assetName, symbol, decimals, pincode, isin = '', private: isPrivate, equityClass, equityCategory },
       ctx: { user },
     }) => {
       const predictedAddress = await portalClient.request(CreateEquityPredictAddress, {
@@ -55,7 +55,7 @@ export const createEquity = actionClient
         decimals,
         equityCategory,
         equityClass,
-        isin: isin ?? '',
+        isin,
         name: assetName,
         symbol,
       });
