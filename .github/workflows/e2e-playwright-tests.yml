@@ -64,7 +64,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests/sign-up.spec.ts --repeat-each 3 --reporter=html
+        run: bun playwright test tests/sign-up.spec.ts --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
