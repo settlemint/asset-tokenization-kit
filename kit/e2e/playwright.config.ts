@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../');
@@ -17,45 +17,44 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-const config: PlaywrightTestConfig = {
+const config: PlaywrightTestConfig = defineConfig({
   testDir: './tests',
   timeout: 600 * 1000,
   expect: {
     timeout: 65000,
   },
   retries: 2,
-  fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: [['html']],
+  workers: process.env.CI ? 3 : undefined,
+  reporter: [['html'], ['list']],
   use: {
     actionTimeout: 65000,
     navigationTimeout: 30000,
     baseURL: process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT,
     trace: 'off',
-    viewport: { width: 1280, height: 720 },
+    viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     headless: true,
     launchOptions: {
-      slowMo: 100,
-      args: [
-        '--disable-dev-shm-usage',
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-gpu',
-        '--disable-web-security',
-      ],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
   },
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/*.spec.ts',
+      testIgnore: [],
     },
   ],
+  fullyParallel: false,
+  shard: process.env.CI
+    ? {
+        current: Number(process.env.TEST_SHARD_CURRENT ?? 1),
+        total: 3,
+      }
+    : undefined,
   webServer: process.env.CI
     ? undefined
     : {
@@ -66,7 +65,16 @@ const config: PlaywrightTestConfig = {
         stdout: 'pipe',
         stderr: 'pipe',
       },
-};
+});
+
+if (process.env.CI) {
+  console.log('\n=== Test Configuration ===');
+  console.log('Current Shard:', config.shard?.current);
+  console.log('Total Shards:', config.shard?.total);
+  console.log('Worker Count:', config.workers);
+  console.log('Parallel Execution:', config.fullyParallel);
+  console.log('========================\n');
+}
 
 console.log('\n🌐 Playwright baseURL:', config?.use?.baseURL);
 console.log('🔧 Running in CI:', !!process.env.CI, '\n');

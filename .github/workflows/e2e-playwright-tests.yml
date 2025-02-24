@@ -64,10 +64,10 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --retries 2 --reporter=html
-        working-directory: kit/e2e
+        run: bun playwright test tests --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --retries=2 --reporter=list,html
         env:
           CI: true
+          TEST_SHARD_CURRENT: ${{ matrix.shardIndex }}
 
       - name: Upload test results
         if: always()
