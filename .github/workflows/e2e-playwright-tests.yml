@@ -12,16 +12,11 @@ concurrency:
 
 jobs:
   test:
-    name: Test (Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }})
+    name: Playwright Tests
     runs-on: namespace-profile-starterkit
     environment: staging
     timeout-minutes: 60  # 1 hour maximum runtime
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
-    strategy:
-      fail-fast: false
-      matrix:
-        shardIndex: [1, 2, 3]
-        shardTotal: [3]
 
     steps:
       - name: Checkout repository
@@ -64,16 +59,15 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --retries=2 --reporter=list,html
+        run: bun playwright test tests --retries=2 --reporter=list,html
         env:
           CI: true
-          TEST_SHARD_CURRENT: ${{ matrix.shardIndex }}
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.shardIndex }}
+          name: playwright-report
           path: |
             kit/e2e/playwright-report/
             kit/e2e/test-results/

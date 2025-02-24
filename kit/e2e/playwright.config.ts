@@ -25,14 +25,12 @@ const config: PlaywrightTestConfig = defineConfig({
   },
   retries: 2,
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI ? 3 : undefined,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [['html'], ['list']],
   use: {
     actionTimeout: 65000,
     navigationTimeout: 30000,
-    baseURL: process.env.CI
-      ? `https://${process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT}`.replace(/\/+$/, '')
-      : 'http://localhost:3000',
+    baseURL: process.env.CI ? process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT : 'http://localhost:3000',
     trace: 'retain-on-failure',
     viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
@@ -51,12 +49,7 @@ const config: PlaywrightTestConfig = defineConfig({
     },
   ],
   fullyParallel: false,
-  shard: process.env.CI
-    ? {
-        current: Number(process.env.TEST_SHARD_CURRENT ?? 1),
-        total: 3,
-      }
-    : undefined,
+  shard: undefined,
   webServer: process.env.CI
     ? undefined
     : {
