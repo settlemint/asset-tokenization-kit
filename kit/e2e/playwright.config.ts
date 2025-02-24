@@ -26,7 +26,6 @@ const config: PlaywrightTestConfig = {
   retries: 2,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI ? 2 : undefined,
   reporter: [['html']],
   use: {
     actionTimeout: 65000,
