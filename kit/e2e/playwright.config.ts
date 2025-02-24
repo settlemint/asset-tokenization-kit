@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PlaywrightTestConfig } from '@playwright/test';
-import { defineConfig, devices } from '@playwright/test';
+import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../');
@@ -17,7 +17,7 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-const config: PlaywrightTestConfig = defineConfig({
+const config: PlaywrightTestConfig = {
   testDir: './tests',
   timeout: 600 * 1000,
   expect: {
@@ -26,18 +26,25 @@ const config: PlaywrightTestConfig = defineConfig({
   retries: 2,
   forbidOnly: !!process.env.CI,
   workers: process.env.CI ? 2 : undefined,
-  reporter: [['html'], ['list']],
+  reporter: [['html']],
   use: {
     actionTimeout: 65000,
     navigationTimeout: 30000,
-    baseURL: process.env.CI ? process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT : 'http://localhost:3000',
-    trace: 'retain-on-failure',
+    baseURL: process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT,
+    trace: 'off',
     viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     headless: true,
     launchOptions: {
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      slowMo: 100,
+      args: [
+        '--disable-dev-shm-usage',
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-gpu',
+        '--disable-web-security',
+      ],
     },
   },
   projects: [
@@ -49,7 +56,6 @@ const config: PlaywrightTestConfig = defineConfig({
     },
   ],
   fullyParallel: false,
-  shard: undefined,
   webServer: process.env.CI
     ? undefined
     : {
@@ -60,12 +66,10 @@ const config: PlaywrightTestConfig = defineConfig({
         stdout: 'pipe',
         stderr: 'pipe',
       },
-});
+};
 
 if (process.env.CI) {
   console.log('\n=== Test Configuration ===');
-  console.log('Current Shard:', config.shard?.current);
-  console.log('Total Shards:', config.shard?.total);
   console.log('Worker Count:', config.workers);
   console.log('Parallel Execution:', config.fullyParallel);
   console.log('========================\n');
