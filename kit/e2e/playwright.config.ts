@@ -51,9 +51,9 @@ const config: PlaywrightTestConfig = {
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-      testMatch: '**/*.spec.ts',
-      testIgnore: [],
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
   ],
   webServer: process.env.CI
