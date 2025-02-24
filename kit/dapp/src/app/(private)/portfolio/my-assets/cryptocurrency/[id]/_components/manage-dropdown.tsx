@@ -33,7 +33,6 @@ export function ManageDropdown({
             decimals={cryptocurrency.decimals}
             balance={balance}
             assetConfig={assetConfig.cryptocurrency}
-            assetType={assetConfig.cryptocurrency.queryKey}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

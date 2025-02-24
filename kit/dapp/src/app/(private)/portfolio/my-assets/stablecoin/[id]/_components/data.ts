@@ -34,9 +34,9 @@ const OffchainStableCoin = hasuraGraphql(`
   }
 `);
 
-export type StableCoin = Awaited<ReturnType<typeof getStableCoin>>;
+export type StableCoin = Awaited<ReturnType<typeof getStableCoinTitle>>;
 
-export async function getStableCoin(id: string) {
+export async function getStableCoinTitle(id: string) {
   const normalizedId = getAddress(id);
   const user = await getAuthenticatedUser();
   const [data, dbStableCoin] = await Promise.all([

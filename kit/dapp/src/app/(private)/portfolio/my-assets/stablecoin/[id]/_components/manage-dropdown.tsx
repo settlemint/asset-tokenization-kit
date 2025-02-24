@@ -29,7 +29,6 @@ export function ManageDropdown({ id, stableCoin, balance }: { id: Address; stabl
             decimals={stableCoin.decimals}
             balance={balance}
             assetConfig={assetConfig.stablecoin}
-            assetType={assetConfig.stablecoin.queryKey}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -28,7 +28,6 @@ export function ManageDropdown({ id, bond, balance }: { id: Address; bond: Bond;
             decimals={bond.decimals}
             balance={balance}
             assetConfig={assetConfig.bond}
-            assetType={assetConfig.bond.queryKey}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

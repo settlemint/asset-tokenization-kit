@@ -6,7 +6,6 @@ import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { ApproveAllowanceForm } from './form';
-import type { ApproveFormAssetType } from './schema';
 
 export function ApproveAllowanceButton({
   address,
@@ -14,13 +13,11 @@ export function ApproveAllowanceButton({
   symbol,
   decimals,
   balance,
-  assetType,
   assetConfig,
 }: {
   name: string;
   symbol: string;
   address: Address;
-  assetType: ApproveFormAssetType;
   assetConfig: AssetDetailConfig;
   decimals: number;
   balance: number;
@@ -46,13 +43,11 @@ export function ApproveAllowanceButton({
         </SheetHeader>
         <ApproveAllowanceForm
           address={address}
-          name={name}
           symbol={symbol}
           decimals={decimals}
           assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}
           balance={balance}
-          assetType={assetType}
         />
       </SheetContent>
     </Sheet>

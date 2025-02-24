@@ -7,7 +7,7 @@ import { getAuthenticatedUser } from '@/lib/auth/auth';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { getStableCoin } from './_components/data';
+import { getStableCoinTitle } from './_components/data';
 import { ManageDropdown } from './_components/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
@@ -18,7 +18,7 @@ interface LayoutProps extends PropsWithChildren {
 
 export async function generateMetadata({ params }: LayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const stableCoin = await getStableCoin(id);
+  const stableCoin = await getStableCoinTitle(id);
 
   if (!stableCoin) {
     return {
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
 
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
-  const stableCoin = await getStableCoin(id);
+  const stableCoin = await getStableCoinTitle(id);
   const user = await getAuthenticatedUser();
   const balance = await getBalanceForAsset(user.wallet as Address, id as Address);
 

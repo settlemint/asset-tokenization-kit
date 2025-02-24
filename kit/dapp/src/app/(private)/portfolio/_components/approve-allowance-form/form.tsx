@@ -4,7 +4,7 @@ import type { AssetDetailConfig } from '@/lib/config/assets';
 import { formatNumber } from '@/lib/number';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
-import { type ApproveFormAssetType, getApproveFormSchema } from './schema';
+import { getApproveFormSchema } from './schema';
 import { Amount } from './steps/amount';
 import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
@@ -12,21 +12,17 @@ import { approveAllowance } from './store';
 
 export function ApproveAllowanceForm({
   address,
-  name,
   symbol,
   decimals,
   assetConfig,
   balance,
-  assetType,
   onCloseAction,
 }: {
   address: Address;
-  name: string;
   symbol: string;
   decimals: number;
   assetConfig: AssetDetailConfig;
   balance: number;
-  assetType: ApproveFormAssetType;
   onCloseAction?: () => void;
 }) {
   return (
@@ -47,7 +43,7 @@ export function ApproveAllowanceForm({
     >
       <Recipients />
       <Amount amountLimit={balance} />
-      <Summary address={address} decimals={decimals} assetType={assetType} />
+      <Summary address={address} decimals={decimals} assetType={assetConfig.queryKey} />
     </AssetForm>
   );
 }
