@@ -30,7 +30,9 @@ const config: PlaywrightTestConfig = defineConfig({
   use: {
     actionTimeout: 65000,
     navigationTimeout: 30000,
-    baseURL: process.env.CI ? process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT : 'http://localhost:3000',
+    baseURL: process.env.CI
+      ? `https://${process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT}`.replace(/\/+$/, '')
+      : 'http://localhost:3000',
     trace: 'retain-on-failure',
     viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
@@ -78,5 +80,12 @@ if (process.env.CI) {
 
 console.log('\n🌐 Playwright baseURL:', config?.use?.baseURL);
 console.log('🔧 Running in CI:', !!process.env.CI, '\n');
+
+if (process.env.CI) {
+  console.log('\n=== URL Configuration ===');
+  console.log('Base URL:', config.use?.baseURL);
+  console.log('Deployment Endpoint:', process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT);
+  console.log('========================\n');
+}
 
 export default config;
