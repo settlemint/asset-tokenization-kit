@@ -9,7 +9,6 @@ const testData = {
 };
 
 test.describe('Create assets', () => {
-  test.describe.configure({ mode: 'serial' });
   let adminContext: BrowserContext;
   let adminPages: ReturnType<typeof Pages>;
 
@@ -25,51 +24,58 @@ test.describe('Create assets', () => {
     await adminContext.close();
   });
 
-  test('Create Stablecoin asset', async () => {
-    await adminPages.adminPage.createStablecoin(stablecoinData);
-    testData.stablecoinName = stablecoinData.name;
-    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
-      name: stablecoinData.name,
-      totalSupply: stablecoinData.initialSupply,
-    });
-  });
+  test.describe
+    .serial('Dependent assets, first create stablecoin and then create dependent bond', () => {
+      test('Create Stablecoin asset', async () => {
+        await adminPages.adminPage.createStablecoin(stablecoinData);
+        testData.stablecoinName = stablecoinData.name;
+        await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+        await adminPages.adminPage.checkIfAssetExists({
+          sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
+          name: stablecoinData.name,
+          totalSupply: stablecoinData.initialSupply,
+        });
+      });
 
-  test('Create Bond asset', async () => {
-    const bondDataWithStablecoin = {
-      ...bondData,
-      faceValueCurrency: testData.stablecoinName,
-    };
-    await adminPages.adminPage.createBond(bondDataWithStablecoin);
-    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
-  });
+      test('Create Bond asset', async () => {
+        const bondDataWithStablecoin = {
+          ...bondData,
+          faceValueCurrency: testData.stablecoinName,
+        };
+        await adminPages.adminPage.createBond(bondDataWithStablecoin);
+        await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+      });
+    });
 
-  test('Create Cryptocurrency asset', async () => {
-    await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
-    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
-      name: cryptocurrencyData.name,
-      totalSupply: cryptocurrencyData.initialSupply,
+  test.describe('Create independent assets', () => {
+    test('Create Cryptocurrency asset', async () => {
+      await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
+      await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: cryptocurrencyData.sidebarAssetTypes,
+        name: cryptocurrencyData.name,
+        totalSupply: cryptocurrencyData.initialSupply,
+      });
     });
-  });
-  test('Create Equity asset', async () => {
-    await adminPages.adminPage.createEquity(equityData);
-    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: equityData.sidebarAssetTypes,
-      name: equityData.name,
-      totalSupply: equityData.initialSupply,
+
+    test('Create Equity asset', async () => {
+      await adminPages.adminPage.createEquity(equityData);
+      await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: equityData.sidebarAssetTypes,
+        name: equityData.name,
+        totalSupply: equityData.initialSupply,
+      });
     });
-  });
-  test('Create Fund asset', async () => {
-    await adminPages.adminPage.createFund(fundData);
-    await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
-    await adminPages.adminPage.checkIfAssetExists({
-      sidebarAssetTypes: fundData.sidebarAssetTypes,
-      name: fundData.name,
-      totalSupply: fundData.initialSupply,
+
+    test('Create Fund asset', async () => {
+      await adminPages.adminPage.createFund(fundData);
+      await adminPages.adminPage.verifySuccessMessage(assetMessage.successMessage);
+      await adminPages.adminPage.checkIfAssetExists({
+        sidebarAssetTypes: fundData.sidebarAssetTypes,
+        name: fundData.name,
+        totalSupply: fundData.initialSupply,
+      });
     });
   });
 });

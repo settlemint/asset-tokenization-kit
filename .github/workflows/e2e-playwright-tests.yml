@@ -19,9 +19,9 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
     strategy:
       fail-fast: false
-      # matrix:
-      #   shardIndex: [1, 2, 3]
-      #   shardTotal: [3]
+      matrix:
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
 
     steps:
       - name: Checkout repository
@@ -64,7 +64,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests/sign-up.spec.ts --retries 2 --reporter=html
+        run: bun playwright test tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
