@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   test:
-    name: Test
+    name: Test (Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }})
     runs-on: namespace-profile-starterkit
     environment: staging
     timeout-minutes: 60  # 1 hour maximum runtime
@@ -64,7 +64,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Run Playwright tests
-        run: bun playwright test tests --retries 2 --reporter=html
+        run: bun playwright test tests --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
