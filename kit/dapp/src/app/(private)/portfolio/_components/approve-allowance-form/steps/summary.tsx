@@ -6,9 +6,13 @@ import { formatNumber } from '@/lib/number';
 import { DollarSign, Lock } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { ApproveFormType } from '../schema';
+import type { ApproveFormAssetType, ApproveFormType } from '../schema';
 
-export function Summary({ address, decimals }: { address: Address; decimals: number }) {
+export function Summary({
+  address,
+  decimals,
+  assetType,
+}: { address: Address; decimals: number; assetType: ApproveFormAssetType }) {
   const { control } = useFormContext<ApproveFormType>();
   const values = useWatch({
     control: control,
@@ -66,6 +70,7 @@ export function Summary({ address, decimals }: { address: Address; decimals: num
           </div>
 
           <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <AssetFormInput control={control} name="assetType" type="hidden" defaultValue={assetType} />
           <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField

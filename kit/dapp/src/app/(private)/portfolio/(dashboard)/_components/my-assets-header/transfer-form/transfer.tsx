@@ -2,6 +2,7 @@
 
 import type { MyAsset } from '@/app/(private)/portfolio/_components/data';
 import { TransferForm } from '@/app/(private)/portfolio/_components/transfer-form/form';
+import type { TransferFormAssetType } from '@/app/(private)/portfolio/_components/transfer-form/schema';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ArrowLeftRight } from 'lucide-react';
@@ -47,7 +48,7 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
               address={selectedAsset?.asset.id as Address}
               name={selectedAsset?.asset.name}
               symbol={selectedAsset?.asset.symbol}
-              assetType={selectedAsset?.asset.type}
+              assetType={selectedAsset?.asset.type as TransferFormAssetType}
               balance={selectedAsset?.value}
               decimals={selectedAsset?.asset.decimals}
               onCloseAction={() => {

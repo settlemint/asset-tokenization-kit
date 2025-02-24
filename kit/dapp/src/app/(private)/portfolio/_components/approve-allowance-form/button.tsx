@@ -2,28 +2,31 @@
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { assetConfig } from '@/lib/config/assets';
+import type { AssetDetailConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import { ApproveForm } from './form';
+import { ApproveAllowanceForm } from './form';
+import type { ApproveFormAssetType } from './schema';
 
-export function ApproveButton({
+export function ApproveAllowanceButton({
   address,
   name,
   symbol,
   decimals,
-  disabled,
   balance,
+  assetType,
+  assetConfig,
 }: {
   name: string;
   symbol: string;
   address: Address;
+  assetType: ApproveFormAssetType;
+  assetConfig: AssetDetailConfig;
   decimals: number;
-  disabled?: boolean;
   balance: number;
 }) {
   const [open, setOpen] = useState(false);
-
+  const disabled = balance <= 0;
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -41,14 +44,15 @@ export function ApproveButton({
             allowance to control how many tokens they can spend on your behalf.
           </SheetDescription>
         </SheetHeader>
-        <ApproveForm
+        <ApproveAllowanceForm
           address={address}
           name={name}
           symbol={symbol}
           decimals={decimals}
-          assetConfig={assetConfig.stablecoin}
+          assetConfig={assetConfig}
           onCloseAction={() => setOpen(false)}
           balance={balance}
+          assetType={assetType}
         />
       </SheetContent>
     </Sheet>

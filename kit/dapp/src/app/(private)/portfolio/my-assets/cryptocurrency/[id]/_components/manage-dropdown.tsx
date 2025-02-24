@@ -1,3 +1,4 @@
+import { ApproveAllowanceButton } from '@/app/(private)/portfolio/_components/approve-allowance-form/button';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -5,9 +6,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { assetConfig } from '@/lib/config/assets';
 import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
-import { ApproveButton } from './approve-allowance/button';
 import type { Cryptocurrency } from './data';
 
 export function ManageDropdown({
@@ -25,12 +26,14 @@ export function ManageDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
         <DropdownMenuItem asChild className="dropdown-menu-item">
-          <ApproveButton
+          <ApproveAllowanceButton
             address={id as Address}
             name={cryptocurrency.name}
             symbol={cryptocurrency.symbol}
             decimals={cryptocurrency.decimals}
             balance={balance}
+            assetConfig={assetConfig.cryptocurrency}
+            assetType={assetConfig.cryptocurrency.queryKey}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>
