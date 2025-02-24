@@ -27,15 +27,6 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
 
-      - name: Setup caches
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: |
-            .turbo
-            ~/.bun/install/cache
-      - name: Start Docker Compose
-        run: docker compose up -d
-
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -76,4 +67,4 @@ jobs:
           path: |
             kit/e2e/playwright-report/
             kit/e2e/test-results/
-          retention-days: 5
+          retention-days: 1
