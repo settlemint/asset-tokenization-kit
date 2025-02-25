@@ -1,3 +1,4 @@
+'use client';
 import { ApproveAllowanceButton } from '@/app/(private)/portfolio/_components/approve-allowance-form/button';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +10,7 @@ import {
 import { assetConfig } from '@/lib/config/assets';
 import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
+import { RedeemBondButton } from '../(details)/_components/redeem-form/button';
 import type { Bond } from './data';
 export function ManageDropdown({ id, bond, balance }: { id: Address; bond: Bond; balance: number }) {
   return (
@@ -22,6 +24,16 @@ export function ManageDropdown({ id, bond, balance }: { id: Address; bond: Bond;
       <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <ApproveAllowanceButton
+            address={id as Address}
+            name={bond.name}
+            symbol={bond.symbol}
+            decimals={bond.decimals}
+            balance={balance}
+            assetConfig={assetConfig.bond}
+          />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="dropdown-menu-item">
+          <RedeemBondButton
             address={id as Address}
             name={bond.name}
             symbol={bond.symbol}
