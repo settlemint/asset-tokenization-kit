@@ -14,25 +14,6 @@ import { db } from '../db';
 import { validateEnvironmentVariables } from './config';
 import { createUserWallet } from './portal';
 
-/**
- * Custom error class for authentication-related errors
- */
-export class AuthError extends Error {
-  readonly code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED';
-  readonly context?: Record<string, unknown>;
-
-  constructor(
-    message: string,
-    code: 'SESSION_NOT_FOUND' | 'USER_NOT_AUTHENTICATED',
-    context?: Record<string, unknown>
-  ) {
-    super(message);
-    this.name = 'AuthError';
-    this.code = code;
-    this.context = context;
-  }
-}
-
 // Validate environment variables at startup
 validateEnvironmentVariables();
 
