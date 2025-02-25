@@ -1,4 +1,5 @@
-import { Address, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ByteArray, Bytes, crypto, log } from '@graphprotocol/graph-ts';
+import { Bond } from '../../generated/schema';
 import {
   Approval,
   BondMatured,
@@ -15,6 +16,7 @@ import {
   UserBlocked,
   UserUnblocked
 } from '../../generated/templates/Bond/Bond';
+
 import { fetchAccount } from '../fetch/account';
 import { fetchAssetBalance, hasBalance } from '../fetch/balance';
 import { toDecimals } from '../utils/decimals';
@@ -191,7 +193,9 @@ export function handleTransfer(event: Transfer): void {
   }
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
+
 
   assetStats.supply = bond.totalSupply;
   assetStats.supplyExact = bond.totalSupplyExact;
@@ -426,6 +430,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.underlyingAmount);
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   bondRedeemedEvent(
@@ -574,6 +579,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
 
   bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   underlyingAssetTopUpEvent(
@@ -603,6 +609,7 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn):
 
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   underlyingAssetWithdrawnEvent(
@@ -616,4 +623,16 @@ export function handleUnderlyingAssetWithdrawn(event: UnderlyingAssetWithdrawn):
   );
   accountActivityEvent(sender, EventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.bond, bond.id);
   accountActivityEvent(to, EventName.UnderlyingAssetWithdrawn, event.block.timestamp, AssetType.bond, bond.id);
+}
+
+function calculateTotalUnderlyingNeeded(bond: Bond): BigInt {
+  const divisor = BigInt.fromI32(10).pow(bond.decimals as u8);
+  return bond.totalSupplyExact.div(divisor).times(bond.faceValue);
+}
+
+export function updateDerivedFields(bond: Bond): void {
+  const totalUnderlyingNeeded = calculateTotalUnderlyingNeeded(bond);
+  bond.totalUnderlyingNeeded = totalUnderlyingNeeded;
+
+  bond.hasSufficientUnderlying = bond.underlyingBalance.ge(totalUnderlyingNeeded);
 }
