@@ -42,7 +42,7 @@ export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
             name={bond.name}
             symbol={bond.symbol}
             decimals={bond.decimals}
-            underlyingAssetAddress={bond.underlyingAsset}
+            underlyingAssetAddress={bond.underlyingAsset as `0x${string}`}
           />
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
