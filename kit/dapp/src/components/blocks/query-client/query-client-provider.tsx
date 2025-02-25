@@ -12,15 +12,17 @@ import type { PropsWithChildren } from 'react';
  * @returns A new QueryClient instance.
  */
 function makeQueryClient(): QueryClient {
-  const client = new QueryClient();
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // With SSR, we usually want to set some default staleTime
+        // above 0 to avoid refetching immediately on the client
+        staleTime: 60 * 1000,
+      },
+    },
+  });
 
   if (typeof window !== 'undefined') {
-    client.setDefaultOptions({
-      queries: {
-        gcTime: 1_000 * 60 * 60 * 24, // 24 hours
-      },
-    });
-
     const persister = createSyncStoragePersister({
       storage: window.localStorage,
     });
@@ -28,6 +30,7 @@ function makeQueryClient(): QueryClient {
     persistQueryClient({
       queryClient: client,
       persister,
+      maxAge: 1_000 * 60 * 60 * 24, // 24 hours,
     });
   }
 
