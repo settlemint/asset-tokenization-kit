@@ -47,7 +47,9 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.96.0"
+  },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.1.9",

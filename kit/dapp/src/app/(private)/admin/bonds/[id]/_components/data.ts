@@ -17,6 +17,7 @@ const BondTitle = theGraphGraphqlStarterkits(
       }
       maturityDate
       isMatured
+      hasSufficientUnderlying
     }
   }
 `

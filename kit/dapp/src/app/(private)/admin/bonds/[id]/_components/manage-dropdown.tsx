@@ -15,6 +15,11 @@ import { PauseButton } from './pause-form/button';
 import { WithdrawExcessUnderlyingAssetsButton } from './withdraw-excess-underlying-asset-form/button';
 
 export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
+  const cannotMature: boolean =
+    bond.isMatured ||
+    !bond.hasSufficientUnderlying ||
+    (bond.maturityDate ? new Date(Number(bond.maturityDate) * 1000) < new Date() : false);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,7 +45,7 @@ export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
           <WithdrawExcessUnderlyingAssetsButton address={id as Address} name={bond.name} symbol={bond.symbol} />
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
-          <MatureBondButton address={id as Address} name={bond.name} symbol={bond.symbol} />
+          <MatureBondButton address={id as Address} name={bond.name} symbol={bond.symbol} disabled={cannotMature} />
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <PauseButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />
