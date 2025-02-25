@@ -20,7 +20,7 @@ export function AddContactForm({
       storeAction={addContact}
       resolverAction={zodResolver(getAddContactFormSchema())}
       onClose={onCloseAction}
-      submitLabel="Transfer"
+      submitLabel="Add Contact"
       messages={{
         onCreate: (input) => `Adding contact ${input.firstName} ${input.lastName}`,
         onSuccess: (input) => `Contact ${input.firstName} ${input.lastName} added successfully`,
