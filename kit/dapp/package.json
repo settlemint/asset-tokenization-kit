@@ -58,7 +58,7 @@
     "@tanstack/react-query-next-experimental": "5.66.9",
     "@tanstack/react-query-persist-client": "5.66.9",
     "@tanstack/react-table": "8.21.2",
-    "better-auth": "1.1.19",
+    "better-auth": "1.1.21",
     "better-auth-harmony": "1.2.3",
     "bignumber.js": "9.1.2",
     "class-variance-authority": "0.7.1",
