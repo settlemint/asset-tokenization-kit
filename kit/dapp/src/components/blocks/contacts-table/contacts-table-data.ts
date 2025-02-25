@@ -1,62 +1,32 @@
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Address } from 'viem';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 
-const TransactionListFragment = portalGraphql(
+const ContactListFragment = hasuraGraphql(
   `
-  fragment TransactionListFragment on TransactionOutput {
-    address
-    createdAt
-    from
-    functionName
-    metadata
-    transactionHash
-    updatedAt
-    receipt {
-      revertReasonDecoded
-      gasUsed
-      blobGasPrice
-      blobGasUsed
-      blockHash
-      blockNumber
-      contractAddress
-      cumulativeGasUsed
-      effectiveGasPrice
-      from
-      logs
-      logsBloom
-      revertReason
-      root
-      status
-      to
-      transactionHash
-      transactionIndex
-      type
-    }
+  fragment ContactListFragment on contact {
+    id
+    wallet
+    name
+    created_at
+    user_id
+    updated_at
   }
 `
 );
 
-const TransactionList = portalGraphql(
+const ContactList = hasuraGraphql(
   `
-  query TransactionList($from: String) {
-    getPendingAndRecentlyProcessedTransactions(from: $from) {
-      records {
-        ...TransactionListFragment
-      }
+  query ContactList($userId: String) {
+    contact(where: {user_id: {_eq: $userId}}) {
+        ...ContactListFragment
     }
   }
 `,
-  [TransactionListFragment]
+  [ContactListFragment]
 );
 
 export type ContactsListItem = Awaited<ReturnType<typeof getContactsList>>[number];
 
-export async function getContactsList(from?: Address) {
-  const data = await portalClient.request(TransactionList, { from });
-  return (
-    data.getPendingAndRecentlyProcessedTransactions?.records.map((record) => ({
-      ...record,
-      status: record.receipt?.status ?? 'Pending',
-    })) ?? []
-  );
+export async function getContactsList(userId: string) {
+  const data = await hasuraClient.request(ContactList, { userId });
+  return data.contact;
 }
