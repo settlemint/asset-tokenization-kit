@@ -12,15 +12,15 @@ import type { PropsWithChildren } from 'react';
  * @returns A new QueryClient instance.
  */
 function makeQueryClient(): QueryClient {
-  const client = new QueryClient({
-    defaultOptions: {
+  const client = new QueryClient();
+
+  if (typeof window !== 'undefined') {
+    client.setDefaultOptions({
       queries: {
         gcTime: 1_000 * 60 * 60 * 24, // 24 hours
       },
-    },
-  });
+    });
 
-  if (typeof window !== 'undefined') {
     const persister = createSyncStoragePersister({
       storage: window.localStorage,
     });
