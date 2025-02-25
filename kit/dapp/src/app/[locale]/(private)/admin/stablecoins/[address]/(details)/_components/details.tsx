@@ -32,7 +32,7 @@ export function Details({ address }: DetailsProps) {
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label="Creator">
+        <DetailGridItem label={t('creator')}>
           <EvmAddress
             address={asset.creator.id}
             hoverCard={false}

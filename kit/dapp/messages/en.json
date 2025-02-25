@@ -6,7 +6,8 @@
   "admin": {
     "stablecoins": {
       "details": {
-        "contract-address": "Contract address"
+        "contract-address": "Contract address",
+        "creator": "Creator"
       }
     }
   }
