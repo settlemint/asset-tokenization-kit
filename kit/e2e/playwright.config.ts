@@ -25,6 +25,7 @@ const config: PlaywrightTestConfig = {
   },
   retries: 2,
   fullyParallel: false,
+  workers: process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
   reporter: [['html']],
   use: {
@@ -69,5 +70,6 @@ const config: PlaywrightTestConfig = {
 
 console.log('\n🌐 Playwright baseURL:', config?.use?.baseURL);
 console.log('🔧 Running in CI:', !!process.env.CI, '\n');
+console.log('👷 Workers:', process.env.CI ? '3' : 'default', '\n');
 
 export default config;
