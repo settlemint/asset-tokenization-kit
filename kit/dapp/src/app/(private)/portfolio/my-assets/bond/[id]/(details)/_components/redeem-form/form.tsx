@@ -40,7 +40,7 @@ export function RedeemBondForm({
       }}
     >
       <Amount amountLimit={balance} />
-      <Summary address={address} decimals={decimals} assetType={assetConfig.queryKey} />
+      <Summary address={address} decimals={decimals} />
     </AssetForm>
   );
 }
