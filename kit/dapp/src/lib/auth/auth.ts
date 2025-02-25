@@ -1,3 +1,4 @@
+import { redirect } from '@/i18n/routing';
 import * as authSchema from '@/lib/db/schema-auth';
 import { betterAuth } from 'better-auth';
 import { emailHarmony } from 'better-auth-harmony';
@@ -8,7 +9,6 @@ import { admin } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { metadata } from '../config/metadata';
 import { db } from '../db';
 import { validateEnvironmentVariables } from './config';
@@ -109,13 +109,16 @@ export const auth = betterAuth({
  * Get the current session from the request headers
  * @throws {AuthError} If no session is found
  */
-async function getSession() {
+async function getSession(locale: string) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect('/auth/signin');
+    return redirect({
+      href: `/auth/signin`,
+      locale,
+    });
   }
 
   return session;
@@ -126,11 +129,14 @@ async function getSession() {
  * @returns The authenticated user
  * @throws {AuthError} If user is not authenticated
  */
-export async function getAuthenticatedUser() {
-  const session = await getSession();
+export async function getAuthenticatedUser(locale: string) {
+  const session = await getSession(locale);
 
   if (!session?.user) {
-    redirect('/auth/signin');
+    return redirect({
+      href: `/auth/signin`,
+      locale,
+    });
   }
 
   return session.user;

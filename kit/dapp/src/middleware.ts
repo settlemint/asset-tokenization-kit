@@ -19,8 +19,8 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: 'always',
 });
 
-function buildRedirectUrl(request: NextRequest): URL {
-  const redirectUrl = new URL('/auth/signin', request.url);
+function buildRedirectUrl(request: NextRequest, locale: string): URL {
+  const redirectUrl = new URL(`/${locale}/auth/signin`, request.url);
   const returnPath = request.nextUrl.search
     ? `${request.nextUrl.pathname}${request.nextUrl.search}`
     : request.nextUrl.pathname;
@@ -44,10 +44,9 @@ export default function middleware(request: NextRequest) {
   // Check for authentication for private routes
   const cookies = getSessionCookie(request);
   if (isPrivateRoute(pathname) && !cookies) {
-    return NextResponse.redirect(buildRedirectUrl(request));
+    const [, locale] = request.nextUrl.pathname.split('/');
+    return NextResponse.redirect(buildRedirectUrl(request, locale));
   }
-
-  console.log('middleware', pathname);
 
   // Finally, handle the internationalization routing
   return intlMiddleware(request);

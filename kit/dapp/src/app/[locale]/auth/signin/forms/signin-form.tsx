@@ -32,8 +32,12 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export function SignInForm({
   className,
   redirectUrl = '/',
+  locale,
   ...props
-}: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
+}: ComponentPropsWithoutRef<'form'> & {
+  redirectUrl?: string;
+  locale: string;
+}) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -50,7 +54,7 @@ export function SignInForm({
         const session = await authClient.getSession();
         const userRole = session.data?.user.role;
         const isAdminOrIssuer = userRole === 'issuer' || userRole === 'admin';
-        const adminRedirect = decodedRedirectUrl.trim() || '/admin';
+        const adminRedirect = decodedRedirectUrl.trim() || `/${locale}/admin`;
         const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
         window.location.replace(targetUrl);
       },

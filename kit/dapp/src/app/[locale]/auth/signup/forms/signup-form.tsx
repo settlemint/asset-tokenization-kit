@@ -56,8 +56,12 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 export function SignUpForm({
   className,
   redirectUrl = '/',
+  locale,
   ...props
-}: ComponentPropsWithoutRef<'form'> & { redirectUrl?: string }) {
+}: ComponentPropsWithoutRef<'form'> & {
+  redirectUrl?: string;
+  locale: string;
+}) {
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -97,7 +101,8 @@ export function SignUpForm({
             const userRole = session.data.user.role;
             const isAdminOrIssuer =
               userRole === 'issuer' || userRole === 'admin';
-            const adminRedirect = decodedRedirectUrl.trim() || '/admin';
+            const adminRedirect =
+              decodedRedirectUrl.trim() || `/${locale}/admin`;
             const targetUrl = isAdminOrIssuer ? adminRedirect : '/portfolio';
             // Force a full page refresh to ensure new auth state is recognized
             window.location.replace(targetUrl);
@@ -253,6 +258,7 @@ export function SignUpForm({
         <div className="text-center text-sm">
           Already have an account?{' '}
           <Link
+            locale={locale}
             href={`/auth/signin?rd=${decodedRedirectUrl}`}
             className="underline underline-offset-4"
           >

@@ -6,14 +6,21 @@ interface SignUpPageProps {
   searchParams: Promise<{
     rd?: string;
   }>;
+  params: Promise<{
+    locale: string;
+  }>;
 }
 
-export default async function SignUp({ searchParams }: SignUpPageProps) {
+export default async function SignUp({
+  searchParams,
+  params,
+}: SignUpPageProps) {
   const { rd } = await searchParams;
+  const { locale } = await params;
   return (
     <>
       <div className="w-full">
-        <SignUpForm redirectUrl={rd} />
+        <SignUpForm redirectUrl={rd} locale={locale} />
       </div>
       <Alert className="mt-8" variant="warning">
         <AlertTriangle className="h-4 w-4" />
