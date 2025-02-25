@@ -9,11 +9,11 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from '@/i18n/routing';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
 import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
 import { shortHex } from '@/lib/utils/hex';
-import Link from 'next/link';
 import { type FC, type PropsWithChildren, Suspense } from 'react';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';

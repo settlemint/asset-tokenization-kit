@@ -1,0 +1,13 @@
+{
+  "HomePage": {
+    "about": "Go to the about page",
+    "title": "Hello world!"
+  },
+  "admin": {
+    "stablecoins": {
+      "details": {
+        "contract-address": "Contract address"
+      }
+    }
+  }
+}

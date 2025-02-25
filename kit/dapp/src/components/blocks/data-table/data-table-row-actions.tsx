@@ -6,10 +6,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 
 const dataTableRowActionsVariants = cva('flex items-center space-x-2', {

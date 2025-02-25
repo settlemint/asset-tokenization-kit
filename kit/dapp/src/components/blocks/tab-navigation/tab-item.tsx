@@ -4,8 +4,8 @@ import {
   NavigationMenuLink,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import type { FC } from 'react';
 
 export interface TabItemProps {

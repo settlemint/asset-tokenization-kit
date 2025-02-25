@@ -11,12 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
 import { usePendingTransactions } from '@/lib/queries/transactions/transactions-pending';
 import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
 import { BookOpenText, BringToFront, ChevronDown, LogOut } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useUser } from '../blocks/user-context/user-context';

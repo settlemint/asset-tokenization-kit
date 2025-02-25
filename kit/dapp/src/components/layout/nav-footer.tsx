@@ -13,9 +13,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const menuItemStyles =

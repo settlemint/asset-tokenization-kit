@@ -6,9 +6,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { Link } from '@/i18n/routing';
 import { getBlockExplorerTxUrl } from '@/lib/block-explorer';
 import { shortHex } from '@/lib/utils/hex';
-import Link from 'next/link';
 import type { PropsWithChildren } from 'react';
 
 interface TransactionHashProps extends PropsWithChildren {

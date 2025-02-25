@@ -15,10 +15,10 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { Link } from '@/i18n/routing';
 import type { assetConfig } from '@/lib/config/assets';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
