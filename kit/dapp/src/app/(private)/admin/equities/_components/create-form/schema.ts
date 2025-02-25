@@ -13,7 +13,9 @@ export const CreateEquityFormSchema = z.object({
     .string()
     .length(6, { message: 'PIN code must be exactly 6 digits' })
     .regex(/^\d+$/, 'PIN code must contain only numbers'),
-  isin: z.string(),
+  isin: z
+    .string()
+    .refine((val) => val === '' || val.length === 12, { message: 'ISIN must be empty or exactly 12 characters long' }),
   equityClass: z.string().min(1, { message: 'Equity class is required' }),
   equityCategory: z.string().min(1, { message: 'Equity category is required' }),
 });

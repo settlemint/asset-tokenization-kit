@@ -11,6 +11,7 @@ import { BurnButton } from './burn-form/button';
 import type { Bond } from './data';
 import { MintButton } from './mint-form/button';
 import { PauseButton } from './pause-form/button';
+import { WithdrawExcessUnderlyingAssetsButton } from './withdraw-excess-underlying-asset-form/button';
 
 export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
   return (
@@ -33,6 +34,9 @@ export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
             decimals={bond.decimals}
             balance={Number(bond.holders.length > 0 ? (bond.holders[0].value ?? 0) : 0)}
           />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="dropdown-menu-item">
+          <WithdrawExcessUnderlyingAssetsButton address={id as Address} name={bond.name} symbol={bond.symbol} />
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <PauseButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />

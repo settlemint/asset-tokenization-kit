@@ -8,6 +8,7 @@ import {
 import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
 import { BurnButton } from './burn-form/button';
+import { CollectManagementFeeButton } from './collect-management-fee-form/button';
 import type { Fund } from './data';
 import { MintButton } from './mint-form/button';
 import { PauseButton } from './pause-form/button';
@@ -36,6 +37,9 @@ export function ManageDropdown({ id, fund }: { id: Address; fund: Fund }) {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <PauseButton address={id as Address} name={fund.name} symbol={fund.symbol} paused={fund.paused} />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="dropdown-menu-item">
+          <CollectManagementFeeButton address={id as Address} name={fund.name} symbol={fund.symbol} />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

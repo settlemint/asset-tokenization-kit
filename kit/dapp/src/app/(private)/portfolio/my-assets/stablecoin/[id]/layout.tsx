@@ -1,11 +1,14 @@
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
+import { getBalanceForAsset } from '@/components/blocks/asset-balance/data';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { PageHeader } from '@/components/layout/page-header';
 import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { getAuthenticatedUser } from '@/lib/auth/auth';
 import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
 import { getStableCoinTitle } from './_components/data';
+import { ManageDropdown } from './_components/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -51,6 +54,8 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
 export default async function FundsDetailLayout({ children, params }: LayoutProps) {
   const { id } = await params;
   const stableCoin = await getStableCoinTitle(id);
+  const user = await getAuthenticatedUser();
+  const balance = await getBalanceForAsset(user.wallet as Address, id as Address);
 
   return (
     <div>
@@ -67,6 +72,7 @@ export default async function FundsDetailLayout({ children, params }: LayoutProp
           </EvmAddress>
         }
         pill={<ActivePill paused={stableCoin?.paused ?? false} />}
+        button={<ManageDropdown id={id as Address} stableCoin={stableCoin} balance={balance} />}
       />
 
       {children}
