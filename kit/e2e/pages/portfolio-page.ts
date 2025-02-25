@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { BasePage } from './base-page';
-const ASSET_DETAILS_URL_PATTERN = /\/portfolio\/my-assets\/0x[a-fA-F0-9]{40}/;
+const ASSET_DETAILS_URL_PATTERN = /\/portfolio\/my-assets(?:\/[a-zA-Z0-9-]+)?\/0x[a-fA-F0-9]{40}/;
 const CURRENCY_CODE_REGEX = /[A-Z]+$/;
 const COMMA_REGEX = /,/g;
 
