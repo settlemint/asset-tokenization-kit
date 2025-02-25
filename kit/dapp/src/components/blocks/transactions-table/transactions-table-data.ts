@@ -57,6 +57,7 @@ export async function getTransactionsList(from?: Address) {
     data.getPendingAndRecentlyProcessedTransactions?.records.map((record) => ({
       ...record,
       status: record.receipt?.status ?? 'Pending',
+      metadata: record.metadata ?? {},
     })) ?? []
   );
 }
