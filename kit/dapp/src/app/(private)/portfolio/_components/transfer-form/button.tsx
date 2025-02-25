@@ -28,7 +28,7 @@ export function TransferButton({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
+        <Button variant="ghost" className="dropdown-menu-item w-full justify-start">
           Transfer
         </Button>
       </SheetTrigger>

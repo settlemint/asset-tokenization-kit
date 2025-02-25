@@ -71,7 +71,7 @@ export type AssetFormProps<
    * Asset configuration for automatic cache invalidation.
    * The form will handle both client-side and server-side cache updates.
    */
-  assetConfig: AssetDetailConfig;
+  assetConfig?: AssetDetailConfig;
   /**
    * Optional address for detail forms (e.g., pause, burn, mint).
    * If provided, the form will invalidate the specific asset's cache.
@@ -82,6 +82,7 @@ export type AssetFormProps<
   processingLabel?: string;
   messages?: Partial<AssetFormMessages<Infer<S>>>;
   defaultValues?: DefaultValues<Infer<S>>;
+  cacheInvalidationConfig?: CacheInvalidationConfig<S>;
 };
 
 export function AssetForm<
@@ -103,6 +104,7 @@ export function AssetForm<
   processingLabel,
   messages: customMessages = {},
   defaultValues,
+  cacheInvalidationConfig,
 }: AssetFormProps<ServerError, S, BAS, CVE, CBAVE, FormContext>) {
   const defaultMessageHandlers = defaultMessages<Infer<S>>();
   const messages = {
@@ -121,14 +123,16 @@ export function AssetForm<
   }, []);
 
   // Build cache invalidation config based on whether this is a detail form or not
-  const cacheInvalidation = {
-    clientCacheKey: address
-      ? queryKeys.asset.detail({ type: assetConfig.queryKey, address })
-      : [queryKeys.asset.all(assetConfig.queryKey), queryKeys.asset.any()],
-    serverCachePath: address
-      ? () => `/admin/${assetConfig.urlSegment}/${address}`
-      : () => `/admin/${assetConfig.urlSegment}`,
-  } satisfies CacheInvalidationConfig<S>;
+  const cacheInvalidation =
+    cacheInvalidationConfig ??
+    ({
+      clientCacheKey: address
+        ? queryKeys.asset.detail({ type: assetConfig?.queryKey, address })
+        : [queryKeys.asset.all(assetConfig?.queryKey), queryKeys.asset.any()],
+      serverCachePath: address
+        ? () => `/admin/${assetConfig?.urlSegment}/${address}`
+        : () => `/admin/${assetConfig?.urlSegment}`,
+    } satisfies CacheInvalidationConfig<S>);
 
   const { form, handleSubmitWithAction, resetFormAndAction } = useHookFormAction(storeAction, resolverAction, {
     actionProps: {
