@@ -3,6 +3,7 @@ import { Pages } from '../pages/pages';
 import { bondData, cryptocurrencyData, equityData, fundData, stablecoinData } from '../test-data/asset-data';
 import { assetMessage } from '../test-data/success-msg-data';
 import { adminUser } from '../test-data/user-data';
+import { ensureUserIsAdmin } from '../utils/db-utils';
 
 const testData = {
   stablecoinName: '',
@@ -13,6 +14,8 @@ test.describe('Create assets', () => {
   let adminPages: ReturnType<typeof Pages>;
 
   test.beforeAll(async ({ browser }) => {
+    await ensureUserIsAdmin(adminUser.email);
+
     adminContext = await browser.newContext();
     const adminPage = await adminContext.newPage();
     adminPages = Pages(adminPage);

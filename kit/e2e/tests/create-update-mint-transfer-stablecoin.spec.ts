@@ -8,7 +8,7 @@ import {
 } from '../test-data/asset-data';
 import { assetMessage, stableCoinMintTokenMessage, stableCoinTransferMessage } from '../test-data/success-msg-data';
 import { adminUser, signUpTransferUserData, signUpUserData } from '../test-data/user-data';
-import { fetchWalletAddressFromDB } from '../utils/db-utils';
+import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
 
 const testData = {
   userName: '',
@@ -59,6 +59,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
     }
   });
   test('Admin user creates stablecoin, updates proven collateral and mints tokens', async ({ browser }) => {
+    await ensureUserIsAdmin(adminUser.email);
     const adminContext = await browser.newContext();
     try {
       const adminPage = await adminContext.newPage();

@@ -30,7 +30,7 @@ export const signUpUserData: SignUpData = {
 } as const;
 
 export const signUpTransferUserData: SignUpData = {
-  name: 'Test Transfer User',
+  name: `Test Transfer User ${date}-${randomValue}`,
   email: `test-transfer-user-${date}-${randomValue}@settlemint.com`,
   password: 'TestPassword123!',
   pincode: '123456',
