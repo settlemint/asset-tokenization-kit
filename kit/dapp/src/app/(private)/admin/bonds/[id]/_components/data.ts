@@ -15,6 +15,8 @@ const BondTitle = theGraphGraphqlStarterkits(
       holders(where: {account_: {id: $account}}) {
         value
       }
+      maturityDate
+      isMatured
     }
   }
 `

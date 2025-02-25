@@ -9,6 +9,7 @@ import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
 import { BurnButton } from './burn-form/button';
 import type { Bond } from './data';
+import { MatureBondButton } from './mature-form/button';
 import { MintButton } from './mint-form/button';
 import { PauseButton } from './pause-form/button';
 import { WithdrawExcessUnderlyingAssetsButton } from './withdraw-excess-underlying-asset-form/button';
@@ -37,6 +38,9 @@ export function ManageDropdown({ id, bond }: { id: Address; bond: Bond }) {
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <WithdrawExcessUnderlyingAssetsButton address={id as Address} name={bond.name} symbol={bond.symbol} />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="dropdown-menu-item">
+          <MatureBondButton address={id as Address} name={bond.name} symbol={bond.symbol} />
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <PauseButton address={id as Address} name={bond.name} symbol={bond.symbol} paused={bond.paused} />
