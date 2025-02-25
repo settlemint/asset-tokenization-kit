@@ -1,11 +1,10 @@
 import { assetConfig } from '@/lib/config/assets';
+import type { NonEmptyArray } from '@/lib/non-empty-array.type';
 import { z } from 'zod';
 
 const PIN_CODE_REGEX = /^\d+$/;
 
-// Get all asset query keys from the config as a tuple with at least one element
-const assetTypes = Object.values(assetConfig).map((asset) => asset.queryKey) as [string, ...string[]];
-
+const assetKeys = Object.keys(assetConfig) as NonEmptyArray<keyof typeof assetConfig>;
 export const getTransferFormSchema = (balance?: string) => {
   return z.object({
     address: z.string().min(1, { message: 'Address is required' }),
@@ -16,7 +15,7 @@ export const getTransferFormSchema = (balance?: string) => {
           .min(1, { message: 'Amount is required' })
           .max(Number(balance), { message: `Amount cannot be greater than balance ${balance}` })
       : z.number().min(1, { message: 'Amount is required' }),
-    assetType: z.enum(assetTypes),
+    assetType: z.enum(assetKeys),
     pincode: z
       .string()
       .length(6, { message: 'PIN code must be exactly 6 digits' })

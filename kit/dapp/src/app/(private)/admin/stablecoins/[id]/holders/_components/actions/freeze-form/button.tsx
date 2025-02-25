@@ -9,20 +9,12 @@ import { FreezeForm } from './form';
 interface FreezeButtonProps {
   address: Address;
   decimals: number;
-  userAddress: Address;
   currentFrozen: number;
   currentBalance: number;
   assetConfig: AssetDetailConfig;
 }
 
-export function FreezeButton({
-  address,
-  decimals,
-  currentFrozen,
-  currentBalance,
-  userAddress,
-  assetConfig,
-}: FreezeButtonProps) {
+export function FreezeButton({ address, decimals, currentFrozen, currentBalance, assetConfig }: FreezeButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,7 +38,6 @@ export function FreezeButton({
         <FreezeForm
           address={address}
           decimals={decimals}
-          userAddress={userAddress}
           currentlyFrozen={currentFrozen}
           currentBalance={currentBalance}
           assetConfig={assetConfig}

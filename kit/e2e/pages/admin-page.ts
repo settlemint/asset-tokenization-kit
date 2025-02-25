@@ -2,6 +2,9 @@ import { expect } from '@playwright/test';
 import { BasePage } from './base-page';
 
 export class AdminPage extends BasePage {
+  private static readonly CURRENCY_CODE_REGEX = /[A-Z]+$/;
+  private static readonly COMMA_REGEX = /,/g;
+
   async goto() {
     await this.page.goto('/admin');
   }
@@ -145,7 +148,6 @@ export class AdminPage extends BasePage {
     name: string;
     symbol: string;
     isin: string;
-    collateralThreshold: string;
     collateralProofValidityDuration: string;
     pincode: string;
   }) {
@@ -161,40 +163,222 @@ export class AdminPage extends BasePage {
     await this.completeAssetCreation(options.pincode);
   }
 
-  async checkIfAssetExists(options: { sidebarAssetTypes: string; name: string; totalSupply: string }) {
-    await this.page.getByRole('button', { name: options.sidebarAssetTypes }).click();
-    await this.page
-      .locator('a[data-sidebar="menu-sub-button"]', {
-        hasText: 'View all',
+  async checkIfAssetExists(options: { name: string; sidebarAssetTypes: string; totalSupply?: string }) {
+    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
+    const searchInput = this.page.getByPlaceholder('Search...');
+
+    const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
+      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+    });
+    const supplyColumnIndex = await this.page.locator('th', { hasText: 'Total Supply' }).evaluate((el) => {
+      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
+    });
+
+    await expect
+      .poll(
+        async () => {
+          await searchInput.clear();
+          await searchInput.fill(options.name);
+          await this.page.waitForSelector('tbody tr', { state: 'visible', timeout: 120000 });
+
+          const rows = this.page.locator('tbody tr');
+          const count = await rows.count();
+
+          if (count === 0) {
+            console.log('No rows found in table');
+            return false;
+          }
+
+          for (let i = 0; i < count; i++) {
+            const row = rows.nth(i);
+            const nameCell = row.locator(`td:nth-child(${nameColumnIndex})`);
+            await nameCell.waitFor({ state: 'visible', timeout: 120000 });
+
+            const nameFlex = nameCell.locator('.flex');
+            const isFlexVisible = await nameFlex.isVisible();
+
+            if (!isFlexVisible) {
+              console.log(`Flex element not visible in row ${i}`);
+              continue;
+            }
+
+            const actualName = await nameFlex.textContent();
+            console.log(`Found name in row ${i}: ${actualName}`);
+
+            if (actualName?.trim() === options.name) {
+              if (options.totalSupply !== undefined) {
+                const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex})`);
+                await totalSupplyCell.waitFor({ state: 'visible', timeout: 120000 });
+
+                const supplyFlex = totalSupplyCell.locator('.flex');
+                const actualTotalSupply = await supplyFlex.textContent();
+
+                if (this.normalizeNumber(actualTotalSupply?.trim() ?? '') === options.totalSupply) {
+                  return true;
+                }
+              } else {
+                return true;
+              }
+            }
+          }
+
+          return false;
+        },
+        {
+          message: `Waiting for asset ${options.name} to appear in the table`,
+          timeout: 120000,
+          intervals: [1000],
+        }
+      )
+      .toBe(true);
+  }
+
+  async updateProvenCollateral(options: { sidebarAssetTypes: string; name: string; amount: string; pincode: string }) {
+    await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.chooseAssetFromTable({ name: options.name, sidebarAssetTypes: options.sidebarAssetTypes });
+    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    const updateCollateralButton = this.page.getByRole('button', { name: 'Update proven collateral' });
+
+    await updateCollateralButton.waitFor({ state: 'visible' });
+    await updateCollateralButton.click();
+    await this.page.getByLabel('Amount').fill(options.amount);
+    await this.page.getByRole('button', { name: 'Next' }).click();
+    await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Update collateral' }).click();
+  }
+
+  private formatAmount(amount: string): string {
+    return amount.replace(AdminPage.CURRENCY_CODE_REGEX, '').replace(AdminPage.COMMA_REGEX, '').trim().split('.')[0];
+  }
+
+  async verifyProvenCollateral(expectedAmount: string) {
+    await this.page.reload();
+    const collateralElement = this.page
+      .locator('div.space-y-1')
+      .filter({
+        has: this.page.locator('span.font-medium.text-muted-foreground.text-sm', {
+          hasText: 'Proven collateral',
+        }),
       })
-      .click();
+      .locator('div.text-md');
+
+    await expect(collateralElement).toBeVisible();
+
+    await expect
+      .poll(
+        async () => {
+          const text = await collateralElement.textContent();
+          return text ? this.formatAmount(text) : '0';
+        },
+        {
+          message: 'Waiting for proven collateral to be updated from 0',
+          timeout: 30000,
+          intervals: [1000],
+        }
+      )
+      .not.toBe('0');
+
+    const actualAmount = await collateralElement.textContent();
+
+    if (!actualAmount) {
+      throw new Error('Could not find proven collateral amount');
+    }
+
+    const formattedActual = this.formatAmount(actualAmount);
+    const formattedExpected = this.formatAmount(expectedAmount);
+
+    await expect(formattedActual).toBe(formattedExpected);
+  }
+
+  async mintToken(options: { sidebarAssetTypes: string; name: string; user: string; amount: string; pincode: string }) {
+    await this.page.reload();
+    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    const mintTokensButton = this.page.getByRole('button', { name: 'Mint tokens' });
+    await mintTokensButton.waitFor({ state: 'visible' });
+    await mintTokensButton.click();
+    await this.page.getByRole('button', { name: 'Search for a user' }).click();
+    await this.page.getByPlaceholder('Search for a user...').click();
+    await this.page.getByPlaceholder('Search for a user...').fill(options.user);
+    await this.page.getByRole('option', { name: `Avatar ${options.user}` }).click();
+    await this.page.getByRole('button', { name: 'Go to next step' }).click();
+    await this.page.getByLabel('Amount').fill(options.amount);
+    await this.page.getByRole('button', { name: 'Go to next step' }).click();
+    await this.page.getByRole('textbox').click();
+    await this.page.getByRole('textbox').fill(options.pincode);
+    await this.page.getByRole('button', { name: 'Mint' }).click();
+  }
+
+  async verifyTotalSupply(expectedAmount: string) {
+    const totalSupplyElement = this.page
+      .locator('div.space-y-1')
+      .filter({
+        has: this.page.locator('span.font-medium.text-muted-foreground.text-sm', {
+          hasText: 'Total supply',
+        }),
+      })
+      .locator('div.text-md');
+
+    await expect(totalSupplyElement).toBeVisible();
+
+    await expect
+      .poll(
+        async () => {
+          const text = await totalSupplyElement.textContent();
+          return text ? this.formatAmount(text) : '0';
+        },
+        {
+          message: 'Waiting for total supply to be updated from 0',
+          timeout: 30000,
+          intervals: [1000],
+        }
+      )
+      .not.toBe('0');
+
+    const actualAmount = await totalSupplyElement.textContent();
+
+    if (!actualAmount) {
+      throw new Error('Could not find total supply amount');
+    }
+
+    const formattedActual = this.formatAmount(actualAmount);
+    const formattedExpected = this.formatAmount(expectedAmount);
+
+    await expect(formattedActual).toBe(formattedExpected);
+  }
+
+  async verifySuccessMessage(partialMessage: string) {
+    await this.page.waitForSelector(
+      `[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"] [data-title]`,
+      { state: 'visible' }
+    );
+    const toastTitle = await this.page.locator('[data-sonner-toast][data-type="success"] [data-title]').textContent();
+
+    if (!toastTitle?.toLowerCase().includes(partialMessage.toLowerCase())) {
+      throw new Error(`Expected successmessage to contain "${partialMessage}" but found "${toastTitle}"`);
+    }
+  }
+
+  async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
+    await this.page.getByRole('button', { name: options.sidebarAssetTypes }).click();
+    const viewAllLink = this.page
+      .locator(`a[data-sidebar="menu-sub-button"][href="/admin/${options.sidebarAssetTypes.toLowerCase()}"]`)
+      .filter({ hasText: 'View all' });
+    await viewAllLink.click();
     await this.page.waitForURL(`**/${options.sidebarAssetTypes.toLowerCase()}`);
     await Promise.all([
       this.page.waitForSelector('table tbody'),
       this.page.waitForSelector('[data-testid="data-table-search-input"]'),
     ]);
+  }
+
+  async chooseAssetFromTable(options: { name: string; sidebarAssetTypes: string }) {
     await this.page.getByPlaceholder('Search...').fill(options.name);
+    const detailsLink = this.page
+      .locator('tr')
+      .filter({ has: this.page.getByText(options.name, { exact: true }) })
+      .getByRole('link', { name: 'Details' });
 
-    const nameColumnIndex = await this.page.locator('th', { hasText: 'Name' }).evaluate((el) => {
-      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
-    });
-
-    const supplyColumnIndex = await this.page.locator('th', { hasText: 'Total Supply' }).evaluate((el) => {
-      return Array.from(el.parentElement?.children ?? []).indexOf(el) + 1;
-    });
-
-    const row = this.page.locator('tbody tr', {
-      has: this.page.locator(`td:nth-child(${nameColumnIndex}) .flex`, { hasText: options.name }),
-    });
-
-    await row.waitFor();
-    const nameCell = row.locator(`td:nth-child(${nameColumnIndex}) .flex`);
-    const totalSupplyCell = row.locator(`td:nth-child(${supplyColumnIndex}) .flex`);
-
-    const actualName = await nameCell.textContent();
-    const actualTotalSupply = await totalSupplyCell.textContent();
-
-    expect(actualName?.trim()).toBe(options.name);
-    expect(this.normalizeNumber(actualTotalSupply?.trim() ?? '')).toBe(options.totalSupply);
+    await detailsLink.click();
+    await this.page.waitForURL(new RegExp(`.*/${options.sidebarAssetTypes.toLowerCase()}/0x[a-fA-F0-9]{40}`));
   }
 }

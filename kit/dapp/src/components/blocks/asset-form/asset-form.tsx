@@ -170,12 +170,15 @@ export function AssetForm<
           const serverErrorWithContext = data.error.serverError as
             | (typeof data.error.serverError & {
                 context?: { details: string };
+                message?: string;
               })
             | string;
           if (serverErrorWithContext instanceof Error) {
             errorMessage = serverErrorWithContext.message;
           } else if (typeof serverErrorWithContext === 'string') {
             errorMessage = serverErrorWithContext;
+          } else if (typeof serverErrorWithContext === 'object' && typeof serverErrorWithContext.message === 'string') {
+            errorMessage = serverErrorWithContext.message;
           } else if (
             typeof serverErrorWithContext === 'object' &&
             typeof serverErrorWithContext.context?.details === 'string'

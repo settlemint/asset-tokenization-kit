@@ -1,6 +1,7 @@
 'use client';
 
 import { AssetForm } from '@/components/blocks/asset-form/asset-form';
+import { useAuthenticatedUser } from '@/lib/auth/client';
 import type { AssetDetailConfig } from '@/lib/config/assets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Address } from 'viem';
@@ -11,7 +12,6 @@ import { freeze } from './store';
 
 interface FreezeFormProps {
   address: Address;
-  userAddress: Address;
   decimals: number;
   currentlyFrozen: number;
   currentBalance: number;
@@ -21,16 +21,21 @@ interface FreezeFormProps {
 
 export function FreezeForm({
   address,
-  userAddress,
   currentlyFrozen,
   currentBalance,
   assetConfig,
   decimals,
   onCloseAction,
 }: FreezeFormProps) {
+  const user = useAuthenticatedUser();
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <AssetForm
-      storeAction={(formData) => freeze({ ...formData, address, userAddress })}
+      storeAction={(formData) => freeze({ ...formData, address, userAddress: user.wallet })}
       resolverAction={zodResolver(FreezeFormSchema)}
       onClose={onCloseAction}
       assetConfig={assetConfig}
@@ -44,13 +49,13 @@ export function FreezeForm({
       }}
       defaultValues={{
         address,
-        userAddress,
+        userAddress: user.wallet,
         amount: 0,
         decimals,
       }}
     >
       <Amount currentBalance={currentBalance} currentlyFrozen={currentlyFrozen} />
-      <Summary userAddress={userAddress} currentBalance={currentBalance} currentlyFrozen={currentlyFrozen} />
+      <Summary userAddress={user.wallet as Address} currentBalance={currentBalance} currentlyFrozen={currentlyFrozen} />
     </AssetForm>
   );
 }

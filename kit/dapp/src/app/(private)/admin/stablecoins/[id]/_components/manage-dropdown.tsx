@@ -5,8 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { ChevronDown } from 'lucide-react';
 import type { Address } from 'viem';
+import { AddTokenAdminButton } from './add-token-admin-form/button';
 import { BurnButton } from './burn-form/button';
 import type { StableCoin } from './data';
 import { MintButton } from './mint-form/button';
@@ -20,7 +22,7 @@ export function ManageDropdown({ id, stableCoin }: { id: Address; stableCoin: St
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="default">
-          Manage Stablecoin
+          Manage
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -59,6 +61,10 @@ export function ManageDropdown({ id, stableCoin }: { id: Address; stableCoin: St
             symbol={stableCoin.symbol}
             decimals={stableCoin.decimals}
           />
+        </DropdownMenuItem>
+        <Separator />
+        <DropdownMenuItem asChild className="dropdown-menu-item">
+          <AddTokenAdminButton address={id as Address} name={stableCoin.name} symbol={stableCoin.symbol} />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
