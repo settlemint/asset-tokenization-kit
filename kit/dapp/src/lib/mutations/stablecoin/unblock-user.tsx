@@ -69,6 +69,7 @@ export type UnblockUser = ZodInfer<typeof UnblockUserSchema>;
  */
 export function useUnblockUser() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'unblock-user'],
     mutationFn: async ({
       pincode,
       from,

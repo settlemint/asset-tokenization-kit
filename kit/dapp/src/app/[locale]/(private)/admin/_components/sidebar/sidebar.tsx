@@ -1,3 +1,4 @@
+import { DesignerButton } from '@/components/layout/designer-button';
 import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { NavMain } from '@/components/layout/nav-main';
@@ -21,7 +22,7 @@ export function AdminSidebar() {
         <NavHeader />
       </SidebarHeader>
       <SidebarContent>
-        <TokenDesignerButton />
+        <DesignerButton />
         <NavMain items={topItems} />
         <AssetManagement />
         <NavMain items={bottomItems} />

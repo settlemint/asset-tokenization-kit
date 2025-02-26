@@ -13,19 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { assetConfig } from '@/lib/config/assets';
 import { useState } from 'react';
 import { CreateStablecoinForm } from '../../stablecoins/_components/create-form/form';
 
-export function TokenDesignerButton() {
+export function DesignerButton() {
   const { state, isMobile } = useSidebar();
   const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(
     null
@@ -67,59 +60,10 @@ export function TokenDesignerButton() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet
-        open={tokenType !== null}
-        onOpenChange={(open) => !open && setTokenType(null)}
-      >
-        <SheetContent className="max-h-full w-[50%] overflow-y-auto lg:max-w-[50%]">
-          {tokenType && (
-            <>
-              <SheetHeader>
-                <SheetTitle>Design a {assetConfig[tokenType].name}</SheetTitle>
-                <SheetDescription>
-                  {assetConfig[tokenType].description}
-                </SheetDescription>
-              </SheetHeader>
-              {(() => {
-                switch (tokenType) {
-                  // case "cryptocurrency":
-                  //   return (
-                  //     <CreateCryptocurrencyForm
-                  //       onCloseAction={() => setTokenType(null)}
-                  //     />
-                  //   );
-                  case 'stablecoin':
-                    return (
-                      <CreateStablecoinForm
-                        onCloseAction={() => setTokenType(null)}
-                      />
-                    );
-                  // case "equity":
-                  //   return (
-                  //     <CreateEquityForm
-                  //       onCloseAction={() => setTokenType(null)}
-                  //     />
-                  //   );
-                  // case "bond":
-                  //   return (
-                  //     <CreateBondForm
-                  //       onCloseAction={() => setTokenType(null)}
-                  //     />
-                  //   );
-                  // case "fund":
-                  //   return (
-                  //     <CreateFundForm
-                  //       onCloseAction={() => setTokenType(null)}
-                  //     />
-                  //   );
-                  default:
-                    return null;
-                }
-              })()}
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
+      <CreateStablecoinForm
+        open={tokenType === assetConfig.stablecoin.queryKey}
+        onCloseAction={() => setTokenType(null)}
+      />
     </SidebarGroup>
   );
 }

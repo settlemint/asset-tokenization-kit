@@ -70,6 +70,7 @@ export type UpdateCollateral = ZodInfer<typeof UpdateCollateralSchema>;
  */
 export function useUpdateCollateral() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'update-collateral'],
     mutationFn: async ({
       amount,
       pincode,

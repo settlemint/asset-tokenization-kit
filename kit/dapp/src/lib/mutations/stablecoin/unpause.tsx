@@ -65,6 +65,7 @@ export type UnPause = ZodInfer<typeof UnPauseSchema>;
  */
 export function useUnPause() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'unpause'],
     mutationFn: async ({ pincode, from, address }: UnPause) => {
       const response = await portalClient.request(UnPause, {
         address: address,

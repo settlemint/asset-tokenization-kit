@@ -58,6 +58,7 @@ export type UpdateRoles = ZodInfer<typeof UpdateRolesSchema>;
  */
 export function useUpdateRoles() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'update-roles'],
     mutationFn: async ({
       pincode,
       from,

@@ -74,6 +74,7 @@ export type Burn = ZodInfer<typeof BurnSchema>;
  */
 export function useBurn() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'burn'],
     mutationFn: async ({ pincode, from, address, amount }: Burn) => {
       const { decimals } = await getStableCoinDetail({ address });
 

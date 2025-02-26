@@ -67,6 +67,7 @@ export type Mint = ZodInfer<typeof MintSchema>;
  */
 export function useMint() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'mint'],
     mutationFn: async ({ pincode, from, address, amount, to }: Mint) => {
       const { decimals } = await getStableCoinDetail({ address });
 

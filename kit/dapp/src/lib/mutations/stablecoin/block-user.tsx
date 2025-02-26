@@ -69,6 +69,7 @@ export type BlockUser = ZodInfer<typeof BlockUserSchema>;
  */
 export function useBlockUser() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'block-user'],
     mutationFn: async ({ pincode, from, address, userAddress }: BlockUser) => {
       const response = await portalClient.request(BlockUser, {
         address: address,

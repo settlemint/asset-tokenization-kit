@@ -114,6 +114,7 @@ export async function revokeRole({
  */
 export function useRevokeRole() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'revoke-role'],
     mutationFn: async ({
       pincode,
       from,

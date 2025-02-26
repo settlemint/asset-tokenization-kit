@@ -125,6 +125,7 @@ export type CreateStablecoin = ZodInfer<typeof CreateStablecoinSchema>;
  */
 export function useCreateStablecoin() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'create'],
     mutationFn: async ({
       pincode,
       from,

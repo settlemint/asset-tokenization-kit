@@ -77,6 +77,7 @@ export type Freeze = ZodInfer<typeof FreezeSchema>;
  */
 export function useFreeze() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'freeze'],
     mutationFn: async ({
       pincode,
       from,

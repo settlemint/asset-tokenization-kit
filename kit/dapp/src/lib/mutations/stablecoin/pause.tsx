@@ -65,6 +65,7 @@ export type Pause = ZodInfer<typeof PauseSchema>;
  */
 export function usePause() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'pause'],
     mutationFn: async ({ pincode, from, address }: Pause) => {
       const response = await portalClient.request(Pause, {
         address: address,

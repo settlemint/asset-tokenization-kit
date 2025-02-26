@@ -114,6 +114,7 @@ export async function grantRole({
  */
 export function useGrantRole() {
   const mutation = useMutation({
+    mutationKey: ['stablecoin', 'grant-role'],
     mutationFn: async ({
       pincode,
       from,

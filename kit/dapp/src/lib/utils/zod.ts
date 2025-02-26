@@ -80,7 +80,7 @@ const extendedZod = {
    * @returns A Zod schema that validates 6-digit pincodes
    */
   pincode: () =>
-    z
+    z.coerce
       .number()
       .min(100000, { message: 'Invalid pincode' })
       .max(999999, { message: 'Invalid pincode' }),

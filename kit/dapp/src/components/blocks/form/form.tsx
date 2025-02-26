@@ -89,10 +89,14 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
 
   // Create a wrapper function that doesn't return the Promise
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    console.log('Form values', form.getValues());
     void form.handleSubmit((data) => {
+      console.log('Form data', data);
       void mutate(data);
     })(event);
   };
+
+  console.log('Form errors', form.formState.errors);
 
   return (
     <div className="space-y-6">
@@ -108,12 +112,10 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
                     totalSteps={totalSteps}
                   />
                 )}
-
                 {/* Current step content */}
                 <div className="min-h-[400px]">
                   {Array.isArray(children) ? children[currentStep] : children}
                 </div>
-
                 {/* Navigation buttons */}
                 <FormButton
                   currentStep={currentStep}
