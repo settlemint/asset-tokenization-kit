@@ -25,7 +25,13 @@ export function DataTableColumnCell({
   ...props
 }: PropsWithChildren<DataTableColumnCellProps>) {
   return (
-    <div className={cn(dataTableColumnCellVariants({ variant, className }), className)} {...props}>
+    <div
+      className={cn(
+        dataTableColumnCellVariants({ variant, className }),
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );

@@ -19,6 +19,8 @@ const createWalletMutation = portalGraphql(`
   }
 `);
 
-export async function createUserWallet(variables: CreateWalletVariables): Promise<CreateWalletResponse> {
+export async function createUserWallet(
+  variables: CreateWalletVariables
+): Promise<CreateWalletResponse> {
   return await portalClient.request(createWalletMutation, variables);
 }

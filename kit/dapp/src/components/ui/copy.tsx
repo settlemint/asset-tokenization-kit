@@ -23,7 +23,12 @@ interface CopyProps {
   className?: string;
 }
 
-export function CopyToClipboard({ value, displayText = '', successMessage = 'Copied to clipboard!', className }: CopyProps) {
+export function CopyToClipboard({
+  value,
+  displayText = '',
+  successMessage = 'Copied to clipboard!',
+  className,
+}: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -38,19 +43,12 @@ export function CopyToClipboard({ value, displayText = '', successMessage = 'Cop
   };
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between",
-        className
-      )}
-    >
+    <div className={cn('flex items-center justify-between', className)}>
       <div
         className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
         onClick={handleCopy}
       >
-        <span className="text-xs">
-          {displayText ?? value}
-        </span>
+        <span className="text-xs">{displayText ?? value}</span>
       </div>
       <Button
         variant="ghost"

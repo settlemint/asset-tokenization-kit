@@ -1,7 +1,7 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { TokensFrozenEvent } from '../../../generated/schema';
-import { toDecimals } from '../../utils/decimals';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { TokensFrozenEvent } from "../../../generated/schema";
+import { toDecimals } from "../../utils/decimals";
+import { EventName } from "../../utils/enums";
 
 export function tokensFrozenEvent(
   id: Bytes,
@@ -10,7 +10,7 @@ export function tokensFrozenEvent(
   sender: Bytes,
   user: Bytes,
   amount: BigInt,
-  decimals: i32
+  decimals: i32,
 ): TokensFrozenEvent {
   const event = new TokensFrozenEvent(id);
   event.eventName = EventName.TokensFrozen;
@@ -21,7 +21,6 @@ export function tokensFrozenEvent(
   event.amount = toDecimals(amount, decimals);
   event.amountExact = amount;
   event.save();
-
 
   return event;
 }

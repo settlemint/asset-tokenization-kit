@@ -1,6 +1,6 @@
-import { Address } from '@graphprotocol/graph-ts';
-import { Factory } from '../../../generated/schema';
-import { fetchAccount } from '../../fetch/account';
+import { Address } from "@graphprotocol/graph-ts";
+import { Factory } from "../../../generated/schema";
+import { fetchAccount } from "../../fetch/account";
 
 export function fetchFactory(address: Address, type: string): Factory {
   let factory = Factory.load(address);

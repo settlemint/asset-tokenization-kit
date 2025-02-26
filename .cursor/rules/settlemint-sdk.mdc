@@ -1,0 +1,9 @@
+---
+description: Best practices for using SettleMint SDKs
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use appropriate SettleMint SDKs for specific blockchain interactions.
+- Implement proper error handling for SDK operations.
+- Utilize SettleMint's codegen tool for generating type-safe SDK clients.
+- Leverage SettleMint's documentation (https://console.settlemint.com/documentation/) for SDK-specific best practices.

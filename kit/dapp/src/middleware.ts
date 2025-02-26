@@ -1,14 +1,26 @@
 import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
 import { getSessionCookie } from 'better-auth';
+import { default as createIntlMiddleware } from 'next-intl/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
-import { type Match, match } from 'path-to-regexp';
-import { isCrawler } from './lib/config/crawlers';
+import { match } from 'path-to-regexp';
 
-const isAssetRoute = match(['/admin/:type/:id', '/admin/:type/:id/*path']);
-const isPrivateRoute = match(['/admin', '/admin/*path', '/proxy', '/proxy/*path']);
+const isPrivateRoute = match([
+  ':locale/admin',
+  ':locale/admin/*path',
+  '/proxy',
+  '/proxy/*path',
+]);
 
-function buildRedirectUrl(request: NextRequest): URL {
-  const redirectUrl = new URL('/auth/signin', request.url);
+// Create the Next Intl middleware outside the main middleware function
+const intlMiddleware = createIntlMiddleware({
+  locales: ['en', 'de'],
+  defaultLocale: 'en',
+  // Add this to ensure root path redirects to the default locale
+  localePrefix: 'always',
+});
+
+function buildRedirectUrl(request: NextRequest, locale: string): URL {
+  const redirectUrl = new URL(`/${locale}/auth/signin`, request.url);
   const returnPath = request.nextUrl.search
     ? `${request.nextUrl.pathname}${request.nextUrl.search}`
     : request.nextUrl.pathname;
@@ -17,38 +29,29 @@ function buildRedirectUrl(request: NextRequest): URL {
 }
 
 export default function middleware(request: NextRequest) {
-  if (isCrawler(request.headers.get('user-agent') || '')) {
-    const assetMatch = isAssetRoute(request.nextUrl.pathname) as Match<{ type: string; id: string }>;
-    if (assetMatch) {
-      const shareUrl = new URL(`/share/${assetMatch.params.type}/${assetMatch.params.id}`, request.url);
-      return NextResponse.redirect(shareUrl);
-    }
-  }
+  const pathname = request.nextUrl.pathname;
 
-  // quick check for the session cookie
-  const cookies = getSessionCookie(request);
-
-  if (isPrivateRoute(request.nextUrl.pathname) && !cookies) {
-    return NextResponse.redirect(buildRedirectUrl(request));
-  }
-
+  // Handle proxy routes - proxyMiddleware already checks if the path matches
+  // and returns NextResponse.next() if it's not a proxy route
   const proxyResponse = proxyMiddleware(request);
-  if (proxyResponse) {
+
+  // Only stop the middleware chain if the response is a rewrite (for proxy routes)
+  // NextResponse.next() should be ignored and allow the middleware to continue
+  if (proxyResponse && proxyResponse.headers.get('x-middleware-rewrite')) {
     return proxyResponse;
   }
 
-  return NextResponse.next();
+  // Check for authentication for private routes
+  const cookies = getSessionCookie(request);
+  if (isPrivateRoute(pathname) && !cookies) {
+    const [, locale] = request.nextUrl.pathname.split('/');
+    return NextResponse.redirect(buildRedirectUrl(request, locale));
+  }
+
+  // Finally, handle the internationalization routing
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/proxy/:path*', '/', '/(de|en)/:path*'],
 };

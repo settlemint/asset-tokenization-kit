@@ -1,6 +1,6 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { RoleGrantedEvent } from '../../../generated/schema';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { RoleGrantedEvent } from "../../../generated/schema";
+import { EventName } from "../../utils/enums";
 
 export function roleGrantedEvent(
   id: Bytes,
@@ -8,7 +8,7 @@ export function roleGrantedEvent(
   emitter: Bytes,
   sender: Bytes,
   role: Bytes,
-  account: Bytes
+  account: Bytes,
 ): RoleGrantedEvent {
   const roleGrantedEvent = new RoleGrantedEvent(id);
   roleGrantedEvent.eventName = EventName.RoleGranted;

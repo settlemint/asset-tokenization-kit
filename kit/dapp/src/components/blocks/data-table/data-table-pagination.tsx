@@ -1,9 +1,20 @@
 'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { Table } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
 
 export interface DataTablePaginationOptions {
   enablePagination?: boolean;
@@ -13,7 +24,10 @@ interface DataTablePaginationProps<TData> extends DataTablePaginationOptions {
   table: Table<TData>;
 }
 
-export function DataTablePagination<TData>({ table, enablePagination = true }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData>({
+  table,
+  enablePagination = true,
+}: DataTablePaginationProps<TData>) {
   if (!enablePagination) {
     return null;
   }
@@ -23,8 +37,8 @@ export function DataTablePagination<TData>({ table, enablePagination = true }: D
       <div className="flex-1 text-muted-foreground text-sm">
         {table.getAllColumns().some((column) => column.id === 'select') && (
           <>
-            {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-            selected.
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
           </>
         )}
       </div>
@@ -50,7 +64,8 @@ export function DataTablePagination<TData>({ table, enablePagination = true }: D
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center font-medium text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
           <Button

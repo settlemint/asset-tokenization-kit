@@ -1,6 +1,13 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   type ChartConfig,
   ChartContainer,
@@ -23,7 +30,15 @@ interface PieChartProps {
   footer?: ReactNode;
 }
 
-export function PieChartComponent({ title, description, data, config, dataKey, nameKey, footer }: PieChartProps) {
+export function PieChartComponent({
+  title,
+  description,
+  data,
+  config,
+  dataKey,
+  nameKey,
+  footer,
+}: PieChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -33,8 +48,16 @@ export function PieChartComponent({ title, description, data, config, dataKey, n
       <CardContent>
         <ChartContainer config={config}>
           <PieChart>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={data} dataKey={dataKey} nameKey={nameKey} strokeWidth={1}>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Pie
+              data={data}
+              dataKey={dataKey}
+              nameKey={nameKey}
+              strokeWidth={1}
+            >
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}

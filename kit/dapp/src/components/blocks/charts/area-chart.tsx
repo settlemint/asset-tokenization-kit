@@ -1,8 +1,20 @@
 'use client';
 import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import type { ReactNode } from 'react';
 
 export interface AreaChartData {
@@ -44,7 +56,11 @@ export function AreaChartComponent({
   chartContainerClassName,
 }: AreaChartProps) {
   const dataKeys = Object.keys(config);
-  const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
+  const {
+    key,
+    tickFormatter = defaultTickFormatter,
+    tickMargin = defaultTickMargin,
+  } = xAxis;
 
   return (
     <Card>
@@ -57,7 +73,11 @@ export function AreaChartComponent({
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             {dataKeys.length > 1 && (
-              <Legend align="center" verticalAlign="bottom" formatter={(value) => config[value].label} />
+              <Legend
+                align="center"
+                verticalAlign="bottom"
+                formatter={(value) => config[value].label}
+              />
             )}
             <XAxis
               dataKey={key}
@@ -66,7 +86,12 @@ export function AreaChartComponent({
               tickMargin={tickMargin}
               tickFormatter={tickFormatter}
             />
-            <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} hide={!showYAxis} />
+            <YAxis
+              tickLine={false}
+              axisLine={true}
+              tickMargin={tickMargin}
+              hide={!showYAxis}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}
@@ -74,9 +99,24 @@ export function AreaChartComponent({
             />
             <defs>
               {dataKeys.map((key) => (
-                <linearGradient key={key} id={`fill${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={config[key].color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={config[key].color} stopOpacity={0.1} />
+                <linearGradient
+                  key={key}
+                  id={`fill${key}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={config[key].color}
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={config[key].color}
+                    stopOpacity={0.1}
+                  />
                 </linearGradient>
               ))}
             </defs>

@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { formatNumber } from '@/lib/number';
-import type { CollateralUpdatedEvent } from '../asset-events-fragments';
+import type { CollateralUpdatedEvent } from '@/lib/queries/asset-events/asset-events-fragments';
+import { formatNumber } from '@/lib/utils/number';
 
 interface CollateralUpdatedDetailsProps {
   details: CollateralUpdatedEvent;
 }
 
-export function CollateralUpdatedDetails({ details }: CollateralUpdatedDetailsProps) {
+export function CollateralUpdatedDetails({
+  details,
+}: CollateralUpdatedDetailsProps) {
   return (
     <Card>
       <CardHeader>Details</CardHeader>

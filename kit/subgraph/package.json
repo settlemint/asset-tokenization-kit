@@ -12,7 +12,7 @@
     "build": "graph build --ipfs=https://ipfs.console.settlemint.com subgraph.yaml | tee subgraph-output.txt",
     "deploy:local": "bash graph-local-deploy.sh",
     "deploy:remote": "bash graph-remote-deploy.sh",
-    "format:biome": "biome format --write ."
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.96.0",

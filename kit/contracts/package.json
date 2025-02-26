@@ -10,9 +10,8 @@
   },
   "scripts": {
     "dependencies": "forge soldeer install && find dependencies -name .git -type d -exec rm -rf {} +",
-    "lint:solhint": "solhint --config .solhint.json ./contracts/**/*.sol",
-    "format:biome": "biome format --write .",
-    "format:forge": "settlemint scs foundry format",
+    "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
+    "format": "settlemint scs foundry format && prettier --write .",
     "compile:forge": "settlemint scs foundry build --sizes",
     "compile:hardhat": "settlemint scs hardhat build",
     "test": "settlemint scs foundry test -vvv",

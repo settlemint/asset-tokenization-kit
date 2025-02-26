@@ -2,8 +2,20 @@
 
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import type { ReactNode } from 'react';
 
 export interface BarChartData {
@@ -42,9 +54,21 @@ const defaultTickFormatter = (value: string) => {
 };
 const defaultTickMargin = 8;
 
-export function BarChartComponent({ data, config, title, description, xAxis, footer, showYAxis }: BarChartProps) {
+export function BarChartComponent({
+  data,
+  config,
+  title,
+  description,
+  xAxis,
+  footer,
+  showYAxis,
+}: BarChartProps) {
   const dataKeys = Object.keys(config);
-  const { key, tickFormatter = defaultTickFormatter, tickMargin = defaultTickMargin } = xAxis;
+  const {
+    key,
+    tickFormatter = defaultTickFormatter,
+    tickMargin = defaultTickMargin,
+  } = xAxis;
 
   return (
     <Card>
@@ -57,7 +81,11 @@ export function BarChartComponent({ data, config, title, description, xAxis, foo
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             {dataKeys.length > 1 && (
-              <Legend align="center" verticalAlign="bottom" formatter={(value) => config[value].label} />
+              <Legend
+                align="center"
+                verticalAlign="bottom"
+                formatter={(value) => config[value].label}
+              />
             )}
             <XAxis
               dataKey={key}
@@ -66,13 +94,30 @@ export function BarChartComponent({ data, config, title, description, xAxis, foo
               tickMargin={tickMargin}
               tickFormatter={tickFormatter}
             />
-            {showYAxis && <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />}
+            {showYAxis && (
+              <YAxis tickLine={false} axisLine={true} tickMargin={tickMargin} />
+            )}
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
               {dataKeys.map((key) => (
-                <linearGradient key={key} id={`barGradient${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={config[key].color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={config[key].color} stopOpacity={0.4} />
+                <linearGradient
+                  key={key}
+                  id={`barGradient${key}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={config[key].color}
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={config[key].color}
+                    stopOpacity={0.4}
+                  />
                 </linearGradient>
               ))}
             </defs>

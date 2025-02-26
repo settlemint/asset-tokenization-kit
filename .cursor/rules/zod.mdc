@@ -1,0 +1,9 @@
+---
+description: Best practices for schema validation with Zod
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use Zod for runtime type checking and validation.
+- Implement custom validation logic using Zod's `refine` method.
+- Utilize `zod-form-data` for handling form data validation.
+- Leverage Zod's inference to generate TypeScript types from schemas.

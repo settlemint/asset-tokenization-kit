@@ -1,0 +1,16 @@
+---
+description: Best practices for using Viem
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+Read the docs: https://viem.sh/docs/getting-started
+
+- Use Viem's type-safe account abstraction for better wallet integration
+- Implement Viem's ENS resolution for easier address management
+- Utilize Viem's batching capabilities for efficient contract interactions
+- Leverage Viem's event watching for real-time contract monitoring
+- Use Viem's `createPublicClient` for read-only operations.
+- Implement wallet connections using `createWalletClient`.
+- Utilize Viem's `parseEther` and `formatEther` for handling Ethereum units.
+- Leverage Viem's error handling for robust Ethereum interactions.
+

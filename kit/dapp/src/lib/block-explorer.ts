@@ -15,6 +15,9 @@ export function getBlockExplorerTxUrl(hash: string, explorerUrl?: string) {
   return createExplorerUrl(`tx/${hash}`, explorerUrl);
 }
 
-export function getBlockExplorerAddressUrl(address: string, explorerUrl?: string) {
+export function getBlockExplorerAddressUrl(
+  address: string,
+  explorerUrl?: string
+) {
   return createExplorerUrl(`address/${address}`, explorerUrl);
 }

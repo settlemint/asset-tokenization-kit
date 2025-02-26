@@ -38,7 +38,6 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "lint:biome": "biome lint .",
     "format": "turbo format",
     "test": "turbo test",
     "codegen": "turbo codegen",
@@ -49,12 +48,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.1.9",
     "turbo": "2.4.4",
     "typescript": "5.7.3",
-    "ultracite": "4.1.20",
-    "lefthook": "1.11.1"
+    "prettier": "3.5.2"
   },
   "trustedDependencies": [
     "@biomejs/biome",
@@ -68,8 +65,8 @@
     "protobufjs",
     "secp256k1"
   ],
-  "packageManager": "bun@1.2.0",
   "workspaces": ["kit/*"],
+  "packageManager": "bun@1.2.3",
   "overrides": {
     "react-is": "19.0.0",
     "graphql": "16.10.0",

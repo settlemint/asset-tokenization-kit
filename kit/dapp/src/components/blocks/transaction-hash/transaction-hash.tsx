@@ -1,10 +1,14 @@
 'use client';
 
 import { CopyToClipboard } from '@/components/ui/copy';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
+import { Link } from '@/i18n/routing';
 import { getBlockExplorerTxUrl } from '@/lib/block-explorer';
-import { shortHex } from '@/lib/hex';
-import Link from 'next/link';
+import { shortHex } from '@/lib/utils/hex';
 import type { PropsWithChildren } from 'react';
 
 interface TransactionHashProps extends PropsWithChildren {
