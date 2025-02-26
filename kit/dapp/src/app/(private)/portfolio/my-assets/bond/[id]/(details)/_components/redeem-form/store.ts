@@ -3,7 +3,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { actionClient } from '@/lib/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { type Address, parseUnits } from 'viem';
-import { ApproveOutputSchema } from './schema';
+import { RedeemOutputSchema, getRedeemFormSchema } from './schema';
 
 const BondRedeemMutation = portalGraphql(`
 mutation BondRedeem($address: String!, $from: String!, $challengeResponse: String!, $input: { amount: String! }) {
@@ -20,7 +20,7 @@ mutation BondRedeem($address: String!, $from: String!, $challengeResponse: Strin
 
 export const redeemBond = actionClient
   .schema(getRedeemFormSchema())
-  .outputSchema(ApproveOutputSchema)
+  .outputSchema(RedeemOutputSchema)
   .action(async ({ parsedInput: { address, amount, pincode, decimals }, ctx: { user } }) => {
     const data = await portalClient.request(BondRedeemMutation, {
       address: address,
