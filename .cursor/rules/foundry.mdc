@@ -1,0 +1,9 @@
+---
+description: 
+globs: *.sol
+alwaysApply: false
+---
+- Use Foundry's fuzz testing for comprehensive test coverage
+- Implement invariant testing for complex contract interactions
+- Utilize Foundry's gas snapshot feature for optimization tracking
+- Leverage Foundry's script system for deployment and interaction tasks

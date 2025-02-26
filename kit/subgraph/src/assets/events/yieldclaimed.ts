@@ -1,7 +1,7 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { YieldClaimedEvent } from '../../../generated/schema';
-import { toDecimals } from '../../utils/decimals';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { YieldClaimedEvent } from "../../../generated/schema";
+import { toDecimals } from "../../utils/decimals";
+import { EventName } from "../../utils/enums";
 
 export function yieldClaimedEvent(
   id: Bytes,
@@ -14,7 +14,7 @@ export function yieldClaimedEvent(
   toPeriod: BigInt,
   periodAmounts: BigInt[],
   unclaimedYield: BigInt,
-  decimals: i32
+  decimals: i32,
 ): YieldClaimedEvent {
   const event = new YieldClaimedEvent(id);
   event.eventName = EventName.YieldClaimed;

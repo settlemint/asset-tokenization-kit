@@ -1,8 +1,8 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { Fund } from '../../../generated/schema';
-import { Fund as FundContract } from '../../../generated/templates/Fund/Fund';
-import { fetchAccount } from '../../fetch/account';
-import { AssetType } from '../../utils/enums';
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { Fund } from "../../../generated/schema";
+import { Fund as FundContract } from "../../../generated/templates/Fund/Fund";
+import { fetchAccount } from "../../fetch/account";
+import { AssetType } from "../../utils/enums";
 
 export function fetchFund(address: Address): Fund {
   let fund = Fund.load(address);
@@ -22,8 +22,8 @@ export function fetchFund(address: Address): Fund {
     fund = new Fund(address);
     fund.type = AssetType.fund;
     fund.asAccount = account.id;
-    fund.name = name.reverted ? '' : name.value;
-    fund.symbol = symbol.reverted ? '' : symbol.value;
+    fund.name = name.reverted ? "" : name.value;
+    fund.symbol = symbol.reverted ? "" : symbol.value;
     fund.decimals = decimals.reverted ? 18 : decimals.value;
     fund.totalSupplyExact = BigInt.zero();
     fund.totalSupply = BigDecimal.zero();
@@ -34,10 +34,12 @@ export function fetchFund(address: Address): Fund {
     fund.creator = Address.zero();
 
     // Fund-specific fields
-    fund.isin = isin.reverted ? '' : isin.value;
-    fund.fundClass = fundClass.reverted ? '' : fundClass.value;
-    fund.fundCategory = fundCategory.reverted ? '' : fundCategory.value;
-    fund.managementFeeBps = managementFeeBps.reverted ? 0 : managementFeeBps.value;
+    fund.isin = isin.reverted ? "" : isin.value;
+    fund.fundClass = fundClass.reverted ? "" : fundClass.value;
+    fund.fundCategory = fundCategory.reverted ? "" : fundCategory.value;
+    fund.managementFeeBps = managementFeeBps.reverted
+      ? 0
+      : managementFeeBps.value;
     fund.paused = paused.reverted ? false : paused.value;
     fund.lastFeeCollection = BigInt.zero();
     fund.save();

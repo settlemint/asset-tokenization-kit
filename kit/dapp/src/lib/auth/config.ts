@@ -8,7 +8,10 @@ class EnvironmentError extends Error {
   }
 }
 
-const REQUIRED_ENV_VARS = ['SETTLEMINT_HASURA_ADMIN_SECRET', 'SETTLEMINT_HD_PRIVATE_KEY'] as const;
+const REQUIRED_ENV_VARS = [
+  'SETTLEMINT_HASURA_ADMIN_SECRET',
+  'SETTLEMINT_HD_PRIVATE_KEY',
+] as const;
 
 /**
  * Validates that all required environment variables are present
@@ -18,6 +21,8 @@ export function validateEnvironmentVariables(): void {
   const missing = REQUIRED_ENV_VARS.filter((name) => !process.env[name]);
 
   if (missing.length > 0) {
-    throw new EnvironmentError(`Missing required environment variables: ${missing.join(', ')}`);
+    throw new EnvironmentError(
+      `Missing required environment variables: ${missing.join(', ')}`
+    );
   }
 }

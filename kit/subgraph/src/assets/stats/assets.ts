@@ -1,13 +1,13 @@
-import { BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { AssetStatsData } from '../../../generated/schema';
+import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { AssetStatsData } from "../../../generated/schema";
 
 export function newAssetStatsData(
   asset: Bytes,
   assetType: string,
-  assetCategory: string = '',
-  assetClass: string = ''
+  assetCategory: string = "",
+  assetClass: string = "",
 ): AssetStatsData {
-  const assetStats = new AssetStatsData('auto');
+  const assetStats = new AssetStatsData("auto");
 
   // Filters
   assetStats.asset = asset;

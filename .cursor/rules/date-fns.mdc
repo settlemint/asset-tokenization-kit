@@ -1,0 +1,6 @@
+---
+description: Best practices for date time operations with date-fns
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use date-fns for all date time operations like calculations, formatting, parsing

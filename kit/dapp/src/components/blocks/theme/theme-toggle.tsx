@@ -39,7 +39,11 @@ const skeletonSizes = {
  * @param props - The component props.
  * @returns A dropdown menu for theme selection.
  */
-export function ThemeToggle({ variant = 'outline', size = 'icon', className }: ThemeToggleProps) {
+export function ThemeToggle({
+  variant = 'outline',
+  size = 'icon',
+  className,
+}: ThemeToggleProps) {
   const { setTheme, resolvedTheme, themes } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -59,14 +63,20 @@ export function ThemeToggle({ variant = 'outline', size = 'icon', className }: T
   }, []);
 
   if (!mounted) {
-    const skeletonSize = skeletonSizes[size as keyof typeof skeletonSizes] || skeletonSizes.icon;
+    const skeletonSize =
+      skeletonSizes[size as keyof typeof skeletonSizes] || skeletonSizes.icon;
     return <Skeleton className={`${skeletonSize} rounded-md ${className}`} />;
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size} className={className} aria-label="Toggle theme">
+        <Button
+          variant={variant}
+          size={size}
+          className={className}
+          aria-label="Toggle theme"
+        >
           <SunIcon className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           {size !== 'icon' && <span className="ml-2">{resolvedTheme}</span>}
@@ -74,7 +84,11 @@ export function ThemeToggle({ variant = 'outline', size = 'icon', className }: T
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {themes.map((theme) => (
-          <DropdownMenuItem key={theme} onClick={() => handleSetTheme(theme)} className="capitalize">
+          <DropdownMenuItem
+            key={theme}
+            onClick={() => handleSetTheme(theme)}
+            className="capitalize"
+          >
             {theme}
           </DropdownMenuItem>
         ))}

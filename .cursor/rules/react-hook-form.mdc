@@ -1,0 +1,9 @@
+---
+description: Best practices for form handling with React Hook Form
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use `useForm` hook for form state management.
+- Implement validation using `zod` with `@hookform/resolvers`.
+- Utilize `Controller` component for controlled inputs.
+- Leverage `useFormContext` for sharing form state across components.

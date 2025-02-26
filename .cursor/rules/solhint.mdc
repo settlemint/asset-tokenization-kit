@@ -1,0 +1,9 @@
+---
+description: Best practices for Solidity linting with Solhint
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Configure Solhint to enforce gas optimization rules
+- Use Solhint's security rules to prevent common vulnerabilities
+- Implement naming convention rules for better code readability
+- Regularly update Solhint configuration to align with best practices

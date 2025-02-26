@@ -1,0 +1,252 @@
+{
+  "admin": {
+    "stablecoins": {
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "stablecoin-details-description": "Details for the stablecoin",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Detailed information about {name} stablecoin"
+      },
+      "collateral": {
+        "proven-collateral": "Proven collateral",
+        "proven-collateral-info": "The amount of collateral that has been proven to be held by the token",
+        "required-collateral-threshold": "Required collateral threshold",
+        "required-collateral-threshold-info": "The amount of collateral that must be proven",
+        "committed-collateral-ratio": "Committed collateral ratio",
+        "committed-collateral-ratio-info": "The ratio of the collateral committed to the total supply of the token",
+        "collateral-proof-expiration": "Collateral proof expiration",
+        "collateral-proof-expiration-info": "From this point the collateral proof is invalid",
+        "collateral-proof-validity": "Collateral proof validity",
+        "collateral-proof-validity-info": "How long the collateral proof is valid for"
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Holders",
+        "events": "Events",
+        "permissions": "Permissions"
+      },
+      "manage": {
+        "manage": "Manage"
+      },
+      "holders": {
+        "holders-page-title": "{name} Holders",
+        "holders-page-description": "List of holders for {name} stablecoin"
+      },
+      "events": {
+        "events-page-title": "{name} Events",
+        "events-page-description": "Event history for {name} stablecoin"
+      },
+      "permissions": {
+        "permissions-page-title": "{name} Permissions",
+        "permissions-page-description": "Permission management for {name} stablecoin"
+      },
+      "pause-form": {
+        "pause": {
+          "trigger-label": "Pause",
+          "title": "Pause",
+          "description": "Pause a stablecoin",
+          "button-label": "Pause"
+        },
+        "unpause": {
+          "trigger-label": "Unpause",
+          "title": "Unpause",
+          "description": "Unpause a stablecoin",
+          "button-label": "Unpause"
+        },
+        "summary": {
+          "title": "Review and confirm pause operation",
+          "description": "Verify the details of your pause operation before proceeding.",
+          "pause-title": "Pause",
+          "pause-description": "Pausing operation details",
+          "asset-label": "Asset",
+          "current-state-label": "Current state",
+          "target-state-label": "Target state",
+          "state-paused": "Paused",
+          "state-active": "Active"
+        }
+      },
+      "update-collateral-form": {
+        "trigger-label": "Update collateral",
+        "title": "Update collateral",
+        "description": "Update the collateral for a stablecoin",
+        "button-label": "Update collateral",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
+          "amount-label": "Amount"
+        },
+        "summary": {
+          "title": "Review and confirm update proven collateral",
+          "description": "Verify the details of your update proven collateral before proceeding.",
+          "update-title": "Update Collateral",
+          "update-description": "Updating collateral operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "mint-form": {
+        "trigger-label": "Mint",
+        "title": "Mint",
+        "description": "Mint a stablecoin",
+        "button-label": "Mint",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to mint.",
+          "amount-label": "Amount",
+          "collateral-available": "Collateral available: {collateral}"
+        },
+        "summary": {
+          "title": "Review and confirm mint",
+          "description": "Verify the details of your mint before proceeding.",
+          "mint-title": "Mint",
+          "mint-description": "Minting operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "burn-form": {
+        "trigger-label": "Burn",
+        "title": "Burn",
+        "description": "Burn a stablecoin",
+        "button-label": "Burn",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to burn.",
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}"
+        },
+        "summary": {
+          "title": "Review and confirm burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "burn-title": "Burn",
+          "burn-description": "Burning operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Grant Role",
+        "title": "Grant Role",
+        "description": "Grant roles to a new admin",
+        "button-label": "Grant Role",
+        "address": {
+          "title": "Select New Admin",
+          "description": "Search for a user by their name or email, or manually enter a wallet address.",
+          "address-label": "Admin Wallet Address",
+          "search-placeholder": "Search for a user",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Search for a user instead...",
+          "manual-toggle": "Enter address manually..."
+        },
+        "roles": {
+          "title": "Select Admin Roles",
+          "description": "Choose the roles to grant to the new admin. At least one role must be selected."
+        },
+        "summary": {
+          "title": "Review and confirm role grant",
+          "description": "Verify the details of your role grant before proceeding.",
+          "grant-title": "Grant Role",
+          "grant-description": "Granting role operation details",
+          "asset-label": "Asset",
+          "admin-address-label": "Admin Address",
+          "roles-label": "Roles"
+        }
+      },
+      "create-form": {
+        "trigger-label": "Create Stablecoin",
+        "title": "Create Stablecoin",
+        "description": "Create a stablecoin",
+        "button-label": "Create",
+        "success": "Stablecoin {name}created successfully",
+        "basics": {
+          "title": "Basic Information",
+          "description": "Configure the basic properties of your asset.",
+          "name-label": "Name",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "SAFU",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "private-token-label": "Private Token",
+          "private-token-description": "Other organisations won't see this asset"
+        },
+        "configuration": {
+          "title": "Configuration",
+          "description": "Set parameters specific to your asset.",
+          "collateral-proof-validity-label": "Collateral Proof Validity",
+          "collateral-proof-validity-description": "The time in seconds that a collateral proof is valid for."
+        },
+        "summary": {
+          "title": "Review and confirm update proven collateral",
+          "description": "Verify the details of your update proven collateral before proceeding.",
+          "asset-basics-title": "Asset Basics",
+          "asset-basics-description": "Basic asset information and settings.",
+          "configuration-title": "Configuration",
+          "configuration-description": "Asset supply and additional settings.",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "private-label": "Private",
+          "yes": "Yes",
+          "no": "No",
+          "collateral-proof-validity-label": "Collateral Proof Validity",
+          "seconds": "seconds"
+        }
+      },
+      "table": {
+        "page-title": "Stable Coins",
+        "page-description": "View and manage your stable coins.",
+        "address-header": "Address",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Total Supply",
+        "committed-collateral-header": "Committed collateral",
+        "status-header": "Status",
+        "private-header": "Private",
+        "actions-header": "Actions",
+        "paused-status": "Paused",
+        "active-status": "Active",
+        "private-status": "Private",
+        "public-status": "Public"
+      }
+    }
+  },
+  "errors": {
+    "formError": "An error occurred while processing your request. Please try again later.",
+    "unknown": "An unexpected error occurred. Please try again.",
+    "validation": "The form contains invalid data. Please check your inputs.",
+    "network": "Network error. Please check your connection and try again.",
+    "permission": "You don't have permission to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "timeout": "The request timed out. Please try again.",
+    "server": "Server error. Our team has been notified.",
+    "unauthorized": "You need to be logged in to perform this action.",
+    "forbidden": "You don't have enough permissions to perform this action.",
+    "conflict": "This operation conflicts with the current state. Please refresh and try again.",
+    "invalidInput": "One or more input fields contain invalid data.",
+    "insufficientFunds": "Insufficient funds to complete this transaction.",
+    "TransactionError": "Transaction failed: {message}",
+    "ChallengeError": "Authentication failed: {message}",
+    "transaction": {
+      "failed": "Transaction failed: {reason}",
+      "reverted": "Transaction was reverted: {reason}",
+      "rejected": "Transaction was rejected: {reason}",
+      "invalidNonce": "Invalid transaction sequence. Please try again."
+    }
+  },
+  "transactions": {
+    "sending": "Sending transaction {hash}",
+    "success": "Transaction successfully included in block {blockNumber}"
+  }
+}

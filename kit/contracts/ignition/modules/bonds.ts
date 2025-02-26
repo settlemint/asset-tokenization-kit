@@ -1,10 +1,10 @@
-import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
-import { keccak256, toUtf8Bytes } from 'ethers';
-import BondFactoryModule from './bond-factory';
-import FixedYieldFactoryModule from './fixed-yield-factory';
-import StableCoinFactoryModule from './stable-coin-factory';
+import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { keccak256, toUtf8Bytes } from "ethers";
+import BondFactoryModule from "./bond-factory";
+import FixedYieldFactoryModule from "./fixed-yield-factory";
+import StableCoinFactoryModule from "./stable-coin-factory";
 
-const BondsModule = buildModule('BondsModule', (m) => {
+const BondsModule = buildModule("BondsModule", (m) => {
   // Get the deployer address which will be the owner
   const deployer = m.getAccount(0);
 
@@ -14,16 +14,28 @@ const BondsModule = buildModule('BondsModule', (m) => {
 
   // Create StableCoin using the factory
   const collateralLivenessSeconds = 7 * 24 * 60 * 60; // 1 week in seconds
-  const createStableCoin = m.call(stableCoinFactory, 'create', ['USD Coin', 'USDC', 6, '', collateralLivenessSeconds], {
-    id: 'createStableCoin',
-    from: deployer,
-  });
+  const createStableCoin = m.call(
+    stableCoinFactory,
+    "create",
+    ["USD Coin", "USDC", 6, "", collateralLivenessSeconds],
+    {
+      id: "createStableCoin",
+      from: deployer,
+    },
+  );
 
   // Get the StableCoin address from the creation event
-  const readStableCoinAddress = m.readEventArgument(createStableCoin, 'StableCoinCreated', 'token', {
-    id: 'readStableCoinAddress',
+  const readStableCoinAddress = m.readEventArgument(
+    createStableCoin,
+    "StableCoinCreated",
+    "token",
+    {
+      id: "readStableCoinAddress",
+    },
+  );
+  const stableCoin = m.contractAt("StableCoin", readStableCoinAddress, {
+    id: "stableCoin",
   });
-  const stableCoin = m.contractAt('StableCoin', readStableCoinAddress, { id: 'stableCoin' });
 
   const oneYearFromNow = Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60;
   const faceValue = 100_000_000; // 100 USDC (with 6 decimals)
@@ -32,27 +44,32 @@ const BondsModule = buildModule('BondsModule', (m) => {
   // Create bond using the deployed StableCoin
   const createBondUSTB = m.call(
     bondFactory,
-    'create',
+    "create",
     [
-      'US Treasury Bond',
-      'USTB',
+      "US Treasury Bond",
+      "USTB",
       2,
-      'US0378331005',
+      "US0378331005",
       maxSupply * 10 ** 2, // Cap is in bond units (2 decimals)
       oneYearFromNow,
       faceValue,
       stableCoin,
     ],
     {
-      id: 'createBondUSTB',
+      id: "createBondUSTB",
       from: deployer,
-    }
+    },
   );
 
-  const readBondUSTBAddress = m.readEventArgument(createBondUSTB, 'BondCreated', 'token', {
-    id: 'readBondUSTBAddress',
-  });
-  const ustb = m.contractAt('Bond', readBondUSTBAddress, { id: 'bondUSTB' });
+  const readBondUSTBAddress = m.readEventArgument(
+    createBondUSTB,
+    "BondCreated",
+    "token",
+    {
+      id: "readBondUSTBAddress",
+    },
+  );
+  const ustb = m.contractAt("Bond", readBondUSTBAddress, { id: "bondUSTB" });
 
   // Create fixed yield schedule for the bond
   const startDate = Math.floor(Date.now() / 1000) + 24 * 60 * 60; // Start tomorrow
@@ -62,33 +79,46 @@ const BondsModule = buildModule('BondsModule', (m) => {
   // Create the yield schedule
   const createYieldSchedule = m.call(
     fixedYieldFactory,
-    'create',
+    "create",
     [ustb, startDate, oneYearFromNow, yieldRate, yieldInterval],
     {
-      id: 'createYieldSchedule',
+      id: "createYieldSchedule",
       from: deployer,
-    }
+    },
   );
 
-  const readYieldScheduleAddress = m.readEventArgument(createYieldSchedule, 'FixedYieldCreated', 'schedule', {
-    id: 'readYieldScheduleAddress',
+  const readYieldScheduleAddress = m.readEventArgument(
+    createYieldSchedule,
+    "FixedYieldCreated",
+    "schedule",
+    {
+      id: "readYieldScheduleAddress",
+    },
+  );
+  const yieldSchedule = m.contractAt("FixedYield", readYieldScheduleAddress, {
+    id: "yieldSchedule",
   });
-  const yieldSchedule = m.contractAt('FixedYield', readYieldScheduleAddress, { id: 'yieldSchedule' });
 
   // Set up roles for the bond
-  const supplyManagementRole = keccak256(toUtf8Bytes('SUPPLY_MANAGEMENT_ROLE'));
-  const userManagementRole = keccak256(toUtf8Bytes('USER_MANAGEMENT_ROLE'));
+  const supplyManagementRole = keccak256(toUtf8Bytes("SUPPLY_MANAGEMENT_ROLE"));
+  const userManagementRole = keccak256(toUtf8Bytes("USER_MANAGEMENT_ROLE"));
 
   // Grant roles to the deployer
-  m.call(ustb, 'grantRole', [supplyManagementRole, deployer], { id: 'grantSupplyRole' });
-  m.call(ustb, 'grantRole', [userManagementRole, deployer], { id: 'grantUserRole' });
+  m.call(ustb, "grantRole", [supplyManagementRole, deployer], {
+    id: "grantSupplyRole",
+  });
+  m.call(ustb, "grantRole", [userManagementRole, deployer], {
+    id: "grantUserRole",
+  });
 
   // Mint and burn some tokens
   const mintAmount = 500 * 10 ** 2; // 500 bonds with 2 decimals
   const burnAmount = 100 * 10 ** 2; // 100 bonds with 2 decimals
 
-  const mintBonds = m.call(ustb, 'mint', [deployer, mintAmount], { id: 'mintBonds' });
-  m.call(ustb, 'burn', [burnAmount], { id: 'burnBonds', after: [mintBonds] });
+  const mintBonds = m.call(ustb, "mint", [deployer, mintAmount], {
+    id: "mintBonds",
+  });
+  m.call(ustb, "burn", [burnAmount], { id: "burnBonds", after: [mintBonds] });
 
   return { ustb, stableCoin, yieldSchedule };
 });

@@ -3,17 +3,20 @@
 import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/ui/evm-address-balances';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
+import type { NormalizedEventsListItem } from '@/lib/queries/asset-events/asset-events-fragments';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
 import type { Address } from 'viem';
-import type { NormalizedEventsListItem } from '../asset-events-fragments';
-import { EventDetailSheet } from '../details/detail-sheet';
+import { EventDetailSheet } from '../detail-sheet';
+
 const columnHelper = createColumnHelper<NormalizedEventsListItem>();
 
 export const columns = [
   columnHelper.accessor('timestamp', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Timestamp</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Timestamp</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => (
       <DataTableColumnCell>
         <span className="[&:first-letter]:uppercase">{getValue()}</span>
@@ -22,7 +25,9 @@ export const columns = [
     enableColumnFilter: false,
   }),
   columnHelper.accessor('asset', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Asset</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Asset</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => {
       const asset = getValue();
 
@@ -37,12 +42,18 @@ export const columns = [
     enableColumnFilter: true,
   }),
   columnHelper.accessor('event', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Event</DataTableColumnHeader>,
-    cell: ({ getValue }) => <DataTableColumnCell>{getValue()}</DataTableColumnCell>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Event</DataTableColumnHeader>
+    ),
+    cell: ({ getValue }) => (
+      <DataTableColumnCell>{getValue()}</DataTableColumnCell>
+    ),
     enableColumnFilter: true,
   }),
   columnHelper.accessor('sender', {
-    header: ({ column }) => <DataTableColumnHeader column={column}>Sender</DataTableColumnHeader>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column}>Sender</DataTableColumnHeader>
+    ),
     cell: ({ getValue }) => {
       const senderId = getValue();
 

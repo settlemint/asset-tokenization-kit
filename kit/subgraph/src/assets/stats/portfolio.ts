@@ -18,11 +18,15 @@
  *
  */
 
-import { BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { PortfolioStatsData } from '../../../generated/schema';
+import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { PortfolioStatsData } from "../../../generated/schema";
 
-export function newPortfolioStatsData(account: Bytes, asset: Bytes, assetType: string): PortfolioStatsData {
-  const portfolioStats = new PortfolioStatsData('auto');
+export function newPortfolioStatsData(
+  account: Bytes,
+  asset: Bytes,
+  assetType: string,
+): PortfolioStatsData {
+  const portfolioStats = new PortfolioStatsData("auto");
 
   // Filters
   portfolioStats.account = account;

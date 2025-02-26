@@ -18,7 +18,10 @@ interface LogoProps {
   variant?: 'horizontal' | 'vertical' | 'icon';
 }
 
-export function Logo({ className = '', variant = 'horizontal' }: PropsWithChildren<LogoProps>) {
+export function Logo({
+  className = '',
+  variant = 'horizontal',
+}: PropsWithChildren<LogoProps>) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -46,7 +49,12 @@ export function Logo({ className = '', variant = 'horizontal' }: PropsWithChildr
 
   return (
     <div className={cn('relative', className)}>
-      <Image src={getLogoSrc()} alt="SettleMint" className="h-full w-full" priority />
+      <Image
+        src={getLogoSrc()}
+        alt="SettleMint"
+        className="h-full w-full"
+        priority
+      />
     </div>
   );
 }

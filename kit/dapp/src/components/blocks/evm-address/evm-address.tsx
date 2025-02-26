@@ -1,19 +1,26 @@
 'use client';
-'use no memo'; // fixes rerendering with react compiler
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';
 import { CopyToClipboard } from '@/components/ui/copy';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useQueryKeys } from '@/hooks/use-query-keys';
+import { Link } from '@/i18n/routing';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
-import { shortHex } from '@/lib/hex';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphClientStarterkits, theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import Link from 'next/link';
-import { type FC, type PropsWithChildren, Suspense } from 'react';
+import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
+import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
+import { shortHex } from '@/lib/utils/hex';
+import {
+  type FC,
+  memo,
+  type PropsWithChildren,
+  Suspense,
+  useMemo,
+} from 'react';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
 
@@ -33,35 +40,8 @@ interface EvmAddressProps extends PropsWithChildren {
   copyToClipboard?: boolean;
 }
 
-interface User {
-  name: string;
-  image: string | null;
-  email: string;
-}
-
-interface Asset {
-  name: string;
-  symbol: string;
-}
-
-const EvmAddressUser = hasuraGraphql(`
-  query EvmAddressUser($id: String!) {
-    user(where: { wallet: { _eq: $id } }) {
-      name
-      image
-      email
-    }
-  }
-`);
-
-const EvmAddressAsset = theGraphGraphqlStarterkits(`
-  query EvmAddressAsset($id: ID = "") {
-    asset(id: $id) {
-      name
-      symbol
-    }
-  }
-`);
+// Memoized AddressAvatar to prevent unnecessary re-renders
+const MemoizedAddressAvatar = memo(AddressAvatar);
 
 /**
  * Renders an EVM address with a hover card displaying additional information.
@@ -82,106 +62,130 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
-  if (!address) {
-    return null;
-  }
+  const checksumAddress = useMemo(() => getAddress(address), [address]);
 
-  const checksumAddress = getAddress(address);
-
-  const { keys } = useQueryKeys();
-  const { data: user } = useSuspenseQuery<User | null>({
-    queryKey: keys.user.profile({ address: checksumAddress }),
-    queryFn: async () => {
-      const result = await hasuraClient.request(EvmAddressUser, {
-        id: checksumAddress,
-      });
-      return result.user[0] ?? null;
-    },
+  const userLookup = useOptionalUserDetail({
+    id: checksumAddress,
+  });
+  const assetLookup = useOptionalAssetDetail({
+    address: checksumAddress,
   });
 
-  const { data: asset } = useSuspenseQuery<Asset | null>({
-    queryKey: keys.asset.detail({ address: checksumAddress }),
-    queryFn: async () => {
-      try {
-        const result = await theGraphClientStarterkits.request(EvmAddressAsset, {
-          id: checksumAddress,
-        });
-        return result.asset ?? null;
-      } catch {
-        return null;
-      }
-    },
-  });
+  const displayName = useMemo(
+    () =>
+      prettyNames
+        ? (name ?? assetLookup?.data?.name ?? userLookup?.data?.name)
+        : undefined,
+    [prettyNames, name, assetLookup?.data?.name, userLookup?.data?.name]
+  );
 
-  const displayName = prettyNames ? (name ?? asset?.name ?? user?.name) : undefined;
-  const displayEmail = prettyNames ? user?.email : undefined;
-  const explorerLink = getBlockExplorerAddressUrl(checksumAddress, explorerUrl);
+  const displayEmail = useMemo(
+    () => (prettyNames ? userLookup?.data?.email : undefined),
+    [prettyNames, userLookup?.data?.email]
+  );
 
-  const MainView: FC = () => {
-    return (
-      <div className="flex items-center space-x-2">
-        <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-          <AddressAvatar address={checksumAddress} variant={iconSize} imageUrl={user?.image} email={displayEmail} />
-        </Suspense>
-        {!displayName && <span className="font-mono">{shortHex(checksumAddress, { prefixLength, suffixLength })}</span>}
-        {displayName && (
-          <span>
-            {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol}) </span>}
-            {verbose && (
-              <Badge variant="secondary" className="font-mono">
-                {shortHex(checksumAddress, { prefixLength, suffixLength })}
-              </Badge>
-            )}
-          </span>
-        )}
-        {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
-      </div>
-    );
-  };
+  const explorerLink = useMemo(
+    () => getBlockExplorerAddressUrl(checksumAddress, explorerUrl),
+    [checksumAddress, explorerUrl]
+  );
+
+  // Memoized shortened address
+  const shortAddress = useMemo(
+    () => shortHex(checksumAddress, { prefixLength, suffixLength }),
+    [checksumAddress, prefixLength, suffixLength]
+  );
+
+  // Memoized MainView component
+  const MainView = useMemo(() => {
+    const Component: FC = () => {
+      return (
+        <div className="flex items-center space-x-2">
+          <MemoizedAddressAvatar
+            address={checksumAddress}
+            size={iconSize}
+            email={displayEmail}
+          />
+          {!displayName && <span className="font-mono">{shortAddress}</span>}
+          {displayName && (
+            <span>
+              {displayName}{' '}
+              {symbol && (
+                <span className="text-muted-foreground text-xs">
+                  ({symbol}){' '}
+                </span>
+              )}
+              {verbose && (
+                <Badge variant="secondary" className="font-mono">
+                  {shortAddress}
+                </Badge>
+              )}
+            </span>
+          )}
+          {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
+        </div>
+      );
+    };
+    return memo(Component);
+  }, [
+    checksumAddress,
+    iconSize,
+    displayEmail,
+    displayName,
+    shortAddress,
+    symbol,
+    verbose,
+    copyToClipboard,
+  ]);
 
   if (!hoverCard) {
     return <MainView />;
   }
 
   return (
-    <HoverCard>
-      <HoverCardTrigger>
-        <MainView />
-      </HoverCardTrigger>
-      <HoverCardContent className="w-120">
-        <div className="flex items-start">
-          <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
-            <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
-              <AddressAvatar
-                address={checksumAddress}
-                imageUrl={user?.image}
-                email={displayEmail}
-                className="row-span-2"
-              />
-            </Suspense>
-            <div className="flex flex-col">
-              <span className="font-mono">{checksumAddress}</span>
-              {displayName && (
-                <span className="text-sm">
-                  {displayName} {symbol && <span className="text-muted-foreground text-xs">({symbol})</span>}
-                </span>
-              )}
-              {explorerLink && (
-                <Link
-                  prefetch={false}
-                  href={explorerLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="truncate text-primary text-xs hover:underline"
-                >
-                  View on the explorer
-                </Link>
-              )}
-            </div>
-          </h4>
-        </div>
-        {children}
-      </HoverCardContent>
-    </HoverCard>
+    <div className="flex items-center">
+      <HoverCard>
+        <HoverCardTrigger>
+          <MainView />
+        </HoverCardTrigger>
+        <HoverCardContent className="w-120">
+          <div className="flex items-start">
+            <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
+              <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+                <MemoizedAddressAvatar
+                  address={checksumAddress}
+                  email={displayEmail}
+                  className="row-span-2"
+                />
+              </Suspense>
+              <div className="flex flex-col">
+                <span className="font-mono">{checksumAddress}</span>
+                {displayName && (
+                  <span className="text-sm">
+                    {displayName}{' '}
+                    {symbol && (
+                      <span className="text-muted-foreground text-xs">
+                        ({symbol})
+                      </span>
+                    )}
+                  </span>
+                )}
+                {explorerLink && (
+                  <Link
+                    prefetch={false}
+                    href={explorerLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate text-primary text-xs hover:underline"
+                  >
+                    View on the explorer
+                  </Link>
+                )}
+              </div>
+            </h4>
+          </div>
+          {children}
+        </HoverCardContent>
+      </HoverCard>
+    </div>
   );
 }

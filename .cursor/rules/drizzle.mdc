@@ -1,0 +1,9 @@
+---
+description: Best practices for database operations with Drizzle ORM
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use `drizzle-orm` for type-safe database queries.
+- Implement migrations using `drizzle-kit migrate`.
+- Utilize `drizzle-kit pull` to sync your schema with the database.
+- Leverage `drizzle-kit generate` for generating type-safe query builders.

@@ -1,27 +1,27 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
   "emmet.showExpandedAbbreviation": "never",
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
+  "eslint.workingDirectories": [{ "mode": "auto" }],
   "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[solidity]": {
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
@@ -53,7 +53,6 @@
   "githubPullRequests.defaultMergeMethod": "squash",
   "githubPullRequests.notifications": "pullRequests",
   "githubPullRequests.quickDiff": true,
-  "sherlock.userId": "2e2829ed-26e5-4fb5-87e9-3d921da61e9f",
   "trailing-spaces.trimOnSave": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
@@ -81,5 +80,18 @@
   },
   "[mdx]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "eslint.codeActionsOnSave.mode": "all",
+  "eslint.lintTask.enable": true,
+  "eslint.run": "onType",
+  "i18n-ally.extract.autoDetect": true,
+  "i18n-ally.namespace": true,
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.localesPaths": ["kit/dapp/messages"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.enabledFrameworks": ["next-intl"],
+  "i18n-ally.pathMatcher": "{locale}.json",
+  "i18n-ally.defaultNamespace": "",
+  "i18n-ally.translate.engines": ["openai", "google"]
 }

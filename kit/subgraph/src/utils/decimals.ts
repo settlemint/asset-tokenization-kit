@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 
 export function toDecimals(value: BigInt, decimals: number): BigDecimal {
   const precision = BigInt.fromI32(10)

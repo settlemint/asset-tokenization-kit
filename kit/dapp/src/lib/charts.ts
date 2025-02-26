@@ -12,8 +12,7 @@ import {
   subMonths,
   subWeeks,
 } from 'date-fns';
-import { getDateFromTimestamp } from './date';
-import { pluralize } from './pluralize';
+import { getDateFromTimestamp } from './utils/date';
 
 export type TimeGranularity = 'hour' | 'day' | 'month';
 export type IntervalType = 'month' | 'week' | 'day';
@@ -50,25 +49,47 @@ type TimeSeriesResult<T> = {
  */
 export function createTimeSeries<T extends DataPoint>(
   data: T[],
-  valueKeys: Array<keyof T>,
+  valueKeys: (keyof T)[],
   options: TimeSeriesOptions
 ): TimeSeriesResult<Pick<T, keyof T>>[] {
-  const { granularity, intervalType, intervalLength, accumulation, aggregation = 'first', historical } = options;
+  const {
+    granularity,
+    intervalType,
+    intervalLength,
+    accumulation,
+    aggregation = 'first',
+    historical,
+  } = options;
 
   // Generate ticks based on granularity
-  const interval: Interval = getInterval(granularity, intervalType, intervalLength);
-  const ticks = granularity === 'hour' ? eachHourOfInterval(interval) : eachDayOfInterval(interval);
+  const interval: Interval = getInterval(
+    granularity,
+    intervalType,
+    intervalLength
+  );
+  const ticks =
+    granularity === 'hour'
+      ? eachHourOfInterval(interval)
+      : eachDayOfInterval(interval);
 
   // Initialize last valid values for each key
   const lastValidValues = new Map<keyof T, number>();
   for (const key of valueKeys) {
-    const initialValue = historical ? findClosestHistoricalValue(data, key, interval.start) : 0;
+    const initialValue = historical
+      ? findClosestHistoricalValue(data, key, interval.start)
+      : 0;
     lastValidValues.set(key, initialValue);
   }
 
   return ticks.map((tick) => {
-    const matchingDataForTick = data.filter((d) => isInTick(tick, d.timestamp, granularity));
-    const aggregatedData = aggregateData(matchingDataForTick, valueKeys, aggregation);
+    const matchingDataForTick = data.filter((d) =>
+      isInTick(tick, d.timestamp, granularity)
+    );
+    const aggregatedData = aggregateData(
+      matchingDataForTick,
+      valueKeys,
+      aggregation
+    );
 
     const result = {
       timestamp: formatDate(tick, granularity),
@@ -97,7 +118,8 @@ export function getInterval(
   const now = new Date();
 
   // First round the current time based on granularity
-  const roundedNow = granularity === 'hour' ? startOfHour(now) : startOfDay(now);
+  const roundedNow =
+    granularity === 'hour' ? startOfHour(now) : startOfDay(now);
 
   let start: Date;
   switch (intervalType) {
@@ -111,13 +133,17 @@ export function getInterval(
       start = subDays(roundedNow, intervalLength);
       break;
     default:
-      throw new Error(`Invalid interval type: ${intervalType}`);
+      throw new Error(`Invalid interval type`);
   }
 
   return { start, end: roundedNow };
 }
 
-function isInTick(tick: Date, timestamp: number | string | Date, granularity: TimeGranularity): boolean {
+function isInTick(
+  tick: Date,
+  timestamp: number | string | Date,
+  granularity: TimeGranularity
+): boolean {
   const timestampDate = getDateFromTimestamp(timestamp);
   switch (granularity) {
     case 'hour':
@@ -128,7 +154,7 @@ function isInTick(tick: Date, timestamp: number | string | Date, granularity: Ti
       return isSameDay(timestampDate, tick);
     default: {
       const _exhaustiveCheck: never = granularity;
-      throw new Error(`Invalid granularity: ${_exhaustiveCheck}`);
+      throw new Error('Invalid granularity');
     }
   }
 }
@@ -137,13 +163,16 @@ function formatDate(date: Date, granularity: TimeGranularity): string {
   return format(date, granularity === 'hour' ? 'HH:mm, MMM d' : 'EEE, MMM d'); // Eg. Tue, Feb 12
 }
 
-export function formatInterval(intervalLength: number, intervalType: IntervalType): string {
-  return `${intervalLength} ${pluralize(intervalLength, intervalType)}`;
+export function formatInterval(
+  intervalLength: number,
+  intervalType: IntervalType
+): string {
+  return `${intervalLength} ${intervalType}${intervalLength > 1 ? 's' : ''}`;
 }
 
 function aggregateData<T extends DataPoint>(
   matchingData: T[],
-  valueKeys: Array<keyof T>,
+  valueKeys: (keyof T)[],
   aggregation: AggregationType
 ): Record<keyof T, unknown> | null {
   switch (aggregation) {
@@ -168,7 +197,7 @@ function aggregateData<T extends DataPoint>(
       return matchingData.length > 0 ? matchingData[0] : null;
     default: {
       const _exhaustiveCheck: never = aggregation;
-      throw new Error(`Unsupported aggregation type: ${_exhaustiveCheck}`);
+      throw new Error('Unsupported aggregation type');
     }
   }
 }
@@ -193,7 +222,11 @@ function processTimeSeriesValue(
   }
 }
 
-function updateLastValidValue(lastValidValues: Map<unknown, number>, key: unknown, value: unknown): void {
+function updateLastValidValue(
+  lastValidValues: Map<unknown, number>,
+  key: unknown,
+  value: unknown
+): void {
   if (value) {
     lastValidValues.set(key, Number(value));
   }
@@ -210,7 +243,11 @@ function findClosestHistoricalValue<T extends DataPoint>(
   const startDate = getDateFromTimestamp(start);
   const closestPoint = data
     .filter((d) => getDateFromTimestamp(d.timestamp) <= startDate)
-    .sort((a, b) => getDateFromTimestamp(b.timestamp).getTime() - getDateFromTimestamp(a.timestamp).getTime())[0];
+    .sort(
+      (a, b) =>
+        getDateFromTimestamp(b.timestamp).getTime() -
+        getDateFromTimestamp(a.timestamp).getTime()
+    )[0];
 
   return closestPoint ? Number(closestPoint[key]) : 0;
 }

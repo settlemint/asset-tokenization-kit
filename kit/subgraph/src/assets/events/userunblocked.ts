@@ -1,13 +1,13 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts';
-import { UserUnblockedEvent } from '../../../generated/schema';
-import { EventName } from '../../utils/enums';
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { UserUnblockedEvent } from "../../../generated/schema";
+import { EventName } from "../../utils/enums";
 
 export function userUnblockedEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
-  user: Bytes
+  user: Bytes,
 ): UserUnblockedEvent {
   const event = new UserUnblockedEvent(id);
   event.eventName = EventName.UserUnblocked;

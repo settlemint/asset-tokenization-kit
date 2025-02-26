@@ -1,4 +1,4 @@
-import { AssetCount } from '../../../generated/schema';
+import { AssetCount } from "../../../generated/schema";
 
 export const fetchAssetCount = (assetType: string): AssetCount => {
   let assetCount = AssetCount.load(assetType);

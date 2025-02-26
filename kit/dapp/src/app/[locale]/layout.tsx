@@ -1,0 +1,70 @@
+import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
+import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
+import { routing } from '@/i18n/routing';
+import { themeConfig } from '@/lib/config/theme';
+import { cn } from '@/lib/utils';
+import '@fontsource/figtree/300.css';
+import '@fontsource/figtree/400.css';
+import '@fontsource/figtree/700.css';
+import '@fontsource/figtree/900.css';
+import type { Viewport } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { Toaster } from 'sonner';
+import '../globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+};
+
+export default async function RootLayout({
+  children,
+  params,
+}: Readonly<{
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
+  const { locale } = await params;
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+
+  return (
+    <html lang={locale} suppressHydrationWarning>
+      <body className={cn('min-h-screen font-sans antialiased')}>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider
+            attribute="class"
+            enableColorScheme
+            enableSystem
+            value={{
+              light:
+                themeConfig.variant === 'settlemint'
+                  ? 'settlemint-light'
+                  : 'light',
+              dark:
+                themeConfig.variant === 'settlemint'
+                  ? 'settlemint-dark'
+                  : 'dark',
+            }}
+          >
+            <QueryClientProvider>{children}</QueryClientProvider>
+          </ThemeProvider>
+          <Toaster richColors />
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}

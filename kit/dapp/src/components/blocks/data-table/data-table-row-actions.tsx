@@ -1,11 +1,15 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 
 const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
@@ -19,7 +23,7 @@ const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
   },
 });
 
-interface DataTableColumnCellRenderProps {
+export interface DataTableColumnCellRenderProps {
   close: () => void;
 }
 
@@ -27,7 +31,10 @@ interface DataTableColumnCellProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'>,
     VariantProps<typeof dataTableRowActionsVariants> {
   detailUrl?: string;
-  children?: ReactNode | undefined | ((renderProps: DataTableColumnCellRenderProps) => ReactNode);
+  children?:
+    | ReactNode
+    | undefined
+    | ((renderProps: DataTableColumnCellRenderProps) => ReactNode);
 }
 
 export function DataTableRowActions({
@@ -44,7 +51,13 @@ export function DataTableRowActions({
   }
 
   return (
-    <div className={cn(dataTableRowActionsVariants({ variant, className }), className)} {...props}>
+    <div
+      className={cn(
+        dataTableRowActionsVariants({ variant, className }),
+        className
+      )}
+      {...props}
+    >
       {detailUrl && (
         <Button
           variant="outline"
@@ -68,8 +81,13 @@ export function DataTableRowActions({
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px] dark:bg-theme-accent-background ">
-            {typeof children === 'function' ? children({ close: () => setIsOpen(false) }) : children}
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] dark:bg-theme-accent-background "
+          >
+            {typeof children === 'function'
+              ? children({ close: () => setIsOpen(false) })
+              : children}
           </DropdownMenuContent>
         </DropdownMenu>
       )}

@@ -1,13 +1,8 @@
 ---
 description: General rules
-globs: *
+globs: 
+alwaysApply: true
 ---
 # General Rules
 
-- we ONLY use Bun, NEVER suggest commands with npm, npx, yarn, pnpm, or anything else.
-  - bun add
-  - bunx
-  - bun run
-
-- always fix all linter warnings too, not only errors. We have a ZERO WARNING policy.
-  - we especially require block statements, even for simple if and switch statements
+- When debugging a problem, reflect on 5-7 different possible sources of the problem, distill those down to 1-2 most likely sources, and then add logs to validate your assumptions before we move onto implementing the actual code fix

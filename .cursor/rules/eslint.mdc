@@ -1,0 +1,12 @@
+---
+description: Best practices for configuring and using ESLint
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Configure ESLint to use the recommended rules as a starting point
+- Extend your configuration with plugins relevant to your tech stack (e.g., @typescript-eslint/eslint-plugin for TypeScript)
+- Use .eslintignore to exclude files or directories that don't need linting
+- Implement a pre-commit hook to run ESLint before committing code
+- Regularly update ESLint and its plugins to benefit from the latest rules and improvements
+- ALWAYS fix all linter warnings too, not only errors. We have a ZERO WARNING policy.
+  - we especially require block statements, even for simple if and switch statements

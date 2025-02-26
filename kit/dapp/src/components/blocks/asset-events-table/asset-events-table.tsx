@@ -1,37 +1,33 @@
-import { getQueryClient, queryKeys } from '@/lib/react-query';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
-import { AssetTableSkeleton } from '../asset-table/asset-table-skeleton';
-import { AssetEventsTableClient } from './asset-events-table-client';
-import { type EventsListVariables, getEventsList } from './asset-events-table-data';
+'use client';
 
-export type AssetEventsTableProps = {
-  variables?: EventsListVariables;
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { useAssetEventsList } from '@/lib/queries/asset-events/asset-events-list';
+import type { Address } from 'viem';
+import { columns, icons } from './table/columns';
+
+interface AssetEventsTableProps {
+  asset?: Address;
+  sender?: Address;
   disableToolbarAndPagination?: boolean;
-};
+  limit?: number;
+}
 
-/**
- * Server component that renders a table of assets with data fetching capabilities
- * @template Asset The type of asset data being displayed
- */
-export async function AssetEventsTable({ variables, disableToolbarAndPagination }: AssetEventsTableProps) {
-  const queryClient = getQueryClient();
-  const queryKey = queryKeys.asset.events(variables?.asset);
-
-  await queryClient.prefetchQuery({
-    queryKey,
-    queryFn: () => getEventsList(variables),
-  });
+export function AssetEventsTable({
+  asset,
+  sender,
+  disableToolbarAndPagination = false,
+  limit,
+}: AssetEventsTableProps) {
+  const { data: events } = useAssetEventsList({ asset, sender, limit });
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<AssetTableSkeleton columns={4} />}>
-        <AssetEventsTableClient
-          queryKey={queryKey}
-          variables={variables}
-          disableToolbarAndPagination={disableToolbarAndPagination}
-        />
-      </Suspense>
-    </HydrationBoundary>
+    <DataTable
+      columns={columns}
+      data={events}
+      icons={icons ?? {}}
+      name={'Events'}
+      toolbar={{ enableToolbar: !disableToolbarAndPagination }}
+      pagination={{ enablePagination: !disableToolbarAndPagination }}
+    />
   );
 }

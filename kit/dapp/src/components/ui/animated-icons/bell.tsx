@@ -54,7 +54,7 @@ const BellIcon = forwardRef<BellIconHandle, HTMLAttributes<HTMLDivElement>>(
     return (
       <div
         className={cn(
-          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
+          'cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center',
           className
         )}
         onMouseEnter={handleMouseEnter}

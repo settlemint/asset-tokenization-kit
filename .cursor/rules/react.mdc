@@ -1,0 +1,9 @@
+---
+description: Best practices for React development
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- Use functional components with hooks instead of class components.
+- Implement proper state management using `useState` and `useReducer`.
+- Utilize `useCallback` and `useMemo` for performance optimization.
+- Implement error boundaries with `react-error-boundary`.

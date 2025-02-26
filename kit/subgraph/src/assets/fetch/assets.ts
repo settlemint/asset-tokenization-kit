@@ -1,12 +1,12 @@
-import { AssetActivityData } from '../../../generated/schema';
+import { AssetActivityData } from "../../../generated/schema";
 
 export function fetchAssetActivity(assetType: string): AssetActivityData {
   let assetActivity = AssetActivityData.load(assetType);
   if (!assetActivity) {
     assetActivity = new AssetActivityData(assetType);
-    
+
     assetActivity.assetType = assetType;
-    
+
     assetActivity.transferEventCount = 0;
     assetActivity.mintEventCount = 0;
     assetActivity.burnEventCount = 0;
@@ -14,6 +14,6 @@ export function fetchAssetActivity(assetType: string): AssetActivityData {
     assetActivity.unfrozenEventCount = 0;
     assetActivity.save();
   }
-  
+
   return assetActivity;
 }

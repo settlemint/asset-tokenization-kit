@@ -1,19 +1,19 @@
 // These need to match the keys of the assetConfig object in the dapp
 export class AssetType {
-  static bond: string = 'bond';
-  static equity: string = 'equity';
-  static stablecoin: string = 'stablecoin';
-  static cryptocurrency: string = 'cryptocurrency';
-  static fund: string = 'fund';
+  static bond: string = "bond";
+  static equity: string = "equity";
+  static stablecoin: string = "stablecoin";
+  static cryptocurrency: string = "cryptocurrency";
+  static fund: string = "fund";
 }
 
 export class FactoryType {
-  static bond: string = 'bond';
-  static equity: string = 'equity';
-  static stablecoin: string = 'stablecoin';
-  static cryptocurrency: string = 'cryptocurrency';
-  static fund: string = 'fund';
-  static fixedyield: string = 'fixedyield';
+  static bond: string = "bond";
+  static equity: string = "equity";
+  static stablecoin: string = "stablecoin";
+  static cryptocurrency: string = "cryptocurrency";
+  static fund: string = "fund";
+  static fixedyield: string = "fixedyield";
 }
 
 export class EventName {
@@ -36,7 +36,7 @@ export class EventName {
   static BondRedeemed: string = "Bond Redeemed";
   // Fixed yield specific events
   static YieldClaimed: string = "Yield Claimed";
-    static FixedYieldCreated: string = "Fixed Yield Created";
+  static FixedYieldCreated: string = "Fixed Yield Created";
   // Fund specific events
   static ManagementFeeCollected: string = "Management Fee Collected";
   static PerformanceFeeCollected: string = "Performance Fee Collected";
