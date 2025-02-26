@@ -9,6 +9,7 @@ import {
   type SunIconHandle,
 } from '@/components/ui/animated-icons/sun';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useRef } from 'react';
 
