@@ -5,7 +5,10 @@
 // import { CreateEquityForm } from "@/app/(private)/admin/equities/_components/create-form/form";
 // import { CreateFundForm } from "@/app/(private)/admin/funds/_components/create-form/form";
 
-import { FrameIcon } from '@/components/ui/animated-icons/frame';
+import {
+  FrameIcon,
+  type FrameIconHandle,
+} from '@/components/ui/animated-icons/frame';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,7 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
 import { assetConfig } from '@/lib/config/assets';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CreateStablecoinForm } from '../../stablecoins/_components/create-form/form';
 
 export function DesignerButton() {
@@ -23,22 +26,29 @@ export function DesignerButton() {
   const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(
     null
   );
+  const frameIconRef = useRef<FrameIconHandle>(null);
 
   return (
     <SidebarGroup className="-mb-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           {state === 'expanded' ? (
-            <Button className="mb-4 flex w-full items-center gap-2 text-sidebar-accent dark:text-sidebar-accent-foreground">
-              <FrameIcon className="size-4" />
+            <Button
+              className="mb-4 flex w-full items-center gap-2 text-sidebar-accent dark:text-sidebar-accent-foreground"
+              onMouseEnter={() => frameIconRef.current?.startAnimation()}
+              onMouseLeave={() => frameIconRef.current?.stopAnimation()}
+            >
+              <FrameIcon ref={frameIconRef} className="size-4" />
               {state === 'expanded' && <span>Asset Designer</span>}
             </Button>
           ) : (
             <button
               type="button"
               className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:bg-theme-sidebar-accent"
+              onMouseEnter={() => frameIconRef.current?.startAnimation()}
+              onMouseLeave={() => frameIconRef.current?.stopAnimation()}
             >
-              <FrameIcon className="size-4" />
+              <FrameIcon ref={frameIconRef} className="size-4" />
             </button>
           )}
         </DropdownMenuTrigger>
