@@ -5,9 +5,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
 import { Logo } from '../blocks/logo/logo';
 
 export function NavHeader() {
