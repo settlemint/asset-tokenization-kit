@@ -27,7 +27,7 @@ export class PortfolioPage extends BasePage {
     }
   }
 
-  async transferAsset(options: { assetName: string; walletAddress: string; transferAmount: string; pincode: string }) {
+  async transferAsset(options: { assetName: string; user: string; transferAmount: string; pincode: string }) {
     await this.page.getByRole('link', { name: 'My Assets' }).click();
     await this.page.waitForURL('**/portfolio/my-assets');
     await this.page.locator('table').waitFor({ state: 'visible' });
@@ -36,13 +36,15 @@ export class PortfolioPage extends BasePage {
     });
     await row.locator('a', { hasText: 'Details' }).click();
     await this.page.waitForURL(ASSET_DETAILS_URL_PATTERN);
-    await this.page.getByRole('button', { name: 'Transfer' }).click();
+    await this.page.getByRole('button', { name: 'Manage' }).click();
     const menu = this.page.getByRole('menu');
     await menu.waitFor({ state: 'visible' });
-    const transferButton = menu.locator('button').filter({ hasText: /^Transfer$/ });
-    await transferButton.waitFor({ state: 'visible' });
-    await transferButton.click();
-    await this.page.getByLabel('Wallet Address').fill(options.walletAddress);
+    const approveTokensButton = menu.locator('button').filter({ hasText: /^Approve tokens$/ });
+    await approveTokensButton.waitFor({ state: 'visible' });
+    await approveTokensButton.click();
+    await this.page.getByPlaceholder('Search for a user').click();
+    await this.page.getByPlaceholder('Search for a user...').fill(options.user);
+    await this.page.getByRole('option', { name: `Avatar ${options.user}` }).click();
     await this.page.getByRole('button', { name: 'Next' }).click();
     await this.page.getByLabel('Amount').fill(options.transferAmount);
     await this.page.getByRole('button', { name: 'Next' }).click();

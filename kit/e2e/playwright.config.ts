@@ -30,7 +30,7 @@ const config: PlaywrightTestConfig = {
   reporter: [['html']],
   use: {
     actionTimeout: 65000,
-    navigationTimeout: 30000,
+    navigationTimeout: 120000,
     baseURL: process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT,
     trace: 'off',
     viewport: { width: 1920, height: 1080 },

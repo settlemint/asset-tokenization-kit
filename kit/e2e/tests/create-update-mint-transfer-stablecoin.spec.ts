@@ -8,12 +8,13 @@ import {
 } from '../test-data/asset-data';
 import { assetMessage, stableCoinMintTokenMessage, stableCoinTransferMessage } from '../test-data/success-msg-data';
 import { adminUser, signUpTransferUserData, signUpUserData } from '../test-data/user-data';
-import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
+import { ensureUserIsAdmin } from '../utils/db-utils';
 
 const testData = {
   userName: '',
   transferUserEmail: '',
-  transferUserWalletAddress: '',
+  // transferUserWalletAddress: '',
+  transferUserName: '',
   stablecoinName: '',
 };
 
@@ -37,9 +38,10 @@ test.describe('Update collateral, mint and transfer assets', () => {
       await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
+      testData.transferUserName = signUpTransferUserData.name;
 
-      const transferUserWalletAddress = await fetchWalletAddressFromDB(signUpTransferUserData.email);
-      testData.transferUserWalletAddress = transferUserWalletAddress;
+      // const transferUserWalletAddress = await fetchWalletAddressFromDB(signUpTransferUserData.email);
+      // testData.transferUserWalletAddress = transferUserWalletAddress;
     } catch (error) {
       if (userContext) {
         await userContext.close();
@@ -101,7 +103,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
     });
     await userPages.portfolioPage.transferAsset({
       assetName: testData.stablecoinName,
-      walletAddress: testData.transferUserWalletAddress,
+      user: testData.transferUserName,
       ...stableCoinTransferData,
     });
     await userPages.adminPage.verifySuccessMessage(stableCoinTransferMessage.successMessage);
