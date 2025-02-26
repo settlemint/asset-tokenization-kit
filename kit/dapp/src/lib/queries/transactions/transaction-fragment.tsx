@@ -17,7 +17,6 @@ export const TransactionFragment = portalGraphql(`
 /**
  * Zod schema for validating transaction data
  *
- * @property {string} from - The sender address of the transaction
  */
 export const TransactionFragmentSchema = z.object({
   from: z.address(),

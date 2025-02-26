@@ -36,8 +36,6 @@ query AssetStats($asset: String!, $timestamp_gte: Timestamp!, $first: Int, $skip
 /**
  * Props interface for asset stats components
  *
- * @property {Address} address - The blockchain address of the asset contract
- * @property {number} [days] - Number of days to look back for statistics (default: 1)
  */
 export interface AssetStatsProps {
   /** Ethereum address of the asset contract */
@@ -49,8 +47,7 @@ export interface AssetStatsProps {
 /**
  * Fetches and processes asset statistics data from The Graph
  *
- * @param {AssetStatsProps} params - Object containing the asset address and time range
- * @returns {Promise<Array<ProcessedAssetStats>>} Array of processed asset statistics
+ * @param params - Object containing the asset address and time range
  *
  * @remarks
  * This function calculates the start date based on the days parameter,
@@ -94,8 +91,7 @@ async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
 /**
  * Creates a memoized query key for asset stats queries
  *
- * @param {AssetStatsProps} params - Object containing the asset address and time range
- * @returns {readonly [string, string, string, number|undefined]} The query key tuple
+ * @param params - Object containing the asset address and time range
  */
 const getQueryKey = ({ address, days }: AssetStatsProps) =>
   ['asset', 'stats', getAddress(address), days] as const;
@@ -103,8 +99,7 @@ const getQueryKey = ({ address, days }: AssetStatsProps) =>
 /**
  * React Query hook for fetching asset statistics
  *
- * @param {AssetStatsProps} params - Object containing the asset address and time range
- * @returns {Object} Query result with asset statistics and query key
+ * @param params - Object containing the asset address and time range
  *
  * @example
  * ```tsx

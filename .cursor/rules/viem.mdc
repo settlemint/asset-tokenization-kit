@@ -1,6 +1,6 @@
 ---
 description: Best practices for using Viem
-globs: **/*.{js,ts}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 Read the docs: https://viem.sh/docs/getting-started

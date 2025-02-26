@@ -21,10 +21,6 @@ export const AssetEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating base asset event data
  *
- * @property {string} id - Unique identifier for the event
- * @property {Object} emitter - The contract that emitted the event
- * @property {string} eventName - The name of the event
- * @property {number} timestamp - When the event occurred
  */
 export const AssetEventFragmentSchema = z.object({
   id: z.string(),
@@ -50,8 +46,6 @@ export const AssetCreatedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating asset creation events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that created the asset
  */
 export const AssetCreatedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('AssetCreatedEvent'),
@@ -82,11 +76,6 @@ export const ApprovalEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating approval events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that sent the transaction
- * @property {Object} owner - The account that owns the tokens
- * @property {Object} spender - The account approved to spend tokens
- * @property {bigint} value - The amount approved to spend
  */
 export const ApprovalEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('ApprovalEvent'),
@@ -117,8 +106,6 @@ export const BondMaturedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating bond matured events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that triggered the maturity
  */
 export const BondMaturedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('BondMaturedEvent'),
@@ -147,11 +134,6 @@ export const BondRedeemedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating bond redemption events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that sent the transaction
- * @property {bigint} bondAmount - The amount of bonds redeemed
- * @property {Object} holder - The account that held the bonds
- * @property {bigint} underlyingAmount - The amount of underlying assets received
  */
 export const BondRedeemedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('BondRedeemedEvent'),
@@ -184,10 +166,6 @@ export const BurnEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating burn events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that sent the transaction
- * @property {Object} from - The account whose tokens were burned
- * @property {bigint} value - The amount of tokens burned
  */
 export const BurnEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('BurnEvent'),
@@ -217,10 +195,6 @@ export const CollateralUpdatedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating collateral update events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that updated the collateral
- * @property {bigint} newAmount - The new collateral amount
- * @property {bigint} oldAmount - The previous collateral amount
  */
 export const CollateralUpdatedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -248,9 +222,6 @@ export const ManagementFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating management fee collection events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that collected the fee
- * @property {bigint} amount - The amount of fees collected
  */
 export const ManagementFeeCollectedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -280,10 +251,6 @@ export const MintEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating mint events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that sent the transaction
- * @property {Object} to - The recipient of the minted tokens
- * @property {bigint} value - The amount of tokens minted
  */
 export const MintEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('MintEvent'),
@@ -311,8 +278,6 @@ export const PausedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating paused events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that paused the contract
  */
 export const PausedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('PausedEvent'),
@@ -337,9 +302,6 @@ export const PerformanceFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating performance fee collection events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that collected the fee
- * @property {bigint} amount - The amount of fees collected
  */
 export const PerformanceFeeCollectedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -368,11 +330,6 @@ export const RoleAdminChangedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating role admin change events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that changed the role admin
- * @property {string} newAdminRole - The new admin role
- * @property {string} previousAdminRole - The previous admin role
- * @property {string} role - The role being modified
  */
 export const RoleAdminChangedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -404,10 +361,6 @@ export const RoleGrantedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating role granted events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that granted the role
- * @property {string} role - The role that was granted
- * @property {Object} account - The account that received the role
  */
 export const RoleGrantedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('RoleGrantedEvent'),
@@ -439,10 +392,6 @@ export const RoleRevokedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating role revoked events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that revoked the role
- * @property {Object} account - The account that lost the role
- * @property {string} role - The role that was revoked
  */
 export const RoleRevokedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('RoleRevokedEvent'),
@@ -479,11 +428,6 @@ export const TokenWithdrawnEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating token withdrawal events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that initiated the withdrawal
- * @property {bigint} amount - The amount of tokens withdrawn
- * @property {Object} to - The recipient of the withdrawn tokens
- * @property {Object} token - Information about the token that was withdrawn
  */
 export const TokenWithdrawnEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -521,10 +465,6 @@ export const TokensFrozenEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating token freezing events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that froze the tokens
- * @property {bigint} amount - The amount of tokens frozen
- * @property {Object} user - The account whose tokens were frozen
  */
 export const TokensFrozenEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('TokensFrozenEvent'),
@@ -559,11 +499,6 @@ export const TransferEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating transfer events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} to - The recipient of the tokens
- * @property {Object} sender - The account that sent the transaction
- * @property {Object} from - The sender of the tokens
- * @property {bigint} value - The amount of tokens transferred
  */
 export const TransferEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('TransferEvent'),
@@ -594,8 +529,6 @@ export const UnpausedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating unpaused events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that unpaused the contract
  */
 export const UnpausedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('UnpausedEvent'),
@@ -622,9 +555,6 @@ export const UserBlockedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating user blocked events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that blocked the user
- * @property {Object} user - The account that was blocked
  */
 export const UserBlockedEventFragmentSchema = AssetEventFragmentSchema.extend({
   __typename: z.literal('UserBlockedEvent'),
@@ -654,9 +584,6 @@ export const UserUnblockedEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating user unblocked events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that unblocked the user
- * @property {Object} user - The account that was unblocked
  */
 export const UserUnblockedEventFragmentSchema = AssetEventFragmentSchema.extend(
   {
@@ -685,8 +612,6 @@ export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating underlying asset top-up events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that topped up the underlying asset
  */
 export const UnderlyingAssetTopUpEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -712,8 +637,6 @@ export const UnderlyingAssetWithdrawnEventFragment =
 /**
  * Zod schema for validating underlying asset withdrawal events
  *
- * @property {string} __typename - Type discriminator for the event
- * @property {Object} sender - The account that withdrew the underlying asset
  */
 export const UnderlyingAssetWithdrawnEventFragmentSchema =
   AssetEventFragmentSchema.extend({
@@ -804,12 +727,6 @@ export type AssetEvent =
 /**
  * Interface for normalized asset event list items
  *
- * @property {string} event - The name of the event
- * @property {string} timestamp - When the event occurred
- * @property {string} asset - The address of the asset contract
- * @property {string} sender - The address of the transaction sender
- * @property {AssetEvent} details - The detailed event data
- * @property {string} transactionHash - The hash of the transaction
  */
 export interface NormalizedEventsListItem {
   event: string;

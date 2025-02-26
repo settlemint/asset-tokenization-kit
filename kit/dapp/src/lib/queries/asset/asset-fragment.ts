@@ -17,8 +17,6 @@ export const PermissionFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating permission data
  *
- * @property {string} id - The account address
- * @property {number} lastActivity - Timestamp of the account's last activity
  */
 export const PermissionFragmentSchema = z.object({
   id: z.address(),
@@ -60,13 +58,6 @@ export const AssetFragment = theGraphGraphqlStarterkits(
 /**
  * Zod schema for validating asset data
  *
- * @property {string} id - The asset contract address
- * @property {string} name - The name of the asset
- * @property {string} symbol - The symbol of the asset
- * @property {string} type - The type of the asset
- * @property {Array<Permission>} admins - List of admin accounts
- * @property {Array<Permission>} supplyManagers - List of supply manager accounts
- * @property {Array<Permission>} userManagers - List of user manager accounts
  */
 export const AssetFragmentSchema = z.object({
   id: z.address(),

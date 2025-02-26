@@ -47,7 +47,7 @@ export interface PermissionWithRoles extends Permission {
  * Fetches and processes asset data with permission information
  *
  * @param params - Object containing the asset address
- * @returns Processed asset data with consolidated role information
+ *
  * @throws Error if fetching or parsing fails
  */
 async function getAssetDetail({ address }: AssetDetailProps) {
@@ -124,7 +124,6 @@ async function getAssetDetail({ address }: AssetDetailProps) {
  * Generates a consistent query key for asset detail queries
  *
  * @param params - Object containing the asset address
- * @returns Array representing the query key for React Query
  */
 const getQueryKey = ({ address }: AssetDetailProps) =>
   ['asset', getAddress(address)] as const;
@@ -133,7 +132,6 @@ const getQueryKey = ({ address }: AssetDetailProps) =>
  * React Query hook for fetching asset details
  *
  * @param params - Object containing the asset address
- * @returns Query result with asset data and query key
  */
 export function useAssetDetail({ address }: AssetDetailProps) {
   const queryKey = getQueryKey({ address });
@@ -154,7 +152,6 @@ export function useAssetDetail({ address }: AssetDetailProps) {
  * Returns null instead of throwing if the asset cannot be found
  *
  * @param params - Object containing the asset address
- * @returns Query result with asset data or null if not found
  */
 export function useOptionalAssetDetail({ address }: AssetDetailProps) {
   try {

@@ -1,6 +1,6 @@
 ---
 description: Best practices for Next.js applications and routing
-globs: kit/dapp/**/*.{ts,tsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use the App Router for better performance and improved data fetching.

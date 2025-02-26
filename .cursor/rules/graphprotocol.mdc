@@ -1,9 +1,0 @@
----
-description: Best practices for writing subgraph mappings with graph-ts
-globs: kit/subgraph/**/*.ts
-alwaysApply: false
----
-- Use `BigInt` for numeric values to avoid precision issues
-- Implement proper error handling and logging in mappings
-- Utilize `graph-ts` utility functions for common operations
-- Keep mappings focused on data transformation, not business logic

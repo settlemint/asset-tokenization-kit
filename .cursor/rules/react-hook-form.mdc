@@ -1,6 +1,6 @@
 ---
 description: Best practices for form handling with React Hook Form
-globs: kit/dapp/**/*.{ts,tsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use `useForm` hook for form state management.

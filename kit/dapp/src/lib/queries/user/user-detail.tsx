@@ -22,7 +22,6 @@ const UserDetail = hasuraGraphql(
 /**
  * Props interface for user detail components
  *
- * @property {string} id - The unique identifier of the user to fetch
  */
 export interface UserDetailProps {
   /** User ID */
@@ -32,8 +31,7 @@ export interface UserDetailProps {
 /**
  * Fetches and processes user data from the database
  *
- * @param {UserDetailProps} params - Object containing the user ID
- * @returns {Promise<User>} The validated user data
+ * @param params - Object containing the user ID
  * @throws {Error} If the user is not found or if fetching/parsing fails
  *
  * @remarks
@@ -64,16 +62,14 @@ async function getUserDetail({ id }: UserDetailProps) {
 /**
  * Creates a memoized query key for user detail queries
  *
- * @param {UserDetailProps} params - Object containing the user ID
- * @returns {readonly [string, string]} The query key tuple
+ * @param params - Object containing the user ID
  */
 const getQueryKey = ({ id }: UserDetailProps) => ['user', id] as const;
 
 /**
  * React Query hook for fetching user details
  *
- * @param {UserDetailProps} params - Object containing the user ID
- * @returns {Object} Query result with user data and query key
+ * @param params - Object containing the user ID
  *
  * @example
  * ```tsx
@@ -97,8 +93,7 @@ export function useUserDetail({ id }: UserDetailProps) {
 /**
  * React Query hook for optionally fetching user details
  *
- * @param {UserDetailProps} params - Object containing the user ID
- * @returns {Object|null} Query result with user data or null if not found
+ * @param params - Object containing the user ID
  *
  * @remarks
  * Returns null instead of throwing if the user cannot be found

@@ -1,6 +1,6 @@
 ---
 description: 
-globs: kit/contracts/**/*.{sol,toml}
+globs: *.sol
 alwaysApply: false
 ---
 - Use Foundry's fuzz testing for comprehensive test coverage

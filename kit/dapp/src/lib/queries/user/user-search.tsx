@@ -32,7 +32,6 @@ const UserSearch = hasuraGraphql(
 /**
  * Props interface for user search components
  *
- * @property {Address} address - The search term to look for in user name, wallet address, or email
  */
 export interface UserSearchProps {
   /** Address, name or email to search for */
@@ -42,8 +41,7 @@ export interface UserSearchProps {
 /**
  * Searches for users by address, name, or email
  *
- * @param {UserSearchProps} params - Object containing the search string
- * @returns {Promise<Array<User>>} Array of matching users, validated with Zod
+ * @param params - Object containing the search string
  *
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
@@ -75,8 +73,7 @@ async function getUserSearch({ searchTerm }: UserSearchProps) {
 /**
  * Creates a memoized query key for user search queries
  *
- * @param {UserSearchProps} params - Object containing the search string
- * @returns {readonly [string, string, string]} The query key tuple
+ * @param params - Object containing the search string
  */
 const getQueryKey = ({ searchTerm }: UserSearchProps) =>
   ['user', 'search', searchTerm ? searchTerm : 'none'] as const;
@@ -84,8 +81,7 @@ const getQueryKey = ({ searchTerm }: UserSearchProps) =>
 /**
  * React Query hook for searching users
  *
- * @param {UserSearchProps} params - Object containing the search string
- * @returns {Object} Query result with matching users and query key
+ * @param params - Object containing the search string
  *
  * @example
  * ```tsx

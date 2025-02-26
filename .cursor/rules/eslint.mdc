@@ -1,6 +1,6 @@
 ---
 description: Best practices for configuring and using ESLint
-globs: kit/dapp/**/*.{ts,tsx,js,jsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Configure ESLint to use the recommended rules as a starting point

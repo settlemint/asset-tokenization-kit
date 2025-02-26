@@ -28,15 +28,6 @@ export const AssetBalanceFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating asset balance data
  *
- * @property {boolean} blocked - Whether the account is blocked from using this asset
- * @property {boolean} frozen - Whether the balance is frozen
- * @property {bigint} value - The balance amount
- * @property {Object} account - Information about the account
- * @property {string} account.id - The account address
- * @property {number} account.lastActivity - Timestamp of the account's last activity
- * @property {Object} asset - Information about the asset
- * @property {string} asset.symbol - The asset's symbol
- * @property {number} asset.decimals - The number of decimals for the asset
  */
 export const AssetBalanceFragmentSchema = z.object({
   blocked: z.boolean(),

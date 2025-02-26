@@ -25,9 +25,6 @@ const PendingTransactions = portalGraphql(
 
 /**
  * Props interface for pending transactions queries
- *
- * @property {Address} [address] - Optional wallet address to filter transactions
- * @property {number} [pollInterval] - Polling interval in milliseconds for real-time updates
  */
 export interface PendingTransactionsProps {
   address?: Address;
@@ -38,8 +35,7 @@ export interface PendingTransactionsProps {
 /**
  * Fetches the count of pending transactions for a specific address
  *
- * @param {PendingTransactionsProps} props - Props containing the address to query
- * @returns {Promise<number>} The count of pending transactions
+ * @param props - Props containing the address to query
  *
  * @remarks
  * Returns 0 if no address is provided or if an error occurs during the query
@@ -66,8 +62,7 @@ export async function getPendingTransactions({
 /**
  * Creates a memoized query key for pending transactions queries
  *
- * @param {PendingTransactionsProps} props - Props containing the address to query
- * @returns {readonly [string, string, string]} The query key tuple
+ * @param props - Props containing the address to query
  */
 const getQueryKey = ({ address }: PendingTransactionsProps) =>
   [
@@ -79,8 +74,7 @@ const getQueryKey = ({ address }: PendingTransactionsProps) =>
 /**
  * React Query hook for fetching pending transactions count
  *
- * @param {PendingTransactionsProps} props - Props containing the address and poll interval
- * @returns {Object} Query result with pending transactions count and query key
+ * @param props - Props containing the address and poll interval
  *
  * @example
  * ```tsx
@@ -92,7 +86,7 @@ const getQueryKey = ({ address }: PendingTransactionsProps) =>
  */
 export function usePendingTransactions({
   address,
-  pollInterval = 5000, // Default 5 seconds for pending transactions
+  pollInterval,
 }: PendingTransactionsProps) {
   const queryKey = getQueryKey({ address });
 

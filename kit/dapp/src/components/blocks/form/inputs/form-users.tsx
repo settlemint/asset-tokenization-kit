@@ -21,7 +21,6 @@ import {
 import { useDebounce } from '@/hooks/use-debounce';
 import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
-import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { CommandEmpty, CommandLoading, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
@@ -120,7 +119,7 @@ function FormUsersList({
   const search = (useCommandState((state) => state.search) || '') as string;
   const debounced = useDebounce<string>(search, 250);
   const { data: users, isLoading } = useUserSearch({
-    address: sanitizeSearchTerm(debounced) as Address,
+    searchTerm: debounced,
   });
 
   return (

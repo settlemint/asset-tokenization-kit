@@ -1,6 +1,6 @@
 ---
 description: Best practices for schema validation with Zod
-globs: kit/dapp/**/*.{ts,tsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use Zod for runtime type checking and validation.

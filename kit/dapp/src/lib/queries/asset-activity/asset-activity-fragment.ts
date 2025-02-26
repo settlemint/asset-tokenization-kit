@@ -22,13 +22,6 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating asset activity data
  *
- * @property {string} id - Unique identifier for the asset activity
- * @property {string} assetType - The type of asset (e.g., ERC20, ERC721)
- * @property {bigint} burnEventCount - Number of burn events for this asset
- * @property {bigint} mintEventCount - Number of mint events for this asset
- * @property {bigint} transferEventCount - Number of transfer events for this asset
- * @property {bigint} frozenEventCount - Number of token freezing events for this asset
- * @property {bigint} unfrozenEventCount - Number of token unfreezing events for this asset
  */
 export const AssetActivityFragmentSchema = z.object({
   id: z.string(),

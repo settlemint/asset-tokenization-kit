@@ -1,6 +1,6 @@
 ---
 description: Best practices for Solidity linting with Solhint
-globs: *kit/contracts/**/*.sol
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Configure Solhint to enforce gas optimization rules

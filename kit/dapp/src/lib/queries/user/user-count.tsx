@@ -56,7 +56,6 @@ const UserCount = hasuraGraphql(
 /**
  * Props interface for user count components
  *
- * @property {Date} since - The date from which to count users
  */
 export interface UserCountProps {
   /** Date to count users from */
@@ -66,8 +65,7 @@ export interface UserCountProps {
 /**
  * Fetches and processes user count data
  *
- * @param {UserCountProps} params - Object containing the date to count from
- * @returns {Promise<Array<UserCountEntry>>} Array of user count entries
+ * @param params - Object containing the date to count from
  *
  * @remarks
  * Each entry represents a single user with their creation timestamp
@@ -121,8 +119,7 @@ async function getUserCount({ since }: UserCountProps) {
 /**
  * Creates a memoized query key for user count queries
  *
- * @param {UserCountProps} params - Object containing the date to count from
- * @returns {readonly [string, string, string]} The query key tuple
+ * @param params - Object containing the date to count from
  */
 const getQueryKey = ({ since }: UserCountProps) =>
   ['user', 'count', since ? since.toISOString() : 'all-time'] as const;
@@ -130,8 +127,7 @@ const getQueryKey = ({ since }: UserCountProps) =>
 /**
  * React Query hook for fetching user count data
  *
- * @param {UserCountProps} params - Object containing the date to count from
- * @returns {Object} Query result with user count data and query key
+ * @param params - Object containing the date to count from
  *
  * @example
  * ```tsx

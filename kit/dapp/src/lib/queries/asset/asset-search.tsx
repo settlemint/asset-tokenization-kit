@@ -39,8 +39,7 @@ export interface AssetSearchProps {
 /**
  * Searches for assets by address, name, or symbol
  *
- * @param params - Object containing the search address
- * @returns Array of matching assets, validated with Zod
+ * @param params - Object containing the search term
  */
 async function getAssetSearch({ searchTerm }: AssetSearchProps) {
   if (!searchTerm) {
@@ -68,8 +67,7 @@ async function getAssetSearch({ searchTerm }: AssetSearchProps) {
 /**
  * Generates a consistent query key for asset search queries
  *
- * @param params - Object containing the search address
- * @returns Array representing the query key for React Query
+ * @param params - Object containing the search term
  */
 const getQueryKey = ({ searchTerm }: AssetSearchProps) =>
   ['asset', 'search', searchTerm ? searchTerm : 'none'] as const;
@@ -77,8 +75,7 @@ const getQueryKey = ({ searchTerm }: AssetSearchProps) =>
 /**
  * React Query hook for searching assets
  *
- * @param params - Object containing the search address
- * @returns Query result with matching assets and query key
+ * @param params - Object containing the search term
  */
 export function useAssetSearch({ searchTerm }: AssetSearchProps) {
   const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);

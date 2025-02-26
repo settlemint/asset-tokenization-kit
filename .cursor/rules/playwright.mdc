@@ -1,9 +1,0 @@
----
-description: Best practices for end-to-end testing with Playwright
-globs: kit/e2e/**/*.{ts,js}
-alwaysApply: false
----
-- Use `test.describe` to group related tests
-- Implement proper test isolation with `test.use`
-- Utilize `page.waitFor` for asynchronous operations
-- Leverage Playwright's built-in assertions for clarity

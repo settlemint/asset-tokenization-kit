@@ -1,6 +1,7 @@
 ---
 description: Rules for Solidity
 globs: *.sol
+alwaysApply: false
 ---
 # Solidity Best Practices (Hardhat Ignition + Foundry)
 

@@ -21,12 +21,6 @@ export const UserFragment = hasuraGraphql(`
 /**
  * Zod schema for validating user data
  *
- * @property {string} id - The unique identifier for the user
- * @property {string|null} name - The user's name (optional)
- * @property {string|null} email - The user's email address (optional)
- * @property {string|null} wallet - The user's wallet address (optional)
- * @property {number} created_at - Timestamp when the user was created
- * @property {number} updated_at - Timestamp when the user was last updated
  */
 export const UserFragmentSchema = z.object({
   id: z.string(),

@@ -25,16 +25,6 @@ export const AssetStatsFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating asset statistics data
  *
- * @property {bigint} totalBurned - Total amount of tokens that have been burned
- * @property {bigint} totalCollateral - Total collateral value backing the asset
- * @property {bigint} totalFrozen - Total amount of tokens currently frozen
- * @property {bigint} totalLocked - Total amount of tokens currently locked
- * @property {bigint} totalMinted - Total amount of tokens that have been minted
- * @property {bigint} totalSupply - Current total supply of the asset
- * @property {bigint} totalTransfers - Total number of transfer transactions
- * @property {bigint} totalUnfrozen - Total amount of tokens that have been unfrozen
- * @property {bigint} totalVolume - Total trading volume of the asset
- * @property {bigint} timestamp - Unix timestamp when these statistics were recorded
  */
 export const AssetStatsFragmentSchema = z.object({
   totalBurned: z.bigInt(),

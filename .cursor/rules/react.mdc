@@ -1,6 +1,6 @@
 ---
 description: Best practices for React development
-globs: kit/dapp/**/*.{ts,tsx,js,jsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use functional components with hooks instead of class components.

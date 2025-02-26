@@ -33,19 +33,6 @@ export const StableCoinFragment = theGraphGraphqlStarterkits(`
 /**
  * Zod schema for validating on-chain stablecoin data
  *
- * @property {string} id - The stablecoin contract address
- * @property {string} name - The name of the stablecoin
- * @property {string} symbol - The symbol of the stablecoin
- * @property {number} decimals - The number of decimal places for the stablecoin
- * @property {string} totalSupply - The formatted total supply of the stablecoin
- * @property {bigint} totalSupplyExact - The exact total supply in base units
- * @property {string} collateral - The formatted collateral amount
- * @property {string} [isin] - Optional International Securities Identification Number
- * @property {number} lastCollateralUpdate - Timestamp of the last collateral update
- * @property {number} liveness - Liveness status of the stablecoin
- * @property {boolean} paused - Whether the stablecoin is paused
- * @property {Object} creator - Information about the creator
- * @property {Array} holders - List of top holders by value
  */
 export const StableCoinFragmentSchema = z.object({
   id: z.address(),
@@ -90,8 +77,6 @@ export const OffchainStableCoinFragment = hasuraGraphql(`
 /**
  * Zod schema for validating off-chain stablecoin data
  *
- * @property {string} id - The stablecoin contract address
- * @property {boolean} private - Whether the stablecoin is private
  */
 export const OffchainStableCoinFragmentSchema = z.object({
   id: z.address(),

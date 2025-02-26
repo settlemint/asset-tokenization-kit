@@ -52,7 +52,6 @@ const OffchainStableCoinList = hasuraGraphql(
 /**
  * Options for fetching stablecoin list
  *
- * @property {number} [limit] - Optional limit to restrict total items fetched
  */
 export interface StableCoinListOptions {
   limit?: number; // Optional limit to restrict total items fetched
@@ -61,8 +60,7 @@ export interface StableCoinListOptions {
 /**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
  *
- * @param {StableCoinListOptions} options - Options for fetching stablecoin list
- * @returns {Promise<Array<StableCoin>>} Array of stablecoins with combined on-chain and off-chain data
+ * @param options - Options for fetching stablecoin list
  *
  * @remarks
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
@@ -144,8 +142,7 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
 /**
  * Creates a memoized query key for stablecoin list queries
  *
- * @param {StableCoinListOptions} [options] - Options for the stablecoin list query
- * @returns {readonly [string, string, number | undefined]} The query key tuple
+ * @param [options] - Options for the stablecoin list query
  */
 const getQueryKey = (options?: StableCoinListOptions) =>
   ['asset', assetConfig.stablecoin.queryKey, options?.limit] as const;
@@ -153,8 +150,7 @@ const getQueryKey = (options?: StableCoinListOptions) =>
 /**
  * React Query hook for fetching stablecoin list
  *
- * @param {StableCoinListOptions} [options] - Options for fetching stablecoin list
- * @returns {Object} Query result with stablecoin data, config, and query key
+ * @param [options] - Options for fetching stablecoin list
  *
  * @example
  * ```tsx

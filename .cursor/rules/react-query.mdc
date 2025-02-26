@@ -1,6 +1,6 @@
 ---
 description: Best practices for managing data with React Query
-globs: kit/dapp/**/*.{ts,tsx}
+globs: *.ts,*.tsx
 alwaysApply: false
 ---
 - Use `useSuspenseQuery` for fetching data and `useMutation` for data modifications.
