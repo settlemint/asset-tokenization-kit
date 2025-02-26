@@ -1,5 +1,7 @@
 'use client';
 
+import { MoonIcon } from '@/components/ui/animated-icons/moon';
+import { SunIcon } from '@/components/ui/animated-icons/sun';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useState } from 'react';

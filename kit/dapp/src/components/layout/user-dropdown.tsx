@@ -1,6 +1,7 @@
 'use client';
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { LanguageMenuItem } from '@/components/blocks/language/language-menu-item';
 import { ThemeMenuItem } from '@/components/blocks/theme/theme-menu-item';
 import {
   DropdownMenu,
@@ -16,10 +17,20 @@ import { authClient } from '@/lib/auth/client';
 import { usePendingTransactions } from '@/lib/queries/transactions/transactions-pending';
 import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
-import { BookOpenText, BringToFront, ChevronDown, LogOut } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '../blocks/user-context/user-context';
+import {
+  BookTextIcon,
+  type BookTextIconHandle,
+} from '../ui/animated-icons/book-text';
+import { LogoutIcon, type LogoutIconHandle } from '../ui/animated-icons/logout';
+import {
+  SquareStackIcon,
+  type SquareStackIconHandle,
+} from '../ui/animated-icons/square-stack';
 import { Badge } from '../ui/badge';
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
@@ -54,6 +65,11 @@ export function UserDropdown() {
 
   // Use client-side only rendering for user data to avoid hydration mismatches
   const [isClient, setIsClient] = useState(false);
+
+  // Create refs for each icon
+  const stackIconRef = useRef<SquareStackIconHandle>(null);
+  const bookIconRef = useRef<BookTextIconHandle>(null);
+  const logoutIconRef = useRef<LogoutIconHandle>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -133,8 +149,12 @@ export function UserDropdown() {
           sideOffset={4}
         >
           <DropdownMenuGroup>
-            <DropdownMenuItem className="dropdown-menu-item">
-              <BringToFront className="mr-2 size-4" />
+            <DropdownMenuItem
+              className="dropdown-menu-item"
+              onMouseEnter={() => stackIconRef.current?.startAnimation()}
+              onMouseLeave={() => stackIconRef.current?.stopAnimation()}
+            >
+              <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
                 {t('pending-transactions')}
                 {(pendingCount ?? 0) > 0 && (
@@ -148,8 +168,13 @@ export function UserDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <ThemeMenuItem />
-            <DropdownMenuItem className="dropdown-menu-item">
-              <BookOpenText className="mr-2 size-4" />
+            <LanguageMenuItem />
+            <DropdownMenuItem
+              className="dropdown-menu-item"
+              onMouseEnter={() => bookIconRef.current?.startAnimation()}
+              onMouseLeave={() => bookIconRef.current?.stopAnimation()}
+            >
+              <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
               <Link href="https://console.settlemint.com/documentation">
                 {t('documentation')}
               </Link>
@@ -159,8 +184,10 @@ export function UserDropdown() {
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
             className="dropdown-menu-item"
+            onMouseEnter={() => logoutIconRef.current?.startAnimation()}
+            onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >
-            <LogOut className="mr-2 size-4" />
+            <LogoutIcon ref={logoutIconRef} className="mr-2 size-4" />
             {t('logout')}
           </DropdownMenuItem>
         </DropdownMenuContent>
