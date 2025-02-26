@@ -1,5 +1,6 @@
 import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
+import { TransitionProvider } from '@/components/layout/transition-provider';
 import { routing } from '@/i18n/routing';
 import { themeConfig } from '@/lib/config/theme';
 import { cn } from '@/lib/utils';
@@ -60,7 +61,9 @@ export default async function RootLayout({
                   : 'dark',
             }}
           >
-            <QueryClientProvider>{children}</QueryClientProvider>
+            <QueryClientProvider>
+              <TransitionProvider>{children}</TransitionProvider>
+            </QueryClientProvider>
           </ThemeProvider>
           <Toaster richColors />
         </NextIntlClientProvider>

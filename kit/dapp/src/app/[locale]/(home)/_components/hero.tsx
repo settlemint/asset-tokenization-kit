@@ -1,4 +1,5 @@
 'use client';
+import { LanguageToggle } from '@/components/blocks/language/language-toggle';
 import { Logo } from '@/components/blocks/logo/logo';
 import { ThemeToggle } from '@/components/blocks/theme/theme-toggle';
 import { Button } from '@/components/ui/button';
@@ -173,6 +174,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
           <div className="z-10 mx-auto max-w-screen-xl gap-12 px-4 py-28 md:px-8 ">
             <div className="absolute top-8 left-8 flex items-center gap-3">
               <Logo className="w-48" />
+              <LanguageToggle size="icon" variant="outline" />
               <ThemeToggle />
             </div>
             <div className="absolute top-8 right-8 flex items-center gap-3">
