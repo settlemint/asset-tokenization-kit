@@ -27,7 +27,9 @@
       "outputs": ["dependencies/**"]
     },
     "format": {},
-    "lint": {},
+    "lint": {
+      "dependsOn": ["codegen"]
+    },
     "//#lint:biome": {
       "dependsOn": ["^codegen"]
     },
