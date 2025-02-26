@@ -15,8 +15,6 @@ export function UserContextProvider({ children }: { children: ReactNode }) {
   const { data: session, isPending } = authClient.useSession();
   const { locale } = useParams();
 
-  console.log('session', session);
-  console.log('isPending', isPending);
   // Show loading state while session is being fetched
   if (isPending) {
     return null;
