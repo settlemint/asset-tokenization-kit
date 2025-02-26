@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import {
@@ -61,13 +62,15 @@ export function FormSelect<T extends FieldValues>({
   label,
   description,
   required,
-  placeholder = 'Select an option',
+  placeholder,
   options,
   className,
   defaultValue,
   ...props
 }: FormSelectProps<T>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const t = useTranslations('components.form.select');
+  const defaultPlaceholder = t('default-placeholder');
 
   return (
     <FormField
@@ -111,7 +114,9 @@ export function FormSelect<T extends FieldValues>({
                   )}
                   {...ariaAttrs}
                 >
-                  <SelectValue placeholder={placeholder} />
+                  <SelectValue
+                    placeholder={placeholder || defaultPlaceholder}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
 import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { assetConfig } from '@/lib/config/assets';
 import { useAssetSearch } from '@/lib/queries/asset/asset-search';
 import { useUserSearch } from '@/lib/queries/user/user-search';
@@ -26,6 +27,7 @@ export const Search = () => {
     mode: 'all',
   });
 
+  const t = useTranslations('components.search');
   const searchIconRef = useRef<SearchIconHandle>(null);
 
   const search = useWatch({
@@ -69,7 +71,7 @@ export const Search = () => {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Search for assets or users..."
+                    placeholder={t('placeholder')}
                     {...field}
                     className={cn(
                       'flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:min-w-[450px]'
@@ -96,14 +98,14 @@ export const Search = () => {
             {(assets ?? []).length === 0 && users?.length === 0 && (
               <div className="py-6 text-center text-sm">
                 <p className="text-muted-foreground text-sm">
-                  No results found
+                  {t('no-results')}
                 </p>
               </div>
             )}
             {(assets ?? []).length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
-                  Assets
+                  {t('assets-section')}
                 </div>
                 {(assets ?? []).map((asset) => (
                   <div
@@ -134,7 +136,7 @@ export const Search = () => {
             {users && users.length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
-                  Users
+                  {t('users-section')}
                 </div>
                 {users.map((user) => (
                   <div

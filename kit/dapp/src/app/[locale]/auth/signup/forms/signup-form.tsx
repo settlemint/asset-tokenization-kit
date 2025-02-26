@@ -1,23 +1,17 @@
 'use client';
 
-import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
+import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { Link } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -62,6 +56,7 @@ export function SignUpForm({
   redirectUrl?: string;
   locale: string;
 }) {
+  const t = useTranslations('auth.signup');
   const decodedRedirectUrl = decodeURIComponent(redirectUrl);
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -133,112 +128,56 @@ export function SignUpForm({
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="font-bold text-2xl">Create an account</h1>
+          <h1 className="font-bold text-2xl">{t('title')}</h1>
           <p className="text-balance text-muted-foreground text-sm">
-            Enter the information below to create your account and managed
-            blockchain wallet
+            {t('description')}
           </p>
         </div>
         {form.formState.errors.root && (
           <Alert variant="destructive">
             <AlertDescription>
               {form.formState.errors.root.message?.toString() ||
-                'An error occurred'}
+                t('error.generic')}
             </AlertDescription>
           </Alert>
         )}
         <div className="grid gap-6">
-          <FormField
+          <FormInput
             control={form.control}
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Warren Buffett Jr."
-                    autoComplete="name"
-                    required
-                    minLength={1}
-                    maxLength={100}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label={t('name.label')}
+            placeholder={t('name.placeholder')}
+            autoComplete="name"
+            required
           />
-          <FormField
+          <FormInput
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="wolf@wallstreet.com"
-                    autoComplete="email"
-                    required
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label={t('email.label')}
+            type="email"
+            placeholder={t('email.placeholder')}
+            autoComplete="email"
+            required
           />
-          <FormField
+          <FormInput
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    minLength={6}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label={t('password.label')}
+            type="password"
+            autoComplete="new-password"
+            required
           />
-          <FormField
+          <FormOtp
             control={form.control}
             name="walletPincode"
-            render={({ field }) => (
-              <FormItem data-testid="wallet-pin-field">
-                <FormLabel>Choose a secure wallet PIN code</FormLabel>
-                <FormControl>
-                  <OTPInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    data-testid="wallet-pin-input"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label={t('wallet-pin.label')}
+            data-testid="wallet-pin-input"
           />
-          <FormField
+          <FormOtp
             control={form.control}
             name="walletPincodeConfirm"
-            render={({ field }) => (
-              <FormItem data-testid="wallet-pin-confirm-field">
-                <FormLabel>Confirm wallet PIN code</FormLabel>
-                <FormControl>
-                  <OTPInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    data-testid="wallet-pin-confirm-input"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label={t('wallet-pin-confirm.label')}
+            data-testid="wallet-pin-confirm-input"
           />
           <Button
             type="submit"
@@ -248,21 +187,21 @@ export function SignUpForm({
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 size={16} className="mr-2 animate-spin" />
-                Creating account...
+                {t('submitting')}
               </>
             ) : (
-              'Create account'
+              t('submit')
             )}
           </Button>
         </div>
         <div className="text-center text-sm">
-          Already have an account?{' '}
+          {t('have-account')}{' '}
           <Link
             locale={locale}
             href={`/auth/signin?rd=${decodedRedirectUrl}`}
             className="underline underline-offset-4"
           >
-            Sign in
+            {t('sign-in')}
           </Link>
         </div>
       </form>

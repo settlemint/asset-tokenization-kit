@@ -1,15 +1,6 @@
 import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
-import { getSessionCookie } from 'better-auth';
 import { default as createIntlMiddleware } from 'next-intl/middleware';
-import { type NextRequest, NextResponse } from 'next/server';
-import { match } from 'path-to-regexp';
-
-const isPrivateRoute = match([
-  ':locale/admin',
-  ':locale/admin/*path',
-  '/proxy',
-  '/proxy/*path',
-]);
+import type { NextRequest } from 'next/server';
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
@@ -19,18 +10,7 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: 'always',
 });
 
-function buildRedirectUrl(request: NextRequest, locale: string): URL {
-  const redirectUrl = new URL(`/${locale}/auth/signin`, request.url);
-  const returnPath = request.nextUrl.search
-    ? `${request.nextUrl.pathname}${request.nextUrl.search}`
-    : request.nextUrl.pathname;
-  redirectUrl.searchParams.set('rd', returnPath);
-  return redirectUrl;
-}
-
 export default function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
   // Handle proxy routes - proxyMiddleware already checks if the path matches
   // and returns NextResponse.next() if it's not a proxy route
   const proxyResponse = proxyMiddleware(request);
@@ -39,13 +19,6 @@ export default function middleware(request: NextRequest) {
   // NextResponse.next() should be ignored and allow the middleware to continue
   if (proxyResponse && proxyResponse.headers.get('x-middleware-rewrite')) {
     return proxyResponse;
-  }
-
-  // Check for authentication for private routes
-  const cookies = getSessionCookie(request);
-  if (isPrivateRoute(pathname) && !cookies) {
-    const [, locale] = request.nextUrl.pathname.split('/');
-    return NextResponse.redirect(buildRedirectUrl(request, locale));
   }
 
   // Finally, handle the internationalization routing

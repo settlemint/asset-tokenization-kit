@@ -3,6 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useState } from 'react';
@@ -24,6 +25,7 @@ export function Logo({
 }: PropsWithChildren<LogoProps>) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations('components.logo');
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +53,7 @@ export function Logo({
     <div className={cn('relative', className)}>
       <Image
         src={getLogoSrc()}
-        alt="SettleMint"
+        alt={t('alt-text')}
         className="h-full w-full"
         priority
       />

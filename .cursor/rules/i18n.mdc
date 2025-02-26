@@ -5,4 +5,7 @@ alwaysApply: false
 ---
 - we use next-intl as a translations system
 - do not use fallbacks, all keys need to be translated
-- use clear namespaces
+- use clear namespaces, kebab cases
+- use clear keys, also kebab case
+- do not translate props
+- use interpolation where possible

@@ -22,6 +22,12 @@ import {
 } from 'recharts';
 import type { AxisConfig, BarChartData, BarChartProps } from './types';
 
+interface VerticalBarChartProps<T extends BarChartData>
+  extends BarChartProps<T> {
+  yAxis: AxisConfig<T>;
+  valueKey: keyof T & string;
+}
+
 export function VerticalBarChartComponent<T extends BarChartData>({
   data,
   config,
@@ -29,7 +35,7 @@ export function VerticalBarChartComponent<T extends BarChartData>({
   description,
   yAxis,
   valueKey,
-}: BarChartProps<T> & { yAxis: AxisConfig<T>; valueKey: keyof T & string }) {
+}: VerticalBarChartProps<T>) {
   const { key, tickFormatter, tickMargin } = yAxis;
 
   return (

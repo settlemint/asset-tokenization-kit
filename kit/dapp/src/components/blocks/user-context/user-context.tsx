@@ -1,7 +1,9 @@
 'use client';
 
+import { redirect } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
 import type { User } from '@/lib/auth/types';
+import { useParams } from 'next/navigation';
 import { createContext, useContext, type ReactNode } from 'react';
 import type { Address, Prettify } from 'viem';
 
@@ -10,11 +12,23 @@ export const UserContext = createContext<Prettify<
 > | null>(null);
 
 export function UserContextProvider({ children }: { children: ReactNode }) {
-  const session = authClient.useSession();
-  if (!session.data?.user) {
+  const { data: session, isPending } = authClient.useSession();
+  const { locale } = useParams();
+
+  // Show loading state while session is being fetched
+  if (isPending) {
     return null;
   }
-  const user = session.data.user as Prettify<
+
+  // Redirect to sign in if no session is found
+  if (!session?.user) {
+    return redirect({
+      href: '/auth/signin',
+      locale: locale as string,
+    });
+  }
+
+  const user = session.user as Prettify<
     Omit<User, 'wallet'> & { wallet: Address }
   >;
 
