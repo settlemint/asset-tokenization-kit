@@ -9,24 +9,24 @@
         "isin": "ISIN",
         "decimals": "Dezimalstellen",
         "total-supply": "Gesamtangebot",
-        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "total-supply-info": "Die Gesamtmenge des Tokens",
         "ownership-concentration": "Eigentumskonzentration",
-        "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
-        "stablecoin-details-description": "Details für den Stablecoin",
+        "ownership-concentration-info": "Prozentsatz im Besitz der Top-5-Inhaber",
+        "stablecoin-details-description": "Details zum Stablecoin",
         "details-page-title": "{name} Details",
         "details-page-description": "Detaillierte Informationen über {name} Stablecoin"
       },
       "collateral": {
         "proven-collateral": "Nachgewiesene Sicherheiten",
-        "proven-collateral-info": "Die Menge an Sicherheiten, die nachweislich vom Token gehalten werden",
-        "required-collateral-threshold": "Erforderliche Sicherheitsschwelle",
+        "proven-collateral-info": "Die Menge an Sicherheiten, die nachweislich für den Token gehalten wird",
+        "required-collateral-threshold": "Erforderlicher Sicherheiten-Schwellenwert",
         "required-collateral-threshold-info": "Die Menge an Sicherheiten, die nachgewiesen werden muss",
-        "committed-collateral-ratio": "Verhältnis der hinterlegten Sicherheiten",
-        "committed-collateral-ratio-info": "Das Verhältnis der hinterlegten Sicherheiten zum Gesamtangebot des Tokens",
-        "collateral-proof-expiration": "Ablauf des Sicherheitsnachweises",
-        "collateral-proof-expiration-info": "Ab diesem Zeitpunkt ist der Sicherheitsnachweis ungültig",
-        "collateral-proof-validity": "Gültigkeit des Sicherheitsnachweises",
-        "collateral-proof-validity-info": "Wie lange der Sicherheitsnachweis gültig ist"
+        "committed-collateral-ratio": "Verpflichtetes Sicherheitenverhältnis",
+        "committed-collateral-ratio-info": "Das Verhältnis der verpflichteten Sicherheiten zur Gesamtversorgung des Tokens",
+        "collateral-proof-expiration": "Ablauf der Sicherheitenbestätigung",
+        "collateral-proof-expiration-info": "Ab diesem Zeitpunkt ist der Sicherheitenachweis ungültig",
+        "collateral-proof-validity": "Gültigkeit der Sicherheitenbestätigung",
+        "collateral-proof-validity-info": "Wie lange die Sicherheitenbestätigung gültig ist"
       },
       "tabs": {
         "details": "Details",
@@ -48,403 +48,34 @@
       "permissions": {
         "permissions-page-title": "{name} Berechtigungen",
         "permissions-page-description": "Berechtigungsverwaltung für {name} Stablecoin"
-      },
-      "pause-form": {
-        "pause": {
-          "trigger-label": "Pausieren",
-          "title": "Pausieren",
-          "description": "Einen Stablecoin pausieren",
-          "button-label": "Pausieren"
-        },
-        "unpause": {
-          "trigger-label": "Fortsetzen",
-          "title": "Fortsetzen",
-          "description": "Einen Stablecoin fortsetzen",
-          "button-label": "Fortsetzen"
-        },
-        "summary": {
-          "title": "Pausierungsvorgang überprüfen und bestätigen",
-          "description": "Überprüfen Sie die Details Ihres Pausierungsvorgangs, bevor Sie fortfahren.",
-          "pause-title": "Pausieren",
-          "pause-description": "Details zum Pausierungsvorgang",
-          "asset-label": "Asset",
-          "current-state-label": "Aktueller Status",
-          "target-state-label": "Zielstatus",
-          "state-paused": "Pausiert",
-          "state-active": "Aktiv"
-        }
-      },
-      "update-collateral-form": {
-        "trigger-label": "Sicherheiten aktualisieren",
-        "title": "Sicherheiten aktualisieren",
-        "description": "Die Sicherheiten für einen Stablecoin aktualisieren",
-        "button-label": "Sicherheiten aktualisieren",
-        "amount": {
-          "title": "Betrag eingeben",
-          "description": "Geben Sie den Betrag ein, auf den Sie die Sicherheiten aktualisieren möchten. Stellen Sie sicher, dass der Betrag größer oder gleich dem aktuellen Angebot ist.",
-          "amount-label": "Betrag"
-        },
-        "summary": {
-          "title": "Aktualisierung der nachgewiesenen Sicherheiten überprüfen und bestätigen",
-          "description": "Überprüfen Sie die Details Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
-          "update-title": "Sicherheiten aktualisieren",
-          "update-description": "Details zur Aktualisierung der Sicherheiten",
-          "asset-label": "Asset",
-          "amount-label": "Betrag"
-        }
-      },
-      "mint-form": {
-        "trigger-label": "Prägen",
-        "title": "Prägen",
-        "description": "Einen Stablecoin prägen",
-        "button-label": "Prägen",
-        "amount": {
-          "title": "Betrag eingeben",
-          "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
-          "amount-label": "Betrag",
-          "collateral-available": "Verfügbare Sicherheiten: {collateral}"
-        },
-        "summary": {
-          "title": "Prägung überprüfen und bestätigen",
-          "description": "Überprüfen Sie die Details Ihrer Prägung, bevor Sie fortfahren.",
-          "mint-title": "Prägen",
-          "mint-description": "Details zum Prägungsvorgang",
-          "asset-label": "Asset",
-          "amount-label": "Betrag"
-        }
-      },
-      "burn-form": {
-        "trigger-label": "Verbrennen",
-        "title": "Verbrennen",
-        "description": "Einen Stablecoin verbrennen",
-        "button-label": "Verbrennen",
-        "amount": {
-          "title": "Betrag eingeben",
-          "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
-          "amount-label": "Betrag",
-          "available-balance": "Verfügbares Guthaben: {balance}"
-        },
-        "summary": {
-          "title": "Überprüfen und Verbrennen bestätigen",
-          "description": "Überprüfen Sie die Details Ihres Verbrennungsvorgangs, bevor Sie fortfahren.",
-          "burn-title": "Verbrennen",
-          "burn-description": "Details zum Verbrennungsvorgang",
-          "asset-label": "Asset",
-          "amount-label": "Betrag"
-        }
-      },
-      "grant-role-form": {
-        "trigger-label": "Rolle zuweisen",
-        "title": "Rolle zuweisen",
-        "description": "Rollen an einen neuen Administrator zuweisen",
-        "button-label": "Rolle zuweisen",
-        "address": {
-          "title": "Neuen Administrator auswählen",
-          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse, oder geben Sie manuell eine Wallet-Adresse ein.",
-          "address-label": "Administrator-Wallet-Adresse",
-          "search-placeholder": "Nach einem Benutzer suchen",
-          "manual-placeholder": "0x0000000000000000000000000000000000000000",
-          "search-toggle": "Stattdessen nach einem Benutzer suchen...",
-          "manual-toggle": "Adresse manuell eingeben..."
-        },
-        "roles": {
-          "title": "Administrator-Rollen auswählen",
-          "description": "Wählen Sie die Rollen aus, die dem neuen Administrator zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
-        },
-        "summary": {
-          "title": "Rollenzuweisung überprüfen und bestätigen",
-          "description": "Überprüfen Sie die Details Ihrer Rollenzuweisung, bevor Sie fortfahren.",
-          "grant-title": "Rolle zuweisen",
-          "grant-description": "Details zur Rollenzuweisung",
-          "asset-label": "Asset",
-          "admin-address-label": "Administrator-Adresse",
-          "roles-label": "Rollen"
-        }
-      },
-      "table": {
-        "page-title": "Stablecoins",
-        "page-description": "Sehen und verwalten Sie Ihre Stablecoins.",
-        "address-header": "Adresse",
-        "name-header": "Name",
-        "symbol-header": "Symbol",
-        "total-supply-header": "Gesamtangebot",
-        "committed-collateral-header": "Hinterlegtes Sicherheiten",
-        "status-header": "Status",
-        "private-header": "Privat",
-        "actions-header": "Aktionen",
-        "paused-status": "Pausiert",
-        "active-status": "Aktiv",
-        "private-status": "Privat",
-        "public-status": "Öffentlich"
-      },
-      "create": {
-        "trigger-label": "Stablecoin erstellen",
-        "title": "Stablecoin erstellen",
-        "description": "Einen Stablecoin erstellen",
-        "button-label": "Erstellen",
-        "basics": {
-          "title": "Grundlegende Informationen",
-          "description": "Konfigurieren Sie die grundlegenden Eigenschaften Ihres Assets.",
-          "name-label": "Name",
-          "name-placeholder": "TotallyNotTether",
-          "symbol-label": "Symbol",
-          "symbol-placeholder": "SAFU",
-          "decimals-label": "Dezimalstellen",
-          "isin-label": "ISIN",
-          "isin-placeholder": "DEFI4EVER2024",
-          "private-token-label": "Privater Token",
-          "private-token-description": "Andere Organisationen werden dieses Asset nicht sehen"
-        },
-        "configuration": {
-          "title": "Konfiguration",
-          "description": "Legen Sie spezifische Parameter für Ihr Asset fest.",
-          "collateral-proof-validity-label": "Gültigkeit des Sicherheitsnachweises",
-          "collateral-proof-validity-description": "Die Zeit in Sekunden, für die ein Sicherheitsnachweis gültig ist."
-        },
-        "summary": {
-          "title": "Überprüfen und bestätigen Sie die Aktualisierung der nachgewiesenen Sicherheiten",
-          "description": "Überprüfen Sie die Details Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
-          "asset-basics-title": "Asset-Grundlagen",
-          "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-          "configuration-title": "Konfiguration",
-          "configuration-description": "Asset-Angebot und zusätzliche Einstellungen.",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "decimals-label": "Dezimalstellen",
-          "isin-label": "ISIN",
-          "private-label": "Privat",
-          "yes": "Ja",
-          "no": "Nein",
-          "collateral-proof-validity-label": "Gültigkeit des Sicherheitsnachweises",
-          "seconds": "Sekunden"
-        }
       }
-    }
-  },
-  "components": {
-    "active-pill": {
-      "active": "Aktiv",
-      "paused": "Pausiert"
-    },
-    "address-avatar": {
-      "avatar": "Avatar"
-    },
-    "asset-events-table": {
-      "events": "Ereignisse",
-      "timestamp": "Zeitstempel",
-      "asset": "Asset",
-      "event": "Ereignis",
-      "sender": "Absender",
-      "detail-sheet": {
-        "details-button": "Details",
-        "details-for-event": "Details für {event} Ereignis",
-        "sender": "Absender",
-        "asset": "Asset",
-        "date": "Datum",
-        "transaction-hash": "Transaktions-Hash"
-      },
-      "details": {
-        "details-header": "Details",
-        "from": "Von",
-        "to": "An",
-        "value": "Wert",
-        "amount": "Betrag",
-        "account": "Konto",
-        "role": "Rolle",
-        "new-mint": "Neue Prägung",
-        "burned": "Verbrannt",
-        "user": "Benutzer",
-        "token": "Token",
-        "holder": "Inhaber",
-        "bond-amount": "Anleihe-Betrag",
-        "underlying-amount": "Zugrunde liegender Betrag",
-        "old-amount": "Alter Betrag",
-        "new-amount": "Neuer Betrag",
-        "previous-admin-role": "Vorherige Admin-Rolle",
-        "new-admin-role": "Neue Admin-Rolle",
-        "yes": "Ja",
-        "no": "Nein"
-      }
-    },
-    "asset-type-icon": {
-      "stablecoin-initials": "SC",
-      "not-available-initials": "NA"
-    },
-    "charts": {
-      "assets": {
-        "last-updated": "Zuletzt aktualisiert",
-        "total-supply": {
-          "label": "Gesamtangebot",
-          "title": "Gesamtangebot",
-          "description": "Zeigt das Gesamtangebot des Tokens an"
-        },
-        "total-supply-changed": {
-          "minted-label": "Insgesamt geprägt",
-          "burned-label": "Insgesamt verbrannt",
-          "title": "Angebotsänderungen",
-          "description": "Zeigt die Angebotsänderung des Tokens an"
-        },
-        "total-transfers": {
-          "label": "Gesamtüberweisungen",
-          "title": "Gesamtüberweisungen",
-          "description": "Zeigt die Gesamtüberweisungen des Tokens an"
-        },
-        "total-volume": {
-          "label": "Gesamtvolumen",
-          "title": "Gesamtvolumen",
-          "description": "Zeigt das Gesamtvolumen des Tokens an"
-        }
-      },
-      "common": {
-        "no-data": "Keine Daten verfügbar",
-        "loading": "Wird geladen...",
-        "last-updated": "Zuletzt aktualisiert"
-      },
-      "bar-charts": {
-        "horizontal": {
-          "default-title": "Balkendiagramm",
-          "default-description": "Zeigt Daten in horizontalen Balken an"
-        },
-        "vertical": {
-          "default-title": "Vertikales Diagramm",
-          "default-description": "Zeigt Daten in vertikalen Balken an"
-        }
-      },
-      "pie": {
-        "default-title": "Kreisdiagramm",
-        "default-description": "Zeigt die Datenverteilung an"
-      },
-      "area": {
-        "default-title": "Flächendiagramm",
-        "default-description": "Zeigt Datentrends im Zeitverlauf an"
-      }
-    },
-    "data-table": {
-      "no-results": "Keine Ergebnisse",
-      "search": "Suchen...",
-      "reset": "Zurücksetzen",
-      "of": "von",
-      "rows-selected": "Zeile(n) ausgewählt",
-      "selected-rows-info": "{selected} von {total} Zeile(n) ausgewählt.",
-      "page-info": "Seite {current} von {total}",
-      "rows-per-page": "Zeilen pro Seite",
-      "page": "Seite",
-      "go-to-first-page": "Zur ersten Seite",
-      "go-to-previous-page": "Zur vorherigen Seite",
-      "go-to-next-page": "Zur nächsten Seite",
-      "go-to-last-page": "Zur letzten Seite",
-      "export": "Exportieren",
-      "failed-export": "Datenexport fehlgeschlagen",
-      "sort-ascending": "Aufsteigend sortieren",
-      "sort-descending": "Absteigend sortieren",
-      "hide": "Ausblenden",
-      "selected": "ausgewählt",
-      "no-results-found": "Keine Ergebnisse gefunden.",
-      "clear-filters": "Filter löschen",
-      "view": "Ansicht",
-      "toggle-columns": "Spalten ein-/ausblenden"
-    },
-    "detail-grid": {
-      "info-icon-label": "Zusätzliche Informationen"
-    },
-    "evm-address": {
-      "view-on-explorer": "Im Explorer anzeigen"
-    },
-    "form": {
-      "input": {
-        "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-        "letters-only": "Bitte geben Sie nur Buchstaben ein"
-      },
-      "select": {
-        "default-placeholder": "Option auswählen"
-      },
-      "users": {
-        "default-placeholder": "Option auswählen",
-        "search-placeholder": "Nach Benutzer suchen...",
-        "searching": "Suchen...",
-        "no-user-found": "Kein Benutzer gefunden."
-      },
-      "summary": {
-        "security-confirmation": {
-          "title": "Sicherheitsbestätigung",
-          "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen und zu signieren."
-        }
-      },
-      "button": {
-        "next": "Weiter",
-        "previous": "Zurück",
-        "send-transaction": "Transaktion senden",
-        "sending-transaction": "Transaktion wird gesendet...",
-        "processing": "Verarbeitung..."
-      },
-      "progress": {
-        "step-of-total": "Schritt {current} von {total}",
-        "completed-step": "Abgeschlossener Schritt",
-        "current-step": "Aktueller Schritt",
-        "upcoming-step": "Nächster Schritt"
-      }
-    },
-    "logo": {
-      "alt-text": "SettleMint"
-    },
-    "search": {
-      "placeholder": "Nach Assets oder Benutzern suchen...",
-      "no-results": "Keine Ergebnisse gefunden",
-      "assets-section": "Assets",
-      "users-section": "Benutzer"
-    },
-    "theme": {
-      "toggle-label": "Theme umschalten",
-      "switch-to-mode": "Zu {mode} Modus wechseln",
-      "dark": "dunkel",
-      "light": "hell",
-      "system": "System"
-    },
-    "transaction-hash": {
-      "view-on-explorer": "Im Explorer anzeigen"
     }
   },
   "errors": {
-    "formError": "Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "formError": "Beim Verarbeiten Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
     "unknown": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "validation": "Das Formular enthält ungültige Daten. Bitte überprüfen Sie Ihre Eingaben.",
     "network": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-    "permission": "Sie haben keine Berechtigung, diese Aktion auszuführen.",
+    "permission": "Sie haben keine Berechtigung, diese Aktion durchzuführen.",
     "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
     "timeout": "Die Anfrage ist abgelaufen. Bitte versuchen Sie es erneut.",
     "server": "Serverfehler. Unser Team wurde benachrichtigt.",
-    "unauthorized": "Sie müssen angemeldet sein, um diese Aktion auszuführen.",
-    "forbidden": "Sie haben nicht genügend Berechtigungen, um diese Aktion auszuführen.",
-    "conflict": "Diese Operation steht im Konflikt mit dem aktuellen Zustand. Bitte aktualisieren Sie und versuchen Sie es erneut.",
+    "unauthorized": "Sie müssen angemeldet sein, um diese Aktion durchzuführen.",
+    "forbidden": "Sie haben nicht genügend Berechtigungen, um diese Aktion durchzuführen.",
+    "conflict": "Dieser Vorgang steht im Konflikt mit dem aktuellen Status. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
     "invalidInput": "Ein oder mehrere Eingabefelder enthalten ungültige Daten.",
-    "insufficientFunds": "Nicht genügend Guthaben, um diese Transaktion abzuschließen.",
+    "insufficientFunds": "Unzureichende Mittel, um diese Transaktion abzuschließen.",
     "TransactionError": "Transaktion fehlgeschlagen: {message}",
     "ChallengeError": "Authentifizierung fehlgeschlagen: {message}",
     "transaction": {
       "failed": "Transaktion fehlgeschlagen: {reason}",
       "reverted": "Transaktion wurde zurückgesetzt: {reason}",
       "rejected": "Transaktion wurde abgelehnt: {reason}",
-      "invalidNonce": "Ungültige Transaktionssequenz. Bitte versuchen Sie es erneut."
+      "invalidNonce": "Ungültige Transaktionsreihenfolge. Bitte versuchen Sie es erneut."
     }
   },
   "transactions": {
-    "sending": "Transaktion wird gesendet {hash}",
-    "success": "Transaktion erfolgreich im Block {blockNumber} enthalten"
-  },
-  "layout": {
-    "navigation": {
-      "home": "Startseite",
-      "admin": "Verwaltung",
-      "portfolio": "Portfolio"
-    },
-    "header": {
-      "app-name": "SettleMint",
-      "app-description": "Asset-Tokenisierung"
-    },
-    "user-dropdown": {
-      "pending-transactions": "Ausstehende Transaktionen",
-      "documentation": "Dokumentation",
-      "logout": "Abmelden"
-    }
+    "sending": "Sende Transaktion {hash}",
+    "success": "Transaktion erfolgreich in Block {blockNumber} aufgenommen"
   }
 }
