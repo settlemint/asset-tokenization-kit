@@ -10,6 +10,7 @@ import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { MoreHorizontal } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 
 const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
@@ -44,6 +45,7 @@ export function DataTableRowActions({
   detailUrl,
   ...props
 }: DataTableColumnCellProps) {
+  const t = useTranslations('components.data-table');
   const [isOpen, setIsOpen] = useState(false);
 
   if (!children && !detailUrl) {
@@ -66,7 +68,7 @@ export function DataTableRowActions({
           className="hover:text-primary-foreground dark:hover:text-foreground"
         >
           <Link href={detailUrl} prefetch>
-            Details
+            {t('details')}
           </Link>
         </Button>
       )}
@@ -78,7 +80,7 @@ export function DataTableRowActions({
               className="flex h-8 w-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
-              <span className="sr-only">Open menu</span>
+              <span className="sr-only">{t('open-menu')}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

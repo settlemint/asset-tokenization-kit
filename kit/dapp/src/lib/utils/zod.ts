@@ -143,13 +143,12 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates ISIN codes
    */
-  isin: () =>
-    z
-      .string()
-      .regex(/^[A-Z0-9]+$/, {
-        message: 'ISIN must contain only uppercase letters and numbers',
-      })
-      .length(12, { message: 'ISIN must be exactly 12 characters' }),
+  isin: () => z.string(),
+  // TODO: uncomment this when we have a proper ISIN validator
+  // .regex(/^[A-Z0-9]+$/, {
+  //   message: 'ISIN must contain only uppercase letters and numbers',
+  // })
+  // .length(12, { message: 'ISIN must be exactly 12 characters' }),
 
   /**
    * Validates and transforms a string to a BigInt

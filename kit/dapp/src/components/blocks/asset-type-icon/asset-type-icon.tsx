@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import type { assetConfig } from '@/lib/config/assets';
+import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
 interface AssetTypeIconProps {
@@ -15,14 +16,14 @@ export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
 
   function getAssetInitials(type: keyof typeof assetConfig): string {
     switch (type) {
-      // case "bond":
-      //   return "BN";
-      // case "cryptocurrency":
-      //   return "CC";
-      // case "equity":
-      //   return "EQ";
-      // case "fund":
-      //   return "FN";
+      case 'bond':
+        return t('bond-initials');
+      case 'cryptocurrency':
+        return t('cryptocurrency-initials');
+      case 'equity':
+        return t('equity-initials');
+      case 'fund':
+        return t('fund-initials');
       case 'stablecoin':
         return t('stablecoin-initials');
       default:
@@ -30,9 +31,31 @@ export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
     }
   }
 
+  function getAssetColorClass(type: keyof typeof assetConfig): string {
+    switch (type) {
+      case 'bond':
+        return 'bg-sm-blue';
+      case 'cryptocurrency':
+        return 'bg-sm-teal';
+      case 'equity':
+        return 'bg-sm-orange';
+      case 'fund':
+        return 'bg-sm-green';
+      case 'stablecoin':
+        return 'bg-sm-purple';
+      default:
+        return 'bg-sm-cyan';
+    }
+  }
+
   return (
     <Avatar className={`${sizeClass} border border-foreground-muted`}>
-      <AvatarFallback className="text-[7px]">
+      <AvatarFallback
+        className={cn(
+          'text-[7px] text-white dark:text-sm-dark-gray font-bold',
+          getAssetColorClass(type)
+        )}
+      >
         {getAssetInitials(type)}
       </AvatarFallback>
     </Avatar>

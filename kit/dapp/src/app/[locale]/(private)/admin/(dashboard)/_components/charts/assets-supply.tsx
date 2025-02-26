@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 // const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
 //   Object.entries(assetConfig).map(([, asset]) => [
 //     asset.pluralName,
@@ -8,6 +10,8 @@
 // ) satisfies ChartConfig;
 
 export function AssetsSupply() {
+  const t = useTranslations('admin.dashboard.charts');
+
   // const { data } = useSuspenseQuery({
   //   queryKey: queryKey,
   //   queryFn: getAssetsWidgetData,
@@ -32,5 +36,5 @@ export function AssetsSupply() {
   //   />
   // );
 
-  return <div>To Be Moved To The Graph</div>;
+  return <div>{t('assets-supply.to-be-moved')}</div>;
 }

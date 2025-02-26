@@ -220,6 +220,49 @@
         "private-status": "Private",
         "public-status": "Public"
       }
+    },
+    "dashboard": {
+      "widgets": {
+        "assets": {
+          "label": "Assets supply",
+          "subtext": "to be moved to the graph"
+        },
+        "users": {
+          "label": "Users",
+          "subtext": "{count} in last {days} days"
+        },
+        "transactions": {
+          "label": "Transactions",
+          "subtext": "{count} in last {days} days"
+        }
+      },
+      "charts": {
+        "asset-activity": {
+          "title": "Activity",
+          "description": "Showing events for each asset type",
+          "mint": "Mint",
+          "transfer": "Transfer",
+          "burn": "Burn"
+        },
+        "assets-supply": {
+          "to-be-moved": "To Be Moved To The Graph"
+        },
+        "transaction-history": {
+          "title": "Transactions",
+          "description": "Showing transactions over the last {interval}",
+          "label": "Transactions"
+        },
+        "users-history": {
+          "title": "Users",
+          "description": "Showing users over the last 7 days",
+          "label": "Users"
+        }
+      },
+      "table": {
+        "latest-events": {
+          "view-all": "View all events →"
+        }
+      }
     }
   },
   "auth": {
@@ -337,6 +380,10 @@
       }
     },
     "asset-type-icon": {
+      "bond-initials": "BN",
+      "cryptocurrency-initials": "CC",
+      "equity-initials": "EQ",
+      "fund-initials": "FN",
       "stablecoin-initials": "SC",
       "not-available-initials": "NA"
     },
@@ -410,7 +457,9 @@
       "no-results-found": "No results found.",
       "clear-filters": "Clear filters",
       "view": "View",
-      "toggle-columns": "Toggle columns"
+      "toggle-columns": "Toggle columns",
+      "details": "Details",
+      "open-menu": "Open menu"
     },
     "detail-grid": {
       "info-icon-label": "Additional information"
