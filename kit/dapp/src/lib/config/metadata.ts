@@ -55,6 +55,28 @@ export const metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      'en-US': `${siteConfig.url}/en`,
+      'de-DE': `${siteConfig.url}/de`,
+    },
+  },
   other: {
     'darkreader-lock': '',
   },
