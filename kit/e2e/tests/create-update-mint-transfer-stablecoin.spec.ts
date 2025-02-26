@@ -13,7 +13,6 @@ import { ensureUserIsAdmin } from '../utils/db-utils';
 const testData = {
   userName: '',
   transferUserEmail: '',
-  // transferUserWalletAddress: '',
   transferUserName: '',
   stablecoinName: '',
 };
@@ -39,9 +38,6 @@ test.describe('Update collateral, mint and transfer assets', () => {
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
-
-      // const transferUserWalletAddress = await fetchWalletAddressFromDB(signUpTransferUserData.email);
-      // testData.transferUserWalletAddress = transferUserWalletAddress;
     } catch (error) {
       if (userContext) {
         await userContext.close();
