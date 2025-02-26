@@ -12,15 +12,25 @@ export const UserContext = createContext<Prettify<
 > | null>(null);
 
 export function UserContextProvider({ children }: { children: ReactNode }) {
-  const session = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const { locale } = useParams();
-  if (!session.data?.user) {
+
+  console.log('session', session);
+  console.log('isPending', isPending);
+  // Show loading state while session is being fetched
+  if (isPending) {
+    return null;
+  }
+
+  // Redirect to sign in if no session is found
+  if (!session?.user) {
     return redirect({
       href: '/auth/signin',
       locale: locale as string,
     });
   }
-  const user = session.data.user as Prettify<
+
+  const user = session.user as Prettify<
     Omit<User, 'wallet'> & { wallet: Address }
   >;
 
