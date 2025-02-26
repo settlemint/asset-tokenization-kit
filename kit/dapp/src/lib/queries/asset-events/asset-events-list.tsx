@@ -336,7 +336,7 @@ export async function getAssetEventsList({
  * @param params - Object containing optional filters and limits
  * @returns Array representing the query key for React Query
  */
-const getQueryKey = ({ asset, sender, limit }: AssetEventsListProps) =>
+export const getQueryKey = ({ asset, sender, limit }: AssetEventsListProps) =>
   ['asset', 'events', asset ?? 'all', sender ?? 'all', limit] as const;
 
 /**

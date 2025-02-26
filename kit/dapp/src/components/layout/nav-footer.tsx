@@ -1,6 +1,16 @@
 'use client';
-import { BriefcaseIcon } from '@/components/ui/animated-icons/briefcase';
-import { SettingsGearIcon } from '@/components/ui/animated-icons/settings-gear';
+import {
+  BriefcaseIcon,
+  type BriefcaseIconHandle,
+} from '@/components/ui/animated-icons/briefcase';
+import {
+  HomeIcon,
+  type HomeIconHandle,
+} from '@/components/ui/animated-icons/home';
+import {
+  SettingsGearIcon,
+  type SettingsGearIconHandle,
+} from '@/components/ui/animated-icons/settings-gear';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +26,7 @@ import {
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import { useRef } from 'react';
 
 const menuItemStyles =
   'flex items-center gap-2 px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
@@ -23,6 +34,11 @@ const menuItemStyles =
 export function NavFooter() {
   const pathname = usePathname();
   const { state } = useSidebar();
+
+  // Create refs for each icon
+  const homeIconRef = useRef<HomeIconHandle>(null);
+  const adminIconRef = useRef<SettingsGearIconHandle>(null);
+  const portfolioIconRef = useRef<BriefcaseIconHandle>(null);
 
   const isAdmin = pathname.startsWith('/admin');
   const currentSection = isAdmin ? 'Admin' : 'Portfolio';
@@ -53,13 +69,30 @@ export function NavFooter() {
           >
             <DropdownMenuItem asChild>
               <Link
+                href="/"
+                className={cn(
+                  menuItemStyles,
+                  pathname === '/' && 'bg-sidebar-accent font-medium'
+                )}
+                onMouseEnter={() => homeIconRef.current?.startAnimation()}
+                onMouseLeave={() => homeIconRef.current?.stopAnimation()}
+              >
+                <HomeIcon ref={homeIconRef} className="h-4 w-4" />
+                Home
+                {pathname === '/' && <Check />}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
                 href="/admin"
                 className={cn(
                   menuItemStyles,
                   isAdmin && 'bg-sidebar-accent font-medium'
                 )}
+                onMouseEnter={() => adminIconRef.current?.startAnimation()}
+                onMouseLeave={() => adminIconRef.current?.stopAnimation()}
               >
-                <SettingsGearIcon className="h-4 w-4" />
+                <SettingsGearIcon ref={adminIconRef} className="h-4 w-4" />
                 Admin
                 {isAdmin && <Check />}
               </Link>
@@ -71,8 +104,10 @@ export function NavFooter() {
                   menuItemStyles,
                   !isAdmin && 'bg-sidebar-accent font-medium'
                 )}
+                onMouseEnter={() => portfolioIconRef.current?.startAnimation()}
+                onMouseLeave={() => portfolioIconRef.current?.stopAnimation()}
               >
-                <BriefcaseIcon className="h-4 w-4" />
+                <BriefcaseIcon ref={portfolioIconRef} className="h-4 w-4" />
                 Portfolio
                 {!isAdmin && <Check />}
               </Link>

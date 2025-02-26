@@ -29,7 +29,7 @@ const PendingTransactions = portalGraphql(
 export interface PendingTransactionsProps {
   address?: Address;
   // Short poll interval in milliseconds, useful for updating pending tx count frequently
-  pollInterval?: number;
+  refetchInterval?: number;
 }
 
 /**
@@ -66,7 +66,7 @@ export async function getPendingTransactions({
  */
 const getQueryKey = ({ address }: PendingTransactionsProps) =>
   [
-    'asset',
+    'transaction',
     'pendingTransactions',
     address ? getAddress(address) : 'all',
   ] as const;
@@ -86,14 +86,14 @@ const getQueryKey = ({ address }: PendingTransactionsProps) =>
  */
 export function usePendingTransactions({
   address,
-  pollInterval,
+  refetchInterval,
 }: PendingTransactionsProps) {
   const queryKey = getQueryKey({ address });
 
   const result = useSuspenseQuery({
     queryKey,
     queryFn: () => getPendingTransactions({ address }),
-    refetchInterval: pollInterval, // Poll for updates
+    refetchInterval, // Poll for updates
     staleTime: 5000, // 5 seconds
     gcTime: 10000, // 10 seconds
   });

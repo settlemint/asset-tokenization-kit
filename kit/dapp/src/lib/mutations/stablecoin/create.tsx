@@ -1,6 +1,5 @@
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
-import { getQueryKey as stablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
@@ -181,8 +180,6 @@ export function useCreateStablecoin() {
     ...mutation,
     inputSchema: CreateStablecoinSchema,
     outputSchema: z.hash(),
-    invalidateKeys: (_variables: CreateStablecoin) => [
-      stablecoinListQueryKey(),
-    ],
+    invalidateKeys: () => [['user'], ['transaction'], ['asset']],
   };
 }

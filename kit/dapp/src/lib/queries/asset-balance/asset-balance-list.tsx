@@ -84,7 +84,11 @@ export async function getAssetBalanceList({
  * @param params - Object containing optional filters and limits
  * @returns Array representing the query key for React Query
  */
-const getQueryKey = ({ address, wallet, limit }: AssetBalanceListProps) =>
+export const getQueryKey = ({
+  address,
+  wallet,
+  limit,
+}: AssetBalanceListProps) =>
   [
     'asset',
     'balance',

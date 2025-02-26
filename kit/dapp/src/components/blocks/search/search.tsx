@@ -1,5 +1,8 @@
 'use client';
-import { SearchIcon } from '@/components/ui/animated-icons/search';
+import {
+  SearchIcon,
+  type SearchIconHandle,
+} from '@/components/ui/animated-icons/search';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -10,6 +13,7 @@ import { useAssetSearch } from '@/lib/queries/asset/asset-search';
 import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
+import { useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { getAddress } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
@@ -21,6 +25,8 @@ export const Search = () => {
     },
     mode: 'all',
   });
+
+  const searchIconRef = useRef<SearchIconHandle>(null);
 
   const search = useWatch({
     control: form.control,
@@ -49,8 +55,13 @@ export const Search = () => {
             'flex items-center border border-b px-3 shadow-md focus-within:outline-none focus-within:ring-0 md:min-w-[450px]',
             debounced ? 'rounded-t-lg' : 'rounded-lg'
           )}
+          onMouseEnter={() => searchIconRef.current?.startAnimation()}
+          onMouseLeave={() => searchIconRef.current?.stopAnimation()}
         >
-          <SearchIcon className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+          <SearchIcon
+            ref={searchIconRef}
+            className="mr-2 h-4 w-4 shrink-0 opacity-50"
+          />
           <FormField
             control={form.control}
             name="search"

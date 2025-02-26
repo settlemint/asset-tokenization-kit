@@ -58,6 +58,7 @@ export function UserDropdown() {
 
   const { data: pendingCount } = usePendingTransactions({
     address: user?.wallet,
+    refetchInterval: 30000,
   });
 
   const handleSignOut = useCallback(async () => {

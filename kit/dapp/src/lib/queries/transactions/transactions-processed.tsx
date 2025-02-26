@@ -84,7 +84,7 @@ export async function getProcessedTransactions({
  */
 const getQueryKey = ({ address, processedAfter }: ProcessedTransactionsProps) =>
   [
-    'asset',
+    'transaction',
     'processedTransactions',
     address ? getAddress(address) : 'all',
     processedAfter ? processedAfter.toISOString() : 'all',

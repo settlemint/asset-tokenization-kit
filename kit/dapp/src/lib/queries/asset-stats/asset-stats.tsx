@@ -93,7 +93,7 @@ async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
  *
  * @param params - Object containing the asset address and time range
  */
-const getQueryKey = ({ address, days }: AssetStatsProps) =>
+export const getQueryKey = ({ address, days }: AssetStatsProps) =>
   ['asset', 'stats', getAddress(address), days] as const;
 
 /**

@@ -35,28 +35,20 @@ export type MutationMeta = {
  * ]);
  * ```
  */
-export function invalidateQueries(
+export async function invalidateQueries(
   queryClient: QueryClient,
   queryKeysToInvalidate: QueryKey[]
-): void {
-  queryKeysToInvalidate.forEach((queryKey) => {
-    // Try both exact and non-exact invalidation for thoroughness
-    void queryClient.invalidateQueries({
-      queryKey,
-      refetchActive: true,
-      refetchInactive: true, // Also refetch inactive queries
-      stale: true,
-      exact: false,
-    });
+) {
+  const promises: Promise<void>[] = [];
+  for (const queryKey of queryKeysToInvalidate) {
+    promises.push(
+      queryClient.invalidateQueries({
+        queryKey,
+      })
+    );
+  }
 
-    // Force refetch for exact matches too
-    queryClient.getQueriesData({ queryKey }).forEach(([exactKey]) => {
-      void queryClient.refetchQueries(
-        { queryKey: exactKey, exact: true },
-        { throwOnError: false }
-      );
-    });
-  });
+  await Promise.all(promises);
 }
 
 const getQueryClient = cache(() => {

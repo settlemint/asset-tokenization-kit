@@ -68,7 +68,6 @@ export interface TransactionMonitoringOptions {
  * Result of a transaction mining operation
  */ interface TransactionMiningResult {
   receipt: FragmentOf<typeof ReceiptFragment>;
-  metadata: Record<string, unknown>;
 }
 
 /**
@@ -93,7 +92,6 @@ async function waitForSingleTransaction(
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
   let receipt: FragmentOf<typeof ReceiptFragment> | null = null;
-  let metadata: Record<string, unknown> | null = null;
   const startTime = Date.now();
 
   while (!receipt) {
@@ -111,7 +109,6 @@ async function waitForSingleTransaction(
       transactionHash,
     });
     receipt = transaction.getTransaction?.receipt ?? null;
-    metadata = transaction.getTransaction?.metadata ?? null;
 
     if (receipt?.status === 'Reverted') {
       throw new TransactionError(
@@ -126,12 +123,12 @@ async function waitForSingleTransaction(
       );
     }
 
-    if (!receipt || !metadata) {
+    if (!receipt) {
       await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
     }
   }
 
-  return { receipt, metadata: metadata ?? {} };
+  return { receipt };
 }
 
 /**
