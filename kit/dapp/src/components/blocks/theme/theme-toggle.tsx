@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MoonIcon, SunIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -46,6 +47,7 @@ export function ThemeToggle({
 }: ThemeToggleProps) {
   const { setTheme, resolvedTheme, themes } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations('theme');
 
   /**
    * Handles setting a new theme.
@@ -75,7 +77,7 @@ export function ThemeToggle({
           variant={variant}
           size={size}
           className={className}
-          aria-label="Toggle theme"
+          aria-label={t('toggle-label')}
         >
           <SunIcon className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -89,7 +91,7 @@ export function ThemeToggle({
             onClick={() => handleSetTheme(theme)}
             className="capitalize"
           >
-            {theme}
+            {t(theme)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

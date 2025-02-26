@@ -14,6 +14,7 @@ import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
 import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
 import { shortHex } from '@/lib/utils/hex';
+import { useTranslations } from 'next-intl';
 import {
   type FC,
   memo,
@@ -62,6 +63,7 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
+  const t = useTranslations('components.evm-address');
   const checksumAddress = useMemo(() => getAddress(address), [address]);
 
   const userLookup = useOptionalUserDetail({
@@ -177,7 +179,7 @@ export function EvmAddress({
                     rel="noopener noreferrer"
                     className="truncate text-primary text-xs hover:underline"
                   >
-                    View on the explorer
+                    {t('view-on-explorer')}
                   </Link>
                 )}
               </div>

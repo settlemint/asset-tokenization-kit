@@ -2,10 +2,12 @@
 
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Moon, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 export function ThemeMenuItem() {
   const { setTheme, resolvedTheme, themes } = useTheme();
+  const t = useTranslations('theme');
 
   const nextTheme = themes?.find((theme) => theme !== resolvedTheme);
 
@@ -23,7 +25,7 @@ export function ThemeMenuItem() {
       ) : (
         <Moon className="mr-2 size-4" />
       )}
-      Switch to {nextTheme} mode
+      {t('switch-to-mode', { mode: t(nextTheme) })}
     </DropdownMenuItem>
   );
 }

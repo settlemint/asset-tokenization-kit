@@ -9,6 +9,7 @@ import {
 import { Link } from '@/i18n/routing';
 import { getBlockExplorerTxUrl } from '@/lib/block-explorer';
 import { shortHex } from '@/lib/utils/hex';
+import { useTranslations } from 'next-intl';
 import type { PropsWithChildren } from 'react';
 
 interface TransactionHashProps extends PropsWithChildren {
@@ -34,6 +35,7 @@ export function TransactionHash({
 }: TransactionHashProps) {
   const explorerLink = getBlockExplorerTxUrl(hash, explorerUrl);
   const shortHash = shortHex(hash, { prefixLength, suffixLength });
+  const t = useTranslations('components.transaction-hash');
 
   return (
     <div className="flex items-center gap-2">
@@ -63,7 +65,7 @@ export function TransactionHash({
                 rel="noopener noreferrer"
                 className="truncate text-primary text-xs hover:underline"
               >
-                View on the explorer
+                {t('view-on-explorer')}
               </Link>
             )}
           </div>

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export type ButtonLabels = {
@@ -33,26 +34,41 @@ export function FormButton({
   totalSteps,
   onNextStep,
   labels = {
-    label: 'Send transaction',
-    submittingLabel: 'Sending transaction...',
-    processingLabel: 'Processing...',
+    label: undefined,
+    submittingLabel: undefined,
+    processingLabel: undefined,
   },
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
+  const t = useTranslations('components.form.button');
+
+  const defaultLabels = {
+    label: t('send-transaction'),
+    submittingLabel: t('sending-transaction'),
+    processingLabel: t('processing'),
+  };
+
+  const finalLabels = {
+    label: labels.label || defaultLabels.label,
+    submittingLabel: labels.submittingLabel || defaultLabels.submittingLabel,
+    processingLabel: labels.processingLabel || defaultLabels.processingLabel,
+  };
 
   const getButtonContent = () => {
     if (isSubmitting) {
       return (
         <>
           <Loader2 size={16} className="mr-2 animate-spin" />
-          {isLastStep ? labels.submittingLabel : labels.processingLabel}
+          {isLastStep
+            ? finalLabels.submittingLabel
+            : finalLabels.processingLabel}
         </>
       );
     }
-    return isLastStep ? labels.label : 'Next';
+    return isLastStep ? finalLabels.label : t('next');
   };
 
   return (
@@ -62,10 +78,10 @@ export function FormButton({
           type="button"
           variant="outline"
           onClick={onPreviousStep}
-          aria-label="Go to previous step"
+          aria-label={t('previous')}
           disabled={isSubmitting}
         >
-          Previous
+          {t('previous')}
         </Button>
       )}
 
@@ -73,7 +89,7 @@ export function FormButton({
         type={isLastStep ? 'submit' : 'button'}
         variant="default"
         onClick={isLastStep ? undefined : onNextStep}
-        aria-label={isLastStep ? labels.label : 'Go to next step'}
+        aria-label={isLastStep ? finalLabels.label : t('next')}
         className={currentStep === 0 ? 'ml-auto' : ''}
         disabled={
           isSubmitting || (isLastStep && Object.keys(errors).length > 0)

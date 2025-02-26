@@ -343,6 +343,65 @@
       "clear-filters": "Filter löschen",
       "view": "Ansicht",
       "toggle-columns": "Spalten ein-/ausblenden"
+    },
+    "detail-grid": {
+      "info-icon-label": "Zusätzliche Informationen"
+    },
+    "evm-address": {
+      "view-on-explorer": "Im Explorer anzeigen"
+    },
+    "form": {
+      "input": {
+        "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "letters-only": "Bitte geben Sie nur Buchstaben ein"
+      },
+      "select": {
+        "default-placeholder": "Option auswählen"
+      },
+      "users": {
+        "default-placeholder": "Option auswählen",
+        "search-placeholder": "Nach Benutzer suchen...",
+        "searching": "Suchen...",
+        "no-user-found": "Kein Benutzer gefunden."
+      },
+      "summary": {
+        "security-confirmation": {
+          "title": "Sicherheitsbestätigung",
+          "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen und zu signieren."
+        }
+      },
+      "button": {
+        "next": "Weiter",
+        "previous": "Zurück",
+        "send-transaction": "Transaktion senden",
+        "sending-transaction": "Transaktion wird gesendet...",
+        "processing": "Verarbeitung..."
+      },
+      "progress": {
+        "step-of-total": "Schritt {current} von {total}",
+        "completed-step": "Abgeschlossener Schritt",
+        "current-step": "Aktueller Schritt",
+        "upcoming-step": "Nächster Schritt"
+      }
+    },
+    "logo": {
+      "alt-text": "SettleMint"
+    },
+    "search": {
+      "placeholder": "Nach Assets oder Benutzern suchen...",
+      "no-results": "Keine Ergebnisse gefunden",
+      "assets-section": "Assets",
+      "users-section": "Benutzer"
+    },
+    "theme": {
+      "toggle-label": "Theme umschalten",
+      "switch-to-mode": "Zu {mode} Modus wechseln",
+      "dark": "dunkel",
+      "light": "hell",
+      "system": "System"
+    },
+    "transaction-hash": {
+      "view-on-explorer": "Im Explorer anzeigen"
     }
   },
   "errors": {
@@ -371,5 +430,21 @@
   "transactions": {
     "sending": "Transaktion wird gesendet {hash}",
     "success": "Transaktion erfolgreich im Block {blockNumber} enthalten"
+  },
+  "layout": {
+    "navigation": {
+      "home": "Startseite",
+      "admin": "Verwaltung",
+      "portfolio": "Portfolio"
+    },
+    "header": {
+      "app-name": "SettleMint",
+      "app-description": "Asset-Tokenisierung"
+    },
+    "user-dropdown": {
+      "pending-transactions": "Ausstehende Transaktionen",
+      "documentation": "Dokumentation",
+      "logout": "Abmelden"
+    }
   }
 }

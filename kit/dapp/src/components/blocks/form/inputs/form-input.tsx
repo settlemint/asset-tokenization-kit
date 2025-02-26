@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import { useFormContext } from 'react-hook-form';
@@ -58,6 +59,7 @@ export function FormInput<T extends FieldValues>({
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
+  const t = useTranslations('components.form.input');
 
   return (
     <FormField
@@ -67,13 +69,13 @@ export function FormInput<T extends FieldValues>({
         ...(props.type === 'email' && {
           pattern: {
             value: EMAIL_PATTERN,
-            message: 'Please enter a valid email address',
+            message: t('valid-email'),
           },
         }),
         ...(textOnly && {
           pattern: {
             value: TEXT_ONLY_PATTERN,
-            message: 'Please enter letters only',
+            message: t('letters-only'),
           },
         }),
       }}
