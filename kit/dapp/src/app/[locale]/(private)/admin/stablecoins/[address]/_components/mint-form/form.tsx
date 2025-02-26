@@ -5,6 +5,7 @@ import { FormSheet } from '@/components/blocks/form/form-sheet';
 import { useUser } from '@/components/blocks/user-context/user-context';
 import { useMint } from '@/lib/mutations/stablecoin/mint';
 import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Amount } from './steps/amount';
@@ -19,6 +20,7 @@ export function MintForm({ address }: MintFormProps) {
   const { data: stableCoin } = useStableCoinDetail({ address });
   const user = useUser();
   const [open, setOpen] = useState(false);
+  const t = useTranslations('admin.stablecoins.mint-form');
 
   const collateralAvailable =
     Number(stableCoin?.collateral ?? 0) - Number(stableCoin?.totalSupply ?? 0);
@@ -31,14 +33,14 @@ export function MintForm({ address }: MintFormProps) {
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Mint"
-      title="Mint"
-      description="Mint a stablecoin"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
         mutation={mint}
         buttonLabels={{
-          label: 'Pause',
+          label: t('button-label'),
         }}
         defaultValues={{
           address,

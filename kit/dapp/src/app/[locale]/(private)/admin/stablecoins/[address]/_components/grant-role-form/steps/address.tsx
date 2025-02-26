@@ -1,23 +1,22 @@
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import type { GrantRole } from '@/lib/mutations/stablecoin/grant-role';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export function AdminAddress() {
   const { control } = useFormContext<GrantRole>();
   const [isManualEntry, setIsManualEntry] = useState(false);
+  const t = useTranslations('admin.stablecoins.grant-role-form.address');
 
   return (
     <div className="space-y-6">
       <div className="space-y-8">
         <div className="mb-2">
           <h2 className="font-semibold text-foreground text-lg">
-            Select New Admin
+            {t('title')}
           </h2>
-          <p className="text-muted-foreground text-sm">
-            Search for a user by their name or email, or manually enter a wallet
-            address.
-          </p>
+          <p className="text-muted-foreground text-sm">{t('description')}</p>
         </div>
       </div>
 
@@ -26,15 +25,15 @@ export function AdminAddress() {
           <FormInput
             control={control}
             name="userAddress"
-            label="Admin Wallet Address"
-            placeholder="0x0000000000000000000000000000000000000000"
+            label={t('address-label')}
+            placeholder={t('manual-placeholder')}
           />
         ) : (
           <FormInput
             control={control}
             name="userAddress"
-            label="Admin Wallet Address"
-            placeholder="Search for a user"
+            label={t('address-label')}
+            placeholder={t('search-placeholder')}
           />
         )}
         <div className="flex justify-end">
@@ -43,9 +42,7 @@ export function AdminAddress() {
             onClick={() => setIsManualEntry(!isManualEntry)}
             className="text-muted-foreground text-xs transition-colors hover:text-foreground"
           >
-            {isManualEntry
-              ? 'Search for a user instead...'
-              : 'Enter address manually...'}
+            {isManualEntry ? t('search-toggle') : t('manual-toggle')}
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import { useUser } from '@/components/blocks/user-context/user-context';
 import { useGrantRole } from '@/lib/mutations/stablecoin/grant-role';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { AdminAddress } from './steps/address';
@@ -18,6 +19,7 @@ export function GrantRoleForm({ address }: GrantRoleFormProps) {
   const grantRole = useGrantRole();
   const user = useUser();
   const [open, setOpen] = useState(false);
+  const t = useTranslations('admin.stablecoins.grant-role-form');
 
   if (!user) {
     return null;
@@ -27,14 +29,14 @@ export function GrantRoleForm({ address }: GrantRoleFormProps) {
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Burn"
-      title="Burn"
-      description="Burn a stablecoin"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
         mutation={grantRole}
         buttonLabels={{
-          label: 'Grant Role',
+          label: t('button-label'),
         }}
         defaultValues={{
           address,

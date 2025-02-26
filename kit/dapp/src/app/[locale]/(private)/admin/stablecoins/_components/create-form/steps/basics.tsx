@@ -2,49 +2,48 @@ import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormSwitch } from '@/components/blocks/form/inputs/form-switch';
 import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export function Basics() {
   const { control } = useFormContext<CreateStablecoin>();
+  const t = useTranslations('admin.stablecoins.create.basics');
 
   return (
-    <FormStep
-      title="Basic Information"
-      description="Configure the basic properties of your asset."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
           name="assetName"
-          label="Name"
-          placeholder="TotallyNotTether"
+          label={t('name-label')}
+          placeholder={t('name-placeholder')}
         />
         <FormInput
           control={control}
           name="symbol"
-          label="Symbol"
-          placeholder="SAFU"
+          label={t('symbol-label')}
+          placeholder={t('symbol-placeholder')}
           textOnly
         />
         <FormInput
           control={control}
           type="number"
           name="decimals"
-          label="Decimals"
+          label={t('decimals-label')}
           defaultValue={18}
         />
         <FormInput
           control={control}
           name="isin"
-          label="ISIN"
-          placeholder="DEFI4EVER2024"
+          label={t('isin-label')}
+          placeholder={t('isin-placeholder')}
         />
       </div>
       <FormSwitch
         control={control}
         name="privateAsset"
-        label="Private Token"
-        description="Other organisations won't see this asset"
+        label={t('private-token-label')}
+        description={t('private-token-description')}
         defaultValue={true}
       />
     </FormStep>

@@ -5,6 +5,7 @@ import { FormSheet } from '@/components/blocks/form/form-sheet';
 import { useUser } from '@/components/blocks/user-context/user-context';
 import { useBurn } from '@/lib/mutations/stablecoin/burn';
 import { useAssetBalanceDetail } from '@/lib/queries/asset-balance/asset-balance-detail';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Amount } from './steps/amount';
@@ -18,6 +19,7 @@ export function BurnForm({ address }: BurnFormProps) {
   const burn = useBurn();
   const user = useUser();
   const [open, setOpen] = useState(false);
+  const t = useTranslations('admin.stablecoins.burn-form');
   const balance = useAssetBalanceDetail({
     address,
     account: user?.wallet,
@@ -31,14 +33,14 @@ export function BurnForm({ address }: BurnFormProps) {
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Burn"
-      title="Burn"
-      description="Burn a stablecoin"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
         mutation={burn}
         buttonLabels={{
-          label: 'Burn',
+          label: t('button-label'),
         }}
         defaultValues={{
           address,

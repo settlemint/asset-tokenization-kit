@@ -15,6 +15,7 @@ import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import type bigDecimal from 'js-big-decimal';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ComponentType } from 'react';
 
 const columnHelper = createColumnHelper<
@@ -33,12 +34,13 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function StableCoinTable() {
   const { data: stablecoins } = useStableCoinList();
+  const t = useTranslations('admin.stablecoins.table');
 
   return (
     <DataTable
       columns={[
         columnHelper.accessor('id', {
-          header: 'Address',
+          header: t('address-header'),
           cell: ({ getValue }) => (
             <EvmAddress address={getValue()} prettyNames={false}>
               <EvmAddressBalances address={getValue()} />
@@ -47,17 +49,17 @@ export function StableCoinTable() {
           enableColumnFilter: false,
         }),
         columnHelper.accessor('name', {
-          header: 'Name',
+          header: t('name-header'),
           cell: ({ getValue }) => getValue(),
           enableColumnFilter: false,
         }),
         columnHelper.accessor('symbol', {
-          header: 'Symbol',
+          header: t('symbol-header'),
           cell: ({ getValue }) => getValue(),
           enableColumnFilter: false,
         }),
         columnHelper.accessor('totalSupply', {
-          header: 'Total Supply',
+          header: t('total-supply-header'),
           meta: {
             variant: 'numeric',
           },
@@ -65,41 +67,43 @@ export function StableCoinTable() {
           enableColumnFilter: false,
         }),
         columnHelper.accessor('collateralCommittedRatio', {
-          header: 'Committed collateral',
+          header: t('committed-collateral-header'),
           cell: ({ getValue }) => {
             return <PercentageProgressBar percentage={getValue()} />;
           },
           enableColumnFilter: false,
         }),
         columnHelper.accessor('paused', {
-          header: 'Status',
+          header: t('status-header'),
           cell: ({ getValue }) => {
             const paused: boolean = getValue();
             const Icon = icons[paused ? 'paused' : 'active'];
             return (
               <>
                 {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{paused ? 'Paused' : 'Active'}</span>
+                <span>{paused ? t('paused-status') : t('active-status')}</span>
               </>
             );
           },
         }),
         columnHelper.accessor('private', {
-          header: 'Private',
+          header: t('private-header'),
           cell: ({ getValue }) => {
             const privateAsset: boolean = !!getValue();
             const Icon = icons[privateAsset ? 'private' : 'public'];
             return (
               <>
                 {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                <span>{privateAsset ? 'Private' : 'Public'}</span>
+                <span>
+                  {privateAsset ? t('private-status') : t('public-status')}
+                </span>
               </>
             );
           },
         }),
         columnHelper.display({
           id: 'actions',
-          header: 'Actions',
+          header: t('actions-header'),
           cell: ({ row }) => {
             return (
               <DataTableRowActions

@@ -4,6 +4,7 @@ import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import { useUser } from '@/components/blocks/user-context/user-context';
 import { useCreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import { useTranslations } from 'next-intl';
 import { Basics } from './steps/basics';
 import { Configuration } from './steps/configuration';
 import { Summary } from './steps/summary';
@@ -19,6 +20,7 @@ export function CreateStablecoinForm({
 }: CreateStablecoinFormProps) {
   const createStablecoin = useCreateStablecoin();
   const user = useUser();
+  const t = useTranslations('admin.stablecoins.create');
 
   if (!user) {
     return null;
@@ -30,14 +32,14 @@ export function CreateStablecoinForm({
       onOpenChange={() => {
         onCloseAction();
       }}
-      triggerLabel="Create Stablecoin"
-      title="Create Stablecoin"
-      description="Create a stablecoin"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
         mutation={createStablecoin}
         buttonLabels={{
-          label: 'Create Stablecoin',
+          label: t('button-label'),
         }}
         defaultValues={{
           from: user.wallet,

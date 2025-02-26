@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import type { Burn } from '@/lib/mutations/stablecoin/burn';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -16,26 +17,24 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<Burn>();
+  const t = useTranslations('admin.stablecoins.burn-form.summary');
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep
-      title="Review and confirm burn"
-      description="Verify the details of your burn before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Burn"
-        description="Burning operation details"
+        title={t('burn-title')}
+        description={t('burn-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Amount"
+          label={t('amount-label')}
           value={formatNumber(values.amount ?? 0)}
         />
       </FormSummaryDetailCard>

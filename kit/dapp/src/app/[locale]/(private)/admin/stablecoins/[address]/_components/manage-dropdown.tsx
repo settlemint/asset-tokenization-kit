@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 import { BurnForm } from './burn-form/form';
 import { GrantRoleForm } from './grant-role-form/form';
@@ -21,11 +22,13 @@ interface ManageDropdownProps {
 }
 
 export function ManageDropdown({ address }: ManageDropdownProps) {
+  const t = useTranslations('admin.stablecoins.manage');
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="default">
-          Manage
+          {t('manage')}
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

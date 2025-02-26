@@ -5,6 +5,7 @@ import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item
 import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { formatDate, formatDuration } from '@/lib/utils/date';
 import { formatNumber } from '@/lib/utils/number';
+import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 
@@ -14,25 +15,26 @@ interface CollateralProps {
 
 export function Collateral({ address }: CollateralProps) {
   const { data: asset } = useStableCoinDetail({ address });
+  const t = useTranslations('admin.stablecoins.collateral');
 
   return (
     <Suspense>
       <DetailGrid className="mt-4">
         <DetailGridItem
-          label="Proven collateral"
-          info="The amount of collateral that has been proven to be held by the token"
+          label={t('proven-collateral')}
+          info={t('proven-collateral-info')}
         >
           {formatNumber(asset.collateral, { token: asset.symbol })}
         </DetailGridItem>
         <DetailGridItem
-          label="Required collateral threshold"
-          info="The amount of collateral that must be proven"
+          label={t('required-collateral-threshold')}
+          info={t('required-collateral-threshold-info')}
         >
           {formatNumber(100, { percentage: true, decimals: 2 })}
         </DetailGridItem>
         <DetailGridItem
-          label="Committed collateral ratio"
-          info="The ratio of the collateral committed to the total supply of the token"
+          label={t('committed-collateral-ratio')}
+          info={t('committed-collateral-ratio-info')}
         >
           {formatNumber(asset.collateralCommittedRatio, {
             percentage: true,
@@ -40,16 +42,16 @@ export function Collateral({ address }: CollateralProps) {
           })}
         </DetailGridItem>
         <DetailGridItem
-          label="Collateral proof expiration"
-          info="From this point the collateral proof is invalid"
+          label={t('collateral-proof-expiration')}
+          info={t('collateral-proof-expiration-info')}
         >
           {formatDate(asset.collateralProofValidity, {
             type: 'absolute',
           })}
         </DetailGridItem>
         <DetailGridItem
-          label="Collateral proof validity"
-          info="How long the collateral proof is valid for"
+          label={t('collateral-proof-validity')}
+          info={t('collateral-proof-validity-info')}
         >
           {formatDuration(asset.liveness)}
         </DetailGridItem>

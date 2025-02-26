@@ -1,0 +1,8 @@
+---
+description: 
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+- we use next-intl as a translations system
+- do not use fallbacks, all keys need to be translated
+- use clear namespaces

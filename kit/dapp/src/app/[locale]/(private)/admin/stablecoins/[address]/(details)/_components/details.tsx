@@ -19,10 +19,10 @@ export function Details({ address }: DetailsProps) {
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label="Name">{asset.name}</DetailGridItem>
-        <DetailGridItem label="Symbol">{asset.symbol}</DetailGridItem>
+        <DetailGridItem label={t('name')}>{asset.name}</DetailGridItem>
+        <DetailGridItem label={t('symbol')}>{asset.symbol}</DetailGridItem>
         {asset.isin && (
-          <DetailGridItem label="ISIN">{asset.isin}</DetailGridItem>
+          <DetailGridItem label={t('isin')}>{asset.isin}</DetailGridItem>
         )}
         <DetailGridItem label={t('contract-address')}>
           <EvmAddress
@@ -39,16 +39,13 @@ export function Details({ address }: DetailsProps) {
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label="Decimals">{asset.decimals}</DetailGridItem>
-        <DetailGridItem
-          label="Total supply"
-          info="The total supply of the token"
-        >
+        <DetailGridItem label={t('decimals')}>{asset.decimals}</DetailGridItem>
+        <DetailGridItem label={t('total-supply')} info={t('total-supply-info')}>
           {formatNumber(asset.totalSupply, { token: asset.symbol })}
         </DetailGridItem>
         <DetailGridItem
-          label="Ownership concentration"
-          info="Percentage owned by the top 5 holders"
+          label={t('ownership-concentration')}
+          info={t('ownership-concentration-info')}
         >
           {formatNumber(asset.concentration, {
             percentage: true,

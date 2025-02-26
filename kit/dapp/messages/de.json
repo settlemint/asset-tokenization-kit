@@ -1,6 +1,224 @@
 {
-  "HomePage": {
-    "title": "Hallo Welt!",
-    "about": "Gehen Sie zur Über-Seite"
+  "admin": {
+    "stablecoins": {
+      "details": {
+        "contract-address": "Vertragsadresse",
+        "creator": "Ersteller",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Dezimalstellen",
+        "total-supply": "Gesamtangebot",
+        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "ownership-concentration": "Eigentumskonzentration",
+        "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
+        "stablecoin-details-description": "Details für den Stablecoin",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Detaillierte Informationen über {name} Stablecoin"
+      },
+      "collateral": {
+        "proven-collateral": "Nachgewiesene Sicherheiten",
+        "proven-collateral-info": "Die Menge an Sicherheiten, die nachweislich vom Token gehalten werden",
+        "required-collateral-threshold": "Erforderliche Sicherheitsschwelle",
+        "required-collateral-threshold-info": "Die Menge an Sicherheiten, die nachgewiesen werden muss",
+        "committed-collateral-ratio": "Verhältnis der hinterlegten Sicherheiten",
+        "committed-collateral-ratio-info": "Das Verhältnis der hinterlegten Sicherheiten zum Gesamtangebot des Tokens",
+        "collateral-proof-expiration": "Ablauf des Sicherheitsnachweises",
+        "collateral-proof-expiration-info": "Ab diesem Zeitpunkt ist der Sicherheitsnachweis ungültig",
+        "collateral-proof-validity": "Gültigkeit des Sicherheitsnachweises",
+        "collateral-proof-validity-info": "Wie lange der Sicherheitsnachweis gültig ist"
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Inhaber",
+        "events": "Ereignisse",
+        "permissions": "Berechtigungen"
+      },
+      "manage": {
+        "manage": "Verwalten"
+      },
+      "holders": {
+        "holders-page-title": "{name} Inhaber",
+        "holders-page-description": "Liste der Inhaber für {name} Stablecoin"
+      },
+      "events": {
+        "events-page-title": "{name} Ereignisse",
+        "events-page-description": "Ereignisverlauf für {name} Stablecoin"
+      },
+      "permissions": {
+        "permissions-page-title": "{name} Berechtigungen",
+        "permissions-page-description": "Berechtigungsverwaltung für {name} Stablecoin"
+      },
+      "pause-form": {
+        "pause": {
+          "trigger-label": "Pausieren",
+          "title": "Pausieren",
+          "description": "Einen Stablecoin pausieren",
+          "button-label": "Pausieren"
+        },
+        "unpause": {
+          "trigger-label": "Fortsetzen",
+          "title": "Fortsetzen",
+          "description": "Einen Stablecoin fortsetzen",
+          "button-label": "Fortsetzen"
+        },
+        "summary": {
+          "title": "Pausierungsvorgang überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihres Pausierungsvorgangs, bevor Sie fortfahren.",
+          "pause-title": "Pausieren",
+          "pause-description": "Details zum Pausierungsvorgang",
+          "asset-label": "Asset",
+          "current-state-label": "Aktueller Status",
+          "target-state-label": "Zielstatus",
+          "state-paused": "Pausiert",
+          "state-active": "Aktiv"
+        }
+      },
+      "update-collateral-form": {
+        "trigger-label": "Sicherheiten aktualisieren",
+        "title": "Sicherheiten aktualisieren",
+        "description": "Die Sicherheiten für einen Stablecoin aktualisieren",
+        "button-label": "Sicherheiten aktualisieren",
+        "amount": {
+          "title": "Betrag eingeben",
+          "description": "Geben Sie den Betrag ein, auf den Sie die Sicherheiten aktualisieren möchten. Stellen Sie sicher, dass der Betrag größer oder gleich dem aktuellen Angebot ist.",
+          "amount-label": "Betrag"
+        },
+        "summary": {
+          "title": "Aktualisierung der nachgewiesenen Sicherheiten überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
+          "update-title": "Sicherheiten aktualisieren",
+          "update-description": "Details zur Aktualisierung der Sicherheiten",
+          "asset-label": "Asset",
+          "amount-label": "Betrag"
+        }
+      },
+      "mint-form": {
+        "trigger-label": "Prägen",
+        "title": "Prägen",
+        "description": "Einen Stablecoin prägen",
+        "button-label": "Prägen",
+        "amount": {
+          "title": "Betrag eingeben",
+          "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
+          "amount-label": "Betrag",
+          "collateral-available": "Verfügbare Sicherheiten: {collateral}"
+        },
+        "summary": {
+          "title": "Prägung überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihrer Prägung, bevor Sie fortfahren.",
+          "mint-title": "Prägen",
+          "mint-description": "Details zum Prägungsvorgang",
+          "asset-label": "Asset",
+          "amount-label": "Betrag"
+        }
+      },
+      "burn-form": {
+        "trigger-label": "Verbrennen",
+        "title": "Verbrennen",
+        "description": "Einen Stablecoin verbrennen",
+        "button-label": "Verbrennen",
+        "amount": {
+          "title": "Betrag eingeben",
+          "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
+          "amount-label": "Betrag",
+          "available-balance": "Verfügbares Guthaben: {balance}"
+        },
+        "summary": {
+          "title": "Überprüfen und Verbrennen bestätigen",
+          "description": "Überprüfen Sie die Details Ihres Verbrennungsvorgangs, bevor Sie fortfahren.",
+          "burn-title": "Verbrennen",
+          "burn-description": "Details zum Verbrennungsvorgang",
+          "asset-label": "Asset",
+          "amount-label": "Betrag"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Rolle zuweisen",
+        "title": "Rolle zuweisen",
+        "description": "Rollen an einen neuen Administrator zuweisen",
+        "button-label": "Rolle zuweisen",
+        "address": {
+          "title": "Neuen Administrator auswählen",
+          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse, oder geben Sie manuell eine Wallet-Adresse ein.",
+          "address-label": "Administrator-Wallet-Adresse",
+          "search-placeholder": "Nach einem Benutzer suchen",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Stattdessen nach einem Benutzer suchen...",
+          "manual-toggle": "Adresse manuell eingeben..."
+        },
+        "roles": {
+          "title": "Administrator-Rollen auswählen",
+          "description": "Wählen Sie die Rollen aus, die dem neuen Administrator zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
+        },
+        "summary": {
+          "title": "Rollenzuweisung überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihrer Rollenzuweisung, bevor Sie fortfahren.",
+          "grant-title": "Rolle zuweisen",
+          "grant-description": "Details zur Rollenzuweisung",
+          "asset-label": "Asset",
+          "admin-address-label": "Administrator-Adresse",
+          "roles-label": "Rollen"
+        }
+      },
+      "table": {
+        "page-title": "Stablecoins",
+        "page-description": "Sehen und verwalten Sie Ihre Stablecoins.",
+        "address-header": "Adresse",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Gesamtangebot",
+        "committed-collateral-header": "Hinterlegtes Sicherheiten",
+        "status-header": "Status",
+        "private-header": "Privat",
+        "actions-header": "Aktionen",
+        "paused-status": "Pausiert",
+        "active-status": "Aktiv",
+        "private-status": "Privat",
+        "public-status": "Öffentlich"
+      },
+      "create": {
+        "trigger-label": "Stablecoin erstellen",
+        "title": "Stablecoin erstellen",
+        "description": "Einen Stablecoin erstellen",
+        "button-label": "Erstellen",
+        "basics": {
+          "title": "Grundlegende Informationen",
+          "description": "Konfigurieren Sie die grundlegenden Eigenschaften Ihres Assets.",
+          "name-label": "Name",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "SAFU",
+          "decimals-label": "Dezimalstellen",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "private-token-label": "Privater Token",
+          "private-token-description": "Andere Organisationen werden dieses Asset nicht sehen"
+        },
+        "configuration": {
+          "title": "Konfiguration",
+          "description": "Legen Sie spezifische Parameter für Ihr Asset fest.",
+          "collateral-proof-validity-label": "Gültigkeit des Sicherheitsnachweises",
+          "collateral-proof-validity-description": "Die Zeit in Sekunden, für die ein Sicherheitsnachweis gültig ist."
+        },
+        "summary": {
+          "title": "Überprüfen und bestätigen Sie die Aktualisierung der nachgewiesenen Sicherheiten",
+          "description": "Überprüfen Sie die Details Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
+          "asset-basics-title": "Asset-Grundlagen",
+          "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
+          "configuration-title": "Konfiguration",
+          "configuration-description": "Asset-Angebot und zusätzliche Einstellungen.",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Dezimalstellen",
+          "isin-label": "ISIN",
+          "private-label": "Privat",
+          "yes": "Ja",
+          "no": "Nein",
+          "collateral-proof-validity-label": "Gültigkeit des Sicherheitsnachweises",
+          "seconds": "Sekunden"
+        }
+      }
+    }
   }
 }

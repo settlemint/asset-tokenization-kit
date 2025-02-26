@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
 import type { GrantRole } from '@/lib/mutations/stablecoin/grant-role';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -16,30 +17,28 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<GrantRole>();
+  const t = useTranslations('admin.stablecoins.grant-role-form.summary');
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep
-      title="Review and confirm update proven collateral"
-      description="Verify the details of your update proven collateral before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Grant Role"
-        description="Granting role operation details"
+        title={t('grant-title')}
+        description={t('grant-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Admin Address"
+          label={t('admin-address-label')}
           value={<EvmAddress address={values.userAddress as Address} />}
         />
         <FormSummaryDetailItem
-          label="Roles"
+          label={t('roles-label')}
           value={
             <div className="flex flex-wrap gap-1">
               {Object.entries(values.roles ?? {})

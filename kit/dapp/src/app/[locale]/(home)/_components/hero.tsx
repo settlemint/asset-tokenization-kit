@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import Image, { type StaticImageData } from 'next/image';
 import * as React from 'react';
@@ -167,8 +166,6 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
     },
     ref
   ) => {
-    const t = useTranslations('HomePage');
-
     return (
       <div className={cn('relative', className)} ref={ref} {...props}>
         <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
@@ -177,7 +174,6 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
             <div className="absolute top-8 left-8 flex items-center gap-3">
               <Logo className="w-48" />
               <ThemeToggle />
-              {t('title')}
             </div>
             <div className="absolute top-8 right-8 flex items-center gap-3">
               <Button variant="ghost" asChild>

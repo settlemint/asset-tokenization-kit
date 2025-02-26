@@ -6,6 +6,7 @@ import { useUser } from '@/components/blocks/user-context/user-context';
 import { usePause } from '@/lib/mutations/stablecoin/pause';
 import { useUnPause } from '@/lib/mutations/stablecoin/unpause';
 import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Summary } from './steps/summary';
@@ -20,6 +21,7 @@ export function PauseForm({ address }: PauseFormProps) {
   const { data: stableCoin } = useStableCoinDetail({ address });
   const user = useUser();
   const [open, setOpen] = useState(false);
+  const t = useTranslations('admin.stablecoins.pause-form');
 
   if (!user) {
     return null;
@@ -30,14 +32,14 @@ export function PauseForm({ address }: PauseFormProps) {
       <FormSheet
         open={open}
         onOpenChange={setOpen}
-        triggerLabel="Unpause"
-        title="Unpause"
-        description="Unpause a stablecoin"
+        triggerLabel={t('unpause.trigger-label')}
+        title={t('unpause.title')}
+        description={t('unpause.description')}
       >
         <Form
           mutation={unPauseMutation}
           buttonLabels={{
-            label: 'Unpause',
+            label: t('unpause.button-label'),
           }}
           defaultValues={{
             address,
@@ -54,14 +56,14 @@ export function PauseForm({ address }: PauseFormProps) {
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Pause"
-      title="Pause"
-      description="Pause a stablecoin"
+      triggerLabel={t('pause.trigger-label')}
+      title={t('pause.title')}
+      description={t('pause.description')}
     >
       <Form
         mutation={pauseMutation}
         buttonLabels={{
-          label: 'Pause',
+          label: t('pause.button-label'),
         }}
         defaultValues={{
           address,

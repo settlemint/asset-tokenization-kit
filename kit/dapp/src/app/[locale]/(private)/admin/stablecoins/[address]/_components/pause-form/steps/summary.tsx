@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import type { Pause } from '@/lib/mutations/stablecoin/pause';
 import type { UnPause } from '@/lib/mutations/stablecoin/unpause';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -17,28 +18,26 @@ interface SummaryProps {
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
   const { control } = useFormContext<Pause | UnPause>();
+  const t = useTranslations('admin.stablecoins.pause-form.summary');
 
   return (
-    <FormStep
-      title="Review and confirm update proven collateral"
-      description="Verify the details of your update proven collateral before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Pause"
-        description="Pausing operation details"
+        title={t('pause-title')}
+        description={t('pause-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Current state"
-          value={isCurrentlyPaused ? 'Paused' : 'Active'}
+          label={t('current-state-label')}
+          value={isCurrentlyPaused ? t('state-paused') : t('state-active')}
         />
         <FormSummaryDetailItem
-          label="Target state"
-          value={isCurrentlyPaused ? 'Active' : 'Paused'}
+          label={t('target-state-label')}
+          value={isCurrentlyPaused ? t('state-active') : t('state-paused')}
         />
       </FormSummaryDetailCard>
 

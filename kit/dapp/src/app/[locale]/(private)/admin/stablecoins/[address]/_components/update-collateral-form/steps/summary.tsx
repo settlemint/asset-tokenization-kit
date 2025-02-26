@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import type { UpdateCollateral } from '@/lib/mutations/stablecoin/update-collateral';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -16,26 +17,24 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<UpdateCollateral>();
+  const t = useTranslations('admin.stablecoins.update-collateral-form.summary');
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep
-      title="Review and confirm update proven collateral"
-      description="Verify the details of your update proven collateral before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Update Collateral"
-        description="Updating collateral operation details"
+        title={t('update-title')}
+        description={t('update-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Amount"
+          label={t('amount-label')}
           value={formatNumber(values.amount ?? 0)}
         />
       </FormSummaryDetailCard>

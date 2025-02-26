@@ -5,6 +5,7 @@ import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
 import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
 import { DollarSign, Settings } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 export function Summary() {
@@ -12,38 +13,45 @@ export function Summary() {
   const values = useWatch({
     control: control,
   });
+  const t = useTranslations('admin.stablecoins.create.summary');
 
   return (
-    <FormStep
-      title="Review and confirm update proven collateral"
-      description="Verify the details of your update proven collateral before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Asset Basics"
-        description="Basic asset information and settings."
+        title={t('asset-basics-title')}
+        description={t('asset-basics-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
-        <FormSummaryDetailItem label="Name" value={values.assetName} />
-        <FormSummaryDetailItem label="Symbol" value={values.symbol} />
-        <FormSummaryDetailItem label="Decimals" value={values.decimals} />
         <FormSummaryDetailItem
-          label="ISIN"
+          label={t('name-label')}
+          value={values.assetName}
+        />
+        <FormSummaryDetailItem
+          label={t('symbol-label')}
+          value={values.symbol}
+        />
+        <FormSummaryDetailItem
+          label={t('decimals-label')}
+          value={values.decimals}
+        />
+        <FormSummaryDetailItem
+          label={t('isin-label')}
           value={values.isin === '' ? '-' : values.isin}
         />
         <FormSummaryDetailItem
-          label="Private"
-          value={values.privateAsset ? 'Yes' : 'No'}
+          label={t('private-label')}
+          value={values.privateAsset ? t('yes') : t('no')}
         />
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard
-        title="Configuration"
-        description="Asset supply and additional settings."
+        title={t('configuration-title')}
+        description={t('configuration-description')}
         icon={<Settings className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Collateral Proof Validity"
-          value={`${values.collateralLivenessSeconds} seconds`}
+          label={t('collateral-proof-validity-label')}
+          value={`${values.collateralLivenessSeconds} ${t('seconds')}`}
         />
       </FormSummaryDetailCard>
 
