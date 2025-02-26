@@ -96,7 +96,7 @@
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
-    "drizzle-kit": "0.30.4",
+    "drizzle-kit": "0.30.5",
     "eslint": "9.21.0",
     "eslint-config-next": "15.1.7",
     "playwright": "1.50.1",
