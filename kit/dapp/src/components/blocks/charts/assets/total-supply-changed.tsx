@@ -3,24 +3,27 @@ import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries } from '@/lib/charts';
 import { useAssetStats } from '@/lib/queries/asset-stats/asset-stats';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 
 interface TotalSupplyChangedProps {
   address: Address;
 }
 
-const chartConfig = {
-  totalMinted: {
-    label: 'Total minted',
-    color: 'hsl(var(--chart-2))',
-  },
-  totalBurned: {
-    label: 'Total burned',
-    color: 'hsl(var(--chart-3))',
-  },
-} satisfies ChartConfig;
-
 export function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
+  const t = useTranslations('components.charts.assets');
+
+  const chartConfig = {
+    totalMinted: {
+      label: t('total-supply-changed.minted-label'),
+      color: 'hsl(var(--chart-2))',
+    },
+    totalBurned: {
+      label: t('total-supply-changed.burned-label'),
+      color: 'hsl(var(--chart-3))',
+    },
+  } satisfies ChartConfig;
+
   const { data } = useAssetStats({ address });
 
   const timeseries = createTimeSeries(data, ['totalMinted', 'totalBurned'], {
@@ -34,13 +37,13 @@ export function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
     <AreaChartComponent
       data={timeseries}
       config={chartConfig}
-      title="Supply changes"
-      description="Showing the supply change of the token"
+      title={t('total-supply-changed.title')}
+      description={t('total-supply-changed.description')}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
       footer={
         <div className="text-muted-foreground text-xs">
-          Last updated: {timeseries.at(-1)?.timestamp}
+          {t('last-updated')}: {timeseries.at(-1)?.timestamp}
         </div>
       }
     />

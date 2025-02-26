@@ -3,20 +3,23 @@ import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries } from '@/lib/charts';
 import { useAssetStats } from '@/lib/queries/asset-stats/asset-stats';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 
 interface TotalVolumeProps {
   address: Address;
 }
 
-const chartConfig = {
-  totalVolume: {
-    label: 'Total volume',
-    color: 'hsl(var(--chart-2))',
-  },
-} satisfies ChartConfig;
-
 export function TotalVolume({ address }: TotalVolumeProps) {
+  const t = useTranslations('components.charts.assets');
+
+  const chartConfig = {
+    totalVolume: {
+      label: t('total-volume.label'),
+      color: 'hsl(var(--chart-2))',
+    },
+  } satisfies ChartConfig;
+
   const { data } = useAssetStats({ address });
 
   const timeseries = createTimeSeries(data, ['totalVolume'], {
@@ -30,13 +33,13 @@ export function TotalVolume({ address }: TotalVolumeProps) {
     <AreaChartComponent
       data={timeseries}
       config={chartConfig}
-      title="Total volume"
-      description="Showing the total volume of the token"
+      title={t('total-volume.title')}
+      description={t('total-volume.description')}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
       footer={
         <div className="text-muted-foreground text-xs">
-          Last updated: {timeseries.at(-1)?.timestamp}
+          {t('last-updated')}: {timeseries.at(-1)?.timestamp}
         </div>
       }
     />

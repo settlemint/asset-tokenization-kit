@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import type { Column } from '@tanstack/react-table';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { HTMLAttributes, PropsWithChildren } from 'react';
 
 const headerVariants = cva('', {
@@ -78,6 +79,8 @@ export function DataTableColumnHeader<TData, TValue>({
   variant = 'default',
   children,
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
+  const t = useTranslations('components.data-table');
+
   if (!column.getCanSort()) {
     return (
       <div className={cn('text-xs', headerVariants({ variant, className }))}>
@@ -113,16 +116,16 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
             <SortAsc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Sort Ascending
+            {t('sort-ascending')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
             <SortDesc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Sort Descending
+            {t('sort-descending')}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
             <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Hide
+            {t('hide')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

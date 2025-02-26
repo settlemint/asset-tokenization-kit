@@ -18,6 +18,7 @@ import { usePendingTransactions } from '@/lib/queries/transactions/transactions-
 import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '../blocks/user-context/user-context';
 import {
@@ -59,6 +60,8 @@ function TextOrSkeleton({
 export function UserDropdown() {
   const user = useUser();
   const router = useRouter();
+  const t = useTranslations('layout.user-dropdown');
+
   // Use client-side only rendering for user data to avoid hydration mismatches
   const [isClient, setIsClient] = useState(false);
 
@@ -152,7 +155,7 @@ export function UserDropdown() {
             >
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
-                Pending Transactions
+                {t('pending-transactions')}
                 {(pendingCount ?? 0) > 0 && (
                   <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
                     {pendingCount}
@@ -172,7 +175,7 @@ export function UserDropdown() {
             >
               <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
               <Link href="https://console.settlemint.com/documentation">
-                Documentation
+                {t('documentation')}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -184,7 +187,7 @@ export function UserDropdown() {
             onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >
             <LogoutIcon ref={logoutIconRef} className="mr-2 size-4" />
-            Log out
+            {t('logout')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       )}

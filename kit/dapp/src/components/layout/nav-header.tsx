@@ -7,10 +7,12 @@ import {
 } from '@/components/ui/sidebar';
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { Logo } from '../blocks/logo/logo';
 
 export function NavHeader() {
   const pathname = usePathname();
+  const t = useTranslations('layout.header');
 
   const content = (
     <div className={cn('flex w-full items-center gap-3')}>
@@ -18,8 +20,8 @@ export function NavHeader() {
         <Logo variant="icon" />
       </div>
       <div className="mb-2 flex flex-col gap-0.5 leading-none">
-        <span className="font-bold text-lg">SettleMint</span>
-        <span className="-mt-1 text-md">Asset Tokenization</span>
+        <span className="font-bold text-lg">{t('app-name')}</span>
+        <span className="-mt-1 text-md">{t('app-description')}</span>
       </div>
     </div>
   );

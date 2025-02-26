@@ -9,11 +9,13 @@ import {
   type SunIconHandle,
 } from '@/components/ui/animated-icons/sun';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useRef } from 'react';
 
 export function ThemeMenuItem() {
   const { setTheme, resolvedTheme, themes } = useTheme();
+  const t = useTranslations('theme');
   const sunIconRef = useRef<SunIconHandle>(null);
   const moonIconRef = useRef<MoonIconHandle>(null);
 
@@ -51,7 +53,7 @@ export function ThemeMenuItem() {
       ) : (
         <MoonIcon ref={moonIconRef} className="mr-2 size-4" />
       )}
-      Switch to {nextTheme} mode
+      {t('switch-to-mode', { mode: t(nextTheme) })}
     </DropdownMenuItem>
   );
 }

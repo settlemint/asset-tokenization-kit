@@ -23,6 +23,7 @@ import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { CommandEmpty, CommandLoading, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -39,11 +40,13 @@ export function FormUsers<T extends FieldValues>({
   label,
   description,
   required,
-  placeholder = 'Select an option',
+  placeholder,
   defaultValue,
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations('components.form.users');
+  const defaultPlaceholder = t('default-placeholder');
 
   return (
     <FormField
@@ -75,7 +78,7 @@ export function FormUsers<T extends FieldValues>({
                   {field.value ? (
                     <EvmAddress address={field.value as Address} />
                   ) : (
-                    placeholder
+                    placeholder || defaultPlaceholder
                   )}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
@@ -83,7 +86,7 @@ export function FormUsers<T extends FieldValues>({
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder="Search for a user..."
+                    placeholder={t('search-placeholder')}
                     className="h-9"
                   />
                   <FormUsersList
@@ -121,12 +124,13 @@ function FormUsersList({
   const { data: users, isLoading } = useUserSearch({
     searchTerm: debounced,
   });
+  const t = useTranslations('components.form.users');
 
   return (
     <CommandList>
-      {isLoading && <CommandLoading>Searching...</CommandLoading>}
+      {isLoading && <CommandLoading>{t('searching')}</CommandLoading>}
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        No user found.
+        {t('no-user-found')}
       </CommandEmpty>
       <CommandGroup>
         {users?.map((user) => (

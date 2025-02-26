@@ -222,6 +222,249 @@
       }
     }
   },
+  "auth": {
+    "signin": {
+      "title": "Login to your account",
+      "description": "Enter your email below to login to your account",
+      "email": {
+        "label": "Email",
+        "placeholder": "m@example.com"
+      },
+      "password": {
+        "label": "Password"
+      },
+      "remember-me": "Remember me",
+      "submitting": "Signing in...",
+      "submit": "Sign in",
+      "no-account": "Don't have an account?",
+      "sign-up": "Sign up",
+      "page": {
+        "alert": {
+          "title": "Just created this dAPP?",
+          "description": "The first user to sign up will be the given the admin role. You can add other admins later."
+        }
+      }
+    },
+    "signup": {
+      "title": "Create an account",
+      "description": "Enter the information below to create your account and managed blockchain wallet",
+      "name": {
+        "label": "Name",
+        "placeholder": "Warren Buffett Jr."
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "wolf@wallstreet.com"
+      },
+      "password": {
+        "label": "Password"
+      },
+      "wallet-pin": {
+        "label": "Choose a secure wallet PIN code"
+      },
+      "wallet-pin-confirm": {
+        "label": "Confirm wallet PIN code"
+      },
+      "submitting": "Creating account...",
+      "submit": "Create account",
+      "have-account": "Already have an account?",
+      "sign-in": "Sign in",
+      "error": {
+        "generic": "An error occurred"
+      },
+      "page": {
+        "alert": {
+          "title": "Just created this dAPP?",
+          "description": "The first user to sign up will be the given the admin role. You can add other admins later."
+        }
+      }
+    },
+    "wrong-role": {
+      "title": "You are not authorized to access this page",
+      "description": "You don't have the required role to access this page. Please sign in with an account that has the appropriate permissions.",
+      "go-to-portfolio": "Go to portfolio"
+    }
+  },
+  "error": {
+    "title": "Something went wrong!",
+    "error-id": "Error ID",
+    "try-again": "Try again",
+    "go-home": "Go home"
+  },
+  "components": {
+    "active-pill": {
+      "active": "Active",
+      "paused": "Paused"
+    },
+    "address-avatar": {
+      "avatar": "Avatar"
+    },
+    "asset-events-table": {
+      "events": "Events",
+      "timestamp": "Timestamp",
+      "asset": "Asset",
+      "event": "Event",
+      "sender": "Sender",
+      "detail-sheet": {
+        "details-button": "Details",
+        "details-for-event": "Details for {event} event",
+        "sender": "Sender",
+        "asset": "Asset",
+        "date": "Date",
+        "transaction-hash": "Transaction Hash"
+      },
+      "details": {
+        "details-header": "Details",
+        "from": "From",
+        "to": "To",
+        "value": "Value",
+        "amount": "Amount",
+        "account": "Account",
+        "role": "Role",
+        "new-mint": "New Mint",
+        "burned": "Burned",
+        "user": "User",
+        "token": "Token",
+        "holder": "Holder",
+        "bond-amount": "Bond Amount",
+        "underlying-amount": "Underlying Amount",
+        "old-amount": "Old Amount",
+        "new-amount": "New Amount",
+        "previous-admin-role": "Previous Admin Role",
+        "new-admin-role": "New Admin Role",
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "asset-type-icon": {
+      "stablecoin-initials": "SC",
+      "not-available-initials": "NA"
+    },
+    "charts": {
+      "assets": {
+        "last-updated": "Last updated",
+        "total-supply": {
+          "label": "Total supply",
+          "title": "Total supply",
+          "description": "Showing the total supply of the token"
+        },
+        "total-supply-changed": {
+          "minted-label": "Total minted",
+          "burned-label": "Total burned",
+          "title": "Supply changes",
+          "description": "Showing the supply change of the token"
+        },
+        "total-transfers": {
+          "label": "Total transfers",
+          "title": "Total transfers",
+          "description": "Showing the total transfers of the token"
+        },
+        "total-volume": {
+          "label": "Total volume",
+          "title": "Total volume",
+          "description": "Showing the total volume of the token"
+        }
+      },
+      "common": {
+        "no-data": "No data available",
+        "loading": "Loading...",
+        "last-updated": "Last updated"
+      },
+      "bar-charts": {
+        "horizontal": {
+          "default-title": "Bar Chart",
+          "default-description": "Showing data in horizontal bars"
+        },
+        "vertical": {
+          "default-title": "Vertical Chart",
+          "default-description": "Showing data in vertical bars"
+        }
+      },
+      "pie": {
+        "default-title": "Pie Chart",
+        "default-description": "Showing data distribution"
+      },
+      "area": {
+        "default-title": "Area Chart",
+        "default-description": "Showing data trends over time"
+      }
+    },
+    "data-table": {
+      "no-results": "No results",
+      "search": "Search...",
+      "reset": "Reset",
+      "rows-selected": "row(s) selected",
+      "selected-rows-info": "{selected} of {total} row(s) selected.",
+      "page-info": "Page {current} of {total}",
+      "rows-per-page": "Rows per page",
+      "go-to-first-page": "Go to first page",
+      "go-to-previous-page": "Go to previous page",
+      "go-to-next-page": "Go to next page",
+      "go-to-last-page": "Go to last page",
+      "export": "Export",
+      "failed-export": "Failed to export data",
+      "sort-ascending": "Sort Ascending",
+      "sort-descending": "Sort Descending",
+      "hide": "Hide",
+      "selected": "selected",
+      "no-results-found": "No results found.",
+      "clear-filters": "Clear filters",
+      "view": "View",
+      "toggle-columns": "Toggle columns"
+    },
+    "detail-grid": {
+      "info-icon-label": "Additional information"
+    },
+    "evm-address": {
+      "view-on-explorer": "View on the explorer"
+    },
+    "form": {
+      "input": {
+        "valid-email": "Please enter a valid email address",
+        "letters-only": "Please enter letters only"
+      },
+      "select": {
+        "default-placeholder": "Select an option"
+      },
+      "users": {
+        "default-placeholder": "Select an option",
+        "search-placeholder": "Search for a user...",
+        "searching": "Searching...",
+        "no-user-found": "No user found."
+      },
+      "summary": {
+        "security-confirmation": {
+          "title": "Security Confirmation",
+          "description": "Enter your pin code to confirm and sign the transaction."
+        }
+      },
+      "button": {
+        "next": "Next",
+        "previous": "Previous",
+        "send-transaction": "Send transaction",
+        "sending-transaction": "Sending transaction...",
+        "processing": "Processing..."
+      },
+      "progress": {
+        "step-of-total": "Step {current} of {total}",
+        "completed-step": "Completed step",
+        "current-step": "Current step",
+        "upcoming-step": "Upcoming step"
+      }
+    },
+    "logo": {
+      "alt-text": "SettleMint"
+    },
+    "search": {
+      "placeholder": "Search for assets or users...",
+      "no-results": "No results found",
+      "assets-section": "Assets",
+      "users-section": "Users"
+    },
+    "transaction-hash": {
+      "view-on-explorer": "View on the explorer"
+    }
+  },
   "errors": {
     "formError": "An error occurred while processing your request. Please try again later.",
     "unknown": "An unexpected error occurred. Please try again.",
@@ -248,5 +491,28 @@
   "transactions": {
     "sending": "Sending transaction {hash}",
     "success": "Transaction successfully included in block {blockNumber}"
+  },
+  "theme": {
+    "toggle-label": "Toggle theme",
+    "switch-to-mode": "Switch to {mode} mode",
+    "dark": "dark",
+    "light": "light",
+    "system": "system"
+  },
+  "layout": {
+    "navigation": {
+      "home": "Home",
+      "admin": "Issuer portal",
+      "portfolio": "My portfolio"
+    },
+    "header": {
+      "app-name": "SettleMint",
+      "app-description": "Asset Tokenization"
+    },
+    "user-dropdown": {
+      "pending-transactions": "Pending Transactions",
+      "documentation": "Documentation",
+      "logout": "Log out"
+    }
   }
 }

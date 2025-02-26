@@ -26,6 +26,7 @@ import {
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 
 const menuItemStyles =
@@ -34,6 +35,7 @@ const menuItemStyles =
 export function NavFooter() {
   const pathname = usePathname();
   const { state } = useSidebar();
+  const t = useTranslations('layout.navigation');
 
   // Create refs for each icon
   const homeIconRef = useRef<HomeIconHandle>(null);
@@ -41,7 +43,7 @@ export function NavFooter() {
   const portfolioIconRef = useRef<BriefcaseIconHandle>(null);
 
   const isAdmin = pathname.startsWith('/admin');
-  const currentSection = isAdmin ? 'Admin' : 'Portfolio';
+  const currentSection = isAdmin ? t('admin') : t('portfolio');
   const currentIcon = isAdmin ? (
     <SettingsGearIcon className="h-4 w-4" />
   ) : (
@@ -78,7 +80,7 @@ export function NavFooter() {
                 onMouseLeave={() => homeIconRef.current?.stopAnimation()}
               >
                 <HomeIcon ref={homeIconRef} className="h-4 w-4" />
-                Home
+                {t('home')}
                 {pathname === '/' && <Check />}
               </Link>
             </DropdownMenuItem>
@@ -93,7 +95,7 @@ export function NavFooter() {
                 onMouseLeave={() => adminIconRef.current?.stopAnimation()}
               >
                 <SettingsGearIcon ref={adminIconRef} className="h-4 w-4" />
-                Admin
+                {t('admin')}
                 {isAdmin && <Check />}
               </Link>
             </DropdownMenuItem>
@@ -108,7 +110,7 @@ export function NavFooter() {
                 onMouseLeave={() => portfolioIconRef.current?.stopAnimation()}
               >
                 <BriefcaseIcon ref={portfolioIconRef} className="h-4 w-4" />
-                Portfolio
+                {t('portfolio')}
                 {!isAdmin && <Check />}
               </Link>
             </DropdownMenuItem>

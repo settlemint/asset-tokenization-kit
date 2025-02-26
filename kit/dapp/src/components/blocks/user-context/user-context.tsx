@@ -1,7 +1,9 @@
 'use client';
 
+import { redirect } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
 import type { User } from '@/lib/auth/types';
+import { useParams } from 'next/navigation';
 import { createContext, useContext, type ReactNode } from 'react';
 import type { Address, Prettify } from 'viem';
 
@@ -11,8 +13,12 @@ export const UserContext = createContext<Prettify<
 
 export function UserContextProvider({ children }: { children: ReactNode }) {
   const session = authClient.useSession();
+  const { locale } = useParams();
   if (!session.data?.user) {
-    return null;
+    return redirect({
+      href: '/auth/signin',
+      locale: locale as string,
+    });
   }
   const user = session.data.user as Prettify<
     Omit<User, 'wallet'> & { wallet: Address }
