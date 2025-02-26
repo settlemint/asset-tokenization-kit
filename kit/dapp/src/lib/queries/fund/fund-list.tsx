@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
@@ -126,12 +125,12 @@ export async function getFundList({ limit }: FundListOptions = {}) {
 }
 
 /**
- * Creates a memoized query key for fund list queries
+ * Generates a consistent query key for fund list queries
  *
  * @param [options] - Options for the fund list query
  */
 export const getQueryKey = (options?: FundListOptions) =>
-  ['asset', assetConfig.fund.queryKey, options?.limit ?? 'all'] as const;
+  ['asset', 'fund', options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching fund list
@@ -153,7 +152,10 @@ export function useFundList(options?: FundListOptions) {
 
   return {
     ...result,
-    config: assetConfig.fund,
     queryKey,
+    // Inline fund config values
+    assetType: 'fund' as const,
+    urlSegment: 'funds',
+    theGraphTypename: 'Fund' as const,
   };
 }

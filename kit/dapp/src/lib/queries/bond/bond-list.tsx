@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
@@ -131,7 +130,7 @@ export async function getBondList({ limit }: BondListOptions = {}) {
  * @param [options] - Options for the bond list query
  */
 export const getQueryKey = (options?: BondListOptions) =>
-  ['asset', assetConfig.bond.queryKey, options?.limit ?? 'all'] as const;
+  ['asset', 'bond', options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching bond list
@@ -153,7 +152,10 @@ export function useBondList(options?: BondListOptions) {
 
   return {
     ...result,
-    config: assetConfig.bond,
     queryKey,
+    // Inline bond config values
+    assetType: 'bond' as const,
+    urlSegment: 'bonds',
+    theGraphTypename: 'Bond' as const,
   };
 }

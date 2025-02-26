@@ -5,7 +5,6 @@
  * It extends the standard Zod library with specialized validators for Ethereum addresses,
  * transaction hashes, financial identifiers, and other domain-specific data types.
  */
-import { assetConfig } from '@/lib/config/assets';
 import { fromUnixTime } from 'date-fns';
 import BigDecimal from 'js-big-decimal';
 import type { Address, Hash } from 'viem';
@@ -224,7 +223,8 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates asset types
    */
-  assetType: () => z.enum(Object.keys(assetConfig) as [string, ...string[]]),
+  assetType: () =>
+    z.enum(['bond', 'cryptocurrency', 'equity', 'fund', 'stablecoin']),
 };
 
 /**

@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
@@ -107,13 +106,13 @@ export async function getFundDetail({ address }: FundDetailProps) {
  * @returns Array representing the query key for React Query
  */
 export const getQueryKey = ({ address }: FundDetailProps) =>
-  ['asset', 'detail', assetConfig.fund.queryKey, getAddress(address)] as const;
+  ['asset', 'detail', 'fund', getAddress(address)] as const;
 
 /**
  * React Query hook for fetching fund details
  *
  * @param params - Object containing the fund address
- * @returns Query result with fund data, config, and query key
+ * @returns Query result with fund data and query key
  */
 export function useFundDetail({ address }: FundDetailProps) {
   const queryKey = getQueryKey({ address });
@@ -125,7 +124,10 @@ export function useFundDetail({ address }: FundDetailProps) {
 
   return {
     ...result,
-    config: assetConfig.fund,
     queryKey,
+    // Inline fund config values
+    assetType: 'fund' as const,
+    urlSegment: 'funds',
+    theGraphTypename: 'Fund' as const,
   };
 }

@@ -17,15 +17,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarGroup, useSidebar } from '@/components/ui/sidebar';
-import { assetConfig } from '@/lib/config/assets';
+import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { CreateStablecoinForm } from '../../stablecoins/_components/create-form/form';
 
 export function DesignerButton() {
+  const t = useTranslations('admin.sidebar');
   const { state, isMobile } = useSidebar();
-  const [tokenType, setTokenType] = useState<keyof typeof assetConfig | null>(
-    null
-  );
+  const [tokenType, setTokenType] = useState<
+    'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin' | null
+  >(null);
   const frameIconRef = useRef<FrameIconHandle>(null);
 
   return (
@@ -39,7 +40,7 @@ export function DesignerButton() {
               onMouseLeave={() => frameIconRef.current?.stopAnimation()}
             >
               <FrameIcon ref={frameIconRef} className="size-4" />
-              {state === 'expanded' && <span>Asset Designer</span>}
+              {state === 'expanded' && <span>{t('asset-designer')}</span>}
             </Button>
           ) : (
             <button
@@ -58,20 +59,69 @@ export function DesignerButton() {
           side={isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          {Object.entries(assetConfig).map(([type, config]) => (
-            <DropdownMenuItem
-              key={type}
-              onSelect={() => setTokenType(type as keyof typeof assetConfig)}
-              className="dropdown-menu-item"
-            >
-              {config.name}
-            </DropdownMenuItem>
-          ))}
+          <DropdownMenuItem
+            onSelect={() => setTokenType('bond')}
+            className="dropdown-menu-item"
+          >
+            {t('asset-types.bond')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => setTokenType('cryptocurrency')}
+            className="dropdown-menu-item"
+          >
+            {t('asset-types.cryptocurrency')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => setTokenType('equity')}
+            className="dropdown-menu-item"
+          >
+            {t('asset-types.equity')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => setTokenType('fund')}
+            className="dropdown-menu-item"
+          >
+            {t('asset-types.fund')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => setTokenType('stablecoin')}
+            className="dropdown-menu-item"
+          >
+            {t('asset-types.stablecoin')}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Placeholder for Bond form - to be implemented */}
+      {tokenType === 'bond' && (
+        <div className="hidden">
+          {/* <CreateBondForm open={true} onCloseAction={() => setTokenType(null)} /> */}
+        </div>
+      )}
+
+      {/* Placeholder for Cryptocurrency form - to be implemented */}
+      {tokenType === 'cryptocurrency' && (
+        <div className="hidden">
+          {/* <CreateCryptocurrencyForm open={true} onCloseAction={() => setTokenType(null)} /> */}
+        </div>
+      )}
+
+      {/* Placeholder for Equity form - to be implemented */}
+      {tokenType === 'equity' && (
+        <div className="hidden">
+          {/* <CreateEquityForm open={true} onCloseAction={() => setTokenType(null)} /> */}
+        </div>
+      )}
+
+      {/* Placeholder for Fund form - to be implemented */}
+      {tokenType === 'fund' && (
+        <div className="hidden">
+          {/* <CreateFundForm open={true} onCloseAction={() => setTokenType(null)} /> */}
+        </div>
+      )}
+
       <CreateStablecoinForm
-        open={tokenType === assetConfig.stablecoin.queryKey}
+        open={tokenType === 'stablecoin'}
         onCloseAction={() => setTokenType(null)}
       />
     </SidebarGroup>

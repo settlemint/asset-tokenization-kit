@@ -1,4 +1,3 @@
-import type { assetConfig } from '@/lib/config/assets';
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
@@ -182,7 +181,9 @@ export function useSidebarAssets(options?: SidebarAssetsOptions) {
   /**
    * Helper function to get the count for a specific asset type
    */
-  const getCount = (assetType: keyof typeof assetConfig) =>
+  const getCount = (
+    assetType: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin'
+  ) =>
     result.data.assetCounts.find((asset) => asset.assetType === assetType)
       ?.count ?? 0;
 

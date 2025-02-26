@@ -8,12 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
 import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
-import { assetConfig } from '@/lib/config/assets';
 import { useAssetSearch } from '@/lib/queries/asset/asset-search';
 import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
+import { useTranslations } from 'next-intl';
 import { useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { getAddress } from 'viem';
@@ -41,6 +40,24 @@ export const Search = () => {
   const { data: assets } = useAssetSearch({
     searchTerm: sanitizeSearchTerm(debounced),
   });
+
+  // Get URL segment based on asset type
+  const getAssetUrlSegment = (type: string): string => {
+    switch (type) {
+      case 'bond':
+        return 'bonds';
+      case 'cryptocurrency':
+        return 'cryptocurrencies';
+      case 'equity':
+        return 'equities';
+      case 'fund':
+        return 'funds';
+      case 'stablecoin':
+        return 'stablecoins';
+      default:
+        return type;
+    }
+  };
 
   return (
     <Form {...form}>
@@ -113,12 +130,11 @@ export const Search = () => {
                     className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                   >
                     <Link
-                      href={`/admin/${assetConfig[asset.type as keyof typeof assetConfig].urlSegment}/${getAddress(asset.id)}`}
+                      href={`/admin/${getAssetUrlSegment(asset.type)}/${getAddress(asset.id)}`}
                       onClick={() => {
                         form.setValue('search', '', {
                           shouldDirty: true,
                           shouldTouch: true,
-                          shouldValidate: true,
                         });
                       }}
                     >

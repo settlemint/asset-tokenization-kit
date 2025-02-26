@@ -242,7 +242,14 @@
           "description": "Showing events for each asset type",
           "mint": "Mint",
           "transfer": "Transfer",
-          "burn": "Burn"
+          "burn": "Burn",
+          "asset-types": {
+            "bonds": "Bonds",
+            "cryptocurrencies": "Cryptocurrencies",
+            "equities": "Equities",
+            "funds": "Funds",
+            "stablecoins": "Stablecoins"
+          }
         },
         "assets-supply": {
           "to-be-moved": "To Be Moved To The Graph"
@@ -262,8 +269,45 @@
         "latest-events": {
           "view-all": "View all events →"
         }
+      },
+      "page": {
+        "title": "Dashboard",
+        "stats_heading": "Stats",
+        "latest_events_heading": "Latest Events"
+      }
+    },
+    "sidebar": {
+      "asset-designer": "Asset Designer",
+      "create-asset": "Create Asset",
+      "asset-management": {
+        "group-title": "Asset Management",
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins",
+        "view-all": "View all"
+      },
+      "asset-types": {
+        "bond": "Bond",
+        "cryptocurrency": "Cryptocurrency",
+        "equity": "Equity",
+        "fund": "Fund",
+        "stablecoin": "Stablecoin"
       }
     }
+  },
+  "asset-types": {
+    "bond": "Bond",
+    "cryptocurrency": "Cryptocurrency",
+    "equity": "Equity",
+    "fund": "Fund",
+    "stablecoin": "Stablecoin",
+    "bonds": "Bonds",
+    "cryptocurrencies": "Cryptocurrencies",
+    "equities": "Equities",
+    "funds": "Funds",
+    "stablecoins": "Stablecoins"
   },
   "auth": {
     "signin": {
