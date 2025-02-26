@@ -1,6 +1,4 @@
 import { revokeRole } from '@/lib/mutations/stablecoin/revoke-role';
-import { getQueryKey as getStablecoinDetailQueryKey } from '@/lib/queries/stablecoin/stablecoin-detail';
-import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
 import type { Hash } from 'viem';
@@ -88,11 +86,6 @@ export function useUpdateRoles() {
     ...mutation,
     inputSchema: UpdateRolesSchema,
     outputSchema: z.array(z.array(z.hash())),
-    invalidateKeys: (variables: UpdateRoles) => [
-      // Invalidate the stablecoin list
-      getStablecoinListQueryKey(),
-      // Invalidate the specific stablecoin details using the query function
-      getStablecoinDetailQueryKey({ address: variables.address }),
-    ],
+    invalidateKeys: () => [['user'], ['transaction'], ['asset']],
   };
 }

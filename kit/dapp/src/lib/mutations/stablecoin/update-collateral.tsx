@@ -1,9 +1,5 @@
 import { handleChallenge } from '@/lib/challenge';
-import {
-  getStableCoinDetail,
-  getQueryKey as getStablecoinDetailQueryKey,
-} from '@/lib/queries/stablecoin/stablecoin-detail';
-import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -100,11 +96,6 @@ export function useUpdateCollateral() {
     ...mutation,
     inputSchema: UpdateCollateralSchema,
     outputSchema: z.hash(),
-    invalidateKeys: (variables: UpdateCollateral) => [
-      // Invalidate the stablecoin list
-      getStablecoinListQueryKey(),
-      // Invalidate the specific stablecoin details using the query function
-      getStablecoinDetailQueryKey({ address: variables.address }),
-    ],
+    invalidateKeys: () => [['user'], ['transaction'], ['asset']],
   };
 }

@@ -66,7 +66,7 @@ export async function getPendingTransactions({
  */
 const getQueryKey = ({ address }: PendingTransactionsProps) =>
   [
-    'asset',
+    'transaction',
     'pendingTransactions',
     address ? getAddress(address) : 'all',
   ] as const;
