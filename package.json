@@ -48,7 +48,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "1.1.9",
+    "@settlemint/sdk-cli": "1.1.10",
     "turbo": "2.4.4",
     "typescript": "5.7.3",
     "prettier": "3.5.2"
@@ -65,7 +65,9 @@
     "protobufjs",
     "secp256k1"
   ],
-  "workspaces": ["kit/*"],
+  "workspaces": [
+    "kit/*"
+  ],
   "packageManager": "bun@1.2.3",
   "overrides": {
     "react-is": "19.0.0",
