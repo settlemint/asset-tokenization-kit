@@ -1,9 +1,17 @@
 'use client';
 
+import { EventDetailSheet } from '@/components/blocks/asset-events-table/detail-sheet';
 import { DataTable } from '@/components/blocks/data-table/data-table';
+import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
+import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
+import type { NormalizedEventsListItem } from '@/lib/queries/asset-events/asset-events-fragments';
 import { useAssetEventsList } from '@/lib/queries/asset-events/asset-events-list';
+import { createColumnHelper } from '@tanstack/react-table';
+import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
-import { columns, icons } from './table/columns';
 
 interface AssetEventsTableProps {
   asset?: Address;
@@ -12,6 +20,13 @@ interface AssetEventsTableProps {
   limit?: number;
 }
 
+export const icons = {
+  active: PlayCircle,
+  paused: PauseCircle,
+  private: Lock,
+  public: Unlock,
+};
+
 export function AssetEventsTable({
   asset,
   sender,
@@ -19,13 +34,105 @@ export function AssetEventsTable({
   limit,
 }: AssetEventsTableProps) {
   const { data: events } = useAssetEventsList({ asset, sender, limit });
+  const t = useTranslations('components.asset-events-table');
+  const columnHelper = createColumnHelper<NormalizedEventsListItem>();
 
   return (
     <DataTable
-      columns={columns}
+      columns={[
+        columnHelper.accessor('timestamp', {
+          header: ({ column }) => {
+            return (
+              <DataTableColumnHeader column={column}>
+                {t('timestamp')}
+              </DataTableColumnHeader>
+            );
+          },
+          cell: ({ getValue }) => (
+            <DataTableColumnCell>
+              <span className="[&:first-letter]:uppercase">{getValue()}</span>
+            </DataTableColumnCell>
+          ),
+          enableColumnFilter: false,
+        }),
+        columnHelper.accessor('asset', {
+          header: ({ column }) => {
+            return (
+              <DataTableColumnHeader column={column}>
+                {t('asset')}
+              </DataTableColumnHeader>
+            );
+          },
+          cell: ({ getValue }) => {
+            const asset = getValue();
+
+            return (
+              <DataTableColumnCell>
+                <EvmAddress address={asset as Address}>
+                  <EvmAddressBalances address={asset as Address} />
+                </EvmAddress>
+              </DataTableColumnCell>
+            );
+          },
+          enableColumnFilter: true,
+        }),
+        columnHelper.accessor('event', {
+          header: ({ column }) => {
+            return (
+              <DataTableColumnHeader column={column}>
+                {t('event')}
+              </DataTableColumnHeader>
+            );
+          },
+          cell: ({ getValue }) => (
+            <DataTableColumnCell>{getValue()}</DataTableColumnCell>
+          ),
+          enableColumnFilter: true,
+        }),
+        columnHelper.accessor('sender', {
+          header: ({ column }) => {
+            return (
+              <DataTableColumnHeader column={column}>
+                {t('sender')}
+              </DataTableColumnHeader>
+            );
+          },
+          cell: ({ getValue }) => {
+            const senderId = getValue();
+
+            return (
+              <DataTableColumnCell>
+                <EvmAddress address={senderId as Address}>
+                  <EvmAddressBalances address={senderId as Address} />
+                </EvmAddress>
+              </DataTableColumnCell>
+            );
+          },
+          enableColumnFilter: true,
+        }),
+        columnHelper.display({
+          id: 'actions',
+          header: () => '',
+          cell: ({ row }) => (
+            <DataTableColumnCell>
+              <EventDetailSheet
+                event={row.original.event}
+                sender={row.original.sender}
+                asset={row.original.asset}
+                timestamp={row.original.timestamp}
+                details={row.original.details}
+                transactionHash={row.original.transactionHash}
+              />
+            </DataTableColumnCell>
+          ),
+          meta: {
+            enableCsvExport: false,
+          },
+        }),
+      ]}
       data={events}
       icons={icons ?? {}}
-      name={'Events'}
+      name={t('events')}
       toolbar={{ enableToolbar: !disableToolbarAndPagination }}
       pagination={{ enablePagination: !disableToolbarAndPagination }}
     />

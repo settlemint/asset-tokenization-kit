@@ -1,35 +1,46 @@
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { ApprovalEvent } from '@/lib/queries/asset-events/asset-events-fragments';
 import { formatNumber } from '@/lib/utils/number';
+import { useTranslations } from 'next-intl';
+import { DetailsCard } from '../details-card';
 
 interface ApprovalDetailsProps {
   details: ApprovalEvent;
+  symbol?: string;
 }
 
-export function ApprovalDetails({ details }: ApprovalDetailsProps) {
-  return (
-    <Card>
-      <CardHeader>Details</CardHeader>
-      <CardContent>
-        <dl className="grid grid-cols-[1fr_2fr] gap-4">
-          <dt className="text-muted-foreground text-sm">Owner:</dt>
-          <dd className="text-sm">
-            <EvmAddress address={details.owner.id}>
-              <EvmAddressBalances address={details.owner.id} />
-            </EvmAddress>
-          </dd>
-          <dt className="text-muted-foreground text-sm">Spender:</dt>
-          <dd className="text-sm">
-            <EvmAddress address={details.spender.id}>
-              <EvmAddressBalances address={details.spender.id} />
-            </EvmAddress>
-          </dd>
-          <dt className="text-muted-foreground text-sm">Value:</dt>
-          <dd className="text-sm">{formatNumber(details.value)}</dd>
-        </dl>
-      </CardContent>
-    </Card>
-  );
+export function ApprovalDetails({
+  details,
+  symbol = '',
+}: ApprovalDetailsProps) {
+  const t = useTranslations('components.asset-events-table.details');
+
+  const detailItems = [
+    {
+      key: 'from',
+      label: t('from'),
+      value: (
+        <EvmAddress address={details.owner.id}>
+          <EvmAddressBalances address={details.owner.id} />
+        </EvmAddress>
+      ),
+    },
+    {
+      key: 'to',
+      label: t('to'),
+      value: (
+        <EvmAddress address={details.spender.id}>
+          <EvmAddressBalances address={details.spender.id} />
+        </EvmAddress>
+      ),
+    },
+    {
+      key: 'amount',
+      label: t('amount'),
+      value: formatNumber(details.value, { token: symbol }),
+    },
+  ];
+
+  return <DetailsCard details={detailItems} />;
 }

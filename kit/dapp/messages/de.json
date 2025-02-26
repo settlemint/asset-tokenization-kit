@@ -221,6 +221,130 @@
       }
     }
   },
+  "components": {
+    "active-pill": {
+      "active": "Aktiv",
+      "paused": "Pausiert"
+    },
+    "address-avatar": {
+      "avatar": "Avatar"
+    },
+    "asset-events-table": {
+      "events": "Ereignisse",
+      "timestamp": "Zeitstempel",
+      "asset": "Asset",
+      "event": "Ereignis",
+      "sender": "Absender",
+      "detail-sheet": {
+        "details-button": "Details",
+        "details-for-event": "Details für {event} Ereignis",
+        "sender": "Absender",
+        "asset": "Asset",
+        "date": "Datum",
+        "transaction-hash": "Transaktions-Hash"
+      },
+      "details": {
+        "details-header": "Details",
+        "from": "Von",
+        "to": "An",
+        "value": "Wert",
+        "amount": "Betrag",
+        "account": "Konto",
+        "role": "Rolle",
+        "new-mint": "Neue Prägung",
+        "burned": "Verbrannt",
+        "user": "Benutzer",
+        "token": "Token",
+        "holder": "Inhaber",
+        "bond-amount": "Anleihe-Betrag",
+        "underlying-amount": "Zugrunde liegender Betrag",
+        "old-amount": "Alter Betrag",
+        "new-amount": "Neuer Betrag",
+        "previous-admin-role": "Vorherige Admin-Rolle",
+        "new-admin-role": "Neue Admin-Rolle",
+        "yes": "Ja",
+        "no": "Nein"
+      }
+    },
+    "asset-type-icon": {
+      "stablecoin-initials": "SC",
+      "not-available-initials": "NA"
+    },
+    "charts": {
+      "assets": {
+        "last-updated": "Zuletzt aktualisiert",
+        "total-supply": {
+          "label": "Gesamtangebot",
+          "title": "Gesamtangebot",
+          "description": "Zeigt das Gesamtangebot des Tokens an"
+        },
+        "total-supply-changed": {
+          "minted-label": "Insgesamt geprägt",
+          "burned-label": "Insgesamt verbrannt",
+          "title": "Angebotsänderungen",
+          "description": "Zeigt die Angebotsänderung des Tokens an"
+        },
+        "total-transfers": {
+          "label": "Gesamtüberweisungen",
+          "title": "Gesamtüberweisungen",
+          "description": "Zeigt die Gesamtüberweisungen des Tokens an"
+        },
+        "total-volume": {
+          "label": "Gesamtvolumen",
+          "title": "Gesamtvolumen",
+          "description": "Zeigt das Gesamtvolumen des Tokens an"
+        }
+      },
+      "common": {
+        "no-data": "Keine Daten verfügbar",
+        "loading": "Wird geladen...",
+        "last-updated": "Zuletzt aktualisiert"
+      },
+      "bar-charts": {
+        "horizontal": {
+          "default-title": "Balkendiagramm",
+          "default-description": "Zeigt Daten in horizontalen Balken an"
+        },
+        "vertical": {
+          "default-title": "Vertikales Diagramm",
+          "default-description": "Zeigt Daten in vertikalen Balken an"
+        }
+      },
+      "pie": {
+        "default-title": "Kreisdiagramm",
+        "default-description": "Zeigt die Datenverteilung an"
+      },
+      "area": {
+        "default-title": "Flächendiagramm",
+        "default-description": "Zeigt Datentrends im Zeitverlauf an"
+      }
+    },
+    "data-table": {
+      "no-results": "Keine Ergebnisse",
+      "search": "Suchen...",
+      "reset": "Zurücksetzen",
+      "of": "von",
+      "rows-selected": "Zeile(n) ausgewählt",
+      "selected-rows-info": "{selected} von {total} Zeile(n) ausgewählt.",
+      "page-info": "Seite {current} von {total}",
+      "rows-per-page": "Zeilen pro Seite",
+      "page": "Seite",
+      "go-to-first-page": "Zur ersten Seite",
+      "go-to-previous-page": "Zur vorherigen Seite",
+      "go-to-next-page": "Zur nächsten Seite",
+      "go-to-last-page": "Zur letzten Seite",
+      "export": "Exportieren",
+      "failed-export": "Datenexport fehlgeschlagen",
+      "sort-ascending": "Aufsteigend sortieren",
+      "sort-descending": "Absteigend sortieren",
+      "hide": "Ausblenden",
+      "selected": "ausgewählt",
+      "no-results-found": "Keine Ergebnisse gefunden.",
+      "clear-filters": "Filter löschen",
+      "view": "Ansicht",
+      "toggle-columns": "Spalten ein-/ausblenden"
+    }
+  },
   "errors": {
     "formError": "Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
     "unknown": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",

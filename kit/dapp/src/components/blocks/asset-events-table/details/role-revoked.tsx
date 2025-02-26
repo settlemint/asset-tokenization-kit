@@ -1,29 +1,33 @@
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { RoleRevokedEvent } from '@/lib/queries/asset-events/asset-events-fragments';
 import { roles } from '@/lib/roles';
+import { useTranslations } from 'next-intl';
+import { DetailsCard } from '../details-card';
 
 interface RoleRevokedDetailsProps {
   details: RoleRevokedEvent;
 }
 
 export function RoleRevokedDetails({ details }: RoleRevokedDetailsProps) {
-  return (
-    <Card>
-      <CardHeader>Details</CardHeader>
-      <CardContent>
-        <dl className="grid grid-cols-[1fr_2fr] gap-4">
-          <dt className="text-muted-foreground text-sm">Account:</dt>
-          <dd className="text-sm">
-            <EvmAddress address={details.account.id}>
-              <EvmAddressBalances address={details.account.id} />
-            </EvmAddress>
-          </dd>
-          <dt className="text-muted-foreground text-sm">Role:</dt>
-          <dd className="text-sm">{roles[details.role]}</dd>
-        </dl>
-      </CardContent>
-    </Card>
-  );
+  const t = useTranslations('components.asset-events-table.details');
+
+  const detailItems = [
+    {
+      key: 'account',
+      label: t('account'),
+      value: (
+        <EvmAddress address={details.account.id}>
+          <EvmAddressBalances address={details.account.id} />
+        </EvmAddress>
+      ),
+    },
+    {
+      key: 'role',
+      label: t('role'),
+      value: roles[details.role],
+    },
+  ];
+
+  return <DetailsCard details={detailItems} />;
 }

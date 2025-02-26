@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { useTranslations } from 'next-intl';
 import { memo, useMemo } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
 import { getAddress, isAddress, type Address } from 'viem';
@@ -63,7 +64,7 @@ export interface AddressAvatarProps
   indicator?: boolean;
   /** Color of the indicator dot */
   indicatorColor?: 'primary' | 'success' | 'warning' | 'destructive';
-  /** Accessibility label, defaults to "Avatar" */
+  /** Accessibility label, defaults to translated "Avatar" text */
   alt?: string;
 }
 
@@ -89,10 +90,12 @@ function AddressAvatarComponent({
   size = 'small',
   indicator = false,
   indicatorColor = 'primary',
-  alt = 'Avatar',
+  alt,
   className,
   ...props
 }: AddressAvatarProps) {
+  const t = useTranslations('components.address-avatar');
+
   // Use either size or variant prop (for backward compatibility)
   const sizeValue = size || 'small';
 
@@ -123,6 +126,9 @@ function AddressAvatarComponent({
     return '??';
   }, [email, validAddress]);
 
+  // Use the provided alt text or the translated default
+  const altText = alt || t('avatar');
+
   return (
     <div
       className={cn(
@@ -133,9 +139,9 @@ function AddressAvatarComponent({
     >
       <Avatar
         className={addressAvatarVariants({ size: sizeValue })}
-        aria-label={alt}
+        aria-label={altText}
       >
-        <AvatarImage src={avatarSrc} alt={alt} loading="lazy" />
+        <AvatarImage src={avatarSrc} alt={altText} loading="lazy" />
         <AvatarFallback>{fallbackText}</AvatarFallback>
       </Avatar>
 

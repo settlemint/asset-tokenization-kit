@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import type { Column, Table } from '@tanstack/react-table';
 import { Download } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 function formatCellValue(value: unknown): string {
@@ -38,7 +39,10 @@ function getColumnHeader<TData>(column: Column<TData, unknown>): string {
   return column.id;
 }
 
-function exportTableToCSV<TData>(table: Table<TData>): void {
+function exportTableToCSV<TData>(
+  table: Table<TData>,
+  errorMessage: string
+): void {
   try {
     // Add BOM for Excel compatibility
     const BOM = '\uFEFF';
@@ -78,7 +82,7 @@ function exportTableToCSV<TData>(table: Table<TData>): void {
     document.body.removeChild(link);
     setTimeout(() => URL.revokeObjectURL(url), 100);
   } catch {
-    toast.error('Failed to export data');
+    toast.error(errorMessage);
   }
 }
 
@@ -87,16 +91,18 @@ interface DataTableExportProps<TData> {
 }
 
 export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
+  const t = useTranslations('components.data-table');
+
   return (
     <div className="ml-2 flex items-center gap-2">
       <Button
         variant="outline"
         size="sm"
-        onClick={() => exportTableToCSV(table)}
+        onClick={() => exportTableToCSV(table, t('failed-export'))}
         className="gap-2"
       >
         <Download className="size-4" aria-hidden="true" />
-        Export
+        {t('export')}
       </Button>
     </div>
   );

@@ -1,6 +1,7 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import type { RoleAdminChangedEvent } from '@/lib/queries/asset-events/asset-events-fragments';
 import { roles } from '@/lib/roles';
+import { useTranslations } from 'next-intl';
+import { DetailsCard } from '../details-card';
 
 interface RoleAdminChangedDetailsProps {
   details: RoleAdminChangedEvent;
@@ -9,21 +10,25 @@ interface RoleAdminChangedDetailsProps {
 export function RoleAdminChangedDetails({
   details,
 }: RoleAdminChangedDetailsProps) {
-  return (
-    <Card>
-      <CardHeader>Details</CardHeader>
-      <CardContent>
-        <dl className="grid grid-cols-[1fr_2fr] gap-4">
-          <dt className="text-muted-foreground text-sm">Role:</dt>
-          <dd className="text-sm">{roles[details.role]}</dd>
-          <dt className="text-muted-foreground text-sm">
-            Previous Admin Role:
-          </dt>
-          <dd className="text-sm">{details.previousAdminRole}</dd>
-          <dt className="text-muted-foreground text-sm">New Admin Role:</dt>
-          <dd className="text-sm">{details.newAdminRole}</dd>
-        </dl>
-      </CardContent>
-    </Card>
-  );
+  const t = useTranslations('components.asset-events-table.details');
+
+  const detailItems = [
+    {
+      key: 'role',
+      label: t('role'),
+      value: roles[details.role],
+    },
+    {
+      key: 'previous-admin-role',
+      label: t('previous-admin-role'),
+      value: details.previousAdminRole,
+    },
+    {
+      key: 'new-admin-role',
+      label: t('new-admin-role'),
+      value: details.newAdminRole,
+    },
+  ];
+
+  return <DetailsCard details={detailItems} />;
 }

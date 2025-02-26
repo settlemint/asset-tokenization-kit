@@ -24,6 +24,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState, type ComponentType } from 'react';
 import { DataTableColumnCell } from './data-table-column-cell';
 import { DataTableColumnHeader } from './data-table-column-header';
@@ -84,6 +85,7 @@ export function DataTable<TData>({
   pagination,
   initialSorting,
 }: DataTableProps<TData>) {
+  const t = useTranslations('components.data-table');
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -166,7 +168,7 @@ export function DataTable<TData>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          No results
+          {t('no-results')}
         </TableCell>
       </TableRow>
     );

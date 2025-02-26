@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import type { NormalizedEventsListItem } from '@/lib/queries/asset-events/asset-events-fragments';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 import { ApprovalDetails } from './details/approval';
@@ -25,6 +26,7 @@ import { TokenWithdrawnDetails } from './details/token-withdrawn';
 import { TokensFrozenDetails } from './details/tokens-frozen';
 import { TransferDetails } from './details/transfer';
 import { UserBlockedDetails } from './details/user-blocked';
+
 export function EventDetailSheet({
   event,
   sender,
@@ -33,35 +35,39 @@ export function EventDetailSheet({
   details,
   transactionHash,
 }: NormalizedEventsListItem) {
+  const t = useTranslations('components.asset-events-table.detail-sheet');
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          Details
+          {t('details-button')}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{event}</SheetTitle>
-          <SheetDescription>Details for {event} event</SheetDescription>
+          <SheetDescription>
+            {t('details-for-event', { event })}
+          </SheetDescription>
         </SheetHeader>
         <Card className="my-6">
           <CardContent className="pt-6">
             <dl className="grid grid-cols-[1fr_2fr] gap-4">
-              <dt className="text-muted-foreground text-sm">Sender:</dt>
+              <dt className="text-muted-foreground text-sm">{t('sender')}:</dt>
               <dd className="text-sm">
                 <EvmAddress address={sender as Address} />
               </dd>
-              <dt className="text-muted-foreground text-sm">Asset:</dt>
+              <dt className="text-muted-foreground text-sm">{t('asset')}:</dt>
               <dd className="text-sm">
                 <EvmAddress address={asset as Address} />
               </dd>
-              <dt className="text-muted-foreground text-sm">Date:</dt>
+              <dt className="text-muted-foreground text-sm">{t('date')}:</dt>
               <dd className="text-sm [&:first-letter]:uppercase">
                 {timestamp}
               </dd>
               <dt className="text-muted-foreground text-sm">
-                Transaction Hash:
+                {t('transaction-hash')}:
               </dt>
               <dd className="text-sm">
                 <TransactionHash hash={transactionHash} />
