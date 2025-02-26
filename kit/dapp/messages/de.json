@@ -222,6 +222,75 @@
       }
     }
   },
+  "auth": {
+    "signin": {
+      "title": "Bei Ihrem Konto anmelden",
+      "description": "Geben Sie Ihre E-Mail-Adresse ein, um sich bei Ihrem Konto anzumelden",
+      "email": {
+        "label": "E-Mail",
+        "placeholder": "m@beispiel.de"
+      },
+      "password": {
+        "label": "Passwort"
+      },
+      "remember-me": "Angemeldet bleiben",
+      "submitting": "Anmeldung läuft...",
+      "submit": "Anmelden",
+      "no-account": "Haben Sie noch kein Konto?",
+      "sign-up": "Registrieren",
+      "page": {
+        "alert": {
+          "title": "Haben Sie diese dAPP gerade erstellt?",
+          "description": "Der erste Benutzer, der sich registriert, erhält die Administratorrolle. Sie können später weitere Administratoren hinzufügen."
+        }
+      }
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "description": "Geben Sie die folgenden Informationen ein, um Ihr Konto und Ihre verwaltete Blockchain-Wallet zu erstellen",
+      "name": {
+        "label": "Name",
+        "placeholder": "Warren Buffett Jr."
+      },
+      "email": {
+        "label": "E-Mail",
+        "placeholder": "wolf@wallstreet.de"
+      },
+      "password": {
+        "label": "Passwort"
+      },
+      "wallet-pin": {
+        "label": "Wählen Sie einen sicheren Wallet-PIN-Code"
+      },
+      "wallet-pin-confirm": {
+        "label": "Wallet-PIN-Code bestätigen"
+      },
+      "submitting": "Konto wird erstellt...",
+      "submit": "Konto erstellen",
+      "have-account": "Haben Sie bereits ein Konto?",
+      "sign-in": "Anmelden",
+      "error": {
+        "generic": "Ein Fehler ist aufgetreten"
+      },
+      "page": {
+        "alert": {
+          "title": "Haben Sie diese dAPP gerade erstellt?",
+          "description": "Der erste Benutzer, der sich registriert, erhält die Administratorrolle. Sie können später weitere Administratoren hinzufügen."
+        }
+      }
+    },
+    "wrong-role": {
+      "title": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen",
+      "description": "Sie haben nicht die erforderliche Rolle, um auf diese Seite zuzugreifen. Bitte melden Sie sich mit einem Konto an, das über die entsprechenden Berechtigungen verfügt.",
+      "go-to-portfolio": "Zum Portfolio"
+    }
+  },
+  "error": {
+    "title": "Etwas ist schiefgelaufen!",
+    "error-id": "Fehler-ID",
+    "try-again": "Erneut versuchen",
+    "go-home": "Zur Startseite"
+  },
   "components": {
     "active-pill": {
       "active": "Aktiv",

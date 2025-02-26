@@ -222,6 +222,75 @@
       }
     }
   },
+  "auth": {
+    "signin": {
+      "title": "Login to your account",
+      "description": "Enter your email below to login to your account",
+      "email": {
+        "label": "Email",
+        "placeholder": "m@example.com"
+      },
+      "password": {
+        "label": "Password"
+      },
+      "remember-me": "Remember me",
+      "submitting": "Signing in...",
+      "submit": "Sign in",
+      "no-account": "Don't have an account?",
+      "sign-up": "Sign up",
+      "page": {
+        "alert": {
+          "title": "Just created this dAPP?",
+          "description": "The first user to sign up will be the given the admin role. You can add other admins later."
+        }
+      }
+    },
+    "signup": {
+      "title": "Create an account",
+      "description": "Enter the information below to create your account and managed blockchain wallet",
+      "name": {
+        "label": "Name",
+        "placeholder": "Warren Buffett Jr."
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "wolf@wallstreet.com"
+      },
+      "password": {
+        "label": "Password"
+      },
+      "wallet-pin": {
+        "label": "Choose a secure wallet PIN code"
+      },
+      "wallet-pin-confirm": {
+        "label": "Confirm wallet PIN code"
+      },
+      "submitting": "Creating account...",
+      "submit": "Create account",
+      "have-account": "Already have an account?",
+      "sign-in": "Sign in",
+      "error": {
+        "generic": "An error occurred"
+      },
+      "page": {
+        "alert": {
+          "title": "Just created this dAPP?",
+          "description": "The first user to sign up will be the given the admin role. You can add other admins later."
+        }
+      }
+    },
+    "wrong-role": {
+      "title": "You are not authorized to access this page",
+      "description": "You don't have the required role to access this page. Please sign in with an account that has the appropriate permissions.",
+      "go-to-portfolio": "Go to portfolio"
+    }
+  },
+  "error": {
+    "title": "Something went wrong!",
+    "error-id": "Error ID",
+    "try-again": "Try again",
+    "go-home": "Go home"
+  },
   "components": {
     "active-pill": {
       "active": "Active",
