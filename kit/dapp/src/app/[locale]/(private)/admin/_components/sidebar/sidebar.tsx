@@ -1,4 +1,3 @@
-import { DesignerButton } from '@/components/layout/designer-button';
 import { NavFooter } from '@/components/layout/nav-footer';
 import { NavHeader } from '@/components/layout/nav-header';
 import { NavMain } from '@/components/layout/nav-main';
@@ -10,10 +9,10 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { DesignerButton } from './designer-button';
 import { AssetManagement } from './items/asset-management/asset-management';
 import { bottomItems } from './items/bottom';
 import { topItems } from './items/top';
-import { TokenDesignerButton } from './token-designer-button';
 
 export function AdminSidebar() {
   return (

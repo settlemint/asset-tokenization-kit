@@ -1,6 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { useQuery } from '@tanstack/react-query';
-import { type Address, getAddress } from 'viem';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
@@ -36,7 +36,7 @@ const UserSearch = hasuraGraphql(
  */
 export interface UserSearchProps {
   /** Address, name or email to search for */
-  address: Address;
+  searchTerm: string;
 }
 
 /**
@@ -48,16 +48,16 @@ export interface UserSearchProps {
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-async function getUserSearch({ address }: UserSearchProps) {
-  if (!address) {
+async function getUserSearch({ searchTerm }: UserSearchProps) {
+  if (!searchTerm) {
     return [];
   }
 
   try {
-    const searchValue = `%${address}%`;
+    const searchValue = `%${searchTerm}%`;
 
     const result = await hasuraClient.request(UserSearch, {
-      address: searchValue,
+      searchTerm: searchValue,
     });
 
     // Parse and validate each user in the results using Zod schema
@@ -78,8 +78,8 @@ async function getUserSearch({ address }: UserSearchProps) {
  * @param {UserSearchProps} params - Object containing the search string
  * @returns {readonly [string, string, string]} The query key tuple
  */
-const getQueryKey = ({ address }: UserSearchProps) =>
-  ['user', 'search', address ? getAddress(address) : 'none'] as const;
+const getQueryKey = ({ searchTerm }: UserSearchProps) =>
+  ['user', 'search', searchTerm ? searchTerm : 'none'] as const;
 
 /**
  * React Query hook for searching users
@@ -99,13 +99,15 @@ const getQueryKey = ({ address }: UserSearchProps) =>
  * ))}
  * ```
  */
-export function useUserSearch({ address }: UserSearchProps) {
-  const queryKey = getQueryKey({ address });
+export function useUserSearch({ searchTerm }: UserSearchProps) {
+  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
+
+  const queryKey = getQueryKey({ searchTerm: sanitizedSearchTerm });
 
   const result = useQuery({
     queryKey,
-    queryFn: () => getUserSearch({ address }),
-    enabled: !!address,
+    queryFn: () => getUserSearch({ searchTerm: sanitizedSearchTerm }),
+    enabled: !!sanitizedSearchTerm,
   });
 
   return {

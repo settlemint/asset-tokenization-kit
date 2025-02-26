@@ -2,8 +2,8 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { useQuery } from '@tanstack/react-query';
-import { type Address, getAddress } from 'viem';
 import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
 
 /**
@@ -33,8 +33,7 @@ const AssetSearch = theGraphGraphqlStarterkits(
  * Props interface for asset search components
  */
 export interface AssetSearchProps {
-  /** Ethereum address to search for */
-  address: Address;
+  searchTerm: string;
 }
 
 /**
@@ -43,15 +42,15 @@ export interface AssetSearchProps {
  * @param params - Object containing the search address
  * @returns Array of matching assets, validated with Zod
  */
-async function getAssetSearch({ address }: AssetSearchProps) {
-  if (!address) {
+async function getAssetSearch({ searchTerm }: AssetSearchProps) {
+  if (!searchTerm) {
     return [];
   }
 
   try {
     const result = await theGraphClientStarterkits.request(AssetSearch, {
-      searchAddress: address,
-      search: address,
+      searchAddress: searchTerm,
+      search: searchTerm,
     });
 
     // Parse and validate each asset in the results using Zod schema
@@ -72,8 +71,8 @@ async function getAssetSearch({ address }: AssetSearchProps) {
  * @param params - Object containing the search address
  * @returns Array representing the query key for React Query
  */
-const getQueryKey = ({ address }: AssetSearchProps) =>
-  ['asset', 'search', address ? getAddress(address) : 'none'] as const;
+const getQueryKey = ({ searchTerm }: AssetSearchProps) =>
+  ['asset', 'search', searchTerm ? searchTerm : 'none'] as const;
 
 /**
  * React Query hook for searching assets
@@ -81,13 +80,14 @@ const getQueryKey = ({ address }: AssetSearchProps) =>
  * @param params - Object containing the search address
  * @returns Query result with matching assets and query key
  */
-export function useAssetSearch({ address }: AssetSearchProps) {
-  const queryKey = getQueryKey({ address });
+export function useAssetSearch({ searchTerm }: AssetSearchProps) {
+  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
+  const queryKey = getQueryKey({ searchTerm: sanitizedSearchTerm });
 
   const result = useQuery({
     queryKey,
-    queryFn: () => getAssetSearch({ address }),
-    enabled: !!address,
+    queryFn: () => getAssetSearch({ searchTerm: sanitizedSearchTerm }),
+    enabled: !!sanitizedSearchTerm,
   });
 
   return {

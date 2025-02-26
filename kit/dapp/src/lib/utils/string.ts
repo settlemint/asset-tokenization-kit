@@ -12,7 +12,8 @@ export function sanitizeSearchTerm(search: string): string {
     // Replace multiple spaces with single space
     .replace(/\s+/g, ' ')
     // Escape special characters used in LIKE patterns
-    .replace(/[%_]/g, '\\$&');
+    .replace(/[%_]/g, '\\$&')
+    .trim();
 
   return cleaned;
 }

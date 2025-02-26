@@ -11,7 +11,7 @@ import { useUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { useForm, useWatch } from 'react-hook-form';
-import { type Address, getAddress } from 'viem';
+import { getAddress } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 
 export const Search = () => {
@@ -28,10 +28,10 @@ export const Search = () => {
   });
   const debounced = useDebounce(search, 250);
   const { data: users } = useUserSearch({
-    address: sanitizeSearchTerm(debounced) as Address,
+    searchTerm: sanitizeSearchTerm(debounced),
   });
   const { data: assets } = useAssetSearch({
-    address: sanitizeSearchTerm(debounced) as Address,
+    searchTerm: sanitizeSearchTerm(debounced),
   });
 
   return (
