@@ -19,9 +19,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
     strategy:
       fail-fast: false
-      # matrix:
-        # shardIndex: [1, 2, 3]
-        # shardTotal: [3]
 
     steps:
       - name: Checkout repository
