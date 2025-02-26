@@ -19,7 +19,6 @@ import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown } from 'lucide-react';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useUser } from '../blocks/user-context/user-context';
 import {
