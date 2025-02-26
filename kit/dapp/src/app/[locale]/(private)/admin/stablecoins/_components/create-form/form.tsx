@@ -38,6 +38,9 @@ export function CreateStablecoinForm({
     >
       <Form
         mutation={createStablecoin}
+        onOpenChange={() => {
+          onCloseAction();
+        }}
         buttonLabels={{
           label: t('button-label'),
         }}

@@ -66,8 +66,7 @@ export interface TransactionMonitoringOptions {
 
 /**
  * Result of a transaction mining operation
- */
-export interface TransactionMiningResult {
+ */ interface TransactionMiningResult {
   receipt: FragmentOf<typeof ReceiptFragment>;
   metadata: Record<string, unknown>;
 }
@@ -75,7 +74,7 @@ export interface TransactionMiningResult {
 /**
  * Result of multiple transaction mining operations
  */
-export interface MultiTransactionMiningResult {
+export interface TransactionsMiningResult {
   receipts: TransactionMiningResult[];
   /** The last transaction's result, useful for UI updates */
   lastTransaction: TransactionMiningResult;
@@ -146,13 +145,17 @@ async function waitForSingleTransaction(
 export async function waitForTransactions(
   transactionHashes: string | string[],
   options: TransactionMonitoringOptions = {}
-): Promise<TransactionMiningResult | MultiTransactionMiningResult> {
+): Promise<TransactionsMiningResult> {
   const hashes = Array.isArray(transactionHashes)
     ? transactionHashes
     : [transactionHashes];
 
   if (hashes.length === 1) {
-    return waitForSingleTransaction(hashes[0], options);
+    const result = await waitForSingleTransaction(hashes[0], options);
+    return {
+      receipts: [result],
+      lastTransaction: result,
+    };
   }
 
   const results = await Promise.all(
@@ -164,6 +167,3 @@ export async function waitForTransactions(
     lastTransaction: results.at(-1)!,
   };
 }
-
-// For backward compatibility
-export const waitForTransactionMining = waitForTransactions;

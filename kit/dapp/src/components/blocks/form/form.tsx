@@ -1,10 +1,20 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Form as UIForm } from '@/components/ui/form';
+import {
+  getTranslatedError,
+  handleTranslatedError,
+} from '@/lib/utils/error-handler';
+import {
+  waitForTransactions,
+  type TransactionError,
+} from '@/lib/wait-for-transaction';
 import type { UseMutationResult } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { DefaultValues, Path } from 'react-hook-form';
+import { toast } from 'sonner';
 import type { Schema, z } from 'zod';
-import { type ButtonLabels, FormButton } from './form-button';
+import { FormButton, type ButtonLabels } from './form-button';
 import { FormProgress } from './form-progress';
 import type { FormStepElement } from './types';
 import { useForm } from './use-form';
@@ -21,6 +31,13 @@ interface FormProps<InputSchema extends Schema, OutputSchema extends Schema> {
     outputSchema: OutputSchema;
   };
   buttonLabels?: ButtonLabels;
+  onOpenChange?: (open: boolean) => void;
+  messages?: {
+    namespace?: string;
+    loading?: string;
+    success?: string;
+    error?: string;
+  };
 }
 
 export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
@@ -28,8 +45,12 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
   defaultValues,
   mutation,
   buttonLabels,
+  onOpenChange,
+  messages,
 }: FormProps<InputSchema, OutputSchema>) {
   const [currentStep, setCurrentStep] = useState(0);
+  const errorT = useTranslations('errors');
+  const messageT = useTranslations(messages?.namespace || 'form');
 
   const { mutate, inputSchema } = mutation;
   const totalSteps = Array.isArray(children) ? children.length : 1;
@@ -87,12 +108,54 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
     }
   };
 
-  // Create a wrapper function that doesn't return the Promise
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log('Form values', form.getValues());
     void form.handleSubmit((data) => {
-      console.log('Form data', data);
-      void mutate(data);
+      mutate(data, {
+        onError(error) {
+          onOpenChange?.(false);
+          handleTranslatedError(error, errorT, {
+            description: errorT('formError', {
+              defaultValue: 'There was an error processing your request.',
+              field: form.formState.errors.root?.message || '',
+            }),
+          });
+        },
+        onSuccess({ data, input }) {
+          onOpenChange?.(false);
+          toast.promise(waitForTransactions(data), {
+            loading: messages?.loading
+              ? messageT(messages.loading, { txHash: data })
+              : `Sending transaction ${data}`,
+            success: (result) => {
+              return messages?.success
+                ? messageT(messages.success, {
+                    blockNumber: result.lastTransaction.receipt.blockNumber,
+                    data,
+                    ...input,
+                  })
+                : `Transaction successfully included in block ${result.lastTransaction.receipt.blockNumber}`;
+            },
+            error: (error: TransactionError) => {
+              if (messages?.error) {
+                return messageT(messages.error, {
+                  error: error.message,
+                  ...input,
+                });
+              }
+
+              return (
+                error.message ||
+                getTranslatedError(error, errorT, {
+                  description: errorT('formError', {
+                    defaultValue: 'There was an error processing your request.',
+                    field: form.formState.errors.root?.message || '',
+                  }),
+                }).message
+              );
+            },
+          });
+        },
+      });
     })(event);
   };
 
@@ -105,18 +168,15 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
           <CardContent>
             <UIForm {...form}>
               <form onSubmit={handleSubmit}>
-                {/* Step indicator */}
                 {totalSteps > 1 && (
                   <FormProgress
                     currentStep={currentStep}
                     totalSteps={totalSteps}
                   />
                 )}
-                {/* Current step content */}
                 <div className="min-h-[400px]">
                   {Array.isArray(children) ? children[currentStep] : children}
                 </div>
-                {/* Navigation buttons */}
                 <FormButton
                   currentStep={currentStep}
                   totalSteps={totalSteps}

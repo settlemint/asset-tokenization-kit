@@ -220,5 +220,28 @@
         "public-status": "Public"
       }
     }
+  },
+  "errors": {
+    "formError": "An error occurred while processing your request. Please try again later.",
+    "unknown": "An unexpected error occurred. Please try again.",
+    "validation": "The form contains invalid data. Please check your inputs.",
+    "network": "Network error. Please check your connection and try again.",
+    "permission": "You don't have permission to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "timeout": "The request timed out. Please try again.",
+    "server": "Server error. Our team has been notified.",
+    "unauthorized": "You need to be logged in to perform this action.",
+    "forbidden": "You don't have enough permissions to perform this action.",
+    "conflict": "This operation conflicts with the current state. Please refresh and try again.",
+    "invalidInput": "One or more input fields contain invalid data.",
+    "insufficientFunds": "Insufficient funds to complete this transaction.",
+    "TransactionError": "Transaction failed: {message}",
+    "ChallengeError": "Authentication failed: {message}",
+    "transaction": {
+      "failed": "Transaction failed: {reason}",
+      "reverted": "Transaction was reverted: {reason}",
+      "rejected": "Transaction was rejected: {reason}",
+      "invalidNonce": "Invalid transaction sequence. Please try again."
+    }
   }
 }

@@ -14,7 +14,13 @@ import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
 import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
 import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
 import { shortHex } from '@/lib/utils/hex';
-import { type FC, type PropsWithChildren, Suspense } from 'react';
+import {
+  type FC,
+  memo,
+  type PropsWithChildren,
+  Suspense,
+  useMemo,
+} from 'react';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
 
@@ -33,6 +39,9 @@ interface EvmAddressProps extends PropsWithChildren {
   hoverCard?: boolean;
   copyToClipboard?: boolean;
 }
+
+// Memoized AddressAvatar to prevent unnecessary re-renders
+const MemoizedAddressAvatar = memo(AddressAvatar);
 
 /**
  * Renders an EVM address with a hover card displaying additional information.
@@ -53,7 +62,7 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
-  const checksumAddress = getAddress(address);
+  const checksumAddress = useMemo(() => getAddress(address), [address]);
 
   const userLookup = useOptionalUserDetail({
     id: checksumAddress,
@@ -62,44 +71,71 @@ export function EvmAddress({
     address: checksumAddress,
   });
 
-  const displayName = prettyNames
-    ? (name ?? assetLookup?.data?.name ?? userLookup?.data?.name)
-    : undefined;
-  const displayEmail = prettyNames ? userLookup?.data?.email : undefined;
-  const explorerLink = getBlockExplorerAddressUrl(checksumAddress, explorerUrl);
+  const displayName = useMemo(
+    () =>
+      prettyNames
+        ? (name ?? assetLookup?.data?.name ?? userLookup?.data?.name)
+        : undefined,
+    [prettyNames, name, assetLookup?.data?.name, userLookup?.data?.name]
+  );
 
-  const MainView: FC = () => {
-    return (
-      <div className="flex items-center space-x-2">
-        <Suspense fallback={<Skeleton className="h-4 w-4 rounded-lg" />}>
-          <AddressAvatar
+  const displayEmail = useMemo(
+    () => (prettyNames ? userLookup?.data?.email : undefined),
+    [prettyNames, userLookup?.data?.email]
+  );
+
+  const explorerLink = useMemo(
+    () => getBlockExplorerAddressUrl(checksumAddress, explorerUrl),
+    [checksumAddress, explorerUrl]
+  );
+
+  // Memoized shortened address
+  const shortAddress = useMemo(
+    () => shortHex(checksumAddress, { prefixLength, suffixLength }),
+    [checksumAddress, prefixLength, suffixLength]
+  );
+
+  // Memoized MainView component
+  const MainView = useMemo(() => {
+    const Component: FC = () => {
+      return (
+        <div className="flex items-center space-x-2">
+          <MemoizedAddressAvatar
             address={checksumAddress}
             size={iconSize}
             email={displayEmail}
           />
-        </Suspense>
-        {!displayName && (
-          <span className="font-mono">
-            {shortHex(checksumAddress, { prefixLength, suffixLength })}
-          </span>
-        )}
-        {displayName && (
-          <span>
-            {displayName}{' '}
-            {symbol && (
-              <span className="text-muted-foreground text-xs">({symbol}) </span>
-            )}
-            {verbose && (
-              <Badge variant="secondary" className="font-mono">
-                {shortHex(checksumAddress, { prefixLength, suffixLength })}
-              </Badge>
-            )}
-          </span>
-        )}
-        {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
-      </div>
-    );
-  };
+          {!displayName && <span className="font-mono">{shortAddress}</span>}
+          {displayName && (
+            <span>
+              {displayName}{' '}
+              {symbol && (
+                <span className="text-muted-foreground text-xs">
+                  ({symbol}){' '}
+                </span>
+              )}
+              {verbose && (
+                <Badge variant="secondary" className="font-mono">
+                  {shortAddress}
+                </Badge>
+              )}
+            </span>
+          )}
+          {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
+        </div>
+      );
+    };
+    return memo(Component);
+  }, [
+    checksumAddress,
+    iconSize,
+    displayEmail,
+    displayName,
+    shortAddress,
+    symbol,
+    verbose,
+    copyToClipboard,
+  ]);
 
   if (!hoverCard) {
     return <MainView />;
@@ -115,7 +151,7 @@ export function EvmAddress({
           <div className="flex items-start">
             <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
               <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
-                <AddressAvatar
+                <MemoizedAddressAvatar
                   address={checksumAddress}
                   email={displayEmail}
                   className="row-span-2"
