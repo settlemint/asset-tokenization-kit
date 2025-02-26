@@ -10,8 +10,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useRouter } from '@/i18n/routing';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { useRouter } from 'next/navigation';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 import type { ListUser } from '../data';

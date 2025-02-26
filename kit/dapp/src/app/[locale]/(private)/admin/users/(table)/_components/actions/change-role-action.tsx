@@ -17,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
-import { useRouter } from 'next/navigation';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 import type { ListUser } from '../data';

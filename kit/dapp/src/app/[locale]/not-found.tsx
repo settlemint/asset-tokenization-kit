@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useRouter } from '@/i18n/routing';
 import { FileQuestion } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 export default function NotFoundPage() {
   const router = useRouter();

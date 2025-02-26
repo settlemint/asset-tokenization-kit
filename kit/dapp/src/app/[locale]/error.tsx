@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useRouter } from '@/i18n/routing';
 import { AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
