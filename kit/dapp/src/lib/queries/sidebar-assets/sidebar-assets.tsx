@@ -5,6 +5,16 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { BondFragment, BondFragmentSchema } from '../bond/bond-fragment';
+import {
+  CryptoCurrencyFragment,
+  CryptoCurrencyFragmentSchema,
+} from '../cryptocurrency/cryptocurrency-fragment';
+import {
+  EquityFragment,
+  EquityFragmentSchema,
+} from '../equity/equity-fragment';
+import { FundFragment, FundFragmentSchema } from '../fund/fund-fragment';
 import {
   StableCoinFragment,
   StableCoinFragmentSchema,
@@ -19,13 +29,31 @@ const SidebarAssets = theGraphGraphqlStarterkits(
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
       ...StableCoinFragment
     }
+    bonds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...BondFragment
+    }
+    equities(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...EquityFragment
+    }
+    funds(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...FundFragment
+    }
+    cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...CryptoCurrencyFragment
+    }
     assetCounts {
       assetType
       count
     }
   }
 `,
-  [StableCoinFragment]
+  [
+    StableCoinFragment,
+    BondFragment,
+    EquityFragment,
+    FundFragment,
+    CryptoCurrencyFragment,
+  ]
 );
 
 /**
@@ -50,30 +78,34 @@ export interface SidebarAssetsOptions {
 }
 
 /**
- * Interface for the response from the sidebar assets query
- */
-export interface SidebarAssetsResponse {
-  /** List of stablecoin assets */
-  stableCoins: ZodInfer<typeof StableCoinFragmentSchema>[];
-  /** Counts of different asset types */
-  assetCounts: AssetCount[];
-}
-
-/**
  * Fetches and processes sidebar asset data
  *
  * @param options - Query options including optional limit
  * @returns Processed sidebar asset data validated with Zod
  */
-async function getSidebarAssets({
-  limit = 10,
-}: SidebarAssetsOptions = {}): Promise<SidebarAssetsResponse> {
+async function getSidebarAssets({ limit = 10 }: SidebarAssetsOptions = {}) {
   try {
     const result = await theGraphClientStarterkits.request(SidebarAssets);
 
     // Validate stableCoins with Zod schema
     const validatedStableCoins = (result.stableCoins || []).map((coin) =>
       StableCoinFragmentSchema.parse(coin)
+    );
+
+    const validatedBonds = (result.bonds || []).map((bond) =>
+      BondFragmentSchema.parse(bond)
+    );
+
+    const validatedEquities = (result.equities || []).map((equity) =>
+      EquityFragmentSchema.parse(equity)
+    );
+
+    const validatedFunds = (result.funds || []).map((fund) =>
+      FundFragmentSchema.parse(fund)
+    );
+
+    const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
+      (currency) => CryptoCurrencyFragmentSchema.parse(currency)
     );
 
     // Validate assetCounts with Zod schema
@@ -86,9 +118,29 @@ async function getSidebarAssets({
       ? validatedStableCoins.slice(0, limit)
       : validatedStableCoins;
 
+    const limitedBonds = limit
+      ? validatedBonds.slice(0, limit)
+      : validatedBonds;
+
+    const limitedEquities = limit
+      ? validatedEquities.slice(0, limit)
+      : validatedEquities;
+
+    const limitedFunds = limit
+      ? validatedFunds.slice(0, limit)
+      : validatedFunds;
+
+    const limitedCryptoCurrencies = limit
+      ? validatedCryptoCurrencies.slice(0, limit)
+      : validatedCryptoCurrencies;
+
     return {
       stableCoins: limitedStableCoins,
       assetCounts: validatedAssetCounts,
+      bonds: limitedBonds,
+      equities: limitedEquities,
+      funds: limitedFunds,
+      cryptoCurrencies: limitedCryptoCurrencies,
     };
   } catch (error) {
     console.error('Error fetching sidebar assets:', error);
@@ -96,6 +148,10 @@ async function getSidebarAssets({
     return {
       stableCoins: [],
       assetCounts: [],
+      bonds: [],
+      equities: [],
+      funds: [],
+      cryptoCurrencies: [],
     };
   }
 }
@@ -135,22 +191,21 @@ export function useSidebarAssets(options?: SidebarAssetsOptions) {
       records: result.data.stableCoins,
       count: getCount('stablecoin'),
     },
-    // Commented out sections for future asset types
-    // equity: {
-    //   records: result.data.equities,
-    //   count: getCount("equity"),
-    // },
-    // bond: {
-    //   records: result.data.bonds,
-    //   count: getCount("bond"),
-    // },
-    // fund: {
-    //   records: result.data.funds,
-    //   count: getCount("fund"),
-    // },
-    // cryptocurrency: {
-    //   records: result.data.cryptoCurrencies,
-    //   count: getCount("cryptocurrency"),
-    // },
+    equity: {
+      records: result.data.equities,
+      count: getCount('equity'),
+    },
+    bond: {
+      records: result.data.bonds,
+      count: getCount('bond'),
+    },
+    fund: {
+      records: result.data.funds,
+      count: getCount('fund'),
+    },
+    cryptocurrency: {
+      records: result.data.cryptoCurrencies,
+      count: getCount('cryptocurrency'),
+    },
   };
 }

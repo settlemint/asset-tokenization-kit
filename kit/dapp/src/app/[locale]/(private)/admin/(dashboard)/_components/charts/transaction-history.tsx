@@ -4,20 +4,15 @@ import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries, formatInterval } from '@/lib/charts';
 import { useProcessedTransactions } from '@/lib/queries/transactions/transactions-processed';
 import { startOfDay, subDays } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 
 interface TransactionsHistoryProps {
   from?: Address;
 }
 
-export const TRANSACTIONS_CHART_CONFIG = {
-  transaction: {
-    label: 'Transactions',
-    color: '#3B9E99',
-  },
-} satisfies ChartConfig;
-
 export function TransactionsHistory({ from }: TransactionsHistoryProps) {
+  const t = useTranslations('admin.dashboard.charts');
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
   const {
     data: { records },
@@ -25,6 +20,13 @@ export function TransactionsHistory({ from }: TransactionsHistoryProps) {
     processedAfter: sevenDaysAgo,
     address: from,
   });
+
+  const TRANSACTIONS_CHART_CONFIG = {
+    transaction: {
+      label: t('transaction-history.label'),
+      color: '#3B9E99',
+    },
+  } satisfies ChartConfig;
 
   return (
     <AreaChartComponent
@@ -35,8 +37,10 @@ export function TransactionsHistory({ from }: TransactionsHistoryProps) {
         intervalLength: 7,
       })}
       config={TRANSACTIONS_CHART_CONFIG}
-      title="Transactions"
-      description={`Showing transactions over the last ${formatInterval(7, 'day')}`}
+      title={t('transaction-history.title')}
+      description={t('transaction-history.description', {
+        interval: formatInterval(7, 'day'),
+      })}
       xAxis={{ key: 'timestamp' }}
       showYAxis={true}
     />
