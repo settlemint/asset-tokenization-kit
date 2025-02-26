@@ -1,20 +1,22 @@
 import { handleChallenge } from '@/lib/challenge';
+import { getQueryKey as getStablecoinDetailQueryKey } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
 
 /**
- * GraphQL mutation for blocking a user from using a stablecoin
+ * GraphQL mutation to block a user from a stablecoin
  *
  * @remarks
- * Requires the sender to have the appropriate role to block users
+ * This adds an address to the blocklist of the stablecoin
  */
-const BlockUser = portalGraphql(`
-  mutation BlockUser($address: String!, $challengeResponse: String!, $from: String!, $user: String!) {
+const StableCoinBlockUser = portalGraphql(`
+  mutation StableCoinBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
     StableCoinBlockUser(
-      from: $from
-      input: {user: $user}
       address: $address
+      input: { user: $account }
+      from: $from
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -26,15 +28,15 @@ const BlockUser = portalGraphql(`
  * Zod schema for validating block user mutation inputs
  *
  * @property {string} address - The stablecoin contract address
- * @property {string} userAddress - The address of the user to block
  * @property {string} pincode - The pincode for signing the transaction
- * @property {string} from - The address of the sender (must have appropriate role)
+ * @property {string} from - The address of the sender (must have blocklister role)
+ * @property {string} account - The account to block
  */
 export const BlockUserSchema = z.object({
   address: z.address(),
-  userAddress: z.address(),
   pincode: z.pincode(),
   from: z.address(),
+  account: z.address(),
 });
 
 /**
@@ -43,7 +45,7 @@ export const BlockUserSchema = z.object({
 export type BlockUser = ZodInfer<typeof BlockUserSchema>;
 
 /**
- * React Query hook for blocking a user from using a stablecoin
+ * React Query hook for blocking a user from a stablecoin contract
  *
  * @returns {Object} Mutation object with additional schema information
  *
@@ -52,13 +54,13 @@ export type BlockUser = ZodInfer<typeof BlockUserSchema>;
  * const blockUser = useBlockUser();
  *
  * // Later in your component
- * const handleBlock = async () => {
+ * const handleBlockUser = async () => {
  *   try {
  *     await blockUser.mutateAsync({
  *       address: "0x123...",
- *       userAddress: "0x456...",
  *       pincode: "123456",
- *       from: "0x789..."
+ *       from: "0x789...",
+ *       account: "0xabc..."
  *     });
  *     toast.success("User blocked successfully");
  *   } catch (error) {
@@ -70,11 +72,11 @@ export type BlockUser = ZodInfer<typeof BlockUserSchema>;
 export function useBlockUser() {
   const mutation = useMutation({
     mutationKey: ['stablecoin', 'block-user'],
-    mutationFn: async ({ pincode, from, address, userAddress }: BlockUser) => {
-      const response = await portalClient.request(BlockUser, {
+    mutationFn: async ({ pincode, from, address, account }: BlockUser) => {
+      const response = await portalClient.request(StableCoinBlockUser, {
         address: address,
+        account,
         from,
-        user: userAddress,
         challengeResponse: await handleChallenge(from, pincode),
       });
 
@@ -86,5 +88,11 @@ export function useBlockUser() {
     ...mutation,
     inputSchema: BlockUserSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (variables: BlockUser) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

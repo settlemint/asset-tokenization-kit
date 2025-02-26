@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
   const { control } = useFormContext<CreateStablecoin>();
-  const t = useTranslations('admin.stablecoins.create.configuration');
+  const t = useTranslations('admin.stablecoins.create-form.configuration');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

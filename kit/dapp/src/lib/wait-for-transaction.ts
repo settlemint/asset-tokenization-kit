@@ -150,17 +150,12 @@ export async function waitForTransactions(
     ? transactionHashes
     : [transactionHashes];
 
-  if (hashes.length === 1) {
-    const result = await waitForSingleTransaction(hashes[0], options);
-    return {
-      receipts: [result],
-      lastTransaction: result,
-    };
-  }
-
   const results = await Promise.all(
     hashes.map((hash) => waitForSingleTransaction(hash, options))
   );
+
+  // Sleep for 2 seconds to allow the graph to update
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   return {
     receipts: results,

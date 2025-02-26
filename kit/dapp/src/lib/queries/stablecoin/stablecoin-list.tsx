@@ -144,8 +144,8 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
  *
  * @param [options] - Options for the stablecoin list query
  */
-const getQueryKey = (options?: StableCoinListOptions) =>
-  ['asset', assetConfig.stablecoin.queryKey, options?.limit] as const;
+export const getQueryKey = (options?: StableCoinListOptions) =>
+  ['asset', assetConfig.stablecoin.queryKey, options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching stablecoin list

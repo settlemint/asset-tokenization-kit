@@ -161,11 +161,12 @@
           "roles-label": "Roles"
         }
       },
-      "create": {
+      "create-form": {
         "trigger-label": "Create Stablecoin",
         "title": "Create Stablecoin",
         "description": "Create a stablecoin",
         "button-label": "Create",
+        "success": "Stablecoin {name}created successfully",
         "basics": {
           "title": "Basic Information",
           "description": "Configure the basic properties of your asset.",
@@ -243,5 +244,9 @@
       "rejected": "Transaction was rejected: {reason}",
       "invalidNonce": "Invalid transaction sequence. Please try again."
     }
+  },
+  "transactions": {
+    "sending": "Sending transaction {hash}",
+    "success": "Transaction successfully included in block {blockNumber}"
   }
 }

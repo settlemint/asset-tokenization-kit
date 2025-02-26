@@ -70,7 +70,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates an array of Ethereum hashes
    */
-  hashs: function () {
+  hashes: function () {
     return z.array(this.hash());
   },
 

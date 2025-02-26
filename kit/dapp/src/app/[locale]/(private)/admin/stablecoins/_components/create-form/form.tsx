@@ -20,7 +20,7 @@ export function CreateStablecoinForm({
 }: CreateStablecoinFormProps) {
   const createStablecoin = useCreateStablecoin();
   const user = useUser();
-  const t = useTranslations('admin.stablecoins.create');
+  const t = useTranslations('admin.stablecoins.create-form');
 
   if (!user) {
     return null;

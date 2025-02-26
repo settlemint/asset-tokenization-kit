@@ -1,5 +1,6 @@
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
+import { getQueryKey as stablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
@@ -11,8 +12,8 @@ import { useMutation } from '@tanstack/react-query';
  * @remarks
  * Creates a new stablecoin contract through the stablecoin factory
  */
-const CreateStablecoin = portalGraphql(`
-  mutation CreateStableCoin($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
+const StableCoinFactoryCreate = portalGraphql(`
+  mutation StableCoinFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
     StableCoinFactoryCreate(
       address: $address
       from: $from
@@ -161,7 +162,7 @@ export function useCreateStablecoin() {
         private: privateAsset,
       });
 
-      const data = await portalClient.request(CreateStablecoin, {
+      const data = await portalClient.request(StableCoinFactoryCreate, {
         address: STABLE_COIN_FACTORY_ADDRESS,
         from: from,
         name: assetName,
@@ -180,5 +181,8 @@ export function useCreateStablecoin() {
     ...mutation,
     inputSchema: CreateStablecoinSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (_variables: CreateStablecoin) => [
+      stablecoinListQueryKey(),
+    ],
   };
 }

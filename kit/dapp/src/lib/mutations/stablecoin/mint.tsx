@@ -1,5 +1,9 @@
 import { handleChallenge } from '@/lib/challenge';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import {
+  getStableCoinDetail,
+  getQueryKey as getStablecoinDetailQueryKey,
+} from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -11,8 +15,8 @@ import { parseUnits } from 'viem';
  * @remarks
  * This mutation requires authentication via challenge response
  */
-const Mint = portalGraphql(`
-  mutation MintStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
+const StableCoinMint = portalGraphql(`
+  mutation StableCoinMint($address: String!, $from: String!, $challengeResponse: String!, $amount: String!, $to: String!) {
     StableCoinMint(
       address: $address
       from: $from
@@ -71,7 +75,7 @@ export function useMint() {
     mutationFn: async ({ pincode, from, address, amount, to }: Mint) => {
       const { decimals } = await getStableCoinDetail({ address });
 
-      const response = await portalClient.request(Mint, {
+      const response = await portalClient.request(StableCoinMint, {
         address: address,
         from,
         amount: parseUnits(amount.toString(), decimals).toString(),
@@ -87,5 +91,11 @@ export function useMint() {
     ...mutation,
     inputSchema: MintSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (variables: Mint) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

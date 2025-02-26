@@ -1,5 +1,9 @@
 import { handleChallenge } from '@/lib/challenge';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import {
+  getStableCoinDetail,
+  getQueryKey as getStablecoinDetailQueryKey,
+} from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -11,8 +15,8 @@ import { parseUnits } from 'viem';
  * @remarks
  * Reduces the total supply of the stablecoin by removing tokens from circulation
  */
-const Burn = portalGraphql(`
-  mutation BurnStableCoin($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
+const StableCoinBurn = portalGraphql(`
+  mutation StableCoinBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {
     StableCoinBurn(
       address: $address
       from: $from
@@ -78,7 +82,7 @@ export function useBurn() {
     mutationFn: async ({ pincode, from, address, amount }: Burn) => {
       const { decimals } = await getStableCoinDetail({ address });
 
-      const response = await portalClient.request(Burn, {
+      const response = await portalClient.request(StableCoinBurn, {
         address: address,
         from,
         amount: parseUnits(amount.toString(), decimals).toString(),
@@ -93,5 +97,11 @@ export function useBurn() {
     ...mutation,
     inputSchema: BurnSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (variables: Burn) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

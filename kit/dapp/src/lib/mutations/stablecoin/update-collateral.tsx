@@ -1,5 +1,9 @@
 import { handleChallenge } from '@/lib/challenge';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import {
+  getStableCoinDetail,
+  getQueryKey as getStablecoinDetailQueryKey,
+} from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -11,8 +15,8 @@ import { parseUnits } from 'viem';
  * @remarks
  * This mutation requires authentication via challenge response
  */
-const UpdateCollateral = portalGraphql(`
-  mutation UpdateCollateral(
+const StableCoinUpdateCollateral = portalGraphql(`
+  mutation StableCoinUpdateCollateral(
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
@@ -79,7 +83,7 @@ export function useUpdateCollateral() {
     }: UpdateCollateral) => {
       const { decimals } = await getStableCoinDetail({ address });
 
-      const response = await portalClient.request(UpdateCollateral, {
+      const response = await portalClient.request(StableCoinUpdateCollateral, {
         address: address,
         from,
         amount: parseUnits(amount.toString(), decimals).toString(),
@@ -96,5 +100,11 @@ export function useUpdateCollateral() {
     ...mutation,
     inputSchema: UpdateCollateralSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (variables: UpdateCollateral) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

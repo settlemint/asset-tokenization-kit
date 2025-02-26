@@ -1,4 +1,6 @@
 import { handleChallenge } from '@/lib/challenge';
+import { getQueryKey as getStablecoinDetailQueryKey } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -9,8 +11,8 @@ import { useMutation } from '@tanstack/react-query';
  * @remarks
  * Temporarily suspends all transfers and operations on the stablecoin
  */
-const Pause = portalGraphql(`
-  mutation PauseStablecoin($address: String!, $from: String!, $challengeResponse: String!) {
+const StableCoinPause = portalGraphql(`
+  mutation StableCoinPause($address: String!, $from: String!, $challengeResponse: String!) {
     StableCoinPause(
       address: $address
       from: $from
@@ -67,7 +69,7 @@ export function usePause() {
   const mutation = useMutation({
     mutationKey: ['stablecoin', 'pause'],
     mutationFn: async ({ pincode, from, address }: Pause) => {
-      const response = await portalClient.request(Pause, {
+      const response = await portalClient.request(StableCoinPause, {
         address: address,
         from,
         challengeResponse: await handleChallenge(from, pincode),
@@ -81,5 +83,11 @@ export function usePause() {
     ...mutation,
     inputSchema: PauseSchema,
     outputSchema: z.hash(),
+    invalidateKeys: (variables: Pause) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

@@ -1,9 +1,10 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getRoleIdentifier, type Role } from '@/lib/config/roles';
+import { getQueryKey as getStablecoinDetailQueryKey } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
-
 /**
  * GraphQL mutation for granting a role to a user for a stablecoin
  *
@@ -129,6 +130,12 @@ export function useGrantRole() {
   return {
     ...mutation,
     inputSchema: GrantRoleSchema,
-    outputSchema: z.array(z.hash()),
+    outputSchema: z.hashes(),
+    invalidateKeys: (variables: GrantRole) => [
+      // Invalidate the stablecoin list
+      getStablecoinListQueryKey(),
+      // Invalidate the specific stablecoin details using the query function
+      getStablecoinDetailQueryKey({ address: variables.address }),
+    ],
   };
 }

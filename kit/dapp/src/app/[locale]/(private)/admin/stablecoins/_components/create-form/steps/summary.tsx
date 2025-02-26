@@ -13,7 +13,7 @@ export function Summary() {
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('admin.stablecoins.create.summary');
+  const t = useTranslations('admin.stablecoins.create-form.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

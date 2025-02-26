@@ -1,3 +1,4 @@
+import { invalidateQueries } from '@/components/blocks/query-client/query-client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form as UIForm } from '@/components/ui/form';
 import {
@@ -8,7 +9,11 @@ import {
   waitForTransactions,
   type TransactionError,
 } from '@/lib/wait-for-transaction';
-import type { UseMutationResult } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  type QueryKey,
+  type UseMutationResult,
+} from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { DefaultValues, Path } from 'react-hook-form';
@@ -29,15 +34,10 @@ interface FormProps<InputSchema extends Schema, OutputSchema extends Schema> {
   > & {
     inputSchema: InputSchema;
     outputSchema: OutputSchema;
+    invalidateKeys: (variables: z.infer<InputSchema>) => QueryKey[];
   };
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
-  messages?: {
-    namespace?: string;
-    loading?: string;
-    success?: string;
-    error?: string;
-  };
 }
 
 export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
@@ -46,13 +46,13 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
   mutation,
   buttonLabels,
   onOpenChange,
-  messages,
 }: FormProps<InputSchema, OutputSchema>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const errorT = useTranslations('errors');
-  const messageT = useTranslations(messages?.namespace || 'form');
+  const tError = useTranslations('errors');
+  const tTransaction = useTranslations('transactions');
+  const queryClient = useQueryClient();
 
-  const { mutate, inputSchema } = mutation;
+  const { mutate, inputSchema, invalidateKeys } = mutation;
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
   const form = useForm({
@@ -113,40 +113,37 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
       mutate(data, {
         onError(error) {
           onOpenChange?.(false);
-          handleTranslatedError(error, errorT, {
-            description: errorT('formError', {
+          handleTranslatedError(error, tError, {
+            description: tError('formError', {
               defaultValue: 'There was an error processing your request.',
               field: form.formState.errors.root?.message || '',
             }),
           });
         },
-        onSuccess({ data, input }) {
+        onSuccess(hash) {
           onOpenChange?.(false);
-          toast.promise(waitForTransactions(data), {
-            loading: messages?.loading
-              ? messageT(messages.loading, { txHash: data })
-              : `Sending transaction ${data}`,
+          toast.promise(waitForTransactions(hash), {
+            loading: tTransaction('sending', {
+              defaultValue: 'Sending transaction {hash}',
+              hash,
+            }),
             success: (result) => {
-              return messages?.success
-                ? messageT(messages.success, {
-                    blockNumber: result.lastTransaction.receipt.blockNumber,
-                    data,
-                    ...input,
-                  })
-                : `Transaction successfully included in block ${result.lastTransaction.receipt.blockNumber}`;
-            },
-            error: (error: TransactionError) => {
-              if (messages?.error) {
-                return messageT(messages.error, {
-                  error: error.message,
-                  ...input,
-                });
+              // If the mutation has specified keys to invalidate, use them
+              if (invalidateKeys?.length) {
+                invalidateQueries(queryClient, invalidateKeys(data));
               }
 
+              return tTransaction('success', {
+                defaultValue:
+                  'Transaction successfully included in block {blockNumber}',
+                blockNumber: result.lastTransaction.receipt.blockNumber,
+              });
+            },
+            error: (error: TransactionError) => {
               return (
                 error.message ||
-                getTranslatedError(error, errorT, {
-                  description: errorT('formError', {
+                getTranslatedError(error, tError, {
+                  description: tError('formError', {
                     defaultValue: 'There was an error processing your request.',
                     field: form.formState.errors.root?.message || '',
                   }),
@@ -158,8 +155,6 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
       });
     })(event);
   };
-
-  console.log('Form errors', form.formState.errors);
 
   return (
     <div className="space-y-6">

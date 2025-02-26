@@ -126,7 +126,7 @@ export async function getStableCoinDetail({ address }: StableCoinDetailProps) {
  * @param params - Object containing the stablecoin address
  * @returns Array representing the query key for React Query
  */
-const getQueryKey = ({ address }: StableCoinDetailProps) =>
+export const getQueryKey = ({ address }: StableCoinDetailProps) =>
   [
     'asset',
     'detail',

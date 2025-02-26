@@ -243,5 +243,9 @@
       "rejected": "Transaktion wurde abgelehnt: {reason}",
       "invalidNonce": "Ungültige Transaktionssequenz. Bitte versuchen Sie es erneut."
     }
+  },
+  "transactions": {
+    "sending": "Transaktion wird gesendet {hash}",
+    "success": "Transaktion erfolgreich im Block {blockNumber} enthalten"
   }
 }
