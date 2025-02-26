@@ -55,7 +55,7 @@ async function getUserSearch({ searchTerm }: UserSearchProps) {
     const searchValue = `%${searchTerm}%`;
 
     const result = await hasuraClient.request(UserSearch, {
-      searchTerm: searchValue,
+      address: searchValue,
     });
 
     // Parse and validate each user in the results using Zod schema
