@@ -3,9 +3,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { getGravatarUrl } from 'react-awesome-gravatar';
-import { getAddress, type Address } from 'viem';
+import { getAddress, isAddress, type Address } from 'viem';
 
 /**
  * Avatar component variant styles using class-variance-authority
@@ -67,11 +67,22 @@ export interface AddressAvatarProps
   alt?: string;
 }
 
+// Helper function to generate Gravatar URL
+const generateGravatarUrl = (
+  identifier: string,
+  size: 'tiny' | 'small' | 'big'
+): string => {
+  return getGravatarUrl(identifier, {
+    default: 'identicon',
+    size: size === 'tiny' ? 200 : 400,
+  });
+};
+
 /**
  * Avatar component that displays an image based on an Ethereum address, email, or custom URL.
  * Falls back to address-based or email-based identicon if no image is provided.
  */
-export function AddressAvatar({
+function AddressAvatarComponent({
   address,
   imageUrl,
   email,
@@ -87,20 +98,23 @@ export function AddressAvatar({
 
   // Ensure address is properly checksummed
   const validAddress = useMemo(
-    () => (address ? getAddress(address) : undefined),
+    () => (address && isAddress(address) ? getAddress(address) : undefined),
     [address]
+  );
+
+  // Determine the identifier for Gravatar (email or address)
+  const gravatarIdentifier = useMemo(
+    () => email ?? address ?? 'anonymous',
+    [email, address]
   );
 
   // Calculate avatar source with fallbacks
   const avatarSrc = useMemo(() => {
-    return (
-      imageUrl ??
-      getGravatarUrl(email ?? address ?? 'anonymous', {
-        default: 'identicon',
-        size: sizeValue === 'tiny' ? 200 : 400,
-      })
-    );
-  }, [imageUrl, email, address, sizeValue]);
+    if (imageUrl) return imageUrl;
+
+    // Generate the Gravatar URL
+    return generateGravatarUrl(gravatarIdentifier, sizeValue);
+  }, [imageUrl, gravatarIdentifier, sizeValue]);
 
   // Calculate fallback text (first 2 chars of email or address)
   const fallbackText = useMemo(() => {
@@ -137,3 +151,10 @@ export function AddressAvatar({
     </div>
   );
 }
+
+// Add display name
+AddressAvatarComponent.displayName = 'AddressAvatarComponent';
+
+// Export a memoized version of the component to prevent unnecessary re-renders
+export const AddressAvatar = memo(AddressAvatarComponent);
+AddressAvatar.displayName = 'AddressAvatar';

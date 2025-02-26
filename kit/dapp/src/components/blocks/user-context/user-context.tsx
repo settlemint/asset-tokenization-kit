@@ -11,9 +11,12 @@ export const UserContext = createContext<Prettify<
 
 export function UserContextProvider({ children }: { children: ReactNode }) {
   const session = authClient.useSession();
-  const user = session?.data?.user as Prettify<
+  if (!session.data?.user) {
+    return null;
+  }
+  const user = session.data.user as Prettify<
     Omit<User, 'wallet'> & { wallet: Address }
-  > | null;
+  >;
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
