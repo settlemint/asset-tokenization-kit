@@ -1,6 +1,4 @@
 import { handleChallenge } from '@/lib/challenge';
-import { getQueryKey as getStablecoinDetailQueryKey } from '@/lib/queries/stablecoin/stablecoin-detail';
-import { getQueryKey as getStablecoinListQueryKey } from '@/lib/queries/stablecoin/stablecoin-list';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -93,11 +91,6 @@ export function useUnblockUser() {
     ...mutation,
     inputSchema: UnblockUserSchema,
     outputSchema: z.hash(),
-    invalidateKeys: (variables: UnblockUser) => [
-      // Invalidate the stablecoin list
-      getStablecoinListQueryKey(),
-      // Invalidate the specific stablecoin details using the query function
-      getStablecoinDetailQueryKey({ address: variables.address }),
-    ],
+    invalidateKeys: () => [['user'], ['transaction'], ['asset']],
   };
 }

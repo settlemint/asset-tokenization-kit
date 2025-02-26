@@ -106,7 +106,7 @@ async function getSidebarAssets({
  * @param options - Query options including optional limit
  * @returns Array representing the query key for React Query
  */
-const getQueryKey = (options?: SidebarAssetsOptions) =>
+export const getQueryKey = (options?: SidebarAssetsOptions) =>
   ['asset', 'sidebar', options?.limit] as const;
 
 /**

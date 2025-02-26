@@ -128,10 +128,7 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
               hash,
             }),
             success: (result) => {
-              // If the mutation has specified keys to invalidate, use them
-              if (invalidateKeys?.length) {
-                invalidateQueries(queryClient, invalidateKeys(data));
-              }
+              void invalidateQueries(queryClient, invalidateKeys(data));
 
               return tTransaction('success', {
                 defaultValue:
