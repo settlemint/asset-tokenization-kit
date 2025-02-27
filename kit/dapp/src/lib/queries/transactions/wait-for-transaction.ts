@@ -1,4 +1,6 @@
+import { waitForIndexing } from '@/lib/queries/transactions/wait-for-indexing';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z, type ZodInfer } from '@/lib/utils/zod';
 import type { FragmentOf } from '@settlemint/sdk-portal';
 
 /**
@@ -11,40 +13,25 @@ const POLLING_DEFAULTS = {
   INTERVAL_MS: 500,
 } as const;
 
-/**
- * Custom error class for transaction-related errors
- */
-export class TransactionError extends Error {
-  readonly code: string;
-  readonly context?: Record<string, unknown>;
-
-  constructor(
-    message: string,
-    code: string,
-    context?: Record<string, unknown>
-  ) {
-    super(message);
-    this.name = 'TransactionError';
-    this.code = code;
-    this.context = context;
-  }
-}
-
 const ReceiptFragment = portalGraphql(`
   fragment ReceiptFragment on TransactionReceiptOutput {
     status
     revertReasonDecoded
-    contractAddress
     blockNumber
-    logs
   }
 `);
+
+export const ReceiptFragmentSchema = z.object({
+  status: z.string(),
+  revertReasonDecoded: z.string().nullish(),
+  blockNumber: z.coerce.number(),
+});
+export type ReceiptFragment = ZodInfer<typeof ReceiptFragmentSchema>;
 
 const GetTransaction = portalGraphql(
   `
   query GetTransaction($transactionHash: String!) {
     getTransaction(transactionHash: $transactionHash) {
-      metadata
       receipt {
         ...ReceiptFragment
       }
@@ -65,28 +52,13 @@ export interface TransactionMonitoringOptions {
 }
 
 /**
- * Result of a transaction mining operation
- */ interface TransactionMiningResult {
-  receipt: FragmentOf<typeof ReceiptFragment>;
-}
-
-/**
- * Result of multiple transaction mining operations
- */
-export interface TransactionsMiningResult {
-  receipts: TransactionMiningResult[];
-  /** The last transaction's result, useful for UI updates */
-  lastTransaction: TransactionMiningResult;
-}
-
-/**
  * Waits for a single transaction to be mined
  * @internal Use waitForTransactions for external calls
  */
 async function waitForSingleTransaction(
   transactionHash: string,
   options: TransactionMonitoringOptions = {}
-): Promise<TransactionMiningResult> {
+) {
   const timeoutMs = options.timeoutMs ?? POLLING_DEFAULTS.TIMEOUT_MS;
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
@@ -96,12 +68,8 @@ async function waitForSingleTransaction(
 
   while (!receipt) {
     if (Date.now() - startTime > timeoutMs) {
-      throw new TransactionError(
-        `Transaction mining timed out after ${timeoutMs / 1000} seconds`,
-        'TIMEOUT',
-        {
-          transactionHash,
-        }
+      throw new Error(
+        `Transaction mining timed out after ${timeoutMs / 1000} seconds`
       );
     }
 
@@ -111,15 +79,8 @@ async function waitForSingleTransaction(
     receipt = transaction.getTransaction?.receipt ?? null;
 
     if (receipt?.status === 'Reverted') {
-      throw new TransactionError(
-        `Transaction reverted: ${receipt.revertReasonDecoded ?? 'Unknown error'}`,
-        'REVERTED',
-        {
-          transactionHash,
-          blockNumber: receipt.blockNumber,
-          contractAddress: receipt.contractAddress ?? 'N/A',
-          revertReason: receipt.revertReasonDecoded,
-        }
+      throw new Error(
+        `Transaction reverted: ${receipt.revertReasonDecoded ?? 'unknown error'}`
       );
     }
 
@@ -127,8 +88,7 @@ async function waitForSingleTransaction(
       await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
     }
   }
-
-  return { receipt };
+  return receipt;
 }
 
 /**
@@ -142,7 +102,7 @@ async function waitForSingleTransaction(
 export async function waitForTransactions(
   transactionHashes: string | string[],
   options: TransactionMonitoringOptions = {}
-): Promise<TransactionsMiningResult> {
+) {
   const hashes = Array.isArray(transactionHashes)
     ? transactionHashes
     : [transactionHashes];
@@ -154,8 +114,21 @@ export async function waitForTransactions(
   // Sleep for 2 seconds to allow the graph to update
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  return {
+  const response = WaitForTransactionsResponseSchema.parse({
     receipts: results,
     lastTransaction: results.at(-1)!,
-  };
+  });
+
+  await waitForIndexing(response.lastTransaction.blockNumber);
+
+  return response;
 }
+
+export const WaitForTransactionsResponseSchema = z.object({
+  receipts: z.array(ReceiptFragmentSchema),
+  lastTransaction: ReceiptFragmentSchema,
+});
+
+export type WaitForTransactionsResponse = ZodInfer<
+  typeof WaitForTransactionsResponseSchema
+>;

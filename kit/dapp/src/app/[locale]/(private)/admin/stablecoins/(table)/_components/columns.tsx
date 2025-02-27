@@ -4,7 +4,6 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PercentageProgressBar } from '@/components/blocks/percentage-progress/percentage-progress';
-import { assetConfig } from '@/lib/config/assets';
 import type { getStableCoinList } from '@/lib/queries/stablecoin/stablecoin-list';
 import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -94,7 +93,7 @@ export function useStableCoinColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/admin/${assetConfig.stablecoin.urlSegment}/${row.original.id}`}
+            detailUrl={`/admin/stablecoins/${row.original.id}`}
           />
         );
       },

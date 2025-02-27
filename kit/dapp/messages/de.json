@@ -558,32 +558,9 @@
       "view-on-explorer": "Im Explorer anzeigen"
     }
   },
-  "errors": {
-    "formError": "Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-    "unknown": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
-    "validation": "Das Formular enthält ungültige Daten. Bitte überprüfen Sie Ihre Eingaben.",
-    "network": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-    "permission": "Sie haben keine Berechtigung, diese Aktion auszuführen.",
-    "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
-    "timeout": "Die Anfrage hat das Zeitlimit überschritten. Bitte versuchen Sie es erneut.",
-    "server": "Serverfehler. Unser Team wurde benachrichtigt.",
-    "unauthorized": "Sie müssen angemeldet sein, um diese Aktion auszuführen.",
-    "forbidden": "Sie haben nicht genügend Berechtigungen, um diese Aktion auszuführen.",
-    "conflict": "Diese Operation steht im Konflikt mit dem aktuellen Zustand. Bitte aktualisieren Sie und versuchen Sie es erneut.",
-    "invalidInput": "Ein oder mehrere Eingabefelder enthalten ungültige Daten.",
-    "insufficientFunds": "Unzureichendes Guthaben, um diese Transaktion abzuschließen.",
-    "TransactionError": "Transaktion fehlgeschlagen: {message}",
-    "ChallengeError": "Authentifizierung fehlgeschlagen: {message}",
-    "transaction": {
-      "failed": "Transaktion fehlgeschlagen: {reason}",
-      "reverted": "Transaktion wurde zurückgesetzt: {reason}",
-      "rejected": "Transaktion wurde abgelehnt: {reason}",
-      "invalidNonce": "Ungültige Transaktionssequenz. Bitte versuchen Sie es erneut."
-    }
-  },
   "transactions": {
-    "sending": "Transaktion wird gesendet {hash}",
-    "success": "Transaktion erfolgreich in Block {blockNumber} aufgenommen"
+    "sending": "Transaktion wird gesendet",
+    "success": "Transaktion erfolgreich verarbeitet"
   },
   "theme": {
     "toggle-label": "Theme umschalten",

@@ -1,64 +1,100 @@
-import { invalidateQueries } from '@/components/blocks/query-client/query-client';
+'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form as UIForm } from '@/components/ui/form';
-import {
-  getTranslatedError,
-  handleTranslatedError,
-} from '@/lib/utils/error-handler';
-import {
-  waitForTransactions,
-  type TransactionError,
-} from '@/lib/wait-for-transaction';
-import {
-  useQueryClient,
-  type QueryKey,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useTranslations } from 'next-intl';
+import type { Infer } from 'next-safe-action/adapters/types';
+import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import { useState } from 'react';
-import type { DefaultValues, Path } from 'react-hook-form';
+import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { Schema, z } from 'zod';
 import { FormButton, type ButtonLabels } from './form-button';
 import { FormProgress } from './form-progress';
 import type { FormStepElement } from './types';
-import { useForm } from './use-form';
 
-interface FormProps<InputSchema extends Schema, OutputSchema extends Schema> {
-  children: FormStepElement<InputSchema> | FormStepElement<InputSchema>[];
-  defaultValues?: DefaultValues<z.infer<InputSchema>>;
-  mutation: UseMutationResult<
-    z.infer<OutputSchema>,
-    Error,
-    z.infer<InputSchema>
-  > & {
-    inputSchema: InputSchema;
-    outputSchema: OutputSchema;
-    invalidateKeys: (variables: z.infer<InputSchema>) => QueryKey[];
-  };
+interface FormProps<
+  ServerError,
+  S extends Schema,
+  BAS extends readonly Schema[],
+  CVE,
+  CBAVE,
+  Data,
+  FormContext = unknown,
+> {
+  children: FormStepElement<S> | FormStepElement<S>[];
+  defaultValues?: DefaultValues<z.infer<S>>;
+  action: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
+  resolver: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
+  toastMessages?: {
+    loading?: string;
+    success?: string;
+  };
 }
 
-export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
+export function Form<
+  ServerError,
+  S extends Schema,
+  BAS extends readonly Schema[],
+  CVE,
+  CBAVE,
+  Data,
+  FormContext = unknown,
+>({
   children,
   defaultValues,
-  mutation,
+  action,
+  resolver,
   buttonLabels,
   onOpenChange,
-}: FormProps<InputSchema, OutputSchema>) {
+  toastMessages,
+}: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const tError = useTranslations('errors');
-  const tTransaction = useTranslations('transactions');
-  const queryClient = useQueryClient();
+  const t = useTranslations('transactions');
+  const [toastId, setToastId] = useState<string | number | undefined>(
+    undefined
+  );
 
-  const { mutate, inputSchema, invalidateKeys } = mutation;
+  console.log('toastId', toastId);
+
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
-  const form = useForm({
-    defaultValues,
-    inputSchema,
-  });
+  const { form, handleSubmitWithAction, resetFormAndAction } =
+    useHookFormAction(action, resolver, {
+      formProps: {
+        mode: 'onSubmit',
+        criteriaMode: 'all',
+        shouldFocusError: false,
+        shouldUseNativeValidation: true,
+        defaultValues,
+      },
+      actionProps: {
+        onExecute: () => {
+          onOpenChange?.(false);
+          setToastId(toast.loading(toastMessages?.loading || t('sending')));
+        },
+        onSuccess: () => {
+          toast.success(toastMessages?.success || t('success'));
+          toast.dismiss(toastId);
+          resetFormAndAction();
+        },
+        onError: (error) => {
+          let errorMessage = 'Unknown error';
+
+          if (error?.error?.serverError) {
+            errorMessage = error.error.serverError as string;
+          } else if (error?.error?.validationErrors) {
+            errorMessage = 'Validation error';
+          }
+
+          toast.error(`Failed to submit: ${errorMessage}`);
+          toast.dismiss(toastId);
+          resetFormAndAction();
+        },
+      },
+    });
 
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
@@ -75,31 +111,18 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
       return;
     }
 
-    // Mark fields as touched
     for (const field of fieldsToValidate) {
-      const value = form.getValues(
-        field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>
-      );
+      const value = form.getValues(field as Path<z.infer<S>>);
 
-      form.setValue(
-        field as Path<InputSchema extends Schema ? z.infer<InputSchema> : any>,
-        value,
-        {
-          shouldValidate: true,
-          shouldTouch: true,
-        }
-      );
+      form.setValue(field as Path<z.infer<S>>, value, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
     }
 
-    // Validate fields
     const results = await Promise.all(
       fieldsToValidate.map((field) =>
-        form.trigger(
-          field as Path<
-            InputSchema extends Schema ? z.infer<InputSchema> : any
-          >,
-          { shouldFocus: true }
-        )
+        form.trigger(field as Path<z.infer<S>>, { shouldFocus: true })
       )
     );
 
@@ -108,58 +131,13 @@ export function Form<InputSchema extends Schema, OutputSchema extends Schema>({
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    void form.handleSubmit((data) => {
-      mutate(data, {
-        onError(error) {
-          onOpenChange?.(false);
-          handleTranslatedError(error, tError, {
-            description: tError('formError', {
-              defaultValue: 'There was an error processing your request.',
-              field: form.formState.errors.root?.message || '',
-            }),
-          });
-        },
-        onSuccess(hash) {
-          onOpenChange?.(false);
-          toast.promise(waitForTransactions(hash), {
-            loading: tTransaction('sending', {
-              defaultValue: 'Sending transaction {hash}',
-              hash,
-            }),
-            success: (result) => {
-              void invalidateQueries(queryClient, invalidateKeys(data));
-
-              return tTransaction('success', {
-                defaultValue:
-                  'Transaction successfully included in block {blockNumber}',
-                blockNumber: result.lastTransaction.receipt.blockNumber,
-              });
-            },
-            error: (error: TransactionError) => {
-              return (
-                error.message ||
-                getTranslatedError(error, tError, {
-                  description: tError('formError', {
-                    defaultValue: 'There was an error processing your request.',
-                    field: form.formState.errors.root?.message || '',
-                  }),
-                }).message
-              );
-            },
-          });
-        },
-      });
-    })(event);
-  };
-
   return (
     <div className="space-y-6">
       <div className="container mt-8">
         <Card className="w-full pt-10">
           <CardContent>
             <UIForm {...form}>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmitWithAction}>
                 {totalSteps > 1 && (
                   <FormProgress
                     currentStep={currentStep}

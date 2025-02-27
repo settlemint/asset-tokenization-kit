@@ -1,3 +1,6 @@
+'use client';
+'use no memo'; // fixes rerendering with react compiler
+
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -71,6 +74,8 @@ export function FormButton({
     return isLastStep ? finalLabels.label : t('next');
   };
 
+  const disabled =
+    isSubmitting || (isLastStep && Object.keys(errors).length > 0);
   return (
     <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (
@@ -91,9 +96,7 @@ export function FormButton({
         onClick={isLastStep ? undefined : onNextStep}
         aria-label={isLastStep ? finalLabels.label : t('next')}
         className={currentStep === 0 ? 'ml-auto' : ''}
-        disabled={
-          isSubmitting || (isLastStep && Object.keys(errors).length > 0)
-        }
+        disabled={disabled}
       >
         {getButtonContent()}
       </Button>
