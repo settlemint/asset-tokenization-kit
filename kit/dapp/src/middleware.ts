@@ -1,6 +1,15 @@
 import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
+import { getSessionCookie } from 'better-auth';
 import { default as createIntlMiddleware } from 'next-intl/middleware';
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { match } from 'path-to-regexp';
+
+const isPrivateRoute = match([
+  '/:locale/admin',
+  '/:locale/admin/*path',
+  '/:locale/proxy',
+  '/:locale/proxy/*path',
+]);
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
@@ -11,6 +20,17 @@ const intlMiddleware = createIntlMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
+  const cookies = getSessionCookie(request);
+
+  if (isPrivateRoute(request.nextUrl.pathname) && !cookies) {
+    const [, locale] = request.nextUrl.pathname.split('/');
+    if (locale != null) {
+      return NextResponse.redirect(
+        new URL(`/auth/signin?rd=${request.nextUrl.pathname}`, request.url)
+      );
+    }
+  }
+
   // Handle proxy routes - proxyMiddleware already checks if the path matches
   // and returns NextResponse.next() if it's not a proxy route
   const proxyResponse = proxyMiddleware(request);
@@ -26,5 +46,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/proxy/:path*', '/', '/(de|en)/:path*'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

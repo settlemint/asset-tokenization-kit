@@ -5,9 +5,11 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import BigDecimal from 'js-big-decimal';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -66,6 +68,15 @@ export interface StableCoinListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each stablecoin.
  */
+
+export const getStableCoinListTest = unstable_cache(
+  getStableCoinList,
+  ['asset', 'stablecoin'],
+  {
+    revalidate: 60, // 1 minute
+  }
+);
+
 export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
   try {
     const [theGraphStableCoins, dbAssets] = await Promise.all([
@@ -132,7 +143,17 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
       };
     });
 
-    return stableCoins;
+    console.log('getStableCoinList', stableCoins.length);
+
+    return stableCoins.map((stableCoin) => ({
+      ...stableCoin,
+      // replace all the BigDecimals with formatted strings
+      collateralCommittedRatio: Number(
+        stableCoin.collateralCommittedRatio.getValue()
+      ),
+      totalSupply: formatNumber(stableCoin.totalSupply),
+      collateral: formatNumber(stableCoin.collateral),
+    }));
   } catch (error) {
     console.error('Error fetching stablecoin list:', error);
     return [];
@@ -145,7 +166,7 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
  * @param [options] - Options for the stablecoin list query
  */
 export const getQueryKey = (options?: StableCoinListOptions) =>
-  ['asset', assetConfig.stablecoin.queryKey, options?.limit ?? 'all'] as const;
+  ['asset', 'stablecoin', options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching stablecoin list
@@ -162,7 +183,7 @@ export function useStableCoinList(options?: StableCoinListOptions) {
 
   const result = useSuspenseQuery({
     queryKey,
-    queryFn: () => getStableCoinList(options),
+    queryFn: () => [],
   });
 
   return {

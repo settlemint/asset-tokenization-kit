@@ -1,8 +1,10 @@
+import { useStableCoinColumns } from '@/app/[locale]/(private)/admin/stablecoins/(table)/_components/columns';
+import { DataTable } from '@/components/blocks/data-table/data-table';
 import { PageHeader } from '@/components/layout/page-header';
+import { assetConfig } from '@/lib/config/assets';
+import { getStableCoinList } from '@/lib/queries/stablecoin/stablecoin-list';
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
-import { StableCoinTable } from './_components/table';
 
 export async function generateMetadata({
   params,
@@ -21,12 +23,19 @@ export async function generateMetadata({
   };
 }
 
-export default function StableCoinsPage() {
-  const t = useTranslations('admin.stablecoins.table');
+export default async function StableCoinsPage() {
+  const t = await getTranslations('admin.stablecoins.table');
+  const stablecoins = await getStableCoinList();
+
   return (
     <>
       <PageHeader title={t('page-title')} />
-      <StableCoinTable />
+
+      <DataTable
+        columnHook={useStableCoinColumns}
+        data={stablecoins}
+        name={assetConfig.stablecoin.name}
+      />
     </>
   );
 }
