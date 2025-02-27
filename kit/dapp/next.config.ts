@@ -21,4 +21,4 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 };
 
-export default withNextIntl(withSettleMint(nextConfig));
+export default withSettleMint(withNextIntl(nextConfig));

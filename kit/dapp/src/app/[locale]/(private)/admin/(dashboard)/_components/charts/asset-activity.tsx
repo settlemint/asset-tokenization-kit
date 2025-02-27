@@ -5,24 +5,26 @@ import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
 import { assetConfig } from '@/lib/config/assets';
 import { useAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
-
-const chartConfig = {
-  mintEventCount: {
-    label: 'Mint',
-    color: '#0d9488',
-  },
-  transferEventCount: {
-    label: 'Transfer',
-    color: '#3b82f6',
-  },
-  burnEventCount: {
-    label: 'Burn',
-    color: '#06b6d4',
-  },
-} satisfies ChartConfig;
+import { useTranslations } from 'next-intl';
 
 export function AssetActivity() {
+  const t = useTranslations('admin.dashboard.charts');
   const { data } = useAssetActivity();
+
+  const chartConfig = {
+    mintEventCount: {
+      label: t('asset-activity.mint'),
+      color: '#0d9488',
+    },
+    transferEventCount: {
+      label: t('asset-activity.transfer'),
+      color: '#3b82f6',
+    },
+    burnEventCount: {
+      label: t('asset-activity.burn'),
+      color: '#06b6d4',
+    },
+  } satisfies ChartConfig;
 
   const isEmpty = data.every(
     (asset) =>
@@ -32,7 +34,7 @@ export function AssetActivity() {
   );
 
   if (isEmpty) {
-    return <ChartSkeleton title="Activity" variant="noData" />;
+    return <ChartSkeleton title={t('asset-activity.title')} variant="noData" />;
   }
 
   // Convert bigint values to numbers for the chart component
@@ -49,8 +51,8 @@ export function AssetActivity() {
     <BarChartComponent
       data={chartData}
       config={chartConfig}
-      title="Activity"
-      description="Showing events for each asset type"
+      title={t('asset-activity.title')}
+      description={t('asset-activity.description')}
       xAxis={{
         key: 'assetType',
         tickFormatter: (value: string) => {

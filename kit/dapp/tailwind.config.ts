@@ -23,6 +23,20 @@ export default {
           'linear-gradient(83deg, #37393d, #384258 50%, #375b7b)',
       },
       colors: {
+        // SettleMint Brand Colors
+        sm: {
+          'mint-green': 'hsl(var(--sm-mint-green))',
+          blue: 'hsl(var(--sm-blue))',
+          orange: 'hsl(var(--sm-orange))',
+          teal: 'hsl(var(--sm-teal))',
+          'light-blue': 'hsl(var(--sm-light-blue))',
+          white: 'hsl(var(--sm-white))',
+          green: 'hsl(var(--sm-green))',
+          'royal-blue': 'hsl(var(--sm-royal-blue))',
+          purple: 'hsl(var(--sm-purple))',
+          cyan: 'hsl(var(--sm-cyan))',
+          'dark-gray': 'hsl(var(--sm-dark-gray))',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

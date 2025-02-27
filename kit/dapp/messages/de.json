@@ -220,6 +220,49 @@
         "private-status": "Privat",
         "public-status": "Öffentlich"
       }
+    },
+    "dashboard": {
+      "widgets": {
+        "assets": {
+          "label": "Asset-Angebot",
+          "subtext": "wird in das Diagramm verschoben"
+        },
+        "users": {
+          "label": "Benutzer",
+          "subtext": "{count} in den letzten {days} Tagen"
+        },
+        "transactions": {
+          "label": "Transaktionen",
+          "subtext": "{count} in den letzten {days} Tagen"
+        }
+      },
+      "charts": {
+        "asset-activity": {
+          "title": "Aktivität",
+          "description": "Zeigt Ereignisse für jeden Asset-Typ",
+          "mint": "Prägen",
+          "transfer": "Übertragen",
+          "burn": "Verbrennen"
+        },
+        "assets-supply": {
+          "to-be-moved": "Wird in das Diagramm verschoben"
+        },
+        "transaction-history": {
+          "title": "Transaktionen",
+          "description": "Zeigt Transaktionen der letzten {interval}",
+          "label": "Transaktionen"
+        },
+        "users-history": {
+          "title": "Benutzer",
+          "description": "Zeigt Benutzer der letzten 7 Tage",
+          "label": "Benutzer"
+        }
+      },
+      "table": {
+        "latest-events": {
+          "view-all": "Alle Ereignisse anzeigen →"
+        }
+      }
     }
   },
   "auth": {
@@ -337,6 +380,10 @@
       }
     },
     "asset-type-icon": {
+      "bond-initials": "AN",
+      "cryptocurrency-initials": "KW",
+      "equity-initials": "EK",
+      "fund-initials": "FD",
       "stablecoin-initials": "SC",
       "not-available-initials": "NA"
     },
@@ -410,7 +457,9 @@
       "no-results-found": "Keine Ergebnisse gefunden.",
       "clear-filters": "Filter löschen",
       "view": "Anzeigen",
-      "toggle-columns": "Spalten umschalten"
+      "toggle-columns": "Spalten umschalten",
+      "details": "Details",
+      "open-menu": "Menü öffnen"
     },
     "detail-grid": {
       "info-icon-label": "Zusätzliche Informationen"

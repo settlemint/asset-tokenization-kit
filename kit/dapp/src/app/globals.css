@@ -4,34 +4,48 @@
 
 @layer base {
   :root {
+    /* SettleMint Brand Colors */
+    --sm-mint-green: 142 41% 81%;
+    --sm-blue: 207 73% 54%;
+    --sm-orange: 20 100% 66%;
+    --sm-teal: 172 53% 59%;
+    --sm-light-blue: 225 91% 94%;
+    --sm-white: 0 0% 100%;
+    --sm-green: 140 50% 69%;
+    --sm-royal-blue: 222 85% 57%;
+    --sm-purple: 267 91% 67%;
+    --sm-cyan: 189 64% 51%;
+    --sm-dark-gray: 0 0% 11%;
+
+    /* Default Light Theme */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --primary: 222 85% 57%; /* Using sm-royal-blue */
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
+    --secondary: 225 91% 94%; /* Using sm-light-blue */
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
+    --accent: 172 53% 59%; /* Using sm-teal */
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --warning: 27 87% 67%;
+    --warning: 20 100% 66%; /* Using sm-orange */
     --warning-foreground: 0 0% 98%;
-    --success: 173 58% 39%;
+    --success: 140 50% 69%; /* Using sm-green */
     --success-foreground: 0 0% 98%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --ring: 222 85% 57%; /* Using sm-royal-blue */
+    --chart-1: 20 100% 66%; /* Using sm-orange */
+    --chart-2: 140 50% 69%; /* Using sm-green */
+    --chart-3: 207 73% 54%; /* Using sm-blue */
+    --chart-4: 267 91% 67%; /* Using sm-purple */
+    --chart-5: 189 64% 51%; /* Using sm-cyan */
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -43,34 +57,35 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
+    /* Default Dark Theme */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: 222 85% 57%; /* Using sm-royal-blue */
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
+    --accent: 172 53% 59%; /* Using sm-teal */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --warning: 27 87% 67%;
+    --warning: 20 100% 66%; /* Using sm-orange */
     --warning-foreground: 0 0% 98%;
-    --success: 160 60% 45%;
+    --success: 140 50% 69%; /* Using sm-green */
     --success-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --ring: 222 85% 57%; /* Using sm-royal-blue */
+    --chart-1: 20 100% 66%; /* Using sm-orange */
+    --chart-2: 140 50% 69%; /* Using sm-green */
+    --chart-3: 207 73% 54%; /* Using sm-blue */
+    --chart-4: 267 91% 67%; /* Using sm-purple */
+    --chart-5: 189 64% 51%; /* Using sm-cyan */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -81,87 +96,89 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .settlemint-light {
-    --button-hover-accent: 221 83% 95%;
-    --background: 222.86 87.5% 96.86%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 221 84.5% 56.9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 220 77% 57%;
-    --accent-foreground: 240 4.8% 95.9%;
+    /* SettleMint Light Theme */
+    --button-hover-accent: 225 91% 94%; /* Using sm-light-blue */
+    --background: 225 91% 94%; /* Using sm-light-blue */
+    --foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --card: 0 0% 100%; /* Using sm-white */
+    --card-foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --popover: 0 0% 100%; /* Using sm-white */
+    --popover-foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --primary: 207 73% 54%; /* Using sm-blue */
+    --primary-foreground: 0 0% 100%; /* Using sm-white */
+    --secondary: 142 41% 81%; /* Using sm-mint-green */
+    --secondary-foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --muted: 225 91% 94%; /* Using sm-light-blue */
+    --muted-foreground: 207 73% 54%; /* Using sm-blue */
+    --accent: 222 85% 57%; /* Using sm-royal-blue */
+    --accent-foreground: 0 0% 100%; /* Using sm-white */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --warning: 27 87% 67%;
+    --warning: 20 100% 66%; /* Using sm-orange */
     --warning-foreground: 0 0% 98%;
-    --success: 173 58% 39%;
+    --success: 140 50% 69%; /* Using sm-green */
     --success-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
+    --border: 225 91% 94%; /* Using sm-light-blue */
     --input: 0 0% 80%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 207 73% 54%; /* Using sm-blue */
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 220.71 87.5% 93.73%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --theme-accent-background: 221 83% 95%;
-    --theme-accent-foreground: 221 85% 57%;
+    --chart-1: 20 100% 66%; /* Using sm-orange */
+    --chart-2: 140 50% 69%; /* Using sm-green */
+    --chart-3: 207 73% 54%; /* Using sm-blue */
+    --chart-4: 267 91% 67%; /* Using sm-purple */
+    --chart-5: 189 64% 51%; /* Using sm-cyan */
+    --sidebar-background: 225 91% 94%; /* Using sm-light-blue */
+    --sidebar-foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --sidebar-primary: 207 73% 54%; /* Using sm-blue */
+    --sidebar-primary-foreground: 0 0% 100%; /* Using sm-white */
+    --sidebar-accent: 142 41% 81%; /* Using sm-mint-green */
+    --sidebar-accent-foreground: 0 0% 11%; /* Using sm-dark-gray */
+    --sidebar-border: 225 91% 94%; /* Using sm-light-blue */
+    --sidebar-ring: 207 73% 54%; /* Using sm-blue */
+    --theme-accent-background: 225 91% 94%; /* Using sm-light-blue */
+    --theme-accent-foreground: 207 73% 54%; /* Using sm-blue */
   }
   .settlemint-dark {
-    --background: 0 0% 16%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 22%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 22%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 219 71% 41%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 221 84.5% 56.9%;
-    --accent-foreground: 0 0% 98%;
+    /* SettleMint Dark Theme */
+    --background: 0 0% 11%; /* Using sm-dark-gray */
+    --foreground: 0 0% 100%; /* Using sm-white */
+    --card: 0 0% 16%;
+    --card-foreground: 0 0% 100%; /* Using sm-white */
+    --popover: 0 0% 16%;
+    --popover-foreground: 0 0% 100%; /* Using sm-white */
+    --primary: 207 73% 54%; /* Using sm-blue */
+    --primary-foreground: 0 0% 100%; /* Using sm-white */
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 100%; /* Using sm-white */
+    --muted: 0 0% 16%;
+    --muted-foreground: 207 73% 54%; /* Using sm-blue at lower opacity */
+    --accent: 222 85% 57%; /* Using sm-royal-blue */
+    --accent-foreground: 0 0% 100%; /* Using sm-white */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --warning: 30 80% 55%;
+    --warning: 20 100% 66%; /* Using sm-orange */
     --warning-foreground: 0 0% 98%;
-    --success: 160 60% 45%;
+    --success: 140 50% 69%; /* Using sm-green */
     --success-foreground: 0 0% 98%;
-    --border: 240 3.7% 25.9%;
-    --input: 0 0% 30%;
-    --ring: 224.3 76.3% 48%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 0 0% 11%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --theme-accent-background: 240 3.7% 15.9%;
-    --theme-accent-foreground: 221 85% 57%;
-    --theme-sidebar-accent: 0 0% 16%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 207 73% 54%; /* Using sm-blue */
+    --chart-1: 20 100% 66%; /* Using sm-orange */
+    --chart-2: 140 50% 69%; /* Using sm-green */
+    --chart-3: 207 73% 54%; /* Using sm-blue */
+    --chart-4: 267 91% 67%; /* Using sm-purple */
+    --chart-5: 189 64% 51%; /* Using sm-cyan */
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 100%; /* Using sm-white */
+    --sidebar-primary: 207 73% 54%; /* Using sm-blue */
+    --sidebar-primary-foreground: 0 0% 100%; /* Using sm-white */
+    --sidebar-accent: 0 0% 16%;
+    --sidebar-accent-foreground: 0 0% 100%; /* Using sm-white */
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 207 73% 54%; /* Using sm-blue */
+    --theme-accent-background: 0 0% 16%;
+    --theme-accent-foreground: 207 73% 54%; /* Using sm-blue */
+    --theme-sidebar-accent: 0 0% 11%; /* Using sm-dark-gray */
   }
 
   /* Add transition for all CSS variables */
