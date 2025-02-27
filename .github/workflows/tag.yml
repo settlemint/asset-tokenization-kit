@@ -92,7 +92,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo codegen addresses
+        run: bunx turbo codegen addresses build
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
