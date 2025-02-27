@@ -1,11 +1,9 @@
-'use client';
-
 import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
 import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { formatNumber } from '@/lib/utils/number';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 
@@ -13,20 +11,20 @@ interface DetailsProps {
   address: Address;
 }
 
-export function Details({ address }: DetailsProps) {
-  const { data: asset } = useStableCoinDetail({ address });
-  const t = useTranslations('admin.stablecoins.details');
+export async function Details({ address }: DetailsProps) {
+  const stableCoin = await getStableCoinDetail({ address });
+  const t = await getTranslations('admin.stablecoins.details');
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t('name')}>{asset.name}</DetailGridItem>
-        <DetailGridItem label={t('symbol')}>{asset.symbol}</DetailGridItem>
-        {asset.isin && (
-          <DetailGridItem label={t('isin')}>{asset.isin}</DetailGridItem>
+        <DetailGridItem label={t('name')}>{stableCoin.name}</DetailGridItem>
+        <DetailGridItem label={t('symbol')}>{stableCoin.symbol}</DetailGridItem>
+        {stableCoin.isin && (
+          <DetailGridItem label={t('isin')}>{stableCoin.isin}</DetailGridItem>
         )}
         <DetailGridItem label={t('contract-address')}>
           <EvmAddress
-            address={asset.id}
+            address={stableCoin.id}
             prettyNames={false}
             hoverCard={false}
             copyToClipboard={true}
@@ -34,20 +32,22 @@ export function Details({ address }: DetailsProps) {
         </DetailGridItem>
         <DetailGridItem label={t('creator')}>
           <EvmAddress
-            address={asset.creator.id}
+            address={stableCoin.creator.id}
             hoverCard={false}
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t('decimals')}>{asset.decimals}</DetailGridItem>
+        <DetailGridItem label={t('decimals')}>
+          {stableCoin.decimals}
+        </DetailGridItem>
         <DetailGridItem label={t('total-supply')} info={t('total-supply-info')}>
-          {formatNumber(asset.totalSupply, { token: asset.symbol })}
+          {stableCoin.totalSupply}
         </DetailGridItem>
         <DetailGridItem
           label={t('ownership-concentration')}
           info={t('ownership-concentration-info')}
         >
-          {formatNumber(asset.concentration, {
+          {formatNumber(stableCoin.concentration, {
             percentage: true,
             decimals: 2,
           })}

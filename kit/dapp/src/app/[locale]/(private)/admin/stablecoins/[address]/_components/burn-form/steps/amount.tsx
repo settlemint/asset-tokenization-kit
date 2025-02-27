@@ -6,10 +6,10 @@ import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 interface AmountProps {
-  balance: number;
+  maxBurnAmount: number;
 }
 
-export function Amount({ balance }: AmountProps) {
+export function Amount({ maxBurnAmount }: AmountProps) {
   const { control } = useFormContext<Burn>();
   const t = useTranslations('admin.stablecoins.burn-form.amount');
 
@@ -22,9 +22,9 @@ export function Amount({ balance }: AmountProps) {
           label={t('amount-label')}
           type="number"
           min={1}
-          max={balance}
+          max={maxBurnAmount}
           description={t('available-balance', {
-            balance: formatNumber(balance),
+            balance: formatNumber(maxBurnAmount),
           })}
         />
       </div>

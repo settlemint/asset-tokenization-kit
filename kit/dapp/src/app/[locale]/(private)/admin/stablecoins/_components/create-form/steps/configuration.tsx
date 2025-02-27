@@ -1,11 +1,11 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import type { CreateStablecoinInput } from '@/lib/mutations/stablecoin/create/create-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
-  const { control } = useFormContext<CreateStablecoin>();
+  const { control } = useFormContext<CreateStablecoinInput>();
   const t = useTranslations('admin.stablecoins.create-form.configuration');
 
   return (

@@ -1,4 +1,4 @@
-import { z } from '@/lib/utils/zod';
+import { z, type ZodInfer } from '@/lib/utils/zod';
 
 /**
  * Zod schema for validating stablecoin creation inputs
@@ -20,3 +20,5 @@ export const CreateStablecoinSchema = z.object({
   pincode: z.pincode(),
   privateAsset: z.boolean(),
 });
+
+export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

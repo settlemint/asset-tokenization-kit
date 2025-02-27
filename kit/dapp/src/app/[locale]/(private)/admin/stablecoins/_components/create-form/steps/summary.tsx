@@ -3,13 +3,13 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { CreateStablecoin } from '@/lib/mutations/stablecoin/create';
+import type { CreateStablecoinInput } from '@/lib/mutations/stablecoin/create/create-schema';
 import { DollarSign, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 export function Summary() {
-  const { control } = useFormContext<CreateStablecoin>();
+  const { control } = useFormContext<CreateStablecoinInput>();
   const values = useWatch({
     control: control,
   });

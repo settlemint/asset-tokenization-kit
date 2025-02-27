@@ -6,7 +6,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import BigDecimal from 'js-big-decimal';
 import { getAddress } from 'viem';
 import {
@@ -140,40 +139,4 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
     totalSupply: formatNumber(stableCoin.totalSupply),
     collateral: formatNumber(stableCoin.collateral),
   }));
-}
-
-/**
- * Generates a consistent query key for stablecoin list queries
- *
- * @param [options] - Options for the stablecoin list query
- */
-export const getQueryKey = (options?: StableCoinListOptions) =>
-  ['asset', 'stablecoin', `${options?.limit ?? 'all'}`] as const;
-
-/**
- * React Query hook for fetching stablecoin list
- *
- * @param [options] - Options for fetching stablecoin list
- *
- * @example
- * ```tsx
- * const { data: stableCoins, isLoading } = useStableCoinList({ limit: 10 });
- * ```
- */
-export function useStableCoinList(options?: StableCoinListOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => [],
-  });
-
-  return {
-    ...result,
-    queryKey,
-    // Inline stablecoin config values
-    assetType: 'stablecoin' as const,
-    urlSegment: 'stablecoins',
-    theGraphTypename: 'StableCoin' as const,
-  };
 }

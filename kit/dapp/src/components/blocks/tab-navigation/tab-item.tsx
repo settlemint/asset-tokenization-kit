@@ -17,7 +17,7 @@ export interface TabItemProps {
 
 export const TabItem: FC<TabItemProps> = ({ href, name, badge, active }) => (
   <NavigationMenuItem>
-    <Link href={href} legacyBehavior passHref>
+    <Link href={href}>
       <NavigationMenuLink
         className={cn(
           navigationMenuTriggerStyle(),

@@ -2,10 +2,11 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { usePause } from '@/lib/mutations/stablecoin/pause';
-import { useUnPause } from '@/lib/mutations/stablecoin/unpause';
-import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { pause } from '@/lib/mutations/stablecoin/pause/pause-action';
+import { PauseSchema } from '@/lib/mutations/stablecoin/pause/pause-schema';
+import { unpause } from '@/lib/mutations/stablecoin/unpause/unpause-action';
+import { UnPauseSchema } from '@/lib/mutations/stablecoin/unpause/unpause-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
@@ -13,21 +14,14 @@ import { Summary } from './steps/summary';
 
 interface PauseFormProps {
   address: Address;
+  isPaused: boolean;
 }
 
-export function PauseForm({ address }: PauseFormProps) {
-  const unPauseMutation = useUnPause();
-  const pauseMutation = usePause();
-  const { data: stableCoin } = useStableCoinDetail({ address });
-  const user = useUser();
+export function PauseForm({ address, isPaused }: PauseFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations('admin.stablecoins.pause-form');
 
-  if (!user) {
-    return null;
-  }
-
-  if (stableCoin?.paused) {
+  if (isPaused) {
     return (
       <FormSheet
         open={open}
@@ -37,16 +31,16 @@ export function PauseForm({ address }: PauseFormProps) {
         description={t('unpause.description')}
       >
         <Form
-          mutation={unPauseMutation}
+          action={unpause}
+          resolver={zodResolver(UnPauseSchema)}
           buttonLabels={{
             label: t('unpause.button-label'),
           }}
           defaultValues={{
             address,
-            from: user.wallet,
           }}
         >
-          <Summary address={address} isCurrentlyPaused={stableCoin.paused} />
+          <Summary address={address} isCurrentlyPaused={isPaused} />
         </Form>
       </FormSheet>
     );
@@ -61,16 +55,16 @@ export function PauseForm({ address }: PauseFormProps) {
       description={t('pause.description')}
     >
       <Form
-        mutation={pauseMutation}
+        action={pause}
+        resolver={zodResolver(PauseSchema)}
         buttonLabels={{
           label: t('pause.button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
         }}
       >
-        <Summary address={address} isCurrentlyPaused={stableCoin.paused} />
+        <Summary address={address} isCurrentlyPaused={isPaused} />
       </Form>
     </FormSheet>
   );
