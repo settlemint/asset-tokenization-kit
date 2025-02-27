@@ -47,9 +47,6 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
-      - name: Install Playwright Browsers
-        run: bunx playwright install --with-deps
-
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:

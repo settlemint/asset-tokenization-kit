@@ -47,9 +47,6 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
-      - name: Install Playwright Browsers
-        run: bunx playwright install --with-deps
-
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
@@ -137,7 +134,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo codegen addresses
+        run: bunx turbo codegen addresses build
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
