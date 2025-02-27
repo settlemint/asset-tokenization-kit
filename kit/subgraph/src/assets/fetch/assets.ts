@@ -1,3 +1,4 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { AssetActivityData } from "../../../generated/schema";
 
 export function fetchAssetActivity(assetType: string): AssetActivityData {
@@ -12,6 +13,10 @@ export function fetchAssetActivity(assetType: string): AssetActivityData {
     assetActivity.burnEventCount = 0;
     assetActivity.frozenEventCount = 0;
     assetActivity.unfrozenEventCount = 0;
+
+    assetActivity.totalSupply = BigDecimal.zero();
+    assetActivity.totalSupplyExact = BigInt.zero();
+
     assetActivity.save();
   }
 

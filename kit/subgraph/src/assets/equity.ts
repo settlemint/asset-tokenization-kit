@@ -49,7 +49,7 @@ export function handleTransfer(event: Transfer): void {
     equity.id,
     AssetType.equity,
     equity.equityCategory,
-    equity.equityClass,
+    equity.equityClass
   );
 
   if (event.params.from.equals(Address.zero())) {
@@ -61,7 +61,7 @@ export function handleTransfer(event: Transfer): void {
       sender.id,
       to.id,
       event.params.value,
-      equity.decimals,
+      equity.decimals
     );
 
     log.info("Equity mint event: amount={}, to={}, sender={}, equity={}", [
@@ -74,6 +74,10 @@ export function handleTransfer(event: Transfer): void {
     // increase total supply
     equity.totalSupplyExact = equity.totalSupplyExact.plus(mint.valueExact);
     equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
+      mint.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     if (!hasBalance(equity.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
@@ -88,7 +92,7 @@ export function handleTransfer(event: Transfer): void {
     const portfolioStats = newPortfolioStatsData(
       to.id,
       equity.id,
-      AssetType.equity,
+      AssetType.equity
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
@@ -103,14 +107,14 @@ export function handleTransfer(event: Transfer): void {
       EventName.Mint,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
     accountActivityEvent(
       to,
       EventName.Mint,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
@@ -121,7 +125,7 @@ export function handleTransfer(event: Transfer): void {
       sender.id,
       from.id,
       event.params.value,
-      equity.decimals,
+      equity.decimals
     );
 
     log.info("Equity burn event: amount={}, from={}, sender={}, equity={}", [
@@ -134,6 +138,10 @@ export function handleTransfer(event: Transfer): void {
     // decrease total supply
     equity.totalSupplyExact = equity.totalSupplyExact.minus(burn.valueExact);
     equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
+      burn.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
 
     const balance = fetchAssetBalance(equity.id, from.id, equity.decimals);
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
@@ -143,7 +151,7 @@ export function handleTransfer(event: Transfer): void {
     const portfolioStats = newPortfolioStatsData(
       from.id,
       equity.id,
-      AssetType.equity,
+      AssetType.equity
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
@@ -158,14 +166,14 @@ export function handleTransfer(event: Transfer): void {
       EventName.Burn,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
     accountActivityEvent(
       from,
       EventName.Burn,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
@@ -179,7 +187,7 @@ export function handleTransfer(event: Transfer): void {
       from.id,
       to.id,
       event.params.value,
-      equity.decimals,
+      equity.decimals
     );
 
     log.info(
@@ -190,7 +198,7 @@ export function handleTransfer(event: Transfer): void {
         transfer.to.toHexString(),
         transfer.sender.toHexString(),
         event.address.toHexString(),
-      ],
+      ]
     );
 
     if (!hasBalance(equity.id, to.id)) {
@@ -206,7 +214,7 @@ export function handleTransfer(event: Transfer): void {
     const fromPortfolioStats = newPortfolioStatsData(
       from.id,
       equity.id,
-      AssetType.equity,
+      AssetType.equity
     );
     fromPortfolioStats.balance = fromBalance.value;
     fromPortfolioStats.balanceExact = fromBalance.valueExact;
@@ -220,7 +228,7 @@ export function handleTransfer(event: Transfer): void {
     const toPortfolioStats = newPortfolioStatsData(
       to.id,
       equity.id,
-      AssetType.equity,
+      AssetType.equity
     );
     toPortfolioStats.balance = toBalance.value;
     toPortfolioStats.balanceExact = toBalance.valueExact;
@@ -236,21 +244,21 @@ export function handleTransfer(event: Transfer): void {
       EventName.Transfer,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
     accountActivityEvent(
       from,
       EventName.Transfer,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
     accountActivityEvent(
       to,
       EventName.Transfer,
       event.block.timestamp,
       AssetType.equity,
-      equity.id,
+      equity.id
     );
   }
 
@@ -275,7 +283,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     event.address,
     sender.id,
     event.params.role,
-    account.id,
+    account.id
   );
 
   log.info("Equity role granted event: role={}, account={}, equity={}", [
@@ -340,14 +348,14 @@ export function handleRoleGranted(event: RoleGranted): void {
     EventName.RoleGranted,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     account,
     EventName.RoleGranted,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -362,7 +370,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     event.address,
     sender.id,
     event.params.role,
-    account.id,
+    account.id
   );
 
   log.info("Equity role revoked event: role={}, account={}, equity={}", [
@@ -418,14 +426,14 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     EventName.RoleRevoked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     account,
     EventName.RoleRevoked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -449,7 +457,7 @@ export function handleApproval(event: Approval): void {
     owner.id,
     spender.id,
     event.params.value,
-    equity.decimals,
+    equity.decimals
   );
 
   log.info(
@@ -459,7 +467,7 @@ export function handleApproval(event: Approval): void {
       approval.owner.toHexString(),
       approval.spender.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   equity.lastActivity = event.block.timestamp;
@@ -470,21 +478,21 @@ export function handleApproval(event: Approval): void {
     EventName.Approval,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     spender,
     EventName.Approval,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     sender,
     EventName.Approval,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -499,7 +507,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     sender.id,
     event.params.role,
     event.params.previousAdminRole,
-    event.params.newAdminRole,
+    event.params.newAdminRole
   );
 
   log.info(
@@ -509,7 +517,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
       roleAdminChanged.previousAdminRole.toHexString(),
       roleAdminChanged.newAdminRole.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   equity.lastActivity = event.block.timestamp;
@@ -520,7 +528,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     EventName.RoleAdminChanged,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -543,7 +551,7 @@ export function handlePaused(event: Paused): void {
     EventName.Paused,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -564,14 +572,14 @@ export function handleUnpaused(event: Unpaused): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender.id
   );
   accountActivityEvent(
     sender,
     EventName.Unpaused,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -587,7 +595,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
       user.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
@@ -599,7 +607,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     equity.id,
     AssetType.equity,
     equity.equityCategory,
-    equity.equityClass,
+    equity.equityClass
   );
   assetStats.frozen = toDecimals(event.params.amount, equity.decimals);
   assetStats.frozenExact = event.params.amount;
@@ -618,7 +626,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     sender.id,
     user.id,
     event.params.amount,
-    equity.decimals,
+    equity.decimals
   );
 
   accountActivityEvent(
@@ -626,14 +634,14 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     EventName.TokensFrozen,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     user,
     EventName.TokensFrozen,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -660,21 +668,21 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    user.id,
+    user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserBlocked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     user,
     EventName.UserBlocked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }
 
@@ -701,20 +709,20 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    user.id,
+    user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserUnblocked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
   accountActivityEvent(
     user,
     EventName.UserUnblocked,
     event.block.timestamp,
     AssetType.equity,
-    equity.id,
+    equity.id
   );
 }

@@ -64,7 +64,7 @@ export function handleTransfer(event: Transfer): void {
       sender.id,
       to.id,
       event.params.value,
-      bond.decimals,
+      bond.decimals
     );
 
     log.info("Bond mint event: amount={}, to={}, sender={}, bond={}", [
@@ -77,6 +77,10 @@ export function handleTransfer(event: Transfer): void {
     // increase total supply
     bond.totalSupplyExact = bond.totalSupplyExact.plus(mint.valueExact);
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
+      mint.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     if (!hasBalance(bond.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
@@ -91,7 +95,7 @@ export function handleTransfer(event: Transfer): void {
     const portfolioStats = newPortfolioStatsData(
       to.id,
       bond.id,
-      AssetType.bond,
+      AssetType.bond
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
@@ -106,14 +110,14 @@ export function handleTransfer(event: Transfer): void {
       EventName.Mint,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
     accountActivityEvent(
       sender,
       EventName.Mint,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
   } else if (event.params.to.equals(Address.zero())) {
     const from = fetchAccount(event.params.from);
@@ -124,7 +128,7 @@ export function handleTransfer(event: Transfer): void {
       sender.id,
       from.id,
       event.params.value,
-      bond.decimals,
+      bond.decimals
     );
 
     log.info("Bond burn event: amount={}, from={}, sender={}, bond={}", [
@@ -137,6 +141,10 @@ export function handleTransfer(event: Transfer): void {
     // decrease total supply
     bond.totalSupplyExact = bond.totalSupplyExact.minus(burn.valueExact);
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
+      burn.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
 
     const balance = fetchAssetBalance(bond.id, from.id, bond.decimals);
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
@@ -146,7 +154,7 @@ export function handleTransfer(event: Transfer): void {
     const portfolioStats = newPortfolioStatsData(
       from.id,
       bond.id,
-      AssetType.bond,
+      AssetType.bond
     );
     portfolioStats.balance = balance.value;
     portfolioStats.balanceExact = balance.valueExact;
@@ -161,14 +169,14 @@ export function handleTransfer(event: Transfer): void {
       EventName.Burn,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
     accountActivityEvent(
       sender,
       EventName.Burn,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
@@ -182,7 +190,7 @@ export function handleTransfer(event: Transfer): void {
       from.id,
       to.id,
       event.params.value,
-      bond.decimals,
+      bond.decimals
     );
 
     log.info(
@@ -193,7 +201,7 @@ export function handleTransfer(event: Transfer): void {
         transfer.to.toHexString(),
         transfer.sender.toHexString(),
         event.address.toHexString(),
-      ],
+      ]
     );
 
     if (!hasBalance(bond.id, to.id)) {
@@ -209,7 +217,7 @@ export function handleTransfer(event: Transfer): void {
     const fromPortfolioStats = newPortfolioStatsData(
       from.id,
       bond.id,
-      AssetType.bond,
+      AssetType.bond
     );
     fromPortfolioStats.balance = fromBalance.value;
     fromPortfolioStats.balanceExact = fromBalance.valueExact;
@@ -223,7 +231,7 @@ export function handleTransfer(event: Transfer): void {
     const toPortfolioStats = newPortfolioStatsData(
       to.id,
       bond.id,
-      AssetType.bond,
+      AssetType.bond
     );
     toPortfolioStats.balance = toBalance.value;
     toPortfolioStats.balanceExact = toBalance.valueExact;
@@ -239,21 +247,21 @@ export function handleTransfer(event: Transfer): void {
       EventName.Transfer,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
     accountActivityEvent(
       from,
       EventName.Transfer,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
     accountActivityEvent(
       sender,
       EventName.Transfer,
       event.block.timestamp,
       AssetType.bond,
-      bond.id,
+      bond.id
     );
   }
 
@@ -278,7 +286,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     event.address,
     sender.id,
     event.params.role,
-    account.id,
+    account.id
   );
 
   log.info("Bond role granted event: role={}, account={}, bond={}", [
@@ -343,14 +351,14 @@ export function handleRoleGranted(event: RoleGranted): void {
     EventName.RoleGranted,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     account,
     EventName.RoleGranted,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -365,7 +373,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     event.address,
     sender.id,
     event.params.role,
-    account.id,
+    account.id
   );
 
   log.info("Bond role revoked event: role={}, account={}, bond={}", [
@@ -421,14 +429,14 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     EventName.RoleRevoked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     account,
     EventName.RoleRevoked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -455,7 +463,7 @@ export function handleApproval(event: Approval): void {
     owner.id,
     spender.id,
     event.params.value,
-    bond.decimals,
+    bond.decimals
   );
 
   log.info("Bond approval event: amount={}, owner={}, spender={}, bond={}", [
@@ -470,21 +478,21 @@ export function handleApproval(event: Approval): void {
     EventName.Approval,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     owner,
     EventName.Approval,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     spender,
     EventName.Approval,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -502,7 +510,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     sender.id,
     event.params.role,
     event.params.previousAdminRole,
-    event.params.newAdminRole,
+    event.params.newAdminRole
   );
 
   log.info(
@@ -512,7 +520,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
       roleAdminChanged.previousAdminRole.toHexString(),
       roleAdminChanged.newAdminRole.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   accountActivityEvent(
@@ -520,7 +528,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     EventName.RoleAdminChanged,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -541,14 +549,14 @@ export function handleBondMatured(event: BondMatured): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender.id
   );
   accountActivityEvent(
     sender,
     EventName.BondMatured,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -567,7 +575,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
   // Update bond's redeemed amount
   bond.redeemedAmount = bond.redeemedAmount.plus(event.params.bondAmount);
   bond.underlyingBalance = bond.underlyingBalance.minus(
-    event.params.underlyingAmount,
+    event.params.underlyingAmount
   );
   bond.lastActivity = event.block.timestamp;
   bond.save();
@@ -580,7 +588,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     holder.id,
     event.params.bondAmount,
     event.params.underlyingAmount,
-    bond.decimals,
+    bond.decimals
   );
 
   accountActivityEvent(
@@ -588,14 +596,14 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     EventName.BondRedeemed,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     holder,
     EventName.BondRedeemed,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -618,7 +626,7 @@ export function handlePaused(event: Paused): void {
     EventName.Paused,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -639,14 +647,14 @@ export function handleUnpaused(event: Unpaused): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id,
+    sender.id
   );
   accountActivityEvent(
     sender,
     EventName.Unpaused,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -686,7 +694,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     sender.id,
     user.id,
     event.params.amount,
-    bond.decimals,
+    bond.decimals
   );
 
   accountActivityEvent(
@@ -694,14 +702,14 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     EventName.TokensFrozen,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     user,
     EventName.TokensFrozen,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -728,21 +736,21 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    user.id,
+    user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserBlocked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     user,
     EventName.UserBlocked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -769,21 +777,21 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
-    user.id,
+    user.id
   );
   accountActivityEvent(
     sender,
     EventName.UserUnblocked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     user,
     EventName.UserUnblocked,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
@@ -799,7 +807,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
       from.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
@@ -813,26 +821,26 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
     sender.id,
     from.id,
     event.params.amount,
-    bond.decimals,
+    bond.decimals
   );
   accountActivityEvent(
     sender,
     EventName.UnderlyingAssetTopUp,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     from,
     EventName.UnderlyingAssetTopUp,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }
 
 export function handleUnderlyingAssetWithdrawn(
-  event: UnderlyingAssetWithdrawn,
+  event: UnderlyingAssetWithdrawn
 ): void {
   const bond = fetchBond(event.address);
   const sender = fetchAccount(event.transaction.from);
@@ -845,7 +853,7 @@ export function handleUnderlyingAssetWithdrawn(
       to.id.toHexString(),
       sender.id.toHexString(),
       event.address.toHexString(),
-    ],
+    ]
   );
 
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
@@ -859,20 +867,20 @@ export function handleUnderlyingAssetWithdrawn(
     sender.id,
     to.id,
     event.params.amount,
-    bond.decimals,
+    bond.decimals
   );
   accountActivityEvent(
     sender,
     EventName.UnderlyingAssetWithdrawn,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
   accountActivityEvent(
     to,
     EventName.UnderlyingAssetWithdrawn,
     event.block.timestamp,
     AssetType.bond,
-    bond.id,
+    bond.id
   );
 }

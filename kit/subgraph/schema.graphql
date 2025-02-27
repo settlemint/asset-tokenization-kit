@@ -688,6 +688,10 @@ type AssetActivityData @entity {
   burnEventCount: Int!
   frozenEventCount: Int!
   unfrozenEventCount: Int!
+
+  ## Supply
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
 }
 
 # --------------------------------------------------
