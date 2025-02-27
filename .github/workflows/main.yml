@@ -70,75 +70,6 @@ jobs:
       - name: Turbo!
         run: bunx turbo deploy:local
 
-  security:
-    name: Security
-    runs-on: namespace-profile-atk-trivy
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
-
-      - name: Secret Scanning (Trivy)
-        uses: aquasecurity/trivy-action@0.29.0
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          trivy-config: trivy-secret.yaml
-          severity: "HIGH,CRITICAL"
-          format: "table"
-          exit-code: "1"
-          scanners: "secret"
-
-  custom-deployment:
-    name: Custom Deployment dAPP
-    runs-on: namespace-profile-atk
-    environment: staging
-    needs:
-      - security
-      - test
-    steps:
-      - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
-
-      - name: Setup caches
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: |
-            .turbo
-            ~/.bun/install/cache
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: .bun-version
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: stable
-
-      - name: Install Bun dependencies
-        run: bun install
-
-      - name: Connect to SettleMint
-        uses: settlemint/settlemint-action@main
-        with:
-          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-
-      - name: Turbo!
-        run: bunx turbo codegen addresses build
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
       - name: Update package versions
         id: package-version
         run: bash .github/scripts/update-version.sh
@@ -187,3 +118,21 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
           command: platform update custom-deployment ${{ env.VERSION }} --wait
+
+  security:
+    name: Security
+    runs-on: namespace-profile-atk-trivy
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v5
+
+      - name: Secret Scanning (Trivy)
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          trivy-config: trivy-secret.yaml
+          severity: "HIGH,CRITICAL"
+          format: "table"
+          exit-code: "1"
+          scanners: "secret"
