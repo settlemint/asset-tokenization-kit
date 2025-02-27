@@ -131,8 +131,6 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
     };
   });
 
-  console.log('getStableCoinList', stableCoins.length);
-
   return stableCoins.map((stableCoin) => ({
     ...stableCoin,
     // replace all the BigDecimals with formatted strings

@@ -1,14 +1,15 @@
 'use client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form as UIForm } from '@/components/ui/form';
+import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
+import { z, type ZodInfer } from '@/lib/utils/zod';
 import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
 import { useTranslations } from 'next-intl';
-import type { Infer } from 'next-safe-action/adapters/types';
 import type { HookSafeActionFn } from 'next-safe-action/hooks';
 import { useState } from 'react';
 import type { DefaultValues, Path, Resolver } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { Schema, z } from 'zod';
+import type { Schema } from 'zod';
 import { FormButton, type ButtonLabels } from './form-button';
 import { FormProgress } from './form-progress';
 import type { FormStepElement } from './types';
@@ -23,9 +24,9 @@ interface FormProps<
   FormContext = unknown,
 > {
   children: FormStepElement<S> | FormStepElement<S>[];
-  defaultValues?: DefaultValues<z.infer<S>>;
+  defaultValues?: DefaultValues<ZodInfer<S>>;
   action: HookSafeActionFn<ServerError, S, BAS, CVE, CBAVE, Data>;
-  resolver: Resolver<S extends Schema ? Infer<S> : any, FormContext>;
+  resolver: Resolver<ZodInfer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
   toastMessages?: {
@@ -71,14 +72,15 @@ export function Form<
         defaultValues,
       },
       actionProps: {
-        onExecute: () => {
-          onOpenChange?.(false);
-          setToastId(toast.loading(toastMessages?.loading || t('sending')));
-        },
-        onSuccess: () => {
-          toast.success(toastMessages?.success || t('success'));
-          toast.dismiss(toastId);
+        onSuccess: ({ data }) => {
+          const hashes = z.hashes().parse(data);
+          toast.promise(waitForTransactions(hashes), {
+            loading: toastMessages?.loading || t('sending'),
+            success: toastMessages?.success || t('success'),
+            error: (error: Error) => `Failed to submit: ${error.message}`,
+          });
           resetFormAndAction();
+          onOpenChange?.(false);
         },
         onError: (error) => {
           let errorMessage = 'Unknown error';
@@ -90,8 +92,8 @@ export function Form<
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);
-          toast.dismiss(toastId);
           resetFormAndAction();
+          onOpenChange?.(false);
         },
       },
     });
@@ -112,9 +114,9 @@ export function Form<
     }
 
     for (const field of fieldsToValidate) {
-      const value = form.getValues(field as Path<z.infer<S>>);
+      const value = form.getValues(field as Path<ZodInfer<S>>);
 
-      form.setValue(field as Path<z.infer<S>>, value, {
+      form.setValue(field as Path<ZodInfer<S>>, value, {
         shouldValidate: true,
         shouldTouch: true,
       });
@@ -122,7 +124,7 @@ export function Form<
 
     const results = await Promise.all(
       fieldsToValidate.map((field) =>
-        form.trigger(field as Path<z.infer<S>>, { shouldFocus: true })
+        form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true })
       )
     );
 

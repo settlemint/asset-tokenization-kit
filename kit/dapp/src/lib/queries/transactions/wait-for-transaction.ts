@@ -1,7 +1,10 @@
+'use server';
+
 import { waitForIndexing } from '@/lib/queries/transactions/wait-for-indexing';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 import type { FragmentOf } from '@settlemint/sdk-portal';
+import { revalidatePath } from 'next/cache';
 
 /**
  * Constants for transaction monitoring
@@ -21,12 +24,12 @@ const ReceiptFragment = portalGraphql(`
   }
 `);
 
-export const ReceiptFragmentSchema = z.object({
+const ReceiptFragmentSchema = z.object({
   status: z.string(),
   revertReasonDecoded: z.string().nullish(),
   blockNumber: z.coerce.number(),
 });
-export type ReceiptFragment = ZodInfer<typeof ReceiptFragmentSchema>;
+type ReceiptFragment = ZodInfer<typeof ReceiptFragmentSchema>;
 
 const GetTransaction = portalGraphql(
   `
@@ -44,7 +47,7 @@ const GetTransaction = portalGraphql(
 /**
  * Configuration options for transaction monitoring
  */
-export interface TransactionMonitoringOptions {
+interface TransactionMonitoringOptions {
   /** Timeout in milliseconds before giving up */
   timeoutMs?: number;
   /** Polling interval in milliseconds */
@@ -121,14 +124,13 @@ export async function waitForTransactions(
 
   await waitForIndexing(response.lastTransaction.blockNumber);
 
+  revalidatePath('/[locale]/admin', 'layout');
+  revalidatePath('/[locale]/portfolio', 'layout');
+
   return response;
 }
 
-export const WaitForTransactionsResponseSchema = z.object({
+const WaitForTransactionsResponseSchema = z.object({
   receipts: z.array(ReceiptFragmentSchema),
   lastTransaction: ReceiptFragmentSchema,
 });
-
-export type WaitForTransactionsResponse = ZodInfer<
-  typeof WaitForTransactionsResponseSchema
->;

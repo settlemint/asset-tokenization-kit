@@ -1,7 +1,6 @@
 import { auth } from '@/lib/auth/auth';
 import type { User } from 'better-auth';
 import { createSafeActionClient } from 'next-safe-action';
-import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import type { Address } from 'viem';
 
@@ -33,11 +32,6 @@ export const action = createSafeActionClient({
         user: session.user as Omit<User, 'wallet'> & { wallet: Address },
       },
     });
-  })
-  .use(async ({ next }) => {
-    const result = await next({ ctx: undefined });
-    revalidatePath('/[locale]/admin', 'layout');
-    return result;
   });
 
 /**

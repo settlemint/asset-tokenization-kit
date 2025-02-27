@@ -2,13 +2,9 @@
 
 import { handleChallenge } from '@/lib/challenge';
 import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
-import {
-  waitForTransactions,
-  WaitForTransactionsResponseSchema,
-} from '@/lib/queries/transactions/wait-for-transaction';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import type { Hash } from 'viem';
+import { z } from '@/lib/utils/zod';
 import { action } from '../../safe-action';
 import { CreateStablecoinSchema } from './create-schema';
 
@@ -70,7 +66,7 @@ const CreateOffchainStablecoin = hasuraGraphql(`
 
 export const createStablecoin = action
   .schema(CreateStablecoinSchema)
-  .outputSchema(WaitForTransactionsResponseSchema)
+  .outputSchema(z.hashes())
   .action(
     async ({
       parsedInput: {
@@ -119,8 +115,7 @@ export const createStablecoin = action
         collateralLivenessSeconds: collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
-      const hash = data.StableCoinFactoryCreate?.transactionHash as Hash;
 
-      return await waitForTransactions([hash]);
+      return z.hashes().parse([data.StableCoinFactoryCreate?.transactionHash]);
     }
   );
