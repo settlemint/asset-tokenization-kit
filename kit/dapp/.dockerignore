@@ -1,5 +1,11 @@
-node_modules
-.git
-.gitignore
-.next
-out
+# Ignore everything
+*
+
+# Allow only what's needed for the Docker build
+!.next/standalone/
+!.next/static/
+!public/
+
+
+# Ignore the environment variables
+.next/standalone/kit/dapp/.env*

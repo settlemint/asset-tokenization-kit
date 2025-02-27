@@ -8,7 +8,7 @@ on:
 jobs:
   codestudio:
     name: Codestudio
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk
     environment: production
     steps:
       - name: Checkout repository
@@ -52,7 +52,7 @@ jobs:
   custom-deployment:
     name: Custom Deployment dAPP
     environment: production
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
@@ -92,7 +92,7 @@ jobs:
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Turbo!
-        run: bunx turbo codegen addresses
+        run: bunx turbo codegen addresses build
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -149,7 +149,7 @@ jobs:
 
   create:
     name: NPM Package for settlemint create
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk
     steps:
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
@@ -193,4 +193,4 @@ jobs:
         with:
           commit_message: "chore: update package versions [skip ci]"
           branch: main
-          file_pattern: 'package.json'
+          file_pattern: "package.json"
