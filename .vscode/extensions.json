@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "biomejs.biome",
     "oven.bun-vscode",
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
