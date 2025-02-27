@@ -11,6 +11,7 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
   fragment AssetActivityFragment on AssetActivityData {
     id
     assetType
+    totalSupply
     burnEventCount
     mintEventCount
     transferEventCount
