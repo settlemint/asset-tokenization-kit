@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
@@ -111,18 +110,13 @@ export async function getEquityDetail({ address }: EquityDetailProps) {
  * @returns Array representing the query key for React Query
  */
 export const getQueryKey = ({ address }: EquityDetailProps) =>
-  [
-    'asset',
-    'detail',
-    assetConfig.equity.queryKey,
-    getAddress(address),
-  ] as const;
+  ['asset', 'detail', 'equity', getAddress(address)] as const;
 
 /**
  * React Query hook for fetching equity details
  *
  * @param params - Object containing the equity address
- * @returns Query result with equity data, config, and query key
+ * @returns Query result with equity data and query key
  */
 export function useEquityDetail({ address }: EquityDetailProps) {
   const queryKey = getQueryKey({ address });
@@ -134,7 +128,10 @@ export function useEquityDetail({ address }: EquityDetailProps) {
 
   return {
     ...result,
-    config: assetConfig.equity,
     queryKey,
+    // Inline equity config values
+    assetType: 'equity' as const,
+    urlSegment: 'equities',
+    theGraphTypename: 'Equity' as const,
   };
 }

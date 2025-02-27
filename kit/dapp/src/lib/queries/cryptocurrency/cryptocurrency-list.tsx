@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
@@ -140,16 +139,12 @@ export async function getCryptoCurrencyList({
 }
 
 /**
- * Creates a memoized query key for cryptocurrency list queries
+ * Generates a consistent query key for cryptocurrency list queries
  *
  * @param [options] - Options for the cryptocurrency list query
  */
 export const getQueryKey = (options?: CryptoCurrencyListOptions) =>
-  [
-    'asset',
-    assetConfig.cryptocurrency.queryKey,
-    options?.limit ?? 'all',
-  ] as const;
+  ['asset', 'cryptocurrency', options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching cryptocurrency list
@@ -171,7 +166,10 @@ export function useCryptoCurrencyList(options?: CryptoCurrencyListOptions) {
 
   return {
     ...result,
-    config: assetConfig.cryptocurrency,
     queryKey,
+    // Inline cryptocurrency config values
+    assetType: 'cryptocurrency' as const,
+    urlSegment: 'cryptocurrencies',
+    theGraphTypename: 'CryptoCurrency' as const,
   };
 }

@@ -3,52 +3,56 @@
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
-import { assetConfig } from '@/lib/config/assets';
 import { useSidebarAssets } from '@/lib/queries/sidebar-assets/sidebar-assets';
-
-const assetItems: NavItem[] = [
-  {
-    assetType: 'bond',
-    label: assetConfig.bond.pluralName,
-    path: `/admin/${assetConfig.bond.urlSegment}`,
-    icon: <AssetTypeIcon type="bond" />,
-  },
-  {
-    assetType: 'cryptocurrency',
-    label: assetConfig.cryptocurrency.pluralName,
-    path: `/admin/${assetConfig.cryptocurrency.urlSegment}`,
-    icon: <AssetTypeIcon type="cryptocurrency" />,
-  },
-  {
-    assetType: 'equity',
-    label: assetConfig.equity.pluralName,
-    path: `/admin/${assetConfig.equity.urlSegment}`,
-    icon: <AssetTypeIcon type="equity" />,
-  },
-  {
-    assetType: 'fund',
-    label: assetConfig.fund.pluralName,
-    path: `/admin/${assetConfig.fund.urlSegment}`,
-    icon: <AssetTypeIcon type="fund" />,
-  },
-  {
-    assetType: 'stablecoin',
-    label: assetConfig.stablecoin.pluralName,
-    path: `/admin/${assetConfig.stablecoin.urlSegment}`,
-    icon: <AssetTypeIcon type="stablecoin" />,
-  },
-];
+import { useTranslations } from 'next-intl';
 
 export function AssetManagement() {
+  const t = useTranslations('admin.sidebar.asset-management');
   const data = useSidebarAssets();
+
+  // Asset configuration defined inline
+  const assetItems: NavItem[] = [
+    {
+      assetType: 'bond',
+      label: t('bonds'),
+      path: `/admin/bonds`,
+      icon: <AssetTypeIcon type="bond" />,
+    },
+    {
+      assetType: 'cryptocurrency',
+      label: t('cryptocurrencies'),
+      path: `/admin/cryptocurrencies`,
+      icon: <AssetTypeIcon type="cryptocurrency" />,
+    },
+    {
+      assetType: 'equity',
+      label: t('equities'),
+      path: `/admin/equities`,
+      icon: <AssetTypeIcon type="equity" />,
+    },
+    {
+      assetType: 'fund',
+      label: t('funds'),
+      path: `/admin/funds`,
+      icon: <AssetTypeIcon type="fund" />,
+    },
+    {
+      assetType: 'stablecoin',
+      label: t('stablecoins'),
+      path: `/admin/stablecoins`,
+      icon: <AssetTypeIcon type="stablecoin" />,
+    },
+  ];
 
   const processedAssetItems = assetItems.reduce((acc, section) => {
     if (!section.assetType) {
       return acc;
     }
 
-    const assetsOfSection = data[section.assetType];
-    const subItems = assetsOfSection.records.map<NavItem>((asset) => ({
+    const assetType = section.assetType;
+    const assetsOfSection = data[assetType];
+
+    const subItems = assetsOfSection.records.map((asset) => ({
       id: asset.id,
       label: (
         <>
@@ -78,7 +82,7 @@ export function AssetManagement() {
       if (assetsOfSection.count > 0) {
         sectionItem.subItems.push({
           id: 'view-all',
-          label: 'View all',
+          label: t('view-all'),
           path: section.path,
           icon: <span>→</span>,
         });
@@ -93,7 +97,7 @@ export function AssetManagement() {
     <NavMain
       items={[
         {
-          groupTitle: 'Asset management',
+          groupTitle: t('group-title'),
           items: processedAssetItems,
         },
       ]}

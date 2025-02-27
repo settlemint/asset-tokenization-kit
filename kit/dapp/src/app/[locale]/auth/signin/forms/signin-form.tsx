@@ -1,10 +1,10 @@
 'use client';
 
+import { FormCheckbox } from '@/components/blocks/form/inputs/form-checkbox';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import { FormCheckbox } from '@/components/blocks/form/inputs/form-checkbox';
 import { Link } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';

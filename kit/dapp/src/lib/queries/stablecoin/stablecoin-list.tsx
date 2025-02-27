@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
@@ -161,7 +160,7 @@ export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
 }
 
 /**
- * Creates a memoized query key for stablecoin list queries
+ * Generates a consistent query key for stablecoin list queries
  *
  * @param [options] - Options for the stablecoin list query
  */
@@ -188,7 +187,10 @@ export function useStableCoinList(options?: StableCoinListOptions) {
 
   return {
     ...result,
-    config: assetConfig.stablecoin,
     queryKey,
+    // Inline stablecoin config values
+    assetType: 'stablecoin' as const,
+    urlSegment: 'stablecoins',
+    theGraphTypename: 'StableCoin' as const,
   };
 }
