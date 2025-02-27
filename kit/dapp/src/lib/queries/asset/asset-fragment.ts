@@ -1,3 +1,4 @@
+import { hasuraGraphql } from '@/lib/settlemint/hasura';
 import { theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
 import { z, type ZodInfer } from '@/lib/utils/zod';
 
@@ -29,7 +30,7 @@ export const PermissionFragmentSchema = z.object({
 export type Permission = ZodInfer<typeof PermissionFragmentSchema>;
 
 /**
- * GraphQL fragment for asset data
+ * GraphQL fragment for on-chain asset data from The Graph
  *
  * @remarks
  * Contains core asset properties and permission relationships
@@ -56,7 +57,7 @@ export const AssetFragment = theGraphGraphqlStarterkits(
 );
 
 /**
- * Zod schema for validating asset data
+ * Zod schema for validating on-chain asset data
  *
  */
 export const AssetFragmentSchema = z.object({
@@ -70,6 +71,33 @@ export const AssetFragmentSchema = z.object({
 });
 
 /**
- * Type definition for asset data
+ * Type definition for on-chain asset data
  */
 export type Asset = ZodInfer<typeof AssetFragmentSchema>;
+
+/**
+ * GraphQL fragment for off-chain asset data from Hasura
+ *
+ * @remarks
+ * Contains additional metadata about assets stored in the database
+ */
+export const OffchainAssetFragment = hasuraGraphql(`
+  fragment OffchainAssetFragment on asset {
+    id
+    private
+  }
+`);
+
+/**
+ * Zod schema for validating off-chain asset data
+ *
+ */
+export const OffchainAssetFragmentSchema = z.object({
+  id: z.address(),
+  private: z.boolean(),
+});
+
+/**
+ * Type definition for off-chain asset data
+ */
+export type OffchainAsset = ZodInfer<typeof OffchainAssetFragmentSchema>;

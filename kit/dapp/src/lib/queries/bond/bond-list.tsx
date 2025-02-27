@@ -5,7 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   BondFragment,
@@ -56,16 +56,12 @@ export interface BondListOptions {
 }
 
 /**
- * Fetches a list of bonds from both on-chain and off-chain sources
- *
- * @param options - Options for fetching bond list
- *
- * @remarks
- * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
- * then merges the results to provide a complete view of each bond.
+ * Cached function to fetch raw bond data from both on-chain and off-chain sources
  */
-export async function getBondList({ limit }: BondListOptions = {}) {
-  try {
+const fetchBondListData = unstable_cache(
+  async (limit?: number) => {
+    console.log('fetchBondListData', limit);
+
     const [theGraphBonds, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(BondList, {
@@ -92,70 +88,64 @@ export async function getBondList({ limit }: BondListOptions = {}) {
       }, limit),
     ]);
 
-    // Parse and validate the data using Zod schemas
-    const validatedBonds = theGraphBonds.map((bond) =>
-      safeParseWithLogging(BondFragmentSchema, bond, 'bond')
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const bonds = validatedBonds.map((bond) => {
-      const dbAsset = assetsById.get(getAddress(bond.id));
-
-      return {
-        ...bond,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return bonds;
-  } catch (error) {
-    console.error('Error fetching bond list:', error);
-    return [];
+    return { theGraphBonds, dbAssets };
+  },
+  ['asset', 'bond', 'list'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset', 'bond'],
   }
-}
+);
 
 /**
- * Creates a memoized query key for bond list queries
+ * Fetches a list of bonds from both on-chain and off-chain sources
  *
- * @param [options] - Options for the bond list query
+ * @param options - Options for fetching bond list
+ *
+ * @remarks
+ * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
+ * then merges the results to provide a complete view of each bond.
  */
-export const getQueryKey = (options?: BondListOptions) =>
-  ['asset', 'bond', options?.limit ?? 'all'] as const;
+export async function getBondList({ limit }: BondListOptions = {}) {
+  const { theGraphBonds, dbAssets } = await fetchBondListData(limit);
 
-/**
- * React Query hook for fetching bond list
- *
- * @param [options] - Options for fetching bond list
- *
- * @example
- * ```tsx
- * const { data: bonds, isLoading } = useBondList({ limit: 10 });
- * ```
- */
-export function useBondList(options?: BondListOptions) {
-  const queryKey = getQueryKey(options);
+  // Parse and validate the data using Zod schemas
+  const validatedBonds = theGraphBonds.map((bond) =>
+    safeParseWithLogging(BondFragmentSchema, bond, 'bond')
+  );
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getBondList(options),
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
+  );
+
+  // Cross-reference on-chain and off-chain data to build complete bonds
+  const bondMap = new Map();
+
+  // First add all on-chain bonds to the map
+  validatedBonds.forEach((bond) => {
+    bondMap.set(getAddress(bond.id), {
+      ...bond,
+      hasOffchainData: false,
+    });
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline bond config values
-    assetType: 'bond' as const,
-    urlSegment: 'bonds',
-    theGraphTypename: 'Bond' as const,
-  };
+  // Then match off-chain data with on-chain bonds where possible
+  validatedDbAssets.forEach((asset) => {
+    const normalizedAddress = getAddress(asset.id);
+    const existingBond = bondMap.get(normalizedAddress);
+
+    if (existingBond) {
+      // Update existing entry with off-chain data
+      bondMap.set(normalizedAddress, {
+        ...existingBond,
+        private: asset.private,
+        hasOffchainData: true,
+      });
+    } else {
+      // This is an off-chain only bond, but we don't have enough data
+      // to create a valid bond object. Skip it for now.
+    }
+  });
+
+  return Array.from(bondMap.values());
 }

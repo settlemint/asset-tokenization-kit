@@ -11,8 +11,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from '@/i18n/routing';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
-import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
+import { useOptionalAssetDetail } from '@/lib/queries/asset/use-asset-detail';
+import { useOptionalUserDetail } from '@/lib/queries/user/use-user-detail';
 import { shortHex } from '@/lib/utils/hex';
 import { useTranslations } from 'next-intl';
 import {
@@ -75,15 +75,13 @@ export function EvmAddress({
 
   const displayName = useMemo(
     () =>
-      prettyNames
-        ? (name ?? assetLookup?.data?.name ?? userLookup?.data?.name)
-        : undefined,
-    [prettyNames, name, assetLookup?.data?.name, userLookup?.data?.name]
+      prettyNames ? (name ?? assetLookup?.name ?? userLookup?.name) : undefined,
+    [prettyNames, name, assetLookup?.name, userLookup?.name]
   );
 
   const displayEmail = useMemo(
-    () => (prettyNames ? userLookup?.data?.email : undefined),
-    [prettyNames, userLookup?.data?.email]
+    () => (prettyNames ? userLookup?.email : undefined),
+    [prettyNames, userLookup?.email]
   );
 
   const explorerLink = useMemo(

@@ -4,7 +4,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   FundFragment,
@@ -50,14 +50,11 @@ export interface FundDetailProps {
 }
 
 /**
- * Fetches and combines on-chain and off-chain fund data
- *
- * @param params - Object containing the fund address
- * @returns Combined fund data with additional calculated metrics
- * @throws Error if fetching or parsing fails
+ * Cached function to fetch raw fund data from both on-chain and off-chain sources
  */
-export async function getFundDetail({ address }: FundDetailProps) {
-  try {
+const fetchFundDetailData = unstable_cache(
+  async (address: Address) => {
+    console.log('fetchFundDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbFund] = await Promise.all([
@@ -65,69 +62,49 @@ export async function getFundDetail({ address }: FundDetailProps) {
       hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
     ]);
 
-    const fund = safeParseWithLogging(FundFragmentSchema, data.fund, 'fund');
-    const offchainFund = dbFund.asset[0]
-      ? safeParseWithLogging(
-          OffchainFundFragmentSchema,
-          dbFund.asset[0],
-          'offchain fund'
-        )
-      : undefined;
-
-    const topHoldersSum = fund.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      fund.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
-
-    return {
-      ...fund,
-      ...{
-        private: false,
-        ...offchainFund,
-      },
-      concentration,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch fund with address ${address}`);
+    return { data, dbFund };
+  },
+  ['asset', 'detail', 'fund'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset', 'fund'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for fund detail queries
+ * Fetches and combines on-chain and off-chain fund data
  *
  * @param params - Object containing the fund address
- * @returns Array representing the query key for React Query
+ * @returns Combined fund data with additional calculated metrics
  */
-export const getQueryKey = ({ address }: FundDetailProps) =>
-  ['asset', 'detail', 'fund', getAddress(address)] as const;
+export async function getFundDetail({ address }: FundDetailProps) {
+  const normalizedAddress = getAddress(address);
+  const { data, dbFund } = await fetchFundDetailData(normalizedAddress);
 
-/**
- * React Query hook for fetching fund details
- *
- * @param params - Object containing the fund address
- * @returns Query result with fund data and query key
- */
-export function useFundDetail({ address }: FundDetailProps) {
-  const queryKey = getQueryKey({ address });
+  const fund = safeParseWithLogging(FundFragmentSchema, data.fund, 'fund');
+  const offchainFund = dbFund.asset[0]
+    ? safeParseWithLogging(
+        OffchainFundFragmentSchema,
+        dbFund.asset[0],
+        'offchain fund'
+      )
+    : undefined;
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getFundDetail({ address }),
-  });
+  const topHoldersSum = fund.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    fund.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
 
   return {
-    ...result,
-    queryKey,
-    // Inline fund config values
-    assetType: 'fund' as const,
-    urlSegment: 'funds',
-    theGraphTypename: 'Fund' as const,
+    ...fund,
+    ...{
+      private: false,
+      ...offchainFund,
+    },
+    concentration,
   };
 }

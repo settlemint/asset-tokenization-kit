@@ -1,6 +1,6 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import {
   RecentUsersCountFragment,
   RecentUsersCountFragmentSchema,
@@ -8,151 +8,110 @@ import {
   UserFragmentSchema,
 } from './user-fragment';
 
-const RecentUsers = hasuraGraphql(
-  `
-  query RecentUsers($createdAfter: timestamptz!) {
-    user_aggregate(
-      where: { created_at: { _gt: $createdAfter } }
-    ) {
-      aggregate {
-        ...RecentUsersCountFragment
-      }
-    }
-  }
-`,
-  [RecentUsersCountFragment]
-);
-
-const TotalUsers = hasuraGraphql(
-  `
-  query TotalUsers {
-    user_aggregate {
-      aggregate {
-        ...RecentUsersCountFragment
-      }
-    }
-  }
-`,
-  [RecentUsersCountFragment]
-);
-
 /**
- * GraphQL query to count users created since a specific date
- *
- * @remarks
- * Retrieves all users created after the specified timestamp
+ * GraphQL query to get users, with an optional filter for recent users
  */
 const UserCount = hasuraGraphql(
   `
-  query UserCount($since: timestamptz!) {
-    user(where: {created_at: {_gt: $since}}) {
+  query UserCount($date: timestamptz!) {
+    recentUsers: user_aggregate(where: { created_at: { _gte: $date } }) {
+      aggregate {
+        ...RecentUsersCountFragment
+      }
+    }
+    totalUsers: user_aggregate {
+      aggregate {
+        ...RecentUsersCountFragment
+      }
+    }
+    user(limit: 3, order_by: { created_at: desc }) {
       ...UserFragment
     }
   }
 `,
-  [UserFragment]
+  [UserFragment, RecentUsersCountFragment]
 );
 
 /**
- * Props interface for user count components
- *
+ * Props interface for retrieving user counts
  */
 export interface UserCountProps {
-  /** Date to count users from */
-  since: Date;
+  /** Date to count users from (optional) */
+  since?: Date;
 }
 
 /**
- * Fetches and processes user count data
- *
- * @param params - Object containing the date to count from
- *
- * @remarks
- * Each entry represents a single user with their creation timestamp
- * Returns an empty array if an error occurs during the query
+ * Type for user count results
  */
-async function getUserCount({ since }: UserCountProps) {
-  try {
+export type UserCountResult = {
+  /** Array of users with their timestamps */
+  users: { timestamp: Date; users: number }[];
+  /** Count of recent users */
+  recentUsersCount: number;
+  /** Total user count */
+  totalUsersCount: number;
+};
+
+/**
+ * Cached function to fetch raw user count data
+ */
+const fetchUserCountData = unstable_cache(
+  async (since: Date | undefined) => {
+    console.log('fetchUserCountData', since);
+
+    // Default to 30 days ago if no date is provided
+    const date = since
+      ? since
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
     const result = await hasuraClient.request(UserCount, {
-      since: since.toISOString(),
+      date: date.toISOString(),
     });
 
-    // Parse and validate each user in the results using Zod schema
-    const validatedUsers = (result.user || []).map((user) =>
-      safeParseWithLogging(UserFragmentSchema, user, 'user count')
-    );
-
-    const recentUsers = await hasuraClient.request(RecentUsers, {
-      createdAfter: since.toISOString(),
-    });
-
-    const recentUsersCount = safeParseWithLogging(
-      RecentUsersCountFragmentSchema,
-      recentUsers.user_aggregate.aggregate,
-      'recent users count'
-    );
-
-    const totalUsers = await hasuraClient.request(TotalUsers);
-    const totalUsersCount = safeParseWithLogging(
-      RecentUsersCountFragmentSchema,
-      totalUsers.user_aggregate.aggregate,
-      'total users count'
-    );
-
-    return {
-      users: validatedUsers.map((user) => ({
-        timestamp: user.created_at,
-        users: 1, // Each entry represents a single user
-      })),
-      recentUsersCount: recentUsersCount.count,
-      totalUsersCount: totalUsersCount.count,
-    };
-  } catch {
-    return {
-      users: [],
-      recentUsersCount: 0,
-      totalUsersCount: 0,
-    };
+    return result;
+  },
+  ['user', 'count'],
+  {
+    revalidate: 60 * 60,
+    tags: ['user'],
   }
-}
+);
 
 /**
- * Creates a memoized query key for user count queries
+ * Fetches user count statistics
  *
- * @param params - Object containing the date to count from
+ * @param params - Optional param to specify a date from which to count recent users
+ * @returns Object containing user data with timestamps, recent user count, and total user count
  */
-const getQueryKey = ({ since }: UserCountProps) =>
-  ['user', 'count', since ? since.toISOString() : 'all-time'] as const;
+export async function getUserCount({ since }: UserCountProps = {}) {
+  const result = await fetchUserCountData(since);
 
-/**
- * React Query hook for fetching user count data
- *
- * @param params - Object containing the date to count from
- *
- * @example
- * ```tsx
- * // Count users created in the last 30 days
- * const thirtyDaysAgo = new Date();
- * thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
- *
- * const { data: userCounts, isLoading } = useUserCount({
- *   since: thirtyDaysAgo
- * });
- *
- * // Later in your component
- * const totalUsers = userCounts?.reduce((sum, entry) => sum + entry.users, 0) || 0;
- * ```
- */
-export function useUserCount({ since }: UserCountProps) {
-  const queryKey = getQueryKey({ since });
+  // Validate the response using Zod schemas
+  const validatedRecentUsers = safeParseWithLogging(
+    RecentUsersCountFragmentSchema,
+    result.recentUsers.aggregate,
+    'recent users count'
+  );
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getUserCount({ since }),
-  });
+  const validatedTotalUsers = safeParseWithLogging(
+    RecentUsersCountFragmentSchema,
+    result.totalUsers.aggregate,
+    'total users count'
+  );
+
+  // Parse and validate each user in the results using the UserFragmentSchema
+  const validatedUsers = Array.isArray(result.user)
+    ? result.user.map((user) =>
+        safeParseWithLogging(UserFragmentSchema, user, 'user count')
+      )
+    : [];
 
   return {
-    ...result,
-    queryKey,
+    users: validatedUsers.map((user) => ({
+      timestamp: user.created_at,
+      users: 1, // Each entry represents a single user
+    })),
+    recentUsersCount: validatedRecentUsers.count,
+    totalUsersCount: validatedTotalUsers.count,
   };
 }

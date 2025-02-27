@@ -2,8 +2,8 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
 import type { FragmentOf } from '@settlemint/sdk-portal';
+import { IndexingFragment } from './transaction-fragment';
 
 /**
  * Constants for transaction monitoring
@@ -14,17 +14,6 @@ const POLLING_DEFAULTS = {
   /** Default polling interval in milliseconds */
   INTERVAL_MS: 500,
 } as const;
-
-const IndexingFragment = theGraphGraphqlStarterkits(`
-  fragment IndexingFragment on _Block_ {
-    number
-  }
-`);
-
-export const IndexingFragmentSchema = z.object({
-  number: z.number(),
-});
-export type IndexingFragment = ZodInfer<typeof IndexingFragmentSchema>;
 
 const GetIndexingStatus = theGraphGraphqlStarterkits(
   `

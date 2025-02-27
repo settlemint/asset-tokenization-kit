@@ -7,6 +7,7 @@ import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { addSeconds } from 'date-fns';
 import BigDecimal from 'js-big-decimal';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -52,6 +53,24 @@ export interface StableCoinDetailProps {
 }
 
 /**
+ * Cached function to fetch stablecoin data from both sources
+ */
+const fetchStableCoinData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    console.log('fetchStableCoinData', address, normalizedAddress);
+    return Promise.all([
+      theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
+      hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
+    ]);
+  },
+  ['asset', 'stablecoin'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and combines on-chain and off-chain stablecoin data
  *
  * @param params - Object containing the stablecoin address
@@ -61,10 +80,10 @@ export interface StableCoinDetailProps {
 export async function getStableCoinDetail({ address }: StableCoinDetailProps) {
   const normalizedAddress = getAddress(address);
 
-  const [data, dbStableCoin] = await Promise.all([
-    theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
-    hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
-  ]);
+  const [data, dbStableCoin] = await fetchStableCoinData(
+    address,
+    normalizedAddress
+  );
 
   const stableCoin = safeParseWithLogging(
     StableCoinFragmentSchema,

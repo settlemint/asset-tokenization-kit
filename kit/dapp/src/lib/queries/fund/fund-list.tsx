@@ -5,7 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   FundFragment,
@@ -56,16 +56,12 @@ export interface FundListOptions {
 }
 
 /**
- * Fetches a list of funds from both on-chain and off-chain sources
- *
- * @param options - Options for fetching fund list
- *
- * @remarks
- * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
- * then merges the results to provide a complete view of each fund.
+ * Cached function to fetch raw fund data from both on-chain and off-chain sources
  */
-export async function getFundList({ limit }: FundListOptions = {}) {
-  try {
+const fetchFundListData = unstable_cache(
+  async (limit?: number) => {
+    console.log('fetchFundListData', limit);
+
     const [theGraphFunds, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(FundList, {
@@ -92,70 +88,64 @@ export async function getFundList({ limit }: FundListOptions = {}) {
       }, limit),
     ]);
 
-    // Parse and validate the data using Zod schemas
-    const validatedFunds = theGraphFunds.map((fund) =>
-      safeParseWithLogging(FundFragmentSchema, fund, 'fund')
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(OffchainFundFragmentSchema, asset, 'offchain fund')
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const funds = validatedFunds.map((fund) => {
-      const dbAsset = assetsById.get(getAddress(fund.id));
-
-      return {
-        ...fund,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return funds;
-  } catch (error) {
-    console.error('Error fetching fund list:', error);
-    return [];
+    return { theGraphFunds, dbAssets };
+  },
+  ['asset', 'fund', 'list'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset', 'fund'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for fund list queries
+ * Fetches a list of funds from both on-chain and off-chain sources
  *
- * @param [options] - Options for the fund list query
+ * @param options - Options for fetching fund list
+ *
+ * @remarks
+ * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
+ * then merges the results to provide a complete view of each fund.
  */
-export const getQueryKey = (options?: FundListOptions) =>
-  ['asset', 'fund', options?.limit ?? 'all'] as const;
+export async function getFundList({ limit }: FundListOptions = {}) {
+  const { theGraphFunds, dbAssets } = await fetchFundListData(limit);
 
-/**
- * React Query hook for fetching fund list
- *
- * @param [options] - Options for fetching fund list
- *
- * @example
- * ```tsx
- * const { data: funds, isLoading } = useFundList({ limit: 10 });
- * ```
- */
-export function useFundList(options?: FundListOptions) {
-  const queryKey = getQueryKey(options);
+  // Parse and validate the data using Zod schemas
+  const validatedFunds = theGraphFunds.map((fund) =>
+    safeParseWithLogging(FundFragmentSchema, fund, 'fund')
+  );
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getFundList(options),
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainFundFragmentSchema, asset, 'offchain fund')
+  );
+
+  // Cross-reference on-chain and off-chain data to build complete funds
+  const fundMap = new Map();
+
+  // First add all on-chain funds to the map
+  validatedFunds.forEach((fund) => {
+    fundMap.set(getAddress(fund.id), {
+      ...fund,
+      hasOffchainData: false,
+    });
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline fund config values
-    assetType: 'fund' as const,
-    urlSegment: 'funds',
-    theGraphTypename: 'Fund' as const,
-  };
+  // Then match off-chain data with on-chain funds where possible
+  validatedDbAssets.forEach((asset) => {
+    const normalizedAddress = getAddress(asset.id);
+    const existingFund = fundMap.get(normalizedAddress);
+
+    if (existingFund) {
+      // Update existing entry with off-chain data
+      fundMap.set(normalizedAddress, {
+        ...existingFund,
+        private: asset.private,
+        hasOffchainData: true,
+      });
+    } else {
+      // This is an off-chain only fund, but we don't have enough data
+      // to create a valid fund object. Skip it for now.
+    }
+  });
+
+  return Array.from(fundMap.values());
 }

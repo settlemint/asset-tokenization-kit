@@ -2,9 +2,10 @@
 
 import { waitForIndexing } from '@/lib/queries/transactions/wait-for-indexing';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { z } from '@/lib/utils/zod';
 import type { FragmentOf } from '@settlemint/sdk-portal';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { ReceiptFragment, ReceiptFragmentSchema } from './transaction-fragment';
 
 /**
  * Constants for transaction monitoring
@@ -15,21 +16,6 @@ const POLLING_DEFAULTS = {
   /** Default polling interval in milliseconds */
   INTERVAL_MS: 500,
 } as const;
-
-const ReceiptFragment = portalGraphql(`
-  fragment ReceiptFragment on TransactionReceiptOutput {
-    status
-    revertReasonDecoded
-    blockNumber
-  }
-`);
-
-const ReceiptFragmentSchema = z.object({
-  status: z.string(),
-  revertReasonDecoded: z.string().nullish(),
-  blockNumber: z.coerce.number(),
-});
-type ReceiptFragment = ZodInfer<typeof ReceiptFragmentSchema>;
 
 const GetTransaction = portalGraphql(
   `
@@ -124,6 +110,11 @@ export async function waitForTransactions(
 
   await waitForIndexing(response.lastTransaction.blockNumber);
 
+  // Revalidate all cache tags
+  revalidateTag('asset');
+  revalidateTag('user');
+
+  // Now revalidate paths after clearing cache
   revalidatePath('/[locale]/admin', 'layout');
   revalidatePath('/[locale]/portfolio', 'layout');
 

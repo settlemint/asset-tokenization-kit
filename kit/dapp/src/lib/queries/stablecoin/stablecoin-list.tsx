@@ -7,6 +7,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import BigDecimal from 'js-big-decimal';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -49,12 +50,38 @@ const OffchainStableCoinList = hasuraGraphql(
 );
 
 /**
- * Options for fetching stablecoin list
- *
+ * Cached function to fetch stablecoin list data from both sources
  */
-export interface StableCoinListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
+const fetchStableCoinListData = unstable_cache(
+  async () => {
+    console.log('fetchStableCoinListData');
+    return Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientStarterkits.request(StableCoinList, {
+          first,
+          skip,
+        });
+
+        const stableCoins = result.stableCoins || [];
+
+        return stableCoins;
+      }),
+
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainStableCoinList, {
+          limit: pageLimit,
+          offset,
+        });
+        return result.asset_aggregate.nodes || [];
+      }),
+    ]);
+  },
+  ['asset', 'stablecoin'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
 
 /**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
@@ -65,32 +92,8 @@ export interface StableCoinListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each stablecoin.
  */
-export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
-  const [theGraphStableCoins, dbAssets] = await Promise.all([
-    fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(StableCoinList, {
-        first,
-        skip,
-      });
-
-      const stableCoins = result.stableCoins || [];
-
-      // If we have a limit, check if we should stop
-      if (limit && skip + stableCoins.length >= limit) {
-        return stableCoins.slice(0, limit - skip);
-      }
-
-      return stableCoins;
-    }, limit),
-
-    fetchAllHasuraPages(async (pageLimit, offset) => {
-      const result = await hasuraClient.request(OffchainStableCoinList, {
-        limit: pageLimit,
-        offset,
-      });
-      return result.asset_aggregate.nodes || [];
-    }, limit),
-  ]);
+export async function getStableCoinList() {
+  const [theGraphStableCoins, dbAssets] = await fetchStableCoinListData();
 
   // Parse and validate the data using Zod schemas
   const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>

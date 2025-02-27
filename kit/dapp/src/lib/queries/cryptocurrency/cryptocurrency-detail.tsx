@@ -4,7 +4,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -50,16 +50,11 @@ export interface CryptoCurrencyDetailProps {
 }
 
 /**
- * Fetches and combines on-chain and off-chain cryptocurrency data
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Combined cryptocurrency data with additional calculated metrics
- * @throws Error if fetching or parsing fails
+ * Cached function to fetch raw cryptocurrency data from both on-chain and off-chain sources
  */
-export async function getCryptoCurrencyDetail({
-  address,
-}: CryptoCurrencyDetailProps) {
-  try {
+const fetchCryptoCurrencyDetailData = unstable_cache(
+  async (address: Address) => {
+    console.log('fetchCryptoCurrencyDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbCryptoCurrency] = await Promise.all([
@@ -69,75 +64,56 @@ export async function getCryptoCurrencyDetail({
       }),
     ]);
 
-    const cryptocurrency = safeParseWithLogging(
-      CryptoCurrencyFragmentSchema,
-      data.cryptoCurrency,
-      'cryptocurrency'
-    );
-    const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
-      ? safeParseWithLogging(
-          OffchainCryptoCurrencyFragmentSchema,
-          dbCryptoCurrency.asset[0],
-          'offchain cryptocurrency'
-        )
-      : undefined;
-
-    const topHoldersSum = cryptocurrency.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      cryptocurrency.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
-
-    return {
-      ...cryptocurrency,
-      ...{
-        private: false,
-        ...offchainCryptoCurrency,
-      },
-      concentration,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch cryptocurrency with address ${address}`);
+    return { data, dbCryptoCurrency };
+  },
+  ['asset', 'detail', 'cryptocurrency'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset', 'cryptocurrency'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for cryptocurrency detail queries
+ * Fetches and combines on-chain and off-chain cryptocurrency data
  *
  * @param params - Object containing the cryptocurrency address
- * @returns Array representing the query key for React Query
+ * @returns Combined cryptocurrency data with additional calculated metrics
  */
-export const getQueryKey = ({ address }: CryptoCurrencyDetailProps) =>
-  ['asset', 'detail', 'cryptocurrency', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching cryptocurrency details
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Query result with cryptocurrency data and query key
- */
-export function useCryptoCurrencyDetail({
+export async function getCryptoCurrencyDetail({
   address,
 }: CryptoCurrencyDetailProps) {
-  const queryKey = getQueryKey({ address });
+  const normalizedAddress = getAddress(address);
+  const { data, dbCryptoCurrency } =
+    await fetchCryptoCurrencyDetailData(normalizedAddress);
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getCryptoCurrencyDetail({ address }),
-  });
+  const cryptocurrency = safeParseWithLogging(
+    CryptoCurrencyFragmentSchema,
+    data.cryptoCurrency,
+    'cryptocurrency'
+  );
+  const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
+    ? safeParseWithLogging(
+        OffchainCryptoCurrencyFragmentSchema,
+        dbCryptoCurrency.asset[0],
+        'offchain cryptocurrency'
+      )
+    : undefined;
+
+  const topHoldersSum = cryptocurrency.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    cryptocurrency.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
 
   return {
-    ...result,
-    queryKey,
-    // Inline cryptocurrency config values
-    assetType: 'cryptocurrency' as const,
-    urlSegment: 'cryptocurrencies',
-    theGraphTypename: 'CryptoCurrency' as const,
+    ...cryptocurrency,
+    ...{
+      private: false,
+      ...offchainCryptoCurrency,
+    },
+    concentration,
   };
 }

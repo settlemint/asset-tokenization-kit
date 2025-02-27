@@ -5,7 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   EquityFragment,
@@ -56,16 +56,12 @@ export interface EquityListOptions {
 }
 
 /**
- * Fetches a list of equitys from both on-chain and off-chain sources
- *
- * @param options - Options for fetching equity list
- *
- * @remarks
- * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
- * then merges the results to provide a complete view of each equity.
+ * Cached function to fetch raw equity data from both on-chain and off-chain sources
  */
-export async function getEquityList({ limit }: EquityListOptions = {}) {
-  try {
+const fetchEquityListData = unstable_cache(
+  async (limit?: number) => {
+    console.log('fetchEquityListData', limit);
+
     const [theGraphEquities, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(EquityList, {
@@ -92,74 +88,64 @@ export async function getEquityList({ limit }: EquityListOptions = {}) {
       }, limit),
     ]);
 
-    // Parse and validate the data using Zod schemas
-    const validatedEquities = theGraphEquities.map((equity) =>
-      safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(
-        OffchainEquityFragmentSchema,
-        asset,
-        'offchain equity'
-      )
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const equities = validatedEquities.map((equity) => {
-      const dbAsset = assetsById.get(getAddress(equity.id));
-
-      return {
-        ...equity,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return equities;
-  } catch (error) {
-    console.error('Error fetching equity list:', error);
-    return [];
+    return { theGraphEquities, dbAssets };
+  },
+  ['asset', 'equity', 'list'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset', 'equity'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for equity list queries
+ * Fetches a list of equities from both on-chain and off-chain sources
  *
- * @param [options] - Options for the equity list query
+ * @param options - Options for fetching equity list
+ *
+ * @remarks
+ * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
+ * then merges the results to provide a complete view of each equity.
  */
-export const getQueryKey = (options?: EquityListOptions) =>
-  ['asset', 'equity', options?.limit ?? 'all'] as const;
+export async function getEquityList({ limit }: EquityListOptions = {}) {
+  const { theGraphEquities, dbAssets } = await fetchEquityListData(limit);
 
-/**
- * React Query hook for fetching equity list
- *
- * @param [options] - Options for fetching equity list
- *
- * @example
- * ```tsx
- * const { data: equities, isLoading } = useEquityList({ limit: 10 });
- * ```
- */
-export function useEquityList(options?: EquityListOptions) {
-  const queryKey = getQueryKey(options);
+  // Parse and validate the data using Zod schemas
+  const validatedEquities = theGraphEquities.map((equity) =>
+    safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
+  );
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getEquityList(options),
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainEquityFragmentSchema, asset, 'offchain equity')
+  );
+
+  // Cross-reference on-chain and off-chain data to build complete equities
+  const equityMap = new Map();
+
+  // First add all on-chain equities to the map
+  validatedEquities.forEach((equity) => {
+    equityMap.set(getAddress(equity.id), {
+      ...equity,
+      hasOffchainData: false,
+    });
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline equity config values
-    assetType: 'equity' as const,
-    urlSegment: 'equities',
-    theGraphTypename: 'Equity' as const,
-  };
+  // Then match off-chain data with on-chain equities where possible
+  validatedDbAssets.forEach((asset) => {
+    const normalizedAddress = getAddress(asset.id);
+    const existingEquity = equityMap.get(normalizedAddress);
+
+    if (existingEquity) {
+      // Update existing entry with off-chain data
+      equityMap.set(normalizedAddress, {
+        ...existingEquity,
+        private: asset.private,
+        hasOffchainData: true,
+      });
+    } else {
+      // This is an off-chain only equity, but we don't have enough data
+      // to create a valid equity object. Skip it for now.
+    }
+  });
+
+  return Array.from(equityMap.values());
 }
