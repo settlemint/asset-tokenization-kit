@@ -1,34 +1,38 @@
 # BUILD DEPENDENCIES
-FROM node:22.14.0 AS deps
-COPY --from=oven/bun:1.2.4-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+FROM oven/bun:1.2.4 AS deps
 
-RUN mkdir -p /app
-WORKDIR /app
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  build-essential \
+  python3
 
 COPY package.json .
 COPY bun.l* .
 RUN bun install
-RUN bun x playwright install --with-deps
 
+# BUILD
 FROM deps AS build
 
-COPY --chmod=0777 . .
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY . .
 RUN bun run build
 RUN rm -Rf .next/standalone/.env
+RUN ls -alh .next/
 
 # RUN
-FROM node:22.14.0-slim
+FROM oven/bun:1.2.4
 
 LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=build --chmod=0777  /app/public public
-COPY --from=build --chmod=0777  /app/.next/standalone ./
-COPY --from=build --chmod=0777  /app/.next/static ./.next/static
+COPY --from=build --chmod=0777  /home/bun/app/public public
+COPY --from=build --chmod=0777  /home/bun/app/.next/standalone ./
+COPY --from=build --chmod=0777  /home/bun/app/.next/static ./.next/static
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["server.js"]
+CMD ["bun", "server.js"]
