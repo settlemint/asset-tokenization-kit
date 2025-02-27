@@ -15,6 +15,6 @@ permissions:
 
 jobs:
   labels:
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk-services
     steps:
       - uses: fuxingloh/multi-labeler@v4

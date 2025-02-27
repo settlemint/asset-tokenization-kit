@@ -12,7 +12,7 @@ concurrency:
 jobs:
   test:
     name: Test
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk
     environment: staging
     steps:
       - name: Checkout repository
@@ -75,7 +75,7 @@ jobs:
 
   security:
     name: Security
-    runs-on: namespace-profile-starterkit
+    runs-on: namespace-profile-atk-trivy
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
@@ -83,10 +83,10 @@ jobs:
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
+          scan-type: "fs"
+          scan-ref: "."
           trivy-config: trivy-secret.yaml
           severity: "HIGH,CRITICAL"
-          format: 'table'
-          exit-code: '1'
-          scanners: 'secret'
+          format: "table"
+          exit-code: "1"
+          scanners: "secret"
