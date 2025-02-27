@@ -225,7 +225,7 @@
       "widgets": {
         "assets": {
           "label": "Assets supply",
-          "subtext": "to be moved to the graph"
+          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "users": {
           "label": "Users",
