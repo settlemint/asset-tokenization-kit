@@ -65,7 +65,6 @@ export interface PermissionWithRoles extends Permission {
  */
 const fetchAssetData = unstable_cache(
   async (address: Address, normalizedAddress: Address) => {
-    console.log('fetchAssetData', address, normalizedAddress);
     const onchainData = await theGraphClientStarterkits.request(AssetDetail, {
       id: address,
     });

@@ -54,7 +54,6 @@ export interface FundDetailProps {
  */
 const fetchFundDetailData = unstable_cache(
   async (address: Address) => {
-    console.log('fetchFundDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbFund] = await Promise.all([

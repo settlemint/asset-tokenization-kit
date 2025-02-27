@@ -60,8 +60,6 @@ export interface CryptoCurrencyListOptions {
  */
 const fetchCryptoCurrencyListData = unstable_cache(
   async (limit?: number) => {
-    console.log('fetchCryptoCurrencyListData', limit);
-
     const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(

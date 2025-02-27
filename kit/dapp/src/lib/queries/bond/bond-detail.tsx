@@ -54,7 +54,6 @@ export interface BondDetailProps {
  */
 const fetchBondDetailData = unstable_cache(
   async (address: Address) => {
-    console.log('fetchBondDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbBond] = await Promise.all([

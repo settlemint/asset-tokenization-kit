@@ -37,7 +37,6 @@ export interface AssetActivityOptions {
  */
 const fetchAssetActivityData = unstable_cache(
   async (limit?: number) => {
-    console.log('fetchAssetActivityData');
     const result = await fetchAllTheGraphPages(async (first, skip) => {
       const response = await theGraphClientStarterkits.request(AssetActivity, {
         first,

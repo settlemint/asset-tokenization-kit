@@ -81,7 +81,6 @@ export interface SidebarAssetsOptions {
  */
 const fetchSidebarAssetsData = unstable_cache(
   async () => {
-    console.log('fetchSidebarAssetsData');
     const result = await theGraphClientStarterkits.request(SidebarAssets);
     return result;
   },

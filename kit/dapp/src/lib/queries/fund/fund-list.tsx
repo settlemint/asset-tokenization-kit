@@ -60,8 +60,6 @@ export interface FundListOptions {
  */
 const fetchFundListData = unstable_cache(
   async (limit?: number) => {
-    console.log('fetchFundListData', limit);
-
     const [theGraphFunds, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(FundList, {

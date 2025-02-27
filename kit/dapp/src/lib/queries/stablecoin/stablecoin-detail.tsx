@@ -57,7 +57,6 @@ export interface StableCoinDetailProps {
  */
 const fetchStableCoinData = unstable_cache(
   async (address: Address, normalizedAddress: Address) => {
-    console.log('fetchStableCoinData', address, normalizedAddress);
     return Promise.all([
       theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
       hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),

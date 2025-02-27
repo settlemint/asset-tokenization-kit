@@ -54,7 +54,6 @@ export interface CryptoCurrencyDetailProps {
  */
 const fetchCryptoCurrencyDetailData = unstable_cache(
   async (address: Address) => {
-    console.log('fetchCryptoCurrencyDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbCryptoCurrency] = await Promise.all([

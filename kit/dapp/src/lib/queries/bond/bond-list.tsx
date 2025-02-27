@@ -60,8 +60,6 @@ export interface BondListOptions {
  */
 const fetchBondListData = unstable_cache(
   async (limit?: number) => {
-    console.log('fetchBondListData', limit);
-
     const [theGraphBonds, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(BondList, {

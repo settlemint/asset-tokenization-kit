@@ -50,8 +50,6 @@ export interface AssetStatsProps {
  */
 const fetchAssetStatsData = unstable_cache(
   async (address: Address, days = 1) => {
-    console.log('fetchAssetStatsData', address, days);
-
     // Calculate timestamp for start date
     const startDate = subDays(new Date(), days - 1);
     const timestampGte = getUnixTime(startOfDay(startDate)).toString();

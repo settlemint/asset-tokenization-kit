@@ -42,8 +42,6 @@ export interface AssetSearchProps {
  */
 const fetchAssetSearchData = unstable_cache(
   async (searchTerm: string) => {
-    console.log('fetchAssetSearchData', searchTerm);
-
     if (!searchTerm) {
       return [];
     }

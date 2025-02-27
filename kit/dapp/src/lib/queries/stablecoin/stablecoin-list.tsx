@@ -54,7 +54,6 @@ const OffchainStableCoinList = hasuraGraphql(
  */
 const fetchStableCoinListData = unstable_cache(
   async () => {
-    console.log('fetchStableCoinListData');
     return Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(StableCoinList, {

@@ -39,7 +39,6 @@ export interface AssetBalanceDetailProps {
  */
 const fetchAssetBalanceData = unstable_cache(
   async (address: Address, account: Address) => {
-    console.log('fetchAssetBalanceData', address, account);
     const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
       address,
       account,

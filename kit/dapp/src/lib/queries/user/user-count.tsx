@@ -57,8 +57,6 @@ export type UserCountResult = {
  */
 const fetchUserCountData = unstable_cache(
   async (since: Date | undefined) => {
-    console.log('fetchUserCountData', since);
-
     // Default to 30 days ago if no date is provided
     const date = since
       ? since

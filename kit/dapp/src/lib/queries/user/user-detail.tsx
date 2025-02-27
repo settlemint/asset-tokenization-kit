@@ -34,8 +34,6 @@ export interface UserDetailProps {
  */
 const fetchUserDetailData = unstable_cache(
   async (id: string) => {
-    console.log('fetchUserDetailData', id);
-
     const result = await hasuraClient.request(UserDetail, {
       id,
     });

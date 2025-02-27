@@ -60,8 +60,6 @@ export interface EquityListOptions {
  */
 const fetchEquityListData = unstable_cache(
   async (limit?: number) => {
-    console.log('fetchEquityListData', limit);
-
     const [theGraphEquities, dbAssets] = await Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(EquityList, {

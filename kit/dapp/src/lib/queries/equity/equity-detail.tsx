@@ -54,7 +54,6 @@ export interface EquityDetailProps {
  */
 const fetchEquityDetailData = unstable_cache(
   async (address: Address) => {
-    console.log('fetchEquityDetailData', address);
     const normalizedAddress = getAddress(address);
 
     const [data, dbEquity] = await Promise.all([

@@ -136,8 +136,6 @@ export interface AssetEventsListProps {
  */
 const fetchAssetEventsListData = unstable_cache(
   async (asset?: Address, sender?: Address, limit?: number) => {
-    console.log('fetchAssetEventsListData', asset, sender);
-
     const where: Record<string, unknown> = {};
 
     if (asset) {

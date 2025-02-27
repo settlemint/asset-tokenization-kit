@@ -44,8 +44,6 @@ export interface UserSearchProps {
  */
 const fetchUserSearchData = unstable_cache(
   async (searchTerm: string) => {
-    console.log('fetchUserSearchData', searchTerm);
-
     if (!searchTerm) {
       return { user: [] };
     }
