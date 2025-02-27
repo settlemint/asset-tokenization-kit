@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
@@ -127,18 +126,13 @@ export async function getStableCoinDetail({ address }: StableCoinDetailProps) {
  * @returns Array representing the query key for React Query
  */
 export const getQueryKey = ({ address }: StableCoinDetailProps) =>
-  [
-    'asset',
-    'detail',
-    assetConfig.stablecoin.queryKey,
-    getAddress(address),
-  ] as const;
+  ['asset', 'detail', 'stablecoin', getAddress(address)] as const;
 
 /**
  * React Query hook for fetching stablecoin details
  *
  * @param params - Object containing the stablecoin address
- * @returns Query result with stablecoin data, config, and query key
+ * @returns Query result with stablecoin data and query key
  */
 export function useStableCoinDetail({ address }: StableCoinDetailProps) {
   const queryKey = getQueryKey({ address });
@@ -150,7 +144,10 @@ export function useStableCoinDetail({ address }: StableCoinDetailProps) {
 
   return {
     ...result,
-    config: assetConfig.stablecoin,
     queryKey,
+    // Inline stablecoin config values
+    assetType: 'stablecoin' as const,
+    urlSegment: 'stablecoins',
+    theGraphTypename: 'StableCoin' as const,
   };
 }

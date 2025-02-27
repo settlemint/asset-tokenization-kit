@@ -1,12 +1,11 @@
 'use client';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import type { assetConfig } from '@/lib/config/assets';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
 interface AssetTypeIconProps {
-  type: keyof typeof assetConfig;
+  type: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin';
   size?: 'sm' | 'md';
 }
 
@@ -14,7 +13,9 @@ export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
   const t = useTranslations('components.asset-type-icon');
   const sizeClass = size === 'sm' ? 'h-5 w-5' : 'h-6 w-6';
 
-  function getAssetInitials(type: keyof typeof assetConfig): string {
+  function getAssetInitials(
+    type: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin'
+  ): string {
     switch (type) {
       case 'bond':
         return t('bond-initials');
@@ -31,7 +32,9 @@ export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
     }
   }
 
-  function getAssetColorClass(type: keyof typeof assetConfig): string {
+  function getAssetColorClass(
+    type: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin'
+  ): string {
     switch (type) {
       case 'bond':
         return 'bg-sm-blue';

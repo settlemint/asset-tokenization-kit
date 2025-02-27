@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
 import { AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };

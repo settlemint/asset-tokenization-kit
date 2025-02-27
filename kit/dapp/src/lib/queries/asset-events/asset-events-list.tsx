@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllTheGraphPages } from '@/lib/pagination';
 import { AssetEventFragment } from '@/lib/queries/asset-events/asset-events-fragments';
 import {
@@ -314,11 +313,7 @@ export async function getAssetEventsList({
       return {
         event: validatedEvent.__typename,
         timestamp: formatDate(validatedEvent.timestamp),
-        asset:
-          validatedEvent.emitter.id in assetConfig
-            ? assetConfig[validatedEvent.emitter.id as keyof typeof assetConfig]
-                ?.name || validatedEvent.emitter.id
-            : validatedEvent.emitter.id,
+        asset: validatedEvent.emitter.id,
         sender: validatedEvent.sender?.id || 'System',
         details: validatedEvent,
         transactionHash: validatedEvent.id.split('-')[0],

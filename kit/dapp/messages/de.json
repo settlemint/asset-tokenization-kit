@@ -242,7 +242,14 @@
           "description": "Zeigt Ereignisse für jeden Asset-Typ",
           "mint": "Prägen",
           "transfer": "Übertragen",
-          "burn": "Verbrennen"
+          "burn": "Verbrennen",
+          "asset-types": {
+            "bonds": "Anleihen",
+            "cryptocurrencies": "Kryptowährungen",
+            "equities": "Aktien",
+            "funds": "Fonds",
+            "stablecoins": "Stablecoins"
+          }
         },
         "assets-supply": {
           "to-be-moved": "Wird in das Diagramm verschoben"
@@ -262,8 +269,45 @@
         "latest-events": {
           "view-all": "Alle Ereignisse anzeigen →"
         }
+      },
+      "page": {
+        "title": "Dashboard",
+        "stats_heading": "Statistiken",
+        "latest_events_heading": "Neueste Ereignisse"
+      }
+    },
+    "sidebar": {
+      "asset-designer": "Asset Designer",
+      "create-asset": "Asset erstellen",
+      "asset-management": {
+        "group-title": "Asset-Verwaltung",
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins",
+        "view-all": "Alle anzeigen"
+      },
+      "asset-types": {
+        "bond": "Anleihe",
+        "cryptocurrency": "Kryptowährung",
+        "equity": "Aktie",
+        "fund": "Fonds",
+        "stablecoin": "Stablecoin"
       }
     }
+  },
+  "asset-types": {
+    "bond": "Anleihe",
+    "cryptocurrency": "Kryptowährung",
+    "equity": "Aktie",
+    "fund": "Fonds",
+    "stablecoin": "Stablecoin",
+    "bonds": "Anleihen",
+    "cryptocurrencies": "Kryptowährungen",
+    "equities": "Aktien",
+    "funds": "Fonds",
+    "stablecoins": "Stablecoins"
   },
   "auth": {
     "signin": {

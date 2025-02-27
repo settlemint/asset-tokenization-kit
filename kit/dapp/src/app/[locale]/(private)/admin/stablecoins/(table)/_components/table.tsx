@@ -5,7 +5,6 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PercentageProgressBar } from '@/components/blocks/percentage-progress/percentage-progress';
-import { assetConfig } from '@/lib/config/assets';
 import type {
   OffchainStableCoin,
   StableCoin,
@@ -107,7 +106,7 @@ export function StableCoinTable() {
           cell: ({ row }) => {
             return (
               <DataTableRowActions
-                detailUrl={`/admin/${assetConfig.stablecoin.urlSegment}/${row.original.id}`}
+                detailUrl={`/admin/stablecoins/${row.original.id}`}
               />
             );
           },
@@ -118,7 +117,7 @@ export function StableCoinTable() {
       ]}
       data={stablecoins}
       icons={icons}
-      name={assetConfig.stablecoin.name}
+      name={t('stablecoin')}
     />
   );
 }

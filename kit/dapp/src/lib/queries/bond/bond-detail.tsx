@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
@@ -107,13 +106,13 @@ export async function getBondDetail({ address }: BondDetailProps) {
  * @returns Array representing the query key for React Query
  */
 export const getQueryKey = ({ address }: BondDetailProps) =>
-  ['asset', 'detail', assetConfig.bond.queryKey, getAddress(address)] as const;
+  ['asset', 'detail', 'bond', getAddress(address)] as const;
 
 /**
  * React Query hook for fetching bond details
  *
  * @param params - Object containing the bond address
- * @returns Query result with bond data, config, and query key
+ * @returns Query result with bond data and query key
  */
 export function useBondDetail({ address }: BondDetailProps) {
   const queryKey = getQueryKey({ address });
@@ -125,7 +124,10 @@ export function useBondDetail({ address }: BondDetailProps) {
 
   return {
     ...result,
-    config: assetConfig.bond,
     queryKey,
+    // Inline bond config values
+    assetType: 'bond' as const,
+    urlSegment: 'bonds',
+    theGraphTypename: 'Bond' as const,
   };
 }

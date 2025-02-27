@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
@@ -130,12 +129,12 @@ export async function getEquityList({ limit }: EquityListOptions = {}) {
 }
 
 /**
- * Creates a memoized query key for equity list queries
+ * Generates a consistent query key for equity list queries
  *
  * @param [options] - Options for the equity list query
  */
 export const getQueryKey = (options?: EquityListOptions) =>
-  ['asset', assetConfig.equity.queryKey, options?.limit ?? 'all'] as const;
+  ['asset', 'equity', options?.limit ?? 'all'] as const;
 
 /**
  * React Query hook for fetching equity list
@@ -144,7 +143,7 @@ export const getQueryKey = (options?: EquityListOptions) =>
  *
  * @example
  * ```tsx
- * const { data: equitys, isLoading } = useEquityList({ limit: 10 });
+ * const { data: equities, isLoading } = useEquityList({ limit: 10 });
  * ```
  */
 export function useEquityList(options?: EquityListOptions) {
@@ -157,7 +156,10 @@ export function useEquityList(options?: EquityListOptions) {
 
   return {
     ...result,
-    config: assetConfig.equity,
     queryKey,
+    // Inline equity config values
+    assetType: 'equity' as const,
+    urlSegment: 'equities',
+    theGraphTypename: 'Equity' as const,
   };
 }

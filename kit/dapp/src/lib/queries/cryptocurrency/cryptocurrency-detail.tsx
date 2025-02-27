@@ -1,4 +1,3 @@
-import { assetConfig } from '@/lib/config/assets';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
@@ -115,18 +114,13 @@ export async function getCryptoCurrencyDetail({
  * @returns Array representing the query key for React Query
  */
 export const getQueryKey = ({ address }: CryptoCurrencyDetailProps) =>
-  [
-    'asset',
-    'detail',
-    assetConfig.cryptocurrency.queryKey,
-    getAddress(address),
-  ] as const;
+  ['asset', 'detail', 'cryptocurrency', getAddress(address)] as const;
 
 /**
  * React Query hook for fetching cryptocurrency details
  *
  * @param params - Object containing the cryptocurrency address
- * @returns Query result with cryptocurrency data, config, and query key
+ * @returns Query result with cryptocurrency data and query key
  */
 export function useCryptoCurrencyDetail({
   address,
@@ -140,7 +134,10 @@ export function useCryptoCurrencyDetail({
 
   return {
     ...result,
-    config: assetConfig.cryptocurrency,
     queryKey,
+    // Inline cryptocurrency config values
+    assetType: 'cryptocurrency' as const,
+    urlSegment: 'cryptocurrencies',
+    theGraphTypename: 'CryptoCurrency' as const,
   };
 }

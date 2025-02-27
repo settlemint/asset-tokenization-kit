@@ -3,7 +3,6 @@
 import { BarChartComponent } from '@/components/blocks/charts/bar-charts/horizontal-bar-chart';
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
-import { assetConfig } from '@/lib/config/assets';
 import { useAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
 import { useTranslations } from 'next-intl';
 
@@ -47,6 +46,25 @@ export function AssetActivity() {
     unfrozenEventCount: Number(asset.unfrozenEventCount),
   }));
 
+  // Get asset type plural names from translations
+  const getAssetPluralName = (type: string): string => {
+    const assetType = type.toLowerCase();
+    switch (assetType) {
+      case 'bond':
+        return t('asset-activity.asset-types.bonds');
+      case 'cryptocurrency':
+        return t('asset-activity.asset-types.cryptocurrencies');
+      case 'equity':
+        return t('asset-activity.asset-types.equities');
+      case 'fund':
+        return t('asset-activity.asset-types.funds');
+      case 'stablecoin':
+        return t('asset-activity.asset-types.stablecoins');
+      default:
+        return type;
+    }
+  };
+
   return (
     <BarChartComponent
       data={chartData}
@@ -55,10 +73,7 @@ export function AssetActivity() {
       description={t('asset-activity.description')}
       xAxis={{
         key: 'assetType',
-        tickFormatter: (value: string) => {
-          const assetType = value.toLowerCase() as keyof typeof assetConfig;
-          return assetConfig[assetType]?.pluralName ?? value;
-        },
+        tickFormatter: (value: string) => getAssetPluralName(value),
       }}
     />
   );

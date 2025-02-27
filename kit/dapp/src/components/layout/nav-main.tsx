@@ -16,7 +16,6 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Link, usePathname } from '@/i18n/routing';
-import type { assetConfig } from '@/lib/config/assets';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -24,7 +23,7 @@ import { useState } from 'react';
 
 export type NavItem = {
   id?: string;
-  assetType?: keyof typeof assetConfig;
+  assetType?: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin';
   label: ReactNode;
   path: string;
   icon?: ReactNode;
