@@ -12,7 +12,7 @@ export function Widget({ label, value, subtext }: WidgetProps) {
       <CardContent>
         <p className="mt-6 text-sm">{label}</p>
         <p className="my-2 font-bold text-3xl">{value}</p>
-        <p className='text-muted-foreground text-sm'>{subtext}</p>
+        <p className="text-sm text-muted-foreground">{subtext}</p>
       </CardContent>
     </Card>
   );

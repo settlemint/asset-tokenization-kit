@@ -98,7 +98,7 @@
   .settlemint-light {
     /* SettleMint Light Theme */
     --button-hover-accent: 225 91% 94%; /* Using sm-light-blue */
-    --background: 225 91% 94%; /* Using sm-light-blue */
+    --background: 222.86, 87.5%, 96.86%; /* Using sm-light-blue */
     --foreground: 0 0% 11%; /* Using sm-dark-gray */
     --card: 0 0% 100%; /* Using sm-white */
     --card-foreground: 0 0% 11%; /* Using sm-dark-gray */
