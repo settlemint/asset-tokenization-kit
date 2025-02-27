@@ -1,18 +1,16 @@
-'use client';
-
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries } from '@/lib/charts';
-import { useAssetStats } from '@/lib/queries/asset-stats/asset-stats';
-import { useTranslations } from 'next-intl';
+import { getAssetStats } from '@/lib/queries/asset-stats/asset-stats';
+import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
 
 interface TotalTransfersProps {
   address: Address;
 }
 
-export function TotalTransfers({ address }: TotalTransfersProps) {
-  const t = useTranslations('components.charts.assets');
+export async function TotalTransfers({ address }: TotalTransfersProps) {
+  const t = await getTranslations('components.charts.assets');
 
   const chartConfig = {
     totalTransfers: {
@@ -21,7 +19,7 @@ export function TotalTransfers({ address }: TotalTransfersProps) {
     },
   } satisfies ChartConfig;
 
-  const { data } = useAssetStats({ address });
+  const data = await getAssetStats({ address });
 
   const timeseries = createTimeSeries(data, ['totalTransfers'], {
     granularity: 'hour',
