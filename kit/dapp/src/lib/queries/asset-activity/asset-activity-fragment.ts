@@ -26,12 +26,13 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
  */
 export const AssetActivityFragmentSchema = z.object({
   id: z.string(),
-  assetType: z.string(),
-  burnEventCount: z.bigInt(),
-  mintEventCount: z.bigInt(),
-  transferEventCount: z.bigInt(),
-  frozenEventCount: z.bigInt(),
-  unfrozenEventCount: z.bigInt(),
+  assetType: z.assetType(),
+  totalSupply: z.coerce.number(),
+  burnEventCount: z.coerce.number(),
+  mintEventCount: z.coerce.number(),
+  transferEventCount: z.coerce.number(),
+  frozenEventCount: z.coerce.number(),
+  unfrozenEventCount: z.coerce.number(),
 });
 
 /**
