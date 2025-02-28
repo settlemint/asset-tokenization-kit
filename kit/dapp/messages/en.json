@@ -861,6 +861,24 @@
         "trigger-label": "Create Equity",
         "title": "Create new equity",
         "description": "Issue a new equity on the blockchain",
+        "button-label": "Create Equity",
+        "button-submitting-label": "Creating equity...",
+        "button-processing-label": "Processing...",
+        "toast-loading": "Creating equity",
+        "toast-success": "Equity successfully created",
+        "basics": {
+          "title": "Basic Information",
+          "description": "Define essential details such as name, symbol, and visibility.",
+          "name-label": "Name",
+          "name-placeholder": "Global Equity",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "GLEQ",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "isin-placeholder": "US1234567890",
+          "private-token-label": "Private Token",
+          "private-token-description": "Other organisations won't see this asset"
+        },
         "configuration": {
           "title": "Configuration",
           "description": "Configure the equity classification details",
@@ -913,6 +931,224 @@
           "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
           "category-tracking-stocks": "Tracking Stocks",
           "category-dual-class-shares": "Dual-Class Shares"
+        },
+        "summary": {
+          "title": "Review and confirm",
+          "description": "Review and confirm the details of your new equity before creation.",
+          "asset-basics-title": "Asset Basics",
+          "asset-basics-description": "Basic asset information and settings.",
+          "configuration-title": "Configuration",
+          "configuration-description": "Equity classification details.",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "private-label": "Private",
+          "yes": "Yes",
+          "no": "No",
+          "equity-class-label": "Equity Class",
+          "equity-category-label": "Equity Category"
+        }
+      },
+      "table": {
+        "page-title": "Equities",
+        "page-description": "Overview and administrative actions for your equity assets.",
+        "address-header": "Address",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Total Supply",
+        "category-header": "Equity Category",
+        "class-header": "Equity Class",
+        "status-header": "Status",
+        "private-header": "Private",
+        "actions-header": "Actions",
+        "paused-status": "Paused",
+        "active-status": "Active",
+        "private-status": "Private",
+        "public-status": "Public"
+      },
+      "manage": {
+        "manage": "Manage"
+      },
+      "burn-form": {
+        "trigger-label": "Burn",
+        "title": "Burn",
+        "description": "Permanently remove equity tokens from circulation to reduce supply.",
+        "button-label": "Burn Assets",
+        "button-submitting-label": "Burning assets...",
+        "button-processing-label": "Processing...",
+        "toast-loading": "Burning equity tokens",
+        "toast-success": "Equity tokens successfully burned",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to burn.",
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}"
+        },
+        "summary": {
+          "title": "Review and confirm burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "burn-title": "Burn",
+          "burn-description": "Burning operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Grant Role",
+        "title": "Grant Role",
+        "description": "Assign administrative permissions to a new user.",
+        "button-label": "Assign Roles",
+        "button-submitting-label": "Assigning roles...",
+        "button-processing-label": "Processing...",
+        "toast-loading": "Granting permissions",
+        "toast-success": "Permissions successfully granted",
+        "address": {
+          "title": "Select New Admin",
+          "description": "Search for a user by their name or email, or manually enter a wallet address.",
+          "address-label": "Admin Wallet Address",
+          "search-placeholder": "Search for a user",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Search for a user instead...",
+          "manual-toggle": "Enter address manually..."
+        },
+        "roles": {
+          "title": "Select Admin Roles",
+          "description": "Choose the roles to grant to the new admin. At least one role must be selected."
+        },
+        "summary": {
+          "title": "Review and confirm role grant",
+          "description": "Verify the details of your role grant before proceeding.",
+          "grant-title": "Grant Role",
+          "grant-description": "Granting role operation details",
+          "asset-label": "Asset",
+          "admin-address-label": "Admin Address",
+          "roles-label": "Roles"
+        }
+      },
+      "mint-form": {
+        "trigger-label": "Mint",
+        "title": "Mint",
+        "description": "Issue new tokens to increase the equity's circulating supply.",
+        "button-label": "Mint Assets",
+        "button-submitting-label": "Minting assets...",
+        "button-processing-label": "Processing...",
+        "toast-loading": "Minting equity tokens",
+        "toast-success": "Equity tokens successfully minted",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to mint.",
+          "amount-label": "Amount"
+        },
+        "summary": {
+          "title": "Review and confirm mint",
+          "description": "Verify the details of your mint before proceeding.",
+          "mint-title": "Mint",
+          "mint-description": "Minting operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "pause-form": {
+        "pause": {
+          "trigger-label": "Pause",
+          "title": "Pause Equity Transactions",
+          "description": "Temporarily halt all transactions and interactions for this equity.",
+          "button-label": "Pause Transactions",
+          "button-submitting-label": "Pausing transactions...",
+          "button-processing-label": "Processing...",
+          "toast-loading": "Pausing equity",
+          "toast-success": "Equity successfully paused"
+        },
+        "unpause": {
+          "trigger-label": "Unpause",
+          "title": "Resume Equity Transactions",
+          "description": "Resume transactions and interactions for this equity.",
+          "button-label": "Resume Transactions",
+          "button-submitting-label": "Resuming transactions...",
+          "button-processing-label": "Processing...",
+          "toast-loading": "Resuming equity",
+          "toast-success": "Equity successfully resumed"
+        },
+        "summary": {
+          "title": "Review and confirm pause operation",
+          "description": "Verify the details of your pause operation before proceeding.",
+          "pause-title": "Pause",
+          "pause-description": "Pausing operation details",
+          "asset-label": "Asset",
+          "current-state-label": "Current state",
+          "target-state-label": "Target state",
+          "state-paused": "Paused",
+          "state-active": "Active"
+        }
+      },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "equity-details-description": "Details for the equity",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Explore comprehensive data and metrics for {name}."
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Holders",
+        "events": "Events",
+        "permissions": "Permissions"
+      },
+      "events": {
+        "events-page-title": "{name} Events",
+        "events-page-description": "Track all events related to {name} equity."
+      },
+      "permissions": {
+        "permissions-page-title": "{name} Permissions",
+        "permissions-page-description": "Manage user roles and access rights for {name}.",
+        "page-title": "Equity Permissions",
+        "page-description": "Manage user roles and access rights for this equity.",
+        "table-title": "Permissions",
+        "wallet-header": "Wallet",
+        "roles-header": "Roles",
+        "last-activity-header": "Last Activity",
+        "actions-header": "Actions",
+        "edit-form": {
+          "trigger-label": "Edit Roles",
+          "title": "Modify User Permissions",
+          "description": "Update the permissions and access levels assigned to this user.",
+          "button-label": "Save Permissions",
+          "roles": {
+            "title": "Select User Roles",
+            "description": "Choose the roles to assign to this user. At least one role must be selected."
+          },
+          "summary": {
+            "title": "Review and confirm new roles",
+            "description": "Verify the details before proceeding. This action will change the roles for the user.",
+            "update-title": "Update Roles",
+            "operation-description": "Updating roles operation details",
+            "user-label": "User",
+            "current-roles-label": "Current roles",
+            "new-roles-label": "New roles"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Revoke All",
+          "title": "Remove All User Access",
+          "description": "Completely revoke this user's access and permissions.",
+          "button-label": "Revoke Access",
+          "summary": {
+            "title": "Review and confirm",
+            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+            "revoke-title": "Revoke All",
+            "operation-description": "Revoking all permissions operation details",
+            "user-label": "User",
+            "roles-to-revoke-label": "Roles to revoke"
+          }
         }
       }
     },
