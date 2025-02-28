@@ -1049,6 +1049,60 @@
           "amount-label": "Amount"
         }
       },
+      "holders": {
+        "holders-page-title": "{name} Holders",
+        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+        "wallet-header": "Wallet",
+        "balance-header": "Balance",
+        "frozen-header": "Frozen",
+        "status-header": "Status",
+        "blocked-status": "Blocked",
+        "active-status": "Active",
+        "last-activity-header": "Last activity",
+        "actions-header": "Actions",
+        "block-form": {
+          "block-trigger-label": "Block",
+          "unblock-trigger-label": "Unblock",
+          "block-title": "Block User Transactions",
+          "unblock-title": "Restore User Transactions",
+          "block-description": "Prevent this user from performing any transactions or interactions.",
+          "unblock-description": "Restore this user's ability to transact and interact.",
+          "block-button-label": "Block User",
+          "unblock-button-label": "Unblock User",
+          "summary": {
+            "title": "Review and confirm block operation",
+            "description": "Verify the details of your block operation before proceeding.",
+            "block-title": "Block",
+            "unblock-title": "Unblock",
+            "operation-description": "Block operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-blocked": "Blocked",
+            "state-active": "Active"
+          }
+        },
+        "freeze-form": {
+          "trigger-label": "Freeze",
+          "title": "Restrict User Funds",
+          "description": "Temporarily restrict a user's access to their funds.",
+          "button-label": "Freeze Funds",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to freeze.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
+          },
+          "summary": {
+            "title": "Review and confirm freeze operation",
+            "description": "Verify the details of your freeze operation before proceeding.",
+            "freeze-title": "Freeze",
+            "operation-description": "Freezing operation details",
+            "asset-label": "Asset",
+            "amount-label": "Amount"
+          }
+        }
+      },
       "pause-form": {
         "pause": {
           "trigger-label": "Pause",
