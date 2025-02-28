@@ -8,12 +8,12 @@ import {
 } from '../test-data/asset-data';
 import { assetMessage, stableCoinMintTokenMessage, stableCoinTransferMessage } from '../test-data/success-msg-data';
 import { adminUser, signUpTransferUserData, signUpUserData } from '../test-data/user-data';
-import { fetchWalletAddressFromDB } from '../utils/db-utils';
+import { ensureUserIsAdmin } from '../utils/db-utils';
 
 const testData = {
   userName: '',
   transferUserEmail: '',
-  transferUserWalletAddress: '',
+  transferUserName: '',
   stablecoinName: '',
 };
 
@@ -37,9 +37,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
       await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
-
-      const transferUserWalletAddress = await fetchWalletAddressFromDB(signUpTransferUserData.email);
-      testData.transferUserWalletAddress = transferUserWalletAddress;
+      testData.transferUserName = signUpTransferUserData.name;
     } catch (error) {
       if (userContext) {
         await userContext.close();
@@ -59,6 +57,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
     }
   });
   test('Admin user creates stablecoin, updates proven collateral and mints tokens', async ({ browser }) => {
+    await ensureUserIsAdmin(adminUser.email);
     const adminContext = await browser.newContext();
     try {
       const adminPage = await adminContext.newPage();
@@ -100,7 +99,7 @@ test.describe('Update collateral, mint and transfer assets', () => {
     });
     await userPages.portfolioPage.transferAsset({
       assetName: testData.stablecoinName,
-      walletAddress: testData.transferUserWalletAddress,
+      user: testData.transferUserName,
       ...stableCoinTransferData,
     });
     await userPages.adminPage.verifySuccessMessage(stableCoinTransferMessage.successMessage);

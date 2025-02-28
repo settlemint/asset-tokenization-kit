@@ -3,11 +3,18 @@ import { fileURLToPath } from 'node:url';
 import { config as dotenvConfig } from 'dotenv';
 import type { ClientConfig } from 'pg';
 import postgres from 'pg';
+import { adminUser } from '../test-data/user-data';
 const { Client } = postgres;
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../');
+
 dotenvConfig({ path: path.join(projectRoot, '.env') });
 dotenvConfig({ path: path.join(projectRoot, '.env.local'), override: true });
+
+const databaseUrl = process.env.SETTLEMINT_HASURA_DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('SETTLEMINT_HASURA_DATABASE_URL not found in environment variables');
+}
 
 export type UserRole = 'admin' | 'user';
 
@@ -72,5 +79,29 @@ export async function fetchWalletAddressFromDB(email: string): Promise<string> {
     return result.rows[0].wallet;
   } finally {
     await client.end();
+  }
+}
+
+export async function isUserAdmin(email: string = adminUser.email): Promise<boolean> {
+  try {
+    const role = await getUserRole(email);
+    return role === 'admin';
+  } catch (error) {
+    throw new Error(`Failed to check admin role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function ensureUserIsAdmin(email: string = adminUser.email): Promise<boolean> {
+  try {
+    const hasAdminRole = await isUserAdmin(email);
+
+    if (!hasAdminRole) {
+      await updateUserRole(email, 'admin');
+      return true; // Role was updated
+    }
+
+    return false;
+  } catch (error) {
+    throw new Error(`Failed to ensure admin role: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

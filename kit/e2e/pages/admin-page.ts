@@ -23,11 +23,14 @@ export class AdminPage extends BasePage {
     }
 
     await this.page.waitForSelector('table[aria-labelledby*="react-day-picker"]');
-    const dateCell = this.page.locator('td[role="presentation"]', {
-      has: this.page.locator(`button:text("${day}")`),
-    });
-
-    await dateCell.locator('button').click();
+    try {
+      const dateCell = this.page.locator('td[role="presentation"]', {
+        has: this.page.locator(`button:text("${day}")`),
+      });
+      await dateCell.locator('button:not([disabled])').click();
+    } catch (error) {
+      throw new Error(`Failed to select date ${day}: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 
   private normalizeNumber(str: string): string {
@@ -236,7 +239,7 @@ export class AdminPage extends BasePage {
   async updateProvenCollateral(options: { sidebarAssetTypes: string; name: string; amount: string; pincode: string }) {
     await this.chooseAssetTypeFromSidebar({ sidebarAssetTypes: options.sidebarAssetTypes });
     await this.chooseAssetFromTable({ name: options.name, sidebarAssetTypes: options.sidebarAssetTypes });
-    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    await this.page.getByRole('button', { name: 'Manage' }).click();
     const updateCollateralButton = this.page.getByRole('button', { name: 'Update proven collateral' });
 
     await updateCollateralButton.waitFor({ state: 'visible' });
@@ -292,7 +295,7 @@ export class AdminPage extends BasePage {
 
   async mintToken(options: { sidebarAssetTypes: string; name: string; user: string; amount: string; pincode: string }) {
     await this.page.reload();
-    await this.page.getByRole('button', { name: 'Manage Stablecoin' }).click();
+    await this.page.getByRole('button', { name: 'Manage' }).click();
     const mintTokensButton = this.page.getByRole('button', { name: 'Mint tokens' });
     await mintTokensButton.waitFor({ state: 'visible' });
     await mintTokensButton.click();
