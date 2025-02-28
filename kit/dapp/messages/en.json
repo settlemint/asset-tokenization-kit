@@ -40,8 +40,6 @@
       "holders": {
         "holders-page-title": "{name} Holders",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "page-title": "{name} Holders",
-        "page-description": "List of holders for {name} stablecoin",
         "wallet-header": "Wallet",
         "balance-header": "Balance",
         "frozen-header": "Frozen",
@@ -82,14 +80,6 @@
             "description": "Input the amount you wish to freeze.",
             "amount-label": "Amount",
             "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
-          },
-          "summary": {
-            "title": "Review and confirm freeze",
-            "description": "Verify the details of your freeze before proceeding.",
-            "freeze-title": "Freeze",
-            "operation-description": "Freezing operation details",
-            "asset-label": "Asset",
-            "amount-label": "Amount"
           }
         }
       },
@@ -251,52 +241,6 @@
           "asset-label": "Asset",
           "admin-address-label": "Admin Address",
           "roles-label": "Roles"
-        },
-        "details": {
-          "contract-address": "Contract address",
-          "creator": "Creator",
-          "name": "Name",
-          "symbol": "Symbol",
-          "isin": "ISIN",
-          "decimals": "Decimals",
-          "total-supply": "Total supply",
-          "total-supply-info": "The total supply of the token",
-          "ownership-concentration": "Ownership concentration",
-          "ownership-concentration-info": "Percentage owned by the top 5 holders",
-          "bond-details-description": "Details for the bond",
-          "details-page-title": "{name} Details",
-          "details-page-description": "Explore comprehensive data and metrics for {name}."
-        },
-        "pause-form": {
-          "pause": {
-            "trigger-label": "Pause",
-            "title": "Pause Bond Transactions",
-            "description": "Temporarily halt all transactions and interactions for this bond.",
-            "button-label": "Pause Transactions"
-          },
-          "unpause": {
-            "trigger-label": "Unpause",
-            "title": "Resume Bond Transactions",
-            "description": "Resume transactions and interactions for this bond.",
-            "button-label": "Resume Transactions"
-          },
-          "summary": {
-            "title": "Review and confirm pause operation",
-            "description": "Verify the details of your pause operation before proceeding.",
-            "pause-title": "Pause",
-            "pause-description": "Pausing operation details",
-            "asset-label": "Asset",
-            "current-state-label": "Current state",
-            "target-state-label": "Target state",
-            "state-paused": "Paused",
-            "state-active": "Active"
-          },
-          "tabs": {
-            "details": "Details",
-            "holders": "Holders",
-            "events": "Events",
-            "permissions": "Permissions"
-          }
         }
       },
       "create-form": {
@@ -304,7 +248,6 @@
         "title": "Create Stablecoin",
         "description": "Define and launch a new stablecoin asset.",
         "button-label": "Create Stablecoin",
-        "success": "Stablecoin {name} has been successfully created.",
         "basics": {
           "title": "Basic Information",
           "description": "Define essential details such as name, symbol, and visibility.",
@@ -321,8 +264,7 @@
         "configuration": {
           "title": "Configuration",
           "description": "Specify advanced settings like collateral proof validity.",
-          "collateral-proof-validity-label": "Collateral Proof Validity",
-          "collateral-proof-validity-description": "Duration (in seconds) for which the collateral proof remains valid."
+          "collateral-proof-validity-label": "Collateral Proof Validity"
         },
         "summary": {
           "title": "Review and confirm the details of your new stablecoin before creation.",
@@ -365,7 +307,6 @@
         "title": "Create Fund",
         "description": "Define and launch a new fund asset.",
         "button-label": "Create Fund",
-        "success": "Fund {name} has been successfully created.",
         "basics": {
           "title": "Basic Information",
           "description": "Define essential details such as name, symbol, and visibility.",
@@ -452,54 +393,7 @@
           "fund-category-label": "Fund Category",
           "fund-class-label": "Fund Class",
           "management-fee-label": "Management Fee",
-          "basis-points": "bps",
-          "category-activist": "Activist",
-          "category-commodity-trading": "Commodity Trading",
-          "category-convertible-arbitrage": "Convertible Arbitrage",
-          "category-credit": "Credit",
-          "category-currency-fx": "Currency / FX",
-          "category-distressed-debt": "Distressed Debt",
-          "category-emerging-markets": "Emerging Markets",
-          "category-equity-hedge": "Equity Hedge",
-          "category-event-driven": "Event-Driven",
-          "category-fixed-income-arbitrage": "Fixed Income Arbitrage",
-          "category-fund-of-funds": "Fund of Funds",
-          "category-global-macro": "Global Macro",
-          "category-high-frequency-trading": "High-Frequency Trading (HFT)",
-          "category-managed-futures-cta": "Managed Futures / CTA",
-          "category-market-neutral": "Market Neutral",
-          "category-merger-arbitrage": "Merger Arbitrage",
-          "category-multi-strategy": "Multi-Strategy",
-          "category-private-equity": "Private Equity (PE)",
-          "category-quantitative-systematic": "Quantitative/Systematic",
-          "category-relative-value": "Relative Value",
-          "category-statistical-arbitrage": "Statistical Arbitrage",
-          "category-structured-credit": "Structured Credit",
-          "category-venture-capital": "Venture Capital (VC)",
-          "class-absolute-return": "Absolute Return",
-          "class-core-blend": "Core / Blend",
-          "class-diversified": "Diversified",
-          "class-early-stage": "Early Stage",
-          "class-factor-based": "Factor-Based",
-          "class-growth-focused": "Growth-Focused",
-          "class-income-focused": "Income-Focused",
-          "class-large-cap": "Large-Cap",
-          "class-long-equity": "Long Equity (Long Only)",
-          "class-long-short-equity": "Long/Short Equity",
-          "class-market-neutral": "Market Neutral",
-          "class-mid-cap": "Mid-Cap",
-          "class-momentum-oriented": "Momentum-Oriented",
-          "class-opportunistic": "Opportunistic",
-          "class-pre-series-b": "Pre-Series B",
-          "class-quantitative-algorithmic": "Quantitative / Algorithmic",
-          "class-regional": "Regional",
-          "class-sector-specific": "Sector-Specific",
-          "class-seed-pre-seed": "Seed / Pre-Seed",
-          "class-series-b-late-stage": "Series B / Late Stage",
-          "class-short-equity": "Short Equity",
-          "class-small-cap": "Small-Cap",
-          "class-tactical-asset-allocation": "Tactical Asset Allocation",
-          "class-value-focused": "Value-Focused"
+          "basis-points": "bps"
         }
       },
       "table": {
@@ -556,8 +450,7 @@
         "amount": {
           "title": "Enter Amount",
           "description": "Input the amount you wish to mint.",
-          "amount-label": "Amount",
-          "collateral-available": "Collateral available: {collateral}"
+          "amount-label": "Amount"
         },
         "summary": {
           "title": "Review and confirm mint",
@@ -674,7 +567,6 @@
     },
     "sidebar": {
       "asset-designer": "Asset Designer",
-      "create-asset": "Create Asset",
       "asset-management": {
         "group-title": "Asset Management",
         "bonds": "Bonds",
@@ -697,9 +589,7 @@
         "trigger-label": "Create Bond",
         "title": "Create new bond",
         "description": "Issue a new bond on the blockchain",
-        "back-to-bonds": "Back to bonds",
         "button-label": "Create Bond",
-        "success": "Bond {name} has been successfully created.",
         "basics": {
           "title": "Basic information",
           "description": "Enter the basic details of the bond",
@@ -710,7 +600,6 @@
           "decimals-label": "Decimals",
           "isin-label": "ISIN",
           "isin-placeholder": "e.g. US000000AA00",
-          "isin-description": "International Securities Identification Number",
           "private-token-label": "Private token",
           "private-token-description": "Private tokens require KYC before transfer"
         },
@@ -723,9 +612,7 @@
           "face-value-description": "Nominal value of a single bond unit",
           "maturity-date-label": "Maturity date",
           "underlying-asset-label": "Underlying asset",
-          "underlying-asset-description": "Address of the asset that backs this bond",
-          "pincode-label": "PIN code",
-          "pincode-description": "Your wallet PIN code to authorize the transaction"
+          "underlying-asset-description": "Address of the asset that backs this bond"
         },
         "summary": {
           "title": "Review and confirm",
@@ -744,22 +631,16 @@
           "maturity-date-label": "Maturity date",
           "underlying-asset-label": "Underlying asset",
           "yes": "Yes",
-          "no": "No",
-          "basis-points": "basis points"
+          "no": "No"
         }
       },
       "table": {
         "page-title": "Bonds Management",
         "page-description": "Create, view, and manage bond assets on the blockchain",
-        "title": "Bonds",
-        "description": "Manage your bond assets",
-        "create-new": "Create new bond",
         "address-header": "Address",
         "name-header": "Name",
         "symbol-header": "Symbol",
         "total-supply-header": "Total supply",
-        "holders-header": "Holders",
-        "maturity-date-header": "Maturity date",
         "status-header": "Status",
         "private-header": "Private",
         "actions-header": "Actions",
@@ -836,52 +717,6 @@
           "asset-label": "Asset",
           "admin-address-label": "Admin Address",
           "roles-label": "Roles"
-        },
-        "details": {
-          "contract-address": "Contract address",
-          "creator": "Creator",
-          "name": "Name",
-          "symbol": "Symbol",
-          "isin": "ISIN",
-          "decimals": "Decimals",
-          "total-supply": "Total supply",
-          "total-supply-info": "The total supply of the token",
-          "ownership-concentration": "Ownership concentration",
-          "ownership-concentration-info": "Percentage owned by the top 5 holders",
-          "bond-details-description": "Details for the bond",
-          "details-page-title": "{name} Details",
-          "details-page-description": "Explore comprehensive data and metrics for {name}."
-        },
-        "pause-form": {
-          "pause": {
-            "trigger-label": "Pause",
-            "title": "Pause Bond Transactions",
-            "description": "Temporarily halt all transactions and interactions for this bond.",
-            "button-label": "Pause Transactions"
-          },
-          "unpause": {
-            "trigger-label": "Unpause",
-            "title": "Resume Bond Transactions",
-            "description": "Resume transactions and interactions for this bond.",
-            "button-label": "Resume Transactions"
-          },
-          "summary": {
-            "title": "Review and confirm pause operation",
-            "description": "Verify the details of your pause operation before proceeding.",
-            "pause-title": "Pause",
-            "pause-description": "Pausing operation details",
-            "asset-label": "Asset",
-            "current-state-label": "Current state",
-            "target-state-label": "Target state",
-            "state-paused": "Paused",
-            "state-active": "Active"
-          },
-          "tabs": {
-            "details": "Details",
-            "holders": "Holders",
-            "events": "Events",
-            "permissions": "Permissions"
-          }
         }
       },
       "details": {
@@ -906,34 +741,13 @@
         "permissions": "Permissions"
       },
       "events": {
-        "page-title": "Bond Events",
-        "page-description": "Track all events related to this bond.",
-        "table-title": "Events",
-        "table-description": "A list of all events related to this bond.",
         "events-page-title": "{name} Events",
         "events-page-description": "Track all events related to {name} bond."
-      },
-      "holders": {
-        "page-title": "Bond Holders",
-        "page-description": "See all wallets currently holding this bond.",
-        "table-title": "Holders",
-        "table-description": "A list of all wallets currently holding this bond.",
-        "headers": {
-          "wallet": "Wallet",
-          "balance": "Balance",
-          "frozen": "Frozen",
-          "last-activity": "Last Activity"
-        }
       },
       "permissions": {
         "page-title": "Bond Permissions",
         "page-description": "Manage user roles and access rights for this bond.",
-        "table-title": "Permissions",
-        "table-description": "A list of all current user roles and access rights for this bond.",
-        "headers": {
-          "role": "Role",
-          "last-activity": "Last Activity"
-        }
+        "table-title": "Permissions"
       },
       "pause-form": {
         "pause": {
@@ -960,19 +774,77 @@
           "state-active": "Active"
         }
       }
-    }
-  },
-  "asset-types": {
-    "bond": "Bond",
-    "cryptocurrency": "Cryptocurrency",
-    "equity": "Equity",
-    "fund": "Fund",
-    "stablecoin": "Stablecoin",
-    "bonds": "Bonds",
-    "cryptocurrencies": "Cryptocurrencies",
-    "equities": "Equities",
-    "funds": "Funds",
-    "stablecoins": "Stablecoins"
+    },
+    "equities": {
+      "create-form": {
+        "trigger-label": "Create Equity",
+        "title": "Create new equity",
+        "description": "Issue a new equity on the blockchain",
+        "configuration": {
+          "title": "Configuration",
+          "description": "Configure the equity classification details",
+          "equity-class-label": "Equity Class",
+          "equity-category-label": "Equity Category",
+
+          "class-common-equity": "Common Equity",
+          "class-preferred-equity": "Preferred Equity",
+          "class-market-capitalization-equity": "Market Capitalization Equity",
+          "class-geographic-equity": "Geographic Equity",
+          "class-sector-industry-equity": "Sector/Industry Equity",
+          "class-investment-style-equity": "Investment Style Equity",
+          "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
+          "class-special-classes-equity": "Special Classes of Equity",
+
+          "category-voting-common-stock": "Voting Common Stock",
+          "category-non-voting-common-stock": "Non-Voting Common Stock",
+
+          "category-cumulative-preferred-stock": "Cumulative Preferred Stock",
+          "category-non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
+          "category-convertible-preferred-stock": "Convertible Preferred Stock",
+          "category-redeemable-preferred-stock": "Redeemable Preferred Stock",
+
+          "category-large-cap-equity": "Large-Cap Equity",
+          "category-mid-cap-equity": "Mid-Cap Equity",
+          "category-small-cap-equity": "Small-Cap Equity",
+          "category-micro-cap-equity": "Micro-Cap Equity",
+
+          "category-domestic-equity": "Domestic Equity",
+          "category-international-equity": "International Equity",
+          "category-global-equity": "Global Equity",
+          "category-emerging-market-equity": "Emerging Market Equity",
+          "category-frontier-market-equity": "Frontier Market Equity",
+
+          "category-technology": "Technology",
+          "category-financials": "Financials",
+          "category-healthcare": "Healthcare",
+          "category-energy": "Energy",
+          "category-consumer-staples": "Consumer Staples",
+          "category-consumer-discretionary": "Consumer Discretionary",
+          "category-industrials": "Industrials",
+          "category-materials": "Materials",
+          "category-utilities": "Utilities",
+          "category-communication-services": "Communication Services",
+          "category-real-estate": "Real Estate",
+
+          "category-growth-equity": "Growth Equity",
+          "category-value-equity": "Value Equity",
+          "category-blend-equity": "Blend Equity",
+          "category-income-equity": "Income Equity",
+
+          "category-venture-capital": "Venture Capital",
+          "category-growth-capital": "Growth Capital",
+          "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+          "category-mezzanine-financing": "Mezzanine Financing",
+          "category-distressed-equity": "Distressed Equity",
+
+          "category-restricted-stock": "Restricted Stock",
+          "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
+          "category-tracking-stocks": "Tracking Stocks",
+          "category-dual-class-shares": "Dual-Class Shares"
+        }
+      }
+    },
+    "cryptocurrencies": {}
   },
   "auth": {
     "signin": {
@@ -1083,9 +955,7 @@
         "old-amount": "Old Amount",
         "new-amount": "New Amount",
         "previous-admin-role": "Previous Admin Role",
-        "new-admin-role": "New Admin Role",
-        "yes": "Yes",
-        "no": "No"
+        "new-admin-role": "New Admin Role"
       }
     },
     "asset-type-icon": {
@@ -1120,36 +990,12 @@
           "title": "Total volume",
           "description": "Showing the total volume of the token"
         }
-      },
-      "common": {
-        "no-data": "No data available",
-        "loading": "Loading...",
-        "last-updated": "Last updated"
-      },
-      "bar-charts": {
-        "horizontal": {
-          "default-title": "Bar Chart",
-          "default-description": "Showing data in horizontal bars"
-        },
-        "vertical": {
-          "default-title": "Vertical Chart",
-          "default-description": "Showing data in vertical bars"
-        }
-      },
-      "pie": {
-        "default-title": "Pie Chart",
-        "default-description": "Showing data distribution"
-      },
-      "area": {
-        "default-title": "Area Chart",
-        "default-description": "Showing data trends over time"
       }
     },
     "data-table": {
       "no-results": "No results",
       "search": "Search...",
       "reset": "Reset",
-      "rows-selected": "row(s) selected",
       "selected-rows-info": "{selected} of {total} row(s) selected.",
       "page-info": "Page {current} of {total}",
       "rows-per-page": "Rows per page",
@@ -1173,9 +1019,6 @@
     "detail-grid": {
       "info-icon-label": "Additional information"
     },
-    "evm-address": {
-      "view-on-explorer": "View on the explorer"
-    },
     "form": {
       "input": {
         "valid-email": "Please enter a valid email address",
@@ -1187,7 +1030,6 @@
       "users": {
         "default-placeholder": "Select an option",
         "search-placeholder": "Search for a user...",
-        "searching": "Searching...",
         "no-user-found": "No user found."
       },
       "summary": {
@@ -1229,10 +1071,7 @@
   },
   "theme": {
     "toggle-label": "Toggle theme",
-    "switch-to-mode": "Switch to {mode} mode",
-    "dark": "dark",
-    "light": "light",
-    "system": "system"
+    "switch-to-mode": "Switch to {mode} mode"
   },
   "layout": {
     "navigation": {
