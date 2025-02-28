@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { Burn } from '@/lib/mutations/stablecoin/burn';
+import type { BurnInput } from '@/lib/mutations/stablecoin/burn/burn-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -10,7 +10,7 @@ interface AmountProps {
 }
 
 export function Amount({ maxBurnAmount }: AmountProps) {
-  const { control } = useFormContext<Burn>();
+  const { control } = useFormContext<BurnInput>();
   const t = useTranslations('admin.stablecoins.burn-form.amount');
 
   return (

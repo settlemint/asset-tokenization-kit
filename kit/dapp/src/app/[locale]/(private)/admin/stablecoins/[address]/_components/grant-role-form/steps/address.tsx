@@ -1,11 +1,11 @@
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { GrantRole } from '@/lib/mutations/stablecoin/grant-role';
+import type { GrantRoleInput } from '@/lib/mutations/stablecoin/grant-role/grant-role-schema';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export function AdminAddress() {
-  const { control } = useFormContext<GrantRole>();
+  const { control } = useFormContext<GrantRoleInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
   const t = useTranslations('admin.stablecoins.grant-role-form.address');
 

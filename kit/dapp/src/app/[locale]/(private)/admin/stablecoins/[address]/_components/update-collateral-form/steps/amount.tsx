@@ -1,11 +1,11 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { UpdateCollateral } from '@/lib/mutations/stablecoin/update-collateral';
+import type { UpdateCollateralInput } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export function Amount() {
-  const { control } = useFormContext<UpdateCollateral>();
+  const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations('admin.stablecoins.update-collateral-form.amount');
 
   return (

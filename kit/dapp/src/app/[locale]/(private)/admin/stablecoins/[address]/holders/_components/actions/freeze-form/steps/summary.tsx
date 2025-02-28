@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { Burn } from '@/lib/mutations/stablecoin/burn';
+import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -15,7 +15,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<Burn>();
+  const { control } = useFormContext<FreezeInput>();
   const values = useWatch({
     control: control,
   });

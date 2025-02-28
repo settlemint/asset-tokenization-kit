@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { Burn } from '@/lib/mutations/stablecoin/burn';
+import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useFormContext } from 'react-hook-form';
 
@@ -11,7 +11,7 @@ interface AmountProps {
 }
 
 export function Amount({ balance, frozen, symbol }: AmountProps) {
-  const { control } = useFormContext<Burn>();
+  const { control } = useFormContext<FreezeInput>();
 
   return (
     <FormStep

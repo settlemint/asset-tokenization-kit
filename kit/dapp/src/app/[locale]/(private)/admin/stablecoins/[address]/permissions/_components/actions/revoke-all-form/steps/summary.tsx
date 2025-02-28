@@ -5,7 +5,7 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
-import type { UpdateRoles } from '@/lib/mutations/stablecoin/update-roles';
+import type { UpdateRolesInput } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
 import { Lock } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -17,7 +17,7 @@ export function Summary({
   userAddress: Address;
   currentRoles: Role[];
 }) {
-  const { control } = useFormContext<UpdateRoles>();
+  const { control } = useFormContext<UpdateRolesInput>();
 
   return (
     <FormStep
