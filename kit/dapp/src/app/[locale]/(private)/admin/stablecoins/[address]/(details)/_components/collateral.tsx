@@ -1,11 +1,9 @@
-'use client';
-
 import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
 import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
-import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { formatDate, formatDuration } from '@/lib/utils/date';
 import { formatNumber } from '@/lib/utils/number';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 
@@ -13,9 +11,9 @@ interface CollateralProps {
   address: Address;
 }
 
-export function Collateral({ address }: CollateralProps) {
-  const { data: asset } = useStableCoinDetail({ address });
-  const t = useTranslations('admin.stablecoins.collateral');
+export async function Collateral({ address }: CollateralProps) {
+  const stableCoin = await getStableCoinDetail({ address });
+  const t = await getTranslations('admin.stablecoins.collateral');
 
   return (
     <Suspense>
@@ -24,7 +22,7 @@ export function Collateral({ address }: CollateralProps) {
           label={t('proven-collateral')}
           info={t('proven-collateral-info')}
         >
-          {formatNumber(asset.collateral, { token: asset.symbol })}
+          {stableCoin.collateral}
         </DetailGridItem>
         <DetailGridItem
           label={t('required-collateral-threshold')}
@@ -36,7 +34,7 @@ export function Collateral({ address }: CollateralProps) {
           label={t('committed-collateral-ratio')}
           info={t('committed-collateral-ratio-info')}
         >
-          {formatNumber(asset.collateralCommittedRatio, {
+          {formatNumber(stableCoin.collateralCommittedRatio, {
             percentage: true,
             decimals: 2,
           })}
@@ -45,7 +43,7 @@ export function Collateral({ address }: CollateralProps) {
           label={t('collateral-proof-expiration')}
           info={t('collateral-proof-expiration-info')}
         >
-          {formatDate(asset.collateralProofValidity, {
+          {formatDate(stableCoin.collateralProofValidity, {
             type: 'absolute',
           })}
         </DetailGridItem>
@@ -53,7 +51,7 @@ export function Collateral({ address }: CollateralProps) {
           label={t('collateral-proof-validity')}
           info={t('collateral-proof-validity-info')}
         >
-          {formatDuration(asset.liveness)}
+          {formatDuration(stableCoin.liveness)}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>

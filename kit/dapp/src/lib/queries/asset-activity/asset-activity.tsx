@@ -3,7 +3,8 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
 import {
   AssetActivityFragment,
   AssetActivityFragmentSchema,
@@ -32,66 +33,48 @@ export interface AssetActivityOptions {
 }
 
 /**
+ * Cached function to fetch raw asset activity data
+ */
+const fetchAssetActivityData = unstable_cache(
+  async (limit?: number) => {
+    const result = await fetchAllTheGraphPages(async (first, skip) => {
+      const response = await theGraphClientStarterkits.request(AssetActivity, {
+        first,
+        skip,
+      });
+
+      const activityData = response.assetActivityDatas || [];
+
+      // If we have a limit, check if we should stop
+      if (limit && skip + activityData.length >= limit) {
+        return activityData.slice(0, limit - skip);
+      }
+
+      return activityData;
+    }, limit);
+
+    return result;
+  },
+  ['asset', 'activity'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and processes asset activity data
  *
  * @param options - Query options including optional limit
  * @returns Array of validated asset activity data
  */
-async function getAssetActivity({ limit }: AssetActivityOptions = {}) {
-  try {
-    const result = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetActivity, {
-        first,
-        skip,
-      });
+export async function getAssetActivity({ limit }: AssetActivityOptions = {}) {
+  const rawData = await fetchAssetActivityData(limit);
 
-      const activityData = result.assetActivityDatas || [];
+  // Validate data using Zod schema
+  const validatedData = rawData.map((data) =>
+    safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
+  );
 
-      // Validate data using Zod schema
-      const validatedData = activityData.map((data) =>
-        AssetActivityFragmentSchema.parse(data)
-      );
-
-      // If we have a limit, check if we should stop
-      if (limit && skip + validatedData.length >= limit) {
-        return validatedData.slice(0, limit - skip);
-      }
-
-      return validatedData;
-    }, limit);
-
-    return result;
-  } catch (error) {
-    console.error('Error fetching asset activity:', error);
-    return [];
-  }
-}
-
-/**
- * Generates a consistent query key for asset activity queries
- *
- * @param options - Query options including optional limit
- * @returns Array representing the query key for React Query
- */
-const getQueryKey = (options?: AssetActivityOptions) =>
-  ['asset', 'activity', options?.limit] as const;
-
-/**
- * React Query hook for fetching asset activity data
- *
- * @param options - Query options including optional limit
- * @returns Query result with asset activity data and query key
- */
-export function useAssetActivity(options?: AssetActivityOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetActivity(options),
-  });
-
-  return {
-    ...result,
-    queryKey,
-  };
+  return validatedData;
 }

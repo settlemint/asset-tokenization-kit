@@ -15,6 +15,13 @@ export const UserFragment = hasuraGraphql(`
     wallet
     created_at
     updated_at
+    kyc_verified
+    role
+    banned
+    ban_reason
+    ban_expires
+    last_login
+    image
   }
 `);
 
@@ -29,6 +36,14 @@ export const UserFragmentSchema = z.object({
   wallet: z.address(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date().nullish(),
+  kyc_verified: z.string().nullish(),
+  role: z.string(),
+  banned: z.boolean().nullish(),
+  ban_reason: z.string().nullish(),
+  ban_expires: z.coerce.date().nullish(),
+  last_login: z.string().nullish(),
+  image: z.string().nullish(),
+  lastActivity: z.string().nullish(),
 });
 
 /**

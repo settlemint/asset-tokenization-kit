@@ -3,8 +3,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -34,7 +35,7 @@ const OffchainCryptoCurrencyDetail = hasuraGraphql(
   `
   query OffchainCryptoCurrencyDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainCryptoCurrencyFragment
+      ...OffchainCryptoCurrencyFragment
     }
   }
 `,
@@ -50,6 +51,25 @@ export interface CryptoCurrencyDetailProps {
 }
 
 /**
+ * Cached function to fetch cryptocurrency data from both sources
+ */
+const fetchCryptoCurrencyData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
+      theGraphClientStarterkits.request(CryptoCurrencyDetail, { id: address }),
+      hasuraClient.request(OffchainCryptoCurrencyDetail, {
+        id: normalizedAddress,
+      }),
+    ]);
+  },
+  ['asset', 'cryptocurrency'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and combines on-chain and off-chain cryptocurrency data
  *
  * @param params - Object containing the cryptocurrency address
@@ -59,85 +79,42 @@ export interface CryptoCurrencyDetailProps {
 export async function getCryptoCurrencyDetail({
   address,
 }: CryptoCurrencyDetailProps) {
-  try {
-    const normalizedAddress = getAddress(address);
+  const normalizedAddress = getAddress(address);
 
-    const [data, dbCryptoCurrency] = await Promise.all([
-      theGraphClientStarterkits.request(CryptoCurrencyDetail, { id: address }),
-      hasuraClient.request(OffchainCryptoCurrencyDetail, {
-        id: normalizedAddress,
-      }),
-    ]);
+  const [data, dbCryptoCurrency] = await fetchCryptoCurrencyData(
+    address,
+    normalizedAddress
+  );
 
-    const cryptocurrency = safeParseWithLogging(
-      CryptoCurrencyFragmentSchema,
-      data.cryptoCurrency,
-      'cryptocurrency'
-    );
-    const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
-      ? safeParseWithLogging(
-          OffchainCryptoCurrencyFragmentSchema,
-          dbCryptoCurrency.asset[0],
-          'offchain cryptocurrency'
-        )
-      : undefined;
+  const cryptocurrency = safeParseWithLogging(
+    CryptoCurrencyFragmentSchema,
+    data.cryptoCurrency,
+    'cryptocurrency'
+  );
+  const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
+    ? safeParseWithLogging(
+        OffchainCryptoCurrencyFragmentSchema,
+        dbCryptoCurrency.asset[0],
+        'offchain cryptocurrency'
+      )
+    : undefined;
 
-    const topHoldersSum = cryptocurrency.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      cryptocurrency.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
-
-    return {
-      ...cryptocurrency,
-      ...{
-        private: false,
-        ...offchainCryptoCurrency,
-      },
-      concentration,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch cryptocurrency with address ${address}`);
-  }
-}
-
-/**
- * Generates a consistent query key for cryptocurrency detail queries
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ address }: CryptoCurrencyDetailProps) =>
-  ['asset', 'detail', 'cryptocurrency', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching cryptocurrency details
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Query result with cryptocurrency data and query key
- */
-export function useCryptoCurrencyDetail({
-  address,
-}: CryptoCurrencyDetailProps) {
-  const queryKey = getQueryKey({ address });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getCryptoCurrencyDetail({ address }),
-  });
+  const topHoldersSum = cryptocurrency.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    cryptocurrency.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
 
   return {
-    ...result,
-    queryKey,
-    // Inline cryptocurrency config values
-    assetType: 'cryptocurrency' as const,
-    urlSegment: 'cryptocurrencies',
-    theGraphTypename: 'CryptoCurrency' as const,
+    ...cryptocurrency,
+    ...{
+      private: false,
+      ...offchainCryptoCurrency,
+    },
+    concentration,
+    totalSupply: formatNumber(cryptocurrency.totalSupply),
   };
 }

@@ -1,13 +1,13 @@
 import { TransactionFragment } from '@/lib/queries/transactions/transaction-fragment';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { type Address, getAddress } from 'viem';
+import { unstable_cache } from 'next/cache';
+import type { Address } from 'viem';
 
 /**
- * GraphQL query to fetch pending transactions from the Portal API
+ * GraphQL query to fetch processed transactions from the Portal API
  *
  * @remarks
- * Retrieves pending transactions for a specific address
+ * Retrieves processed transactions for a specific address
  */
 const ProcessedTransactionsHistory = portalGraphql(
   `
@@ -27,7 +27,7 @@ const ProcessedTransactionsHistory = portalGraphql(
 );
 
 /**
- * Props interface for pending transactions queries
+ * Props interface for processed transactions queries
  *
  */
 export interface ProcessedTransactionsProps {
@@ -36,25 +36,17 @@ export interface ProcessedTransactionsProps {
 }
 
 /**
- * Fetches the count of pending transactions for a specific address
- *
- * @param props - Props containing the address to query
- *
- * @remarks
- * Returns 0 if no address is provided or if an error occurs during the query
+ * Cached function to fetch processed transactions data from the Portal API
  */
-export async function getProcessedTransactions({
-  address,
-  processedAfter,
-}: ProcessedTransactionsProps) {
-  try {
+const fetchProcessedTransactionsData = unstable_cache(
+  async ({ address, processedAfter }: ProcessedTransactionsProps) => {
     const response = await portalClient.request(ProcessedTransactionsHistory, {
       from: address,
       processedAfter: processedAfter?.toISOString(),
     });
 
     return {
-      total: response.getProcessedTransactions?.count ?? 0,
+      total: response.total?.count ?? 0,
       recentCount: response.getProcessedTransactions?.count ?? 0,
       records:
         response.getProcessedTransactions?.records
@@ -64,58 +56,29 @@ export async function getProcessedTransactions({
             transaction: 1,
           })) ?? [],
     };
-  } catch (error) {
-    console.error(
-      `Error fetching processed transactions for ${address}:`,
-      error
-    );
-    return {
-      total: 0,
-      recentCount: 0,
-      records: [],
-    };
+  },
+  ['transaction', 'processedTransactions'],
+  {
+    revalidate: 60 * 60, // Revalidate every 5 minutes
+    tags: ['transaction'],
   }
-}
+);
 
 /**
- * Creates a memoized query key for pending transactions queries
+ * Fetches processed transactions for a specific address
  *
- * @param props - Props containing the address to query
+ * @param props - Props containing the address to query and optional processedAfter date
+ *
+ * @remarks
+ * Returns transaction data with total count, recent count, and transaction records
  */
-const getQueryKey = ({ address, processedAfter }: ProcessedTransactionsProps) =>
-  [
-    'transaction',
-    'processedTransactions',
-    address ? getAddress(address) : 'all',
-    processedAfter ? processedAfter.toISOString() : 'all',
-  ] as const;
+export async function getProcessedTransactions(
+  props: ProcessedTransactionsProps
+) {
+  const { address, processedAfter } = props;
 
-/**
- * React Query hook for fetching pending transactions count
- *
- * @param props - Props containing the address and poll interval
- *
- * @example
- * ```tsx
- * const { data: pendingCount } = usePendingTransactions({
- *   address: "0x...",
- *   pollInterval: 3000
- * });
- * ```
- */
-export function useProcessedTransactions({
-  address,
-  processedAfter,
-}: ProcessedTransactionsProps) {
-  const queryKey = getQueryKey({ address, processedAfter });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getProcessedTransactions({ address, processedAfter }),
+  return fetchProcessedTransactionsData({
+    address,
+    processedAfter,
   });
-
-  return {
-    ...result,
-    queryKey,
-  };
 }

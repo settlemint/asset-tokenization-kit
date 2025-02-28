@@ -1,10 +1,8 @@
-'use client';
-
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PageHeader } from '@/components/layout/page-header';
-import { useStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import type { Address } from 'viem';
 import { ManageDropdown } from './manage-dropdown';
 
@@ -12,8 +10,8 @@ interface PageHeaderProps {
   address: Address;
 }
 
-export function StableCoinPageHeader({ address }: PageHeaderProps) {
-  const { data: stableCoin } = useStableCoinDetail({ address });
+export async function StableCoinPageHeader({ address }: PageHeaderProps) {
+  const stableCoin = await getStableCoinDetail({ address });
 
   return (
     <PageHeader

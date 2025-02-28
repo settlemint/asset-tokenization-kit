@@ -1,6 +1,6 @@
 ---
 description: General rules
-globs: 
+globs: *.ts,*.tsx
 alwaysApply: true
 ---
 # General Rules

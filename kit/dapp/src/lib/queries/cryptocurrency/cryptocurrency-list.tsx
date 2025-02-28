@@ -4,8 +4,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -34,9 +35,9 @@ const CryptoCurrencyList = theGraphGraphqlStarterkits(
 /**
  * GraphQL query to fetch off-chain cryptocurrency list from Hasura
  */
-const OffchainCryptoCurrencyList = hasuraGraphql(
+const OffchainCryptocurrencyList = hasuraGraphql(
   `
-  query OffchainCryptoCurrencyList($limit: Int, $offset: Int) {
+  query OffchainCryptocurrencyList($limit: Int, $offset: Int) {
     asset_aggregate(limit: $limit, offset: $offset) {
       nodes {
         ...OffchainCryptoCurrencyFragment
@@ -48,27 +49,11 @@ const OffchainCryptoCurrencyList = hasuraGraphql(
 );
 
 /**
- * Options for fetching cryptocurrency list
- *
+ * Cached function to fetch cryptocurrency list data from both sources
  */
-export interface CryptoCurrencyListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
- * Fetches a list of cryptocurrencys from both on-chain and off-chain sources
- *
- * @param options - Options for fetching cryptocurrency list
- *
- * @remarks
- * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
- * then merges the results to provide a complete view of each cryptocurrency.
- */
-export async function getCryptoCurrencyList({
-  limit,
-}: CryptoCurrencyListOptions = {}) {
-  try {
-    const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
+const fetchCryptoCurrencyListData = unstable_cache(
+  async () => {
+    return Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(
           CryptoCurrencyList,
@@ -80,96 +65,75 @@ export async function getCryptoCurrencyList({
 
         const cryptoCurrencies = result.cryptoCurrencies || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + cryptoCurrencies.length >= limit) {
-          return cryptoCurrencies.slice(0, limit - skip);
-        }
-
         return cryptoCurrencies;
-      }, limit),
+      }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainCryptoCurrencyList, {
+        const result = await hasuraClient.request(OffchainCryptocurrencyList, {
           limit: pageLimit,
           offset,
         });
         return result.asset_aggregate.nodes || [];
-      }, limit),
+      }),
     ]);
-
-    // Parse and validate the data using Zod schemas
-    const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
-      (cryptocurrency) =>
-        safeParseWithLogging(
-          CryptoCurrencyFragmentSchema,
-          cryptocurrency,
-          'cryptocurrency'
-        )
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(
-        OffchainCryptoCurrencyFragmentSchema,
-        asset,
-        'offchain cryptocurrency'
-      )
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const cryptoCurrencies = validatedCryptoCurrencies.map((cryptocurrency) => {
-      const dbAsset = assetsById.get(getAddress(cryptocurrency.id));
-
-      return {
-        ...cryptocurrency,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return cryptoCurrencies;
-  } catch (error) {
-    console.error('Error fetching cryptocurrency list:', error);
-    return [];
+  },
+  ['asset', 'cryptocurrency'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for cryptocurrency list queries
+ * Fetches a list of cryptocurrencys from both on-chain and off-chain sources
  *
- * @param [options] - Options for the cryptocurrency list query
+ * @param options - Options for fetching cryptocurrency list
+ *
+ * @remarks
+ * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
+ * then merges the results to provide a complete view of each cryptocurrency.
  */
-export const getQueryKey = (options?: CryptoCurrencyListOptions) =>
-  ['asset', 'cryptocurrency', options?.limit ?? 'all'] as const;
+export async function getCryptoCurrencyList() {
+  const [theGraphCryptoCurrencies, dbAssets] =
+    await fetchCryptoCurrencyListData();
 
-/**
- * React Query hook for fetching cryptocurrency list
- *
- * @param [options] - Options for fetching cryptocurrency list
- *
- * @example
- * ```tsx
- * const { data: cryptocurrencys, isLoading } = useCryptoCurrencyList({ limit: 10 });
- * ```
- */
-export function useCryptoCurrencyList(options?: CryptoCurrencyListOptions) {
-  const queryKey = getQueryKey(options);
+  // Parse and validate the data using Zod schemas
+  const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
+    (cryptocurrency) =>
+      safeParseWithLogging(
+        CryptoCurrencyFragmentSchema,
+        cryptocurrency,
+        'cryptocurrency'
+      )
+  );
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getCryptoCurrencyList(options),
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(
+      OffchainCryptoCurrencyFragmentSchema,
+      asset,
+      'offchain cryptocurrency'
+    )
+  );
+
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
+
+  const cryptoCurrencies = validatedCryptoCurrencies.map((cryptocurrency) => {
+    const dbAsset = assetsById.get(getAddress(cryptocurrency.id));
+
+    return {
+      ...cryptocurrency,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline cryptocurrency config values
-    assetType: 'cryptocurrency' as const,
-    urlSegment: 'cryptocurrencies',
-    theGraphTypename: 'CryptoCurrency' as const,
-  };
+  return cryptoCurrencies.map((cryptocurrency) => ({
+    ...cryptocurrency,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(cryptocurrency.totalSupply),
+  }));
 }

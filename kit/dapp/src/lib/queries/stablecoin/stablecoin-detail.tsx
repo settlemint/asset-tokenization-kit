@@ -3,10 +3,11 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { addSeconds } from 'date-fns';
 import BigDecimal from 'js-big-decimal';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -52,6 +53,23 @@ export interface StableCoinDetailProps {
 }
 
 /**
+ * Cached function to fetch stablecoin data from both sources
+ */
+const fetchStableCoinData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
+      theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
+      hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
+    ]);
+  },
+  ['asset', 'stablecoin'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and combines on-chain and off-chain stablecoin data
  *
  * @param params - Object containing the stablecoin address
@@ -59,95 +77,57 @@ export interface StableCoinDetailProps {
  * @throws Error if fetching or parsing fails
  */
 export async function getStableCoinDetail({ address }: StableCoinDetailProps) {
-  try {
-    const normalizedAddress = getAddress(address);
+  const normalizedAddress = getAddress(address);
 
-    const [data, dbStableCoin] = await Promise.all([
-      theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
-      hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
-    ]);
+  const [data, dbStableCoin] = await fetchStableCoinData(
+    address,
+    normalizedAddress
+  );
 
-    const stableCoin = safeParseWithLogging(
-      StableCoinFragmentSchema,
-      data.stableCoin,
-      'stablecoin'
-    );
-    const offchainStableCoin = dbStableCoin.asset[0]
-      ? safeParseWithLogging(
-          OffchainStableCoinFragmentSchema,
-          dbStableCoin.asset[0],
-          'offchain stablecoin'
-        )
-      : undefined;
+  const stableCoin = safeParseWithLogging(
+    StableCoinFragmentSchema,
+    data.stableCoin,
+    'stablecoin'
+  );
+  const offchainStableCoin = dbStableCoin.asset[0]
+    ? safeParseWithLogging(
+        OffchainStableCoinFragmentSchema,
+        dbStableCoin.asset[0],
+        'offchain stablecoin'
+      )
+    : undefined;
 
-    const topHoldersSum = stableCoin.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      stableCoin.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
+  const topHoldersSum = stableCoin.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    stableCoin.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
 
-    const collateralCommittedRatio =
-      stableCoin.collateral.compareTo(new BigDecimal(0)) === 0
-        ? new BigDecimal(100)
-        : stableCoin.totalSupply
-            .divide(stableCoin.collateral)
-            .multiply(new BigDecimal(100));
+  const collateralCommittedRatio =
+    stableCoin.collateral.compareTo(new BigDecimal(0)) === 0
+      ? new BigDecimal(100)
+      : stableCoin.totalSupply
+          .divide(stableCoin.collateral)
+          .multiply(new BigDecimal(100));
 
-    const collateralProofValidity = addSeconds(
-      stableCoin.lastCollateralUpdate,
-      stableCoin.liveness
-    );
-
-    return {
-      ...stableCoin,
-      ...{
-        private: false,
-        ...offchainStableCoin,
-      },
-      concentration,
-      collateralCommittedRatio,
-      collateralProofValidity,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch stablecoin with address ${address}`);
-  }
-}
-
-/**
- * Generates a consistent query key for stablecoin detail queries
- *
- * @param params - Object containing the stablecoin address
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ address }: StableCoinDetailProps) =>
-  ['asset', 'detail', 'stablecoin', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching stablecoin details
- *
- * @param params - Object containing the stablecoin address
- * @returns Query result with stablecoin data and query key
- */
-export function useStableCoinDetail({ address }: StableCoinDetailProps) {
-  const queryKey = getQueryKey({ address });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getStableCoinDetail({ address }),
-  });
+  const collateralProofValidity = addSeconds(
+    stableCoin.lastCollateralUpdate,
+    stableCoin.liveness
+  );
 
   return {
-    ...result,
-    queryKey,
-    // Inline stablecoin config values
-    assetType: 'stablecoin' as const,
-    urlSegment: 'stablecoins',
-    theGraphTypename: 'StableCoin' as const,
+    ...stableCoin,
+    ...{
+      private: false,
+      ...offchainStableCoin,
+    },
+    concentration,
+    collateralCommittedRatio: Number(collateralCommittedRatio.getValue()),
+    collateralProofValidity,
+    collateral: formatNumber(stableCoin.collateral),
+    totalSupply: formatNumber(stableCoin.totalSupply),
   };
 }

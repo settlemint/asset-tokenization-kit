@@ -39,6 +39,12 @@ const config = [
     },
 
     rules: {
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksVoidReturn: false,
+        },
+      ],
       'no-restricted-imports': [
         'error',
         {

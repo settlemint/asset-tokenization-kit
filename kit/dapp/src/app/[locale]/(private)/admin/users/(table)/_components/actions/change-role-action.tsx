@@ -19,15 +19,15 @@ import {
 } from '@/components/ui/select';
 import { useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
+import type { getUserList } from '@/lib/queries/user/user-list';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
-import type { ListUser } from '../data';
 
 export function ChangeRoleAction({
   user,
   onComplete,
 }: {
-  user: ListUser;
+  user: Awaited<ReturnType<typeof getUserList>>[number];
   onComplete?: () => void;
 }) {
   const [showRoleDialog, setShowRoleDialog] = useState(false);

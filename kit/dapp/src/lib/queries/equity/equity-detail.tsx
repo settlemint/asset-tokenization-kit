@@ -3,8 +3,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
 import {
   EquityFragment,
@@ -34,7 +35,7 @@ const OffchainEquityDetail = hasuraGraphql(
   `
   query OffchainEquityDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainEquityFragment
+      ...OffchainEquityFragment
     }
   }
 `,
@@ -50,6 +51,23 @@ export interface EquityDetailProps {
 }
 
 /**
+ * Cached function to fetch equity data from both sources
+ */
+const fetchEquityData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
+      theGraphClientStarterkits.request(EquityDetail, { id: address }),
+      hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
+    ]);
+  },
+  ['asset', 'equity'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and combines on-chain and off-chain equity data
  *
  * @param params - Object containing the equity address
@@ -57,81 +75,39 @@ export interface EquityDetailProps {
  * @throws Error if fetching or parsing fails
  */
 export async function getEquityDetail({ address }: EquityDetailProps) {
-  try {
-    const normalizedAddress = getAddress(address);
+  const normalizedAddress = getAddress(address);
 
-    const [data, dbEquity] = await Promise.all([
-      theGraphClientStarterkits.request(EquityDetail, { id: address }),
-      hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
-    ]);
+  const [data, dbEquity] = await fetchEquityData(address, normalizedAddress);
 
-    const equity = safeParseWithLogging(
-      EquityFragmentSchema,
-      data.equity,
-      'equity'
-    );
-    const offchainEquity = dbEquity.asset[0]
-      ? safeParseWithLogging(
-          OffchainEquityFragmentSchema,
-          dbEquity.asset[0],
-          'offchain equity'
-        )
-      : undefined;
+  const equity = safeParseWithLogging(
+    EquityFragmentSchema,
+    data.equity,
+    'equity'
+  );
+  const offchainEquity = dbEquity.asset[0]
+    ? safeParseWithLogging(
+        OffchainEquityFragmentSchema,
+        dbEquity.asset[0],
+        'offchain equity'
+      )
+    : undefined;
 
-    const topHoldersSum = equity.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      equity.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / equity.totalSupplyExact);
-
-    return {
-      ...equity,
-      ...{
-        private: false,
-        ...offchainEquity,
-      },
-      concentration,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch equity with address ${address}`);
-  }
-}
-
-/**
- * Generates a consistent query key for equity detail queries
- *
- * @param params - Object containing the equity address
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ address }: EquityDetailProps) =>
-  ['asset', 'detail', 'equity', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching equity details
- *
- * @param params - Object containing the equity address
- * @returns Query result with equity data and query key
- */
-export function useEquityDetail({ address }: EquityDetailProps) {
-  const queryKey = getQueryKey({ address });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getEquityDetail({ address }),
-  });
+  const topHoldersSum = equity.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    equity.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / equity.totalSupplyExact);
 
   return {
-    ...result,
-    queryKey,
-    // Inline equity config values
-    assetType: 'equity' as const,
-    urlSegment: 'equities',
-    theGraphTypename: 'Equity' as const,
+    ...equity,
+    ...{
+      private: false,
+      ...offchainEquity,
+    },
+    concentration,
+    totalSupply: formatNumber(equity.totalSupply),
   };
 }

@@ -2,7 +2,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { formatNumber } from '@/lib/utils/number';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
 import { type Address, getAddress } from 'viem';
 import {
   AssetBalanceFragment,
@@ -34,12 +36,31 @@ export interface AssetBalanceDetailProps {
 }
 
 /**
+ * Cached function to fetch raw asset balance data
+ */
+const fetchAssetBalanceData = unstable_cache(
+  async (address: Address, account: Address) => {
+    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
+      address,
+      account,
+    });
+
+    return result;
+  },
+  ['asset', 'balance'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and processes asset balance data for a specific address and account
  *
  * @param params - Object containing the asset address and account
  * @returns Asset balance data or undefined if not found
  */
-async function getAssetBalanceDetail({
+export async function getAssetBalanceDetail({
   address,
   account,
 }: AssetBalanceDetailProps) {
@@ -47,65 +68,30 @@ async function getAssetBalanceDetail({
     return undefined;
   }
 
-  try {
-    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
-      address,
-      account,
-    });
+  const normalizedAddress = getAddress(address);
+  const normalizedAccount = getAddress(account);
 
-    // Return undefined if no balance found
-    if (result.assetBalances.length === 0) {
-      return undefined;
-    }
+  const result = await fetchAssetBalanceData(
+    normalizedAddress,
+    normalizedAccount
+  );
 
-    // Parse and validate the balance data
-    const validatedBalance = AssetBalanceFragmentSchema.parse(
-      result.assetBalances[0]
-    );
-
-    return validatedBalance;
-  } catch (error) {
-    console.error(
-      `Error fetching balance for asset ${address} and account ${account}:`,
-      error
-    );
+  // Return undefined if no balance found
+  if (result.assetBalances.length === 0) {
     return undefined;
   }
-}
 
-/**
- * Generates a consistent query key for asset balance detail queries
- *
- * @param params - Object containing the asset address and account
- * @returns Array representing the query key for React Query
- */
-const getQueryKey = ({ address, account }: AssetBalanceDetailProps) =>
-  [
-    'asset',
-    'balance',
-    getAddress(address),
-    ...(account ? [getAddress(account)] : []),
-  ] as const;
+  // Parse and validate the balance data
+  const validatedBalance = safeParseWithLogging(
+    AssetBalanceFragmentSchema,
+    result.assetBalances[0],
+    'asset balance'
+  );
 
-/**
- * React Query hook for fetching asset balance details
- *
- * @param params - Object containing the asset address and account
- * @returns Query result with asset balance data and query key
- */
-export function useAssetBalanceDetail({
-  address,
-  account,
-}: AssetBalanceDetailProps) {
-  const queryKey = getQueryKey({ address, account });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetBalanceDetail({ address, account }),
-  });
-
+  // Format BigDecimal values
   return {
-    ...result.data,
-    queryKey,
+    ...validatedBalance,
+    value: formatNumber(validatedBalance.value),
+    frozen: formatNumber(validatedBalance.frozen),
   };
 }

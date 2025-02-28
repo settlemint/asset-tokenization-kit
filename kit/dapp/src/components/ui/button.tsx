@@ -1,9 +1,7 @@
+import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
-
-import { themeConfig } from '@/lib/config/theme';
-import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
@@ -27,19 +25,13 @@ const buttonVariants = cva(
         lg: 'h-10 rounded-md px-8',
         icon: 'h-9 w-9',
       },
-      theme: {
-        settlemint: '',
-        shadcn: '',
-      },
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
-      theme: themeConfig.variant,
     },
     compoundVariants: [
       {
-        theme: 'settlemint',
         variant: 'default',
         className: 'hover:!bg-accent shadow-button',
       },

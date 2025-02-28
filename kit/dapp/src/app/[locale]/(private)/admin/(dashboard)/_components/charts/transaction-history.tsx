@@ -1,22 +1,19 @@
-'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries, formatInterval } from '@/lib/charts';
-import { useProcessedTransactions } from '@/lib/queries/transactions/transactions-processed';
+import { getProcessedTransactions } from '@/lib/queries/transactions/transactions-processed';
 import { startOfDay, subDays } from 'date-fns';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
 
 interface TransactionsHistoryProps {
   from?: Address;
 }
 
-export function TransactionsHistory({ from }: TransactionsHistoryProps) {
-  const t = useTranslations('admin.dashboard.charts');
+export async function TransactionsHistory({ from }: TransactionsHistoryProps) {
+  const t = await getTranslations('admin.dashboard.charts');
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
-  const {
-    data: { records },
-  } = useProcessedTransactions({
+  const { records } = await getProcessedTransactions({
     processedAfter: sevenDaysAgo,
     address: from,
   });

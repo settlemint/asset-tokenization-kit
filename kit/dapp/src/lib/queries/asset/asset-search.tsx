@@ -3,7 +3,8 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { useQuery } from '@tanstack/react-query';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
 import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
 
 /**
@@ -37,58 +38,47 @@ export interface AssetSearchProps {
 }
 
 /**
- * Searches for assets by address, name, or symbol
- *
- * @param params - Object containing the search term
+ * Cached function to fetch raw asset search data
  */
-async function getAssetSearch({ searchTerm }: AssetSearchProps) {
-  if (!searchTerm) {
-    return [];
-  }
+const fetchAssetSearchData = unstable_cache(
+  async (searchTerm: string) => {
+    if (!searchTerm) {
+      return [];
+    }
 
-  try {
     const result = await theGraphClientStarterkits.request(AssetSearch, {
       searchAddress: searchTerm,
       search: searchTerm,
     });
 
-    // Parse and validate each asset in the results using Zod schema
-    const validatedAssets = (result.assets || []).map((asset) =>
-      AssetFragmentSchema.parse(asset)
-    );
+    return result.assets || [];
+  },
+  ['asset', 'search'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
 
-    return validatedAssets;
-  } catch (error) {
-    console.error('Error searching for assets:', error);
+/**
+ * Searches for assets by address, name, or symbol
+ *
+ * @param params - Object containing the search term
+ * @returns Array of validated assets matching the search term
+ */
+export async function getAssetSearch({ searchTerm }: AssetSearchProps) {
+  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
+
+  if (!sanitizedSearchTerm) {
     return [];
   }
-}
 
-/**
- * Generates a consistent query key for asset search queries
- *
- * @param params - Object containing the search term
- */
-const getQueryKey = ({ searchTerm }: AssetSearchProps) =>
-  ['asset', 'search', searchTerm ? searchTerm : 'none'] as const;
+  const rawData = await fetchAssetSearchData(sanitizedSearchTerm);
 
-/**
- * React Query hook for searching assets
- *
- * @param params - Object containing the search term
- */
-export function useAssetSearch({ searchTerm }: AssetSearchProps) {
-  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
-  const queryKey = getQueryKey({ searchTerm: sanitizedSearchTerm });
+  // Validate data using Zod schema
+  const validatedAssets = rawData.map((asset) =>
+    safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
+  );
 
-  const result = useQuery({
-    queryKey,
-    queryFn: () => getAssetSearch({ searchTerm: sanitizedSearchTerm }),
-    enabled: !!sanitizedSearchTerm,
-  });
-
-  return {
-    ...result,
-    queryKey,
-  };
+  return validatedAssets;
 }

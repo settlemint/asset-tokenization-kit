@@ -2,8 +2,8 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { safeParseWithLogging, z, type ZodInfer } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
 import { BondFragment, BondFragmentSchema } from '../bond/bond-fragment';
 import {
   CryptoCurrencyFragment,
@@ -77,106 +77,77 @@ export interface SidebarAssetsOptions {
 }
 
 /**
- * Fetches and processes sidebar asset data
- *
- * @param options - Query options including optional limit
- * @returns Processed sidebar asset data validated with Zod
+ * Cached function to fetch sidebar asset raw data
  */
-async function getSidebarAssets({ limit = 10 }: SidebarAssetsOptions = {}) {
-  try {
+const fetchSidebarAssetsData = unstable_cache(
+  async () => {
     const result = await theGraphClientStarterkits.request(SidebarAssets);
-
-    // Validate stableCoins with Zod schema
-    const validatedStableCoins = (result.stableCoins || []).map((coin) =>
-      StableCoinFragmentSchema.parse(coin)
-    );
-
-    const validatedBonds = (result.bonds || []).map((bond) =>
-      BondFragmentSchema.parse(bond)
-    );
-
-    const validatedEquities = (result.equities || []).map((equity) =>
-      EquityFragmentSchema.parse(equity)
-    );
-
-    const validatedFunds = (result.funds || []).map((fund) =>
-      FundFragmentSchema.parse(fund)
-    );
-
-    const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
-      (currency) => CryptoCurrencyFragmentSchema.parse(currency)
-    );
-
-    // Validate assetCounts with Zod schema
-    const validatedAssetCounts = (result.assetCounts || []).map((count) =>
-      AssetCountSchema.parse(count)
-    );
-
-    // Limit the number of records if requested
-    const limitedStableCoins = limit
-      ? validatedStableCoins.slice(0, limit)
-      : validatedStableCoins;
-
-    const limitedBonds = limit
-      ? validatedBonds.slice(0, limit)
-      : validatedBonds;
-
-    const limitedEquities = limit
-      ? validatedEquities.slice(0, limit)
-      : validatedEquities;
-
-    const limitedFunds = limit
-      ? validatedFunds.slice(0, limit)
-      : validatedFunds;
-
-    const limitedCryptoCurrencies = limit
-      ? validatedCryptoCurrencies.slice(0, limit)
-      : validatedCryptoCurrencies;
-
-    return {
-      stableCoins: limitedStableCoins,
-      assetCounts: validatedAssetCounts,
-      bonds: limitedBonds,
-      equities: limitedEquities,
-      funds: limitedFunds,
-      cryptoCurrencies: limitedCryptoCurrencies,
-    };
-  } catch (error) {
-    console.error('Error fetching sidebar assets:', error);
-    // Return empty results if there's an error
-    return {
-      stableCoins: [],
-      assetCounts: [],
-      bonds: [],
-      equities: [],
-      funds: [],
-      cryptoCurrencies: [],
-    };
+    return result;
+  },
+  ['asset', 'sidebar'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
   }
-}
+);
 
 /**
- * Generates a consistent query key for sidebar assets queries
- *
- * @param options - Query options including optional limit
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = (options?: SidebarAssetsOptions) =>
-  ['asset', 'sidebar', options?.limit] as const;
-
-/**
- * React Query hook for fetching sidebar assets
+ * Fetches sidebar assets data
  *
  * @param options - Query options including optional limit
  * @returns Formatted sidebar asset data with counts
  */
-export function useSidebarAssets(options?: SidebarAssetsOptions) {
-  const queryKey = getQueryKey(options);
+export async function getSidebarAssets(options?: SidebarAssetsOptions) {
+  const result = await fetchSidebarAssetsData();
+  const { limit = 10 } = options || {};
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getSidebarAssets(options),
-  });
+  // Validate stableCoins with Zod schema
+  const validatedStableCoins = (result.stableCoins || []).map((coin) =>
+    safeParseWithLogging(StableCoinFragmentSchema, coin, 'stablecoin')
+  );
+
+  const validatedBonds = (result.bonds || []).map((bond) =>
+    safeParseWithLogging(BondFragmentSchema, bond, 'bond')
+  );
+
+  const validatedEquities = (result.equities || []).map((equity) =>
+    safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
+  );
+
+  const validatedFunds = (result.funds || []).map((fund) =>
+    safeParseWithLogging(FundFragmentSchema, fund, 'fund')
+  );
+
+  const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
+    (currency) =>
+      safeParseWithLogging(
+        CryptoCurrencyFragmentSchema,
+        currency,
+        'cryptocurrency'
+      )
+  );
+
+  // Validate assetCounts with Zod schema
+  const validatedAssetCounts = (result.assetCounts || []).map((count) =>
+    safeParseWithLogging(AssetCountSchema, count, 'assetCount')
+  );
+
+  // Limit the number of records if requested
+  const limitedStableCoins = limit
+    ? validatedStableCoins.slice(0, limit)
+    : validatedStableCoins;
+
+  const limitedBonds = limit ? validatedBonds.slice(0, limit) : validatedBonds;
+
+  const limitedEquities = limit
+    ? validatedEquities.slice(0, limit)
+    : validatedEquities;
+
+  const limitedFunds = limit ? validatedFunds.slice(0, limit) : validatedFunds;
+
+  const limitedCryptoCurrencies = limit
+    ? validatedCryptoCurrencies.slice(0, limit)
+    : validatedCryptoCurrencies;
 
   /**
    * Helper function to get the count for a specific asset type
@@ -184,28 +155,28 @@ export function useSidebarAssets(options?: SidebarAssetsOptions) {
   const getCount = (
     assetType: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin'
   ) =>
-    result.data.assetCounts.find((asset) => asset.assetType === assetType)
+    validatedAssetCounts.find((asset) => asset.assetType === assetType)
       ?.count ?? 0;
 
   return {
     stablecoin: {
-      records: result.data.stableCoins,
+      records: limitedStableCoins,
       count: getCount('stablecoin'),
     },
     equity: {
-      records: result.data.equities,
+      records: limitedEquities,
       count: getCount('equity'),
     },
     bond: {
-      records: result.data.bonds,
+      records: limitedBonds,
       count: getCount('bond'),
     },
     fund: {
-      records: result.data.funds,
+      records: limitedFunds,
       count: getCount('fund'),
     },
     cryptocurrency: {
-      records: result.data.cryptoCurrencies,
+      records: limitedCryptoCurrencies,
       count: getCount('cryptocurrency'),
     },
   };

@@ -1,4 +1,5 @@
 'use client';
+'use no memo'; // fixes rerendering with react compiler
 
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { Badge } from '@/components/ui/badge';
@@ -11,17 +12,10 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from '@/i18n/routing';
 import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
-import { useOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { useOptionalUserDetail } from '@/lib/queries/user/user-detail';
+import { getOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
+import { getOptionalUserDetail } from '@/lib/queries/user/user-detail';
 import { shortHex } from '@/lib/utils/hex';
-import { useTranslations } from 'next-intl';
-import {
-  type FC,
-  memo,
-  type PropsWithChildren,
-  Suspense,
-  useMemo,
-} from 'react';
+import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
 
@@ -40,9 +34,6 @@ interface EvmAddressProps extends PropsWithChildren {
   hoverCard?: boolean;
   copyToClipboard?: boolean;
 }
-
-// Memoized AddressAvatar to prevent unnecessary re-renders
-const MemoizedAddressAvatar = memo(AddressAvatar);
 
 /**
  * Renders an EVM address with a hover card displaying additional information.
@@ -63,131 +54,128 @@ export function EvmAddress({
   hoverCard = true,
   copyToClipboard = false,
 }: EvmAddressProps) {
-  const t = useTranslations('components.evm-address');
-  const checksumAddress = useMemo(() => getAddress(address), [address]);
+  // State for user and asset data
+  const [user, setUser] =
+    useState<Awaited<ReturnType<typeof getOptionalUserDetail>>>();
+  const [asset, setAsset] =
+    useState<Awaited<ReturnType<typeof getOptionalAssetDetail>>>();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const userLookup = useOptionalUserDetail({
-    id: checksumAddress,
-  });
-  const assetLookup = useOptionalAssetDetail({
-    address: checksumAddress,
-  });
+  // Effect to fetch user and asset data
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const [userResult, assetResult] = await Promise.all([
+          getOptionalUserDetail({ id: getAddress(address) }),
+          getOptionalAssetDetail({ address: getAddress(address) }),
+        ]);
 
-  const displayName = useMemo(
-    () =>
-      prettyNames
-        ? (name ?? assetLookup?.data?.name ?? userLookup?.data?.name)
-        : undefined,
-    [prettyNames, name, assetLookup?.data?.name, userLookup?.data?.name]
+        setUser(userResult);
+        setAsset(assetResult);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    // Call the fetch function
+    void fetchData();
+  }, [address]);
+
+  const displayName = prettyNames
+    ? (name ?? asset?.name ?? user?.name)
+    : undefined;
+  const displayEmail = prettyNames ? user?.email : undefined;
+  const explorerLink = getBlockExplorerAddressUrl(
+    getAddress(address),
+    explorerUrl
   );
 
-  const displayEmail = useMemo(
-    () => (prettyNames ? userLookup?.data?.email : undefined),
-    [prettyNames, userLookup?.data?.email]
-  );
-
-  const explorerLink = useMemo(
-    () => getBlockExplorerAddressUrl(checksumAddress, explorerUrl),
-    [checksumAddress, explorerUrl]
-  );
-
-  // Memoized shortened address
-  const shortAddress = useMemo(
-    () => shortHex(checksumAddress, { prefixLength, suffixLength }),
-    [checksumAddress, prefixLength, suffixLength]
-  );
-
-  // Memoized MainView component
-  const MainView = useMemo(() => {
-    const Component: FC = () => {
-      return (
-        <div className="flex items-center space-x-2">
-          <MemoizedAddressAvatar
-            address={checksumAddress}
+  const MainView: FC = () => {
+    return (
+      <div className="flex items-center space-x-2">
+        {isLoading ? (
+          <Skeleton className="h-4 w-4 rounded-lg" />
+        ) : (
+          <AddressAvatar
+            address={getAddress(address)}
             size={iconSize}
             email={displayEmail}
           />
-          {!displayName && <span className="font-mono">{shortAddress}</span>}
-          {displayName && (
-            <span>
-              {displayName}{' '}
-              {symbol && (
-                <span className="text-muted-foreground text-xs">
-                  ({symbol}){' '}
-                </span>
-              )}
-              {verbose && (
-                <Badge variant="secondary" className="font-mono">
-                  {shortAddress}
-                </Badge>
-              )}
-            </span>
-          )}
-          {copyToClipboard && <CopyToClipboard value={checksumAddress} />}
-        </div>
-      );
-    };
-    return memo(Component);
-  }, [
-    checksumAddress,
-    iconSize,
-    displayEmail,
-    displayName,
-    shortAddress,
-    symbol,
-    verbose,
-    copyToClipboard,
-  ]);
+        )}
+        {!displayName && (
+          <span className="font-mono">
+            {shortHex(getAddress(address), { prefixLength, suffixLength })}
+          </span>
+        )}
+        {displayName && (
+          <span>
+            {displayName}{' '}
+            {symbol && (
+              <span className="text-muted-foreground text-xs">({symbol}) </span>
+            )}
+            {verbose && (
+              <Badge variant="secondary" className="font-mono">
+                {shortHex(getAddress(address), { prefixLength, suffixLength })}
+              </Badge>
+            )}
+          </span>
+        )}
+        {copyToClipboard && <CopyToClipboard value={getAddress(address)} />}
+      </div>
+    );
+  };
 
   if (!hoverCard) {
     return <MainView />;
   }
 
   return (
-    <div className="flex items-center">
-      <HoverCard>
-        <HoverCardTrigger>
-          <MainView />
-        </HoverCardTrigger>
-        <HoverCardContent className="w-120">
-          <div className="flex items-start">
-            <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
-              <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
-                <MemoizedAddressAvatar
-                  address={checksumAddress}
-                  email={displayEmail}
-                  className="row-span-2"
-                />
-              </Suspense>
-              <div className="flex flex-col">
-                <span className="font-mono">{checksumAddress}</span>
-                {displayName && (
-                  <span className="text-sm">
-                    {displayName}{' '}
-                    {symbol && (
-                      <span className="text-muted-foreground text-xs">
-                        ({symbol})
-                      </span>
-                    )}
-                  </span>
-                )}
-                {explorerLink && (
-                  <Link
-                    prefetch={false}
-                    href={explorerLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate text-primary text-xs hover:underline"
-                  >
-                    {t('view-on-explorer')}
-                  </Link>
-                )}
-              </div>
-            </h4>
-          </div>
-          {children}
-        </HoverCardContent>
-      </HoverCard>
-    </div>
+    <HoverCard>
+      <HoverCardTrigger>
+        <MainView />
+      </HoverCardTrigger>
+      <HoverCardContent className="w-120">
+        <div className="flex items-start">
+          <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
+            {isLoading ? (
+              <Skeleton className="h-8 w-8 rounded-lg" />
+            ) : (
+              <AddressAvatar
+                address={getAddress(address)}
+                size="big"
+                email={displayEmail}
+                className="row-span-2"
+              />
+            )}
+            <div className="flex flex-col">
+              <span className="font-mono">{getAddress(address)}</span>
+              {displayName && (
+                <span className="text-sm">
+                  {displayName}{' '}
+                  {symbol && (
+                    <span className="text-muted-foreground text-xs">
+                      ({symbol})
+                    </span>
+                  )}
+                </span>
+              )}
+              {explorerLink && (
+                <Link
+                  prefetch={false}
+                  href={explorerLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="truncate text-primary text-xs hover:underline"
+                >
+                  View on the explorer
+                </Link>
+              )}
+            </div>
+          </h4>
+        </div>
+        <div className="mt-4">{children}</div>
+      </HoverCardContent>
+    </HoverCard>
   );
 }

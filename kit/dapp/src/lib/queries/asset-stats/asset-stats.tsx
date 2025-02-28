@@ -3,8 +3,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { safeParseWithLogging } from '@/lib/utils/zod';
 import { getUnixTime, startOfDay, subDays } from 'date-fns';
+import { unstable_cache } from 'next/cache';
 import { type Address, getAddress } from 'viem';
 import {
   AssetStatsFragment,
@@ -45,6 +46,35 @@ export interface AssetStatsProps {
 }
 
 /**
+ * Cached function to fetch raw asset stats data from The Graph
+ */
+const fetchAssetStatsData = unstable_cache(
+  async (address: Address, days = 1) => {
+    // Calculate timestamp for start date
+    const startDate = subDays(new Date(), days - 1);
+    const timestampGte = getUnixTime(startOfDay(startDate)).toString();
+
+    const result = await fetchAllTheGraphPages(async (first, skip) => {
+      const response = await theGraphClientStarterkits.request(AssetStats, {
+        asset: address,
+        timestamp_gte: timestampGte,
+        first,
+        skip,
+      });
+
+      return response.assetStats_collection || [];
+    });
+
+    return result;
+  },
+  ['asset', 'stats'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
+
+/**
  * Fetches and processes asset statistics data from The Graph
  *
  * @param params - Object containing the asset address and time range
@@ -53,81 +83,24 @@ export interface AssetStatsProps {
  * This function calculates the start date based on the days parameter,
  * fetches data from The Graph, validates it using the AssetStatsFragmentSchema,
  * and processes the totalBurned field to be a negated string value.
- * Returns an empty array if an error occurs during the query.
  */
-async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
-  try {
-    // Calculate timestamp for start date
-    const startDate = subDays(new Date(), days - 1);
-    const timestampGte = getUnixTime(startOfDay(startDate)).toString();
+export async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
+  const normalizedAddress = getAddress(address);
+  const rawData = await fetchAssetStatsData(normalizedAddress, days);
 
-    const result = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetStats, {
-        asset: address,
-        timestamp_gte: timestampGte,
-        first,
-        skip,
-      });
+  // Validate data using Zod schema and process
+  const validatedStats = rawData.map((item) => {
+    const validatedItem = safeParseWithLogging(
+      AssetStatsFragmentSchema,
+      item,
+      'asset stats'
+    );
 
-      // Validate data using Zod schema
-      const validatedStats = (result.assetStats_collection || []).map((item) =>
-        AssetStatsFragmentSchema.parse(item)
-      );
-
-      return validatedStats;
-    });
-
-    // Process the data
-    return result.map((item) => ({
-      ...item,
-      totalBurned: item.totalBurned.toString(),
-    }));
-  } catch (error) {
-    console.error(`Error fetching asset stats for ${address}:`, error);
-    return [];
-  }
-}
-
-/**
- * Creates a memoized query key for asset stats queries
- *
- * @param params - Object containing the asset address and time range
- */
-export const getQueryKey = ({ address, days }: AssetStatsProps) =>
-  ['asset', 'stats', getAddress(address), days] as const;
-
-/**
- * React Query hook for fetching asset statistics
- *
- * @param params - Object containing the asset address and time range
- *
- * @example
- * ```tsx
- * const { data: assetStats, isLoading } = useAssetStats({
- *   address: "0x123...",
- *   days: 7
- * });
- *
- * // Later in your component
- * {assetStats.map(stat => (
- *   <StatItem
- *     key={stat.timestamp.toString()}
- *     supply={stat.totalSupply}
- *     volume={stat.totalVolume}
- *   />
- * ))}
- * ```
- */
-export function useAssetStats({ address, days = 1 }: AssetStatsProps) {
-  const queryKey = getQueryKey({ address, days });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetStats({ address, days }),
+    return {
+      ...validatedItem,
+      totalBurned: validatedItem.totalBurned.toString(),
+    };
   });
 
-  return {
-    ...result,
-    queryKey,
-  };
+  return validatedStats;
 }

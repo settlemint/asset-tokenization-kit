@@ -9,12 +9,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getUserDetail } from '@/lib/queries/user/user-detail';
 import { ChevronDown } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
-import type { Address } from 'viem';
 import { ChangeRoleAction } from '../(table)/_components/actions/change-role-action';
 import { UpdateKycStatusAction } from '../(table)/_components/actions/update-kyc-status-action';
-import { getUser } from './(details)/_components/data';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -46,15 +45,15 @@ export default async function UserDetailLayout({
   params,
 }: LayoutProps) {
   const { id } = await params;
-  const user = await getUser(id);
+  const user = await getUserDetail({ id });
 
   return (
     <div>
       <PageHeader
         title={user?.name}
         subtitle={
-          <EvmAddress address={user.wallet as Address} prettyNames={false}>
-            <EvmAddressBalances address={user.wallet as Address} />
+          <EvmAddress address={user.wallet} prettyNames={false}>
+            <EvmAddressBalances address={user.wallet} />
           </EvmAddress>
         }
         button={

@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { Mint } from '@/lib/mutations/stablecoin/mint';
+import type { MintInput } from '@/lib/mutations/stablecoin/mint/mint-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -16,7 +16,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<Mint>();
+  const { control } = useFormContext<MintInput>();
   const t = useTranslations('admin.stablecoins.mint-form.summary');
   const values = useWatch({
     control: control,

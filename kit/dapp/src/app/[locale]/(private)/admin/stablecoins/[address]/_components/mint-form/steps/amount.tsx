@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { Mint } from '@/lib/mutations/stablecoin/mint';
+import type { MintInput } from '@/lib/mutations/stablecoin/mint/mint-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -10,7 +10,7 @@ interface AmountProps {
 }
 
 export function Amount({ collateralAvailable }: AmountProps) {
-  const { control } = useFormContext<Mint>();
+  const { control } = useFormContext<MintInput>();
   const t = useTranslations('admin.stablecoins.mint-form.amount');
 
   return (

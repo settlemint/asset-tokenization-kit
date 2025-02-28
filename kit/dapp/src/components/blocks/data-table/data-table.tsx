@@ -39,7 +39,7 @@ import {
 
 interface DataTableProps<TData> {
   /** The column definitions for the table. */
-  columns: Parameters<typeof useReactTable<TData>>[0]['columns'];
+  columnHook: () => Parameters<typeof useReactTable<TData>>[0]['columns'];
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;
@@ -76,7 +76,7 @@ declare module '@tanstack/react-table' {
  * @returns The rendered DataTable component.
  */
 export function DataTable<TData>({
-  columns,
+  columnHook,
   data,
   isLoading,
   icons,
@@ -91,12 +91,13 @@ export function DataTable<TData>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
+  const columns = columnHook();
 
   const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
     data: memoizedData,
-    columns: columns,
+    columns,
     enableRowSelection: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,

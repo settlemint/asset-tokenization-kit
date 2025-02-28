@@ -4,8 +4,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   EquityFragment,
@@ -48,12 +49,37 @@ const OffchainEquityList = hasuraGraphql(
 );
 
 /**
- * Options for fetching equity list
- *
+ * Cached function to fetch equity list data from both sources
  */
-export interface EquityListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
+const fetchEquityListData = unstable_cache(
+  async () => {
+    return Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientStarterkits.request(EquityList, {
+          first,
+          skip,
+        });
+
+        const equitys = result.equities || [];
+
+        return equitys;
+      }),
+
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainEquityList, {
+          limit: pageLimit,
+          offset,
+        });
+        return result.asset_aggregate.nodes || [];
+      }),
+    ]);
+  },
+  ['asset', 'equity'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
 
 /**
  * Fetches a list of equitys from both on-chain and off-chain sources
@@ -64,102 +90,37 @@ export interface EquityListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each equity.
  */
-export async function getEquityList({ limit }: EquityListOptions = {}) {
-  try {
-    const [theGraphEquities, dbAssets] = await Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(EquityList, {
-          first,
-          skip,
-        });
+export async function getEquityList() {
+  const [theGraphEquitys, dbAssets] = await fetchEquityListData();
 
-        const equities = result.equities || [];
+  // Parse and validate the data using Zod schemas
+  const validatedEquitys = theGraphEquitys.map((equity) =>
+    safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
+  );
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + equities.length >= limit) {
-          return equities.slice(0, limit - skip);
-        }
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainEquityFragmentSchema, asset, 'offchain equity')
+  );
 
-        return equities;
-      }, limit),
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainEquityList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }, limit),
-    ]);
+  const equitys = validatedEquitys.map((equity) => {
+    const dbAsset = assetsById.get(getAddress(equity.id));
 
-    // Parse and validate the data using Zod schemas
-    const validatedEquities = theGraphEquities.map((equity) =>
-      safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(
-        OffchainEquityFragmentSchema,
-        asset,
-        'offchain equity'
-      )
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const equities = validatedEquities.map((equity) => {
-      const dbAsset = assetsById.get(getAddress(equity.id));
-
-      return {
-        ...equity,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return equities;
-  } catch (error) {
-    console.error('Error fetching equity list:', error);
-    return [];
-  }
-}
-
-/**
- * Generates a consistent query key for equity list queries
- *
- * @param [options] - Options for the equity list query
- */
-export const getQueryKey = (options?: EquityListOptions) =>
-  ['asset', 'equity', options?.limit ?? 'all'] as const;
-
-/**
- * React Query hook for fetching equity list
- *
- * @param [options] - Options for fetching equity list
- *
- * @example
- * ```tsx
- * const { data: equities, isLoading } = useEquityList({ limit: 10 });
- * ```
- */
-export function useEquityList(options?: EquityListOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getEquityList(options),
+    return {
+      ...equity,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline equity config values
-    assetType: 'equity' as const,
-    urlSegment: 'equities',
-    theGraphTypename: 'Equity' as const,
-  };
+  return equitys.map((equity) => ({
+    ...equity,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(equity.totalSupply),
+  }));
 }

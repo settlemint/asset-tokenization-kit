@@ -1,14 +1,12 @@
-'use client';
-
 import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
 import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
 import { type NavItem, NavMain } from '@/components/layout/nav-main';
-import { useSidebarAssets } from '@/lib/queries/sidebar-assets/sidebar-assets';
-import { useTranslations } from 'next-intl';
+import { getSidebarAssets } from '@/lib/queries/sidebar-assets/sidebar-assets';
+import { getTranslations } from 'next-intl/server';
 
-export function AssetManagement() {
-  const t = useTranslations('admin.sidebar.asset-management');
-  const data = useSidebarAssets();
+export async function AssetManagement() {
+  const t = await getTranslations('admin.sidebar.asset-management');
+  const data = await getSidebarAssets();
 
   // Asset configuration defined inline
   const assetItems: NavItem[] = [

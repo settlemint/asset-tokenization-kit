@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { useAssetTypeFormatter } from '@/hooks/use-asset-type-formatter';
 import type { ReactNode } from 'react';
 
 export interface BarChartData {
@@ -24,7 +25,7 @@ export interface BarChartData {
 
 interface XAxisConfig {
   key: string;
-  tickFormatter?: (value: string) => string;
+  assetTypeFormatter?: boolean;
   tickMargin?: number;
   angle?: number;
 }
@@ -49,8 +50,9 @@ const defaultTickFormatter = (value: string) => {
   if (commaSplit !== value) {
     return commaSplit;
   }
-  // If no comma, truncate to first 3 chars
-  return value.slice(0, 3);
+
+  // Try lowercase
+  return value.toLowerCase();
 };
 const defaultTickMargin = 8;
 
@@ -66,9 +68,19 @@ export function BarChartComponent({
   const dataKeys = Object.keys(config);
   const {
     key,
-    tickFormatter = defaultTickFormatter,
+    assetTypeFormatter = false,
     tickMargin = defaultTickMargin,
   } = xAxis;
+
+  // Use the asset type formatter hook if requested
+  const formatAssetType = useAssetTypeFormatter();
+
+  const tickFormatter = (value: string) => {
+    if (assetTypeFormatter) {
+      return formatAssetType(value);
+    }
+    return defaultTickFormatter(value);
+  };
 
   return (
     <Card>

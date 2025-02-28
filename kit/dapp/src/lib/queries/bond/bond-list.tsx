@@ -4,8 +4,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
 import {
   BondFragment,
@@ -48,12 +49,37 @@ const OffchainBondList = hasuraGraphql(
 );
 
 /**
- * Options for fetching bond list
- *
+ * Cached function to fetch bond list data from both sources
  */
-export interface BondListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
+const fetchBondListData = unstable_cache(
+  async () => {
+    return Promise.all([
+      fetchAllTheGraphPages(async (first, skip) => {
+        const result = await theGraphClientStarterkits.request(BondList, {
+          first,
+          skip,
+        });
+
+        const bonds = result.bonds || [];
+
+        return bonds;
+      }),
+
+      fetchAllHasuraPages(async (pageLimit, offset) => {
+        const result = await hasuraClient.request(OffchainBondList, {
+          limit: pageLimit,
+          offset,
+        });
+        return result.asset_aggregate.nodes || [];
+      }),
+    ]);
+  },
+  ['asset', 'bond'],
+  {
+    revalidate: 60 * 60,
+    tags: ['asset'],
+  }
+);
 
 /**
  * Fetches a list of bonds from both on-chain and off-chain sources
@@ -64,98 +90,37 @@ export interface BondListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each bond.
  */
-export async function getBondList({ limit }: BondListOptions = {}) {
-  try {
-    const [theGraphBonds, dbAssets] = await Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(BondList, {
-          first,
-          skip,
-        });
+export async function getBondList() {
+  const [theGraphBonds, dbAssets] = await fetchBondListData();
 
-        const bonds = result.bonds || [];
+  // Parse and validate the data using Zod schemas
+  const validatedBonds = theGraphBonds.map((bond) =>
+    safeParseWithLogging(BondFragmentSchema, bond, 'bond')
+  );
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + bonds.length >= limit) {
-          return bonds.slice(0, limit - skip);
-        }
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
+  );
 
-        return bonds;
-      }, limit),
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainBondList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }, limit),
-    ]);
+  const bonds = validatedBonds.map((bond) => {
+    const dbAsset = assetsById.get(getAddress(bond.id));
 
-    // Parse and validate the data using Zod schemas
-    const validatedBonds = theGraphBonds.map((bond) =>
-      safeParseWithLogging(BondFragmentSchema, bond, 'bond')
-    );
-
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
-    );
-
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
-
-    const bonds = validatedBonds.map((bond) => {
-      const dbAsset = assetsById.get(getAddress(bond.id));
-
-      return {
-        ...bond,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return bonds;
-  } catch (error) {
-    console.error('Error fetching bond list:', error);
-    return [];
-  }
-}
-
-/**
- * Creates a memoized query key for bond list queries
- *
- * @param [options] - Options for the bond list query
- */
-export const getQueryKey = (options?: BondListOptions) =>
-  ['asset', 'bond', options?.limit ?? 'all'] as const;
-
-/**
- * React Query hook for fetching bond list
- *
- * @param [options] - Options for fetching bond list
- *
- * @example
- * ```tsx
- * const { data: bonds, isLoading } = useBondList({ limit: 10 });
- * ```
- */
-export function useBondList(options?: BondListOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getBondList(options),
+    return {
+      ...bond,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline bond config values
-    assetType: 'bond' as const,
-    urlSegment: 'bonds',
-    theGraphTypename: 'Bond' as const,
-  };
+  return bonds.map((bond) => ({
+    ...bond,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(bond.totalSupply),
+  }));
 }

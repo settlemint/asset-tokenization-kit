@@ -1,12 +1,21 @@
+import {
+  AccountFragment,
+  AccountFragmentSchema,
+} from '@/lib/queries/accounts/accounts-fragment';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
- * GraphQL query to fetch user details from Hasura
+ * GraphQL query to fetch a single user by ID from Hasura
  *
  * @remarks
- * Retrieves a single user by their primary key (ID)
+ * Returns user details like name, email, wallet address, and timestamps
  */
 const UserDetail = hasuraGraphql(
   `
@@ -20,97 +29,115 @@ const UserDetail = hasuraGraphql(
 );
 
 /**
+ * GraphQL query to fetch user activity from TheGraph
+ *
+ * @remarks
+ * Retrieves account with its last activity timestamp
+ */
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserActivity($id: ID!) {
+    account(id: $id) {
+      ...AccountFragment
+    }
+  }
+`,
+  [AccountFragment]
+);
+
+/**
  * Props interface for user detail components
  *
  */
 export interface UserDetailProps {
-  /** User ID */
+  /** UUID of the user */
   id: string;
 }
 
 /**
- * Fetches and processes user data from the database
- *
- * @param params - Object containing the user ID
- * @throws {Error} If the user is not found or if fetching/parsing fails
- *
- * @remarks
- * This function validates the response using the UserFragmentSchema
+ * Cached function to fetch raw user detail data
  */
-async function getUserDetail({ id }: UserDetailProps) {
-  try {
-    const result = await hasuraClient.request(UserDetail, {
+const fetchUserDetailData = unstable_cache(
+  async (id: string) => {
+    const userResult = await hasuraClient.request(UserDetail, {
       id,
     });
 
-    if (!result.user_by_pk) {
-      throw new Error(`User ${id} not found`);
+    if (!userResult.user_by_pk) {
+      throw new Error(`User not found with ID ${id}`);
     }
 
-    // Parse and validate the user data with Zod schema
-    const validatedUser = UserFragmentSchema.parse(result.user_by_pk);
+    // Validate user data
+    const validatedUser = safeParseWithLogging(
+      UserFragmentSchema,
+      userResult.user_by_pk,
+      'user detail'
+    );
 
-    return validatedUser;
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch user ${id}`);
+    // Fetch activity data if user has wallet address
+    if (validatedUser.wallet) {
+      try {
+        const activityResult = await theGraphClientStarterkits.request(
+          UserActivity,
+          {
+            id: validatedUser.wallet.toLowerCase(),
+          }
+        );
+
+        if (activityResult.account) {
+          // Validate account data
+          const validatedAccount = safeParseWithLogging(
+            AccountFragmentSchema,
+            activityResult.account,
+            'account detail'
+          );
+
+          // Combine validated user data with validated activity data
+          return {
+            ...validatedAccount,
+            ...validatedUser,
+            assetCount: validatedAccount.balancesCount ?? 0,
+            transactionCount: validatedAccount.activityEventsCount ?? 0,
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching user activity:', error);
+      }
+    }
+
+    return {
+      ...validatedUser,
+      assetCount: 0,
+      transactionCount: 0,
+    };
+  },
+  ['user', 'detail', 'activity'],
+  {
+    revalidate: 60 * 60,
+    tags: ['user'],
   }
+);
+
+/**
+ * Fetches a user by ID
+ *
+ * @param params - Object containing the user ID
+ * @throws Will throw an error if the user is not found
+ */
+export async function getUserDetail({ id }: UserDetailProps) {
+  const result = await fetchUserDetailData(id);
+
+  return result;
 }
 
 /**
- * Creates a memoized query key for user detail queries
+ * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
  */
-const getQueryKey = ({ id }: UserDetailProps) => ['user', id] as const;
-
-/**
- * React Query hook for fetching user details
- *
- * @param params - Object containing the user ID
- *
- * @example
- * ```tsx
- * const { data: user, isLoading } = useUserDetail({ id: "user-123" });
- * ```
- */
-export function useUserDetail({ id }: UserDetailProps) {
-  const queryKey = getQueryKey({ id });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getUserDetail({ id }),
-  });
-
-  return {
-    ...result,
-    queryKey,
-  };
-}
-
-/**
- * React Query hook for optionally fetching user details
- *
- * @param params - Object containing the user ID
- *
- * @remarks
- * Returns null instead of throwing if the user cannot be found
- *
- * @example
- * ```tsx
- * const userResult = useOptionalUserDetail({ id: "user-123" });
- * if (userResult) {
- *   // User exists, use userResult.data
- * } else {
- *   // User not found
- * }
- * ```
- */
-export function useOptionalUserDetail({ id }: UserDetailProps) {
+export async function getOptionalUserDetail({ id }: UserDetailProps) {
   try {
-    return useUserDetail({ id });
+    return await getUserDetail({ id });
   } catch {
     return null;
   }
