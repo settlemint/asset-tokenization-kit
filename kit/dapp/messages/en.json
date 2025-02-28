@@ -69,18 +69,6 @@
             "state-blocked": "Blocked",
             "state-active": "Active"
           }
-        },
-        "freeze-form": {
-          "trigger-label": "Freeze",
-          "title": "Restrict User Funds",
-          "description": "Temporarily restrict a user's access to their funds.",
-          "button-label": "Freeze Funds",
-          "amount": {
-            "title": "Enter Amount",
-            "description": "Input the amount you wish to freeze.",
-            "amount-label": "Amount",
-            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
-          }
         }
       },
       "events": {
@@ -745,9 +733,48 @@
         "events-page-description": "Track all events related to {name} bond."
       },
       "permissions": {
+        "permissions-page-title": "{name} Permissions",
+        "permissions-page-description": "Manage user roles and access rights for {name}.",
         "page-title": "Bond Permissions",
         "page-description": "Manage user roles and access rights for this bond.",
-        "table-title": "Permissions"
+        "table-title": "Permissions",
+        "wallet-header": "Wallet",
+        "roles-header": "Roles",
+        "last-activity-header": "Last Activity",
+        "actions-header": "Actions",
+        "edit-form": {
+          "trigger-label": "Edit Roles",
+          "title": "Modify User Permissions",
+          "description": "Update the permissions and access levels assigned to this user.",
+          "button-label": "Save Permissions",
+          "roles": {
+            "title": "Select User Roles",
+            "description": "Choose the roles to assign to this user. At least one role must be selected."
+          },
+          "summary": {
+            "title": "Review and confirm new roles",
+            "description": "Verify the details before proceeding. This action will change the roles for the user.",
+            "update-title": "Update Roles",
+            "operation-description": "Updating roles operation details",
+            "user-label": "User",
+            "current-roles-label": "Current roles",
+            "new-roles-label": "New roles"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Revoke All",
+          "title": "Remove All User Access",
+          "description": "Completely revoke this user's access and permissions.",
+          "button-label": "Revoke Access",
+          "summary": {
+            "title": "Review and confirm",
+            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+            "revoke-title": "Revoke All",
+            "operation-description": "Revoking all permissions operation details",
+            "user-label": "User",
+            "roles-to-revoke-label": "Roles to revoke"
+          }
+        }
       },
       "pause-form": {
         "pause": {
@@ -773,6 +800,60 @@
           "state-paused": "Paused",
           "state-active": "Active"
         }
+      },
+      "holders": {
+        "holders-page-title": "{name} Holders",
+        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+        "wallet-header": "Wallet",
+        "balance-header": "Balance",
+        "frozen-header": "Frozen",
+        "status-header": "Status",
+        "blocked-status": "Blocked",
+        "active-status": "Active",
+        "last-activity-header": "Last activity",
+        "actions-header": "Actions",
+        "block-form": {
+          "block-trigger-label": "Block",
+          "unblock-trigger-label": "Unblock",
+          "block-title": "Block User Transactions",
+          "unblock-title": "Restore User Transactions",
+          "block-description": "Prevent this user from performing any transactions or interactions.",
+          "unblock-description": "Restore this user's ability to transact and interact.",
+          "block-button-label": "Block User",
+          "unblock-button-label": "Unblock User",
+          "summary": {
+            "title": "Review and confirm block operation",
+            "description": "Verify the details of your block operation before proceeding.",
+            "block-title": "Block",
+            "unblock-title": "Unblock",
+            "operation-description": "Block operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-blocked": "Blocked",
+            "state-active": "Active"
+          }
+        },
+        "freeze-form": {
+          "trigger-label": "Freeze",
+          "title": "Restrict User Funds",
+          "description": "Temporarily restrict a user's access to their funds.",
+          "button-label": "Freeze Funds",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to freeze.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
+          },
+          "summary": {
+            "title": "Review and confirm freeze operation",
+            "description": "Verify the details of your freeze operation before proceeding.",
+            "freeze-title": "Freeze",
+            "operation-description": "Freezing operation details",
+            "asset-label": "Asset",
+            "amount-label": "Amount"
+          }
+        }
       }
     },
     "equities": {
@@ -785,7 +866,6 @@
           "description": "Configure the equity classification details",
           "equity-class-label": "Equity Class",
           "equity-category-label": "Equity Category",
-
           "class-common-equity": "Common Equity",
           "class-preferred-equity": "Preferred Equity",
           "class-market-capitalization-equity": "Market Capitalization Equity",
@@ -794,26 +874,21 @@
           "class-investment-style-equity": "Investment Style Equity",
           "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
           "class-special-classes-equity": "Special Classes of Equity",
-
           "category-voting-common-stock": "Voting Common Stock",
           "category-non-voting-common-stock": "Non-Voting Common Stock",
-
           "category-cumulative-preferred-stock": "Cumulative Preferred Stock",
           "category-non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
           "category-convertible-preferred-stock": "Convertible Preferred Stock",
           "category-redeemable-preferred-stock": "Redeemable Preferred Stock",
-
           "category-large-cap-equity": "Large-Cap Equity",
           "category-mid-cap-equity": "Mid-Cap Equity",
           "category-small-cap-equity": "Small-Cap Equity",
           "category-micro-cap-equity": "Micro-Cap Equity",
-
           "category-domestic-equity": "Domestic Equity",
           "category-international-equity": "International Equity",
           "category-global-equity": "Global Equity",
           "category-emerging-market-equity": "Emerging Market Equity",
           "category-frontier-market-equity": "Frontier Market Equity",
-
           "category-technology": "Technology",
           "category-financials": "Financials",
           "category-healthcare": "Healthcare",
@@ -825,18 +900,15 @@
           "category-utilities": "Utilities",
           "category-communication-services": "Communication Services",
           "category-real-estate": "Real Estate",
-
           "category-growth-equity": "Growth Equity",
           "category-value-equity": "Value Equity",
           "category-blend-equity": "Blend Equity",
           "category-income-equity": "Income Equity",
-
           "category-venture-capital": "Venture Capital",
           "category-growth-capital": "Growth Capital",
           "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
           "category-mezzanine-financing": "Mezzanine Financing",
           "category-distressed-equity": "Distressed Equity",
-
           "category-restricted-stock": "Restricted Stock",
           "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
           "category-tracking-stocks": "Tracking Stocks",
@@ -844,7 +916,190 @@
         }
       }
     },
-    "cryptocurrencies": {}
+    "cryptocurrencies": {
+      "create-form": {
+        "trigger-label": "Create Cryptocurrency",
+        "title": "Create Cryptocurrency",
+        "description": "Define and launch a new cryptocurrency asset.",
+        "button-label": "Create Cryptocurrency",
+        "basics": {
+          "title": "Basic Information",
+          "description": "Define essential details such as name, symbol, and visibility.",
+          "name-label": "Name",
+          "name-placeholder": "Bitcoin",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "BTC",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "isin-placeholder": "CRYPTO123456",
+          "private-token-label": "Private Token",
+          "private-token-description": "Other organisations won't see this asset"
+        },
+        "configuration": {
+          "title": "Configuration",
+          "description": "Specify advanced settings for your cryptocurrency.",
+          "initial-supply-label": "Initial Supply",
+          "initial-supply-description": "The amount of tokens to mint at creation"
+        },
+        "summary": {
+          "title": "Review and confirm",
+          "description": "Review and confirm the details of your new cryptocurrency before creation.",
+          "asset-basics-title": "Asset Basics",
+          "asset-basics-description": "Basic asset information and settings.",
+          "configuration-title": "Configuration",
+          "configuration-description": "Asset supply and additional settings.",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "private-label": "Private",
+          "yes": "Yes",
+          "no": "No",
+          "initial-supply-label": "Initial Supply"
+        }
+      },
+      "manage": {
+        "manage": "Manage"
+      },
+      "mint-form": {
+        "trigger-label": "Mint",
+        "title": "Mint",
+        "description": "Issue new tokens to increase the cryptocurrency's circulating supply.",
+        "button-label": "Mint Assets",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to mint.",
+          "amount-label": "Amount"
+        },
+        "summary": {
+          "title": "Review and confirm mint",
+          "description": "Verify the details of your mint before proceeding.",
+          "mint-title": "Mint",
+          "mint-description": "Minting operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Grant Role",
+        "title": "Grant Role",
+        "description": "Assign administrative permissions to a new user.",
+        "button-label": "Assign Roles",
+        "address": {
+          "title": "Select New Admin",
+          "description": "Search for a user by their name or email, or manually enter a wallet address.",
+          "address-label": "Admin Wallet Address",
+          "search-placeholder": "Search for a user",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Search for a user instead...",
+          "manual-toggle": "Enter address manually..."
+        },
+        "roles": {
+          "title": "Select Admin Roles",
+          "description": "Choose the roles to grant to the new admin. At least one role must be selected."
+        },
+        "summary": {
+          "title": "Review and confirm role grant",
+          "description": "Verify the details of your role grant before proceeding.",
+          "grant-title": "Grant Role",
+          "grant-description": "Granting role operation details",
+          "asset-label": "Asset",
+          "admin-address-label": "Admin Address",
+          "roles-label": "Roles"
+        }
+      },
+      "table": {
+        "page-title": "Cryptocurrencies",
+        "page-description": "Overview and administrative actions for your cryptocurrency assets.",
+        "address-header": "Address",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Total Supply",
+        "private-header": "Private",
+        "actions-header": "Actions",
+        "private-status": "Private",
+        "public-status": "Public"
+      },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "cryptocurrency-details-description": "Details for the cryptocurrency",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Explore comprehensive data and metrics for {name}."
+      },
+      "events": {
+        "events-page-title": "{name} Events",
+        "events-page-description": "Track historical activities and transactions involving {name}."
+      },
+      "holders": {
+        "holders-page-title": "{name} Holders",
+        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+        "wallet-header": "Wallet",
+        "balance-header": "Balance",
+        "frozen-header": "Frozen",
+        "status-header": "Status",
+        "blocked-status": "Blocked",
+        "active-status": "Active",
+        "last-activity-header": "Last activity"
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Holders",
+        "events": "Events",
+        "permissions": "Permissions"
+      },
+      "permissions": {
+        "permissions-page-title": "{name} Permissions",
+        "permissions-page-description": "Manage user roles and access rights for {name}.",
+        "page-title": "Cryptocurrency Permissions",
+        "page-description": "Permission management for {name} cryptocurrency",
+        "table-title": "Permissions",
+        "wallet-header": "Wallet",
+        "roles-header": "Roles",
+        "last-activity-header": "Last Activity",
+        "actions-header": "Actions",
+        "edit-form": {
+          "trigger-label": "Edit Roles",
+          "title": "Modify User Permissions",
+          "description": "Update the permissions and access levels assigned to this user.",
+          "button-label": "Save Permissions",
+          "roles": {
+            "title": "Select User Roles",
+            "description": "Choose the roles to assign to this user. At least one role must be selected."
+          },
+          "summary": {
+            "title": "Review and confirm new roles",
+            "description": "Verify the details before proceeding. This action will change the roles for the user.",
+            "update-title": "Update Roles",
+            "operation-description": "Updating roles operation details",
+            "user-label": "User",
+            "current-roles-label": "Current roles",
+            "new-roles-label": "New roles"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Revoke All",
+          "title": "Remove All User Access",
+          "description": "Completely revoke this user's access and permissions.",
+          "button-label": "Revoke Access",
+          "summary": {
+            "title": "Review and confirm",
+            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+            "revoke-title": "Revoke All",
+            "operation-description": "Revoking all permissions operation details",
+            "user-label": "User",
+            "roles-to-revoke-label": "Roles to revoke"
+          }
+        }
+      }
+    }
   },
   "auth": {
     "signin": {
