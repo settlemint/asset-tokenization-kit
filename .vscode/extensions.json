@@ -12,6 +12,6 @@
     "nomicfoundation.hardhat-solidity",
     "bruceyuhb.hsl-preview",
     "esbenp.prettier-vscode",
-    "lokalise.i18n-ally"
+    "inlang.vs-code-extension"
   ]
 }
