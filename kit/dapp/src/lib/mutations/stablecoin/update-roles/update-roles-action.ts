@@ -35,7 +35,7 @@ import { UpdateRolesSchema } from './update-roles-schema';
 export const updateRoles = action
   .schema(UpdateRolesSchema)
   .outputSchema(z.array(z.array(z.hash())))
-  .action(async ({ parsedInput, ctx }) => {
+  .action(async ({ parsedInput }) => {
     const { address, roles, userAddress, pincode } = parsedInput;
 
     // Separate roles to grant and revoke
