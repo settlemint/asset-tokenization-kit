@@ -4,6 +4,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
@@ -48,19 +49,11 @@ const OffchainBondList = hasuraGraphql(
 );
 
 /**
- * Options for fetching bond list
- *
- */
-export interface BondListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
- * Cached function to fetch raw bond data from both on-chain and off-chain sources
+ * Cached function to fetch bond list data from both sources
  */
 const fetchBondListData = unstable_cache(
-  async (limit?: number) => {
-    const [theGraphBonds, dbAssets] = await Promise.all([
+  async () => {
+    return Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(BondList, {
           first,
@@ -69,13 +62,8 @@ const fetchBondListData = unstable_cache(
 
         const bonds = result.bonds || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + bonds.length >= limit) {
-          return bonds.slice(0, limit - skip);
-        }
-
         return bonds;
-      }, limit),
+      }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
         const result = await hasuraClient.request(OffchainBondList, {
@@ -83,15 +71,13 @@ const fetchBondListData = unstable_cache(
           offset,
         });
         return result.asset_aggregate.nodes || [];
-      }, limit),
+      }),
     ]);
-
-    return { theGraphBonds, dbAssets };
   },
-  ['asset', 'bond', 'list'],
+  ['asset', 'bond'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'bond'],
+    tags: ['asset'],
   }
 );
 
@@ -104,8 +90,8 @@ const fetchBondListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each bond.
  */
-export async function getBondList({ limit }: BondListOptions = {}) {
-  const { theGraphBonds, dbAssets } = await fetchBondListData(limit);
+export async function getBondList() {
+  const [theGraphBonds, dbAssets] = await fetchBondListData();
 
   // Parse and validate the data using Zod schemas
   const validatedBonds = theGraphBonds.map((bond) =>
@@ -116,34 +102,25 @@ export async function getBondList({ limit }: BondListOptions = {}) {
     safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
   );
 
-  // Cross-reference on-chain and off-chain data to build complete bonds
-  const bondMap = new Map();
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-  // First add all on-chain bonds to the map
-  validatedBonds.forEach((bond) => {
-    bondMap.set(getAddress(bond.id), {
+  const bonds = validatedBonds.map((bond) => {
+    const dbAsset = assetsById.get(getAddress(bond.id));
+
+    return {
       ...bond,
-      hasOffchainData: false,
-    });
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  // Then match off-chain data with on-chain bonds where possible
-  validatedDbAssets.forEach((asset) => {
-    const normalizedAddress = getAddress(asset.id);
-    const existingBond = bondMap.get(normalizedAddress);
-
-    if (existingBond) {
-      // Update existing entry with off-chain data
-      bondMap.set(normalizedAddress, {
-        ...existingBond,
-        private: asset.private,
-        hasOffchainData: true,
-      });
-    } else {
-      // This is an off-chain only bond, but we don't have enough data
-      // to create a valid bond object. Skip it for now.
-    }
-  });
-
-  return Array.from(bondMap.values());
+  return bonds.map((bond) => ({
+    ...bond,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(bond.totalSupply),
+  }));
 }

@@ -3,6 +3,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
@@ -34,7 +35,7 @@ const OffchainFundDetail = hasuraGraphql(
   `
   query OffchainFundDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainFundFragment
+      ...OffchainFundFragment
     }
   }
 `,
@@ -50,23 +51,19 @@ export interface FundDetailProps {
 }
 
 /**
- * Cached function to fetch raw fund data from both on-chain and off-chain sources
+ * Cached function to fetch fund data from both sources
  */
-const fetchFundDetailData = unstable_cache(
-  async (address: Address) => {
-    const normalizedAddress = getAddress(address);
-
-    const [data, dbFund] = await Promise.all([
+const fetchFundData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
       theGraphClientStarterkits.request(FundDetail, { id: address }),
       hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
     ]);
-
-    return { data, dbFund };
   },
-  ['asset', 'detail', 'fund'],
+  ['asset', 'fund'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'fund'],
+    tags: ['asset'],
   }
 );
 
@@ -75,10 +72,12 @@ const fetchFundDetailData = unstable_cache(
  *
  * @param params - Object containing the fund address
  * @returns Combined fund data with additional calculated metrics
+ * @throws Error if fetching or parsing fails
  */
 export async function getFundDetail({ address }: FundDetailProps) {
   const normalizedAddress = getAddress(address);
-  const { data, dbFund } = await fetchFundDetailData(normalizedAddress);
+
+  const [data, dbFund] = await fetchFundData(address, normalizedAddress);
 
   const fund = safeParseWithLogging(FundFragmentSchema, data.fund, 'fund');
   const offchainFund = dbFund.asset[0]
@@ -105,5 +104,6 @@ export async function getFundDetail({ address }: FundDetailProps) {
       ...offchainFund,
     },
     concentration,
+    totalSupply: formatNumber(fund.totalSupply),
   };
 }

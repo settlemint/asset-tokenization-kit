@@ -3,6 +3,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
@@ -34,7 +35,7 @@ const OffchainEquityDetail = hasuraGraphql(
   `
   query OffchainEquityDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainEquityFragment
+      ...OffchainEquityFragment
     }
   }
 `,
@@ -50,23 +51,19 @@ export interface EquityDetailProps {
 }
 
 /**
- * Cached function to fetch raw equity data from both on-chain and off-chain sources
+ * Cached function to fetch equity data from both sources
  */
-const fetchEquityDetailData = unstable_cache(
-  async (address: Address) => {
-    const normalizedAddress = getAddress(address);
-
-    const [data, dbEquity] = await Promise.all([
+const fetchEquityData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
       theGraphClientStarterkits.request(EquityDetail, { id: address }),
       hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
     ]);
-
-    return { data, dbEquity };
   },
-  ['asset', 'detail', 'equity'],
+  ['asset', 'equity'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'equity'],
+    tags: ['asset'],
   }
 );
 
@@ -75,10 +72,12 @@ const fetchEquityDetailData = unstable_cache(
  *
  * @param params - Object containing the equity address
  * @returns Combined equity data with additional calculated metrics
+ * @throws Error if fetching or parsing fails
  */
 export async function getEquityDetail({ address }: EquityDetailProps) {
   const normalizedAddress = getAddress(address);
-  const { data, dbEquity } = await fetchEquityDetailData(normalizedAddress);
+
+  const [data, dbEquity] = await fetchEquityData(address, normalizedAddress);
 
   const equity = safeParseWithLogging(
     EquityFragmentSchema,
@@ -109,5 +108,6 @@ export async function getEquityDetail({ address }: EquityDetailProps) {
       ...offchainEquity,
     },
     concentration,
+    totalSupply: formatNumber(equity.totalSupply),
   };
 }

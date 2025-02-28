@@ -4,6 +4,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
@@ -34,9 +35,9 @@ const CryptoCurrencyList = theGraphGraphqlStarterkits(
 /**
  * GraphQL query to fetch off-chain cryptocurrency list from Hasura
  */
-const OffchainCryptoCurrencyList = hasuraGraphql(
+const OffchainCryptocurrencyList = hasuraGraphql(
   `
-  query OffchainCryptoCurrencyList($limit: Int, $offset: Int) {
+  query OffchainCryptocurrencyList($limit: Int, $offset: Int) {
     asset_aggregate(limit: $limit, offset: $offset) {
       nodes {
         ...OffchainCryptoCurrencyFragment
@@ -48,19 +49,11 @@ const OffchainCryptoCurrencyList = hasuraGraphql(
 );
 
 /**
- * Options for fetching cryptocurrency list
- *
- */
-export interface CryptoCurrencyListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
- * Cached function to fetch raw cryptocurrency data from both on-chain and off-chain sources
+ * Cached function to fetch cryptocurrency list data from both sources
  */
 const fetchCryptoCurrencyListData = unstable_cache(
-  async (limit?: number) => {
-    const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
+  async () => {
+    return Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(
           CryptoCurrencyList,
@@ -72,29 +65,22 @@ const fetchCryptoCurrencyListData = unstable_cache(
 
         const cryptoCurrencies = result.cryptoCurrencies || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + cryptoCurrencies.length >= limit) {
-          return cryptoCurrencies.slice(0, limit - skip);
-        }
-
         return cryptoCurrencies;
-      }, limit),
+      }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainCryptoCurrencyList, {
+        const result = await hasuraClient.request(OffchainCryptocurrencyList, {
           limit: pageLimit,
           offset,
         });
         return result.asset_aggregate.nodes || [];
-      }, limit),
+      }),
     ]);
-
-    return { theGraphCryptoCurrencies, dbAssets };
   },
-  ['asset', 'cryptocurrency', 'list'],
+  ['asset', 'cryptocurrency'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'cryptocurrency'],
+    tags: ['asset'],
   }
 );
 
@@ -107,11 +93,9 @@ const fetchCryptoCurrencyListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each cryptocurrency.
  */
-export async function getCryptoCurrencyList({
-  limit,
-}: CryptoCurrencyListOptions = {}) {
-  const { theGraphCryptoCurrencies, dbAssets } =
-    await fetchCryptoCurrencyListData(limit);
+export async function getCryptoCurrencyList() {
+  const [theGraphCryptoCurrencies, dbAssets] =
+    await fetchCryptoCurrencyListData();
 
   // Parse and validate the data using Zod schemas
   const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
@@ -131,34 +115,25 @@ export async function getCryptoCurrencyList({
     )
   );
 
-  // Cross-reference on-chain and off-chain data to build complete cryptocurrencies
-  const cryptoMap = new Map();
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-  // First add all on-chain cryptocurrencies to the map
-  validatedCryptoCurrencies.forEach((crypto) => {
-    cryptoMap.set(getAddress(crypto.id), {
-      ...crypto,
-      hasOffchainData: false,
-    });
+  const cryptoCurrencies = validatedCryptoCurrencies.map((cryptocurrency) => {
+    const dbAsset = assetsById.get(getAddress(cryptocurrency.id));
+
+    return {
+      ...cryptocurrency,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  // Then match off-chain data with on-chain cryptocurrencies where possible
-  validatedDbAssets.forEach((asset) => {
-    const normalizedAddress = getAddress(asset.id);
-    const existingCrypto = cryptoMap.get(normalizedAddress);
-
-    if (existingCrypto) {
-      // Update existing entry with off-chain data
-      cryptoMap.set(normalizedAddress, {
-        ...existingCrypto,
-        private: asset.private,
-        hasOffchainData: true,
-      });
-    } else {
-      // This is an off-chain only cryptocurrency, but we don't have enough data
-      // to create a valid cryptocurrency object. Skip it for now.
-    }
-  });
-
-  return Array.from(cryptoMap.values());
+  return cryptoCurrencies.map((cryptocurrency) => ({
+    ...cryptocurrency,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(cryptocurrency.totalSupply),
+  }));
 }

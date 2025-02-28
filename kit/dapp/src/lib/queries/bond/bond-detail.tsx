@@ -3,6 +3,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress, type Address } from 'viem';
@@ -34,7 +35,7 @@ const OffchainBondDetail = hasuraGraphql(
   `
   query OffchainBondDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainBondFragment
+      ...OffchainBondFragment
     }
   }
 `,
@@ -50,23 +51,19 @@ export interface BondDetailProps {
 }
 
 /**
- * Cached function to fetch raw bond data from both on-chain and off-chain sources
+ * Cached function to fetch bond data from both sources
  */
-const fetchBondDetailData = unstable_cache(
-  async (address: Address) => {
-    const normalizedAddress = getAddress(address);
-
-    const [data, dbBond] = await Promise.all([
+const fetchBondData = unstable_cache(
+  async (address: Address, normalizedAddress: Address) => {
+    return Promise.all([
       theGraphClientStarterkits.request(BondDetail, { id: address }),
       hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
     ]);
-
-    return { data, dbBond };
   },
-  ['asset', 'detail', 'bond'],
+  ['asset', 'bond'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'bond'],
+    tags: ['asset'],
   }
 );
 
@@ -75,10 +72,12 @@ const fetchBondDetailData = unstable_cache(
  *
  * @param params - Object containing the bond address
  * @returns Combined bond data with additional calculated metrics
+ * @throws Error if fetching or parsing fails
  */
 export async function getBondDetail({ address }: BondDetailProps) {
   const normalizedAddress = getAddress(address);
-  const { data, dbBond } = await fetchBondDetailData(normalizedAddress);
+
+  const [data, dbBond] = await fetchBondData(address, normalizedAddress);
 
   const bond = safeParseWithLogging(BondFragmentSchema, data.bond, 'bond');
   const offchainBond = dbBond.asset[0]
@@ -105,5 +104,6 @@ export async function getBondDetail({ address }: BondDetailProps) {
       ...offchainBond,
     },
     concentration,
+    totalSupply: formatNumber(bond.totalSupply),
   };
 }

@@ -4,6 +4,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { getAddress } from 'viem';
@@ -48,34 +49,21 @@ const OffchainEquityList = hasuraGraphql(
 );
 
 /**
- * Options for fetching equity list
- *
- */
-export interface EquityListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
- * Cached function to fetch raw equity data from both on-chain and off-chain sources
+ * Cached function to fetch equity list data from both sources
  */
 const fetchEquityListData = unstable_cache(
-  async (limit?: number) => {
-    const [theGraphEquities, dbAssets] = await Promise.all([
+  async () => {
+    return Promise.all([
       fetchAllTheGraphPages(async (first, skip) => {
         const result = await theGraphClientStarterkits.request(EquityList, {
           first,
           skip,
         });
 
-        const equities = result.equities || [];
+        const equitys = result.equities || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + equities.length >= limit) {
-          return equities.slice(0, limit - skip);
-        }
-
-        return equities;
-      }, limit),
+        return equitys;
+      }),
 
       fetchAllHasuraPages(async (pageLimit, offset) => {
         const result = await hasuraClient.request(OffchainEquityList, {
@@ -83,20 +71,18 @@ const fetchEquityListData = unstable_cache(
           offset,
         });
         return result.asset_aggregate.nodes || [];
-      }, limit),
+      }),
     ]);
-
-    return { theGraphEquities, dbAssets };
   },
-  ['asset', 'equity', 'list'],
+  ['asset', 'equity'],
   {
     revalidate: 60 * 60,
-    tags: ['asset', 'equity'],
+    tags: ['asset'],
   }
 );
 
 /**
- * Fetches a list of equities from both on-chain and off-chain sources
+ * Fetches a list of equitys from both on-chain and off-chain sources
  *
  * @param options - Options for fetching equity list
  *
@@ -104,11 +90,11 @@ const fetchEquityListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each equity.
  */
-export async function getEquityList({ limit }: EquityListOptions = {}) {
-  const { theGraphEquities, dbAssets } = await fetchEquityListData(limit);
+export async function getEquityList() {
+  const [theGraphEquitys, dbAssets] = await fetchEquityListData();
 
   // Parse and validate the data using Zod schemas
-  const validatedEquities = theGraphEquities.map((equity) =>
+  const validatedEquitys = theGraphEquitys.map((equity) =>
     safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
   );
 
@@ -116,34 +102,25 @@ export async function getEquityList({ limit }: EquityListOptions = {}) {
     safeParseWithLogging(OffchainEquityFragmentSchema, asset, 'offchain equity')
   );
 
-  // Cross-reference on-chain and off-chain data to build complete equities
-  const equityMap = new Map();
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-  // First add all on-chain equities to the map
-  validatedEquities.forEach((equity) => {
-    equityMap.set(getAddress(equity.id), {
+  const equitys = validatedEquitys.map((equity) => {
+    const dbAsset = assetsById.get(getAddress(equity.id));
+
+    return {
       ...equity,
-      hasOffchainData: false,
-    });
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  // Then match off-chain data with on-chain equities where possible
-  validatedDbAssets.forEach((asset) => {
-    const normalizedAddress = getAddress(asset.id);
-    const existingEquity = equityMap.get(normalizedAddress);
-
-    if (existingEquity) {
-      // Update existing entry with off-chain data
-      equityMap.set(normalizedAddress, {
-        ...existingEquity,
-        private: asset.private,
-        hasOffchainData: true,
-      });
-    } else {
-      // This is an off-chain only equity, but we don't have enough data
-      // to create a valid equity object. Skip it for now.
-    }
-  });
-
-  return Array.from(equityMap.values());
+  return equitys.map((equity) => ({
+    ...equity,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(equity.totalSupply),
+  }));
 }
