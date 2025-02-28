@@ -82,8 +82,8 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.3.0",
     "@better-auth/cli": "1.1.21",
+    "@eslint/eslintrc": "3.3.0",
     "@eslint/js": "9.21.0",
     "@types/node": "22.13.5",
     "@types/pg": "8.11.11",
@@ -94,6 +94,7 @@
     "drizzle-kit": "0.30.5",
     "eslint": "9.21.0",
     "eslint-config-next": "15.2.0",
+    "languine": "3.0.6",
     "postcss": "8.5.3",
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3"
