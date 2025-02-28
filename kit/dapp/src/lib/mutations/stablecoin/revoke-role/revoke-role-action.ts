@@ -38,9 +38,8 @@ export const revokeRole = action
         .filter(([, enabled]) => enabled)
         .map(([role]) => role as Role);
 
-      const transactions: string[] = [];
-
-      for (const role of selectedRoles) {
+      // Create an array of promises for each role revocation request
+      const revokePromises = selectedRoles.map(async (role) => {
         const response = await portalClient.request(RevokeRole, {
           address: address,
           from: user.wallet,
@@ -51,10 +50,14 @@ export const revokeRole = action
           challengeResponse: await handleChallenge(user.wallet, pincode),
         });
 
-        if (response.StableCoinRevokeRole?.transactionHash) {
-          transactions.push(response.StableCoinRevokeRole?.transactionHash);
-        }
-      }
+        return response.StableCoinRevokeRole?.transactionHash;
+      });
+
+      // Execute all requests in parallel
+      const results = await Promise.all(revokePromises);
+
+      // Filter out any undefined values and return transaction hashes
+      const transactions = results.filter(Boolean) as string[];
 
       return z.hashes().parse(transactions);
     }

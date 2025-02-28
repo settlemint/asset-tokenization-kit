@@ -19,12 +19,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { useUserSearch } from '@/lib/queries/user/use-user-search';
+import { getUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { CommandEmpty, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FieldValues } from 'react-hook-form';
 import type { Address } from 'viem';
 import { EvmAddress } from '../../evm-address/evm-address';
@@ -35,6 +35,13 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     /** The default selected value */
     defaultValue?: string;
   };
+
+// Define a type for user objects based on the expected structure
+interface User {
+  wallet: Address;
+  name?: string;
+  email?: string;
+}
 
 export function FormUsers<T extends FieldValues>({
   label,
@@ -121,18 +128,51 @@ function FormUsersList({
 }) {
   const search = (useCommandState((state) => state.search) || '') as string;
   const debounced = useDebounce<string>(search, 250);
-  const users = useUserSearch({
-    searchTerm: debounced,
-  });
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations('components.form.users');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchUsers() {
+      if (!debounced) {
+        setUsers([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const results = await getUserSearch({ searchTerm: debounced });
+        if (isMounted) {
+          setUsers(results as User[]);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        if (isMounted) {
+          setUsers([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void fetchUsers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [debounced]);
 
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {t('no-user-found')}
+        {isLoading ? t('loading') : t('no-user-found')}
       </CommandEmpty>
       <CommandGroup>
-        {users?.map((user) => (
+        {users.map((user) => (
           <CommandItem
             key={user.wallet}
             value={user.wallet}

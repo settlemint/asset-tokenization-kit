@@ -38,9 +38,8 @@ export const grantRole = action
         .filter(([, enabled]) => enabled)
         .map(([role]) => role as Role);
 
-      const transactions: string[] = [];
-
-      for (const role of selectedRoles) {
+      // Create an array of promises for each role granting request
+      const grantPromises = selectedRoles.map(async (role) => {
         const response = await portalClient.request(GrantRole, {
           address: address,
           from: user.wallet,
@@ -51,10 +50,14 @@ export const grantRole = action
           challengeResponse: await handleChallenge(user.wallet, pincode),
         });
 
-        if (response.StableCoinGrantRole?.transactionHash) {
-          transactions.push(response.StableCoinGrantRole?.transactionHash);
-        }
-      }
+        return response.StableCoinGrantRole?.transactionHash;
+      });
+
+      // Execute all requests in parallel
+      const results = await Promise.all(grantPromises);
+
+      // Filter out any undefined values and return transaction hashes
+      const transactions = results.filter(Boolean) as string[];
 
       return z.hashes().parse(transactions);
     }

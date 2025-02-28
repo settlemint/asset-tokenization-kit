@@ -3,8 +3,8 @@
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
-import { revokeAllRoles } from '@/lib/mutations/stablecoin/revoke-all-roles/revoke-all-roles-action';
-import { RevokeAllRolesSchema } from '@/lib/mutations/stablecoin/revoke-all-roles/revoke-all-roles-schema';
+import { revokeRole } from '@/lib/mutations/stablecoin/revoke-role/revoke-role-action';
+import { RevokeRoleSchema } from '@/lib/mutations/stablecoin/revoke-role/revoke-role-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -34,8 +34,8 @@ export function RevokeAllPermissionsForm({
       description={t('description')}
     >
       <Form
-        action={revokeAllRoles}
-        resolver={zodResolver(RevokeAllRolesSchema)}
+        action={revokeRole}
+        resolver={zodResolver(RevokeRoleSchema)}
         buttonLabels={{
           label: t('button-label'),
         }}

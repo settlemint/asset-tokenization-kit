@@ -62,10 +62,15 @@ export function usePermissionsColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions>
-            <EditPermissionsForm address={address} account={row.original.id} />
+            <EditPermissionsForm
+              address={address}
+              account={row.original.id}
+              currentRoles={row.original.roles}
+            />
             <RevokeAllPermissionsForm
               address={address}
               account={row.original.id}
+              currentRoles={row.original.roles}
             />
           </DataTableRowActions>
         );
