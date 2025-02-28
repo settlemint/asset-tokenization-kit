@@ -14,7 +14,7 @@
         "ownership-concentration-info": "Prozentsatz, der von den Top-5-Inhabern gehalten wird",
         "stablecoin-details-description": "Details zum Stablecoin",
         "details-page-title": "{name} Details",
-        "details-page-description": "Detaillierte Informationen über {name} Stablecoin"
+        "details-page-description": "Umfassende Daten und Kennzahlen für {name} anzeigen."
       },
       "collateral": {
         "proven-collateral": "Nachgewiesene Sicherheiten",
@@ -39,7 +39,7 @@
       },
       "holders": {
         "holders-page-title": "{name} Inhaber",
-        "holders-page-description": "Liste der Inhaber für {name} Stablecoin",
+        "holders-page-description": "Wallets anzeigen, die {name} halten, einschließlich Guthaben und Status.",
         "page-title": "{name} Inhaber",
         "page-description": "Liste der Inhaber für {name} Stablecoin",
         "wallet-header": "Wallet",
@@ -53,12 +53,12 @@
         "block-form": {
           "block-trigger-label": "Blockieren",
           "unblock-trigger-label": "Freigeben",
-          "block-title": "Benutzer blockieren",
-          "unblock-title": "Benutzer freigeben",
-          "block-description": "Blockieren Sie diesen Benutzer, damit er nicht mit dem Stablecoin interagieren kann",
-          "unblock-description": "Geben Sie diesen Benutzer frei und erlauben Sie Interaktionen mit dem Stablecoin",
-          "block-button-label": "Blockieren",
-          "unblock-button-label": "Freigeben",
+          "block-title": "Benutzertransaktionen blockieren",
+          "unblock-title": "Benutzertransaktionen wiederherstellen",
+          "block-description": "Verhindern Sie, dass dieser Benutzer Transaktionen oder Interaktionen durchführt.",
+          "unblock-description": "Stellen Sie die Fähigkeit dieses Benutzers wieder her, Transaktionen durchzuführen und zu interagieren.",
+          "block-button-label": "Benutzer blockieren",
+          "unblock-button-label": "Benutzer freigeben",
           "summary": {
             "title": "Überprüfen und bestätigen Sie die Blockierungsoperation",
             "description": "Überprüfen Sie die Details Ihrer Blockierungsoperation, bevor Sie fortfahren.",
@@ -74,9 +74,9 @@
         },
         "freeze-form": {
           "trigger-label": "Einfrieren",
-          "title": "Guthaben einfrieren",
-          "description": "Guthaben für diesen Benutzer einfrieren",
-          "button-label": "Einfrieren",
+          "title": "Benutzerguthaben einschränken",
+          "description": "Schränken Sie vorübergehend den Zugriff eines Benutzers auf seine Guthaben ein.",
+          "button-label": "Guthaben einfrieren",
           "amount": {
             "title": "Betrag eingeben",
             "description": "Geben Sie den Betrag ein, den Sie einfrieren möchten.",
@@ -95,11 +95,11 @@
       },
       "events": {
         "events-page-title": "{name} Ereignisse",
-        "events-page-description": "Ereignisverlauf für {name} Stablecoin"
+        "events-page-description": "Historische Aktivitäten und Transaktionen für {name} verfolgen."
       },
       "permissions": {
         "permissions-page-title": "{name} Berechtigungen",
-        "permissions-page-description": "Berechtigungsverwaltung für {name} Stablecoin",
+        "permissions-page-description": "Benutzerrollen und Zugriffsrechte für {name} verwalten.",
         "page-title": "{name} Berechtigungen",
         "page-description": "Berechtigungsverwaltung für {name} Stablecoin",
         "table-title": "Berechtigungen",
@@ -109,9 +109,9 @@
         "actions-header": "Aktionen",
         "edit-form": {
           "trigger-label": "Rollen bearbeiten",
-          "title": "Benutzerrollen bearbeiten",
-          "description": "Ändern Sie die Rollen, die diesem Benutzer zugewiesen sind",
-          "button-label": "Rollen aktualisieren",
+          "title": "Benutzerberechtigungen ändern",
+          "description": "Aktualisieren Sie die Berechtigungen und Zugriffsebenen dieses Benutzers.",
+          "button-label": "Berechtigungen speichern",
           "roles": {
             "title": "Benutzerrollen auswählen",
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
@@ -128,9 +128,9 @@
         },
         "revoke-all-form": {
           "trigger-label": "Alle widerrufen",
-          "title": "Alle Berechtigungen widerrufen",
-          "description": "Entfernen Sie alle Berechtigungen für diesen Benutzer",
-          "button-label": "Alle widerrufen",
+          "title": "Gesamten Benutzerzugriff entfernen",
+          "description": "Widerrufen Sie vollständig den Zugriff und die Berechtigungen dieses Benutzers.",
+          "button-label": "Zugriff widerrufen",
           "summary": {
             "title": "Überprüfen und bestätigen",
             "description": "Überprüfen Sie die Details, bevor Sie fortfahren. Diese Aktion wird alle Berechtigungen für den Benutzer widerrufen.",
@@ -144,15 +144,15 @@
       "pause-form": {
         "pause": {
           "trigger-label": "Anhalten",
-          "title": "Anhalten",
-          "description": "Einen Stablecoin anhalten",
-          "button-label": "Anhalten"
+          "title": "Stablecoin-Transaktionen pausieren",
+          "description": "Stoppen Sie vorübergehend alle Transaktionen und Interaktionen für diesen Stablecoin.",
+          "button-label": "Transaktionen pausieren"
         },
         "unpause": {
           "trigger-label": "Fortsetzen",
-          "title": "Fortsetzen",
-          "description": "Einen Stablecoin fortsetzen",
-          "button-label": "Fortsetzen"
+          "title": "Stablecoin-Transaktionen fortsetzen",
+          "description": "Setzen Sie Transaktionen und Interaktionen für diesen Stablecoin fort.",
+          "button-label": "Transaktionen fortsetzen"
         },
         "summary": {
           "title": "Anhaltevorgang überprüfen und bestätigen",
@@ -168,9 +168,9 @@
       },
       "update-collateral-form": {
         "trigger-label": "Sicherheiten aktualisieren",
-        "title": "Sicherheiten aktualisieren",
-        "description": "Aktualisieren Sie die Sicherheiten für einen Stablecoin",
-        "button-label": "Sicherheiten aktualisieren",
+        "title": "Sicherheitenbetrag anpassen",
+        "description": "Passen Sie die Sicherheiten an, die den Stablecoin unterstützen, um aktuellen Anforderungen zu entsprechen.",
+        "button-label": "Sicherheitenbetrag aktualisieren",
         "amount": {
           "title": "Betrag eingeben",
           "description": "Geben Sie den Betrag ein, auf den Sie die Sicherheiten aktualisieren möchten. Stellen Sie sicher, dass der Betrag größer oder gleich dem aktuellen Angebot ist.",
@@ -188,8 +188,8 @@
       "mint-form": {
         "trigger-label": "Prägen",
         "title": "Prägen",
-        "description": "Einen Stablecoin prägen",
-        "button-label": "Prägen",
+        "description": "Neue Assets ausgeben, um das zirkulierende Angebot des Stablecoins zu erhöhen.",
+        "button-label": "Assets prägen",
         "amount": {
           "title": "Betrag eingeben",
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
@@ -208,8 +208,8 @@
       "burn-form": {
         "trigger-label": "Verbrennen",
         "title": "Verbrennen",
-        "description": "Einen Stablecoin verbrennen",
-        "button-label": "Verbrennen",
+        "description": "Tokens dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+        "button-label": "Assets verbrennen",
         "amount": {
           "title": "Betrag eingeben",
           "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
