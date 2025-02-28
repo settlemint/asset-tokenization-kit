@@ -48,7 +48,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@settlemint/sdk-cli": "1.1.10",
+    "@settlemint/sdk-cli": "1.1.11",
     "turbo": "2.4.4",
     "typescript": "5.7.3",
     "prettier": "3.5.2"
