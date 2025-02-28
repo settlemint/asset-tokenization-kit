@@ -88,7 +88,7 @@ export const ApprovalEventFragmentSchema = AssetEventFragmentSchema.extend({
   spender: z.object({
     id: z.address(),
   }),
-  value: z.bigDecimal(),
+  value: z.string(),
 });
 
 /**
@@ -140,11 +140,11 @@ export const BondRedeemedEventFragmentSchema = AssetEventFragmentSchema.extend({
   sender: z.object({
     id: z.address(),
   }),
-  bondAmount: z.bigDecimal(),
+  bondAmount: z.string(),
   holder: z.object({
     id: z.address(),
   }),
-  underlyingAmount: z.bigDecimal(),
+  underlyingAmount: z.string(),
 });
 
 /**
@@ -175,7 +175,7 @@ export const BurnEventFragmentSchema = AssetEventFragmentSchema.extend({
   from: z.object({
     id: z.address(),
   }),
-  value: z.bigDecimal(),
+  value: z.string(),
 });
 
 /**
@@ -202,8 +202,8 @@ export const CollateralUpdatedEventFragmentSchema =
     sender: z.object({
       id: z.address(),
     }),
-    newAmount: z.bigDecimal(),
-    oldAmount: z.bigDecimal(),
+    newAmount: z.string(),
+    oldAmount: z.string(),
   });
 
 /**
@@ -229,7 +229,7 @@ export const ManagementFeeCollectedEventFragmentSchema =
     sender: z.object({
       id: z.address(),
     }),
-    amount: z.bigDecimal(),
+    amount: z.string(),
   });
 
 /**
@@ -260,7 +260,7 @@ export const MintEventFragmentSchema = AssetEventFragmentSchema.extend({
   to: z.object({
     id: z.address(),
   }),
-  value: z.bigDecimal(),
+  value: z.string(),
 });
 
 /**
@@ -309,7 +309,7 @@ export const PerformanceFeeCollectedEventFragmentSchema =
     sender: z.object({
       id: z.address(),
     }),
-    amount: z.bigDecimal(),
+    amount: z.string(),
   });
 
 /**
@@ -435,7 +435,7 @@ export const TokenWithdrawnEventFragmentSchema =
     sender: z.object({
       id: z.address(),
     }),
-    amount: z.bigDecimal(),
+    amount: z.string(),
     to: z.object({
       id: z.address(),
     }),
@@ -471,7 +471,7 @@ export const TokensFrozenEventFragmentSchema = AssetEventFragmentSchema.extend({
   sender: z.object({
     id: z.address(),
   }),
-  amount: z.bigDecimal(),
+  amount: z.string(),
   user: z.object({
     id: z.address(),
   }),
@@ -511,7 +511,7 @@ export const TransferEventFragmentSchema = AssetEventFragmentSchema.extend({
   from: z.object({
     id: z.address(),
   }),
-  value: z.bigDecimal(),
+  value: z.string(),
 });
 
 /**

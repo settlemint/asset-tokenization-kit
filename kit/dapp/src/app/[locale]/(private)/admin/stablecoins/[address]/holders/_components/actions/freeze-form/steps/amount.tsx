@@ -28,7 +28,7 @@ export function Amount({ balance, frozen, symbol }: AmountProps) {
           max={balance}
           description={`Available balance: ${formatNumber(balance, {
             token: symbol,
-          })} Current frozen: ${formatNumber(frozen, {
+          })} Currently frozen: ${formatNumber(frozen, {
             token: symbol,
           })}`}
         />

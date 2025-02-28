@@ -2,7 +2,6 @@ import { QueryClientProvider } from '@/components/blocks/query-client/query-clie
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { TransitionProvider } from '@/components/layout/transition-provider';
 import { routing } from '@/i18n/routing';
-import { themeConfig } from '@/lib/config/theme';
 import { cn } from '@/lib/utils';
 import '@fontsource/figtree/300.css';
 import '@fontsource/figtree/400.css';
@@ -46,21 +45,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={cn('min-h-screen font-sans antialiased')}>
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            enableColorScheme
-            enableSystem
-            value={{
-              light:
-                themeConfig.variant === 'settlemint'
-                  ? 'settlemint-light'
-                  : 'light',
-              dark:
-                themeConfig.variant === 'settlemint'
-                  ? 'settlemint-dark'
-                  : 'dark',
-            }}
-          >
+          <ThemeProvider attribute="class" enableColorScheme enableSystem>
             <QueryClientProvider>
               <TransitionProvider>{children}</TransitionProvider>
             </QueryClientProvider>

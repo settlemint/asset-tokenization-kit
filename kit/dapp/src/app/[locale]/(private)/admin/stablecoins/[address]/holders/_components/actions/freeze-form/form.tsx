@@ -2,9 +2,10 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { useFreeze } from '@/lib/mutations/stablecoin/freeze';
-import { useAssetBalanceDetail } from '@/lib/queries/asset-balance/asset-balance-detail';
+import { freeze } from '@/lib/mutations/stablecoin/freeze/freeze-action';
+import { FreezeSchema } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Amount } from './steps/amount';
@@ -12,43 +13,48 @@ import { Summary } from './steps/summary';
 
 interface FreezeFormProps {
   address: Address;
-  account: Address;
+  userAddress: Address;
+  balance: string | number;
+  frozen: string | number;
+  symbol: string;
 }
 
-export function FreezeForm({ address, account }: FreezeFormProps) {
-  const freezeMutation = useFreeze();
-  const balance = useAssetBalanceDetail({ address, account });
-  const user = useUser();
+export function FreezeForm({
+  address,
+  userAddress,
+  balance,
+  frozen,
+  symbol,
+}: FreezeFormProps) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations('admin.stablecoins.holders.freeze-form');
 
-  if (!user) {
-    return null;
-  }
+  // Convert to numbers for component use
+  const balanceNum =
+    typeof balance === 'string' ? parseFloat(balance) : balance;
+  const frozenNum = typeof frozen === 'string' ? parseFloat(frozen) : frozen;
 
   return (
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Pause"
-      title="Pause"
-      description="Pause a stablecoin"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
-        mutation={freezeMutation}
+        action={freeze}
+        resolver={zodResolver(FreezeSchema)}
         buttonLabels={{
-          label: 'Freeze',
+          label: t('button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
+          userAddress,
           amount: 0,
         }}
       >
-        <Amount
-          balance={Number(balance.value) ?? 0}
-          frozen={Number(balance.frozen) ?? 0}
-          symbol={balance.asset?.symbol ?? ''}
-        />
+        <Amount balance={balanceNum} frozen={frozenNum} symbol={symbol} />
         <Summary address={address} />
       </Form>
     </FormSheet>

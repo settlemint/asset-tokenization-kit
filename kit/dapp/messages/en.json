@@ -39,7 +39,17 @@
       },
       "holders": {
         "holders-page-title": "{name} Holders",
-        "holders-page-description": "List of holders for {name} stablecoin"
+        "holders-page-description": "List of holders for {name} stablecoin",
+        "page-title": "{name} Holders",
+        "page-description": "List of holders for {name} stablecoin",
+        "wallet-header": "Wallet",
+        "balance-header": "Balance",
+        "frozen-header": "Frozen",
+        "status-header": "Status",
+        "blocked-status": "Blocked",
+        "active-status": "Active",
+        "last-activity-header": "Last activity",
+        "actions-header": "Actions"
       },
       "events": {
         "events-page-title": "{name} Events",
@@ -47,7 +57,14 @@
       },
       "permissions": {
         "permissions-page-title": "{name} Permissions",
-        "permissions-page-description": "Permission management for {name} stablecoin"
+        "permissions-page-description": "Permission management for {name} stablecoin",
+        "page-title": "{name} Permissions",
+        "page-description": "Permission management for {name} stablecoin",
+        "table-title": "Permissions",
+        "wallet-header": "Wallet",
+        "roles-header": "Roles",
+        "last-activity-header": "Last Activity",
+        "actions-header": "Actions"
       },
       "pause-form": {
         "pause": {

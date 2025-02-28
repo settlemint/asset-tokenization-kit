@@ -2,10 +2,10 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { useBlockUser } from '@/lib/mutations/stablecoin/block-user';
-import { useUnblockUser } from '@/lib/mutations/stablecoin/unblock-user';
-import { useAssetBalanceDetail } from '@/lib/queries/asset-balance/asset-balance-detail';
+import { blockUser } from '@/lib/mutations/stablecoin/block-user/block-user-action';
+import { BlockUserSchema } from '@/lib/mutations/stablecoin/block-user/block-user-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Summary } from './steps/summary';
@@ -13,66 +13,39 @@ import { Summary } from './steps/summary';
 interface BlockFormProps {
   address: Address;
   account: Address;
+  isBlocked: boolean;
 }
 
-export function BlockForm({ address, account }: BlockFormProps) {
-  const unblockMutation = useUnblockUser();
-  const blockMutation = useBlockUser();
-  const balance = useAssetBalanceDetail({ address, account });
-  const user = useUser();
+export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
   const [open, setOpen] = useState(false);
-
-  if (!user) {
-    return null;
-  }
-
-  if (balance?.blocked) {
-    return (
-      <FormSheet
-        open={open}
-        onOpenChange={setOpen}
-        triggerLabel="Unpause"
-        title="Unpause"
-        description="Unpause a stablecoin"
-      >
-        <Form
-          mutation={unblockMutation}
-          buttonLabels={{
-            label: 'Unblock',
-          }}
-          defaultValues={{
-            address,
-            from: user.wallet,
-          }}
-        >
-          <Summary address={address} isCurrentlyBlocked={balance.blocked} />
-        </Form>
-      </FormSheet>
-    );
-  }
+  const t = useTranslations('admin.stablecoins.holders.block-form');
 
   return (
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Pause"
-      title="Pause"
-      description="Pause a stablecoin"
+      triggerLabel={
+        isBlocked ? t('unblock-trigger-label') : t('block-trigger-label')
+      }
+      title={isBlocked ? t('unblock-title') : t('block-title')}
+      description={
+        isBlocked ? t('unblock-description') : t('block-description')
+      }
     >
       <Form
-        mutation={blockMutation}
+        action={blockUser}
+        resolver={zodResolver(BlockUserSchema)}
         buttonLabels={{
-          label: 'Block',
+          label: isBlocked
+            ? t('unblock-button-label')
+            : t('block-button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
+          account,
         }}
       >
-        <Summary
-          address={address}
-          isCurrentlyBlocked={balance.blocked ?? false}
-        />
+        <Summary address={address} isCurrentlyBlocked={isBlocked} />
       </Form>
     </FormSheet>
   );

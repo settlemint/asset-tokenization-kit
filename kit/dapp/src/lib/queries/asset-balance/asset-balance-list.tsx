@@ -1,7 +1,10 @@
+'use server'; // because this needs to be fetched client side in the address hover
+
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import type { Address } from 'viem';
@@ -74,13 +77,31 @@ export async function getAssetBalanceList({
   const userBalances = result.userBalances || [];
 
   // Validate data using Zod schema
-  const validatedBalances = balances.map((balance) =>
-    safeParseWithLogging(AssetBalanceFragmentSchema, balance, 'balance')
-  );
+  const validatedBalances = balances.map((balance) => {
+    const validatedBalance = safeParseWithLogging(
+      AssetBalanceFragmentSchema,
+      balance,
+      'balance'
+    );
+    return {
+      ...validatedBalance,
+      value: formatNumber(validatedBalance.value),
+      frozen: formatNumber(validatedBalance.frozen),
+    };
+  });
 
-  const validatedUserBalances = userBalances.map((balance) =>
-    safeParseWithLogging(AssetBalanceFragmentSchema, balance, 'user balance')
-  );
+  const validatedUserBalances = userBalances.map((balance) => {
+    const validatedBalance = safeParseWithLogging(
+      AssetBalanceFragmentSchema,
+      balance,
+      'user balance'
+    );
+    return {
+      ...validatedBalance,
+      value: formatNumber(validatedBalance.value),
+      frozen: formatNumber(validatedBalance.frozen),
+    };
+  });
 
   if (wallet) {
     return validatedUserBalances;

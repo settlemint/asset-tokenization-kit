@@ -2,6 +2,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { type Address, getAddress } from 'viem';
@@ -87,5 +88,10 @@ export async function getAssetBalanceDetail({
     'asset balance'
   );
 
-  return validatedBalance;
+  // Format BigDecimal values
+  return {
+    ...validatedBalance,
+    value: formatNumber(validatedBalance.value),
+    frozen: formatNumber(validatedBalance.frozen),
+  };
 }

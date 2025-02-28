@@ -16,87 +16,6 @@
     --sm-purple: 267 91% 67%;
     --sm-cyan: 189 64% 51%;
     --sm-dark-gray: 0 0% 11%;
-
-    /* Default Light Theme */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 222 85% 57%; /* Using sm-royal-blue */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 225 91% 94%; /* Using sm-light-blue */
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 172 53% 59%; /* Using sm-teal */
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --warning: 20 100% 66%; /* Using sm-orange */
-    --warning-foreground: 0 0% 98%;
-    --success: 140 50% 69%; /* Using sm-green */
-    --success-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 222 85% 57%; /* Using sm-royal-blue */
-    --chart-1: 20 100% 66%; /* Using sm-orange */
-    --chart-2: 140 50% 69%; /* Using sm-green */
-    --chart-3: 207 73% 54%; /* Using sm-blue */
-    --chart-4: 267 91% 67%; /* Using sm-purple */
-    --chart-5: 189 64% 51%; /* Using sm-cyan */
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    /* Default Dark Theme */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 222 85% 57%; /* Using sm-royal-blue */
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 172 53% 59%; /* Using sm-teal */
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --warning: 20 100% 66%; /* Using sm-orange */
-    --warning-foreground: 0 0% 98%;
-    --success: 140 50% 69%; /* Using sm-green */
-    --success-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 222 85% 57%; /* Using sm-royal-blue */
-    --chart-1: 20 100% 66%; /* Using sm-orange */
-    --chart-2: 140 50% 69%; /* Using sm-green */
-    --chart-3: 207 73% 54%; /* Using sm-blue */
-    --chart-4: 267 91% 67%; /* Using sm-purple */
-    --chart-5: 189 64% 51%; /* Using sm-cyan */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .settlemint-light {
-    /* SettleMint Light Theme */
     --button-hover-accent: 225 91% 94%; /* Using sm-light-blue */
     --background: 225 91% 94%; /* Using sm-light-blue */
     --foreground: 0 0% 11%; /* Using sm-dark-gray */
@@ -137,9 +56,11 @@
     --sidebar-ring: 207 73% 54%; /* Using sm-blue */
     --theme-accent-background: 225 91% 94%; /* Using sm-light-blue */
     --theme-accent-foreground: 207 73% 54%; /* Using sm-blue */
+    transition: all 0.2s ease;
   }
-  .settlemint-dark {
-    /* SettleMint Dark Theme */
+
+  .dark {
+    /* Default Dark Theme */
     --background: 0 0% 11%; /* Using sm-dark-gray */
     --foreground: 0 0% 100%; /* Using sm-white */
     --card: 0 0% 16%;
@@ -179,13 +100,6 @@
     --theme-accent-background: 0 0% 16%;
     --theme-accent-foreground: 207 73% 54%; /* Using sm-blue */
     --theme-sidebar-accent: 0 0% 11%; /* Using sm-dark-gray */
-  }
-
-  /* Add transition for all CSS variables */
-  :root,
-  .settlemint-light,
-  .settlemint-dark {
-    transition: all 0.3s ease;
   }
 }
 
@@ -250,11 +164,11 @@
     @apply ml-2 !important;
   }
 
-  .settlemint-light .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+  .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
     @apply bg-lm-gradient-menu !important;
   }
 
-  .settlemint-dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
+  .dark .dropdown-menu-item:is(:hover, :focus, [data-highlighted]) {
     @apply bg-dm-gradient-menu-hover !important;
   }
 

@@ -1,35 +1,28 @@
 'use client';
 
-import { DataTable } from '@/components/blocks/data-table/data-table';
 import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { getRoleDisplayName, type Role } from '@/lib/config/roles';
-import {
-  useAssetDetail,
-  type PermissionWithRoles,
-} from '@/lib/queries/asset/asset-detail';
+import type { PermissionWithRoles } from '@/lib/queries/asset/asset-detail';
 import { formatDate } from '@/lib/utils/date';
 import { createColumnHelper } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import type { Address } from 'viem';
 import { EditPermissionsForm } from './actions/edit-form/form';
 import { RevokeAllPermissionsForm } from './actions/revoke-all-form/form';
 
-interface PermissionsTableProps {
-  address: Address;
-}
-
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function PermissionsTable({ address }: PermissionsTableProps) {
-  const {
-    data: { roles },
-  } = useAssetDetail({ address });
+export function usePermissionsColumns() {
+  const t = useTranslations('admin.stablecoins.permissions');
+  const { address } = useParams<{ address: Address }>();
 
-  const columns = [
+  return [
     columnHelper.accessor('id', {
-      header: 'Wallet',
+      header: t('wallet-header'),
       cell: ({ getValue }) => {
         const wallet = getValue();
         return (
@@ -41,7 +34,7 @@ export function PermissionsTable({ address }: PermissionsTableProps) {
       enableColumnFilter: false,
     }),
     columnHelper.accessor('roles', {
-      header: 'Roles',
+      header: t('roles-header'),
       cell: ({ getValue }) => (
         <div className="flex flex-wrap gap-1">
           {getValue().map((role: Role) => (
@@ -54,7 +47,7 @@ export function PermissionsTable({ address }: PermissionsTableProps) {
       enableColumnFilter: true,
     }),
     columnHelper.accessor('lastActivity', {
-      header: 'Last Activity',
+      header: t('last-activity-header'),
       cell: ({ getValue }) =>
         getValue() ? formatDate(getValue(), { type: 'distance' }) : '-',
       enableColumnFilter: false,
@@ -62,7 +55,9 @@ export function PermissionsTable({ address }: PermissionsTableProps) {
     columnHelper.display({
       id: 'actions',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Action</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t('actions-header')}
+        </DataTableColumnHeader>
       ),
       cell: ({ row }) => {
         return (
@@ -80,6 +75,4 @@ export function PermissionsTable({ address }: PermissionsTableProps) {
       },
     }),
   ];
-
-  return <DataTable columns={columns} data={roles} name={'Permissions'} />;
 }

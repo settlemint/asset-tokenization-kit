@@ -54,12 +54,6 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations('transactions');
-  const [toastId, setToastId] = useState<string | number | undefined>(
-    undefined
-  );
-
-  console.log('toastId', toastId);
-
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
   const { form, handleSubmitWithAction, resetFormAndAction } =

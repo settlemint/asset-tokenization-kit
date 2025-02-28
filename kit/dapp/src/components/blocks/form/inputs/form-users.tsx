@@ -19,9 +19,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
-import { useUserSearch } from '@/lib/queries/user/user-search';
+import { useUserSearch } from '@/lib/queries/user/use-user-search';
 import { cn } from '@/lib/utils';
-import { CommandEmpty, CommandLoading, useCommandState } from 'cmdk';
+import { CommandEmpty, useCommandState } from 'cmdk';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -121,14 +121,13 @@ function FormUsersList({
 }) {
   const search = (useCommandState((state) => state.search) || '') as string;
   const debounced = useDebounce<string>(search, 250);
-  const { data: users, isLoading } = useUserSearch({
+  const users = useUserSearch({
     searchTerm: debounced,
   });
   const t = useTranslations('components.form.users');
 
   return (
     <CommandList>
-      {isLoading && <CommandLoading>{t('searching')}</CommandLoading>}
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
         {t('no-user-found')}
       </CommandEmpty>

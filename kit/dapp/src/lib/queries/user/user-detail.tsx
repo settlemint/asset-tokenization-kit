@@ -1,4 +1,12 @@
+import {
+  AccountFragment,
+  AccountFragmentSchema,
+} from '@/lib/queries/accounts/accounts-fragment';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
@@ -21,6 +29,23 @@ const UserDetail = hasuraGraphql(
 );
 
 /**
+ * GraphQL query to fetch user activity from TheGraph
+ *
+ * @remarks
+ * Retrieves account with its last activity timestamp
+ */
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserActivity($id: ID!) {
+    account(id: $id) {
+      ...AccountFragment
+    }
+  }
+`,
+  [AccountFragment]
+);
+
+/**
  * Props interface for user detail components
  *
  */
@@ -34,13 +59,59 @@ export interface UserDetailProps {
  */
 const fetchUserDetailData = unstable_cache(
   async (id: string) => {
-    const result = await hasuraClient.request(UserDetail, {
+    const userResult = await hasuraClient.request(UserDetail, {
       id,
     });
 
-    return result;
+    if (!userResult.user_by_pk) {
+      throw new Error(`User not found with ID ${id}`);
+    }
+
+    // Validate user data
+    const validatedUser = safeParseWithLogging(
+      UserFragmentSchema,
+      userResult.user_by_pk,
+      'user detail'
+    );
+
+    // Fetch activity data if user has wallet address
+    if (validatedUser.wallet) {
+      try {
+        const activityResult = await theGraphClientStarterkits.request(
+          UserActivity,
+          {
+            id: validatedUser.wallet.toLowerCase(),
+          }
+        );
+
+        if (activityResult.account) {
+          // Validate account data
+          const validatedAccount = safeParseWithLogging(
+            AccountFragmentSchema,
+            activityResult.account,
+            'account detail'
+          );
+
+          // Combine validated user data with validated activity data
+          return {
+            ...validatedAccount,
+            ...validatedUser,
+            assetCount: validatedAccount.balancesCount ?? 0,
+            transactionCount: validatedAccount.activityEventsCount ?? 0,
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching user activity:', error);
+      }
+    }
+
+    return {
+      ...validatedUser,
+      assetCount: 0,
+      transactionCount: 0,
+    };
   },
-  ['user', 'detail'],
+  ['user', 'detail', 'activity'],
   {
     revalidate: 60 * 60,
     tags: ['user'],
@@ -56,16 +127,7 @@ const fetchUserDetailData = unstable_cache(
 export async function getUserDetail({ id }: UserDetailProps) {
   const result = await fetchUserDetailData(id);
 
-  if (!result.user_by_pk) {
-    throw new Error(`User not found with ID ${id}`);
-  }
-
-  // Validate the user data using the Zod schema
-  return safeParseWithLogging(
-    UserFragmentSchema,
-    result.user_by_pk,
-    'user detail'
-  );
+  return result;
 }
 
 /**

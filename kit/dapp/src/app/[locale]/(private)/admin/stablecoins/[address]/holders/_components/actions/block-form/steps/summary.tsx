@@ -4,8 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { Pause } from '@/lib/mutations/stablecoin/pause';
-import type { UnPause } from '@/lib/mutations/stablecoin/unpause';
+import type { BlockUserInput } from '@/lib/mutations/stablecoin/block-user/block-user-schema';
 import { DollarSign } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
@@ -16,7 +15,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
-  const { control } = useFormContext<Pause | UnPause>();
+  const { control } = useFormContext<BlockUserInput>();
 
   return (
     <FormStep

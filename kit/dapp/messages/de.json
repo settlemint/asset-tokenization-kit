@@ -39,7 +39,17 @@
       },
       "holders": {
         "holders-page-title": "{name} Inhaber",
-        "holders-page-description": "Liste der Inhaber für {name} Stablecoin"
+        "holders-page-description": "Liste der Inhaber für {name} Stablecoin",
+        "page-title": "{name} Inhaber",
+        "page-description": "Liste der Inhaber für {name} Stablecoin",
+        "wallet-header": "Wallet",
+        "balance-header": "Guthaben",
+        "frozen-header": "Eingefroren",
+        "status-header": "Status",
+        "blocked-status": "Blockiert",
+        "active-status": "Aktiv",
+        "last-activity-header": "Letzte Aktivität",
+        "actions-header": "Aktionen"
       },
       "events": {
         "events-page-title": "{name} Ereignisse",
@@ -47,7 +57,14 @@
       },
       "permissions": {
         "permissions-page-title": "{name} Berechtigungen",
-        "permissions-page-description": "Berechtigungsverwaltung für {name} Stablecoin"
+        "permissions-page-description": "Berechtigungsverwaltung für {name} Stablecoin",
+        "page-title": "{name} Berechtigungen",
+        "page-description": "Berechtigungsverwaltung für {name} Stablecoin",
+        "table-title": "Berechtigungen",
+        "wallet-header": "Wallet",
+        "roles-header": "Rollen",
+        "last-activity-header": "Letzte Aktivität",
+        "actions-header": "Aktionen"
       },
       "pause-form": {
         "pause": {

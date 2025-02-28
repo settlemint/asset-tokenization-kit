@@ -1,16 +1,12 @@
-'use client';
-
-import { useProcessedTransactions } from '@/lib/queries/transactions/transactions-processed';
+import { getProcessedTransactions } from '@/lib/queries/transactions/transactions-processed';
 import { startOfDay, subDays } from 'date-fns';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Widget } from './widget';
 
-export function TransactionsWidget() {
-  const t = useTranslations('admin.dashboard.widgets');
+export async function TransactionsWidget() {
+  const t = await getTranslations('admin.dashboard.widgets');
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
-  const {
-    data: { total, recentCount },
-  } = useProcessedTransactions({
+  const { total, recentCount } = await getProcessedTransactions({
     processedAfter: sevenDaysAgo,
   });
 
