@@ -69,6 +69,18 @@
             "state-blocked": "Blocked",
             "state-active": "Active"
           }
+        },
+        "freeze-form": {
+          "trigger-label": "Freeze",
+          "title": "Restrict User Funds",
+          "description": "Temporarily restrict a user's access to their funds.",
+          "button-label": "Freeze Funds",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to freeze.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
+          }
         }
       },
       "events": {
@@ -384,6 +396,50 @@
           "basis-points": "bps"
         }
       },
+      "permissions": {
+        "permissions-page-title": "{name} Permissions",
+        "permissions-page-description": "Manage user roles and access rights for {name}.",
+        "page-title": "Bond Permissions",
+        "page-description": "Manage user roles and access rights for this bond.",
+        "table-title": "Permissions",
+        "wallet-header": "Wallet",
+        "roles-header": "Roles",
+        "last-activity-header": "Last Activity",
+        "actions-header": "Actions",
+        "edit-form": {
+          "trigger-label": "Edit Roles",
+          "title": "Modify User Permissions",
+          "description": "Update the permissions and access levels assigned to this user.",
+          "button-label": "Save Permissions",
+          "roles": {
+            "title": "Select User Roles",
+            "description": "Choose the roles to assign to this user. At least one role must be selected."
+          },
+          "summary": {
+            "title": "Review and confirm new roles",
+            "description": "Verify the details before proceeding. This action will change the roles for the user.",
+            "update-title": "Update Roles",
+            "operation-description": "Updating roles operation details",
+            "user-label": "User",
+            "current-roles-label": "Current roles",
+            "new-roles-label": "New roles"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Revoke All",
+          "title": "Remove All User Access",
+          "description": "Completely revoke this user's access and permissions.",
+          "button-label": "Revoke Access",
+          "summary": {
+            "title": "Review and confirm",
+            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+            "revoke-title": "Revoke All",
+            "operation-description": "Revoking all permissions operation details",
+            "user-label": "User",
+            "roles-to-revoke-label": "Roles to revoke"
+          }
+        }
+      },
       "table": {
         "page-title": "Funds",
         "page-description": "Overview and administrative actions for your fund assets.",
@@ -496,6 +552,85 @@
           "admin-address-label": "Admin Address",
           "roles-label": "Roles"
         }
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Holders",
+        "events": "Events",
+        "permissions": "Permissions"
+      },
+      "events": {
+        "events-page-title": "{name} Events",
+        "events-page-description": "Track all events related to {name} bond."
+      },
+      "holders": {
+        "holders-page-title": "{name} Holders",
+        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+        "wallet-header": "Wallet",
+        "balance-header": "Balance",
+        "frozen-header": "Frozen",
+        "status-header": "Status",
+        "blocked-status": "Blocked",
+        "active-status": "Active",
+        "last-activity-header": "Last activity",
+        "actions-header": "Actions",
+        "block-form": {
+          "block-trigger-label": "Block",
+          "unblock-trigger-label": "Unblock",
+          "block-title": "Block User Transactions",
+          "unblock-title": "Restore User Transactions",
+          "block-description": "Prevent this user from performing any transactions or interactions.",
+          "unblock-description": "Restore this user's ability to transact and interact.",
+          "block-button-label": "Block User",
+          "unblock-button-label": "Unblock User",
+          "summary": {
+            "title": "Review and confirm block operation",
+            "description": "Verify the details of your block operation before proceeding.",
+            "block-title": "Block",
+            "unblock-title": "Unblock",
+            "operation-description": "Block operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-blocked": "Blocked",
+            "state-active": "Active"
+          }
+        },
+        "freeze-form": {
+          "trigger-label": "Freeze",
+          "title": "Restrict User Funds",
+          "description": "Temporarily restrict a user's access to their funds.",
+          "button-label": "Freeze Funds",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to freeze.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
+          },
+          "summary": {
+            "title": "Review and confirm freeze operation",
+            "description": "Verify the details of your freeze operation before proceeding.",
+            "freeze-title": "Freeze",
+            "operation-description": "Freezing operation details",
+            "asset-label": "Asset",
+            "amount-label": "Amount"
+          }
+        }
+      },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "fund-details-description": "Details for the equity",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Explore comprehensive data and metrics for {name}."
       }
     },
     "dashboard": {
@@ -862,10 +997,6 @@
         "title": "Create new equity",
         "description": "Issue a new equity on the blockchain",
         "button-label": "Create Equity",
-        "button-submitting-label": "Creating equity...",
-        "button-processing-label": "Processing...",
-        "toast-loading": "Creating equity",
-        "toast-success": "Equity successfully created",
         "basics": {
           "title": "Basic Information",
           "description": "Define essential details such as name, symbol, and visibility.",
@@ -975,10 +1106,6 @@
         "title": "Burn",
         "description": "Permanently remove equity tokens from circulation to reduce supply.",
         "button-label": "Burn Assets",
-        "button-submitting-label": "Burning assets...",
-        "button-processing-label": "Processing...",
-        "toast-loading": "Burning equity tokens",
-        "toast-success": "Equity tokens successfully burned",
         "amount": {
           "title": "Enter Amount",
           "description": "Input the amount you wish to burn.",
@@ -999,10 +1126,6 @@
         "title": "Grant Role",
         "description": "Assign administrative permissions to a new user.",
         "button-label": "Assign Roles",
-        "button-submitting-label": "Assigning roles...",
-        "button-processing-label": "Processing...",
-        "toast-loading": "Granting permissions",
-        "toast-success": "Permissions successfully granted",
         "address": {
           "title": "Select New Admin",
           "description": "Search for a user by their name or email, or manually enter a wallet address.",
@@ -1031,10 +1154,6 @@
         "title": "Mint",
         "description": "Issue new tokens to increase the equity's circulating supply.",
         "button-label": "Mint Assets",
-        "button-submitting-label": "Minting assets...",
-        "button-processing-label": "Processing...",
-        "toast-loading": "Minting equity tokens",
-        "toast-success": "Equity tokens successfully minted",
         "amount": {
           "title": "Enter Amount",
           "description": "Input the amount you wish to mint.",
@@ -1108,21 +1227,13 @@
           "trigger-label": "Pause",
           "title": "Pause Equity Transactions",
           "description": "Temporarily halt all transactions and interactions for this equity.",
-          "button-label": "Pause Transactions",
-          "button-submitting-label": "Pausing transactions...",
-          "button-processing-label": "Processing...",
-          "toast-loading": "Pausing equity",
-          "toast-success": "Equity successfully paused"
+          "button-label": "Pause Transactions"
         },
         "unpause": {
           "trigger-label": "Unpause",
           "title": "Resume Equity Transactions",
           "description": "Resume transactions and interactions for this equity.",
-          "button-label": "Resume Transactions",
-          "button-submitting-label": "Resuming transactions...",
-          "button-processing-label": "Processing...",
-          "toast-loading": "Resuming equity",
-          "toast-success": "Equity successfully resumed"
+          "button-label": "Resume Transactions"
         },
         "summary": {
           "title": "Review and confirm pause operation",
@@ -1575,7 +1686,8 @@
       "users": {
         "default-placeholder": "Select an option",
         "search-placeholder": "Search for a user...",
-        "no-user-found": "No user found."
+        "no-user-found": "No user found.",
+        "loading": "Loading..."
       },
       "summary": {
         "security-confirmation": {
