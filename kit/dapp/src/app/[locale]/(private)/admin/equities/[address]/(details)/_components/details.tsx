@@ -1,7 +1,7 @@
 import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
 import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
 import { formatNumber } from '@/lib/utils/number';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
@@ -12,19 +12,19 @@ interface DetailsProps {
 }
 
 export async function Details({ address }: DetailsProps) {
-  const stableCoin = await getStableCoinDetail({ address });
-  const t = await getTranslations('admin.stablecoins.details');
+  const equity = await getEquityDetail({ address });
+  const t = await getTranslations('admin.equities.details');
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t('name')}>{stableCoin.name}</DetailGridItem>
-        <DetailGridItem label={t('symbol')}>{stableCoin.symbol}</DetailGridItem>
-        {stableCoin.isin && (
-          <DetailGridItem label={t('isin')}>{stableCoin.isin}</DetailGridItem>
+        <DetailGridItem label={t('name')}>{equity.name}</DetailGridItem>
+        <DetailGridItem label={t('symbol')}>{equity.symbol}</DetailGridItem>
+        {equity.isin && (
+          <DetailGridItem label={t('isin')}>{equity.isin}</DetailGridItem>
         )}
         <DetailGridItem label={t('contract-address')}>
           <EvmAddress
-            address={stableCoin.id}
+            address={equity.id}
             prettyNames={false}
             hoverCard={false}
             copyToClipboard={true}
@@ -32,22 +32,20 @@ export async function Details({ address }: DetailsProps) {
         </DetailGridItem>
         <DetailGridItem label={t('creator')}>
           <EvmAddress
-            address={stableCoin.creator.id}
+            address={equity.creator.id}
             hoverCard={false}
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t('decimals')}>
-          {stableCoin.decimals}
-        </DetailGridItem>
+        <DetailGridItem label={t('decimals')}>{equity.decimals}</DetailGridItem>
         <DetailGridItem label={t('total-supply')} info={t('total-supply-info')}>
-          {stableCoin.totalSupply}
+          {equity.totalSupply}
         </DetailGridItem>
         <DetailGridItem
           label={t('ownership-concentration')}
           info={t('ownership-concentration-info')}
         >
-          {formatNumber(stableCoin.concentration, {
+          {formatNumber(equity.concentration, {
             percentage: true,
             decimals: 2,
           })}

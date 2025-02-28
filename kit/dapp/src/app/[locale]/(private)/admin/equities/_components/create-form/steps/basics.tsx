@@ -1,13 +1,13 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormSwitch } from '@/components/blocks/form/inputs/form-switch';
-import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
+import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export function Basics() {
-  const { control } = useFormContext<CreateFundInput>();
-  const t = useTranslations('admin.funds.create-form.basics');
+  const { control } = useFormContext<CreateEquityInput>();
+  const t = useTranslations('admin.equities.create-form.basics');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

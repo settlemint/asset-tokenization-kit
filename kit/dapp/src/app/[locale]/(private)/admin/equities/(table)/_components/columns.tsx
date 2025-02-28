@@ -3,7 +3,7 @@
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { getFundList } from '@/lib/queries/fund/fund-list';
+import type { getEquityList } from '@/lib/queries/equity/equity-list';
 import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 import type { ComponentType } from 'react';
 
 const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getFundList>>[number]>();
+  createColumnHelper<Awaited<ReturnType<typeof getEquityList>>[number]>();
 
 export const icons: Record<string, ComponentType<{ className?: string }>> = {
   active: PlayCircle,
@@ -20,8 +20,8 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   public: Unlock,
 };
 
-export function useFundColumns() {
-  const t = useTranslations('admin.funds.table');
+export function useEquityColumns() {
+  const t = useTranslations('admin.equities.table');
 
   return [
     columnHelper.accessor('id', {
@@ -51,22 +51,14 @@ export function useFundColumns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('fundCategory', {
+    columnHelper.accessor('equityCategory', {
       header: t('category-header'),
       cell: ({ getValue }) => getValue(),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('fundClass', {
+    columnHelper.accessor('equityClass', {
       header: t('class-header'),
       cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
-    }),
-    columnHelper.accessor('managementFeeBps', {
-      header: t('management-fee-header'),
-      meta: {
-        variant: 'numeric',
-      },
-      cell: ({ getValue }) => `${getValue() / 100}% (${getValue()} bps)`,
       enableColumnFilter: false,
     }),
     columnHelper.accessor('paused', {
@@ -102,7 +94,9 @@ export function useFundColumns() {
       header: t('actions-header'),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions detailUrl={`/admin/funds/${row.original.id}`} />
+          <DataTableRowActions
+            detailUrl={`/admin/equities/${row.original.id}`}
+          />
         );
       },
       meta: {

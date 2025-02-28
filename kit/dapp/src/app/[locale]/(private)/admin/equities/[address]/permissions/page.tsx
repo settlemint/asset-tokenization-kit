@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { PageHeader } from '@/components/layout/page-header';
 import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
@@ -17,35 +17,35 @@ export async function generateMetadata({
   params: Promise<{ locale: string; address: Address }>;
 }): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.stablecoins.permissions',
+    namespace: 'admin.equities.permissions',
   });
 
   return {
     title: t('permissions-page-title', {
-      name: stableCoin?.name,
+      name: equity?.name,
     }),
     description: t('permissions-page-description', {
-      name: stableCoin?.name,
+      name: equity?.name,
     }),
   };
 }
 
-export default async function StablecoinTokenPermissionsPage({
+export default async function EquityTokenPermissionsPage({
   params,
 }: PageProps) {
   const { address } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const equity = await getEquityDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations('admin.stablecoins.permissions');
+  const t = await getTranslations('admin.equities.permissions');
 
   return (
     <>
       <PageHeader
-        title={t('page-title', { name: stableCoin?.name })}
-        subtitle={t('page-description', { name: stableCoin?.name })}
+        title={t('page-title', { name: equity?.name })}
+        subtitle={t('page-description', { name: equity?.name })}
       />
       <DataTable
         columnHook={usePermissionsColumns}

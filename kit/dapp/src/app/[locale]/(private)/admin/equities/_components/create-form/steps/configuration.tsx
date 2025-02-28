@@ -1,88 +1,126 @@
 import { FormStep } from '@/components/blocks/form/form-step';
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormSelect } from '@/components/blocks/form/inputs/form-select';
-import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
+import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
-  const { control } = useFormContext<CreateFundInput>();
-  const t = useTranslations('admin.funds.create-form.configuration');
+  const { control } = useFormContext<CreateEquityInput>();
+  const t = useTranslations('admin.equities.create-form.configuration');
 
-  // Fund categories sorted alphabetically
-  const fundCategories = [
-    { value: 'ACTIVIST', label: t('category-activist') },
-    { value: 'COMMODITY_TRADING', label: t('category-commodity-trading') },
+  // Equity classes based on the new structure
+  const equityClasses = [
+    { value: 'COMMON_EQUITY', label: t('class-common-equity') },
+    { value: 'PREFERRED_EQUITY', label: t('class-preferred-equity') },
     {
-      value: 'CONVERTIBLE_ARBITRAGE',
-      label: t('category-convertible-arbitrage'),
+      value: 'MARKET_CAPITALIZATION_EQUITY',
+      label: t('class-market-capitalization-equity'),
     },
-    { value: 'CREDIT', label: t('category-credit') },
-    { value: 'CURRENCY_FX', label: t('category-currency-fx') },
-    { value: 'DISTRESSED_DEBT', label: t('category-distressed-debt') },
-    { value: 'EMERGING_MARKETS', label: t('category-emerging-markets') },
-    { value: 'EQUITY_HEDGE', label: t('category-equity-hedge') },
-    { value: 'EVENT_DRIVEN', label: t('category-event-driven') },
+    { value: 'GEOGRAPHIC_EQUITY', label: t('class-geographic-equity') },
     {
-      value: 'FIXED_INCOME_ARBITRAGE',
-      label: t('category-fixed-income-arbitrage'),
+      value: 'SECTOR_INDUSTRY_EQUITY',
+      label: t('class-sector-industry-equity'),
     },
-    { value: 'FUND_OF_FUNDS', label: t('category-fund-of-funds') },
-    { value: 'GLOBAL_MACRO', label: t('category-global-macro') },
     {
-      value: 'HIGH_FREQUENCY_TRADING',
-      label: t('category-high-frequency-trading'),
+      value: 'INVESTMENT_STYLE_EQUITY',
+      label: t('class-investment-style-equity'),
     },
-    { value: 'MANAGED_FUTURES_CTA', label: t('category-managed-futures-cta') },
-    { value: 'MARKET_NEUTRAL', label: t('category-market-neutral') },
-    { value: 'MERGER_ARBITRAGE', label: t('category-merger-arbitrage') },
-    { value: 'MULTI_STRATEGY', label: t('category-multi-strategy') },
-    { value: 'PRIVATE_EQUITY', label: t('category-private-equity') },
     {
-      value: 'QUANTITATIVE_SYSTEMATIC',
-      label: t('category-quantitative-systematic'),
+      value: 'INVESTMENT_STAGE_PRIVATE_EQUITY',
+      label: t('class-investment-stage-private-equity'),
     },
-    { value: 'RELATIVE_VALUE', label: t('category-relative-value') },
     {
-      value: 'STATISTICAL_ARBITRAGE',
-      label: t('category-statistical-arbitrage'),
+      value: 'SPECIAL_CLASSES_EQUITY',
+      label: t('class-special-classes-equity'),
     },
-    { value: 'STRUCTURED_CREDIT', label: t('category-structured-credit') },
-    { value: 'VENTURE_CAPITAL', label: t('category-venture-capital') },
   ].sort((a, b) => a.label.localeCompare(b.label));
 
-  // Fund classes sorted alphabetically
-  const fundClasses = [
-    { value: 'ABSOLUTE_RETURN', label: t('class-absolute-return') },
-    { value: 'CORE_BLEND', label: t('class-core-blend') },
-    { value: 'DIVERSIFIED', label: t('class-diversified') },
-    { value: 'EARLY_STAGE', label: t('class-early-stage') },
-    { value: 'FACTOR_BASED', label: t('class-factor-based') },
-    { value: 'GROWTH_FOCUSED', label: t('class-growth-focused') },
-    { value: 'INCOME_FOCUSED', label: t('class-income-focused') },
-    { value: 'LARGE_CAP', label: t('class-large-cap') },
-    { value: 'LONG_EQUITY', label: t('class-long-equity') },
-    { value: 'LONG_SHORT_EQUITY', label: t('class-long-short-equity') },
-    { value: 'MARKET_NEUTRAL', label: t('class-market-neutral') },
-    { value: 'MID_CAP', label: t('class-mid-cap') },
-    { value: 'MOMENTUM_ORIENTED', label: t('class-momentum-oriented') },
-    { value: 'OPPORTUNISTIC', label: t('class-opportunistic') },
-    { value: 'PRE_SERIES_B', label: t('class-pre-series-b') },
+  // Equity categories based on the new structured list
+  const equityCategories = [
+    // Common Equity
+    { value: 'VOTING_COMMON_STOCK', label: t('category-voting-common-stock') },
     {
-      value: 'QUANTITATIVE_ALGORITHMIC',
-      label: t('class-quantitative-algorithmic'),
+      value: 'NON_VOTING_COMMON_STOCK',
+      label: t('category-non-voting-common-stock'),
     },
-    { value: 'REGIONAL', label: t('class-regional') },
-    { value: 'SECTOR_SPECIFIC', label: t('class-sector-specific') },
-    { value: 'SEED_PRE_SEED', label: t('class-seed-pre-seed') },
-    { value: 'SERIES_B_LATE_STAGE', label: t('class-series-b-late-stage') },
-    { value: 'SHORT_EQUITY', label: t('class-short-equity') },
-    { value: 'SMALL_CAP', label: t('class-small-cap') },
+
+    // Preferred Equity
     {
-      value: 'TACTICAL_ASSET_ALLOCATION',
-      label: t('class-tactical-asset-allocation'),
+      value: 'CUMULATIVE_PREFERRED_STOCK',
+      label: t('category-cumulative-preferred-stock'),
     },
-    { value: 'VALUE_FOCUSED', label: t('class-value-focused') },
+    {
+      value: 'NON_CUMULATIVE_PREFERRED_STOCK',
+      label: t('category-non-cumulative-preferred-stock'),
+    },
+    {
+      value: 'CONVERTIBLE_PREFERRED_STOCK',
+      label: t('category-convertible-preferred-stock'),
+    },
+    {
+      value: 'REDEEMABLE_PREFERRED_STOCK',
+      label: t('category-redeemable-preferred-stock'),
+    },
+
+    // Market Capitalization Equity
+    { value: 'LARGE_CAP_EQUITY', label: t('category-large-cap-equity') },
+    { value: 'MID_CAP_EQUITY', label: t('category-mid-cap-equity') },
+    { value: 'SMALL_CAP_EQUITY', label: t('category-small-cap-equity') },
+    { value: 'MICRO_CAP_EQUITY', label: t('category-micro-cap-equity') },
+
+    // Geographic Equity
+    { value: 'DOMESTIC_EQUITY', label: t('category-domestic-equity') },
+    {
+      value: 'INTERNATIONAL_EQUITY',
+      label: t('category-international-equity'),
+    },
+    { value: 'GLOBAL_EQUITY', label: t('category-global-equity') },
+    {
+      value: 'EMERGING_MARKET_EQUITY',
+      label: t('category-emerging-market-equity'),
+    },
+    {
+      value: 'FRONTIER_MARKET_EQUITY',
+      label: t('category-frontier-market-equity'),
+    },
+
+    // Sector/Industry Equity
+    { value: 'TECHNOLOGY', label: t('category-technology') },
+    { value: 'FINANCIALS', label: t('category-financials') },
+    { value: 'HEALTHCARE', label: t('category-healthcare') },
+    { value: 'ENERGY', label: t('category-energy') },
+    { value: 'CONSUMER_STAPLES', label: t('category-consumer-staples') },
+    {
+      value: 'CONSUMER_DISCRETIONARY',
+      label: t('category-consumer-discretionary'),
+    },
+    { value: 'INDUSTRIALS', label: t('category-industrials') },
+    { value: 'MATERIALS', label: t('category-materials') },
+    { value: 'UTILITIES', label: t('category-utilities') },
+    {
+      value: 'COMMUNICATION_SERVICES',
+      label: t('category-communication-services'),
+    },
+    { value: 'REAL_ESTATE', label: t('category-real-estate') },
+
+    // Investment Style Equity
+    { value: 'GROWTH_EQUITY', label: t('category-growth-equity') },
+    { value: 'VALUE_EQUITY', label: t('category-value-equity') },
+    { value: 'BLEND_EQUITY', label: t('category-blend-equity') },
+    { value: 'INCOME_EQUITY', label: t('category-income-equity') },
+
+    // Investment Stage (Private Equity)
+    { value: 'VENTURE_CAPITAL', label: t('category-venture-capital') },
+    { value: 'GROWTH_CAPITAL', label: t('category-growth-capital') },
+    { value: 'LEVERAGED_BUYOUTS', label: t('category-leveraged-buyouts') },
+    { value: 'MEZZANINE_FINANCING', label: t('category-mezzanine-financing') },
+    { value: 'DISTRESSED_EQUITY', label: t('category-distressed-equity') },
+
+    // Special Classes of Equity
+    { value: 'RESTRICTED_STOCK', label: t('category-restricted-stock') },
+    { value: 'ESOP_SHARES', label: t('category-esop-shares') },
+    { value: 'TRACKING_STOCKS', label: t('category-tracking-stocks') },
+    { value: 'DUAL_CLASS_SHARES', label: t('category-dual-class-shares') },
   ].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
@@ -90,23 +128,15 @@ export function Configuration() {
       <div className="grid grid-cols-2 gap-6">
         <FormSelect
           control={control}
-          name="fundCategory"
-          label={t('fund-category-label')}
-          options={fundCategories}
+          name="equityClass"
+          label={t('equity-class-label')}
+          options={equityClasses}
         />
         <FormSelect
           control={control}
-          name="fundClass"
-          label={t('fund-class-label')}
-          options={fundClasses}
-        />
-        <FormInput
-          control={control}
-          type="number"
-          name="managementFeeBps"
-          label={t('management-fee-label')}
-          description={t('management-fee-description')}
-          postfix={t('basis-points')}
+          name="equityCategory"
+          label={t('equity-category-label')}
+          options={equityCategories}
         />
       </div>
     </FormStep>
@@ -114,7 +144,7 @@ export function Configuration() {
 }
 
 Configuration.validatedFields = [
-  'fundCategory',
-  'fundClass',
+  'equityCategory',
+  'equityClass',
   'managementFeeBps',
 ] as const;

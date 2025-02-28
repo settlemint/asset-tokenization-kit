@@ -3,8 +3,8 @@
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
-import { updateRoles } from '@/lib/mutations/stablecoin/update-roles/update-roles-action';
-import { UpdateRolesSchema } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
+import { updateRoles } from '@/lib/mutations/equity/update-roles/update-roles-action';
+import { UpdateRolesSchema } from '@/lib/mutations/equity/update-roles/update-roles-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -24,7 +24,7 @@ export function EditPermissionsForm({
   currentRoles,
 }: EditPermissionsFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('admin.stablecoins.permissions.edit-form');
+  const t = useTranslations('admin.equities.permissions.edit-form');
 
   return (
     <FormSheet

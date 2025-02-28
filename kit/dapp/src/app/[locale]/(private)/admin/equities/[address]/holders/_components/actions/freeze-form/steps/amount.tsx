@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
+import type { FreezeInput } from '@/lib/mutations/equity/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -13,7 +13,7 @@ interface AmountProps {
 
 export function Amount({ balance, frozen, symbol }: AmountProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations('admin.stablecoins.holders.freeze-form.amount');
+  const t = useTranslations('admin.equities.holders.freeze-form.amount');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

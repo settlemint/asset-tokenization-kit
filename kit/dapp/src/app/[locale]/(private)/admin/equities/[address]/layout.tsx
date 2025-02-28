@@ -1,11 +1,11 @@
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { StableCoinPageHeader } from './_components/page-header';
+import { EquityPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -18,15 +18,15 @@ export async function generateMetadata({
   params,
 }: LayoutProps): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.stablecoins.details',
+    namespace: 'admin.equities.details',
   });
 
   return {
-    title: stableCoin?.name,
-    description: t('stablecoin-details-description'),
+    title: equity?.name,
+    description: t('equity-details-description'),
   };
 }
 
@@ -36,30 +36,30 @@ const tabs = async (
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
-    namespace: 'admin.stablecoins.tabs',
+    namespace: 'admin.equities.tabs',
   });
 
   return [
     {
       name: t('details'),
-      href: `/admin/stablecoins/${address}`,
+      href: `/admin/equities/${address}`,
     },
     {
       name: t('holders'),
-      href: `/admin/stablecoins/${address}/holders`,
+      href: `/admin/equities/${address}/holders`,
     },
     {
       name: t('events'),
-      href: `/admin/stablecoins/${address}/events`,
+      href: `/admin/equities/${address}/events`,
     },
     {
       name: t('permissions'),
-      href: `/admin/stablecoins/${address}/permissions`,
+      href: `/admin/equities/${address}/permissions`,
     },
   ];
 };
 
-export default async function FundsDetailLayout({
+export default async function EquitiesDetailLayout({
   children,
   params,
 }: LayoutProps) {
@@ -68,7 +68,7 @@ export default async function FundsDetailLayout({
 
   return (
     <>
-      <StableCoinPageHeader address={address} />
+      <EquityPageHeader address={address} />
 
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabItems} />

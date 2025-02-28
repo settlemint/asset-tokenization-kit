@@ -2,8 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { blockUser } from '@/lib/mutations/stablecoin/block-user/block-user-action';
-import { BlockUserSchema } from '@/lib/mutations/stablecoin/block-user/block-user-schema';
+import { blockUser } from '@/lib/mutations/equity/block-user/block-user-action';
+import { BlockUserSchema } from '@/lib/mutations/equity/block-user/block-user-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ interface BlockFormProps {
 
 export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('admin.stablecoins.holders.block-form');
+  const t = useTranslations('admin.equities.holders.block-form');
 
   return (
     <FormSheet

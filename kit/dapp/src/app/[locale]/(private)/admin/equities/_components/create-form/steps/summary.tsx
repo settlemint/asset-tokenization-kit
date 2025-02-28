@@ -3,17 +3,17 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
+import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
 import { DollarSign, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 export function Summary() {
-  const { control } = useFormContext<CreateFundInput>();
+  const { control } = useFormContext<CreateEquityInput>();
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('admin.funds.create-form.summary');
+  const t = useTranslations('admin.equities.create-form.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>
@@ -50,26 +50,18 @@ export function Summary() {
         icon={<Settings className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t('fund-category-label')}
+          label={t('equity-category-label')}
           value={
-            values.fundCategory
-              ? t(`category-${values.fundCategory.toLowerCase()}`)
+            values.equityCategory
+              ? t(`category-${values.equityCategory.toLowerCase()}`)
               : '-'
           }
         />
         <FormSummaryDetailItem
-          label={t('fund-class-label')}
+          label={t('equity-class-label')}
           value={
-            values.fundClass
-              ? t(`class-${values.fundClass.toLowerCase()}`)
-              : '-'
-          }
-        />
-        <FormSummaryDetailItem
-          label={t('management-fee-label')}
-          value={
-            values.managementFeeBps
-              ? `${values.managementFeeBps / 100}% (${values.managementFeeBps} ${t('basis-points')})`
+            values.equityClass
+              ? t(`class-${values.equityClass.toLowerCase()}`)
               : '-'
           }
         />

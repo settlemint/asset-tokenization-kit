@@ -34,21 +34,6 @@
         "events": "Events",
         "permissions": "Permissions"
       },
-      "details": {
-        "contract-address": "Contract address",
-        "creator": "Creator",
-        "name": "Name",
-        "symbol": "Symbol",
-        "isin": "ISIN",
-        "decimals": "Decimals",
-        "total-supply": "Total supply",
-        "total-supply-info": "The total supply of the token",
-        "ownership-concentration": "Ownership concentration",
-        "ownership-concentration-info": "Percentage owned by the top 5 holders",
-        "bond-details-description": "Details for the bond",
-        "details-page-title": "{name} Details",
-        "details-page-description": "Explore comprehensive data and metrics for {name}."
-      },
       "manage": {
         "manage": "Manage"
       },

@@ -2,8 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { grantRole } from '@/lib/mutations/stablecoin/grant-role/grant-role-action';
-import { GrantRoleSchema } from '@/lib/mutations/stablecoin/grant-role/grant-role-schema';
+import { grantRole } from '@/lib/mutations/equity/grant-role/grant-role-action';
+import { GrantRoleSchema } from '@/lib/mutations/equity/grant-role/grant-role-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ interface GrantRoleFormProps {
 
 export function GrantRoleForm({ address }: GrantRoleFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('admin.stablecoins.grant-role-form');
+  const t = useTranslations('admin.equities.grant-role-form');
 
   return (
     <FormSheet

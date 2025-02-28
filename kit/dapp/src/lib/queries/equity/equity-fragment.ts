@@ -18,6 +18,8 @@ export const EquityFragment = theGraphGraphqlStarterkits(`
     totalSupplyExact
     isin
     paused
+    equityCategory
+    equityClass
     creator {
       id
     }
@@ -40,6 +42,8 @@ export const EquityFragmentSchema = z.object({
   totalSupplyExact: z.bigInt(),
   isin: z.isin().nullish(),
   paused: z.boolean(),
+  equityCategory: z.string(),
+  equityClass: z.string(),
   creator: z.object({
     id: z.address(),
   }),
