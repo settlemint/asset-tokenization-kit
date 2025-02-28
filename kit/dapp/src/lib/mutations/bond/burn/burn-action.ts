@@ -9,10 +9,10 @@ import { action } from '../../safe-action';
 import { BurnSchema } from './burn-schema';
 
 /**
- * GraphQL mutation to burn bond tokens
+ * GraphQL mutation for burning bond tokens
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * Reduces the total supply of the bond by removing tokens from circulation
  */
 const BondBurn = portalGraphql(`
   mutation BondBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {

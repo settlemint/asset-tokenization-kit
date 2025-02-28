@@ -2,8 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { mint } from '@/lib/mutations/funds/mint/mint-action';
-import { MintSchema } from '@/lib/mutations/funds/mint/mint-schema';
+import { mint } from '@/lib/mutations/fund/mint/mint-action';
+import { MintSchema } from '@/lib/mutations/fund/mint/mint-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

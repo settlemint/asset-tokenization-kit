@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { PageHeader } from '@/components/layout/page-header';
 import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getFundDetail } from '@/lib/queries/fund/fund-detail';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
@@ -17,35 +17,33 @@ export async function generateMetadata({
   params: Promise<{ locale: string; address: Address }>;
 }): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const fund = await getFundDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.stablecoins.permissions',
+    namespace: 'admin.funds.permissions',
   });
 
   return {
     title: t('permissions-page-title', {
-      name: stableCoin?.name,
+      name: fund?.name,
     }),
     description: t('permissions-page-description', {
-      name: stableCoin?.name,
+      name: fund?.name,
     }),
   };
 }
 
-export default async function StablecoinTokenPermissionsPage({
-  params,
-}: PageProps) {
+export default async function FundTokenPermissionsPage({ params }: PageProps) {
   const { address } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const fund = await getFundDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations('admin.stablecoins.permissions');
+  const t = await getTranslations('admin.funds.permissions');
 
   return (
     <>
       <PageHeader
-        title={t('page-title', { name: stableCoin?.name })}
-        subtitle={t('page-description', { name: stableCoin?.name })}
+        title={t('page-title', { name: fund?.name })}
+        subtitle={t('page-description', { name: fund?.name })}
       />
       <DataTable
         columnHook={usePermissionsColumns}

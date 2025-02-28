@@ -9,10 +9,10 @@ import { action } from '../../safe-action';
 import { BurnSchema } from './burn-schema';
 
 /**
- * GraphQL mutation to burn equity tokens
+ * GraphQL mutation for burning equity tokens
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * Reduces the total supply of the equity by removing tokens from circulation
  */
 const EquityBurn = portalGraphql(`
   mutation EquityBurn($address: String!, $from: String!, $challengeResponse: String!, $amount: String!) {

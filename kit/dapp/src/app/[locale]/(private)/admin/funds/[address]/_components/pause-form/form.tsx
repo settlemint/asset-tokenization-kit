@@ -2,10 +2,10 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { pause } from '@/lib/mutations/funds/pause/pause-action';
-import { PauseSchema } from '@/lib/mutations/funds/pause/pause-schema';
-import { unpause } from '@/lib/mutations/funds/unpause/unpause-action';
-import { UnpauseSchema } from '@/lib/mutations/funds/unpause/unpause-schema';
+import { pause } from '@/lib/mutations/fund/pause/pause-action';
+import { PauseSchema } from '@/lib/mutations/fund/pause/pause-schema';
+import { unpause } from '@/lib/mutations/fund/unpause/unpause-action';
+import { UnPauseSchema } from '@/lib/mutations/fund/unpause/unpause-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -32,7 +32,7 @@ export function PauseForm({ address, isPaused }: PauseFormProps) {
       >
         <Form
           action={unpause}
-          resolver={zodResolver(UnpauseSchema)}
+          resolver={zodResolver(UnPauseSchema)}
           buttonLabels={{
             label: t('unpause.button-label'),
           }}

@@ -5,7 +5,7 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  *
  * @property {string} address - The equity contract address
  * @property {number} amount - The amount of tokens to burn
- * @property {string} pincode - User's pincode for authentication
+ * @property {string} pincode - The pincode for signing the transaction
  */
 export const BurnSchema = z.object({
   address: z.address(),

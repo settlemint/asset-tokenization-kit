@@ -5,7 +5,7 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
-import type { UpdateRolesInput } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
+import type { UpdateRolesInput } from '@/lib/mutations/fund/update-roles/update-roles-schema';
 import { Lock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -19,7 +19,7 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations('admin.stablecoins.permissions.edit-form.summary');
+  const t = useTranslations('admin.funds.permissions.edit-form.summary');
   const values = useWatch({
     control: control,
   });

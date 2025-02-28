@@ -4,8 +4,8 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { PauseInput } from '@/lib/mutations/funds/pause/pause-schema';
-import type { UnpauseInput } from '@/lib/mutations/funds/unpause/unpause-schema';
+import type { PauseInput } from '@/lib/mutations/fund/pause/pause-schema';
+import type { UnPauseInput } from '@/lib/mutations/fund/unpause/unpause-schema';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -17,7 +17,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const { control } = useFormContext<PauseInput | UnpauseInput>();
+  const { control } = useFormContext<PauseInput | UnPauseInput>();
   const t = useTranslations('admin.funds.pause-form.summary');
 
   return (

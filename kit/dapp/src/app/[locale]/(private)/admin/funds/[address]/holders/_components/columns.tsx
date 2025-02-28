@@ -23,7 +23,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 };
 
 export function useHoldersColumns() {
-  const t = useTranslations('admin.stablecoins.holders');
+  const t = useTranslations('admin.funds.holders');
 
   return [
     columnHelper.accessor('account.id', {

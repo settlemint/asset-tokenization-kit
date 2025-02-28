@@ -1,59 +1,11 @@
 'use server';
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Role } from '@/lib/config/roles';
 import { z } from '@/lib/utils/zod';
 import { action } from '../../safe-action';
+import { grantRole } from '../grant-role/grant-role-action';
+import { revokeRole } from '../revoke-role/revoke-role-action';
 import { UpdateRolesSchema } from './update-roles-schema';
-
-/**
- * GraphQL mutation to grant a role to an account for a bond
- *
- * @remarks
- * This mutation requires authentication via challenge response
- */
-const BondGrantRole = portalGraphql(`
-  mutation BondGrantRole($address: String!, $from: String!, $challengeResponse: String!, $role: String!, $account: String!) {
-    BondGrantRole(
-      address: $address
-      from: $from
-      input: {role: $role, account: $account}
-      challengeResponse: $challengeResponse
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL mutation to revoke a role from an account for a bond
- *
- * @remarks
- * This mutation requires authentication via challenge response
- */
-const BondRevokeRole = portalGraphql(`
-  mutation BondRevokeRole($address: String!, $from: String!, $challengeResponse: String!, $role: String!, $account: String!) {
-    BondRevokeRole(
-      address: $address
-      from: $from
-      input: {role: $role, account: $account}
-      challengeResponse: $challengeResponse
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-/**
- * Map of role names to their corresponding byte strings
- */
-const ROLES = {
-  ADMIN: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  SUPPLY_MANAGER:
-    '0x7a8dc26796a1e50e6e190b70259f58f6a4edd5b22280ceecc82b687b8e982869',
-  USER_MANAGER:
-    '0xf5e09b4647c695736f6a1427562c70ff437a315248dd2f8f7ff87e3792a3df6c',
-} as const;
 
 /**
  * Server action for updating a user's roles for a bond
@@ -82,51 +34,62 @@ const ROLES = {
  */
 export const updateRoles = action
   .schema(UpdateRolesSchema)
-  .outputSchema(z.hashes())
-  .action(
-    async ({
-      parsedInput: { address, roles, account, pincode },
-      ctx: { user },
-    }) => {
-      const transactions: string[] = [];
+  .outputSchema(z.array(z.array(z.hash())))
+  .action(async ({ parsedInput }) => {
+    const { address, roles, userAddress, pincode } = parsedInput;
 
-      // Process each role
-      for (const [roleName, shouldHave] of Object.entries(roles)) {
-        const roleBytes = ROLES[roleName as keyof typeof ROLES];
+    // Separate roles to grant and revoke
+    const rolesToEnable: Record<string, boolean> = {};
+    const rolesToDisable: Record<string, boolean> = {};
 
-        if (!roleBytes) {
-          console.warn(`Skipping unknown role: ${roleName}`);
-          continue;
-        }
-
-        // Grant or revoke the role based on the shouldHave flag
-        if (shouldHave) {
-          const response = await portalClient.request(BondGrantRole, {
-            address,
-            from: user.wallet,
-            role: roleBytes,
-            account,
-            challengeResponse: await handleChallenge(user.wallet, pincode),
-          });
-
-          if (response.BondGrantRole?.transactionHash) {
-            transactions.push(response.BondGrantRole.transactionHash);
-          }
-        } else {
-          const response = await portalClient.request(BondRevokeRole, {
-            address,
-            from: user.wallet,
-            role: roleBytes,
-            account,
-            challengeResponse: await handleChallenge(user.wallet, pincode),
-          });
-
-          if (response.BondRevokeRole?.transactionHash) {
-            transactions.push(response.BondRevokeRole.transactionHash);
-          }
-        }
+    Object.entries(roles).forEach(([role, enabled]) => {
+      if (enabled) {
+        rolesToEnable[role] = true;
+      } else {
+        rolesToDisable[role] = true;
       }
+    });
 
-      return z.hashes().parse(transactions);
+    // Process role grant and revoke operations
+    const results: string[][] = [];
+
+    // Handle role granting if there are roles to enable
+    if (Object.keys(rolesToEnable).length > 0) {
+      try {
+        const grantResult = await grantRole({
+          address,
+          roles: rolesToEnable as Record<Role, boolean>,
+          userAddress,
+          pincode,
+        });
+
+        if (grantResult?.data) {
+          results.push(grantResult.data);
+        }
+      } catch (error) {
+        console.error('Error granting roles:', error);
+        throw error;
+      }
     }
-  );
+
+    // Handle role revocations if there are roles to disable
+    if (Object.keys(rolesToDisable).length > 0) {
+      try {
+        const revokeResult = await revokeRole({
+          address,
+          roles: rolesToDisable as Record<Role, boolean>,
+          userAddress,
+          pincode,
+        });
+
+        if (revokeResult?.data) {
+          results.push(revokeResult.data);
+        }
+      } catch (error) {
+        console.error('Error revoking roles:', error);
+        throw error;
+      }
+    }
+
+    return z.array(z.array(z.hash())).parse(results);
+  });

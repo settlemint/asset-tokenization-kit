@@ -4,11 +4,11 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * Zod schema for validating unpause mutation inputs
  *
  * @property {string} address - The equity contract address
- * @property {string} pincode - User's pincode for authentication
+ * @property {string} pincode - The pincode for signing the transaction
  */
-export const UnpauseSchema = z.object({
+export const UnPauseSchema = z.object({
   address: z.address(),
   pincode: z.pincode(),
 });
 
-export type UnpauseInput = ZodInfer<typeof UnpauseSchema>;
+export type UnPauseInput = ZodInfer<typeof UnPauseSchema>;

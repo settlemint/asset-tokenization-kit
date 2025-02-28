@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { BurnInput } from '@/lib/mutations/funds/burn/burn-schema';
+import type { BurnInput } from '@/lib/mutations/fund/burn/burn-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';

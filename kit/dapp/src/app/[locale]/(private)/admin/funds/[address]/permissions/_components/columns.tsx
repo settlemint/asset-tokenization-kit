@@ -17,7 +17,7 @@ import { RevokeAllPermissionsForm } from './actions/revoke-all-form/form';
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
 export function usePermissionsColumns() {
-  const t = useTranslations('admin.stablecoins.permissions');
+  const t = useTranslations('admin.funds.permissions');
   const { address } = useParams<{ address: Address }>();
 
   return [

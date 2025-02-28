@@ -3,7 +3,7 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
 /**
  * Zod schema for validating mint mutation inputs
  *
- * @property {string} address - The bond contract address
+ * @property {string} address - The cryptocurrency contract address
  * @property {number} amount - The amount of tokens to mint
  * @property {string} to - The recipient address
  * @property {string} pincode - User's pincode for authentication

@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { MintInput } from '@/lib/mutations/funds/mint/mint-schema';
+import type { MintInput } from '@/lib/mutations/fund/mint/mint-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';

@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { MintInput } from '@/lib/mutations/funds/mint/mint-schema';
+import type { MintInput } from '@/lib/mutations/fund/mint/mint-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 

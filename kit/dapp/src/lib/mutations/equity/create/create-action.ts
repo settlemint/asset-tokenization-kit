@@ -1,7 +1,7 @@
 'use server';
 
 import { handleChallenge } from '@/lib/challenge';
-import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
+import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z } from '@/lib/utils/zod';
@@ -52,7 +52,7 @@ const CreateEquityPredictAddress = portalGraphql(`
 `);
 
 /**
- * GraphQL mutation for creating off-chain metadata for an equity
+ * GraphQL mutation for creating off-chain metadata for a equity
  *
  * @remarks
  * Stores additional metadata about the equity in Hasura
@@ -85,7 +85,7 @@ export const createEquity = action
       const predictedAddress = await portalClient.request(
         CreateEquityPredictAddress,
         {
-          address: EQUITY_FACTORY_ADDRESS,
+          address: STABLE_COIN_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
           isin: isin ?? '',
@@ -109,15 +109,15 @@ export const createEquity = action
       });
 
       const data = await portalClient.request(EquityFactoryCreate, {
-        address: EQUITY_FACTORY_ADDRESS,
+        address: STABLE_COIN_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
         decimals,
         isin: isin ?? '',
+        challengeResponse: await handleChallenge(user.wallet, pincode),
         equityCategory,
         equityClass,
-        challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
       return z.hashes().parse([data.EquityFactoryCreate?.transactionHash]);

@@ -34,6 +34,21 @@
         "events": "Ereignisse",
         "permissions": "Berechtigungen"
       },
+      "details": {
+        "contract-address": "Vertragsadresse",
+        "creator": "Ersteller",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Dezimalstellen",
+        "total-supply": "Gesamtangebot",
+        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "ownership-concentration": "Eigentumskonzentration",
+        "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
+        "bond-details-description": "Details zur Anleihe",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Erkunden Sie umfassende Daten und Metriken für {name}."
+      },
       "manage": {
         "manage": "Verwalten"
       },
@@ -95,7 +110,7 @@
       },
       "events": {
         "events-page-title": "{name} Ereignisse",
-        "events-page-description": "Historische Aktivitäten und Transaktionen für {name} verfolgen."
+        "events-page-description": "Historische Aktivitäten und Transaktionen für {name} Stablecoin verfolgen."
       },
       "permissions": {
         "permissions-page-title": "{name} Berechtigungen",
@@ -228,190 +243,109 @@
       "grant-role-form": {
         "trigger-label": "Rolle zuweisen",
         "title": "Rolle zuweisen",
-        "description": "Rollen an einen neuen Administrator vergeben",
-        "button-label": "Rolle zuweisen",
+        "description": "Weisen Sie einem neuen Benutzer Administratorberechtigungen zu.",
+        "button-label": "Rollen zuweisen",
         "address": {
           "title": "Neuen Administrator auswählen",
           "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse, oder geben Sie manuell eine Wallet-Adresse ein.",
-          "address-label": "Administrator-Wallet-Adresse",
+          "address-label": "Wallet-Adresse des Administrators",
           "search-placeholder": "Nach einem Benutzer suchen",
           "manual-placeholder": "0x0000000000000000000000000000000000000000",
           "search-toggle": "Stattdessen nach einem Benutzer suchen...",
           "manual-toggle": "Adresse manuell eingeben..."
         },
         "roles": {
-          "title": "Administrator-Rollen auswählen",
+          "title": "Administratorrollen auswählen",
           "description": "Wählen Sie die Rollen aus, die dem neuen Administrator zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
         },
         "summary": {
           "title": "Rollenzuweisung überprüfen und bestätigen",
           "description": "Überprüfen Sie die Details Ihrer Rollenzuweisung, bevor Sie fortfahren.",
           "grant-title": "Rolle zuweisen",
-          "grant-description": "Details zum Vorgang der Rollenzuweisung",
+          "grant-description": "Details zum Zuweisen von Rollen",
           "asset-label": "Asset",
-          "admin-address-label": "Administrator-Adresse",
+          "admin-address-label": "Administratoradresse",
           "roles-label": "Rollen"
         }
       },
-      "create-form": {
-        "trigger-label": "Stablecoin erstellen",
-        "title": "Stablecoin erstellen",
-        "description": "Einen Stablecoin erstellen",
-        "button-label": "Erstellen",
-        "success": "Stablecoin {name} erfolgreich erstellt",
-        "basics": {
-          "title": "Grundlegende Informationen",
-          "description": "Konfigurieren Sie die grundlegenden Eigenschaften Ihres Assets.",
-          "name-label": "Name",
-          "name-placeholder": "TotallyNotTether",
-          "symbol-label": "Symbol",
-          "symbol-placeholder": "SAFU",
-          "decimals-label": "Dezimalstellen",
-          "isin-label": "ISIN",
-          "isin-placeholder": "DEFI4EVER2024",
-          "private-token-label": "Privater Token",
-          "private-token-description": "Andere Organisationen werden dieses Asset nicht sehen"
-        },
-        "configuration": {
-          "title": "Konfiguration",
-          "description": "Konfigurieren Sie die Fondskategorie, Klasse und Gebühren.",
-          "fund-category-label": "Fondskategorie",
-          "fund-category-description": "Wählen Sie die Kategorie Ihres Fonds.",
-          "fund-class-label": "Fondsklasse",
-          "fund-class-description": "Wählen Sie die Klasse Ihres Fonds.",
-          "management-fee-label": "Verwaltungsgebühr",
-          "management-fee-description": "Geben Sie die Verwaltungsgebühr in Basispunkten an.",
-          "basis-points": "Basispunkte",
-          "category-activist": "Aktivist",
-          "category-commodity-trading": "Rohstoffhandel",
-          "category-convertible-arbitrage": "Wandelanleihen-Arbitrage",
-          "category-credit": "Kredit",
-          "category-currency-fx": "Währung / Devisen",
-          "category-distressed-debt": "Notleidende Schulden",
-          "category-emerging-markets": "Schwellenmärkte",
-          "category-equity-hedge": "Aktienabsicherung",
-          "category-event-driven": "Ereignisgesteuert",
-          "category-fixed-income-arbitrage": "Festzins-Arbitrage",
-          "category-fund-of-funds": "Dachfonds",
-          "category-global-macro": "Global Makro",
-          "category-high-frequency-trading": "Hochfrequenzhandel (HFT)",
-          "category-managed-futures-cta": "Managed Futures / CTA",
-          "category-market-neutral": "Marktneutral",
-          "category-merger-arbitrage": "Fusionsarbitrage",
-          "category-multi-strategy": "Multi-Strategie",
-          "category-private-equity": "Private Equity (PE)",
-          "category-quantitative-systematic": "Quantitativ/Systematisch",
-          "category-relative-value": "Relativer Wert",
-          "category-statistical-arbitrage": "Statistische Arbitrage",
-          "category-structured-credit": "Strukturierte Kredite",
-          "category-venture-capital": "Risikokapital (VC)",
-          "class-absolute-return": "Absolute Rendite",
-          "class-core-blend": "Kern / Mischung",
-          "class-diversified": "Diversifiziert",
-          "class-early-stage": "Frühphase",
-          "class-factor-based": "Faktorbasiert",
-          "class-growth-focused": "Wachstumsorientiert",
-          "class-income-focused": "Einkommensorientiert",
-          "class-large-cap": "Large-Cap",
-          "class-long-equity": "Long Equity (Nur Long)",
-          "class-long-short-equity": "Long/Short Equity",
-          "class-market-neutral": "Marktneutral",
-          "class-mid-cap": "Mid-Cap",
-          "class-momentum-oriented": "Momentum-orientiert",
-          "class-opportunistic": "Opportunistisch",
-          "class-pre-series-b": "Pre-Series B",
-          "class-quantitative-algorithmic": "Quantitativ / Algorithmisch",
-          "class-regional": "Regional",
-          "class-sector-specific": "Sektorspezifisch",
-          "class-seed-pre-seed": "Seed / Pre-Seed",
-          "class-series-b-late-stage": "Series B / Spätphase",
-          "class-short-equity": "Short Equity",
-          "class-small-cap": "Small-Cap",
-          "class-tactical-asset-allocation": "Taktische Asset-Allokation",
-          "class-value-focused": "Wertorientiert"
-        },
+      "details": {
+        "contract-address": "Vertragsadresse",
+        "creator": "Ersteller",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Dezimalstellen",
+        "total-supply": "Gesamtangebot",
+        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "ownership-concentration": "Eigentumskonzentration",
+        "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
+        "bond-details-description": "Details zur Anleihe",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Erkunden Sie umfassende Daten und Metriken für {name}."
+      },
+      "pause-form": {
         "summary": {
-          "title": "Überprüfen und bestätigen",
-          "description": "Überprüfen und bestätigen Sie die Details Ihres neuen Fonds vor der Erstellung.",
-          "asset-basics-title": "Asset-Grundlagen",
-          "asset-basics-description": "Grundlegende Informationen und Einstellungen zum Asset.",
-          "configuration-title": "Fondskonfiguration",
-          "configuration-description": "Fondskategorie, Klasse und Gebühreneinstellungen.",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "decimals-label": "Dezimalstellen",
-          "isin-label": "ISIN",
-          "private-label": "Privat",
-          "yes": "Ja",
-          "no": "Nein",
-          "fund-category-label": "Fondskategorie",
-          "fund-class-label": "Fondsklasse",
-          "management-fee-label": "Verwaltungsgebühr",
-          "basis-points": "Basispunkte",
-          "category-activist": "Aktivist",
-          "category-commodity-trading": "Rohstoffhandel",
-          "category-convertible-arbitrage": "Wandelanleihen-Arbitrage",
-          "category-credit": "Kredit",
-          "category-currency-fx": "Währung / Devisen",
-          "category-distressed-debt": "Notleidende Schulden",
-          "category-emerging-markets": "Schwellenmärkte",
-          "category-equity-hedge": "Aktienabsicherung",
-          "category-event-driven": "Ereignisgesteuert",
-          "category-fixed-income-arbitrage": "Festzins-Arbitrage",
-          "category-fund-of-funds": "Dachfonds",
-          "category-global-macro": "Global Makro",
-          "category-high-frequency-trading": "Hochfrequenzhandel (HFT)",
-          "category-managed-futures-cta": "Managed Futures / CTA",
-          "category-market-neutral": "Marktneutral",
-          "category-merger-arbitrage": "Fusionsarbitrage",
-          "category-multi-strategy": "Multi-Strategie",
-          "category-private-equity": "Private Equity (PE)",
-          "category-quantitative-systematic": "Quantitativ/Systematisch",
-          "category-relative-value": "Relativer Wert",
-          "category-statistical-arbitrage": "Statistische Arbitrage",
-          "category-structured-credit": "Strukturierte Kredite",
-          "category-venture-capital": "Risikokapital (VC)",
-          "class-absolute-return": "Absolute Rendite",
-          "class-core-blend": "Kern / Mischung",
-          "class-diversified": "Diversifiziert",
-          "class-early-stage": "Frühphase",
-          "class-factor-based": "Faktorbasiert",
-          "class-growth-focused": "Wachstumsorientiert",
-          "class-income-focused": "Einkommensorientiert",
-          "class-large-cap": "Large-Cap",
-          "class-long-equity": "Long Equity (Nur Long)",
-          "class-long-short-equity": "Long/Short Equity",
-          "class-market-neutral": "Marktneutral",
-          "class-mid-cap": "Mid-Cap",
-          "class-momentum-oriented": "Momentum-orientiert",
-          "class-opportunistic": "Opportunistisch",
-          "class-pre-series-b": "Pre-Series B",
-          "class-quantitative-algorithmic": "Quantitativ / Algorithmisch",
-          "class-regional": "Regional",
-          "class-sector-specific": "Sektorspezifisch",
-          "class-seed-pre-seed": "Seed / Pre-Seed",
-          "class-series-b-late-stage": "Series B / Spätphase",
-          "class-short-equity": "Short Equity",
-          "class-small-cap": "Small-Cap",
-          "class-tactical-asset-allocation": "Taktische Asset-Allokation",
-          "class-value-focused": "Wertorientiert"
+          "title": "Pausierungsvorgang überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihres Pausierungsvorgangs, bevor Sie fortfahren.",
+          "pause-title": "Pausieren",
+          "pause-description": "Details zum Pausierungsvorgang",
+          "asset-label": "Asset",
+          "current-state-label": "Aktueller Status",
+          "target-state-label": "Zielstatus",
+          "state-paused": "Pausiert",
+          "state-active": "Aktiv"
+        },
+        "details": {
+          "contract-address": "Vertragsadresse",
+          "creator": "Ersteller",
+          "name": "Name",
+          "symbol": "Symbol",
+          "isin": "ISIN",
+          "decimals": "Dezimalstellen",
+          "total-supply": "Gesamtangebot",
+          "total-supply-info": "Das Gesamtangebot des Tokens",
+          "ownership-concentration": "Eigentumskonzentration",
+          "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
+          "bond-details-description": "Details zur Anleihe",
+          "details-page-title": "{name} Details",
+          "details-page-description": "Erkunden Sie umfassende Daten und Metriken für {name}."
+        },
+        "tabs": {
+          "details": "Details",
+          "holders": "Inhaber",
+          "events": "Ereignisse",
+          "permissions": "Berechtigungen"
         }
       },
-      "table": {
-        "page-title": "Stablecoins",
-        "page-description": "Sehen und verwalten Sie Ihre Stablecoins.",
-        "address-header": "Adresse",
-        "name-header": "Name",
-        "symbol-header": "Symbol",
-        "total-supply-header": "Gesamtangebot",
-        "committed-collateral-header": "Zugesagte Sicherheiten",
-        "status-header": "Status",
-        "private-header": "Privat",
-        "actions-header": "Aktionen",
-        "paused-status": "Pausiert",
-        "active-status": "Aktiv",
-        "private-status": "Privat",
-        "public-status": "Öffentlich"
+      "events": {
+        "page-title": "Anleihe-Ereignisse",
+        "page-description": "Verfolgen Sie alle Ereignisse im Zusammenhang mit dieser Anleihe.",
+        "table-title": "Ereignisse",
+        "table-description": "Eine Liste aller Ereignisse im Zusammenhang mit dieser Anleihe.",
+        "events-page-title": "{name} Ereignisse",
+        "events-page-description": "Verfolgen Sie alle Ereignisse im Zusammenhang mit der Anleihe {name}."
+      },
+      "holders": {
+        "page-title": "Anleihe-Inhaber",
+        "page-description": "Sehen Sie alle Wallets, die derzeit diese Anleihe halten.",
+        "table-title": "Inhaber",
+        "table-description": "Eine Liste aller Wallets, die derzeit diese Anleihe halten.",
+        "headers": {
+          "wallet": "Wallet",
+          "balance": "Guthaben",
+          "frozen": "Eingefroren",
+          "last-activity": "Letzte Aktivität"
+        }
+      },
+      "permissions": {
+        "page-title": "Anleihe-Berechtigungen",
+        "page-description": "Verwalten Sie Benutzerrollen und Zugriffsrechte für diese Anleihe.",
+        "table-title": "Berechtigungen",
+        "table-description": "Eine Liste aller aktuellen Benutzerrollen und Zugriffsrechte für diese Anleihe.",
+        "headers": {
+          "role": "Rolle",
+          "last-activity": "Letzte Aktivität"
+        }
       }
     },
     "funds": {
@@ -671,6 +605,217 @@
         "equity": "Aktie",
         "fund": "Fonds",
         "stablecoin": "Stablecoin"
+      }
+    },
+    "bonds": {
+      "create-form": {
+        "trigger-label": "Anleihe erstellen",
+        "title": "Neue Anleihe erstellen",
+        "description": "Geben Sie eine neue Anleihe auf der Blockchain aus",
+        "back-to-bonds": "Zurück zu Anleihen",
+        "button-label": "Anleihe erstellen",
+        "success": "Anleihe {name} wurde erfolgreich erstellt.",
+        "basics": {
+          "title": "Grundinformationen",
+          "description": "Geben Sie die grundlegenden Details der Anleihe ein",
+          "name-label": "Asset-Name",
+          "name-placeholder": "z.B. Unternehmen XYZ Anleihe 2023",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "z.B. XYZ23",
+          "decimals-label": "Dezimalstellen",
+          "isin-label": "ISIN",
+          "isin-placeholder": "z.B. US000000AA00",
+          "isin-description": "Internationale Wertpapierkennnummer",
+          "private-token-label": "Privater Token",
+          "private-token-description": "Private Token erfordern KYC vor der Übertragung"
+        },
+        "configuration": {
+          "title": "Anleihekonfiguration",
+          "description": "Konfigurieren Sie die Eigenschaften der Anleihe",
+          "cap-label": "Obergrenze",
+          "cap-description": "Maximale Anzahl von Token, die ausgegeben werden können",
+          "face-value-label": "Nennwert",
+          "face-value-description": "Nominaler Wert einer einzelnen Anleiheeinheit",
+          "maturity-date-label": "Fälligkeitsdatum",
+          "underlying-asset-label": "Basiswert",
+          "underlying-asset-description": "Adresse des Assets, das diese Anleihe sichert",
+          "pincode-label": "PIN-Code",
+          "pincode-description": "Ihr Wallet-PIN-Code zur Autorisierung der Transaktion"
+        },
+        "summary": {
+          "title": "Überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Anleihedetails vor der Erstellung",
+          "asset-basics-title": "Grundinformationen",
+          "asset-basics-description": "Grundlegende Informationen über die Anleihe",
+          "configuration-title": "Anleihekonfiguration",
+          "configuration-description": "Technische Konfiguration der Anleihe",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Dezimalstellen",
+          "isin-label": "ISIN",
+          "private-label": "Privater Token",
+          "cap-label": "Obergrenze",
+          "face-value-label": "Nennwert",
+          "maturity-date-label": "Fälligkeitsdatum",
+          "underlying-asset-label": "Basiswert",
+          "yes": "Ja",
+          "no": "Nein",
+          "basis-points": "Basispunkte"
+        }
+      },
+      "table": {
+        "page-title": "Anleihenverwaltung",
+        "page-description": "Erstellen, anzeigen und verwalten Sie Anleihe-Assets auf der Blockchain",
+        "title": "Anleihen",
+        "description": "Verwalten Sie Ihre Anleihe-Assets",
+        "create-new": "Neue Anleihe erstellen",
+        "address-header": "Adresse",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Gesamtangebot",
+        "holders-header": "Inhaber",
+        "maturity-date-header": "Fälligkeitsdatum",
+        "status-header": "Status",
+        "private-header": "Privat",
+        "actions-header": "Aktionen",
+        "paused-status": "Pausiert",
+        "active-status": "Aktiv",
+        "private-status": "Privat",
+        "public-status": "Öffentlich"
+      },
+      "manage": {
+        "manage": "Verwalten"
+      },
+      "burn-form": {
+        "trigger-label": "Verbrennen",
+        "title": "Verbrennen",
+        "description": "Entfernen Sie Anleihe-Token dauerhaft aus dem Umlauf, um das Angebot zu reduzieren.",
+        "button-label": "Assets verbrennen",
+        "amount": {
+          "title": "Betrag eingeben",
+          "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
+          "amount-label": "Betrag",
+          "available-balance": "Verfügbares Guthaben: {balance}"
+        },
+        "summary": {
+          "title": "Verbrennen überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihres Verbrennungsvorgangs, bevor Sie fortfahren.",
+          "burn-title": "Verbrennen",
+          "burn-description": "Details zum Verbrennungsvorgang",
+          "asset-label": "Asset",
+          "amount-label": "Betrag"
+        }
+      },
+      "mint-form": {
+        "trigger-label": "Prägen",
+        "title": "Prägen",
+        "description": "Geben Sie neue Token aus, um das zirkulierende Angebot der Anleihe zu erhöhen.",
+        "button-label": "Assets prägen",
+        "amount": {
+          "title": "Betrag eingeben",
+          "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
+          "amount-label": "Betrag"
+        },
+        "summary": {
+          "title": "Prägung überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihrer Prägung, bevor Sie fortfahren.",
+          "mint-title": "Prägen",
+          "mint-description": "Details zum Prägungsvorgang",
+          "asset-label": "Asset",
+          "amount-label": "Betrag"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Rolle zuweisen",
+        "title": "Rolle zuweisen",
+        "description": "Weisen Sie einem neuen Benutzer Administratorberechtigungen zu.",
+        "button-label": "Rollen zuweisen",
+        "address": {
+          "title": "Neuen Administrator auswählen",
+          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse, oder geben Sie manuell eine Wallet-Adresse ein.",
+          "address-label": "Wallet-Adresse des Administrators",
+          "search-placeholder": "Nach einem Benutzer suchen",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Stattdessen nach einem Benutzer suchen...",
+          "manual-toggle": "Adresse manuell eingeben..."
+        },
+        "roles": {
+          "title": "Administratorrollen auswählen",
+          "description": "Wählen Sie die Rollen aus, die dem neuen Administrator zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
+        },
+        "summary": {
+          "title": "Rollenzuweisung überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihrer Rollenzuweisung, bevor Sie fortfahren.",
+          "grant-title": "Rolle zuweisen",
+          "grant-description": "Details zum Zuweisen von Rollen",
+          "asset-label": "Asset",
+          "admin-address-label": "Administratoradresse",
+          "roles-label": "Rollen"
+        }
+      },
+      "pause-form": {
+        "summary": {
+          "title": "Pausierungsvorgang überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details Ihres Pausierungsvorgangs, bevor Sie fortfahren.",
+          "pause-title": "Pausieren",
+          "pause-description": "Details zum Pausierungsvorgang",
+          "asset-label": "Asset",
+          "current-state-label": "Aktueller Status",
+          "target-state-label": "Zielstatus",
+          "state-paused": "Pausiert",
+          "state-active": "Aktiv"
+        },
+        "details": {
+          "contract-address": "Vertragsadresse",
+          "creator": "Ersteller",
+          "name": "Name",
+          "symbol": "Symbol",
+          "isin": "ISIN",
+          "decimals": "Dezimalstellen",
+          "total-supply": "Gesamtangebot",
+          "total-supply-info": "Das Gesamtangebot des Tokens",
+          "ownership-concentration": "Eigentumskonzentration",
+          "ownership-concentration-info": "Prozentsatz im Besitz der Top 5 Inhaber",
+          "bond-details-description": "Details zur Anleihe",
+          "details-page-title": "{name} Details",
+          "details-page-description": "Erkunden Sie umfassende Daten und Metriken für {name}."
+        },
+        "tabs": {
+          "details": "Details",
+          "holders": "Inhaber",
+          "events": "Ereignisse",
+          "permissions": "Berechtigungen"
+        }
+      },
+      "events": {
+        "page-title": "Anleihe-Ereignisse",
+        "page-description": "Verfolgen Sie alle Ereignisse im Zusammenhang mit dieser Anleihe.",
+        "table-title": "Ereignisse",
+        "table-description": "Eine Liste aller Ereignisse im Zusammenhang mit dieser Anleihe.",
+        "events-page-title": "{name} Ereignisse",
+        "events-page-description": "Verfolgen Sie alle Ereignisse im Zusammenhang mit der Anleihe {name}."
+      },
+      "holders": {
+        "page-title": "Anleihe-Inhaber",
+        "page-description": "Sehen Sie alle Wallets, die derzeit diese Anleihe halten.",
+        "table-title": "Inhaber",
+        "table-description": "Eine Liste aller Wallets, die derzeit diese Anleihe halten.",
+        "headers": {
+          "wallet": "Wallet",
+          "balance": "Guthaben",
+          "frozen": "Eingefroren",
+          "last-activity": "Letzte Aktivität"
+        }
+      },
+      "permissions": {
+        "page-title": "Anleihe-Berechtigungen",
+        "page-description": "Verwalten Sie Benutzerrollen und Zugriffsrechte für diese Anleihe.",
+        "table-title": "Berechtigungen",
+        "table-description": "Eine Liste aller aktuellen Benutzerrollen und Zugriffsrechte für diese Anleihe.",
+        "headers": {
+          "role": "Rolle",
+          "last-activity": "Letzte Aktivität"
+        }
       }
     }
   },

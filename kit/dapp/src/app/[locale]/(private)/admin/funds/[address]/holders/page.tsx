@@ -1,6 +1,6 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getFundDetail } from '@/lib/queries/fund/fund-detail';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
@@ -16,23 +16,23 @@ export async function generateMetadata({
   params: Promise<{ locale: string; address: Address }>;
 }): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const fund = await getFundDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.stablecoins.holders',
+    namespace: 'admin.funds.holders',
   });
 
   return {
     title: t('holders-page-title', {
-      name: stableCoin?.name,
+      name: fund?.name,
     }),
     description: t('holders-page-description', {
-      name: stableCoin?.name,
+      name: fund?.name,
     }),
   };
 }
 
-export default async function StablecoinHoldersPage({ params }: PageProps) {
+export default async function FundHoldersPage({ params }: PageProps) {
   const { address } = await params;
   const balances = await getAssetBalanceList({ address });
 

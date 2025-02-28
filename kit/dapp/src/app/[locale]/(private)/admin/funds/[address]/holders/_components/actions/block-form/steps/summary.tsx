@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { BlockUserInput } from '@/lib/mutations/stablecoin/block-user/block-user-schema';
+import type { BlockUserInput } from '@/lib/mutations/fund/block-user/block-user-schema';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -17,7 +17,7 @@ interface SummaryProps {
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
   const { control } = useFormContext<BlockUserInput>();
-  const t = useTranslations('admin.stablecoins.holders.block-form.summary');
+  const t = useTranslations('admin.funds.holders.block-form.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

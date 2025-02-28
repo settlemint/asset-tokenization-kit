@@ -34,6 +34,21 @@
         "events": "Events",
         "permissions": "Permissions"
       },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "bond-details-description": "Details for the bond",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Explore comprehensive data and metrics for {name}."
+      },
       "manage": {
         "manage": "Manage"
       },
@@ -251,6 +266,52 @@
           "asset-label": "Asset",
           "admin-address-label": "Admin Address",
           "roles-label": "Roles"
+        },
+        "details": {
+          "contract-address": "Contract address",
+          "creator": "Creator",
+          "name": "Name",
+          "symbol": "Symbol",
+          "isin": "ISIN",
+          "decimals": "Decimals",
+          "total-supply": "Total supply",
+          "total-supply-info": "The total supply of the token",
+          "ownership-concentration": "Ownership concentration",
+          "ownership-concentration-info": "Percentage owned by the top 5 holders",
+          "bond-details-description": "Details for the bond",
+          "details-page-title": "{name} Details",
+          "details-page-description": "Explore comprehensive data and metrics for {name}."
+        },
+        "pause-form": {
+          "pause": {
+            "trigger-label": "Pause",
+            "title": "Pause Bond Transactions",
+            "description": "Temporarily halt all transactions and interactions for this bond.",
+            "button-label": "Pause Transactions"
+          },
+          "unpause": {
+            "trigger-label": "Unpause",
+            "title": "Resume Bond Transactions",
+            "description": "Resume transactions and interactions for this bond.",
+            "button-label": "Resume Transactions"
+          },
+          "summary": {
+            "title": "Review and confirm pause operation",
+            "description": "Verify the details of your pause operation before proceeding.",
+            "pause-title": "Pause",
+            "pause-description": "Pausing operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-paused": "Paused",
+            "state-active": "Active"
+          },
+          "tabs": {
+            "details": "Details",
+            "holders": "Holders",
+            "events": "Events",
+            "permissions": "Permissions"
+          }
         }
       },
       "create-form": {
@@ -644,6 +705,275 @@
         "equity": "Equity",
         "fund": "Fund",
         "stablecoin": "Stablecoin"
+      }
+    },
+    "bonds": {
+      "create-form": {
+        "trigger-label": "Create Bond",
+        "title": "Create new bond",
+        "description": "Issue a new bond on the blockchain",
+        "back-to-bonds": "Back to bonds",
+        "button-label": "Create Bond",
+        "success": "Bond {name} has been successfully created.",
+        "basics": {
+          "title": "Basic information",
+          "description": "Enter the basic details of the bond",
+          "name-label": "Asset name",
+          "name-placeholder": "e.g. Company XYZ Bond 2023",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "e.g. XYZ23",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "isin-placeholder": "e.g. US000000AA00",
+          "isin-description": "International Securities Identification Number",
+          "private-token-label": "Private token",
+          "private-token-description": "Private tokens require KYC before transfer"
+        },
+        "configuration": {
+          "title": "Bond configuration",
+          "description": "Configure the properties of the bond",
+          "cap-label": "Cap",
+          "cap-description": "Maximum amount of tokens that can be issued",
+          "face-value-label": "Face value",
+          "face-value-description": "Nominal value of a single bond unit",
+          "maturity-date-label": "Maturity date",
+          "underlying-asset-label": "Underlying asset",
+          "underlying-asset-description": "Address of the asset that backs this bond",
+          "pincode-label": "PIN code",
+          "pincode-description": "Your wallet PIN code to authorize the transaction"
+        },
+        "summary": {
+          "title": "Review and confirm",
+          "description": "Review the bond details before creating",
+          "asset-basics-title": "Basic information",
+          "asset-basics-description": "Basic information about the bond",
+          "configuration-title": "Bond configuration",
+          "configuration-description": "Technical configuration of the bond",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "decimals-label": "Decimals",
+          "isin-label": "ISIN",
+          "private-label": "Private token",
+          "cap-label": "Cap",
+          "face-value-label": "Face value",
+          "maturity-date-label": "Maturity date",
+          "underlying-asset-label": "Underlying asset",
+          "yes": "Yes",
+          "no": "No",
+          "basis-points": "basis points"
+        }
+      },
+      "table": {
+        "page-title": "Bonds Management",
+        "page-description": "Create, view, and manage bond assets on the blockchain",
+        "title": "Bonds",
+        "description": "Manage your bond assets",
+        "create-new": "Create new bond",
+        "address-header": "Address",
+        "name-header": "Name",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Total supply",
+        "holders-header": "Holders",
+        "maturity-date-header": "Maturity date",
+        "status-header": "Status",
+        "private-header": "Private",
+        "actions-header": "Actions",
+        "paused-status": "Paused",
+        "active-status": "Active",
+        "private-status": "Private",
+        "public-status": "Public"
+      },
+      "manage": {
+        "manage": "Manage"
+      },
+      "burn-form": {
+        "trigger-label": "Burn",
+        "title": "Burn",
+        "description": "Permanently remove bond tokens from circulation to reduce supply.",
+        "button-label": "Burn Assets",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to burn.",
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}"
+        },
+        "summary": {
+          "title": "Review and confirm burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "burn-title": "Burn",
+          "burn-description": "Burning operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "mint-form": {
+        "trigger-label": "Mint",
+        "title": "Mint",
+        "description": "Issue new tokens to increase the bond's circulating supply.",
+        "button-label": "Mint Assets",
+        "amount": {
+          "title": "Enter Amount",
+          "description": "Input the amount you wish to mint.",
+          "amount-label": "Amount"
+        },
+        "summary": {
+          "title": "Review and confirm mint",
+          "description": "Verify the details of your mint before proceeding.",
+          "mint-title": "Mint",
+          "mint-description": "Minting operation details",
+          "asset-label": "Asset",
+          "amount-label": "Amount"
+        }
+      },
+      "grant-role-form": {
+        "trigger-label": "Grant Role",
+        "title": "Grant Role",
+        "description": "Assign administrative permissions to a new user.",
+        "button-label": "Assign Roles",
+        "address": {
+          "title": "Select New Admin",
+          "description": "Search for a user by their name or email, or manually enter a wallet address.",
+          "address-label": "Admin Wallet Address",
+          "search-placeholder": "Search for a user",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "search-toggle": "Search for a user instead...",
+          "manual-toggle": "Enter address manually..."
+        },
+        "roles": {
+          "title": "Select Admin Roles",
+          "description": "Choose the roles to grant to the new admin. At least one role must be selected."
+        },
+        "summary": {
+          "title": "Review and confirm role grant",
+          "description": "Verify the details of your role grant before proceeding.",
+          "grant-title": "Grant Role",
+          "grant-description": "Granting role operation details",
+          "asset-label": "Asset",
+          "admin-address-label": "Admin Address",
+          "roles-label": "Roles"
+        },
+        "details": {
+          "contract-address": "Contract address",
+          "creator": "Creator",
+          "name": "Name",
+          "symbol": "Symbol",
+          "isin": "ISIN",
+          "decimals": "Decimals",
+          "total-supply": "Total supply",
+          "total-supply-info": "The total supply of the token",
+          "ownership-concentration": "Ownership concentration",
+          "ownership-concentration-info": "Percentage owned by the top 5 holders",
+          "bond-details-description": "Details for the bond",
+          "details-page-title": "{name} Details",
+          "details-page-description": "Explore comprehensive data and metrics for {name}."
+        },
+        "pause-form": {
+          "pause": {
+            "trigger-label": "Pause",
+            "title": "Pause Bond Transactions",
+            "description": "Temporarily halt all transactions and interactions for this bond.",
+            "button-label": "Pause Transactions"
+          },
+          "unpause": {
+            "trigger-label": "Unpause",
+            "title": "Resume Bond Transactions",
+            "description": "Resume transactions and interactions for this bond.",
+            "button-label": "Resume Transactions"
+          },
+          "summary": {
+            "title": "Review and confirm pause operation",
+            "description": "Verify the details of your pause operation before proceeding.",
+            "pause-title": "Pause",
+            "pause-description": "Pausing operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-paused": "Paused",
+            "state-active": "Active"
+          },
+          "tabs": {
+            "details": "Details",
+            "holders": "Holders",
+            "events": "Events",
+            "permissions": "Permissions"
+          }
+        }
+      },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "name": "Name",
+        "symbol": "Symbol",
+        "isin": "ISIN",
+        "decimals": "Decimals",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "bond-details-description": "Details for the bond",
+        "details-page-title": "{name} Details",
+        "details-page-description": "Explore comprehensive data and metrics for {name}."
+      },
+      "tabs": {
+        "details": "Details",
+        "holders": "Holders",
+        "events": "Events",
+        "permissions": "Permissions"
+      },
+      "events": {
+        "page-title": "Bond Events",
+        "page-description": "Track all events related to this bond.",
+        "table-title": "Events",
+        "table-description": "A list of all events related to this bond.",
+        "events-page-title": "{name} Events",
+        "events-page-description": "Track all events related to {name} bond."
+      },
+      "holders": {
+        "page-title": "Bond Holders",
+        "page-description": "See all wallets currently holding this bond.",
+        "table-title": "Holders",
+        "table-description": "A list of all wallets currently holding this bond.",
+        "headers": {
+          "wallet": "Wallet",
+          "balance": "Balance",
+          "frozen": "Frozen",
+          "last-activity": "Last Activity"
+        }
+      },
+      "permissions": {
+        "page-title": "Bond Permissions",
+        "page-description": "Manage user roles and access rights for this bond.",
+        "table-title": "Permissions",
+        "table-description": "A list of all current user roles and access rights for this bond.",
+        "headers": {
+          "role": "Role",
+          "last-activity": "Last Activity"
+        }
+      },
+      "pause-form": {
+        "pause": {
+          "trigger-label": "Pause",
+          "title": "Pause Bond Transactions",
+          "description": "Temporarily halt all transactions and interactions for this bond.",
+          "button-label": "Pause Transactions"
+        },
+        "unpause": {
+          "trigger-label": "Unpause",
+          "title": "Resume Bond Transactions",
+          "description": "Resume transactions and interactions for this bond.",
+          "button-label": "Resume Transactions"
+        },
+        "summary": {
+          "title": "Review and confirm pause operation",
+          "description": "Verify the details of your pause operation before proceeding.",
+          "pause-title": "Pause",
+          "pause-description": "Pausing operation details",
+          "asset-label": "Asset",
+          "current-state-label": "Current state",
+          "target-state-label": "Target state",
+          "state-paused": "Paused",
+          "state-active": "Active"
+        }
       }
     }
   },

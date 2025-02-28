@@ -9,13 +9,10 @@ import { action } from '../../safe-action';
 import { FreezeSchema } from './freeze-schema';
 
 /**
- * GraphQL mutation to freeze tokens for a user
- *
- * @remarks
- * This mutation requires authentication via challenge response
+ * GraphQL mutation to freeze a specific user account from a equity
  */
 const EquityFreeze = portalGraphql(`
-  mutation EquityFreeze($address: String!, $from: String!, $challengeResponse: String!, $user: String!, $amount: String!) {
+  mutation EquityFreeze($address: String!, $challengeResponse: String!, $from: String!, $user: String!, $amount: String!) {
     EquityFreeze(
       address: $address
       from: $from
@@ -32,17 +29,17 @@ export const freeze = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, pincode, user, amount },
-      ctx: { user: currentUser },
+      parsedInput: { address, pincode, userAddress, amount },
+      ctx: { user },
     }) => {
       const { decimals } = await getEquityDetail({ address });
 
       const response = await portalClient.request(EquityFreeze, {
         address: address,
-        from: currentUser.wallet,
-        user,
+        user: userAddress,
+        from: user.wallet,
         amount: parseUnits(amount.toString(), decimals).toString(),
-        challengeResponse: await handleChallenge(currentUser.wallet, pincode),
+        challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
       return z.hashes().parse([response.EquityFreeze?.transactionHash]);

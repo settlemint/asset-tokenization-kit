@@ -4,14 +4,14 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * Zod schema for validating revoke role mutation inputs
  *
  * @property {string} address - The equity contract address
- * @property {string} role - The role to revoke (ADMIN, SUPPLY_MANAGER, USER_MANAGER)
- * @property {string} account - The account to revoke the role from
- * @property {string} pincode - User's pincode for authentication
+ * @property {Object} roles - Map of role names to boolean values indicating which roles to revoke
+ * @property {string} userAddress - The address of the user to revoke roles from
+ * @property {string} pincode - The pincode for signing the transaction
  */
 export const RevokeRoleSchema = z.object({
   address: z.address(),
-  role: z.enum(['ADMIN', 'SUPPLY_MANAGER', 'USER_MANAGER']),
-  account: z.address(),
+  roles: z.roles(),
+  userAddress: z.address(),
   pincode: z.pincode(),
 });
 

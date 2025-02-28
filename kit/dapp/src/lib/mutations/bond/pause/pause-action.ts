@@ -7,10 +7,10 @@ import { action } from '../../safe-action';
 import { PauseSchema } from './pause-schema';
 
 /**
- * GraphQL mutation to pause a bond
+ * GraphQL mutation for pausing a bond contract
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * Temporarily suspends all transfers and operations on the bond
  */
 const BondPause = portalGraphql(`
   mutation BondPause($address: String!, $from: String!, $challengeResponse: String!) {

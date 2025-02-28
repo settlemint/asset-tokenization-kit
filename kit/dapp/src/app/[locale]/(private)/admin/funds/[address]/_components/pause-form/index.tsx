@@ -1,4 +1,4 @@
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getFundDetail } from '@/lib/queries/fund/fund-detail';
 import type { Address } from 'viem';
 import { PauseForm } from './form';
 
@@ -7,6 +7,6 @@ interface PauseFormWrapperProps {
 }
 
 export async function PauseFormWrapper({ address }: PauseFormWrapperProps) {
-  const stableCoin = await getStableCoinDetail({ address });
-  return <PauseForm address={address} isPaused={stableCoin.paused} />;
+  const fund = await getFundDetail({ address });
+  return <PauseForm address={address} isPaused={fund.paused} />;
 }

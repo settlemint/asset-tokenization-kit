@@ -7,10 +7,10 @@ import { action } from '../../safe-action';
 import { PauseSchema } from './pause-schema';
 
 /**
- * GraphQL mutation to pause an equity
+ * GraphQL mutation for pausing a equity contract
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * Temporarily suspends all transfers and operations on the equity
  */
 const EquityPause = portalGraphql(`
   mutation EquityPause($address: String!, $from: String!, $challengeResponse: String!) {

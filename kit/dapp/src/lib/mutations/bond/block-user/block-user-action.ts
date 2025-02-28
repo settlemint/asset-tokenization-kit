@@ -7,17 +7,17 @@ import { action } from '../../safe-action';
 import { BlockUserSchema } from './block-user-schema';
 
 /**
- * GraphQL mutation to block a user from interacting with a bond
+ * GraphQL mutation to block a user from a bond
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * This adds an address to the blocklist of the bond
  */
 const BondBlockUser = portalGraphql(`
-  mutation BondBlockUser($address: String!, $from: String!, $challengeResponse: String!, $user: String!) {
+  mutation BondBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
     BondBlockUser(
       address: $address
+      input: { user: $account }
       from: $from
-      input: {user: $user}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -29,15 +29,12 @@ export const blockUser = action
   .schema(BlockUserSchema)
   .outputSchema(z.hashes())
   .action(
-    async ({
-      parsedInput: { address, pincode, user },
-      ctx: { user: currentUser },
-    }) => {
+    async ({ parsedInput: { address, pincode, account }, ctx: { user } }) => {
       const response = await portalClient.request(BondBlockUser, {
         address: address,
-        from: currentUser.wallet,
-        user,
-        challengeResponse: await handleChallenge(currentUser.wallet, pincode),
+        account,
+        from: user.wallet,
+        challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
       return z.hashes().parse([response.BondBlockUser?.transactionHash]);

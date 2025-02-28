@@ -4,13 +4,13 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * Zod schema for validating block user mutation inputs
  *
  * @property {string} address - The equity contract address
- * @property {string} user - The address of the user to block
- * @property {string} pincode - User's pincode for authentication
+ * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} account - The account to block
  */
 export const BlockUserSchema = z.object({
   address: z.address(),
-  user: z.address(),
   pincode: z.pincode(),
+  account: z.address(),
 });
 
 export type BlockUserInput = ZodInfer<typeof BlockUserSchema>;

@@ -4,15 +4,15 @@ import { handleChallenge } from '@/lib/challenge';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { z } from '@/lib/utils/zod';
 import { action } from '../../safe-action';
-import { UnpauseSchema } from './unpause-schema';
+import { UnPauseSchema } from './unpause-schema';
 
 /**
- * GraphQL mutation to unpause a bond
+ * GraphQL mutation for unpausing a bond contract
  *
  * @remarks
- * This mutation requires authentication via challenge response
+ * Resumes normal operations on a previously paused bond
  */
-const BondUnpause = portalGraphql(`
+const BondUnPause = portalGraphql(`
   mutation BondUnpause($address: String!, $from: String!, $challengeResponse: String!) {
     BondUnpause(
       address: $address
@@ -25,10 +25,10 @@ const BondUnpause = portalGraphql(`
 `);
 
 export const unpause = action
-  .schema(UnpauseSchema)
+  .schema(UnPauseSchema)
   .outputSchema(z.hashes())
   .action(async ({ parsedInput: { address, pincode }, ctx: { user } }) => {
-    const response = await portalClient.request(BondUnpause, {
+    const response = await portalClient.request(BondUnPause, {
       address: address,
       from: user.wallet,
       challengeResponse: await handleChallenge(user.wallet, pincode),

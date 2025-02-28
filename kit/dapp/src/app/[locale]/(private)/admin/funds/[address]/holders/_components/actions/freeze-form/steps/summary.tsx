@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
+import type { FreezeInput } from '@/lib/mutations/fund/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -17,7 +17,7 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations('admin.stablecoins.holders.freeze-form.summary');
+  const t = useTranslations('admin.funds.holders.freeze-form.summary');
   const values = useWatch({
     control: control,
   });
