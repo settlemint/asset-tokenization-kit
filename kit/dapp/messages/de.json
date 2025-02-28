@@ -49,7 +49,49 @@
         "blocked-status": "Blockiert",
         "active-status": "Aktiv",
         "last-activity-header": "Letzte Aktivität",
-        "actions-header": "Aktionen"
+        "actions-header": "Aktionen",
+        "block-form": {
+          "block-trigger-label": "Blockieren",
+          "unblock-trigger-label": "Freigeben",
+          "block-title": "Benutzer blockieren",
+          "unblock-title": "Benutzer freigeben",
+          "block-description": "Blockieren Sie diesen Benutzer, damit er nicht mit dem Stablecoin interagieren kann",
+          "unblock-description": "Geben Sie diesen Benutzer frei und erlauben Sie Interaktionen mit dem Stablecoin",
+          "block-button-label": "Blockieren",
+          "unblock-button-label": "Freigeben",
+          "summary": {
+            "title": "Überprüfen und bestätigen Sie die Blockierungsoperation",
+            "description": "Überprüfen Sie die Details Ihrer Blockierungsoperation, bevor Sie fortfahren.",
+            "block-title": "Blockieren",
+            "unblock-title": "Freigeben",
+            "operation-description": "Details zur Blockierungsoperation",
+            "asset-label": "Asset",
+            "current-state-label": "Aktueller Status",
+            "target-state-label": "Zielstatus",
+            "state-blocked": "Blockiert",
+            "state-active": "Aktiv"
+          }
+        },
+        "freeze-form": {
+          "trigger-label": "Einfrieren",
+          "title": "Guthaben einfrieren",
+          "description": "Guthaben für diesen Benutzer einfrieren",
+          "button-label": "Einfrieren",
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den Betrag ein, den Sie einfrieren möchten.",
+            "amount-label": "Betrag",
+            "balance-description": "Verfügbares Guthaben: {balance} Aktuell eingefroren: {frozen}"
+          },
+          "summary": {
+            "title": "Einfrierungsvorgang überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihres Einfrierungsvorgangs, bevor Sie fortfahren.",
+            "freeze-title": "Einfrieren",
+            "operation-description": "Details zum Einfrierungsvorgang",
+            "asset-label": "Asset",
+            "amount-label": "Betrag"
+          }
+        }
       },
       "events": {
         "events-page-title": "{name} Ereignisse",
@@ -64,7 +106,40 @@
         "wallet-header": "Wallet",
         "roles-header": "Rollen",
         "last-activity-header": "Letzte Aktivität",
-        "actions-header": "Aktionen"
+        "actions-header": "Aktionen",
+        "edit-form": {
+          "trigger-label": "Rollen bearbeiten",
+          "title": "Benutzerrollen bearbeiten",
+          "description": "Ändern Sie die Rollen, die diesem Benutzer zugewiesen sind",
+          "button-label": "Rollen aktualisieren",
+          "roles": {
+            "title": "Benutzerrollen auswählen",
+            "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden."
+          },
+          "summary": {
+            "title": "Neue Rollen überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details, bevor Sie fortfahren. Diese Aktion wird die Rollen für den Benutzer ändern.",
+            "update-title": "Rollen aktualisieren",
+            "operation-description": "Details zum Aktualisierungsvorgang der Rollen",
+            "user-label": "Benutzer",
+            "current-roles-label": "Aktuelle Rollen",
+            "new-roles-label": "Neue Rollen"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Alle widerrufen",
+          "title": "Alle Berechtigungen widerrufen",
+          "description": "Entfernen Sie alle Berechtigungen für diesen Benutzer",
+          "button-label": "Alle widerrufen",
+          "summary": {
+            "title": "Überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details, bevor Sie fortfahren. Diese Aktion wird alle Berechtigungen für den Benutzer widerrufen.",
+            "revoke-title": "Alle widerrufen",
+            "operation-description": "Details zum Widerruf aller Berechtigungen",
+            "user-label": "Benutzer",
+            "roles-to-revoke-label": "Zu widerrufende Rollen"
+          }
+        }
       },
       "pause-form": {
         "pause": {

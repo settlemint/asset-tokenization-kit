@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -16,26 +17,24 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<FreezeInput>();
+  const t = useTranslations('admin.stablecoins.holders.freeze-form.summary');
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep
-      title="Review and confirm freeze"
-      description="Verify the details of your freeze before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Freeze"
-        description="Freezing operation details"
+        title={t('freeze-title')}
+        description={t('operation-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Amount"
+          label={t('amount-label')}
           value={formatNumber(values.amount)}
         />
       </FormSummaryDetailCard>

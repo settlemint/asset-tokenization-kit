@@ -49,7 +49,49 @@
         "blocked-status": "Blocked",
         "active-status": "Active",
         "last-activity-header": "Last activity",
-        "actions-header": "Actions"
+        "actions-header": "Actions",
+        "block-form": {
+          "block-trigger-label": "Block",
+          "unblock-trigger-label": "Unblock",
+          "block-title": "Block User",
+          "unblock-title": "Unblock User",
+          "block-description": "Block this user from interacting with the stablecoin",
+          "unblock-description": "Unblock this user and allow interactions with the stablecoin",
+          "block-button-label": "Block",
+          "unblock-button-label": "Unblock",
+          "summary": {
+            "title": "Review and confirm block operation",
+            "description": "Verify the details of your block operation before proceeding.",
+            "block-title": "Block",
+            "unblock-title": "Unblock",
+            "operation-description": "Block operation details",
+            "asset-label": "Asset",
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "state-blocked": "Blocked",
+            "state-active": "Active"
+          }
+        },
+        "freeze-form": {
+          "trigger-label": "Freeze",
+          "title": "Freeze Funds",
+          "description": "Freeze funds for this user",
+          "button-label": "Freeze",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to freeze.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance: {balance} Currently frozen: {frozen}"
+          },
+          "summary": {
+            "title": "Review and confirm freeze",
+            "description": "Verify the details of your freeze before proceeding.",
+            "freeze-title": "Freeze",
+            "operation-description": "Freezing operation details",
+            "asset-label": "Asset",
+            "amount-label": "Amount"
+          }
+        }
       },
       "events": {
         "events-page-title": "{name} Events",
@@ -64,7 +106,40 @@
         "wallet-header": "Wallet",
         "roles-header": "Roles",
         "last-activity-header": "Last Activity",
-        "actions-header": "Actions"
+        "actions-header": "Actions",
+        "edit-form": {
+          "trigger-label": "Edit Roles",
+          "title": "Edit User Roles",
+          "description": "Modify the roles assigned to this user",
+          "button-label": "Update Roles",
+          "roles": {
+            "title": "Select User Roles",
+            "description": "Choose the roles to assign to this user. At least one role must be selected."
+          },
+          "summary": {
+            "title": "Review and confirm new roles",
+            "description": "Verify the details before proceeding. This action will change the roles for the user.",
+            "update-title": "Update Roles",
+            "operation-description": "Updating roles operation details",
+            "user-label": "User",
+            "current-roles-label": "Current roles",
+            "new-roles-label": "New roles"
+          }
+        },
+        "revoke-all-form": {
+          "trigger-label": "Revoke All",
+          "title": "Revoke All Permissions",
+          "description": "Remove all permissions for this user",
+          "button-label": "Revoke All",
+          "summary": {
+            "title": "Review and confirm",
+            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+            "revoke-title": "Revoke All",
+            "operation-description": "Revoking all permissions operation details",
+            "user-label": "User",
+            "roles-to-revoke-label": "Roles to revoke"
+          }
+        }
       },
       "pause-form": {
         "pause": {

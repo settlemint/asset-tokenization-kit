@@ -7,6 +7,7 @@ import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summar
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
 import type { UpdateRolesInput } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
 import { Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -18,26 +19,24 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
+  const t = useTranslations('admin.stablecoins.permissions.edit-form.summary');
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep
-      title="Review and confirm new roles"
-      description="Verify the details before proceeding. This action will change the roles for the user."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Update Roles"
-        description="Updating roles operation details"
+        title={t('update-title')}
+        description={t('operation-description')}
         icon={<Lock className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="User"
+          label={t('user-label')}
           value={<EvmAddress address={userAddress} />}
         />
         <FormSummaryDetailItem
-          label="Current roles"
+          label={t('current-roles-label')}
           value={
             <div className="flex flex-wrap gap-1">
               {roles.map((role: Role) => (
@@ -49,7 +48,7 @@ export function Summary({
           }
         />
         <FormSummaryDetailItem
-          label="New roles"
+          label={t('new-roles-label')}
           value={
             <div className="flex flex-wrap gap-1">
               {Object.entries(values.roles ?? {})
