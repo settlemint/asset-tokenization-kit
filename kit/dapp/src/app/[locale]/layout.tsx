@@ -1,4 +1,3 @@
-import { QueryClientProvider } from '@/components/blocks/query-client/query-client-provider';
 import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { TransitionProvider } from '@/components/layout/transition-provider';
 import { routing } from '@/i18n/routing';
@@ -46,9 +45,7 @@ export default async function RootLayout({
       <body className={cn('min-h-screen font-sans antialiased')}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
-            <QueryClientProvider>
-              <TransitionProvider>{children}</TransitionProvider>
-            </QueryClientProvider>
+            <TransitionProvider>{children}</TransitionProvider>
           </ThemeProvider>
           <Toaster richColors />
         </NextIntlClientProvider>
