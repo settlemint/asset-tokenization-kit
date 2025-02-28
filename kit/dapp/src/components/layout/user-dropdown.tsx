@@ -14,7 +14,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
-import { usePendingTransactions } from '@/lib/queries/transactions/transactions-pending';
 import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
@@ -30,7 +29,6 @@ import {
   SquareStackIcon,
   type SquareStackIconHandle,
 } from '../ui/animated-icons/square-stack';
-import { Badge } from '../ui/badge';
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -74,11 +72,6 @@ export function UserDropdown() {
     setIsClient(true);
   }, []);
 
-  const { data: pendingCount } = usePendingTransactions({
-    address: user?.wallet,
-    refetchInterval: 30000,
-  });
-
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -113,7 +106,7 @@ export function UserDropdown() {
                 address={user.wallet}
                 email={user.email}
                 className="h-8 w-8 rounded-lg"
-                indicator={(pendingCount ?? 0) > 0}
+                indicator={false}
               />
             ) : (
               <Skeleton className="h-8 w-8 rounded-lg" />
@@ -156,11 +149,6 @@ export function UserDropdown() {
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
                 {t('pending-transactions')}
-                {(pendingCount ?? 0) > 0 && (
-                  <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
-                    {pendingCount}
-                  </Badge>
-                )}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
