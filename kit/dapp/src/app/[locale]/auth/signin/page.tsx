@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server';
 import { SignInForm } from './forms/signin-form';
 
 interface SignInPageProps {
@@ -16,8 +15,6 @@ export default async function SignIn({
 }: SignInPageProps) {
   const { rd } = await searchParams;
   const { locale } = await params;
-  const t = await getTranslations('auth.signin.page');
-
   return (
     <>
       <div className="w-full">
