@@ -58,9 +58,10 @@ const CreateFundPredictAddress = portalGraphql(`
  * Stores additional metadata about the fund in Hasura
  */
 const CreateOffchainFund = hasuraGraphql(`
-  mutation CreateOffchainFund($id: String!, $isin: String!) {
+  mutation CreateOffchainFund($id: String!, $isin: String) {
     insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
+      isin
     }
   }
 `);
@@ -105,7 +106,7 @@ export const createFund = action
 
       await hasuraClient.request(CreateOffchainFund, {
         id: newAddress,
-        isin: isin,
+        isin,
       });
 
       const data = await portalClient.request(FundFactoryCreate, {

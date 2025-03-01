@@ -6,6 +6,7 @@ import {
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { getUnixTime, startOfDay, subDays } from 'date-fns';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetStatsFragment,
@@ -84,23 +85,25 @@ const fetchAssetStatsData = unstable_cache(
  * fetches data from The Graph, validates it using the AssetStatsFragmentSchema,
  * and processes the totalBurned field to be a negated string value.
  */
-export async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
-  const normalizedAddress = getAddress(address);
-  const rawData = await fetchAssetStatsData(normalizedAddress, days);
+export const getAssetStats = cache(
+  async ({ address, days = 1 }: AssetStatsProps) => {
+    const normalizedAddress = getAddress(address);
+    const rawData = await fetchAssetStatsData(normalizedAddress, days);
 
-  // Validate data using Zod schema and process
-  const validatedStats = rawData.map((item) => {
-    const validatedItem = safeParseWithLogging(
-      AssetStatsFragmentSchema,
-      item,
-      'asset stats'
-    );
+    // Validate data using Zod schema and process
+    const validatedStats = rawData.map((item) => {
+      const validatedItem = safeParseWithLogging(
+        AssetStatsFragmentSchema,
+        item,
+        'asset stats'
+      );
 
-    return {
-      ...validatedItem,
-      totalBurned: validatedItem.totalBurned.toString(),
-    };
-  });
+      return {
+        ...validatedItem,
+        totalBurned: validatedItem.totalBurned.toString(),
+      };
+    });
 
-  return validatedStats;
-}
+    return validatedStats;
+  }
+);

@@ -7,6 +7,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import type { Address } from 'viem';
 import {
   AssetBalanceFragment,
@@ -67,45 +68,44 @@ const fetchAssetBalanceListData = unstable_cache(
  * @param params - Object containing optional filters and limits
  * @returns Array of validated asset balances
  */
-export async function getAssetBalanceList({
-  address,
-  wallet,
-}: AssetBalanceListProps) {
-  const result = await fetchAssetBalanceListData(address, wallet);
+export const getAssetBalanceList = cache(
+  async ({ address, wallet }: AssetBalanceListProps) => {
+    const result = await fetchAssetBalanceListData(address, wallet);
 
-  const balances = result.assetBalances || [];
-  const userBalances = result.userBalances || [];
+    const balances = result.assetBalances || [];
+    const userBalances = result.userBalances || [];
 
-  // Validate data using Zod schema
-  const validatedBalances = balances.map((balance) => {
-    const validatedBalance = safeParseWithLogging(
-      AssetBalanceFragmentSchema,
-      balance,
-      'balance'
-    );
-    return {
-      ...validatedBalance,
-      value: formatNumber(validatedBalance.value),
-      frozen: formatNumber(validatedBalance.frozen),
-    };
-  });
+    // Validate data using Zod schema
+    const validatedBalances = balances.map((balance) => {
+      const validatedBalance = safeParseWithLogging(
+        AssetBalanceFragmentSchema,
+        balance,
+        'balance'
+      );
+      return {
+        ...validatedBalance,
+        value: formatNumber(validatedBalance.value),
+        frozen: formatNumber(validatedBalance.frozen),
+      };
+    });
 
-  const validatedUserBalances = userBalances.map((balance) => {
-    const validatedBalance = safeParseWithLogging(
-      AssetBalanceFragmentSchema,
-      balance,
-      'user balance'
-    );
-    return {
-      ...validatedBalance,
-      value: formatNumber(validatedBalance.value),
-      frozen: formatNumber(validatedBalance.frozen),
-    };
-  });
+    const validatedUserBalances = userBalances.map((balance) => {
+      const validatedBalance = safeParseWithLogging(
+        AssetBalanceFragmentSchema,
+        balance,
+        'user balance'
+      );
+      return {
+        ...validatedBalance,
+        value: formatNumber(validatedBalance.value),
+        frozen: formatNumber(validatedBalance.frozen),
+      };
+    });
 
-  if (wallet) {
-    return validatedUserBalances;
+    if (wallet) {
+      return validatedUserBalances;
+    }
+
+    return validatedBalances;
   }
-
-  return validatedBalances;
-}
+);

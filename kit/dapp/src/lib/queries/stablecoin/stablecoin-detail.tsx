@@ -6,8 +6,8 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { addSeconds } from 'date-fns';
-import BigDecimal from 'js-big-decimal';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -76,58 +76,53 @@ const fetchStableCoinData = unstable_cache(
  * @returns Combined stablecoin data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getStableCoinDetail({ address }: StableCoinDetailProps) {
-  const normalizedAddress = getAddress(address);
+export const getStableCoinDetail = cache(
+  async ({ address }: StableCoinDetailProps) => {
+    const normalizedAddress = getAddress(address);
 
-  const [data, dbStableCoin] = await fetchStableCoinData(
-    address,
-    normalizedAddress
-  );
+    const [data, dbStableCoin] = await fetchStableCoinData(
+      address,
+      normalizedAddress
+    );
 
-  const stableCoin = safeParseWithLogging(
-    StableCoinFragmentSchema,
-    data.stableCoin,
-    'stablecoin'
-  );
-  const offchainStableCoin = dbStableCoin.asset[0]
-    ? safeParseWithLogging(
-        OffchainStableCoinFragmentSchema,
-        dbStableCoin.asset[0],
-        'offchain stablecoin'
-      )
-    : undefined;
+    const stableCoin = safeParseWithLogging(
+      StableCoinFragmentSchema,
+      data.stableCoin,
+      'stablecoin'
+    );
+    const offchainStableCoin = dbStableCoin.asset[0]
+      ? safeParseWithLogging(
+          OffchainStableCoinFragmentSchema,
+          dbStableCoin.asset[0],
+          'offchain stablecoin'
+        )
+      : undefined;
 
-  const topHoldersSum = stableCoin.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    stableCoin.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
+    const topHoldersSum = stableCoin.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      stableCoin.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
 
-  const collateralCommittedRatio =
-    stableCoin.collateral.compareTo(new BigDecimal(0)) === 0
-      ? new BigDecimal(100)
-      : stableCoin.totalSupply
-          .divide(stableCoin.collateral)
-          .multiply(new BigDecimal(100));
+    const collateralProofValidity = addSeconds(
+      stableCoin.lastCollateralUpdate,
+      stableCoin.liveness
+    );
 
-  const collateralProofValidity = addSeconds(
-    stableCoin.lastCollateralUpdate,
-    stableCoin.liveness
-  );
-
-  return {
-    ...stableCoin,
-    ...{
-      private: false,
-      ...offchainStableCoin,
-    },
-    concentration,
-    collateralCommittedRatio: Number(collateralCommittedRatio.getValue()),
-    collateralProofValidity,
-    collateral: formatNumber(stableCoin.collateral),
-    totalSupply: formatNumber(stableCoin.totalSupply),
-  };
-}
+    return {
+      ...stableCoin,
+      ...{
+        private: false,
+        ...offchainStableCoin,
+      },
+      concentration,
+      collateralRatio: Number(stableCoin.collateralRatio.getValue()),
+      collateralProofValidity,
+      collateral: formatNumber(stableCoin.collateral),
+      totalSupply: formatNumber(stableCoin.totalSupply),
+    };
+  }
+);

@@ -1,6 +1,7 @@
 import { TransactionFragment } from '@/lib/queries/transactions/transaction-fragment';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import type { Address } from 'viem';
 
 /**
@@ -72,13 +73,13 @@ const fetchProcessedTransactionsData = unstable_cache(
  * @remarks
  * Returns transaction data with total count, recent count, and transaction records
  */
-export async function getProcessedTransactions(
-  props: ProcessedTransactionsProps
-) {
-  const { address, processedAfter } = props;
+export const getProcessedTransactions = cache(
+  async (props: ProcessedTransactionsProps) => {
+    const { address, processedAfter } = props;
 
-  return fetchProcessedTransactionsData({
-    address,
-    processedAfter,
-  });
-}
+    return fetchProcessedTransactionsData({
+      address,
+      processedAfter,
+    });
+  }
+);

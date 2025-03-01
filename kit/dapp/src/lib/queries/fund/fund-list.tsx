@@ -7,6 +7,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   FundFragment,
@@ -90,7 +91,7 @@ const fetchFundListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each fund.
  */
-export async function getFundList() {
+export const getFundList = cache(async () => {
   const [theGraphFunds, dbAssets] = await fetchFundListData();
 
   // Parse and validate the data using Zod schemas
@@ -123,4 +124,4 @@ export async function getFundList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(fund.totalSupply),
   }));
-}
+});

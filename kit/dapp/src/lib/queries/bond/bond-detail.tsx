@@ -6,6 +6,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   BondFragment,
@@ -74,7 +75,7 @@ const fetchBondData = unstable_cache(
  * @returns Combined bond data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getBondDetail({ address }: BondDetailProps) {
+export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbBond] = await fetchBondData(address, normalizedAddress);
@@ -106,4 +107,4 @@ export async function getBondDetail({ address }: BondDetailProps) {
     concentration,
     totalSupply: formatNumber(bond.totalSupply),
   };
-}
+});

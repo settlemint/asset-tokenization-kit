@@ -6,6 +6,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -76,45 +77,45 @@ const fetchCryptoCurrencyData = unstable_cache(
  * @returns Combined cryptocurrency data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getCryptoCurrencyDetail({
-  address,
-}: CryptoCurrencyDetailProps) {
-  const normalizedAddress = getAddress(address);
+export const getCryptoCurrencyDetail = cache(
+  async ({ address }: CryptoCurrencyDetailProps) => {
+    const normalizedAddress = getAddress(address);
 
-  const [data, dbCryptoCurrency] = await fetchCryptoCurrencyData(
-    address,
-    normalizedAddress
-  );
+    const [data, dbCryptoCurrency] = await fetchCryptoCurrencyData(
+      address,
+      normalizedAddress
+    );
 
-  const cryptocurrency = safeParseWithLogging(
-    CryptoCurrencyFragmentSchema,
-    data.cryptoCurrency,
-    'cryptocurrency'
-  );
-  const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
-    ? safeParseWithLogging(
-        OffchainCryptoCurrencyFragmentSchema,
-        dbCryptoCurrency.asset[0],
-        'offchain cryptocurrency'
-      )
-    : undefined;
+    const cryptocurrency = safeParseWithLogging(
+      CryptoCurrencyFragmentSchema,
+      data.cryptoCurrency,
+      'cryptocurrency'
+    );
+    const offchainCryptoCurrency = dbCryptoCurrency.asset[0]
+      ? safeParseWithLogging(
+          OffchainCryptoCurrencyFragmentSchema,
+          dbCryptoCurrency.asset[0],
+          'offchain cryptocurrency'
+        )
+      : undefined;
 
-  const topHoldersSum = cryptocurrency.holders.reduce(
-    (sum, holder) => sum + holder.valueExact,
-    0n
-  );
-  const concentration =
-    cryptocurrency.totalSupplyExact === 0n
-      ? 0
-      : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
+    const topHoldersSum = cryptocurrency.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      cryptocurrency.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / cryptocurrency.totalSupplyExact);
 
-  return {
-    ...cryptocurrency,
-    ...{
-      private: false,
-      ...offchainCryptoCurrency,
-    },
-    concentration,
-    totalSupply: formatNumber(cryptocurrency.totalSupply),
-  };
-}
+    return {
+      ...cryptocurrency,
+      ...{
+        private: false,
+        ...offchainCryptoCurrency,
+      },
+      concentration,
+      totalSupply: formatNumber(cryptocurrency.totalSupply),
+    };
+  }
+);

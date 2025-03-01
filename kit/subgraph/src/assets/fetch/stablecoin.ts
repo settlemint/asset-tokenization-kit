@@ -33,6 +33,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     // StableCoin-specific fields
     stableCoin.collateralExact = BigInt.zero();
     stableCoin.collateral = BigDecimal.zero();
+    stableCoin.collateralRatio = BigDecimal.zero();
     stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.liveness = liveness.reverted ? BigInt.zero() : liveness.value;
     stableCoin.lastCollateralUpdate = BigInt.zero();

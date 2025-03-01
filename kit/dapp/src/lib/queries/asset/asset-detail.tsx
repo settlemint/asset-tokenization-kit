@@ -6,6 +6,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetFragment,
@@ -91,7 +92,7 @@ const fetchAssetData = unstable_cache(
  * @returns Combined asset data with additional permission details
  * @throws Error if fetching or parsing fails
  */
-export async function getAssetDetail({ address }: AssetDetailProps) {
+export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const { onchainData, offchainData } = await fetchAssetData(
@@ -167,17 +168,19 @@ export async function getAssetDetail({ address }: AssetDetailProps) {
     },
     roles: Array.from(usersWithRoles.values()),
   };
-}
+});
 
 /**
  * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
  */
-export async function getOptionalAssetDetail({ address }: AssetDetailProps) {
-  try {
-    return await getAssetDetail({ address });
-  } catch {
-    return null;
+export const getOptionalAssetDetail = cache(
+  async ({ address }: AssetDetailProps) => {
+    try {
+      return await getAssetDetail({ address });
+    } catch {
+      return null;
+    }
   }
-}
+);

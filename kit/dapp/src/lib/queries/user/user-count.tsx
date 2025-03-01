@@ -1,6 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import {
   RecentUsersCountFragment,
   RecentUsersCountFragmentSchema,
@@ -81,7 +82,7 @@ const fetchUserCountData = unstable_cache(
  * @param params - Optional param to specify a date from which to count recent users
  * @returns Object containing user data with timestamps, recent user count, and total user count
  */
-export async function getUserCount({ since }: UserCountProps = {}) {
+export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
   const result = await fetchUserCountData(since);
 
   // Validate the response using Zod schemas
@@ -112,4 +113,4 @@ export async function getUserCount({ since }: UserCountProps = {}) {
     recentUsersCount: validatedRecentUsers.count,
     totalUsersCount: validatedTotalUsers.count,
   };
-}
+});

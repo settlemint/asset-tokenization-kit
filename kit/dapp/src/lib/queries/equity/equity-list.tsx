@@ -7,6 +7,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   EquityFragment,
@@ -90,7 +91,7 @@ const fetchEquityListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each equity.
  */
-export async function getEquityList() {
+export const getEquityList = cache(async () => {
   const [theGraphEquitys, dbAssets] = await fetchEquityListData();
 
   // Parse and validate the data using Zod schemas
@@ -123,4 +124,4 @@ export async function getEquityList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(equity.totalSupply),
   }));
-}
+});

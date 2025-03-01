@@ -56,7 +56,7 @@ const CreateStablecoinPredictAddress = portalGraphql(`
  * Stores additional metadata about the stablecoin in Hasura
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-  mutation CreateOffchainStablecoin($id: String!, $isin: String!) {
+  mutation CreateOffchainStablecoin($id: String!, $isin: String) {
     insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
@@ -99,7 +99,7 @@ export const createStablecoin = action
 
       await hasuraClient.request(CreateOffchainStablecoin, {
         id: newAddress,
-        isin: isin,
+        isin,
       });
 
       const data = await portalClient.request(StableCoinFactoryCreate, {

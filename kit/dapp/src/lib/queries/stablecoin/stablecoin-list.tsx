@@ -6,8 +6,8 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import BigDecimal from 'js-big-decimal';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -91,7 +91,7 @@ const fetchStableCoinListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each stablecoin.
  */
-export async function getStableCoinList() {
+export const getStableCoinList = cache(async () => {
   const [theGraphStableCoins, dbAssets] = await fetchStableCoinListData();
 
   // Parse and validate the data using Zod schemas
@@ -114,31 +114,20 @@ export async function getStableCoinList() {
   const stableCoins = validatedStableCoins.map((stableCoin) => {
     const dbAsset = assetsById.get(getAddress(stableCoin.id));
 
-    // Calculate collateral ratio similar to stablecoin-detail.tsx
-    const collateralCommittedRatio =
-      stableCoin.collateral.compareTo(new BigDecimal(0)) === 0
-        ? new BigDecimal(100)
-        : stableCoin.totalSupply
-            .divide(stableCoin.collateral)
-            .multiply(new BigDecimal(100));
-
     return {
       ...stableCoin,
       ...{
         private: false,
         ...dbAsset,
       },
-      collateralCommittedRatio,
     };
   });
 
   return stableCoins.map((stableCoin) => ({
     ...stableCoin,
     // replace all the BigDecimals with formatted strings
-    collateralCommittedRatio: Number(
-      stableCoin.collateralCommittedRatio.getValue()
-    ),
+    collateralRatio: Number(stableCoin.collateralRatio.getValue()),
     totalSupply: formatNumber(stableCoin.totalSupply),
     collateral: formatNumber(stableCoin.collateral),
   }));
-}
+});

@@ -2,6 +2,7 @@ import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
@@ -70,7 +71,7 @@ const fetchUserSearchData = unstable_cache(
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-export async function getUserSearch({ searchTerm }: UserSearchProps) {
+export const getUserSearch = cache(async ({ searchTerm }: UserSearchProps) => {
   const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
   if (!sanitizedSearchTerm) {
@@ -85,4 +86,4 @@ export async function getUserSearch({ searchTerm }: UserSearchProps) {
   );
 
   return validatedUsers;
-}
+});

@@ -7,6 +7,7 @@ import {
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -93,7 +94,7 @@ const fetchCryptoCurrencyListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each cryptocurrency.
  */
-export async function getCryptoCurrencyList() {
+export const getCryptoCurrencyList = cache(async () => {
   const [theGraphCryptoCurrencies, dbAssets] =
     await fetchCryptoCurrencyListData();
 
@@ -136,4 +137,4 @@ export async function getCryptoCurrencyList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(cryptocurrency.totalSupply),
   }));
-}
+});

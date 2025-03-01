@@ -5,6 +5,7 @@ import {
 import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
 
 /**
@@ -66,19 +67,21 @@ const fetchAssetSearchData = unstable_cache(
  * @param params - Object containing the search term
  * @returns Array of validated assets matching the search term
  */
-export async function getAssetSearch({ searchTerm }: AssetSearchProps) {
-  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
+export const getAssetSearch = cache(
+  async ({ searchTerm }: AssetSearchProps) => {
+    const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
-  if (!sanitizedSearchTerm) {
-    return [];
+    if (!sanitizedSearchTerm) {
+      return [];
+    }
+
+    const rawData = await fetchAssetSearchData(sanitizedSearchTerm);
+
+    // Validate data using Zod schema
+    const validatedAssets = rawData.map((asset) =>
+      safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
+    );
+
+    return validatedAssets;
   }
-
-  const rawData = await fetchAssetSearchData(sanitizedSearchTerm);
-
-  // Validate data using Zod schema
-  const validatedAssets = rawData.map((asset) =>
-    safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
-  );
-
-  return validatedAssets;
-}
+);

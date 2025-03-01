@@ -34,7 +34,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('committed-collateral-ratio')}
           info={t('committed-collateral-ratio-info')}
         >
-          {formatNumber(stableCoin.collateralCommittedRatio, {
+          {formatNumber(stableCoin.collateralRatio, {
             percentage: true,
             decimals: 2,
           })}

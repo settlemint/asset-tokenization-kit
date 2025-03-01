@@ -10,6 +10,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
@@ -111,6 +112,6 @@ const fetchUserListData = unstable_cache(
  * This function fetches user data from Hasura and activity data from TheGraph,
  * then returns a combined list of users with their details and last activity.
  */
-export async function getUserList() {
+export const getUserList = cache(async () => {
   return await fetchUserListData();
-}
+});

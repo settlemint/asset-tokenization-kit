@@ -5,6 +5,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import {
   AssetActivityFragment,
   AssetActivityFragmentSchema,
@@ -68,13 +69,15 @@ const fetchAssetActivityData = unstable_cache(
  * @param options - Query options including optional limit
  * @returns Array of validated asset activity data
  */
-export async function getAssetActivity({ limit }: AssetActivityOptions = {}) {
-  const rawData = await fetchAssetActivityData(limit);
+export const getAssetActivity = cache(
+  async ({ limit }: AssetActivityOptions = {}) => {
+    const rawData = await fetchAssetActivityData(limit);
 
-  // Validate data using Zod schema
-  const validatedData = rawData.map((data) =>
-    safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
-  );
+    // Validate data using Zod schema
+    const validatedData = rawData.map((data) =>
+      safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
+    );
 
-  return validatedData;
-}
+    return validatedData;
+  }
+);

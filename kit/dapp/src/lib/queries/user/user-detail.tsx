@@ -9,6 +9,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
@@ -124,21 +125,21 @@ const fetchUserDetailData = unstable_cache(
  * @param params - Object containing the user ID
  * @throws Will throw an error if the user is not found
  */
-export async function getUserDetail({ id }: UserDetailProps) {
+export const getUserDetail = cache(async ({ id }: UserDetailProps) => {
   const result = await fetchUserDetailData(id);
 
   return result;
-}
+});
 
 /**
  * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
  */
-export async function getOptionalUserDetail({ id }: UserDetailProps) {
+export const getOptionalUserDetail = cache(async ({ id }: UserDetailProps) => {
   try {
     return await getUserDetail({ id });
   } catch {
     return null;
   }
-}
+});
