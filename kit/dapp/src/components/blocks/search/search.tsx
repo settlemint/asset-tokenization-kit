@@ -10,7 +10,6 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { Link } from '@/i18n/routing';
 import type { Asset } from '@/lib/queries/asset/asset-fragment';
 import { getAssetSearch } from '@/lib/queries/asset/asset-search';
-import type { User } from '@/lib/queries/user/user-fragment';
 import { getUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
@@ -63,7 +62,9 @@ function useClientAssetSearch(searchTerm: string) {
 }
 
 function useClientUserSearch(searchTerm: string) {
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

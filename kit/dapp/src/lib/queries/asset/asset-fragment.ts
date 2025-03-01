@@ -93,7 +93,6 @@ export const OffchainAssetFragment = hasuraGraphql(`
  */
 export const OffchainAssetFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
 });
 
 /**

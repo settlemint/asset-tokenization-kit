@@ -54,10 +54,6 @@ export const getUserSearch = cache(async ({ searchTerm }: UserSearchProps) => {
     return [];
   }
 
-  if (!searchTerm) {
-    return { user: [] };
-  }
-
   const searchValue = `%${searchTerm}%`;
   const result = await hasuraClient.request(UserSearch, {
     address: searchValue,
