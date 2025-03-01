@@ -176,7 +176,7 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;
 
-  --shadow-button: 0 -3px 3px 0 var(--sm-dark-gray / 21%) inset;
+  --shadow-button: 0 -3px 3px 0 rgba(0, 0, 0, 0.21) inset;
 
   @keyframes caret-blink {
     0%,
