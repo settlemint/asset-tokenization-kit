@@ -28,7 +28,7 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="default">
           {t('manage')}
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">

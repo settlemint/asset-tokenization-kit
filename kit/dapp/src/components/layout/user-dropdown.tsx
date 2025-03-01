@@ -88,7 +88,7 @@ export function UserDropdown() {
   if (!isClient) {
     return (
       <div className="flex h-12 items-center gap-2 rounded-md px-2 text-sm">
-        <Skeleton className="h-8 w-8 rounded-lg" />
+        <Skeleton className="size-8 rounded-lg" />
         <div className="grid flex-1 text-left text-sm leading-tight">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-3 w-20" />
@@ -102,16 +102,16 @@ export function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-          <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+          <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             {user ? (
               <AddressAvatar
                 address={user.wallet as Address}
                 email={user.email}
-                className="h-8 w-8 rounded-lg"
+                className="size-8 rounded-lg"
                 indicator={false}
               />
             ) : (
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="size-8 rounded-lg" />
             )}
           </Suspense>
           <div className="grid flex-1 text-left text-sm leading-tight">

@@ -26,7 +26,7 @@ export default async function SignUp({
         <SignUpForm redirectUrl={rd} locale={locale} />
       </div>
       <Alert className="mt-8" variant="warning">
-        <AlertTriangle className="h-4 w-4" />
+        <AlertTriangle className="size-4" />
         <AlertTitle>{t('alert.title')}</AlertTitle>
         <AlertDescription>{t('alert.description')}</AlertDescription>
       </Alert>

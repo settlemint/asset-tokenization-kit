@@ -27,7 +27,7 @@ export function Summary({ address }: SummaryProps) {
       <FormSummaryDetailCard
         title={t('burn-title')}
         description={t('burn-description')}
-        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+        icon={<DollarSign className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t('asset-label')}

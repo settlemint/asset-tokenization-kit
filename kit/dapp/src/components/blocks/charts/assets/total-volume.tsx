@@ -15,7 +15,7 @@ export async function TotalVolume({ address }: TotalVolumeProps) {
   const chartConfig = {
     totalVolume: {
       label: t('total-volume.label'),
-      color: 'hsl(var(--chart-2))',
+      color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
 

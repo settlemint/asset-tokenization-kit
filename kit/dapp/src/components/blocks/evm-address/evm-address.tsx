@@ -95,7 +95,7 @@ export function EvmAddress({
     return (
       <div className="flex items-center space-x-2">
         {isLoading ? (
-          <Skeleton className="h-4 w-4 rounded-lg" />
+          <Skeleton className="size-4 rounded-lg" />
         ) : (
           <AddressAvatar
             address={getAddress(address)}
@@ -139,7 +139,7 @@ export function EvmAddress({
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto_1fr] items-start gap-x-2 font-semibold text-sm">
             {isLoading ? (
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="size-8 rounded-lg" />
             ) : (
               <AddressAvatar
                 address={getAddress(address)}

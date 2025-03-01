@@ -33,7 +33,7 @@ export default async function StableCoinsPage() {
       <PageHeader title={t('page-title')} />
 
       <Alert variant="default" className="border-dashed border-primary">
-        <Info className="h-4 w-4" />
+        <Info className="size-4" />
         <AlertTitle>
           Stablecoins are digital currencies designed to maintain a stable value
           by being backed by real-world assets or reserves.

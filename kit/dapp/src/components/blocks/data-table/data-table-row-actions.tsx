@@ -77,7 +77,7 @@ export function DataTableRowActions({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-8 w-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+              className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
               <span className="sr-only">{t('open-menu')}</span>

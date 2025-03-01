@@ -15,7 +15,7 @@ export async function TotalSupply({ address }: TotalSupplyProps) {
   const chartConfig = {
     totalSupply: {
       label: t('total-supply.label'),
-      color: 'hsl(var(--chart-2))',
+      color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
 

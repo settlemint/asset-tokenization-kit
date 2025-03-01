@@ -91,12 +91,12 @@ export function DataTableColumnHeader<TData, TValue>({
 
   const sortIcon = () => {
     if (column.getIsSorted() === 'desc') {
-      return <SortDesc className="ml-2 h-4 w-4" />;
+      return <SortDesc className="ml-2 size-4" />;
     }
     if (column.getIsSorted() === 'asc') {
-      return <SortAsc className="ml-2 h-4 w-4" />;
+      return <SortAsc className="ml-2 size-4" />;
     }
-    return <ArrowDownUp className="ml-2 h-4 w-4" />;
+    return <ArrowDownUp className="ml-2 size-4" />;
   };
 
   return (

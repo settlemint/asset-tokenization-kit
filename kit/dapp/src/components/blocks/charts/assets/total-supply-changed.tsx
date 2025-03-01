@@ -15,11 +15,11 @@ export async function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
   const chartConfig = {
     totalMinted: {
       label: t('total-supply-changed.minted-label'),
-      color: 'hsl(var(--chart-2))',
+      color: 'var(--chart-1)',
     },
     totalBurned: {
       label: t('total-supply-changed.burned-label'),
-      color: 'hsl(var(--chart-3))',
+      color: 'var(--chart-2)',
     },
   } satisfies ChartConfig;
 

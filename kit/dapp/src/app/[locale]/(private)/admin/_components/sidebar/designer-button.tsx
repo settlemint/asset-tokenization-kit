@@ -45,7 +45,7 @@ export function DesignerButton() {
           ) : (
             <button
               type="button"
-              className="mt-2 h-10 w-10 rounded-xl pl-3"
+              className="mt-2 size-10 rounded-xl pl-3"
               onMouseEnter={() => frameIconRef.current?.startAnimation()}
               onMouseLeave={() => frameIconRef.current?.stopAnimation()}
             >

@@ -44,12 +44,12 @@ export function FormOtp<T extends FieldValues>({
               autoComplete="off"
             >
               <InputOTPGroup>
-                <InputOTPSlot index={0} className="h-8 w-8" />
-                <InputOTPSlot index={1} className="h-8 w-8" />
-                <InputOTPSlot index={2} className="h-8 w-8" />
-                <InputOTPSlot index={3} className="h-8 w-8" />
-                <InputOTPSlot index={4} className="h-8 w-8" />
-                <InputOTPSlot index={5} className="h-8 w-8" />
+                <InputOTPSlot index={0} className="size-8" />
+                <InputOTPSlot index={1} className="size-8" />
+                <InputOTPSlot index={2} className="size-8" />
+                <InputOTPSlot index={3} className="size-8" />
+                <InputOTPSlot index={4} className="size-8" />
+                <InputOTPSlot index={5} className="size-8" />
               </InputOTPGroup>
             </InputOTP>
           </FormControl>

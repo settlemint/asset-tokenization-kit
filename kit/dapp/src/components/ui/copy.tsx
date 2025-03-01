@@ -53,14 +53,14 @@ export function CopyToClipboard({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 hover:bg-theme-accent-background ml-1"
+        className="size-8 hover:bg-theme-accent-background ml-1"
         onClick={handleCopy}
         title="Copy to clipboard"
       >
         {hasCopied ? (
-          <Check className="h-4 w-4 text-green-500" />
+          <Check className="size-4 text-green-500" />
         ) : (
-          <CopyIcon className="h-4 w-4 text-muted-foreground" />
+          <CopyIcon className="size-4 text-muted-foreground" />
         )}
       </Button>
     </div>

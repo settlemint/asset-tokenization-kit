@@ -61,7 +61,7 @@ export default async function UserDetailLayout({
             <DropdownMenuTrigger asChild className="self-end">
               <Button variant="default">
                 Edit user
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="relative right-10 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl p-0 shadow-dropdown">

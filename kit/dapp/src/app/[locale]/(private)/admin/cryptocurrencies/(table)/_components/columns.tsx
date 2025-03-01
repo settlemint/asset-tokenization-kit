@@ -60,7 +60,7 @@ export function useCryptoCurrencyColumns() {
         const Icon = icons[privateAsset ? 'private' : 'public'];
         return (
           <>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>
               {privateAsset ? t('private-status') : t('public-status')}
             </span>
