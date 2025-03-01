@@ -23,7 +23,7 @@ const stepCircleStyles =
 /**
  * Common styles for the connecting line between steps
  */
-const stepLineStyles = 'h-0.5 flex-grow';
+const stepLineStyles = 'h-0.5 grow';
 
 /**
  * Renders a completed step with a checkmark

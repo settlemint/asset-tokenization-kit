@@ -137,7 +137,7 @@ export function EvmAddress({
       </HoverCardTrigger>
       <HoverCardContent className="w-120">
         <div className="flex items-start">
-          <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
+          <h4 className="grid grid-cols-[auto_1fr] items-start gap-x-2 font-semibold text-sm">
             {isLoading ? (
               <Skeleton className="h-8 w-8 rounded-lg" />
             ) : (

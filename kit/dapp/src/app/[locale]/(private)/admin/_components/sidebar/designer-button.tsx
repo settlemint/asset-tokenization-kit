@@ -54,7 +54,7 @@ export function DesignerButton() {
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="-translate-y-2 ml-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown"
+          className="-translate-y-2 ml-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown"
           align="start"
           side={isMobile ? 'bottom' : 'right'}
           sideOffset={4}

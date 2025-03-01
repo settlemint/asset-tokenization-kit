@@ -31,7 +31,7 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown">
+      <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
         <DropdownMenuItem>
           <MintForm
             address={address}

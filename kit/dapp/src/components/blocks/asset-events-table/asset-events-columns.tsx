@@ -35,7 +35,7 @@ export function useAssetEventsColumns() {
       },
       cell: ({ getValue }) => (
         <DataTableColumnCell>
-          <span className="[&:first-letter]:uppercase">{getValue()}</span>
+          <span className="first-letter:uppercase">{getValue()}</span>
         </DataTableColumnCell>
       ),
       enableColumnFilter: false,
