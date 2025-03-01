@@ -124,7 +124,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
                 )
             )
         );
-        if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment

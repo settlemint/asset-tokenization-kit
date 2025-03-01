@@ -108,7 +108,6 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
                 )
             )
         );
-        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment

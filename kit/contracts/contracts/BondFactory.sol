@@ -107,7 +107,6 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
 
         predicted =
             address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
-        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment
