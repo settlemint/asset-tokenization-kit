@@ -107,10 +107,10 @@ export const getStableCoinDetail = cache(
         ? 0
         : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
 
-    const collateralProofValidity = addSeconds(
-      stableCoin.lastCollateralUpdate,
-      stableCoin.liveness
-    );
+    const collateralProofValidity =
+      stableCoin.lastCollateralUpdate.valueOf() > 0
+        ? addSeconds(stableCoin.lastCollateralUpdate, stableCoin.liveness)
+        : undefined;
 
     return {
       ...stableCoin,

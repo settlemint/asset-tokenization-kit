@@ -83,7 +83,7 @@ export function handleTransfer(event: Transfer): void {
     stableCoin.collateralRatio = stableCoin.totalSupply.equals(
       BigDecimal.zero()
     )
-      ? BigDecimal.zero()
+      ? BigDecimal.fromString("100")
       : stableCoin.collateral.div(stableCoin.totalSupply);
 
     if (!hasBalance(stableCoin.id, to.id)) {
@@ -165,7 +165,7 @@ export function handleTransfer(event: Transfer): void {
     stableCoin.collateralRatio = stableCoin.totalSupply.equals(
       BigDecimal.zero()
     )
-      ? BigDecimal.zero()
+      ? BigDecimal.fromString("100")
       : stableCoin.collateral.div(stableCoin.totalSupply);
 
     const balance = fetchAssetBalance(
@@ -811,7 +811,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.lastCollateralUpdate = event.block.timestamp;
   stableCoin.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
-    ? BigDecimal.zero()
+    ? BigDecimal.fromString("100")
     : stableCoin.collateral.div(stableCoin.totalSupply);
   stableCoin.save();
 
@@ -819,7 +819,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   assetStats.collateral = stableCoin.collateral;
   assetStats.collateralExact = stableCoin.collateralExact;
   assetStats.collateralRatio = stableCoin.totalSupply.equals(BigDecimal.zero())
-    ? BigDecimal.zero()
+    ? BigDecimal.fromString("100")
     : stableCoin.collateral.div(stableCoin.totalSupply);
   assetStats.save();
 

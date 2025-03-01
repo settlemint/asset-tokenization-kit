@@ -43,9 +43,11 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('collateral-proof-expiration')}
           info={t('collateral-proof-expiration-info')}
         >
-          {formatDate(stableCoin.collateralProofValidity, {
-            type: 'absolute',
-          })}
+          {stableCoin.collateralProofValidity
+            ? formatDate(stableCoin.collateralProofValidity, {
+                type: 'absolute',
+              })
+            : '-'}
         </DetailGridItem>
         <DetailGridItem
           label={t('collateral-proof-validity')}
