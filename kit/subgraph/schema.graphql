@@ -125,6 +125,8 @@ type StableCoin implements Asset @entity {
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
   liveness: BigInt!
   lastCollateralUpdate: BigInt!
   paused: Boolean!
