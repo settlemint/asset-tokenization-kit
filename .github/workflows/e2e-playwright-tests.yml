@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   schedule:
-    - cron: '0 0 * * 1-5' # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+    - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
   pull_request:
     types: [labeled]
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
     name: Playwright Tests
     runs-on: namespace-profile-starterkit
     environment: staging
-    timeout-minutes: 60  # 1 hour maximum runtime
+    timeout-minutes: 60 # 1 hour maximum runtime
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
     strategy:
       fail-fast: false
@@ -24,15 +24,10 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v5
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          token: ${{ secrets.GITHUB_TOKEN }}
+          bun-version-file: .bun-version
 
       - name: Install dependencies
         run: bun install
