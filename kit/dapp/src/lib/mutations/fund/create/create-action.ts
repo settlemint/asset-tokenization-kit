@@ -15,11 +15,11 @@ import { CreateFundSchema } from './create-schema';
  * Creates a new fund contract through the fund factory
  */
 const FundFactoryCreate = portalGraphql(`
-  mutation FundFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $isin: String!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!) {
+  mutation FundFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!) {
     FundFactoryCreate(
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, isin: $isin, fundCategory: $fundCategory, fundClass: $fundClass, managementFeeBps: $managementFeeBps}
+      input: {name: $name, symbol: $symbol, decimals: $decimals, fundCategory: $fundCategory, fundClass: $fundClass, managementFeeBps: $managementFeeBps}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -34,14 +34,13 @@ const FundFactoryCreate = portalGraphql(`
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateFundPredictAddress = portalGraphql(`
-  query CreateFundPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!) {
+  query CreateFundPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $fundCategory: String!, $fundClass: String!, $managementFeeBps: Int!) {
     FundFactory(address: $address) {
       predictAddress(
         sender: $sender
         decimals: $decimals
         name: $name
         symbol: $symbol
-        isin: $isin
         fundCategory: $fundCategory
         fundClass: $fundClass
         managementFeeBps: $managementFeeBps
@@ -59,9 +58,10 @@ const CreateFundPredictAddress = portalGraphql(`
  * Stores additional metadata about the fund in Hasura
  */
 const CreateOffchainFund = hasuraGraphql(`
-  mutation CreateOffchainFund($id: String!, $private: Boolean!) {
-    insert_asset_one(object: {id: $id, private: $private}, on_conflict: {constraint: asset_pkey, update_columns: private}) {
+  mutation CreateOffchainFund($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
+      isin
     }
   }
 `);
@@ -77,7 +77,6 @@ export const createFund = action
         decimals,
         pincode,
         isin,
-        privateAsset,
         fundCategory,
         fundClass,
         managementFeeBps,
@@ -90,7 +89,6 @@ export const createFund = action
           address: STABLE_COIN_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
-          isin: isin ?? '',
           name: assetName,
           symbol,
           fundCategory,
@@ -108,7 +106,7 @@ export const createFund = action
 
       await hasuraClient.request(CreateOffchainFund, {
         id: newAddress,
-        private: privateAsset,
+        isin,
       });
 
       const data = await portalClient.request(FundFactoryCreate, {
@@ -117,7 +115,6 @@ export const createFund = action
         name: assetName,
         symbol,
         decimals,
-        isin: isin ?? '',
         challengeResponse: await handleChallenge(user.wallet, pincode),
         fundCategory,
         fundClass,

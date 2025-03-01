@@ -25,7 +25,6 @@ contract BondTest is Test {
     uint8 public constant WHOLE_INITIAL_SUPPLY = 100;
     uint8 public constant WHOLE_FACE_FALUE = 100;
     uint8 public constant DECIMALS = 2;
-    string public constant VALID_ISIN = "US0378331005";
     uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
     // Utility functions for decimal conversions
@@ -71,7 +70,6 @@ contract BondTest is Test {
             "TBOND",
             DECIMALS,
             owner,
-            VALID_ISIN,
             CAP,
             maturityDate,
             faceValue,
@@ -92,7 +90,6 @@ contract BondTest is Test {
         assertEq(bond.maturityDate(), maturityDate);
         assertEq(bond.faceValue(), faceValue);
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset));
-        assertEq(bond.isin(), VALID_ISIN);
         assertFalse(bond.isMatured());
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner));
@@ -113,7 +110,6 @@ contract BondTest is Test {
                 "TBOND",
                 decimalValues[i],
                 owner,
-                VALID_ISIN,
                 CAP,
                 maturityDate,
                 faceValue,
@@ -128,67 +124,8 @@ contract BondTest is Test {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(Bond.InvalidDecimals.selector, 19));
         new Bond(
-            "Test Bond",
-            "TBOND",
-            19,
-            owner,
-            VALID_ISIN,
-            CAP,
-            maturityDate,
-            faceValue,
-            address(underlyingAsset),
-            address(forwarder)
+            "Test Bond", "TBOND", 19, owner, CAP, maturityDate, faceValue, address(underlyingAsset), address(forwarder)
         );
-        vm.stopPrank();
-    }
-
-    function test_RevertOnInvalidISIN() public {
-        vm.startPrank(owner);
-
-        Bond emptyIsinToken = new Bond(
-            "Test Bond",
-            "TBOND",
-            DECIMALS,
-            owner,
-            "",
-            CAP,
-            maturityDate,
-            faceValue,
-            address(underlyingAsset),
-            address(forwarder)
-        );
-        assertEq(emptyIsinToken.isin(), "");
-
-        // Test with ISIN that's too short
-        vm.expectRevert(Bond.InvalidISIN.selector);
-        new Bond(
-            "Test Bond",
-            "TBOND",
-            DECIMALS,
-            owner,
-            "US03783310",
-            CAP,
-            maturityDate,
-            faceValue,
-            address(underlyingAsset),
-            address(forwarder)
-        );
-
-        // Test with ISIN that's too long
-        vm.expectRevert(Bond.InvalidISIN.selector);
-        new Bond(
-            "Test Bond",
-            "TBOND",
-            DECIMALS,
-            owner,
-            "US0378331005XX",
-            CAP,
-            maturityDate,
-            faceValue,
-            address(underlyingAsset),
-            address(forwarder)
-        );
-
         vm.stopPrank();
     }
 
@@ -647,7 +584,6 @@ contract BondTest is Test {
             "TBOND",
             DECIMALS,
             owner,
-            VALID_ISIN,
             CAP,
             maturityDate,
             faceValue,
@@ -704,7 +640,6 @@ contract BondTest is Test {
             "TBOND",
             DECIMALS,
             owner,
-            VALID_ISIN,
             CAP,
             maturityDate,
             faceValue,
@@ -782,7 +717,6 @@ contract BondTest is Test {
             "TBOND",
             DECIMALS,
             owner,
-            VALID_ISIN,
             CAP,
             maturityDate,
             faceValue,

@@ -6,7 +6,6 @@
  * transaction hashes, financial identifiers, and other domain-specific data types.
  */
 import { fromUnixTime } from 'date-fns';
-import BigDecimal from 'js-big-decimal';
 import type { Address, Hash } from 'viem';
 import { getAddress, isAddress, isHash } from 'viem';
 import { z } from 'zod';
@@ -128,12 +127,10 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates token symbols
    */
-  symbol: () => z.string(),
-  // current data is dirty
-  // .regex(/^[A-Z]+$/, {
-  //     message:
-  //       "Symbol must contain only uppercase letters (no spaces or numbers)",
-  //   }),
+  symbol: () =>
+    z.string().regex(/^[A-Z0-9]+$/, {
+      message: 'Symbol must contain only uppercase letters and numbers',
+    }),
 
   /**
    * Validates an International Securities Identification Number (ISIN)
@@ -142,12 +139,13 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates ISIN codes
    */
-  isin: () => z.string(),
-  // TODO: uncomment this when we have a proper ISIN validator
-  // .regex(/^[A-Z0-9]+$/, {
-  //   message: 'ISIN must contain only uppercase letters and numbers',
-  // })
-  // .length(12, { message: 'ISIN must be exactly 12 characters' }),
+  isin: () =>
+    z
+      .string()
+      .regex(/^[A-Z0-9]+$/, {
+        message: 'ISIN must contain only uppercase letters and numbers',
+      })
+      .length(12, { message: 'ISIN must be exactly 12 characters' }),
 
   /**
    * Validates and transforms a string to a BigInt
@@ -161,23 +159,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates and transforms a string to a BigDecimal
    */
-  bigDecimal: () =>
-    z
-      .string()
-      .refine(
-        (val) => {
-          try {
-            new BigDecimal(val);
-            return true;
-          } catch {
-            return false;
-          }
-        },
-        {
-          message: 'Must be a valid decimal number',
-        }
-      )
-      .transform((val) => new BigDecimal(val)),
+  bigDecimal: () => z.coerce.number(),
 
   /**
    * Validates and transforms a timestamp to a Date object

@@ -8,8 +8,9 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
-import { UserFragment, UserFragmentSchema } from './user-fragment';
+import { cache } from 'react';
+import { getAddress, type Address } from 'viem';
+import { UserFragment, UserFragmentSchema, type User } from './user-fragment';
 
 /**
  * GraphQL query to fetch a single user by ID from Hasura
@@ -21,6 +22,23 @@ const UserDetail = hasuraGraphql(
   `
   query UserDetail($id: String!) {
     user_by_pk(id: $id) {
+      ...UserFragment
+    }
+  }
+`,
+  [UserFragment]
+);
+
+/**
+ * GraphQL query to fetch a single user by ID from Hasura
+ *
+ * @remarks
+ * Returns user details like name, email, wallet address, and timestamps
+ */
+const UserDetailByWallet = hasuraGraphql(
+  `
+  query UserDetailByWallet($address: String!) {
+    user(limit: 1, where: {wallet: {_ilike: $address}}) {
       ...UserFragment
     }
   }
@@ -51,72 +69,10 @@ const UserActivity = theGraphGraphqlStarterkits(
  */
 export interface UserDetailProps {
   /** UUID of the user */
-  id: string;
+  id?: string;
+  /** EVM address of the user */
+  address?: Address;
 }
-
-/**
- * Cached function to fetch raw user detail data
- */
-const fetchUserDetailData = unstable_cache(
-  async (id: string) => {
-    const userResult = await hasuraClient.request(UserDetail, {
-      id,
-    });
-
-    if (!userResult.user_by_pk) {
-      throw new Error(`User not found with ID ${id}`);
-    }
-
-    // Validate user data
-    const validatedUser = safeParseWithLogging(
-      UserFragmentSchema,
-      userResult.user_by_pk,
-      'user detail'
-    );
-
-    // Fetch activity data if user has wallet address
-    if (validatedUser.wallet) {
-      try {
-        const activityResult = await theGraphClientStarterkits.request(
-          UserActivity,
-          {
-            id: validatedUser.wallet.toLowerCase(),
-          }
-        );
-
-        if (activityResult.account) {
-          // Validate account data
-          const validatedAccount = safeParseWithLogging(
-            AccountFragmentSchema,
-            activityResult.account,
-            'account detail'
-          );
-
-          // Combine validated user data with validated activity data
-          return {
-            ...validatedAccount,
-            ...validatedUser,
-            assetCount: validatedAccount.balancesCount ?? 0,
-            transactionCount: validatedAccount.activityEventsCount ?? 0,
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching user activity:', error);
-      }
-    }
-
-    return {
-      ...validatedUser,
-      assetCount: 0,
-      transactionCount: 0,
-    };
-  },
-  ['user', 'detail', 'activity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['user'],
-  }
-);
 
 /**
  * Fetches a user by ID
@@ -124,21 +80,80 @@ const fetchUserDetailData = unstable_cache(
  * @param params - Object containing the user ID
  * @throws Will throw an error if the user is not found
  */
-export async function getUserDetail({ id }: UserDetailProps) {
-  const result = await fetchUserDetailData(id);
+export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
+  if (!id && !address) {
+    throw new Error('Either id or address must be provided');
+  }
 
-  return result;
-}
+  let userData: User;
+
+  if (id) {
+    const result = await hasuraClient.request(UserDetail, { id });
+    if (!result.user_by_pk) {
+      throw new Error(`User not found with ID ${id}`);
+    }
+    userData = UserFragmentSchema.parse(result.user_by_pk);
+  } else if (address) {
+    const result = await hasuraClient.request(UserDetailByWallet, {
+      address: getAddress(address),
+    });
+    if (!result.user || result.user.length === 0) {
+      throw new Error(`User not found with wallet address ${address}`);
+    }
+    userData = UserFragmentSchema.parse(result.user[0]);
+  } else {
+    throw new Error('Either id or address must be provided');
+  }
+
+  // Fetch activity data if user has wallet address
+  if (userData.wallet) {
+    try {
+      const activityResult = await theGraphClientStarterkits.request(
+        UserActivity,
+        {
+          id: userData.wallet.toLowerCase(),
+        }
+      );
+
+      if (activityResult.account) {
+        // Validate account data
+        const validatedAccount = safeParseWithLogging(
+          AccountFragmentSchema,
+          activityResult.account,
+          'account detail'
+        );
+
+        // Combine validated user data with validated activity data
+        return {
+          ...validatedAccount,
+          ...userData,
+          assetCount: validatedAccount.balancesCount ?? 0,
+          transactionCount: validatedAccount.activityEventsCount ?? 0,
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user activity:', error);
+    }
+  }
+
+  return {
+    ...userData,
+    assetCount: 0,
+    transactionCount: 0,
+  };
+});
 
 /**
  * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
  */
-export async function getOptionalUserDetail({ id }: UserDetailProps) {
-  try {
-    return await getUserDetail({ id });
-  } catch {
-    return null;
+export const getOptionalUserDetail = cache(
+  async ({ id, address }: UserDetailProps) => {
+    try {
+      return await getUserDetail({ id, address });
+    } catch {
+      return null;
+    }
   }
-}
+);

@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Amount } from './steps/amount';
+import { Recipients } from './steps/recipients';
 import { Summary } from './steps/summary';
 
 interface MintFormProps {
@@ -31,6 +32,7 @@ export function MintForm({ address, collateralAvailable }: MintFormProps) {
       <Form
         action={mint}
         resolver={zodResolver(MintSchema)}
+        onOpenChange={setOpen}
         buttonLabels={{
           label: t('button-label'),
         }}
@@ -39,6 +41,7 @@ export function MintForm({ address, collateralAvailable }: MintFormProps) {
         }}
       >
         <Amount collateralAvailable={collateralAvailable} />
+        <Recipients />
         <Summary address={address} />
       </Form>
     </FormSheet>

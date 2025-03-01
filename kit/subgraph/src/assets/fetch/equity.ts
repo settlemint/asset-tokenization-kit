@@ -11,7 +11,6 @@ export function fetchEquity(address: Address): Equity {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
-    let isin = endpoint.try_isin();
     let equityClass = endpoint.try_equityClass();
     let equityCategory = endpoint.try_equityCategory();
     let paused = endpoint.try_paused();
@@ -33,7 +32,6 @@ export function fetchEquity(address: Address): Equity {
     equity.creator = Address.zero();
 
     // Equity-specific fields
-    equity.isin = isin.reverted ? "" : isin.value;
     equity.equityClass = equityClass.reverted ? "" : equityClass.value;
     equity.equityCategory = equityCategory.reverted ? "" : equityCategory.value;
     equity.paused = paused.reverted ? false : paused.value;

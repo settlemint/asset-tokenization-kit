@@ -60,7 +60,6 @@ export type CryptoCurrency = ZodInfer<typeof CryptoCurrencyFragmentSchema>;
 export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
   fragment OffchainCryptoCurrencyFragment on asset {
     id
-    private
   }
 `);
 
@@ -70,7 +69,6 @@ export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
  */
 export const OffchainCryptoCurrencyFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
 });
 
 /**

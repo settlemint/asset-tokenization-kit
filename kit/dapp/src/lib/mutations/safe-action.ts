@@ -7,8 +7,11 @@ import type { Address } from 'viem';
 export const action = createSafeActionClient({
   throwValidationErrors: true,
   defaultValidationErrorsShape: 'flattened',
-  handleServerError: (error: Error) => {
-    return `An unexpected error occurred: ${error.message}`;
+  handleServerError: (error: Error, { clientInput, metadata }) => {
+    console.error('Input ->', redactSensitiveFields(clientInput));
+    console.error('Metadata ->', redactSensitiveFields(metadata));
+    console.error('Error ->', error);
+    return `An unexpected error occurred`;
   },
 })
   .use(async ({ next, clientInput, metadata }) => {

@@ -15,11 +15,11 @@ import { CreateStablecoinSchema } from './create-schema';
  * Creates a new stablecoin contract through the stablecoin factory
  */
 const StableCoinFactoryCreate = portalGraphql(`
-  mutation StableCoinFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!, $isin: String!) {
+  mutation StableCoinFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
     StableCoinFactoryCreate(
       address: $address
       from: $from
-      input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals, isin: $isin}
+      input: {collateralLivenessSeconds: $collateralLivenessSeconds, name: $name, symbol: $symbol, decimals: $decimals}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -34,7 +34,7 @@ const StableCoinFactoryCreate = portalGraphql(`
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateStablecoinPredictAddress = portalGraphql(`
-  query CreateStablecoinPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
+  query CreateStablecoinPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
     StableCoinFactory(address: $address) {
       predictAddress(
         sender: $sender
@@ -42,7 +42,6 @@ const CreateStablecoinPredictAddress = portalGraphql(`
         collateralLivenessSeconds: $collateralLivenessSeconds
         name: $name
         symbol: $symbol
-        isin: $isin
       ) {
         predicted
       }
@@ -57,8 +56,8 @@ const CreateStablecoinPredictAddress = portalGraphql(`
  * Stores additional metadata about the stablecoin in Hasura
  */
 const CreateOffchainStablecoin = hasuraGraphql(`
-  mutation CreateOffchainStablecoin($id: String!, $private: Boolean!) {
-    insert_asset_one(object: {id: $id, private: $private}, on_conflict: {constraint: asset_pkey, update_columns: private}) {
+  mutation CreateOffchainStablecoin($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
   }
@@ -75,7 +74,6 @@ export const createStablecoin = action
         decimals,
         pincode,
         isin,
-        privateAsset,
         collateralLivenessSeconds,
       },
       ctx: { user },
@@ -86,7 +84,6 @@ export const createStablecoin = action
           address: STABLE_COIN_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
-          isin: isin ?? '',
           collateralLivenessSeconds,
           name: assetName,
           symbol,
@@ -102,7 +99,7 @@ export const createStablecoin = action
 
       await hasuraClient.request(CreateOffchainStablecoin, {
         id: newAddress,
-        private: privateAsset,
+        isin,
       });
 
       const data = await portalClient.request(StableCoinFactoryCreate, {
@@ -111,7 +108,6 @@ export const createStablecoin = action
         name: assetName,
         symbol,
         decimals,
-        isin: isin ?? '',
         collateralLivenessSeconds: collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });

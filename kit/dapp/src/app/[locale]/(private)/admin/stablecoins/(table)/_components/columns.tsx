@@ -52,7 +52,7 @@ export function useStableCoinColumns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('collateralCommittedRatio', {
+    columnHelper.accessor('collateralRatio', {
       header: t('committed-collateral-header'),
       cell: ({ getValue }) => {
         return <PercentageProgressBar percentage={getValue()} />;

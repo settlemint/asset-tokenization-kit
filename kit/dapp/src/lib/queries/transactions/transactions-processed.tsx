@@ -1,6 +1,6 @@
 import { TransactionFragment } from '@/lib/queries/transactions/transaction-fragment';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import type { Address } from 'viem';
 
 /**
@@ -36,10 +36,16 @@ export interface ProcessedTransactionsProps {
 }
 
 /**
- * Cached function to fetch processed transactions data from the Portal API
+ * Fetches processed transactions for a specific address
+ *
+ * @param props - Props containing the address to query and optional processedAfter date
+ *
+ * @remarks
+ * Returns transaction data with total count, recent count, and transaction records
  */
-const fetchProcessedTransactionsData = unstable_cache(
-  async ({ address, processedAfter }: ProcessedTransactionsProps) => {
+export const getProcessedTransactions = cache(
+  async (props: ProcessedTransactionsProps) => {
+    const { address, processedAfter } = props;
     const response = await portalClient.request(ProcessedTransactionsHistory, {
       from: address,
       processedAfter: processedAfter?.toISOString(),
@@ -56,29 +62,5 @@ const fetchProcessedTransactionsData = unstable_cache(
             transaction: 1,
           })) ?? [],
     };
-  },
-  ['transaction', 'processedTransactions'],
-  {
-    revalidate: 60 * 60, // Revalidate every 5 minutes
-    tags: ['transaction'],
   }
 );
-
-/**
- * Fetches processed transactions for a specific address
- *
- * @param props - Props containing the address to query and optional processedAfter date
- *
- * @remarks
- * Returns transaction data with total count, recent count, and transaction records
- */
-export async function getProcessedTransactions(
-  props: ProcessedTransactionsProps
-) {
-  const { address, processedAfter } = props;
-
-  return fetchProcessedTransactionsData({
-    address,
-    processedAfter,
-  });
-}

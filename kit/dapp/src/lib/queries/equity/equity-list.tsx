@@ -6,7 +6,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   EquityFragment,
@@ -49,39 +49,6 @@ const OffchainEquityList = hasuraGraphql(
 );
 
 /**
- * Cached function to fetch equity list data from both sources
- */
-const fetchEquityListData = unstable_cache(
-  async () => {
-    return Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(EquityList, {
-          first,
-          skip,
-        });
-
-        const equitys = result.equities || [];
-
-        return equitys;
-      }),
-
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainEquityList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }),
-    ]);
-  },
-  ['asset', 'equity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches a list of equitys from both on-chain and off-chain sources
  *
  * @param options - Options for fetching equity list
@@ -90,8 +57,27 @@ const fetchEquityListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each equity.
  */
-export async function getEquityList() {
-  const [theGraphEquitys, dbAssets] = await fetchEquityListData();
+export const getEquityList = cache(async () => {
+  const [theGraphEquitys, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(EquityList, {
+        first,
+        skip,
+      });
+
+      const equitys = result.equities || [];
+
+      return equitys;
+    }),
+
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainEquityList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
   // Parse and validate the data using Zod schemas
   const validatedEquitys = theGraphEquitys.map((equity) =>
@@ -123,4 +109,4 @@ export async function getEquityList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(equity.totalSupply),
   }));
-}
+});

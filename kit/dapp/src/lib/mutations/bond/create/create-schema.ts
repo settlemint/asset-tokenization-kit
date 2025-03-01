@@ -8,7 +8,6 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {string} pincode - The pincode for signing the transaction
- * @property {boolean} privateAsset - Whether the asset should be private
  * @property {string} cap - Maximum issuance amount
  * @property {string} faceValue - Face value of the bond
  * @property {string} maturityDate - Maturity date of the bond
@@ -20,7 +19,6 @@ export const CreateBondSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  privateAsset: z.boolean(),
   cap: z.string(),
   faceValue: z.string(),
   maturityDate: z.string(),

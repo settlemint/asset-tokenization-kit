@@ -4,7 +4,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import {
   AssetActivityFragment,
   AssetActivityFragmentSchema,
@@ -33,11 +33,14 @@ export interface AssetActivityOptions {
 }
 
 /**
- * Cached function to fetch raw asset activity data
+ * Fetches and processes asset activity data
+ *
+ * @param options - Query options including optional limit
+ * @returns Array of validated asset activity data
  */
-const fetchAssetActivityData = unstable_cache(
-  async (limit?: number) => {
-    const result = await fetchAllTheGraphPages(async (first, skip) => {
+export const getAssetActivity = cache(
+  async ({ limit }: AssetActivityOptions = {}) => {
+    const rawData = await fetchAllTheGraphPages(async (first, skip) => {
       const response = await theGraphClientStarterkits.request(AssetActivity, {
         first,
         skip,
@@ -53,28 +56,11 @@ const fetchAssetActivityData = unstable_cache(
       return activityData;
     }, limit);
 
-    return result;
-  },
-  ['asset', 'activity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
+    // Validate data using Zod schema
+    const validatedData = rawData.map((data) =>
+      safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
+    );
+
+    return validatedData;
   }
 );
-
-/**
- * Fetches and processes asset activity data
- *
- * @param options - Query options including optional limit
- * @returns Array of validated asset activity data
- */
-export async function getAssetActivity({ limit }: AssetActivityOptions = {}) {
-  const rawData = await fetchAssetActivityData(limit);
-
-  // Validate data using Zod schema
-  const validatedData = rawData.map((data) =>
-    safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
-  );
-
-  return validatedData;
-}

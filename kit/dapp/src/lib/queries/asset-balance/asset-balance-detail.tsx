@@ -4,7 +4,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetBalanceFragment,
@@ -36,62 +36,42 @@ export interface AssetBalanceDetailProps {
 }
 
 /**
- * Cached function to fetch raw asset balance data
- */
-const fetchAssetBalanceData = unstable_cache(
-  async (address: Address, account: Address) => {
-    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
-      address,
-      account,
-    });
-
-    return result;
-  },
-  ['asset', 'balance'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and processes asset balance data for a specific address and account
  *
  * @param params - Object containing the asset address and account
  * @returns Asset balance data or undefined if not found
  */
-export async function getAssetBalanceDetail({
-  address,
-  account,
-}: AssetBalanceDetailProps) {
-  if (!account) {
-    return undefined;
+export const getAssetBalanceDetail = cache(
+  async ({ address, account }: AssetBalanceDetailProps) => {
+    if (!account) {
+      return undefined;
+    }
+
+    const normalizedAddress = getAddress(address);
+    const normalizedAccount = getAddress(account);
+
+    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
+      address: normalizedAddress,
+      account: normalizedAccount,
+    });
+
+    // Return undefined if no balance found
+    if (result.assetBalances.length === 0) {
+      return undefined;
+    }
+
+    // Parse and validate the balance data
+    const validatedBalance = safeParseWithLogging(
+      AssetBalanceFragmentSchema,
+      result.assetBalances[0],
+      'asset balance'
+    );
+
+    // Format BigDecimal values
+    return {
+      ...validatedBalance,
+      value: formatNumber(validatedBalance.value),
+      frozen: formatNumber(validatedBalance.frozen),
+    };
   }
-
-  const normalizedAddress = getAddress(address);
-  const normalizedAccount = getAddress(account);
-
-  const result = await fetchAssetBalanceData(
-    normalizedAddress,
-    normalizedAccount
-  );
-
-  // Return undefined if no balance found
-  if (result.assetBalances.length === 0) {
-    return undefined;
-  }
-
-  // Parse and validate the balance data
-  const validatedBalance = safeParseWithLogging(
-    AssetBalanceFragmentSchema,
-    result.assetBalances[0],
-    'asset balance'
-  );
-
-  // Format BigDecimal values
-  return {
-    ...validatedBalance,
-    value: formatNumber(validatedBalance.value),
-    frozen: formatNumber(validatedBalance.frozen),
-  };
-}
+);

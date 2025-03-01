@@ -20,7 +20,6 @@ contract BondFactoryTest is Test {
     uint256 public futureDate;
     uint8 public constant DECIMALS = 8;
     uint256 public constant FACE_VALUE = 100e18; // 100 underlying tokens per bond
-    string public constant VALID_ISIN = "US0378331005";
     uint256 public constant CAP = 1000 * 10 ** DECIMALS; // 1000 tokens cap
 
     // Meta-transaction related
@@ -49,7 +48,7 @@ contract BondFactoryTest is Test {
 
         vm.prank(owner);
         address bondAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
@@ -59,7 +58,6 @@ contract BondFactoryTest is Test {
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
-        assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         assertEq(bond.cap(), CAP, "Bond cap should match");
         assertTrue(bond.hasRole(bond.DEFAULT_ADMIN_ROLE(), owner), "Owner should have admin role");
         assertTrue(bond.hasRole(bond.SUPPLY_MANAGEMENT_ROLE(), owner), "Owner should have supply management role");
@@ -82,16 +80,14 @@ contract BondFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address bondAddress = factory.create(
-                name, symbol, decimalValues[i], VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
-            );
+            address bondAddress =
+                factory.create(name, symbol, decimalValues[i], CAP, futureDate, FACE_VALUE, address(underlyingAsset));
             assertNotEq(bondAddress, address(0), "Bond address should not be zero");
 
             Bond bond = Bond(bondAddress);
             assertEq(bond.decimals(), decimalValues[i], "Bond decimals should match");
             assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
             assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
-            assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
             assertEq(bond.cap(), CAP, "Bond cap should match");
             assertTrue(factory.isFactoryToken(bondAddress), "Bond should be tracked as factory token");
         }
@@ -102,12 +98,11 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         vm.startPrank(owner);
-        address predictedAddress = factory.predictAddress(
-            owner, name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset)
-        );
+        address predictedAddress =
+            factory.predictAddress(owner, name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         address actualAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         assertEq(predictedAddress, actualAddress, "Predicted address should match actual address");
         vm.stopPrank();
@@ -119,27 +114,25 @@ contract BondFactoryTest is Test {
 
         // First deployment should succeed
         address bondAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
         assertTrue(factory.isFactoryToken(bondAddress), "First deployment should be tracked");
 
         // Second deployment with same parameters should revert
         vm.expectRevert(BondFactory.AddressAlreadyDeployed.selector);
-        factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
     }
 
     function test_DeterministicAddresses() public {
         string memory name = "Test Bond";
         string memory symbol = "TBOND";
 
-        address bond1 =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bond1 = factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // Create a new factory instance
         BondFactory newFactory = new BondFactory(address(forwarder));
 
         // Create a bond with the same parameters
-        address bond2 =
-            newFactory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+        address bond2 = newFactory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(bond1, bond2, "Bonds should have different addresses due to different factory addresses");
@@ -150,14 +143,13 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         address bondAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Test initial state
         assertEq(bond.decimals(), DECIMALS, "Bond decimals should match");
         assertEq(bond.faceValue(), FACE_VALUE, "Bond face value should match");
         assertEq(address(bond.underlyingAsset()), address(underlyingAsset), "Bond underlying asset should match");
-        assertEq(bond.isin(), VALID_ISIN, "Bond ISIN should match");
         assertFalse(bond.paused(), "Bond should not be paused initially");
         assertFalse(bond.isMatured(), "Bond should not be matured initially");
     }
@@ -168,7 +160,7 @@ contract BondFactoryTest is Test {
 
         vm.recordLogs();
         address bondAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
 
         Vm.Log[] memory entries = vm.getRecordedLogs();
         assertEq(
@@ -220,7 +212,7 @@ contract BondFactoryTest is Test {
         string memory symbol = "TBOND";
 
         address bondAddress =
-            factory.create(name, symbol, DECIMALS, VALID_ISIN, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
+            factory.create(name, symbol, DECIMALS, CAP, futureDate, FACE_VALUE, address(underlyingAsset));
         Bond bond = Bond(bondAddress);
 
         // Try to mature before maturity date

@@ -5,7 +5,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
 import { getUnixTime, startOfDay, subDays } from 'date-fns';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetStatsFragment,
@@ -46,35 +46,6 @@ export interface AssetStatsProps {
 }
 
 /**
- * Cached function to fetch raw asset stats data from The Graph
- */
-const fetchAssetStatsData = unstable_cache(
-  async (address: Address, days = 1) => {
-    // Calculate timestamp for start date
-    const startDate = subDays(new Date(), days - 1);
-    const timestampGte = getUnixTime(startOfDay(startDate)).toString();
-
-    const result = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientStarterkits.request(AssetStats, {
-        asset: address,
-        timestamp_gte: timestampGte,
-        first,
-        skip,
-      });
-
-      return response.assetStats_collection || [];
-    });
-
-    return result;
-  },
-  ['asset', 'stats'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and processes asset statistics data from The Graph
  *
  * @param params - Object containing the asset address and time range
@@ -84,23 +55,38 @@ const fetchAssetStatsData = unstable_cache(
  * fetches data from The Graph, validates it using the AssetStatsFragmentSchema,
  * and processes the totalBurned field to be a negated string value.
  */
-export async function getAssetStats({ address, days = 1 }: AssetStatsProps) {
-  const normalizedAddress = getAddress(address);
-  const rawData = await fetchAssetStatsData(normalizedAddress, days);
+export const getAssetStats = cache(
+  async ({ address, days = 1 }: AssetStatsProps) => {
+    const normalizedAddress = getAddress(address);
+    // Calculate timestamp for start date
+    const startDate = subDays(new Date(), days - 1);
+    const timestampGte = getUnixTime(startOfDay(startDate)).toString();
 
-  // Validate data using Zod schema and process
-  const validatedStats = rawData.map((item) => {
-    const validatedItem = safeParseWithLogging(
-      AssetStatsFragmentSchema,
-      item,
-      'asset stats'
-    );
+    const result = await fetchAllTheGraphPages(async (first, skip) => {
+      const response = await theGraphClientStarterkits.request(AssetStats, {
+        asset: normalizedAddress,
+        timestamp_gte: timestampGte,
+        first,
+        skip,
+      });
 
-    return {
-      ...validatedItem,
-      totalBurned: validatedItem.totalBurned.toString(),
-    };
-  });
+      return response.assetStats_collection || [];
+    });
 
-  return validatedStats;
-}
+    // Validate data using Zod schema and process
+    const validatedStats = result.map((item) => {
+      const validatedItem = safeParseWithLogging(
+        AssetStatsFragmentSchema,
+        item,
+        'asset stats'
+      );
+
+      return {
+        ...validatedItem,
+        totalBurned: validatedItem.totalBurned.toString(),
+      };
+    });
+
+    return validatedStats;
+  }
+);

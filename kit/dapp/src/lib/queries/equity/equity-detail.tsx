@@ -5,7 +5,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   EquityFragment,
@@ -51,33 +51,19 @@ export interface EquityDetailProps {
 }
 
 /**
- * Cached function to fetch equity data from both sources
- */
-const fetchEquityData = unstable_cache(
-  async (address: Address, normalizedAddress: Address) => {
-    return Promise.all([
-      theGraphClientStarterkits.request(EquityDetail, { id: address }),
-      hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
-    ]);
-  },
-  ['asset', 'equity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and combines on-chain and off-chain equity data
  *
  * @param params - Object containing the equity address
  * @returns Combined equity data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getEquityDetail({ address }: EquityDetailProps) {
+export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
   const normalizedAddress = getAddress(address);
 
-  const [data, dbEquity] = await fetchEquityData(address, normalizedAddress);
+  const [data, dbEquity] = await Promise.all([
+    theGraphClientStarterkits.request(EquityDetail, { id: address }),
+    hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
+  ]);
 
   const equity = safeParseWithLogging(
     EquityFragmentSchema,
@@ -110,4 +96,4 @@ export async function getEquityDetail({ address }: EquityDetailProps) {
     concentration,
     totalSupply: formatNumber(equity.totalSupply),
   };
-}
+});

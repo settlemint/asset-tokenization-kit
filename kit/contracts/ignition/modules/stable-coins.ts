@@ -12,17 +12,17 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
   const createUSDC = m.call(
     stableCoinFactory,
     "create",
-    ["Euro Coin", "EUR", 6, "", collateralLivenessSeconds],
+    ["Euro Coin", "EUR", 6, collateralLivenessSeconds],
     {
       id: "createUSDC",
       from: deployer,
-    },
+    }
   );
   const readUSDCAddress = m.readEventArgument(
     createUSDC,
     "StableCoinCreated",
     "token",
-    { id: "readUSDCAddress" },
+    { id: "readUSDCAddress" }
   );
   const usdc = m.contractAt("StableCoin", readUSDCAddress, { id: "usdc" });
 
@@ -48,7 +48,7 @@ const StableCoinsModule = buildModule("StableCoinsModule", (m) => {
     usdc,
     "updateCollateral",
     [collateralAmount],
-    { id: "updateCollateral" },
+    { id: "updateCollateral" }
   );
 
   const mintStableCoin = m.call(usdc, "mint", [deployer, mintAmount], {

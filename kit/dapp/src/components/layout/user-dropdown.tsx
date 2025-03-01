@@ -19,7 +19,7 @@ import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useUser } from '../blocks/user-context/user-context';
+import type { Address } from 'viem';
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -56,7 +56,9 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const user = useUser();
+  const session = authClient.useSession();
+  const user = session.data?.user;
+
   const router = useRouter();
   const t = useTranslations('layout.user-dropdown');
 
@@ -103,7 +105,7 @@ export function UserDropdown() {
           <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
             {user ? (
               <AddressAvatar
-                address={user.wallet}
+                address={user.wallet as Address}
                 email={user.email}
                 className="h-8 w-8 rounded-lg"
                 indicator={false}

@@ -16,7 +16,6 @@ export const FundFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
-    isin
     paused
     fundCategory
     fundClass
@@ -41,7 +40,6 @@ export const FundFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
-  isin: z.isin().nullish(),
   paused: z.boolean(),
   fundCategory: z.string(),
   fundClass: z.string(),
@@ -70,7 +68,7 @@ export type Fund = ZodInfer<typeof FundFragmentSchema>;
 export const OffchainFundFragment = hasuraGraphql(`
   fragment OffchainFundFragment on asset {
     id
-    private
+    isin
   }
 `);
 
@@ -80,7 +78,7 @@ export const OffchainFundFragment = hasuraGraphql(`
  */
 export const OffchainFundFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
+  isin: z.isin().nullish(),
 });
 
 /**

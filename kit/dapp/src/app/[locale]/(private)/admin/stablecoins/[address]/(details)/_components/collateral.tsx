@@ -22,7 +22,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('proven-collateral')}
           info={t('proven-collateral-info')}
         >
-          {stableCoin.collateral}
+          {formatNumber(stableCoin.collateral)}
         </DetailGridItem>
         <DetailGridItem
           label={t('required-collateral-threshold')}
@@ -34,7 +34,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('committed-collateral-ratio')}
           info={t('committed-collateral-ratio-info')}
         >
-          {formatNumber(stableCoin.collateralCommittedRatio, {
+          {formatNumber(stableCoin.collateralRatio, {
             percentage: true,
             decimals: 2,
           })}
@@ -43,9 +43,11 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('collateral-proof-expiration')}
           info={t('collateral-proof-expiration-info')}
         >
-          {formatDate(stableCoin.collateralProofValidity, {
-            type: 'absolute',
-          })}
+          {stableCoin.collateralProofValidity
+            ? formatDate(stableCoin.collateralProofValidity, {
+                type: 'absolute',
+              })
+            : '-'}
         </DetailGridItem>
         <DetailGridItem
           label={t('collateral-proof-validity')}

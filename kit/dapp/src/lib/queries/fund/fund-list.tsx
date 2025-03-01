@@ -6,7 +6,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   FundFragment,
@@ -49,39 +49,6 @@ const OffchainFundList = hasuraGraphql(
 );
 
 /**
- * Cached function to fetch fund list data from both sources
- */
-const fetchFundListData = unstable_cache(
-  async () => {
-    return Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(FundList, {
-          first,
-          skip,
-        });
-
-        const funds = result.funds || [];
-
-        return funds;
-      }),
-
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainFundList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }),
-    ]);
-  },
-  ['asset', 'fund'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches a list of funds from both on-chain and off-chain sources
  *
  * @param options - Options for fetching fund list
@@ -90,8 +57,27 @@ const fetchFundListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each fund.
  */
-export async function getFundList() {
-  const [theGraphFunds, dbAssets] = await fetchFundListData();
+export const getFundList = cache(async () => {
+  const [theGraphFunds, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(FundList, {
+        first,
+        skip,
+      });
+
+      const funds = result.funds || [];
+
+      return funds;
+    }),
+
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainFundList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
   // Parse and validate the data using Zod schemas
   const validatedFunds = theGraphFunds.map((fund) =>
@@ -123,4 +109,4 @@ export async function getFundList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(fund.totalSupply),
   }));
-}
+});

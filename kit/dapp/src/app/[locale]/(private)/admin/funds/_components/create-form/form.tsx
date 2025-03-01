@@ -22,7 +22,6 @@ export function CreateFundForm({ open, onCloseAction }: CreateFundFormProps) {
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      triggerLabel={t('trigger-label')}
       title={t('title')}
       description={t('description')}
     >

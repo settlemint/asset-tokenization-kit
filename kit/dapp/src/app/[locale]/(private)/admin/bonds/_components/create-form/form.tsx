@@ -22,7 +22,6 @@ export function CreateBondForm({ open, onCloseAction }: CreateBondFormProps) {
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      triggerLabel={t('trigger-label')}
       title={t('title')}
       description={t('description')}
     >

@@ -8,7 +8,6 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {string} pincode - The pincode for signing the transaction
- * @property {boolean} privateAsset - Whether the asset should be private
  * @property {string} equityCategory - The category of the equity
  * @property {string} equityClass - The class of the equity
  */
@@ -18,7 +17,6 @@ export const CreateEquitySchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  privateAsset: z.boolean(),
   equityCategory: z.string(),
   equityClass: z.string(),
 });

@@ -5,7 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetFragment,
@@ -61,43 +61,19 @@ export interface PermissionWithRoles extends Permission {
 }
 
 /**
- * Cached function to fetch asset raw data from both sources
- */
-const fetchAssetData = unstable_cache(
-  async (address: Address, normalizedAddress: Address) => {
-    const onchainData = await theGraphClientStarterkits.request(AssetDetail, {
-      id: address,
-    });
-    const offchainData = await hasuraClient.request(OffchainAssetDetail, {
-      id: normalizedAddress,
-    });
-
-    return {
-      onchainData,
-      offchainData,
-    };
-  },
-  ['asset', 'detail'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and combines on-chain and off-chain asset data with permission information
  *
  * @param params - Object containing the asset address
  * @returns Combined asset data with additional permission details
  * @throws Error if fetching or parsing fails
  */
-export async function getAssetDetail({ address }: AssetDetailProps) {
+export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const normalizedAddress = getAddress(address);
 
-  const { onchainData, offchainData } = await fetchAssetData(
-    address,
-    normalizedAddress
-  );
+  const [onchainData, offchainData] = await Promise.all([
+    theGraphClientStarterkits.request(AssetDetail, { id: address }),
+    hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
+  ]);
 
   if (!onchainData.asset) {
     throw new Error(`Asset ${address} not found`);
@@ -167,17 +143,19 @@ export async function getAssetDetail({ address }: AssetDetailProps) {
     },
     roles: Array.from(usersWithRoles.values()),
   };
-}
+});
 
 /**
  * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
  */
-export async function getOptionalAssetDetail({ address }: AssetDetailProps) {
-  try {
-    return await getAssetDetail({ address });
-  } catch {
-    return null;
+export const getOptionalAssetDetail = cache(
+  async ({ address }: AssetDetailProps) => {
+    try {
+      return await getAssetDetail({ address });
+    } catch {
+      return null;
+    }
   }
-}
+);

@@ -15,7 +15,6 @@ export function fetchBond(address: Address): Bond {
     let maturityDate = endpoint.try_maturityDate();
     let isMatured = endpoint.try_isMatured();
     let paused = endpoint.try_paused();
-    let isin = endpoint.try_isin();
     let cap = endpoint.try_cap();
     let faceValue = endpoint.try_faceValue();
     let underlyingAsset = endpoint.try_underlyingAsset();
@@ -46,7 +45,6 @@ export function fetchBond(address: Address): Bond {
     bond.isMatured = isMatured.reverted ? false : isMatured.value;
     bond.paused = paused.reverted ? false : paused.value;
     bond.faceValue = faceValue.reverted ? BigInt.zero() : faceValue.value;
-    bond.isin = isin.reverted ? "" : isin.value;
     bond.underlyingAsset = underlyingAsset.reverted
       ? Address.zero()
       : underlyingAsset.value;

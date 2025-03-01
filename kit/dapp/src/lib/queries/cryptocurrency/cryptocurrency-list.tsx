@@ -6,7 +6,7 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -49,42 +49,6 @@ const OffchainCryptocurrencyList = hasuraGraphql(
 );
 
 /**
- * Cached function to fetch cryptocurrency list data from both sources
- */
-const fetchCryptoCurrencyListData = unstable_cache(
-  async () => {
-    return Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(
-          CryptoCurrencyList,
-          {
-            first,
-            skip,
-          }
-        );
-
-        const cryptoCurrencies = result.cryptoCurrencies || [];
-
-        return cryptoCurrencies;
-      }),
-
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainCryptocurrencyList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }),
-    ]);
-  },
-  ['asset', 'cryptocurrency'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches a list of cryptocurrencys from both on-chain and off-chain sources
  *
  * @param options - Options for fetching cryptocurrency list
@@ -93,9 +57,30 @@ const fetchCryptoCurrencyListData = unstable_cache(
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each cryptocurrency.
  */
-export async function getCryptoCurrencyList() {
-  const [theGraphCryptoCurrencies, dbAssets] =
-    await fetchCryptoCurrencyListData();
+export const getCryptoCurrencyList = cache(async () => {
+  const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(
+        CryptoCurrencyList,
+        {
+          first,
+          skip,
+        }
+      );
+
+      const cryptoCurrencies = result.cryptoCurrencies || [];
+
+      return cryptoCurrencies;
+    }),
+
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainCryptocurrencyList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
   // Parse and validate the data using Zod schemas
   const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
@@ -136,4 +121,4 @@ export async function getCryptoCurrencyList() {
     // replace all the BigDecimals with formatted strings
     totalSupply: formatNumber(cryptocurrency.totalSupply),
   }));
-}
+});
