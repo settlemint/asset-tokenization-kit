@@ -2,13 +2,10 @@ import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
 import { TransitionProvider } from '@/components/layout/transition-provider';
 import { routing } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import '@fontsource/figtree/300.css';
-import '@fontsource/figtree/400.css';
-import '@fontsource/figtree/700.css';
-import '@fontsource/figtree/900.css';
 import type { Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { Figtree } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
@@ -22,6 +19,11 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 };
+
+const figTree = Figtree({
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export default async function RootLayout({
   children,
@@ -41,7 +43,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={figTree.className}>
       {/* Can be used to debug rerenders using react-scan
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
