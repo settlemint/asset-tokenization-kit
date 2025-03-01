@@ -42,6 +42,10 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      {/* Can be used to debug rerenders using react-scan
+      <head>
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+      </head> */}
       <body className={cn('min-h-screen font-sans antialiased')}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>

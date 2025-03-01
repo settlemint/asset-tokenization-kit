@@ -19,7 +19,6 @@ import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useUser } from '../blocks/user-context/user-context';
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -56,7 +55,9 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const user = useUser();
+  const session = authClient.useSession();
+  const user = session.data?.user;
+
   const router = useRouter();
   const t = useTranslations('layout.user-dropdown');
 

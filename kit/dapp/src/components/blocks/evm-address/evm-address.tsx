@@ -67,7 +67,7 @@ export function EvmAddress({
       setIsLoading(true);
       try {
         const [userResult, assetResult] = await Promise.all([
-          getOptionalUserDetail({ id: getAddress(address) }),
+          getOptionalUserDetail({ address: getAddress(address) }),
           getOptionalAssetDetail({ address: getAddress(address) }),
         ]);
 
@@ -115,7 +115,7 @@ export function EvmAddress({
               <span className="text-muted-foreground text-xs">({symbol}) </span>
             )}
             {verbose && (
-              <Badge variant="secondary" className="font-mono">
+              <Badge className="font-mono">
                 {shortHex(getAddress(address), { prefixLength, suffixLength })}
               </Badge>
             )}
