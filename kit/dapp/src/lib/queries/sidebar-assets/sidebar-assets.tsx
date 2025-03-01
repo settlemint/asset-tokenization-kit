@@ -3,7 +3,6 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging, z, type ZodInfer } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { BondFragment, BondFragmentSchema } from '../bond/bond-fragment';
 import {
@@ -78,21 +77,6 @@ export interface SidebarAssetsOptions {
 }
 
 /**
- * Cached function to fetch sidebar asset raw data
- */
-const fetchSidebarAssetsData = unstable_cache(
-  async () => {
-    const result = await theGraphClientStarterkits.request(SidebarAssets);
-    return result;
-  },
-  ['asset', 'sidebar'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches sidebar assets data
  *
  * @param options - Query options including optional limit
@@ -100,7 +84,7 @@ const fetchSidebarAssetsData = unstable_cache(
  */
 export const getSidebarAssets = cache(
   async (options?: SidebarAssetsOptions) => {
-    const result = await fetchSidebarAssetsData();
+    const result = await theGraphClientStarterkits.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
     // Validate stableCoins with Zod schema

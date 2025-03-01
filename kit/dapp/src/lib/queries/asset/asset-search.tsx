@@ -4,7 +4,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
 
@@ -39,29 +38,6 @@ export interface AssetSearchProps {
 }
 
 /**
- * Cached function to fetch raw asset search data
- */
-const fetchAssetSearchData = unstable_cache(
-  async (searchTerm: string) => {
-    if (!searchTerm) {
-      return [];
-    }
-
-    const result = await theGraphClientStarterkits.request(AssetSearch, {
-      searchAddress: searchTerm,
-      search: searchTerm,
-    });
-
-    return result.assets || [];
-  },
-  ['asset', 'search'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Searches for assets by address, name, or symbol
  *
  * @param params - Object containing the search term
@@ -75,10 +51,13 @@ export const getAssetSearch = cache(
       return [];
     }
 
-    const rawData = await fetchAssetSearchData(sanitizedSearchTerm);
+    const { assets } = await theGraphClientStarterkits.request(AssetSearch, {
+      searchAddress: sanitizedSearchTerm,
+      search: sanitizedSearchTerm,
+    });
 
     // Validate data using Zod schema
-    const validatedAssets = rawData.map((asset) =>
+    const validatedAssets = assets.map((asset) =>
       safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
     );
 

@@ -6,7 +6,6 @@
  * transaction hashes, financial identifiers, and other domain-specific data types.
  */
 import { fromUnixTime } from 'date-fns';
-import BigDecimal from 'js-big-decimal';
 import type { Address, Hash } from 'viem';
 import { getAddress, isAddress, isHash } from 'viem';
 import { z } from 'zod';
@@ -160,23 +159,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates and transforms a string to a BigDecimal
    */
-  bigDecimal: () =>
-    z
-      .string()
-      .refine(
-        (val) => {
-          try {
-            new BigDecimal(val);
-            return true;
-          } catch {
-            return false;
-          }
-        },
-        {
-          message: 'Must be a valid decimal number',
-        }
-      )
-      .transform((val) => new BigDecimal(val)),
+  bigDecimal: () => z.coerce.number(),
 
   /**
    * Validates and transforms a timestamp to a Date object

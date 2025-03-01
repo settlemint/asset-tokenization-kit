@@ -8,7 +8,6 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
@@ -56,79 +55,63 @@ export interface UserDetailProps {
 }
 
 /**
- * Cached function to fetch raw user detail data
- */
-const fetchUserDetailData = unstable_cache(
-  async (id: string) => {
-    const userResult = await hasuraClient.request(UserDetail, {
-      id,
-    });
-
-    if (!userResult.user_by_pk) {
-      throw new Error(`User not found with ID ${id}`);
-    }
-
-    // Validate user data
-    const validatedUser = safeParseWithLogging(
-      UserFragmentSchema,
-      userResult.user_by_pk,
-      'user detail'
-    );
-
-    // Fetch activity data if user has wallet address
-    if (validatedUser.wallet) {
-      try {
-        const activityResult = await theGraphClientStarterkits.request(
-          UserActivity,
-          {
-            id: validatedUser.wallet.toLowerCase(),
-          }
-        );
-
-        if (activityResult.account) {
-          // Validate account data
-          const validatedAccount = safeParseWithLogging(
-            AccountFragmentSchema,
-            activityResult.account,
-            'account detail'
-          );
-
-          // Combine validated user data with validated activity data
-          return {
-            ...validatedAccount,
-            ...validatedUser,
-            assetCount: validatedAccount.balancesCount ?? 0,
-            transactionCount: validatedAccount.activityEventsCount ?? 0,
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching user activity:', error);
-      }
-    }
-
-    return {
-      ...validatedUser,
-      assetCount: 0,
-      transactionCount: 0,
-    };
-  },
-  ['user', 'detail', 'activity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['user'],
-  }
-);
-
-/**
  * Fetches a user by ID
  *
  * @param params - Object containing the user ID
  * @throws Will throw an error if the user is not found
  */
 export const getUserDetail = cache(async ({ id }: UserDetailProps) => {
-  const result = await fetchUserDetailData(id);
+  const userResult = await hasuraClient.request(UserDetail, {
+    id,
+  });
 
-  return result;
+  if (!userResult.user_by_pk) {
+    throw new Error(`User not found with ID ${id}`);
+  }
+
+  // Validate user data
+  const validatedUser = safeParseWithLogging(
+    UserFragmentSchema,
+    userResult.user_by_pk,
+    'user detail'
+  );
+
+  // Fetch activity data if user has wallet address
+  if (validatedUser.wallet) {
+    try {
+      const activityResult = await theGraphClientStarterkits.request(
+        UserActivity,
+        {
+          id: validatedUser.wallet.toLowerCase(),
+        }
+      );
+
+      if (activityResult.account) {
+        // Validate account data
+        const validatedAccount = safeParseWithLogging(
+          AccountFragmentSchema,
+          activityResult.account,
+          'account detail'
+        );
+
+        // Combine validated user data with validated activity data
+        return {
+          ...validatedAccount,
+          ...validatedUser,
+          assetCount: validatedAccount.balancesCount ?? 0,
+          transactionCount: validatedAccount.activityEventsCount ?? 0,
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user activity:', error);
+    }
+  }
+
+  return {
+    ...validatedUser,
+    assetCount: 0,
+    transactionCount: 0,
+  };
 });
 
 /**

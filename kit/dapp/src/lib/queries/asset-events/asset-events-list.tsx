@@ -6,7 +6,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatDate } from '@/lib/utils/date';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import type { Address } from 'viem';
 
 import { cache } from 'react';
@@ -133,10 +132,13 @@ export interface AssetEventsListProps {
 }
 
 /**
- * Cached function to fetch raw asset events list data
+ * Fetches and processes asset event data
+ *
+ * @param params - Object containing optional filters and limits
+ * @returns Array of normalized asset events
  */
-const fetchAssetEventsListData = unstable_cache(
-  async (asset?: Address, sender?: Address, limit?: number) => {
+export const getAssetEventsList = cache(
+  async ({ asset, sender, limit }: AssetEventsListProps) => {
     const where: Record<string, unknown> = {};
 
     if (asset) {
@@ -163,25 +165,6 @@ const fetchAssetEventsListData = unstable_cache(
 
       return events;
     }, limit);
-
-    return events;
-  },
-  ['asset', 'events'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
- * Fetches and processes asset event data
- *
- * @param params - Object containing optional filters and limits
- * @returns Array of normalized asset events
- */
-export const getAssetEventsList = cache(
-  async ({ asset, sender, limit }: AssetEventsListProps) => {
-    const events = await fetchAssetEventsListData(asset, sender, limit);
 
     // Validate and transform events
     const validatedEvents = events

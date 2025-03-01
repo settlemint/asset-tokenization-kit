@@ -127,6 +127,8 @@ export function Form<
     }
   };
 
+  console.debug(form.formState.errors);
+
   return (
     <div className="space-y-6">
       <div className="container mt-8">

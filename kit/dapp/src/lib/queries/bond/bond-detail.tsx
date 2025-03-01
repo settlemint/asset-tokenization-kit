@@ -5,7 +5,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
@@ -52,23 +51,6 @@ export interface BondDetailProps {
 }
 
 /**
- * Cached function to fetch bond data from both sources
- */
-const fetchBondData = unstable_cache(
-  async (address: Address, normalizedAddress: Address) => {
-    return Promise.all([
-      theGraphClientStarterkits.request(BondDetail, { id: address }),
-      hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
-    ]);
-  },
-  ['asset', 'bond'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and combines on-chain and off-chain bond data
  *
  * @param params - Object containing the bond address
@@ -78,7 +60,10 @@ const fetchBondData = unstable_cache(
 export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
   const normalizedAddress = getAddress(address);
 
-  const [data, dbBond] = await fetchBondData(address, normalizedAddress);
+  const [data, dbBond] = await Promise.all([
+    theGraphClientStarterkits.request(BondDetail, { id: address }),
+    hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
+  ]);
 
   const bond = safeParseWithLogging(BondFragmentSchema, data.bond, 'bond');
   const offchainBond = dbBond.asset[0]

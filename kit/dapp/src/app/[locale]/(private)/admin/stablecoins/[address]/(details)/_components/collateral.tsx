@@ -22,7 +22,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('proven-collateral')}
           info={t('proven-collateral-info')}
         >
-          {stableCoin.collateral}
+          {formatNumber(stableCoin.collateral)}
         </DetailGridItem>
         <DetailGridItem
           label={t('required-collateral-threshold')}

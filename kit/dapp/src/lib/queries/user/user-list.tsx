@@ -9,7 +9,6 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
@@ -48,64 +47,6 @@ const UserActivity = theGraphGraphqlStarterkits(
 );
 
 /**
- * Cached function to fetch user list and activity data
- */
-const fetchUserListData = unstable_cache(
-  async () => {
-    const [users, accounts] = await Promise.all([
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(UserList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.user || [];
-      }),
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(UserActivity, {
-          first,
-          skip,
-        });
-        return result.accounts || [];
-      }),
-    ]);
-
-    // Validate each dataset with their respective schemas
-    const validatedUsers = users.map((user) =>
-      safeParseWithLogging(UserFragmentSchema, user, 'user')
-    );
-
-    const validatedAccounts = accounts.map((account) =>
-      safeParseWithLogging(AccountFragmentSchema, account, 'account')
-    );
-
-    // Combine validated user data with validated activity data
-    return validatedUsers.map((user) => {
-      const matchingAccount = validatedAccounts.find(
-        (account) => account.id.toLowerCase() === user.wallet?.toLowerCase()
-      );
-
-      if (matchingAccount) {
-        // Full merge of user and matching account
-        return {
-          ...matchingAccount,
-          ...user,
-          assetCount: matchingAccount.balancesCount ?? 0,
-          transactionCount: matchingAccount.activityEventsCount ?? 0,
-        };
-      }
-
-      // Return original validated user if no match found
-      return user;
-    });
-  },
-  ['user', 'list', 'activity'],
-  {
-    revalidate: 60 * 60,
-    tags: ['user'],
-  }
-);
-
-/**
  * Fetches a list of users from Hasura with their last activity
  *
  * @remarks
@@ -113,5 +54,49 @@ const fetchUserListData = unstable_cache(
  * then returns a combined list of users with their details and last activity.
  */
 export const getUserList = cache(async () => {
-  return await fetchUserListData();
+  const [users, accounts] = await Promise.all([
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(UserList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.user || [];
+    }),
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(UserActivity, {
+        first,
+        skip,
+      });
+      return result.accounts || [];
+    }),
+  ]);
+
+  // Validate each dataset with their respective schemas
+  const validatedUsers = users.map((user) =>
+    safeParseWithLogging(UserFragmentSchema, user, 'user')
+  );
+
+  const validatedAccounts = accounts.map((account) =>
+    safeParseWithLogging(AccountFragmentSchema, account, 'account')
+  );
+
+  // Combine validated user data with validated activity data
+  return validatedUsers.map((user) => {
+    const matchingAccount = validatedAccounts.find(
+      (account) => account.id.toLowerCase() === user.wallet?.toLowerCase()
+    );
+
+    if (matchingAccount) {
+      // Full merge of user and matching account
+      return {
+        ...matchingAccount,
+        ...user,
+        assetCount: matchingAccount.balancesCount ?? 0,
+        transactionCount: matchingAccount.activityEventsCount ?? 0,
+      };
+    }
+
+    // Return original validated user if no match found
+    return user;
+  });
 });

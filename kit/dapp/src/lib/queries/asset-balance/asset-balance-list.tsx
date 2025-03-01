@@ -6,7 +6,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import type { Address } from 'viem';
 import {
@@ -44,25 +43,6 @@ export interface AssetBalanceListProps {
 }
 
 /**
- * Cached function to fetch raw asset balance list data
- */
-const fetchAssetBalanceListData = unstable_cache(
-  async (address?: Address, wallet?: Address) => {
-    const result = await theGraphClientStarterkits.request(AssetBalanceList, {
-      address: address,
-      wallet: wallet,
-    });
-
-    return result;
-  },
-  ['asset', 'balance', 'list'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and processes asset balance data
  *
  * @param params - Object containing optional filters and limits
@@ -70,7 +50,10 @@ const fetchAssetBalanceListData = unstable_cache(
  */
 export const getAssetBalanceList = cache(
   async ({ address, wallet }: AssetBalanceListProps) => {
-    const result = await fetchAssetBalanceListData(address, wallet);
+    const result = await theGraphClientStarterkits.request(AssetBalanceList, {
+      address: address,
+      wallet: wallet,
+    });
 
     const balances = result.assetBalances || [];
     const userBalances = result.userBalances || [];

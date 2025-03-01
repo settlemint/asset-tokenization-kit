@@ -5,7 +5,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
@@ -52,25 +51,6 @@ export interface CryptoCurrencyDetailProps {
 }
 
 /**
- * Cached function to fetch cryptocurrency data from both sources
- */
-const fetchCryptoCurrencyData = unstable_cache(
-  async (address: Address, normalizedAddress: Address) => {
-    return Promise.all([
-      theGraphClientStarterkits.request(CryptoCurrencyDetail, { id: address }),
-      hasuraClient.request(OffchainCryptoCurrencyDetail, {
-        id: normalizedAddress,
-      }),
-    ]);
-  },
-  ['asset', 'cryptocurrency'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and combines on-chain and off-chain cryptocurrency data
  *
  * @param params - Object containing the cryptocurrency address
@@ -81,10 +61,12 @@ export const getCryptoCurrencyDetail = cache(
   async ({ address }: CryptoCurrencyDetailProps) => {
     const normalizedAddress = getAddress(address);
 
-    const [data, dbCryptoCurrency] = await fetchCryptoCurrencyData(
-      address,
-      normalizedAddress
-    );
+    const [data, dbCryptoCurrency] = await Promise.all([
+      theGraphClientStarterkits.request(CryptoCurrencyDetail, { id: address }),
+      hasuraClient.request(OffchainCryptoCurrencyDetail, {
+        id: normalizedAddress,
+      }),
+    ]);
 
     const cryptocurrency = safeParseWithLogging(
       CryptoCurrencyFragmentSchema,

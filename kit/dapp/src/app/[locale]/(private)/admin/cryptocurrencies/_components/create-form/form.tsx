@@ -25,7 +25,6 @@ export function CreateCryptoCurrencyForm({
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      triggerLabel={t('trigger-label')}
       title={t('title')}
       description={t('description')}
     >

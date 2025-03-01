@@ -4,9 +4,7 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
@@ -50,39 +48,6 @@ const OffchainStableCoinList = hasuraGraphql(
 );
 
 /**
- * Cached function to fetch stablecoin list data from both sources
- */
-const fetchStableCoinListData = unstable_cache(
-  async () => {
-    return Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(StableCoinList, {
-          first,
-          skip,
-        });
-
-        const stableCoins = result.stableCoins || [];
-
-        return stableCoins;
-      }),
-
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainStableCoinList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }),
-    ]);
-  },
-  ['asset', 'stablecoin'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
  *
  * @param options - Options for fetching stablecoin list
@@ -92,7 +57,26 @@ const fetchStableCoinListData = unstable_cache(
  * then merges the results to provide a complete view of each stablecoin.
  */
 export const getStableCoinList = cache(async () => {
-  const [theGraphStableCoins, dbAssets] = await fetchStableCoinListData();
+  const [theGraphStableCoins, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(StableCoinList, {
+        first,
+        skip,
+      });
+
+      const stableCoins = result.stableCoins || [];
+
+      return stableCoins;
+    }),
+
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainStableCoinList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
   // Parse and validate the data using Zod schemas
   const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
@@ -111,7 +95,7 @@ export const getStableCoinList = cache(async () => {
     validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
   );
 
-  const stableCoins = validatedStableCoins.map((stableCoin) => {
+  return validatedStableCoins.map((stableCoin) => {
     const dbAsset = assetsById.get(getAddress(stableCoin.id));
 
     return {
@@ -122,12 +106,4 @@ export const getStableCoinList = cache(async () => {
       },
     };
   });
-
-  return stableCoins.map((stableCoin) => ({
-    ...stableCoin,
-    // replace all the BigDecimals with formatted strings
-    collateralRatio: Number(stableCoin.collateralRatio.getValue()),
-    totalSupply: formatNumber(stableCoin.totalSupply),
-    collateral: formatNumber(stableCoin.collateral),
-  }));
 });

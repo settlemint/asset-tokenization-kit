@@ -23,7 +23,6 @@ interface ManageDropdownProps {
 export async function ManageDropdown({ address }: ManageDropdownProps) {
   const t = await getTranslations('admin.stablecoins.manage');
   const stableCoin = await getStableCoinDetail({ address });
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,7 +31,7 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
+      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded p-0 shadow-dropdown">
         <DropdownMenuItem asChild className="dropdown-menu-item">
           <MintForm
             address={address}

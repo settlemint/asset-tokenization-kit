@@ -4,7 +4,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
@@ -37,25 +36,6 @@ export interface AssetBalanceDetailProps {
 }
 
 /**
- * Cached function to fetch raw asset balance data
- */
-const fetchAssetBalanceData = unstable_cache(
-  async (address: Address, account: Address) => {
-    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
-      address,
-      account,
-    });
-
-    return result;
-  },
-  ['asset', 'balance'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and processes asset balance data for a specific address and account
  *
  * @param params - Object containing the asset address and account
@@ -70,10 +50,10 @@ export const getAssetBalanceDetail = cache(
     const normalizedAddress = getAddress(address);
     const normalizedAccount = getAddress(account);
 
-    const result = await fetchAssetBalanceData(
-      normalizedAddress,
-      normalizedAccount
-    );
+    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
+      address: normalizedAddress,
+      account: normalizedAccount,
+    });
 
     // Return undefined if no balance found
     if (result.assetBalances.length === 0) {

@@ -6,7 +6,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
@@ -50,39 +49,6 @@ const OffchainBondList = hasuraGraphql(
 );
 
 /**
- * Cached function to fetch bond list data from both sources
- */
-const fetchBondListData = unstable_cache(
-  async () => {
-    return Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(BondList, {
-          first,
-          skip,
-        });
-
-        const bonds = result.bonds || [];
-
-        return bonds;
-      }),
-
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainBondList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }),
-    ]);
-  },
-  ['asset', 'bond'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches a list of bonds from both on-chain and off-chain sources
  *
  * @param options - Options for fetching bond list
@@ -92,7 +58,26 @@ const fetchBondListData = unstable_cache(
  * then merges the results to provide a complete view of each bond.
  */
 export const getBondList = cache(async () => {
-  const [theGraphBonds, dbAssets] = await fetchBondListData();
+  const [theGraphBonds, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(BondList, {
+        first,
+        skip,
+      });
+
+      const bonds = result.bonds || [];
+
+      return bonds;
+    }),
+
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainBondList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
   // Parse and validate the data using Zod schemas
   const validatedBonds = theGraphBonds.map((bond) =>

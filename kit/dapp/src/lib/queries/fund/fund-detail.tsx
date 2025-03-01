@@ -5,7 +5,6 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
@@ -52,23 +51,6 @@ export interface FundDetailProps {
 }
 
 /**
- * Cached function to fetch fund data from both sources
- */
-const fetchFundData = unstable_cache(
-  async (address: Address, normalizedAddress: Address) => {
-    return Promise.all([
-      theGraphClientStarterkits.request(FundDetail, { id: address }),
-      hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
-    ]);
-  },
-  ['asset', 'fund'],
-  {
-    revalidate: 60 * 60,
-    tags: ['asset'],
-  }
-);
-
-/**
  * Fetches and combines on-chain and off-chain fund data
  *
  * @param params - Object containing the fund address
@@ -78,7 +60,10 @@ const fetchFundData = unstable_cache(
 export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
   const normalizedAddress = getAddress(address);
 
-  const [data, dbFund] = await fetchFundData(address, normalizedAddress);
+  const [data, dbFund] = await Promise.all([
+    theGraphClientStarterkits.request(FundDetail, { id: address }),
+    hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
+  ]);
 
   const fund = safeParseWithLogging(FundFragmentSchema, data.fund, 'fund');
   const offchainFund = dbFund.asset[0]
