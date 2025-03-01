@@ -1,5 +1,3 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { SignInForm } from './forms/signin-form';
 
@@ -28,11 +26,6 @@ export default async function SignIn({
           locale={locale}
         />
       </div>
-      <Alert className="mt-8" variant="warning">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>{t('alert.title')}</AlertTitle>
-        <AlertDescription>{t('alert.description')}</AlertDescription>
-      </Alert>
     </>
   );
 }
