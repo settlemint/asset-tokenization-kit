@@ -8,7 +8,6 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {string} pincode - The pincode for signing the transaction
- * @property {boolean} privateAsset - Whether the asset should be private
  * @property {string} fundCategory - The category of the fund
  * @property {string} fundClass - The class of the fund
  * @property {number} managementFeeBps - Management fee in basis points
@@ -19,7 +18,6 @@ export const CreateFundSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  privateAsset: z.boolean(),
   fundCategory: z.string(),
   fundClass: z.string(),
   managementFeeBps: z.number(),

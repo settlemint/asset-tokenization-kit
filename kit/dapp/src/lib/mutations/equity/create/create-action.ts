@@ -15,11 +15,11 @@ import { CreateEquitySchema } from './create-schema';
  * Creates a new equity contract through the equity factory
  */
 const EquityFactoryCreate = portalGraphql(`
-  mutation EquityFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $isin: String!, $equityCategory: String!, $equityClass: String!) {
+  mutation EquityFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $equityCategory: String!, $equityClass: String!) {
     EquityFactoryCreate(
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, isin: $isin, equityCategory: $equityCategory, equityClass: $equityClass}
+      input: {name: $name, symbol: $symbol, decimals: $decimals, equityCategory: $equityCategory, equityClass: $equityClass}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -34,14 +34,13 @@ const EquityFactoryCreate = portalGraphql(`
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateEquityPredictAddress = portalGraphql(`
-  query CreateEquityPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $equityCategory: String!, $equityClass: String!) {
+  query CreateEquityPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $equityCategory: String!, $equityClass: String!) {
     EquityFactory(address: $address) {
       predictAddress(
         sender: $sender
         decimals: $decimals
         name: $name
         symbol: $symbol
-        isin: $isin
         equityCategory: $equityCategory
         equityClass: $equityClass
       ) {
@@ -58,8 +57,8 @@ const CreateEquityPredictAddress = portalGraphql(`
  * Stores additional metadata about the equity in Hasura
  */
 const CreateOffchainEquity = hasuraGraphql(`
-  mutation CreateOffchainEquity($id: String!, $private: Boolean!) {
-    insert_asset_one(object: {id: $id, private: $private}, on_conflict: {constraint: asset_pkey, update_columns: private}) {
+  mutation CreateOffchainEquity($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
   }
@@ -76,7 +75,6 @@ export const createEquity = action
         decimals,
         pincode,
         isin,
-        privateAsset,
         equityCategory,
         equityClass,
       },
@@ -88,7 +86,6 @@ export const createEquity = action
           address: STABLE_COIN_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
-          isin: isin ?? '',
           name: assetName,
           symbol,
           equityCategory,
@@ -105,7 +102,7 @@ export const createEquity = action
 
       await hasuraClient.request(CreateOffchainEquity, {
         id: newAddress,
-        private: privateAsset,
+        isin: isin,
       });
 
       const data = await portalClient.request(EquityFactoryCreate, {
@@ -114,7 +111,6 @@ export const createEquity = action
         name: assetName,
         symbol,
         decimals,
-        isin: isin ?? '',
         challengeResponse: await handleChallenge(user.wallet, pincode),
         equityCategory,
         equityClass,

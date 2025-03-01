@@ -11,7 +11,6 @@ export function fetchFund(address: Address): Fund {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
-    let isin = endpoint.try_isin();
     let fundClass = endpoint.try_fundClass();
     let fundCategory = endpoint.try_fundCategory();
     let managementFeeBps = endpoint.try_managementFeeBps();
@@ -34,7 +33,6 @@ export function fetchFund(address: Address): Fund {
     fund.creator = Address.zero();
 
     // Fund-specific fields
-    fund.isin = isin.reverted ? "" : isin.value;
     fund.fundClass = fundClass.reverted ? "" : fundClass.value;
     fund.fundCategory = fundCategory.reverted ? "" : fundCategory.value;
     fund.managementFeeBps = managementFeeBps.reverted

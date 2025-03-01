@@ -36,8 +36,6 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the bond token (e.g., "Company A 5% Bond 2025")
     /// @param symbol The symbol of the token (e.g., "BOND-A-25")
     /// @param decimals The number of decimals for the token (must be <= 18)
-    /// @param isin The ISIN (International Securities Identification Number) of the bond (must be empty or 12
-    /// characters)
     /// @param cap The maximum total supply of the token
     /// @param maturityDate The timestamp when the bond matures (must be in the future)
     /// @param faceValue The face value of the bond in underlying asset base units
@@ -47,7 +45,6 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
@@ -57,22 +54,13 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         nonReentrant
         returns (address bond)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
         address predicted =
-            predictAddress(_msgSender(), name, symbol, decimals, isin, cap, maturityDate, faceValue, underlyingAsset);
+            predictAddress(_msgSender(), name, symbol, decimals, cap, maturityDate, faceValue, underlyingAsset);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
-            name,
-            symbol,
-            decimals,
-            _msgSender(),
-            isin,
-            cap,
-            maturityDate,
-            faceValue,
-            underlyingAsset,
-            trustedForwarder()
+            name, symbol, decimals, _msgSender(), cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()
         );
 
         bond = address(newBond);
@@ -88,7 +76,6 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the bond token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the bond
     /// @param cap The maximum total supply of the token
     /// @param maturityDate The timestamp when the bond matures
     /// @param faceValue The face value of the bond in underlying asset base units
@@ -99,7 +86,6 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
@@ -109,26 +95,19 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
         bytes32 bytecodeHash = keccak256(
             abi.encodePacked(
                 type(Bond).creationCode,
                 abi.encode(
-                    name,
-                    symbol,
-                    decimals,
-                    sender,
-                    isin,
-                    cap,
-                    maturityDate,
-                    faceValue,
-                    underlyingAsset,
-                    trustedForwarder()
+                    name, symbol, decimals, sender, cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()
                 )
             )
         );
 
-        return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
+        predicted =
+            address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, bytecodeHash)))));
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment
@@ -137,18 +116,8 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the bond token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the bond
     /// @return The calculated salt for CREATE2 deployment
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

@@ -37,8 +37,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token (e.g., "Global Growth Fund")
     /// @param symbol The symbol of the token (e.g., "GGF")
     /// @param decimals The number of decimals for the token (must be <= 18)
-    /// @param isin The ISIN (International Securities Identification Number) of the fund (must be empty or 12
-    /// characters)
     /// @param fundClass The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points (e.g., 100 for 1%, 200 for 2%)
@@ -47,7 +45,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         string memory fundClass,
         string memory fundCategory,
         uint16 managementFeeBps
@@ -58,13 +55,13 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
     {
         // Check if address is already deployed
         address predicted =
-            predictAddress(_msgSender(), name, symbol, decimals, isin, fundClass, fundCategory, managementFeeBps);
+            predictAddress(_msgSender(), name, symbol, decimals, fundClass, fundCategory, managementFeeBps);
         if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         Fund newToken = new Fund{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, managementFeeBps, fundClass, fundCategory, trustedForwarder()
+            name, symbol, decimals, _msgSender(), managementFeeBps, fundClass, fundCategory, trustedForwarder()
         );
 
         token = address(newToken);
@@ -80,7 +77,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the fund
     /// @param fundClass The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory The fund category (e.g., "Long/Short Equity", "Global Macro")
     /// @param managementFeeBps The management fee in basis points (e.g., 100 for 1%, 200 for 2%)
@@ -90,7 +86,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         string memory fundClass,
         string memory fundCategory,
         uint16 managementFeeBps
@@ -99,7 +94,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         predicted = address(
             uint160(
@@ -117,7 +112,6 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
                                         symbol,
                                         decimals,
                                         sender,
-                                        isin,
                                         managementFeeBps,
                                         fundClass,
                                         fundCategory,
@@ -130,6 +124,7 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
                 )
             )
         );
+        if (isFactoryFund[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment
@@ -138,18 +133,8 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the fund
     /// @return The calculated salt for CREATE2 deployment
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

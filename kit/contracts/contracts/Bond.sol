@@ -87,10 +87,6 @@ contract Bond is
     /// @dev Maps holder address to amount of bonds redeemed
     mapping(address => uint256) public bondRedeemed;
 
-    /// @notice The ISIN (International Securities Identification Number) of the bond
-    /// @dev Must be exactly 12 characters if provided
-    string private _isin;
-
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
     event BondMatured(uint256 timestamp);
@@ -137,8 +133,6 @@ contract Bond is
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token (must be <= 18)
     /// @param initialOwner The address that will receive admin rights
-    /// @param isin_ The ISIN (International Securities Identification Number) of the bond (must be empty or 12
-    /// characters)
     /// @param _cap The maximum total supply of the token
     /// @param _maturityDate Timestamp when the bond matures (must be in the future)
     /// @param _faceValue The face value of the bond in underlying asset base units (must be > 0)
@@ -149,7 +143,6 @@ contract Bond is
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
-        string memory isin_,
         uint256 _cap,
         uint256 _maturityDate,
         uint256 _faceValue,
@@ -165,7 +158,6 @@ contract Bond is
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (_faceValue == 0) revert InvalidFaceValue();
         if (_underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
-        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         // Verify the underlying asset contract exists by attempting to call a view function
         try IERC20(_underlyingAsset).totalSupply() returns (uint256) {
@@ -178,7 +170,6 @@ contract Bond is
         maturityDate = _maturityDate;
         faceValue = _faceValue;
         underlyingAsset = IERC20(_underlyingAsset);
-        _isin = isin_;
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
         _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner);
@@ -370,12 +361,6 @@ contract Bond is
         if (!success) revert InsufficientUnderlyingBalance();
 
         emit UnderlyingAssetTopUp(_msgSender(), missing);
-    }
-
-    /// @notice Returns the ISIN (International Securities Identification Number) of the bond
-    /// @return The ISIN of the bond
-    function isin() public view returns (string memory) {
-        return _isin;
     }
 
     /// @notice Returns the basis for yield calculation

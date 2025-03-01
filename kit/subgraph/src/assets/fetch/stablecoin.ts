@@ -11,7 +11,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     let name = endpoint.try_name();
     let symbol = endpoint.try_symbol();
     let decimals = endpoint.try_decimals();
-    let isin = endpoint.try_isin();
     let paused = endpoint.try_paused();
     let liveness = endpoint.try_liveness();
 
@@ -32,7 +31,6 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.creator = Address.zero();
 
     // StableCoin-specific fields
-    stableCoin.isin = isin.reverted ? "" : isin.value;
     stableCoin.collateralExact = BigInt.zero();
     stableCoin.collateral = BigDecimal.zero();
     stableCoin.paused = paused.reverted ? false : paused.value;

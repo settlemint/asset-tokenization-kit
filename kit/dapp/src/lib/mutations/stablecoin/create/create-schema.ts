@@ -9,7 +9,6 @@ import { z, type ZodInfer } from '@/lib/utils/zod';
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {number} collateralLivenessSeconds - Time period for collateral validity
  * @property {string} pincode - The pincode for signing the transaction
- * @property {boolean} privateAsset - Whether the asset should be private
  */
 export const CreateStablecoinSchema = z.object({
   assetName: z.string(),
@@ -18,7 +17,6 @@ export const CreateStablecoinSchema = z.object({
   isin: z.isin().optional(),
   collateralLivenessSeconds: z.number(),
   pincode: z.pincode(),
-  privateAsset: z.boolean(),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

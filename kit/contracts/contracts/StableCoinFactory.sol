@@ -37,15 +37,12 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token (e.g., "USD Stablecoin")
     /// @param symbol The symbol of the token (e.g., "USDS")
     /// @param decimals The number of decimals for the token (must be <= 18)
-    /// @param isin The ISIN (International Securities Identification Number) of the stablecoin (must be empty or 12
-    /// characters)
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid (must be > 0)
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         uint48 collateralLivenessSeconds
     )
         external
@@ -53,13 +50,13 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(_msgSender(), name, symbol, decimals, isin, collateralLivenessSeconds);
+        address predicted = predictAddress(_msgSender(), name, symbol, decimals, collateralLivenessSeconds);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         StableCoin newToken = new StableCoin{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, collateralLivenessSeconds, trustedForwarder()
+            name, symbol, decimals, _msgSender(), collateralLivenessSeconds, trustedForwarder()
         );
 
         token = address(newToken);
@@ -75,7 +72,6 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the stablecoin
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @return predicted The address where the token would be deployed
     function predictAddress(
@@ -83,14 +79,13 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         uint48 collateralLivenessSeconds
     )
         public
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         predicted = address(
             uint160(
@@ -104,13 +99,7 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
                                 abi.encodePacked(
                                     type(StableCoin).creationCode,
                                     abi.encode(
-                                        name,
-                                        symbol,
-                                        decimals,
-                                        sender,
-                                        isin,
-                                        collateralLivenessSeconds,
-                                        trustedForwarder()
+                                        name, symbol, decimals, sender, collateralLivenessSeconds, trustedForwarder()
                                     )
                                 )
                             )
@@ -119,6 +108,7 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
                 )
             )
         );
+        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
     }
 
     /// @notice Calculates the salt for CREATE2 deployment
@@ -127,18 +117,8 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the stablecoin
     /// @return The calculated salt for CREATE2 deployment
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

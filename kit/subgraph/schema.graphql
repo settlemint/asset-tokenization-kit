@@ -53,7 +53,6 @@ type Bond implements Asset @entity {
   isMatured: Boolean!
   paused: Boolean!
   faceValue: BigInt!
-  isin: String!
   underlyingAsset: Bytes!
   redeemedAmount: BigInt!
   underlyingBalance: BigInt!
@@ -77,7 +76,6 @@ type Equity implements Asset @entity {
   supplyManagers: [Account!]!
   userManagers: [Account!]!
   # Equity-Specific Fields
-  isin: String!
   equityClass: String!
   equityCategory: String!
   paused: Boolean!
@@ -100,7 +98,6 @@ type Fund implements Asset @entity {
   supplyManagers: [Account!]!
   userManagers: [Account!]!
   # Fund-Specific Fields
-  isin: String!
   fundClass: String!
   fundCategory: String!
   paused: Boolean!
@@ -125,7 +122,6 @@ type StableCoin implements Asset @entity {
   supplyManagers: [Account!]!
   userManagers: [Account!]!
   # StableCoin-Specific Fields
-  isin: String
   collateral: BigDecimal!
   collateralExact: BigInt!
   liveness: BigInt!

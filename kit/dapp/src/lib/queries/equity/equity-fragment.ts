@@ -16,7 +16,6 @@ export const EquityFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
-    isin
     paused
     equityCategory
     equityClass
@@ -40,7 +39,6 @@ export const EquityFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
-  isin: z.isin().nullish(),
   paused: z.boolean(),
   equityCategory: z.string(),
   equityClass: z.string(),
@@ -68,7 +66,7 @@ export type Equity = ZodInfer<typeof EquityFragmentSchema>;
 export const OffchainEquityFragment = hasuraGraphql(`
   fragment OffchainEquityFragment on asset {
     id
-    private
+    isin
   }
 `);
 
@@ -78,7 +76,7 @@ export const OffchainEquityFragment = hasuraGraphql(`
  */
 export const OffchainEquityFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
+  isin: z.isin().nullish(),
 });
 
 /**

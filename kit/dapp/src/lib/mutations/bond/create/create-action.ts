@@ -15,11 +15,11 @@ import { CreateBondSchema } from './create-schema';
  * Creates a new bond contract through the bond factory
  */
 const BondFactoryCreate = portalGraphql(`
-  mutation BondFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $isin: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
+  mutation BondFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
     BondFactoryCreate(
       address: $address
       from: $from
-      input: {name: $name, symbol: $symbol, decimals: $decimals, isin: $isin, cap: $cap, faceValue: $faceValue, maturityDate: $maturityDate, underlyingAsset: $underlyingAsset}
+      input: {name: $name, symbol: $symbol, decimals: $decimals, cap: $cap, faceValue: $faceValue, maturityDate: $maturityDate, underlyingAsset: $underlyingAsset}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -34,14 +34,13 @@ const BondFactoryCreate = portalGraphql(`
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateBondPredictAddress = portalGraphql(`
-  query CreateBondPredictAddress($address: String!, $sender: String!, $decimals: Int!, $isin: String!, $name: String!, $symbol: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
+  query CreateBondPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
     BondFactory(address: $address) {
       predictAddress(
         sender: $sender
         decimals: $decimals
         name: $name
         symbol: $symbol
-        isin: $isin
         cap: $cap
         faceValue: $faceValue
         maturityDate: $maturityDate
@@ -60,8 +59,8 @@ const CreateBondPredictAddress = portalGraphql(`
  * Stores additional metadata about the bond in Hasura
  */
 const CreateOffchainBond = hasuraGraphql(`
-  mutation CreateOffchainBond($id: String!, $private: Boolean!) {
-    insert_asset_one(object: {id: $id, private: $private}, on_conflict: {constraint: asset_pkey, update_columns: private}) {
+  mutation CreateOffchainBond($id: String!, $isin: String) {
+    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
     }
   }
@@ -78,7 +77,6 @@ export const createBond = action
         decimals,
         pincode,
         isin,
-        privateAsset,
         cap,
         faceValue,
         maturityDate,
@@ -92,7 +90,6 @@ export const createBond = action
           address: STABLE_COIN_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
-          isin: isin ?? '',
           cap,
           faceValue,
           maturityDate,
@@ -111,7 +108,7 @@ export const createBond = action
 
       await hasuraClient.request(CreateOffchainBond, {
         id: newAddress,
-        private: privateAsset,
+        isin: isin,
       });
 
       const data = await portalClient.request(BondFactoryCreate, {
@@ -120,7 +117,6 @@ export const createBond = action
         name: assetName,
         symbol,
         decimals,
-        isin: isin ?? '',
         cap,
         faceValue,
         maturityDate,

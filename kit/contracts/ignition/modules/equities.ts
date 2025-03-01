@@ -13,17 +13,17 @@ const EquitiesModule = buildModule("EquitiesModule", (m) => {
   const createAPPL = m.call(
     equityFactory,
     "create",
-    ["Apple Inc.", "AAPL", 0, "US0378331005", equityClass, equityCategory],
+    ["Apple Inc.", "AAPL", 0, equityClass, equityCategory],
     {
       id: "createAPPL",
       from: deployer,
-    },
+    }
   );
   const readAPPLAddress = m.readEventArgument(
     createAPPL,
     "EquityCreated",
     "token",
-    { id: "readAPPLAddress" },
+    { id: "readAPPLAddress" }
   );
   const aapl = m.contractAt("Equity", readAPPLAddress, { id: "aapl" });
 
