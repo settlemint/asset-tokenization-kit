@@ -1728,7 +1728,10 @@
   },
   "theme": {
     "toggle-label": "Toggle theme",
-    "switch-to-mode": "Switch to {mode} mode"
+    "switch-to-mode": "Switch to {mode} mode",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "layout": {
     "navigation": {

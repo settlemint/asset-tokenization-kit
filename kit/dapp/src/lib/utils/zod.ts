@@ -128,12 +128,10 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates token symbols
    */
-  symbol: () => z.string(),
-  // current data is dirty
-  // .regex(/^[A-Z]+$/, {
-  //     message:
-  //       "Symbol must contain only uppercase letters (no spaces or numbers)",
-  //   }),
+  symbol: () =>
+    z.string().regex(/^[A-Z0-9]+$/, {
+      message: 'Symbol must contain only uppercase letters and numbers',
+    }),
 
   /**
    * Validates an International Securities Identification Number (ISIN)
@@ -142,12 +140,13 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates ISIN codes
    */
-  isin: () => z.string(),
-  // TODO: uncomment this when we have a proper ISIN validator
-  // .regex(/^[A-Z0-9]+$/, {
-  //   message: 'ISIN must contain only uppercase letters and numbers',
-  // })
-  // .length(12, { message: 'ISIN must be exactly 12 characters' }),
+  isin: () =>
+    z
+      .string()
+      .regex(/^[A-Z0-9]+$/, {
+        message: 'ISIN must contain only uppercase letters and numbers',
+      })
+      .length(12, { message: 'ISIN must be exactly 12 characters' }),
 
   /**
    * Validates and transforms a string to a BigInt

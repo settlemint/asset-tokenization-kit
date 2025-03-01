@@ -84,7 +84,6 @@ export type Asset = ZodInfer<typeof AssetFragmentSchema>;
 export const OffchainAssetFragment = hasuraGraphql(`
   fragment OffchainAssetFragment on asset {
     id
-    private
   }
 `);
 
