@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import animate from 'tailwindcss-animate';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 export default {
   darkMode: ['class', '.dark'],
@@ -11,6 +12,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Figtree', ...fontFamily.sans],
+      },
       colors: {
         // SettleMint Brand Colors
         sm: {

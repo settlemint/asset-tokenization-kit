@@ -16,7 +16,6 @@
     --sm-purple: 267 91% 67%;
     --sm-cyan: 189 64% 51%;
     --sm-dark-gray: 0 0% 11%;
-    --sm-light-gray: 225 91% 94%;
     --button-hover-accent: 225 91% 94%; /* Using sm-light-blue */
     --background: 225 91% 94%; /* Using sm-light-blue */
     --foreground: 0 0% 11%; /* Using sm-dark-gray */
@@ -29,17 +28,17 @@
     --secondary: 142 41% 81%; /* Using sm-mint-green */
     --secondary-foreground: 0 0% 11%; /* Using sm-dark-gray */
     --muted: 225 91% 94%; /* Using sm-light-blue */
-    --muted-foreground: 0 0% 11%; /* Using sm-dark-gray */
-    --accent: 207 73% 54%; /* Using sm-blue */
+    --muted-foreground: 207 73% 54%; /* Using sm-blue */
+    --accent: 222 85% 57%; /* Using sm-royal-blue */
     --accent-foreground: 0 0% 100%; /* Using sm-white */
-    --destructive: 20 100% 66%; /* Using sm-orange */
-    --destructive-foreground: 0 0% 100%; /* Using sm-white */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
     --warning: 20 100% 66%; /* Using sm-orange */
-    --warning-foreground: 0 0% 100%; /* Using sm-white */
+    --warning-foreground: 0 0% 98%;
     --success: 140 50% 69%; /* Using sm-green */
-    --success-foreground: 0 0% 100%; /* Using sm-white */
+    --success-foreground: 0 0% 98%;
     --border: 225 91% 94%; /* Using sm-light-blue */
-    --input: 225 91% 94%; /* Using sm-light-blue */
+    --input: 0 0% 80%;
     --ring: 207 73% 54%; /* Using sm-blue */
     --radius: 0.5rem;
     --chart-1: 20 100% 66%; /* Using sm-orange */
@@ -64,41 +63,41 @@
     /* Default Dark Theme */
     --background: 0 0% 11%; /* Using sm-dark-gray */
     --foreground: 0 0% 100%; /* Using sm-white */
-    --card: 0 0% 11%; /* Using sm-dark-gray */
+    --card: 0 0% 16%;
     --card-foreground: 0 0% 100%; /* Using sm-white */
-    --popover: 0 0% 11%; /* Using sm-dark-gray */
+    --popover: 0 0% 16%;
     --popover-foreground: 0 0% 100%; /* Using sm-white */
     --primary: 207 73% 54%; /* Using sm-blue */
     --primary-foreground: 0 0% 100%; /* Using sm-white */
-    --secondary: 0 0% 11%; /* Using sm-dark-gray */
+    --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 100%; /* Using sm-white */
-    --muted: 0 0% 11%; /* Using sm-dark-gray */
-    --muted-foreground: 225 91% 94%; /* Using sm-light-gray */
-    --accent: 207 73% 54%; /* Using sm-blue */
+    --muted: 0 0% 16%;
+    --muted-foreground: 215 20% 65%; /* More subtle gray with slight blue tint */
+    --accent: 222 85% 57%; /* Using sm-royal-blue */
     --accent-foreground: 0 0% 100%; /* Using sm-white */
-    --destructive: 20 100% 66%; /* Using sm-orange */
-    --destructive-foreground: 0 0% 100%; /* Using sm-white */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
     --warning: 20 100% 66%; /* Using sm-orange */
-    --warning-foreground: 0 0% 100%; /* Using sm-white */
+    --warning-foreground: 0 0% 98%;
     --success: 140 50% 69%; /* Using sm-green */
-    --success-foreground: 0 0% 100%; /* Using sm-white */
-    --border: 0 0% 11%; /* Using sm-dark-gray */
-    --input: 0 0% 11%; /* Using sm-dark-gray */
+    --success-foreground: 0 0% 98%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
     --ring: 207 73% 54%; /* Using sm-blue */
     --chart-1: 20 100% 66%; /* Using sm-orange */
     --chart-2: 140 50% 69%; /* Using sm-green */
     --chart-3: 207 73% 54%; /* Using sm-blue */
     --chart-4: 267 91% 67%; /* Using sm-purple */
     --chart-5: 189 64% 51%; /* Using sm-cyan */
-    --sidebar-background: 0 0% 11%; /* Using sm-dark-gray */
+    --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 100%; /* Using sm-white */
     --sidebar-primary: 207 73% 54%; /* Using sm-blue */
     --sidebar-primary-foreground: 0 0% 100%; /* Using sm-white */
-    --sidebar-accent: 0 0% 11%; /* Using sm-dark-gray */
+    --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 0 0% 100%; /* Using sm-white */
-    --sidebar-border: 0 0% 11%; /* Using sm-dark-gray */
+    --sidebar-border: 0 0% 16%;
     --sidebar-ring: 207 73% 54%; /* Using sm-blue */
-    --theme-accent-background: 0 0% 11%; /* Using sm-dark-gray */
+    --theme-accent-background: 0 0% 16%;
     --theme-accent-foreground: 207 73% 54%; /* Using sm-blue */
     --theme-sidebar-accent: 0 0% 11%; /* Using sm-dark-gray */
   }

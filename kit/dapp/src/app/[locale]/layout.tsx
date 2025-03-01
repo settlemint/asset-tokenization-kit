@@ -23,6 +23,7 @@ export const viewport: Viewport = {
 const figTree = Figtree({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-figtree',
 });
 
 export default async function RootLayout({
