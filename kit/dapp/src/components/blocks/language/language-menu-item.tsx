@@ -54,10 +54,10 @@ export function LanguageMenuItem() {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger
-        className="dropdown-menu-item"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         disabled={isPending}
+        className="px-4 py-4"
       >
         <EarthIcon ref={globeIconRef} className="mr-2 size-4" />
         <span>{isPending ? 'Changing...' : 'Language'}</span>

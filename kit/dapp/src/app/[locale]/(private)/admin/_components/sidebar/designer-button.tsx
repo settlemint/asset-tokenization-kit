@@ -35,7 +35,7 @@ export function DesignerButton() {
         <DropdownMenuTrigger asChild>
           {state === 'expanded' ? (
             <Button
-              className="mb-4 flex w-full items-center gap-2 text-sidebar-accent dark:text-sidebar-accent-foreground"
+              className="mb-4 flex w-full items-center gap-2"
               onMouseEnter={() => frameIconRef.current?.startAnimation()}
               onMouseLeave={() => frameIconRef.current?.stopAnimation()}
             >
@@ -45,7 +45,7 @@ export function DesignerButton() {
           ) : (
             <button
               type="button"
-              className="mt-2 h-10 w-10 rounded-xl pl-3 hover:bg-sidebar-accent dark:hover:bg-theme-sidebar-accent"
+              className="mt-2 h-10 w-10 rounded-xl pl-3"
               onMouseEnter={() => frameIconRef.current?.startAnimation()}
               onMouseLeave={() => frameIconRef.current?.stopAnimation()}
             >
@@ -59,34 +59,19 @@ export function DesignerButton() {
           side={isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          <DropdownMenuItem
-            onSelect={() => setTokenType('bond')}
-            className="dropdown-menu-item"
-          >
+          <DropdownMenuItem onSelect={() => setTokenType('bond')}>
             {t('asset-types.bond')}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setTokenType('cryptocurrency')}
-            className="dropdown-menu-item"
-          >
+          <DropdownMenuItem onSelect={() => setTokenType('cryptocurrency')}>
             {t('asset-types.cryptocurrency')}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setTokenType('equity')}
-            className="dropdown-menu-item"
-          >
+          <DropdownMenuItem onSelect={() => setTokenType('equity')}>
             {t('asset-types.equity')}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setTokenType('fund')}
-            className="dropdown-menu-item"
-          >
+          <DropdownMenuItem onSelect={() => setTokenType('fund')}>
             {t('asset-types.fund')}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setTokenType('stablecoin')}
-            className="dropdown-menu-item"
-          >
+          <DropdownMenuItem onSelect={() => setTokenType('stablecoin')}>
             {t('asset-types.stablecoin')}
           </DropdownMenuItem>
         </DropdownMenuContent>

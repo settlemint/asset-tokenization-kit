@@ -28,11 +28,11 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded p-0 shadow-dropdown">
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <MintForm address={address} />
         </DropdownMenuItem>
         <Separator />
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <GrantRoleForm address={address} />
         </DropdownMenuItem>
       </DropdownMenuContent>

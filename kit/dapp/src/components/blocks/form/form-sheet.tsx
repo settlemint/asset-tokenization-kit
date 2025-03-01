@@ -27,9 +27,7 @@ export function FormSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {triggerLabel && (
-        <SheetTrigger className="dropdown-menu-item w-full text-left">
-          {triggerLabel}
-        </SheetTrigger>
+        <SheetTrigger className="w-full text-left">{triggerLabel}</SheetTrigger>
       )}
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>

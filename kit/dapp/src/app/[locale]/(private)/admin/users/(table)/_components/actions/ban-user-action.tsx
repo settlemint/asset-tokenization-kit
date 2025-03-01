@@ -111,11 +111,7 @@ export function BanUserAction({
 
   return (
     <>
-      <DropdownMenuItem
-        onClick={handleBanClick}
-        disabled={isLoading}
-        className="dropdown-menu-item"
-      >
+      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading}>
         {user.banned ? (isLoading ? 'Unbanning...' : 'Unban') : 'Ban'}
       </DropdownMenuItem>
 

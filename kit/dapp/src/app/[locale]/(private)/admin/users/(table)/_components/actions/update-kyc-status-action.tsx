@@ -67,7 +67,6 @@ export function UpdateKycStatusAction({
           setShowDialog(true);
         }}
         disabled={isLoading}
-        className="dropdown-menu-item"
       >
         {user.kyc_verified ? 'Remove KYC Verification' : 'Verify KYC'}
       </DropdownMenuItem>

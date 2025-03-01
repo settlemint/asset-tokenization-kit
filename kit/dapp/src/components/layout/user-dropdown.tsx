@@ -137,14 +137,13 @@ export function UserDropdown() {
       </DropdownMenuTrigger>
       {user && (
         <DropdownMenuContent
-          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown"
+          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown"
           side="bottom"
           align="end"
           sideOffset={4}
         >
           <DropdownMenuGroup>
             <DropdownMenuItem
-              className="dropdown-menu-item"
               onMouseEnter={() => stackIconRef.current?.startAnimation()}
               onMouseLeave={() => stackIconRef.current?.stopAnimation()}
             >
@@ -159,7 +158,6 @@ export function UserDropdown() {
             <ThemeMenuItem />
             <LanguageMenuItem />
             <DropdownMenuItem
-              className="dropdown-menu-item"
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
             >
@@ -172,7 +170,6 @@ export function UserDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
-            className="dropdown-menu-item"
             onMouseEnter={() => logoutIconRef.current?.startAnimation()}
             onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >

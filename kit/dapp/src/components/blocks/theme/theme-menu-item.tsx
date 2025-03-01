@@ -44,7 +44,6 @@ export function ThemeMenuItem() {
   return (
     <DropdownMenuItem
       onSelect={() => setTheme(nextTheme)}
-      className="dropdown-menu-item"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

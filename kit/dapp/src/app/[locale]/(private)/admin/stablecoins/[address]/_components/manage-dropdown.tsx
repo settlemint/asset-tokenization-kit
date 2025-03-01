@@ -31,27 +31,27 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded p-0 shadow-dropdown">
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown">
+        <DropdownMenuItem>
           <MintForm
             address={address}
             collateralAvailable={Number(stableCoin.collateral)}
           />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <BurnForm
             address={address}
             balance={Number(stableCoin.totalSupply)}
           />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <PauseForm address={address} isPaused={stableCoin.paused} />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <UpdateCollateralForm address={address} />
         </DropdownMenuItem>
         <Separator />
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <GrantRoleForm address={address} />
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -68,7 +68,6 @@ export function ChangeRoleAction({
           setShowRoleDialog(true);
         }}
         disabled={isLoading}
-        className="dropdown-menu-item"
       >
         Change Role
       </DropdownMenuItem>

@@ -33,7 +33,7 @@ const buttonVariants = cva(
     compoundVariants: [
       {
         variant: 'default',
-        className: 'hover:!bg-accent shadow-button',
+        className: 'shadow-button',
       },
     ],
   }
