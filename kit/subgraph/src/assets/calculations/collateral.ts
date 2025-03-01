@@ -1,7 +1,7 @@
 import { BigDecimal } from "@graphprotocol/graph-ts";
 import { StableCoin } from "../../../generated/schema";
 
-export function collateralCalculatedFields(stableCoin: StableCoin) {
+export function collateralCalculatedFields(stableCoin: StableCoin): StableCoin {
   const ratio = stableCoin.totalSupply.equals(BigDecimal.zero())
     ? BigDecimal.fromString("100")
     : stableCoin.collateral.div(stableCoin.totalSupply);
@@ -13,4 +13,5 @@ export function collateralCalculatedFields(stableCoin: StableCoin) {
   );
   stableCoin.freeCollateral = freeCollateral;
   stableCoin.freeCollateralExact = freeCollateralExact;
+  return stableCoin;
 }
