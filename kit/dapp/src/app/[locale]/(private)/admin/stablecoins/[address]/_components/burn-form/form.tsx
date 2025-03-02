@@ -14,9 +14,14 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   balance: number;
+  asButton?: boolean;
 }
 
-export function BurnForm({ address, balance }: BurnFormProps) {
+export function BurnForm({
+  address,
+  balance,
+  asButton = false,
+}: BurnFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.burn-form");
 
@@ -27,6 +32,7 @@ export function BurnForm({ address, balance }: BurnFormProps) {
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
     >
       <Form
         action={burn}

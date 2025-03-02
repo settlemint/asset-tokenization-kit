@@ -15,9 +15,14 @@ import { Summary } from "./steps/summary";
 interface MintFormProps {
   address: Address;
   collateralAvailable: number;
+  asButton?: boolean;
 }
 
-export function MintForm({ address, collateralAvailable }: MintFormProps) {
+export function MintForm({
+  address,
+  collateralAvailable,
+  asButton = false,
+}: MintFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.mint-form");
 
@@ -28,6 +33,7 @@ export function MintForm({ address, collateralAvailable }: MintFormProps) {
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
     >
       <Form
         action={mint}

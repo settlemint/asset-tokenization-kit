@@ -168,4 +168,26 @@
       var(--sm-light-gray)
     );
   }
+
+  .linear-gradient-colored {
+    background: transparent
+      radial-gradient(
+        farthest-corner at 97% 7%,
+        var(--sm-mint-green) 0,
+        oklch(0.66 0.1 244.03) 50%,
+        var(--sm-blue) 100%
+      )
+      0 0 no-repeat padding-box;
+  }
+
+  .linear-gradient-related {
+    background: transparent
+      linear-gradient(
+        40deg,
+        var(--sm-light-gray),
+        oklch(0.39 0.04 262.42) 70%,
+        oklch(0.46 0.07 246.7) 100%
+      )
+      0 0 no-repeat padding-box;
+  }
 }

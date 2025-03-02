@@ -1,12 +1,17 @@
+import { UpdateCollateralForm } from "@/app/[locale]/(private)/admin/stablecoins/[address]/_components/update-collateral-form/form";
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
+import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
+import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { BurnForm } from "../_components/burn-form/form";
+import { MintForm } from "../_components/mint-form/form";
 import { Collateral } from "./_components/collateral";
 import { Details } from "./_components/details";
 
@@ -38,6 +43,7 @@ export async function generateMetadata({
 
 export default async function StableCoinDetailPage({ params }: PageProps) {
   const { address } = await params;
+  const stableCoin = await getStableCoinDetail({ address });
 
   return (
     <>
@@ -49,6 +55,34 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
       </ChartGrid>
+      <RelatedGrid title="Related actions">
+        <RelatedGridItem
+          title="Update collateral"
+          description="A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times."
+        >
+          <UpdateCollateralForm address={address} asButton />
+        </RelatedGridItem>
+        <RelatedGridItem
+          title="Increase the supply"
+          description="A supply manager can mint new stablecoins, provided sufficient collateral is available."
+        >
+          <MintForm
+            address={address}
+            collateralAvailable={stableCoin.collateral}
+            asButton
+          />
+        </RelatedGridItem>
+        <RelatedGridItem
+          title="Decrease the supply"
+          description="A supply manager can burn existing stablecoins, provided sufficient collateral is available."
+        >
+          <BurnForm
+            address={address}
+            balance={stableCoin.totalSupply}
+            asButton
+          />
+        </RelatedGridItem>
+      </RelatedGrid>
     </>
   );
 }

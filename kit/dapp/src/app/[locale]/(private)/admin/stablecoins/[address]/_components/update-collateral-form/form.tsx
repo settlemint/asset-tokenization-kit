@@ -13,9 +13,13 @@ import { Summary } from "./steps/summary";
 
 interface UpdateCollateralFormProps {
   address: Address;
+  asButton?: boolean;
 }
 
-export function UpdateCollateralForm({ address }: UpdateCollateralFormProps) {
+export function UpdateCollateralForm({
+  address,
+  asButton = false,
+}: UpdateCollateralFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.update-collateral-form");
 
@@ -26,6 +30,7 @@ export function UpdateCollateralForm({ address }: UpdateCollateralFormProps) {
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
     >
       <Form
         action={updateCollateral}
