@@ -5,6 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
@@ -15,7 +16,6 @@ import {
   type Permission,
   PermissionFragmentSchema,
 } from "./asset-fragment";
-
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
@@ -71,8 +71,21 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [onchainData, offchainData] = await Promise.all([
-    theGraphClientStarterkits.request(AssetDetail, { id: address }),
-    hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
+    unstable_cache(
+      () => theGraphClientStarterkits.request(AssetDetail, { id: address }),
+      ["asset", "asset-detail", address],
+      {
+        revalidate: 60 * 60 * 24, // 24 hours
+      }
+    )(),
+    unstable_cache(
+      () =>
+        hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
+      ["asset", "offchain-asset-detail", normalizedAddress],
+      {
+        revalidate: 60 * 60 * 24, // 24 hours
+      }
+    )(),
   ]);
 
   if (!onchainData.asset) {
