@@ -1477,7 +1477,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "topinfo-title": "A secure and collateralized digital currency",
+        "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities."
       },
       "tabs": {
         "details": "Details",
