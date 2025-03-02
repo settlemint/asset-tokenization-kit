@@ -41,7 +41,7 @@ export async function Details({ address }: DetailsProps) {
           {stableCoin.decimals}
         </DetailGridItem>
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {stableCoin.totalSupply}
+          {formatNumber(stableCoin.totalSupply)}
         </DetailGridItem>
         <DetailGridItem
           label={t("ownership-concentration")}
