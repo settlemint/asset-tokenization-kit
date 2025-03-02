@@ -512,7 +512,7 @@
       "widgets": {
         "assets": {
           "label": "Assets supply",
-          "subtext": "Data visualization coming soon."
+          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "transactions": {
           "label": "Transactions",
