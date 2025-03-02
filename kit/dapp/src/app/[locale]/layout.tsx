@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Figtree, Geist_Mono } from "next/font/google";
+import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -23,12 +23,13 @@ export const viewport: Viewport = {
 const figTree = Figtree({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-figtree",
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const geistMono = Roboto_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export default async function RootLayout({
@@ -49,18 +50,16 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={cn(figTree.variable, geistMono.variable)}
+      suppressHydrationWarning
+    >
       {/* Can be used to debug rerenders using react-scan
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
-      <body
-        className={cn(
-          "min-h-screen  antialiased",
-          figTree.variable,
-          geistMono.variable
-        )}
-      >
+      <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
             <TransitionProvider>{children}</TransitionProvider>

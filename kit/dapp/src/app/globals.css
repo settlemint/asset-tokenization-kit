@@ -4,11 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
-  --font-sans: var(--font-figtree);
-  --font-mono: var(--font-geist-mono);
-}
-
 :root {
   /* SettleMint Brand Colors */
   --sm-mint-green: oklch(0.88 0.076 145.8);
@@ -151,5 +146,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-figtree);
+  }
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-geist-mono);
   }
 }

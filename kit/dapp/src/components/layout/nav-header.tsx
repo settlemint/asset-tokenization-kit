@@ -21,7 +21,7 @@ export function NavHeader() {
       </div>
       <div className="mb-2 flex flex-col gap-0.5 leading-none">
         <span className="font-bold text-lg">{t("app-name")}</span>
-        <span className="-mt-1 text-md">{t("app-description")}</span>
+        <span className="-mt-1 text-md truncate">{t("app-description")}</span>
       </div>
     </div>
   );
