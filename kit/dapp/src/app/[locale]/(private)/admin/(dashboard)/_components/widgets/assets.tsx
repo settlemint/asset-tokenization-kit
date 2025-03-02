@@ -10,7 +10,7 @@ export function AssetsWidget() {
   const { data } = useAssetActivity();
   const allAssetsSupply = data.reduce(
     (acc, asset) => acc + asset.totalSupply,
-    0
+    0n
   );
 
   const getAssetSupply = (assetType: (typeof data)[number]['assetType']) => {
