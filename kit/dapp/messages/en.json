@@ -470,14 +470,14 @@
     },
     "dashboard": {
       "charts": {
+        "asset-types": {
+          "bonds": "Bonds",
+          "cryptocurrencies": "Cryptocurrencies",
+          "equities": "Equities",
+          "funds": "Funds",
+          "stablecoins": "Stablecoins"
+        },
         "asset-activity": {
-          "asset-types": {
-            "bonds": "Bonds",
-            "cryptocurrencies": "Cryptocurrencies",
-            "equities": "Equities",
-            "funds": "Funds",
-            "stablecoins": "Stablecoins"
-          },
           "burn": "Burn",
           "description": "Visualize recent minting, transfers, and burning activities across asset types.",
           "mint": "Mint",

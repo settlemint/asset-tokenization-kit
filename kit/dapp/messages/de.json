@@ -649,19 +649,19 @@
         }
       },
       "charts": {
+        "asset-types": {
+          "bonds": "Anleihen",
+          "cryptocurrencies": "Kryptowährungen",
+          "equities": "Aktien",
+          "funds": "Fonds",
+          "stablecoins": "Stablecoins"
+        },
         "asset-activity": {
           "title": "Aktivität",
           "description": "Visualisieren Sie kürzliche Minting-, Transfer- und Burning-Aktivitäten über Vermögensarten hinweg.",
           "mint": "Prägen",
           "transfer": "Übertragen",
-          "burn": "Verbrennen",
-          "asset-types": {
-            "bonds": "Anleihen",
-            "cryptocurrencies": "Kryptowährungen",
-            "equities": "Aktien",
-            "funds": "Fonds",
-            "stablecoins": "Stablecoins"
-          }
+          "burn": "Verbrennen"
         },
         "assets-supply": {
           "label": "Verteilung",

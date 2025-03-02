@@ -17,7 +17,31 @@ export async function AssetsSupply() {
     assetType: item.assetType,
     totalSupply: Number(item.totalSupply),
   }));
-
+  type AssetType = Awaited<
+    ReturnType<typeof getAssetActivity>
+  >[number]['assetType'];
+  const config: Record<AssetType, { label: string; color: string }> = {
+    bond: {
+      label: t('asset-types.bonds'),
+      color: assetColors.bond,
+    },
+    cryptocurrency: {
+      label: t('asset-types.cryptocurrencies'),
+      color: assetColors.cryptocurrency,
+    },
+    equity: {
+      label: t('asset-types.equities'),
+      color: assetColors.equity,
+    },
+    fund: {
+      label: t('asset-types.funds'),
+      color: assetColors.fund,
+    },
+    stablecoin: {
+      label: t('asset-types.stablecoins'),
+      color: assetColors.stablecoin,
+    },
+  };
   return (
     <PieChartComponent
       description={t('assets-supply.description')}
@@ -25,16 +49,7 @@ export async function AssetsSupply() {
       data={chartData}
       dataKey="totalSupply"
       nameKey="assetType"
-      config={{
-        bond: { label: 'Bond', color: assetColors.bond },
-        cryptocurrency: {
-          label: 'Cryptocurrency',
-          color: assetColors.cryptocurrency,
-        },
-        equity: { label: 'Equity', color: assetColors.equity },
-        fund: { label: 'Fund', color: assetColors.fund },
-        stablecoin: { label: 'Stablecoin', color: assetColors.stablecoin },
-      }}
+      config={config}
     />
   );
 }

@@ -9,15 +9,15 @@ export function useAssetTypeFormatter() {
     const assetType = type.toLowerCase();
     switch (assetType) {
       case 'bond':
-        return t('asset-activity.asset-types.bonds');
+        return t('asset-types.bonds');
       case 'cryptocurrency':
-        return t('asset-activity.asset-types.cryptocurrencies');
+        return t('asset-types.cryptocurrencies');
       case 'equity':
-        return t('asset-activity.asset-types.equities');
+        return t('asset-types.equities');
       case 'fund':
-        return t('asset-activity.asset-types.funds');
+        return t('asset-types.funds');
       case 'stablecoin':
-        return t('asset-activity.asset-types.stablecoins');
+        return t('asset-types.stablecoins');
       default:
         return type;
     }
