@@ -1,7 +1,7 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+"use client";
+"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   flexRender,
   getCoreRowModel,
@@ -23,23 +23,23 @@ import {
   type RowData,
   type SortingState,
   type VisibilityState,
-} from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
-import { useMemo, useState, type ComponentType } from 'react';
-import { DataTableColumnCell } from './data-table-column-cell';
-import { DataTableColumnHeader } from './data-table-column-header';
+} from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { useMemo, useState, type ComponentType } from "react";
+import { DataTableColumnCell } from "./data-table-column-cell";
+import { DataTableColumnHeader } from "./data-table-column-header";
 import {
   DataTablePagination,
   type DataTablePaginationOptions,
-} from './data-table-pagination';
+} from "./data-table-pagination";
 import {
   DataTableToolbar,
   type DataTableToolbarOptions,
-} from './data-table-toolbar';
+} from "./data-table-toolbar";
 
 interface DataTableProps<TData> {
   /** The column definitions for the table. */
-  columnHook: () => Parameters<typeof useReactTable<TData>>[0]['columns'];
+  columnHook: () => Parameters<typeof useReactTable<TData>>[0]["columns"];
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;
@@ -50,7 +50,7 @@ interface DataTableProps<TData> {
   initialSorting?: SortingState;
 }
 
-declare module '@tanstack/table-core' {
+declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     name: string;
@@ -58,11 +58,11 @@ declare module '@tanstack/table-core' {
   }
 }
 
-declare module '@tanstack/react-table' {
+declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     enableCsvExport?: boolean;
-    variant?: 'default' | 'numeric';
+    variant?: "default" | "numeric";
     detailUrl?: string;
   }
 }
@@ -85,12 +85,12 @@ export function DataTable<TData>({
   pagination,
   initialSorting,
 }: DataTableProps<TData>) {
-  const t = useTranslations('components.data-table');
+  const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
   const columns = columnHook();
 
   const memoizedData = useMemo(() => data, [data]);
@@ -108,7 +108,7 @@ export function DataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
 
     state: {
       sorting,
@@ -145,7 +145,7 @@ export function DataTable<TData>({
 
     if (table.getRowModel().rows?.length) {
       return table.getRowModel().rows.map((row) => (
-        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
           {row.getVisibleCells().map((cell) => {
             const content = flexRender(
               cell.column.columnDef.cell,
@@ -169,7 +169,7 @@ export function DataTable<TData>({
     return (
       <TableRow>
         <TableCell colSpan={columns.length} className="h-24 text-center">
-          {t('no-results')}
+          {t("no-results")}
         </TableCell>
       </TableRow>
     );
@@ -188,7 +188,7 @@ export function DataTable<TData>({
                     return (
                       <TableHead key={header.id} colSpan={header.colSpan}>
                         {header.isPlaceholder ? null : typeof header.column
-                            .columnDef.header === 'string' ? (
+                            .columnDef.header === "string" ? (
                           <DataTableColumnHeader
                             column={header.column}
                             variant={header.column.columnDef.meta?.variant}

@@ -1,22 +1,22 @@
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { GrantRoleInput } from '@/lib/mutations/cryptocurrency/grant-role/grant-role-schema';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import type { GrantRoleInput } from "@/lib/mutations/cryptocurrency/grant-role/grant-role-schema";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 export function AdminAddress() {
   const { control } = useFormContext<GrantRoleInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
-  const t = useTranslations('admin.cryptocurrencies.grant-role-form.address');
+  const t = useTranslations("admin.cryptocurrencies.grant-role-form.address");
 
   return (
     <div className="space-y-6">
       <div className="space-y-8">
         <div className="mb-2">
           <h2 className="font-semibold text-foreground text-lg">
-            {t('title')}
+            {t("title")}
           </h2>
-          <p className="text-muted-foreground text-sm">{t('description')}</p>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
         </div>
       </div>
 
@@ -25,15 +25,15 @@ export function AdminAddress() {
           <FormInput
             control={control}
             name="userAddress"
-            label={t('address-label')}
-            placeholder={t('manual-placeholder')}
+            label={t("address-label")}
+            placeholder={t("manual-placeholder")}
           />
         ) : (
           <FormInput
             control={control}
             name="userAddress"
-            label={t('address-label')}
-            placeholder={t('search-placeholder')}
+            label={t("address-label")}
+            placeholder={t("search-placeholder")}
           />
         )}
         <div className="flex justify-end">
@@ -42,7 +42,7 @@ export function AdminAddress() {
             onClick={() => setIsManualEntry(!isManualEntry)}
             className="text-muted-foreground text-xs transition-colors hover:text-foreground"
           >
-            {isManualEntry ? t('search-toggle') : t('manual-toggle')}
+            {isManualEntry ? t("search-toggle") : t("manual-toggle")}
           </button>
         </div>
       </div>
@@ -50,4 +50,4 @@ export function AdminAddress() {
   );
 }
 
-AdminAddress.validatedFields = ['userAddress'] as const;
+AdminAddress.validatedFields = ["userAddress"] as const;

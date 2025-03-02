@@ -1,5 +1,5 @@
-import type bigDecimal from 'js-big-decimal';
-import BigDecimal from 'js-big-decimal';
+import type bigDecimal from "js-big-decimal";
+import BigDecimal from "js-big-decimal";
 
 /**
  * Options for currency formatting
@@ -32,7 +32,7 @@ export function formatNumber(
   const {
     currency,
     token,
-    locale = 'en-US',
+    locale = "en-US",
     decimals = 2,
     percentage = false,
   } = options;
@@ -43,20 +43,20 @@ export function formatNumber(
     // Safely convert amount to string, handling null, undefined, and objects
     const amountStr =
       amount === null || amount === undefined
-        ? '0'
-        : typeof amount === 'object' && amount !== null && 'getValue' in amount
+        ? "0"
+        : typeof amount === "object" && amount !== null && "getValue" in amount
           ? amount.getValue()
           : String(amount);
 
     value = new BigDecimal(amountStr);
   } catch (_error) {
     // Use underscore prefix for unused variable
-    value = new BigDecimal('0');
+    value = new BigDecimal("0");
   }
 
   if (percentage) {
     let percentageValue: number;
-    if (value.getValue() !== '0') {
+    if (value.getValue() !== "0") {
       // Divide by 100 for percentage
       percentageValue = parseFloat(value.getValue()) / 100;
     } else {
@@ -64,7 +64,7 @@ export function formatNumber(
     }
 
     return new Intl.NumberFormat(locale, {
-      style: 'percent',
+      style: "percent",
       maximumFractionDigits: decimals,
       minimumFractionDigits: decimals,
     }).format(percentageValue);
@@ -74,9 +74,9 @@ export function formatNumber(
   const numberValue = parseFloat(value.getValue());
 
   const formattedNumber = new Intl.NumberFormat(locale, {
-    style: currency ? 'currency' : 'decimal',
+    style: currency ? "currency" : "decimal",
     currency,
-    currencyDisplay: currency ? 'symbol' : undefined,
+    currencyDisplay: currency ? "symbol" : undefined,
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(numberValue);

@@ -1,8 +1,8 @@
-import { redirect } from '@/i18n/routing';
-import { auth } from '@/lib/auth/auth';
-import { headers } from 'next/headers';
+import { redirect } from "@/i18n/routing";
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
 
-type UserRole = 'admin' | 'issuer' | 'user';
+type UserRole = "admin" | "issuer" | "user";
 
 /**
  * Get the currently authenticated user

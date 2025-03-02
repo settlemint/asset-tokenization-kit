@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from "@/lib/utils";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
 export interface SettingsGearIconHandle {
   startAnimation: () => void;
@@ -21,15 +21,15 @@ const SettingsGearIcon = forwardRef<
     isControlledRef.current = true;
 
     return {
-      startAnimation: () => controls.start('animate'),
-      stopAnimation: () => controls.start('normal'),
+      startAnimation: () => controls.start("animate"),
+      stopAnimation: () => controls.start("normal"),
     };
   });
 
   const handleMouseEnter = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isControlledRef.current) {
-        controls.start('animate');
+        controls.start("animate");
       } else {
         onMouseEnter?.(e);
       }
@@ -40,7 +40,7 @@ const SettingsGearIcon = forwardRef<
   const handleMouseLeave = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isControlledRef.current) {
-        controls.start('normal');
+        controls.start("normal");
       } else {
         onMouseLeave?.(e);
       }
@@ -51,7 +51,7 @@ const SettingsGearIcon = forwardRef<
   return (
     <div
       className={cn(
-        'cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center',
+        "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
         className
       )}
       onMouseEnter={handleMouseEnter}
@@ -68,7 +68,7 @@ const SettingsGearIcon = forwardRef<
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        transition={{ type: 'spring', stiffness: 50, damping: 10 }}
+        transition={{ type: "spring", stiffness: 50, damping: 10 }}
         variants={{
           normal: {
             rotate: 0,
@@ -86,6 +86,6 @@ const SettingsGearIcon = forwardRef<
   );
 });
 
-SettingsGearIcon.displayName = 'SettingsGearIcon';
+SettingsGearIcon.displayName = "SettingsGearIcon";
 
 export { SettingsGearIcon };

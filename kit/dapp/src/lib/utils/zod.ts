@@ -5,10 +5,10 @@
  * It extends the standard Zod library with specialized validators for Ethereum addresses,
  * transaction hashes, financial identifiers, and other domain-specific data types.
  */
-import { fromUnixTime } from 'date-fns';
-import type { Address, Hash } from 'viem';
-import { getAddress, isAddress, isHash } from 'viem';
-import { z } from 'zod';
+import { fromUnixTime } from "date-fns";
+import type { Address, Hash } from "viem";
+import { getAddress, isAddress, isHash } from "viem";
+import { z } from "zod";
 
 /**
  * Safely parses data with a Zod schema and provides standardized error logging
@@ -22,7 +22,7 @@ import { z } from 'zod';
 export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
   schema: z.ZodType<Output, Def, Input>,
   data: unknown,
-  context: string = 'data'
+  context: string = "data"
 ): Output {
   try {
     return schema.parse(data);
@@ -46,7 +46,7 @@ const extendedZod = {
     z
       .string()
       .refine((val) => isAddress(val), {
-        message: 'Invalid Ethereum address format',
+        message: "Invalid Ethereum address format",
       })
       .transform((val): Address => getAddress(val)),
 
@@ -59,7 +59,7 @@ const extendedZod = {
     z
       .string()
       .refine((val) => isHash(val), {
-        message: 'Invalid hash format',
+        message: "Invalid hash format",
       })
       .transform((val): Hash => val),
 
@@ -80,8 +80,8 @@ const extendedZod = {
   pincode: () =>
     z.coerce
       .number()
-      .min(100000, { message: 'Invalid pincode' })
-      .max(999999, { message: 'Invalid pincode' }),
+      .min(100000, { message: "Invalid pincode" })
+      .max(999999, { message: "Invalid pincode" }),
 
   /**
    * Validates token decimals (0-18)
@@ -91,8 +91,8 @@ const extendedZod = {
   decimals: () =>
     z
       .number()
-      .min(0, { message: 'Must be at least 0' })
-      .max(18, { message: 'Must be between 0 and 18' })
+      .min(0, { message: "Must be at least 0" })
+      .max(18, { message: "Must be between 0 and 18" })
       .default(18),
 
   /**
@@ -100,7 +100,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates positive amounts
    */
-  amount: () => z.number().min(1, { message: 'Must be at least 1' }),
+  amount: () => z.number().min(1, { message: "Must be at least 1" }),
 
   /**
    * Validates user roles selection
@@ -117,7 +117,7 @@ const extendedZod = {
         USER_MANAGEMENT_ROLE: z.boolean(),
       })
       .refine((data) => Object.values(data).some(Boolean), {
-        message: 'At least one role must be selected',
+        message: "At least one role must be selected",
       }),
 
   /**
@@ -129,7 +129,7 @@ const extendedZod = {
    */
   symbol: () =>
     z.string().regex(/^[A-Z0-9]+$/, {
-      message: 'Symbol must contain only uppercase letters and numbers',
+      message: "Symbol must contain only uppercase letters and numbers",
     }),
 
   /**
@@ -143,9 +143,9 @@ const extendedZod = {
     z
       .string()
       .regex(/^[A-Z0-9]+$/, {
-        message: 'ISIN must contain only uppercase letters and numbers',
+        message: "ISIN must contain only uppercase letters and numbers",
       })
-      .length(12, { message: 'ISIN must be exactly 12 characters' }),
+      .length(12, { message: "ISIN must be exactly 12 characters" }),
 
   /**
    * Validates and transforms a string to a BigInt
@@ -176,7 +176,7 @@ const extendedZod = {
   timestamp: () =>
     z.coerce
       .number()
-      .min(0, { message: 'Timestamp must be a positive number' })
+      .min(0, { message: "Timestamp must be a positive number" })
       .transform((val) => {
         // Detect timestamp format based on the number of digits
         // Unix timestamp (seconds): ~10 digits
@@ -206,7 +206,7 @@ const extendedZod = {
    * @returns A Zod schema that validates asset types
    */
   assetType: () =>
-    z.enum(['bond', 'cryptocurrency', 'equity', 'fund', 'stablecoin']),
+    z.enum(["bond", "cryptocurrency", "equity", "fund", "stablecoin"]),
 };
 
 /**
@@ -217,5 +217,5 @@ export { extendedZod as z };
 /**
  * Type utility for inferring the type of a Zod schema
  */
-export type { infer as ZodInfer } from 'zod';
+export type { infer as ZodInfer } from "zod";
 export type ZodType = z.ZodType<any, any, any>;

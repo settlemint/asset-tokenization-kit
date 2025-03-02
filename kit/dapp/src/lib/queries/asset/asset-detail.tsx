@@ -1,12 +1,12 @@
-import type { Role } from '@/lib/config/roles';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import type { Role } from "@/lib/config/roles";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { type Address, getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { type Address, getAddress } from "viem";
 import {
   AssetFragment,
   AssetFragmentSchema,
@@ -14,7 +14,7 @@ import {
   OffchainAssetFragmentSchema,
   type Permission,
   PermissionFragmentSchema,
-} from './asset-fragment';
+} from "./asset-fragment";
 
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
@@ -83,14 +83,14 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const validatedAsset = safeParseWithLogging(
     AssetFragmentSchema,
     onchainData.asset,
-    'asset'
+    "asset"
   );
 
   const offchainAsset = offchainData.asset[0]
     ? safeParseWithLogging(
         OffchainAssetFragmentSchema,
         offchainData.asset[0],
-        'offchain asset'
+        "offchain asset"
       )
     : undefined;
 
@@ -98,15 +98,15 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const roleConfigs = [
     {
       permissions: validatedAsset.admins,
-      role: 'DEFAULT_ADMIN_ROLE' as const,
+      role: "DEFAULT_ADMIN_ROLE" as const,
     },
     {
       permissions: validatedAsset.supplyManagers,
-      role: 'SUPPLY_MANAGEMENT_ROLE' as const,
+      role: "SUPPLY_MANAGEMENT_ROLE" as const,
     },
     {
       permissions: validatedAsset.userManagers,
-      role: 'USER_MANAGEMENT_ROLE' as const,
+      role: "USER_MANAGEMENT_ROLE" as const,
     },
   ];
 
@@ -116,7 +116,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   // Process all role configurations
   roleConfigs.forEach(({ permissions, role }) => {
     const validatedPermissions = permissions.map((permission) =>
-      safeParseWithLogging(PermissionFragmentSchema, permission, 'permission')
+      safeParseWithLogging(PermissionFragmentSchema, permission, "permission")
     );
     validatedPermissions.forEach((validatedPermission) => {
       const userId = validatedPermission.id;

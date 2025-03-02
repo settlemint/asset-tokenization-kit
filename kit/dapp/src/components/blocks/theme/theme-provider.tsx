@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import {
   ThemeProvider as NextThemesProvider,
   type ThemeProviderProps,
-} from 'next-themes';
+} from "next-themes";
 
 /**
  * A wrapper component that provides theme functionality to its children.

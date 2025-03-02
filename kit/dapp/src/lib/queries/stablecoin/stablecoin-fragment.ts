@@ -1,6 +1,6 @@
-import { hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
+import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph

@@ -1,23 +1,23 @@
-import { NavFooter } from '@/components/layout/nav-footer';
-import { NavHeader } from '@/components/layout/nav-header';
-import { NavMain } from '@/components/layout/nav-main';
-import NavSidebar from '@/components/layout/nav-sidebar';
+import { NavFooter } from "@/components/layout/nav-footer";
+import { NavHeader } from "@/components/layout/nav-header";
+import { NavMain } from "@/components/layout/nav-main";
+import NavSidebar from "@/components/layout/nav-sidebar";
 import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
   SidebarSeparator,
-} from '@/components/ui/sidebar';
-import { DesignerButton } from './designer-button';
-import { AssetManagement } from './items/asset-management/asset-management';
-import { bottomItems } from './items/bottom';
-import { topItems } from './items/top';
+} from "@/components/ui/sidebar";
+import { DesignerButton } from "./designer-button";
+import { AssetManagement } from "./items/asset-management/asset-management";
+import { bottomItems } from "./items/bottom";
+import { topItems } from "./items/top";
 
 export function AdminSidebar() {
   return (
     <NavSidebar>
-      <SidebarHeader>
+      <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
       <SidebarContent>

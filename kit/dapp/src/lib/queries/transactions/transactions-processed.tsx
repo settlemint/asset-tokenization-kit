@@ -1,7 +1,7 @@
-import { TransactionFragment } from '@/lib/queries/transactions/transaction-fragment';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { cache } from 'react';
-import type { Address } from 'viem';
+import { TransactionFragment } from "@/lib/queries/transactions/transaction-fragment";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { cache } from "react";
+import type { Address } from "viem";
 
 /**
  * GraphQL query to fetch processed transactions from the Portal API
@@ -58,7 +58,7 @@ export const getProcessedTransactions = cache(
         response.getProcessedTransactions?.records
           .filter((record) => record.createdAt)
           .map((record) => ({
-            timestamp: new Date(record.createdAt ?? ''),
+            timestamp: new Date(record.createdAt ?? ""),
             transaction: 1,
           })) ?? [],
     };

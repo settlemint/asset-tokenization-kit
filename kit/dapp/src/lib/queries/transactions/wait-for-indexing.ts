@@ -1,9 +1,9 @@
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import type { FragmentOf } from '@settlemint/sdk-portal';
-import { IndexingFragment } from './transaction-fragment';
+} from "@/lib/settlemint/the-graph";
+import type { FragmentOf } from "@settlemint/sdk-portal";
+import { IndexingFragment } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring

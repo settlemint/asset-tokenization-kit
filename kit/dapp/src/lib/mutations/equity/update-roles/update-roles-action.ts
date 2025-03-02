@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import type { Role } from '@/lib/config/roles';
-import { z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { grantRole } from '../grant-role/grant-role-action';
-import { revokeRole } from '../revoke-role/revoke-role-action';
-import { UpdateRolesSchema } from './update-roles-schema';
+import type { Role } from "@/lib/config/roles";
+import { z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { grantRole } from "../grant-role/grant-role-action";
+import { revokeRole } from "../revoke-role/revoke-role-action";
+import { UpdateRolesSchema } from "./update-roles-schema";
 
 /**
  * Server action for updating a user's roles for a equity
@@ -67,7 +67,7 @@ export const updateRoles = action
           results.push(grantResult.data);
         }
       } catch (error) {
-        console.error('Error granting roles:', error);
+        console.error("Error granting roles:", error);
         throw error;
       }
     }
@@ -86,7 +86,7 @@ export const updateRoles = action
           results.push(revokeResult.data);
         }
       } catch (error) {
-        console.error('Error revoking roles:', error);
+        console.error("Error revoking roles:", error);
         throw error;
       }
     }

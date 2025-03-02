@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { waitForIndexing } from '@/lib/queries/transactions/wait-for-indexing';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import type { FragmentOf } from '@settlemint/sdk-portal';
-import { revalidatePath, revalidateTag } from 'next/cache';
-import { ReceiptFragment, ReceiptFragmentSchema } from './transaction-fragment';
+import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import type { FragmentOf } from "@settlemint/sdk-portal";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -67,9 +67,9 @@ async function waitForSingleTransaction(
     });
     receipt = transaction.getTransaction?.receipt ?? null;
 
-    if (receipt?.status === 'Reverted') {
+    if (receipt?.status === "Reverted") {
       throw new Error(
-        `Transaction reverted: ${receipt.revertReasonDecoded ?? 'unknown error'}`
+        `Transaction reverted: ${receipt.revertReasonDecoded ?? "unknown error"}`
       );
     }
 
@@ -111,12 +111,12 @@ export async function waitForTransactions(
   await waitForIndexing(response.lastTransaction.blockNumber);
 
   // Revalidate all cache tags
-  revalidateTag('asset');
-  revalidateTag('user');
-  revalidateTag('transaction');
+  revalidateTag("asset");
+  revalidateTag("user");
+  revalidateTag("transaction");
   // Now revalidate paths after clearing cache
-  revalidatePath('/[locale]/admin', 'layout');
-  revalidatePath('/[locale]/portfolio', 'layout');
+  revalidatePath("/[locale]/admin", "layout");
+  revalidatePath("/[locale]/portfolio", "layout");
 
   return response;
 }

@@ -1,8 +1,8 @@
-import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
-import { getCryptoCurrencyDetail } from '@/lib/queries/cryptocurrency/cryptocurrency-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
+import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -17,14 +17,14 @@ export async function generateMetadata({
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.cryptocurrencies.events',
+    namespace: "admin.cryptocurrencies.events",
   });
 
   return {
-    title: t('events-page-title', {
+    title: t("events-page-title", {
       name: cryptocurrency?.name,
     }),
-    description: t('events-page-description', {
+    description: t("events-page-description", {
       name: cryptocurrency?.name,
     }),
   };

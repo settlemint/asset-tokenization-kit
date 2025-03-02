@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
 import {
   EarthIcon,
   type EarthIconHandle,
-} from '@/components/ui/animated-icons/earth';
+} from "@/components/ui/animated-icons/earth";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/components/ui/dropdown-menu';
-import { routing, usePathname, useRouter } from '@/i18n/routing';
-import { Check } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { useRef, useTransition } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { routing, usePathname, useRouter } from "@/i18n/routing";
+import { Check } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useRef, useTransition } from "react";
 
 // Language display names mapping
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  de: 'Deutsch',
+  en: "English",
+  de: "Deutsch",
   // Add more languages here as needed
 };
 
@@ -57,10 +57,13 @@ export function LanguageMenuItem() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         disabled={isPending}
-        className="px-4 py-4"
+        className="px-2 py-4"
       >
-        <EarthIcon ref={globeIconRef} className="mr-2 size-4" />
-        <span>{isPending ? 'Changing...' : 'Language'}</span>
+        <EarthIcon
+          ref={globeIconRef}
+          className="mr-2 size-4 text-muted-foreground"
+        />
+        <span>{isPending ? "Changing..." : "Language"}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {routing.locales.map((locale) => (

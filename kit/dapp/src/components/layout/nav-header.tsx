@@ -1,27 +1,29 @@
-'use client';
+"use client";
 
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { Link, usePathname } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
-import { Logo } from '../blocks/logo/logo';
+} from "@/components/ui/sidebar";
+import { Link, usePathname } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { Logo } from "../blocks/logo/logo";
 
 export function NavHeader() {
   const pathname = usePathname();
-  const t = useTranslations('layout.header');
+  const t = useTranslations("layout.header");
 
   const content = (
-    <div className={cn('flex w-full items-center gap-3')}>
+    <div className={cn("flex w-full items-center gap-3")}>
       <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
         <Logo variant="icon" />
       </div>
-      <div className="mb-2 flex flex-col gap-0.5 leading-none">
-        <span className="font-bold text-lg">{t('app-name')}</span>
-        <span className="-mt-1 text-md">{t('app-description')}</span>
+      <div className="flex flex-col leading-none max-w-[180px]">
+        <span className="font-bold text-lg">{t("app-name")}</span>
+        <span className="text-md truncate text-ellipsis overflow-hidden leading-snug -mt-1">
+          {t("app-description")}
+        </span>
       </div>
     </div>
   );
@@ -30,9 +32,9 @@ export function NavHeader() {
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton size="lg" asChild>
-          {pathname.includes('/admin') ? (
+          {pathname.includes("/admin") ? (
             <Link href="/admin">{content}</Link>
-          ) : pathname.includes('/portfolio') ? (
+          ) : pathname.includes("/portfolio") ? (
             <Link href="/portfolio">{content}</Link>
           ) : (
             content

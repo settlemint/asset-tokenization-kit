@@ -1,16 +1,16 @@
 import {
   AccountFragment,
   AccountFragmentSchema,
-} from '@/lib/queries/accounts/accounts-fragment';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+} from "@/lib/queries/accounts/accounts-fragment";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { getAddress, type Address } from 'viem';
-import { UserFragment, UserFragmentSchema, type User } from './user-fragment';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { getAddress, type Address } from "viem";
+import { UserFragment, UserFragmentSchema, type User } from "./user-fragment";
 
 /**
  * GraphQL query to fetch a single user by ID from Hasura
@@ -82,7 +82,7 @@ export interface UserDetailProps {
  */
 export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
   if (!id && !address) {
-    throw new Error('Either id or address must be provided');
+    throw new Error("Either id or address must be provided");
   }
 
   let userData: User;
@@ -102,7 +102,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
     }
     userData = UserFragmentSchema.parse(result.user[0]);
   } else {
-    throw new Error('Either id or address must be provided');
+    throw new Error("Either id or address must be provided");
   }
 
   // Fetch activity data if user has wallet address
@@ -120,7 +120,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
         const validatedAccount = safeParseWithLogging(
           AccountFragmentSchema,
           activityResult.account,
-          'account detail'
+          "account detail"
         );
 
         // Combine validated user data with validated activity data
@@ -132,7 +132,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
         };
       }
     } catch (error) {
-      console.error('Error fetching user activity:', error);
+      console.error("Error fetching user activity:", error);
     }
   }
 

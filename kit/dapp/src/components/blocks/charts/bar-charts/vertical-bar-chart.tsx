@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Card,
@@ -6,12 +6,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
+} from "@/components/ui/chart";
 import {
   Bar,
   BarChart,
@@ -19,8 +19,8 @@ import {
   LabelList,
   XAxis,
   YAxis,
-} from 'recharts';
-import type { AxisConfig, BarChartData, BarChartProps } from './types';
+} from "recharts";
+import type { AxisConfig, BarChartData, BarChartProps } from "./types";
 
 interface VerticalBarChartProps<T extends BarChartData>
   extends BarChartProps<T> {

@@ -1,21 +1,21 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { TokenWithdrawnEvent } from '@/lib/queries/asset-events/asset-events-fragments';
-import { formatNumber } from '@/lib/utils/number';
-import { useTranslations } from 'next-intl';
-import { DetailsCard } from '../details-card';
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { TokenWithdrawnEvent } from "@/lib/queries/asset-events/asset-events-fragments";
+import { formatNumber } from "@/lib/utils/number";
+import { useTranslations } from "next-intl";
+import { DetailsCard } from "../details-card";
 
 interface TokenWithdrawnDetailsProps {
   details: TokenWithdrawnEvent;
 }
 
 export function TokenWithdrawnDetails({ details }: TokenWithdrawnDetailsProps) {
-  const t = useTranslations('components.asset-events-table.details');
+  const t = useTranslations("components.asset-events-table.details");
 
   const detailItems = [
     {
-      key: 'to',
-      label: t('to'),
+      key: "to",
+      label: t("to"),
       value: (
         <EvmAddress address={details.to.id}>
           <EvmAddressBalances address={details.to.id} />
@@ -23,20 +23,20 @@ export function TokenWithdrawnDetails({ details }: TokenWithdrawnDetailsProps) {
       ),
     },
     {
-      key: 'token',
-      label: t('token'),
+      key: "token",
+      label: t("token"),
       value: (
         <>
           <EvmAddress address={details.token.id}>
             <EvmAddressBalances address={details.token.id} />
-          </EvmAddress>{' '}
+          </EvmAddress>{" "}
           ({details.token.symbol})
         </>
       ),
     },
     {
-      key: 'amount',
-      label: t('amount'),
+      key: "amount",
+      label: t("amount"),
       value: formatNumber(details.amount),
     },
   ];

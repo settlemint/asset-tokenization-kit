@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { PauseSchema } from './pause-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { PauseSchema } from "./pause-schema";
 
 /**
  * GraphQL mutation for pausing a equity contract

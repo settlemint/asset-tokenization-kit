@@ -1727,6 +1727,8 @@
     "success": "Transaktion erfolgreich verarbeitet"
   },
   "theme": {
+    "dark": "Dark",
+    "light": "Light",
     "toggle-label": "Thema umschalten",
     "switch-to-mode": "Wechseln Sie in den {mode} Modus"
   },

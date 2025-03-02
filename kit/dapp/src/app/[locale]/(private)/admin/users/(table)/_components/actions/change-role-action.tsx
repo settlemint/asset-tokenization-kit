@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useRouter } from '@/i18n/routing';
-import { authClient } from '@/lib/auth/client';
-import type { getUserList } from '@/lib/queries/user/user-list';
-import { type MouseEvent, useState } from 'react';
-import { toast } from 'sonner';
+} from "@/components/ui/select";
+import { useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+import type { getUserList } from "@/lib/queries/user/user-list";
+import { type MouseEvent, useState } from "react";
+import { toast } from "sonner";
 
 export function ChangeRoleAction({
   user,
@@ -31,7 +31,7 @@ export function ChangeRoleAction({
   onComplete?: () => void;
 }) {
   const [showRoleDialog, setShowRoleDialog] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>(user.role || 'user');
+  const [selectedRole, setSelectedRole] = useState<string>(user.role || "user");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -45,15 +45,15 @@ export function ChangeRoleAction({
       setIsLoading(true);
       await authClient.admin.setRole({
         userId: user.id,
-        role: selectedRole as 'user' | 'issuer' | 'admin',
+        role: selectedRole as "user" | "issuer" | "admin",
       });
-      toast.success('User role updated successfully');
+      toast.success("User role updated successfully");
       setShowRoleDialog(false);
       router.refresh();
       onComplete?.();
     } catch (error) {
       toast.error(
-        `Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     } finally {
       setIsLoading(false);
@@ -116,13 +116,13 @@ export function ChangeRoleAction({
               onClick={(e) => {
                 handleRoleChange(e).catch((error) => {
                   toast.error(
-                    `Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`
+                    `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"}`
                   );
                 });
               }}
               disabled={selectedRole === user.role || isLoading}
             >
-              {isLoading ? 'Updating...' : 'Update Role'}
+              {isLoading ? "Updating..." : "Update Role"}
             </Button>
           </DialogFooter>
         </DialogContent>

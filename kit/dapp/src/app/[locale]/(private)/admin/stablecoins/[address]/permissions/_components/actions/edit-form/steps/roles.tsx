@@ -1,8 +1,8 @@
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormCheckbox } from '@/components/blocks/form/inputs/form-checkbox';
-import { ROLES, type Role, type RoleKey } from '@/lib/config/roles';
-import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
+import { ROLES, type Role, type RoleKey } from "@/lib/config/roles";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
 interface RolesProps {
   currentRoles?: Role[];
@@ -11,7 +11,7 @@ interface RolesProps {
 
 export function Roles({ currentRoles = [], onRolesChange }: RolesProps) {
   const { control, getValues } = useFormContext();
-  const t = useTranslations('admin.stablecoins.permissions.edit-form.roles');
+  const t = useTranslations("admin.stablecoins.permissions.edit-form.roles");
 
   const handleChange = () => {
     // Get current form values after the checkbox change
@@ -26,7 +26,7 @@ export function Roles({ currentRoles = [], onRolesChange }: RolesProps) {
   };
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-3">
@@ -52,4 +52,4 @@ export function Roles({ currentRoles = [], onRolesChange }: RolesProps) {
   );
 }
 
-Roles.validatedFields = ['newRoles'] as const;
+Roles.validatedFields = ["newRoles"] as const;
