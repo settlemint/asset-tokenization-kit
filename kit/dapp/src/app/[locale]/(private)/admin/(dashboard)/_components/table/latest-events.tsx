@@ -1,9 +1,9 @@
-import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
-import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
+import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function LatestEvents() {
-  const t = useTranslations('admin.dashboard.table');
+  const t = useTranslations("admin.dashboard.table");
 
   return (
     <>
@@ -12,7 +12,7 @@ export function LatestEvents() {
         href="/admin/activity/events"
         className="mt-4 text-muted-foreground text-sm hover:text-primary"
       >
-        {t('latest-events.view-all')}
+        {t("latest-events.view-all")}
       </Link>
     </>
   );

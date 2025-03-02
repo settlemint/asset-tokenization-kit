@@ -1,15 +1,15 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
-import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
-import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import { type Role, getRoleDisplayName } from '@/lib/config/roles';
-import type { UpdateRolesInput } from '@/lib/mutations/bond/update-roles/update-roles-schema';
-import { Lock } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useFormContext, useWatch } from 'react-hook-form';
-import type { Address } from 'viem';
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
+import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
+import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
+import { type Role, getRoleDisplayName } from "@/lib/config/roles";
+import type { UpdateRolesInput } from "@/lib/mutations/bond/update-roles/update-roles-schema";
+import { Lock } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useFormContext, useWatch } from "react-hook-form";
+import type { Address } from "viem";
 
 export function Summary({
   userAddress,
@@ -19,24 +19,24 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations('admin.bonds.permissions.edit-form.summary');
+  const t = useTranslations("admin.bonds.permissions.edit-form.summary");
   const values = useWatch({
     control: control,
   });
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t("title")} description={t("description")}>
       <FormSummaryDetailCard
-        title={t('update-title')}
-        description={t('operation-description')}
-        icon={<Lock className="h-3 w-3 text-primary-foreground" />}
+        title={t("update-title")}
+        description={t("operation-description")}
+        icon={<Lock className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t('user-label')}
+          label={t("user-label")}
           value={<EvmAddress address={userAddress} />}
         />
         <FormSummaryDetailItem
-          label={t('current-roles-label')}
+          label={t("current-roles-label")}
           value={
             <div className="flex flex-wrap gap-1">
               {roles.map((role: Role) => (
@@ -48,7 +48,7 @@ export function Summary({
           }
         />
         <FormSummaryDetailItem
-          label={t('new-roles-label')}
+          label={t("new-roles-label")}
           value={
             <div className="flex flex-wrap gap-1">
               {Object.entries(values.roles ?? {})
@@ -73,4 +73,4 @@ export function Summary({
   );
 }
 
-Summary.validatedFields = ['pincode'] as const;
+Summary.validatedFields = ["pincode"] as const;

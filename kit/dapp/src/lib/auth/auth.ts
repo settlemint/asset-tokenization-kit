@@ -1,16 +1,16 @@
-import * as authSchema from '@/lib/db/schema-auth';
-import { betterAuth } from 'better-auth';
-import { emailHarmony } from 'better-auth-harmony';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { APIError } from 'better-auth/api';
-import { nextCookies } from 'better-auth/next-js';
-import { admin } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
-import { eq } from 'drizzle-orm';
-import { metadata } from '../config/metadata';
-import { db } from '../db';
-import { validateEnvironmentVariables } from './config';
-import { createUserWallet } from './portal';
+import * as authSchema from "@/lib/db/schema-auth";
+import { betterAuth } from "better-auth";
+import { emailHarmony } from "better-auth-harmony";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
+import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
+import { eq } from "drizzle-orm";
+import { metadata } from "../config/metadata";
+import { db } from "../db";
+import { validateEnvironmentVariables } from "./config";
+import { createUserWallet } from "./portal";
 
 // Validate environment variables at startup
 validateEnvironmentVariables();
@@ -21,10 +21,10 @@ validateEnvironmentVariables();
 export const auth = betterAuth({
   appName: metadata.title.default,
   secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
-  trustedOrigins: [process.env.BETTER_AUTH_URL || 'http://localhost:3000'],
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   database: drizzleAdapter(db, {
-    provider: 'pg',
+    provider: "pg",
     schema: authSchema,
   }),
   emailAndPassword: {
@@ -33,16 +33,16 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       wallet: {
-        type: 'string',
+        type: "string",
         required: true,
         unique: true,
       },
       kycVerifiedAt: {
-        type: 'date',
+        type: "date",
         required: false,
       },
       lastLoginAt: {
-        type: 'date',
+        type: "date",
         required: false,
       },
     },
@@ -58,8 +58,8 @@ export const auth = betterAuth({
             });
 
             if (!wallet.createWallet?.address) {
-              throw new APIError('BAD_REQUEST', {
-                message: 'Failed to create wallet',
+              throw new APIError("BAD_REQUEST", {
+                message: "Failed to create wallet",
               });
             }
 
@@ -68,12 +68,12 @@ export const auth = betterAuth({
               data: {
                 ...user,
                 wallet: wallet.createWallet.address,
-                role: firstUser ? 'user' : 'admin',
+                role: firstUser ? "user" : "admin",
               },
             };
           } catch (error) {
-            throw new APIError('BAD_REQUEST', {
-              message: 'Failed to create user wallet',
+            throw new APIError("BAD_REQUEST", {
+              message: "Failed to create user wallet",
               cause: error instanceof Error ? error : undefined,
             });
           }
@@ -100,5 +100,12 @@ export const auth = betterAuth({
       maxAge: 10 * 60,
     },
   },
-  plugins: [admin(), passkey(), emailHarmony(), nextCookies()],
+  plugins: [
+    admin(),
+    passkey({
+      rpName: metadata.title.default,
+    }),
+    emailHarmony(),
+    nextCookies(),
+  ],
 });

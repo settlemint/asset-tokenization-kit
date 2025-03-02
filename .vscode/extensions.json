@@ -10,6 +10,7 @@
     "shardulm94.trailing-spaces",
     "nomicfoundation.hardhat-solidity",
     "bruceyuhb.hsl-preview",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "nize.oklch-preview"
   ]
 }

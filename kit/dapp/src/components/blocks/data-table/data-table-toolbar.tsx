@@ -1,14 +1,14 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+"use client";
+"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import type { Table } from '@tanstack/react-table';
-import { X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { DataTableExport } from './data-table-export';
-import { DataTableFacetedFilter } from './data-table-faceted-filter';
-import { DataTableViewOptions } from './data-table-view-options';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { DataTableExport } from "./data-table-export";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { DataTableViewOptions } from "./data-table-view-options";
 
 export interface DataTableToolbarOptions {
   enableToolbar?: boolean;
@@ -34,14 +34,14 @@ function prettifyTitle(identifier: string): string {
   // Capitalize the first letter of each word
   return words
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(" ");
 }
 
 export function DataTableToolbar<TData>({
   table,
   enableToolbar = true,
 }: DataTableToolbarProps<TData>) {
-  const t = useTranslations('components.data-table');
+  const t = useTranslations("components.data-table");
 
   if (!enableToolbar) {
     return null;
@@ -74,10 +74,10 @@ export function DataTableToolbar<TData>({
         {globalFilterColumn && (
           <Input
             data-testid="data-table-search-input"
-            placeholder={t('search')}
-            value={table.getState().globalFilter ?? ''}
+            placeholder={t("search")}
+            value={table.getState().globalFilter ?? ""}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className="h-8 w-[150px] lg:w-[250px]"
+            className="h-8 w-[150px] lg:w-[250px] border-muted-foreground"
           />
         )}
         {(facetedColumns ?? []).map((facet) => {
@@ -96,7 +96,7 @@ export function DataTableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
             className="h-8 px-2 lg:px-3"
           >
-            {t('reset')}
+            {t("reset")}
             <X />
           </Button>
         )}

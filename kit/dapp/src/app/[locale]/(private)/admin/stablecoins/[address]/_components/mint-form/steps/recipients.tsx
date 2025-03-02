@@ -1,19 +1,19 @@
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import { FormUsers } from '@/components/blocks/form/inputs/form-users';
-import type { MintInput } from '@/lib/mutations/stablecoin/mint/mint-schema';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormUsers } from "@/components/blocks/form/inputs/form-users";
+import type { MintInput } from "@/lib/mutations/stablecoin/mint/mint-schema";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 export function Recipients() {
   const { control } = useFormContext<MintInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
-  const t = useTranslations('admin.stablecoins.mint-form.recipients');
+  const t = useTranslations("admin.stablecoins.mint-form.recipients");
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t("title")} description={t("description")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
@@ -38,8 +38,8 @@ export function Recipients() {
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
               {isManualEntry
-                ? 'Search for a user instead...'
-                : 'Enter address manually...'}
+                ? "Search for a user instead..."
+                : "Enter address manually..."}
             </button>
           </div>
         </div>
@@ -48,4 +48,4 @@ export function Recipients() {
   );
 }
 
-Recipients.validatedFields = ['to'] as const;
+Recipients.validatedFields = ["to"] as const;

@@ -1,5 +1,5 @@
-'use client';
-import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts';
+"use client";
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
-import type { ReactNode } from 'react';
+} from "@/components/ui/chart";
+import type { ReactNode } from "react";
 
 export interface AreaChartData {
   [key: string]: string | number;
@@ -41,7 +41,7 @@ interface AreaChartProps {
   chartContainerClassName?: string;
 }
 
-const defaultTickFormatter = (value: string) => value.split(',')[0];
+const defaultTickFormatter = (value: string) => value.split(",")[0];
 const defaultTickMargin = 8;
 
 export function AreaChartComponent({
@@ -95,7 +95,7 @@ export function AreaChartComponent({
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}
-              wrapperStyle={{ minWidth: '200px', width: 'auto' }}
+              wrapperStyle={{ minWidth: "200px", width: "auto" }}
             />
             <defs>
               {dataKeys.map((key) => (
@@ -128,7 +128,7 @@ export function AreaChartComponent({
                 fill={`url(#fill${key})`}
                 fillOpacity={0.4}
                 stroke={config[key].color}
-                stackId={stacked ? 'a' : key}
+                stackId={stacked ? "a" : key}
               />
             ))}
           </AreaChart>

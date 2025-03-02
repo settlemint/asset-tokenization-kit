@@ -1,6 +1,6 @@
-import { getBondDetail } from '@/lib/queries/bond/bond-detail';
-import type { Address } from 'viem';
-import { PauseForm } from './form';
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { Address } from "viem";
+import { PauseForm } from "./form";
 
 interface PauseFormWrapperProps {
   address: Address;

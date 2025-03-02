@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   FormControl,
@@ -7,16 +7,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
-import type { ComponentPropsWithoutRef } from 'react';
-import type { FieldValues } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import type { ComponentPropsWithoutRef } from "react";
+import type { FieldValues } from "react-hook-form";
 import {
   getAriaAttributes,
   type BaseFormInputProps,
   type WithHelperTextProps,
-} from './types';
+} from "./types";
 
 type SwitchProps = ComponentPropsWithoutRef<typeof Switch>;
 
@@ -65,8 +65,8 @@ export function FormSwitch<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && 'text-destructive',
-                  props.disabled && 'cursor-not-allowed opacity-70'
+                  fieldState.error && "text-destructive",
+                  props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}

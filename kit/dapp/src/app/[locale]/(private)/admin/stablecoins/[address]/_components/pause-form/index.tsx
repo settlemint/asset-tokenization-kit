@@ -1,6 +1,6 @@
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
-import type { Address } from 'viem';
-import { PauseForm } from './form';
+import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import type { Address } from "viem";
+import { PauseForm } from "./form";
 
 interface PauseFormWrapperProps {
   address: Address;

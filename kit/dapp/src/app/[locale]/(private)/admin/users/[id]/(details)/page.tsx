@@ -1,4 +1,4 @@
-import { DetailsGrid } from './_components/details-grid';
+import { DetailsGrid } from "./_components/details-grid";
 
 export default async function UserDetailPage({
   params,

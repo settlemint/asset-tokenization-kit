@@ -1,4 +1,4 @@
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating bond creation inputs

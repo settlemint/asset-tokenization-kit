@@ -1,23 +1,23 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler
+"use client";
+"use no memo"; // fixes rerendering with react compiler
 
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { Badge } from '@/components/ui/badge';
-import { CopyToClipboard } from '@/components/ui/copy';
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@/components/ui/hover-card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from '@/i18n/routing';
-import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
-import { getOptionalAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { getOptionalUserDetail } from '@/lib/queries/user/user-detail';
-import { shortHex } from '@/lib/utils/hex';
-import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
-import type { Address } from 'viem';
-import { getAddress } from 'viem';
+} from "@/components/ui/hover-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/routing";
+import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
+import { getOptionalAssetDetail } from "@/lib/queries/asset/asset-detail";
+import { getOptionalUserDetail } from "@/lib/queries/user/user-detail";
+import { shortHex } from "@/lib/utils/hex";
+import { type FC, type PropsWithChildren, useEffect, useState } from "react";
+import type { Address } from "viem";
+import { getAddress } from "viem";
+import { CopyToClipboard } from "../copy/copy";
 
 interface EvmAddressProps extends PropsWithChildren {
   /** The EVM address to display. */
@@ -28,7 +28,7 @@ interface EvmAddressProps extends PropsWithChildren {
   explorerUrl?: string;
   prefixLength?: number;
   suffixLength?: number;
-  iconSize?: 'tiny' | 'small' | 'big';
+  iconSize?: "tiny" | "small" | "big";
   prettyNames?: boolean;
   verbose?: boolean;
   hoverCard?: boolean;
@@ -48,7 +48,7 @@ export function EvmAddress({
   children,
   prefixLength = 6,
   suffixLength = 4,
-  iconSize = 'tiny',
+  iconSize = "tiny",
   prettyNames = true,
   verbose = false,
   hoverCard = true,
@@ -95,7 +95,7 @@ export function EvmAddress({
     return (
       <div className="flex items-center space-x-2">
         {isLoading ? (
-          <Skeleton className="h-4 w-4 rounded-lg" />
+          <Skeleton className="size-4 rounded-lg" />
         ) : (
           <AddressAvatar
             address={getAddress(address)}
@@ -110,7 +110,7 @@ export function EvmAddress({
         )}
         {displayName && (
           <span>
-            {displayName}{' '}
+            {displayName}{" "}
             {symbol && (
               <span className="text-muted-foreground text-xs">({symbol}) </span>
             )}
@@ -137,9 +137,9 @@ export function EvmAddress({
       </HoverCardTrigger>
       <HoverCardContent className="w-120">
         <div className="flex items-start">
-          <h4 className="grid grid-cols-[auto,1fr] items-start gap-x-2 font-semibold text-sm">
+          <h4 className="grid grid-cols-[auto_1fr] items-start gap-x-2 font-semibold text-sm">
             {isLoading ? (
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="size-8 rounded-lg" />
             ) : (
               <AddressAvatar
                 address={getAddress(address)}
@@ -152,7 +152,7 @@ export function EvmAddress({
               <span className="font-mono">{getAddress(address)}</span>
               {displayName && (
                 <span className="text-sm">
-                  {displayName}{' '}
+                  {displayName}{" "}
                   {symbol && (
                     <span className="text-muted-foreground text-xs">
                       ({symbol})

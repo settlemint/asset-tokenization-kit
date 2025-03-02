@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { MoonIcon } from '@/components/ui/animated-icons/moon';
-import { SunIcon } from '@/components/ui/animated-icons/sun';
-import { Button, type ButtonProps } from '@/components/ui/button';
+import { MoonIcon } from "@/components/ui/animated-icons/moon";
+import { SunIcon } from "@/components/ui/animated-icons/sun";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
-import { useCallback, useEffect, useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslations } from "next-intl";
+import { useTheme } from "next-themes";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * Props for the ThemeToggle component.
  */
 interface ThemeToggleProps {
   /** The variant of the button. */
-  variant?: ButtonProps['variant'];
+  variant?: Parameters<typeof Button>[0]["variant"];
   /** The size of the button. */
-  size?: ButtonProps['size'];
+  size?: Parameters<typeof Button>[0]["size"];
   /** Additional CSS classes to apply to the button. */
   className?: string;
 }
@@ -30,10 +30,10 @@ interface ThemeToggleProps {
  * Mapping of button sizes to skeleton sizes.
  */
 const skeletonSizes = {
-  icon: 'h-10 w-10',
-  default: 'h-10 w-16',
-  sm: 'h-9 w-14',
-  lg: 'h-11 w-20',
+  icon: "h-10 w-10",
+  default: "h-10 w-16",
+  sm: "size-94",
+  lg: "h-11 w-20",
 } as const;
 
 /**
@@ -42,13 +42,13 @@ const skeletonSizes = {
  * @returns A dropdown menu for theme selection.
  */
 export function ThemeToggle({
-  variant = 'outline',
-  size = 'icon',
+  variant = "outline",
+  size = "icon",
   className,
 }: ThemeToggleProps) {
   const { setTheme, resolvedTheme, themes } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const t = useTranslations('theme');
+  const t = useTranslations("theme");
 
   /**
    * Handles setting a new theme.
@@ -78,11 +78,11 @@ export function ThemeToggle({
           variant={variant}
           size={size}
           className={className}
-          aria-label={t('toggle-label')}
+          aria-label={t("toggle-label")}
         >
           <SunIcon className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          {size !== 'icon' && <span className="ml-2">{resolvedTheme}</span>}
+          {size !== "icon" && <span className="ml-2">{resolvedTheme}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,5 +1,5 @@
-import { theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for asset balance data from The Graph

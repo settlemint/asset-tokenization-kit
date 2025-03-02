@@ -1,5 +1,5 @@
-import type { ZodInfer, ZodType } from '@/lib/utils/zod';
-import type { ComponentType, ReactElement } from 'react';
+import type { ZodInfer, ZodType } from "@/lib/utils/zod";
+import type { ComponentType, ReactElement } from "react";
 
 export type Schema = ZodType;
 export type ValidatedFields<S extends Schema> = {

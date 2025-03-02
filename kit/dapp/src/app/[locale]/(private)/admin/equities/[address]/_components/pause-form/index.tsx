@@ -1,6 +1,6 @@
-import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
-import type { Address } from 'viem';
-import { PauseForm } from './form';
+import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
+import type { Address } from "viem";
+import { PauseForm } from "./form";
 
 interface PauseFormWrapperProps {
   address: Address;

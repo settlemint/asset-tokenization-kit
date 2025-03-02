@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Link } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
-import { type VariantProps, cva } from 'class-variance-authority';
-import { MoreHorizontal } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import { type VariantProps, cva } from "class-variance-authority";
+import { MoreHorizontal } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { type HTMLAttributes, type ReactNode, useState } from "react";
 
-const dataTableRowActionsVariants = cva('flex items-center space-x-2', {
+const dataTableRowActionsVariants = cva("flex items-center space-x-2", {
   variants: {
     variant: {
-      default: '',
+      default: "",
     },
   },
   defaultVariants: {
-    variant: 'default',
+    variant: "default",
   },
 });
 
@@ -29,7 +29,7 @@ export interface DataTableColumnCellRenderProps {
 }
 
 interface DataTableColumnCellProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'children'>,
+  extends Omit<HTMLAttributes<HTMLDivElement>, "children">,
     VariantProps<typeof dataTableRowActionsVariants> {
   detailUrl?: string;
   children?:
@@ -40,12 +40,12 @@ interface DataTableColumnCellProps
 
 export function DataTableRowActions({
   className,
-  variant = 'default',
+  variant = "default",
   children,
   detailUrl,
   ...props
 }: DataTableColumnCellProps) {
-  const t = useTranslations('components.data-table');
+  const t = useTranslations("components.data-table");
   const [isOpen, setIsOpen] = useState(false);
 
   if (!children && !detailUrl) {
@@ -61,14 +61,9 @@ export function DataTableRowActions({
       {...props}
     >
       {detailUrl && (
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="hover:text-primary-foreground dark:hover:text-foreground"
-        >
+        <Button variant="outline" size="sm" className="border-muted" asChild>
           <Link href={detailUrl} prefetch>
-            {t('details')}
+            {t("details")}
           </Link>
         </Button>
       )}
@@ -77,17 +72,17 @@ export function DataTableRowActions({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-8 w-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+              className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
-              <span className="sr-only">{t('open-menu')}</span>
+              <span className="sr-only">{t("open-menu")}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
             className="w-[160px] dark:bg-theme-accent-background "
           >
-            {typeof children === 'function'
+            {typeof children === "function"
               ? children({ close: () => setIsOpen(false) })
               : children}
           </DropdownMenuContent>

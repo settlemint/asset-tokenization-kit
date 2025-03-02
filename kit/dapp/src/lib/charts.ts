@@ -11,13 +11,13 @@ import {
   subDays,
   subMonths,
   subWeeks,
-} from 'date-fns';
-import { getDateFromTimestamp } from './utils/date';
+} from "date-fns";
+import { getDateFromTimestamp } from "./utils/date";
 
-export type TimeGranularity = 'hour' | 'day' | 'month';
-export type IntervalType = 'month' | 'week' | 'day';
-export type AggregationType = 'first' | 'sum' | 'count';
-export type AccumulationType = 'total' | 'max';
+export type TimeGranularity = "hour" | "day" | "month";
+export type IntervalType = "month" | "week" | "day";
+export type AggregationType = "first" | "sum" | "count";
+export type AccumulationType = "total" | "max";
 
 export interface TimeSeriesOptions {
   granularity: TimeGranularity;
@@ -57,7 +57,7 @@ export function createTimeSeries<T extends DataPoint>(
     intervalType,
     intervalLength,
     accumulation,
-    aggregation = 'first',
+    aggregation = "first",
     historical,
   } = options;
 
@@ -68,7 +68,7 @@ export function createTimeSeries<T extends DataPoint>(
     intervalLength
   );
   const ticks =
-    granularity === 'hour'
+    granularity === "hour"
       ? eachHourOfInterval(interval)
       : eachDayOfInterval(interval);
 
@@ -119,17 +119,17 @@ export function getInterval(
 
   // First round the current time based on granularity
   const roundedNow =
-    granularity === 'hour' ? startOfHour(now) : startOfDay(now);
+    granularity === "hour" ? startOfHour(now) : startOfDay(now);
 
   let start: Date;
   switch (intervalType) {
-    case 'month':
+    case "month":
       start = subMonths(roundedNow, intervalLength);
       break;
-    case 'week':
+    case "week":
       start = subWeeks(roundedNow, intervalLength);
       break;
-    case 'day':
+    case "day":
       start = subDays(roundedNow, intervalLength);
       break;
     default:
@@ -146,28 +146,28 @@ function isInTick(
 ): boolean {
   const timestampDate = getDateFromTimestamp(timestamp);
   switch (granularity) {
-    case 'hour':
+    case "hour":
       return isSameHour(timestampDate, tick);
-    case 'month':
+    case "month":
       return isSameMonth(timestampDate, tick);
-    case 'day':
+    case "day":
       return isSameDay(timestampDate, tick);
     default: {
       const _exhaustiveCheck: never = granularity;
-      throw new Error('Invalid granularity');
+      throw new Error("Invalid granularity");
     }
   }
 }
 
 function formatDate(date: Date, granularity: TimeGranularity): string {
-  return format(date, granularity === 'hour' ? 'HH:mm, MMM d' : 'EEE, MMM d'); // Eg. Tue, Feb 12
+  return format(date, granularity === "hour" ? "HH:mm, MMM d" : "EEE, MMM d"); // Eg. Tue, Feb 12
 }
 
 export function formatInterval(
   intervalLength: number,
   intervalType: IntervalType
 ): string {
-  return `${intervalLength} ${intervalType}${intervalLength > 1 ? 's' : ''}`;
+  return `${intervalLength} ${intervalType}${intervalLength > 1 ? "s" : ""}`;
 }
 
 function aggregateData<T extends DataPoint>(
@@ -176,7 +176,7 @@ function aggregateData<T extends DataPoint>(
   aggregation: AggregationType
 ): Record<keyof T, unknown> | null {
   switch (aggregation) {
-    case 'sum':
+    case "sum":
       return valueKeys.reduce(
         (acc, key) => {
           const sum = matchingData.reduce((sum, d) => sum + Number(d[key]), 0);
@@ -185,7 +185,7 @@ function aggregateData<T extends DataPoint>(
         },
         {} as Record<keyof T, number>
       );
-    case 'count':
+    case "count":
       return valueKeys.reduce(
         (acc, key) => {
           acc[key] = matchingData.length;
@@ -193,11 +193,11 @@ function aggregateData<T extends DataPoint>(
         },
         {} as Record<keyof T, number>
       );
-    case 'first':
+    case "first":
       return matchingData.length > 0 ? matchingData[0] : null;
     default: {
       const _exhaustiveCheck: never = aggregation;
-      throw new Error('Unsupported aggregation type');
+      throw new Error("Unsupported aggregation type");
     }
   }
 }
@@ -212,9 +212,9 @@ function processTimeSeriesValue(
   }
 
   switch (accumulation) {
-    case 'total':
+    case "total":
       return currentValue + lastValidValue;
-    case 'max':
+    case "max":
       return Math.max(currentValue, lastValidValue);
     default: {
       return currentValue;

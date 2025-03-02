@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { LanguageMenuItem } from '@/components/blocks/language/language-menu-item';
-import { ThemeMenuItem } from '@/components/blocks/theme/theme-menu-item';
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
+import { PasskeyModal } from "@/components/blocks/passkeys/passkey-modal";
+import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,25 +11,25 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Link, useRouter } from '@/i18n/routing';
-import { authClient } from '@/lib/auth/client';
-import { cn } from '@/lib/utils';
-import { shortHex } from '@/lib/utils/hex';
-import { ChevronDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import type { Address } from 'viem';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link, useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
+import { shortHex } from "@/lib/utils/hex";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import type { Address } from "viem";
 import {
   BookTextIcon,
   type BookTextIconHandle,
-} from '../ui/animated-icons/book-text';
-import { LogoutIcon, type LogoutIconHandle } from '../ui/animated-icons/logout';
+} from "../ui/animated-icons/book-text";
+import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
 import {
   SquareStackIcon,
   type SquareStackIconHandle,
-} from '../ui/animated-icons/square-stack';
+} from "../ui/animated-icons/square-stack";
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -47,7 +48,7 @@ function TextOrSkeleton({
       {condition ? (
         children
       ) : (
-        <span className={cn('block', skeletonClassName)}>
+        <span className={cn("block", skeletonClassName)}>
           <Skeleton className="h-full w-full" />
         </span>
       )}
@@ -60,7 +61,7 @@ export function UserDropdown() {
   const user = session.data?.user;
 
   const router = useRouter();
-  const t = useTranslations('layout.user-dropdown');
+  const t = useTranslations("layout.user-dropdown");
 
   // Use client-side only rendering for user data to avoid hydration mismatches
   const [isClient, setIsClient] = useState(false);
@@ -78,7 +79,7 @@ export function UserDropdown() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push('/'); // redirect to login page
+          router.push("/"); // redirect to login page
         },
       },
     });
@@ -88,10 +89,10 @@ export function UserDropdown() {
   if (!isClient) {
     return (
       <div className="flex h-12 items-center gap-2 rounded-md px-2 text-sm">
-        <Skeleton className="h-8 w-8 rounded-lg" />
+        <Skeleton className="size-8 rounded-lg" />
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-20" />
+          <Skeleton className="size-44" />
+          <Skeleton className="size-30" />
         </div>
         <ChevronDown className="ml-2 size-4" />
       </div>
@@ -102,23 +103,23 @@ export function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex h-12 cursor-pointer items-center gap-2 rounded-md px-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-          <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+          <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             {user ? (
               <AddressAvatar
                 address={user.wallet as Address}
                 email={user.email}
-                className="h-8 w-8 rounded-lg"
+                className="size-8 rounded-lg"
                 indicator={false}
               />
             ) : (
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="size-8 rounded-lg" />
             )}
           </Suspense>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <TextOrSkeleton
               condition={Boolean(user?.name || user?.email)}
               className="truncate font-semibold"
-              skeletonClassName="h-4 w-24"
+              skeletonClassName="size-44"
             >
               {user?.name ?? user?.email}
             </TextOrSkeleton>
@@ -126,7 +127,7 @@ export function UserDropdown() {
             <TextOrSkeleton
               condition={Boolean(user?.wallet)}
               className="truncate text-xs"
-              skeletonClassName="h-3 w-20"
+              skeletonClassName="size-30"
             >
               {user?.wallet &&
                 shortHex(user.wallet, { prefixLength: 12, suffixLength: 8 })}
@@ -137,7 +138,7 @@ export function UserDropdown() {
       </DropdownMenuTrigger>
       {user && (
         <DropdownMenuContent
-          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown"
+          className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown"
           side="bottom"
           align="end"
           sideOffset={4}
@@ -149,7 +150,7 @@ export function UserDropdown() {
             >
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
-                {t('pending-transactions')}
+                {t("pending-transactions")}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -163,18 +164,19 @@ export function UserDropdown() {
             >
               <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
               <Link href="https://console.settlemint.com/documentation">
-                {t('documentation')}
+                {t("documentation")}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          <PasskeyModal />
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
             onMouseEnter={() => logoutIconRef.current?.startAnimation()}
             onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >
             <LogoutIcon ref={logoutIconRef} className="mr-2 size-4" />
-            {t('logout')}
+            {t("logout")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       )}
