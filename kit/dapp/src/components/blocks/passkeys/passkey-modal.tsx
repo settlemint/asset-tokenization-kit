@@ -17,6 +17,7 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth/client";
 import { formatDate } from "@/lib/utils/date";
+import { TrashIcon } from "lucide-react";
 import { useRef } from "react";
 import { toast } from "sonner";
 
@@ -66,6 +67,15 @@ export function PasskeyModal() {
                     Created at {formatDate(passkey.createdAt)}
                   </div>
                 </div>
+                <Button
+                  size="icon"
+                  onClick={() =>
+                    authClient.passkey.deletePasskey({ id: passkey.id })
+                  }
+                  variant="destructive"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
               </div>
             ))}
 
