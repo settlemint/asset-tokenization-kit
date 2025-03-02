@@ -2,11 +2,11 @@ import {
   Address,
   BigDecimal,
   ByteArray,
-  type Bytes,
+  Bytes,
   crypto,
   log,
 } from "@graphprotocol/graph-ts";
-import type {
+import {
   Approval,
   CollateralUpdated,
   Paused,
