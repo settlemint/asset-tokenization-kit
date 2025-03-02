@@ -37,8 +37,8 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
     return (
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between py-1">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-5 w-12" />
+          <Skeleton className="size-56" />
+          <Skeleton className="size-52" />
         </div>
       </div>
     );

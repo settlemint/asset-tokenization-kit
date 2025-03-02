@@ -20,7 +20,7 @@ export function Summary() {
       <FormSummaryDetailCard
         title={t("asset-basics-title")}
         description={t("asset-basics-description")}
-        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+        icon={<DollarSign className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("name-label")}
@@ -47,7 +47,7 @@ export function Summary() {
       <FormSummaryDetailCard
         title={t("configuration-title")}
         description={t("configuration-description")}
-        icon={<Settings className="h-3 w-3 text-primary-foreground" />}
+        icon={<Settings className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("initial-supply-label")}

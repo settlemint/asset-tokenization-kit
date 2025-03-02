@@ -32,7 +32,7 @@ import { CreateStablecoinForm } from "../../stablecoins/_components/create-form/
 
 export function DesignerButton() {
   const t = useTranslations("admin.sidebar");
-  const { state, isMobile } = useSidebar();
+  const { isMobile } = useSidebar();
   const [tokenType, setTokenType] = useState<
     "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin" | null
   >(null);
@@ -47,7 +47,7 @@ export function DesignerButton() {
               <SidebarMenuButton
                 onMouseEnter={() => frameIconRef.current?.startAnimation()}
                 onMouseLeave={() => frameIconRef.current?.stopAnimation()}
-                className="bg-accent text-accent-foreground"
+                className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-dropdown"
               >
                 <FrameIcon ref={frameIconRef} className="size-4" />
                 <span>{t("asset-designer")}</span>

@@ -163,7 +163,7 @@ export const Search = () => {
         >
           <SearchIcon
             ref={searchIconRef}
-            className="mr-2 h-4 w-4 shrink-0 opacity-50"
+            className="mr-2 size-4 shrink-0 opacity-50"
           />
           <FormField
             control={form.control}

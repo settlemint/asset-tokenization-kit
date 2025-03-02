@@ -14,8 +14,8 @@ import { getAddress, isAddress, type Address } from "viem";
 const addressAvatarVariants = cva("", {
   variants: {
     size: {
-      tiny: "h-4 w-4",
-      small: "h-8 w-8",
+      tiny: "size-4",
+      small: "size-8",
       big: "h-12 w-12",
     },
     indicator: {
@@ -32,7 +32,7 @@ const addressAvatarVariants = cva("", {
 /**
  * Indicator variant styles for the animation dot
  */
-const indicatorVariants = cva("-top-0.5 -right-0.5 absolute flex h-3 w-3", {
+const indicatorVariants = cva("-top-0.5 -right-0.5 absolute flex size-3", {
   variants: {
     color: {
       primary: "", // Uses primary color in Tailwind config
@@ -145,7 +145,7 @@ function AddressAvatarComponent({
           src={avatarSrc}
           alt={altText}
           loading="lazy"
-          className="border-1 border-accent-foreground rounded-full"
+          className="border-1 border-muted-foreground rounded-full"
         />
         <AvatarFallback>{fallbackText}</AvatarFallback>
       </Avatar>
@@ -156,7 +156,7 @@ function AddressAvatarComponent({
           aria-hidden="true"
         >
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
-          <span className="relative inline-flex h-3 w-3 rounded-full bg-current" />
+          <span className="relative inline-flex size-3 rounded-full bg-current" />
         </span>
       )}
     </div>

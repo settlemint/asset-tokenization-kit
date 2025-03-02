@@ -22,12 +22,12 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <Badge variant={user.banned ? "destructive" : "default"}>
           {user.banned ? (
             <>
-              <Ban className="mr-1 h-3 w-3" />
+              <Ban className="mr-1 size-3" />
               <span>Banned</span>
             </>
           ) : (
             <>
-              <Check className="mr-1 h-3 w-3" />
+              <Check className="mr-1 size-3" />
               <span>Active</span>
             </>
           )}

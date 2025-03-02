@@ -39,7 +39,7 @@ interface LanguageToggleProps {
 const skeletonSizes = {
   icon: "h-10 w-10",
   default: "h-10 w-16",
-  sm: "h-9 w-14",
+  sm: "size-94",
   lg: "h-11 w-20",
 } as const;
 
@@ -123,7 +123,7 @@ export function LanguageToggle({
             disabled={isPending || locale === currentLocale}
           >
             {LANGUAGE_NAMES[locale] || locale}
-            {locale === currentLocale && <Check className="ml-2 h-4 w-4" />}
+            {locale === currentLocale && <Check className="ml-2 size-4" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

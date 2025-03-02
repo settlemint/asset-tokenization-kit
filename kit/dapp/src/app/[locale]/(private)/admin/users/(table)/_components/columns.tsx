@@ -46,7 +46,7 @@ export function useUserColumns() {
       ),
       cell: ({ renderValue, row }) => (
         <DataTableColumnCell>
-          <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+          <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             <AddressAvatar
               email={row.original.email}
               address={row.original.wallet}
@@ -102,7 +102,7 @@ export function useUserColumns() {
         const Icon = role ? icons[role] : null;
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{role}</span>
           </DataTableColumnCell>
         );
@@ -119,7 +119,7 @@ export function useUserColumns() {
         const Icon = icons[status];
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{banned ? "Banned" : "Active"}</span>
           </DataTableColumnCell>
         );
@@ -138,7 +138,7 @@ export function useUserColumns() {
         const Icon = icons[status];
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{verified ? "Verified" : "Not Verified"}</span>
           </DataTableColumnCell>
         );

@@ -42,7 +42,7 @@ const CompletedStep = ({
         )}
         aria-label={t("completed-step")}
       >
-        <Check className="h-4 w-4 text-[hsl(var(--background))]" />
+        <Check className="size-4 text-[hsl(var(--background))]" />
       </div>
       {!isLastStep && (
         <div
@@ -73,7 +73,7 @@ const CurrentStep = ({
         aria-label={t("current-step")}
         aria-current="step"
       >
-        <Circle className="h-3 w-3 rounded-full bg-[hsl(var(--foreground))] text-[hsl(var(--foreground))]" />
+        <Circle className="size-3 rounded-full bg-[hsl(var(--foreground))] text-[hsl(var(--foreground))]" />
       </div>
       {index + 1 < totalSteps && (
         <div
@@ -103,7 +103,7 @@ const NextStep = ({
         )}
         aria-label={t("upcoming-step")}
       >
-        <div className="h-3 w-3 rounded-full border-2 border-[hsl(var(--input))]" />
+        <div className="size-3 rounded-full border-2 border-[hsl(var(--input))]" />
       </div>
       {index + 1 < totalSteps && (
         <div

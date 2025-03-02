@@ -26,7 +26,7 @@ export function Summary({
       <FormSummaryDetailCard
         title={t("revoke-title")}
         description={t("operation-description")}
-        icon={<Lock className="h-3 w-3 text-primary-foreground" />}
+        icon={<Lock className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("user-label")}

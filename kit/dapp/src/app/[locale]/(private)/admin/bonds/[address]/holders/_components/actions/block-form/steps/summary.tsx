@@ -24,7 +24,7 @@ export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
       <FormSummaryDetailCard
         title={isCurrentlyBlocked ? t("unblock-title") : t("block-title")}
         description={t("operation-description")}
-        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+        icon={<DollarSign className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
           label={t("asset-label")}

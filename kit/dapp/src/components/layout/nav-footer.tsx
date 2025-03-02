@@ -45,9 +45,9 @@ export function NavFooter() {
   const isAdmin = pathname.startsWith("/admin");
   const currentSection = isAdmin ? t("admin") : t("portfolio");
   const currentIcon = isAdmin ? (
-    <SettingsGearIcon className="h-4 w-4" />
+    <SettingsGearIcon className="size-4" />
   ) : (
-    <BriefcaseIcon className="h-4 w-4" />
+    <BriefcaseIcon className="size-4" />
   );
 
   return (
@@ -79,7 +79,7 @@ export function NavFooter() {
                 onMouseEnter={() => homeIconRef.current?.startAnimation()}
                 onMouseLeave={() => homeIconRef.current?.stopAnimation()}
               >
-                <HomeIcon ref={homeIconRef} className="h-4 w-4" />
+                <HomeIcon ref={homeIconRef} className="size-4" />
                 {t("home")}
                 {pathname === "/" && <Check />}
               </Link>
@@ -94,7 +94,7 @@ export function NavFooter() {
                 onMouseEnter={() => adminIconRef.current?.startAnimation()}
                 onMouseLeave={() => adminIconRef.current?.stopAnimation()}
               >
-                <SettingsGearIcon ref={adminIconRef} className="h-4 w-4" />
+                <SettingsGearIcon ref={adminIconRef} className="size-4" />
                 {t("admin")}
                 {isAdmin && <Check />}
               </Link>
@@ -109,7 +109,7 @@ export function NavFooter() {
                 onMouseEnter={() => portfolioIconRef.current?.startAnimation()}
                 onMouseLeave={() => portfolioIconRef.current?.stopAnimation()}
               >
-                <BriefcaseIcon ref={portfolioIconRef} className="h-4 w-4" />
+                <BriefcaseIcon ref={portfolioIconRef} className="size-4" />
                 {t("portfolio")}
                 {!isAdmin && <Check />}
               </Link>

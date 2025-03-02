@@ -27,7 +27,7 @@ export function DetailGridItem({ label, children, info }: DetailGridItemProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info
-                  className="h-4 w-4 text-muted-foreground"
+                  className="size-4 text-muted-foreground"
                   aria-label={t("info-icon-label")}
                 />
               </TooltipTrigger>

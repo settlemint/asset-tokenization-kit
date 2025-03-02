@@ -17,12 +17,12 @@ export function ActivePill({ paused }: { paused: boolean }): ReactElement {
     >
       {paused ? (
         <>
-          <PauseCircle className="mr-1 h-3 w-3" />
+          <PauseCircle className="mr-1 size-3" />
           <span>{t("paused")}</span>
         </>
       ) : (
         <>
-          <PlayCircle className="mr-1 h-3 w-3" />
+          <PlayCircle className="mr-1 size-3" />
           <span>{t("active")}</span>
         </>
       )}

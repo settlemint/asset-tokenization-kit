@@ -25,7 +25,7 @@ export function Summary({ address }: SummaryProps) {
   return (
     <FormStep title={t("title")} description={t("description")}>
       <FormSummaryDetailCard
-        icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
+        icon={<DollarSign className="size-3 text-primary-foreground" />}
         title={t("mint-title")}
         description={t("mint-description")}
       >

@@ -75,7 +75,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         className="rounded-sm px-1 font-normal"
                       >
                         {option.icon && (
-                          <option.icon className="mr-1 h-4 w-4 text-muted-foreground" />
+                          <option.icon className="mr-1 size-4 text-muted-foreground" />
                         )}
                         {option.label}
                       </Badge>
@@ -111,7 +111,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"
@@ -120,11 +120,11 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <Check />
                     </div>
                     {option.icon && (
-                      <option.icon className="h-4 w-4 text-muted-foreground" />
+                      <option.icon className="size-4 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
+                      <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
                         {facets.get(option.value)}
                       </span>
                     )}

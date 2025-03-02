@@ -32,7 +32,7 @@ interface ThemeToggleProps {
 const skeletonSizes = {
   icon: "h-10 w-10",
   default: "h-10 w-16",
-  sm: "h-9 w-14",
+  sm: "size-94",
   lg: "h-11 w-20",
 } as const;
 

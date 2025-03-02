@@ -17,7 +17,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
       <div className="rounded-full bg-destructive/15 p-3">
-        <AlertCircle className="h-6 w-6 text-destructive" />
+        <AlertCircle className="size-6 text-destructive" />
       </div>
       <h1 className="font-semibold text-2xl tracking-tight">{t("title")}</h1>
       {error.digest && (

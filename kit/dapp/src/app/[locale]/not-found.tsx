@@ -10,7 +10,7 @@ export default function NotFoundPage() {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
       <div className="rounded-full bg-muted p-3">
-        <FileQuestion className="h-6 w-6 text-muted-foreground" />
+        <FileQuestion className="size-6 text-muted-foreground" />
       </div>
       <h1 className="font-semibold text-2xl tracking-tight">Page not found</h1>
       <p className="text-muted-foreground">
