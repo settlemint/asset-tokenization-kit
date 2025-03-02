@@ -1,8 +1,8 @@
+import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
-import { DetailChartGrid } from "@/components/blocks/detail-grid/detail-chart-grid";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -43,12 +43,12 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
     <>
       <Details address={address} />
       <Collateral address={address} />
-      <DetailChartGrid>
+      <ChartGrid title="Asset statistics">
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
-      </DetailChartGrid>
+      </ChartGrid>
     </>
   );
 }

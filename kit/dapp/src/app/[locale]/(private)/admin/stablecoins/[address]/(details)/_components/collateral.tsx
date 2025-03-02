@@ -17,7 +17,7 @@ export async function Collateral({ address }: CollateralProps) {
 
   return (
     <Suspense>
-      <DetailGrid className="mt-4">
+      <DetailGrid className="mt-4" title="Collateral">
         <DetailGridItem
           label={t("proven-collateral")}
           info={t("proven-collateral-info")}
