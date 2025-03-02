@@ -77,7 +77,7 @@ export function DataTableToolbar<TData>({
             placeholder={t("search")}
             value={table.getState().globalFilter ?? ""}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className="h-8 w-[150px] lg:w-[250px]"
+            className="h-8 w-[150px] lg:w-[250px] border-muted-foreground"
           />
         )}
         {(facetedColumns ?? []).map((facet) => {

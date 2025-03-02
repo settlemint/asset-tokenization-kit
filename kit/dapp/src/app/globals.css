@@ -65,9 +65,9 @@
   --popover-foreground: var(--sm-white);
   --primary: var(--sm-white);
   --primary-foreground: var(--sm-dark-gray);
-  --secondary: oklch(0.269 0 0);
+  --secondary: var(--sm-dark-gray);
   --secondary-foreground: var(--sm-white);
-  --muted: oklch(0.269 0 0);
+  --muted: var(--sm-dark-gray);
   --muted-foreground: oklch(0.708 0 0);
   --accent: var(--sm-blue);
   --accent-foreground: var(--sm-white);

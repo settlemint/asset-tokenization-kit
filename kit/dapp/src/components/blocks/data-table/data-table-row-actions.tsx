@@ -61,12 +61,7 @@ export function DataTableRowActions({
       {...props}
     >
       {detailUrl && (
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="hover:text-primary-foreground dark:hover:text-foreground"
-        >
+        <Button variant="outline" size="sm" className="border-muted" asChild>
           <Link href={detailUrl} prefetch>
             {t("details")}
           </Link>

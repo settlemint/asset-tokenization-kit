@@ -99,7 +99,7 @@ export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
         variant="outline"
         size="sm"
         onClick={() => exportTableToCSV(table, t("failed-export"))}
-        className="gap-2"
+        className="gap-2 border-muted-foreground text-muted-foreground"
       >
         <Download className="size-4" aria-hidden="true" />
         {t("export")}

@@ -29,7 +29,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="ml-auto hidden h-8 lg:flex border-muted-foreground text-muted-foreground"
         >
           <Settings2 />
           {t("view")}
