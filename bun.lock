@@ -4,7 +4,7 @@
     "": {
       "name": "@settlemint/starterkit-asset-tokenization",
       "devDependencies": {
-        "@settlemint/sdk-cli": "1.1.11",
+        "@settlemint/sdk-cli": "1.1.12",
         "prettier": "3.5.2",
         "turbo": "2.4.4",
         "typescript": "5.8.2",
@@ -892,7 +892,7 @@
 
     "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@1.1.11", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.11", "gql.tada": "^1", "graphql-request": "^7", "zod": "^3" } }, "sha512-kHZY25XH6oYV7TcJh09+SQ7euVGRGWXm7tBQIeyKDyW/2QV+ts5TOwWH7wK047PR0NSt3cqPZDQlJ+gKZoNn+w=="],
 
-    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.1.11", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-vyguo6LTVDYf6zvDSxBnFqfS/0fmSJ0rflDtcOfGtLkRJv1Y/+J6TFeKdiDY0dMtphQJYOueC0cf9IdNlLV8Ug=="],
+    "@settlemint/sdk-cli": ["@settlemint/sdk-cli@1.1.12", "", { "dependencies": { "tinyexec": "0.3.2" }, "peerDependencies": { "hardhat": "2.22.19" }, "optionalPeers": ["hardhat"], "bin": { "settlemint": "dist/cli.js" } }, "sha512-3bQK9R1K5ARyA/aTVLX6hnzw76DWv6c4PfKVc0yKVBixtzcrGqNKQWxRTEkXk4EW4vfaSFAZE00eXiGZeQUs3A=="],
 
     "@settlemint/sdk-hasura": ["@settlemint/sdk-hasura@1.1.11", "", { "dependencies": { "@settlemint/sdk-utils": "1.1.11", "drizzle-kit": "^0.30", "drizzle-orm": "^0.40.0", "gql.tada": "^1", "graphql-request": "^7", "pg": "^8", "zod": "^3" } }, "sha512-hxARVlIHg6Cu9/QZZALnAIqVFPOT6vvU/t83A+GyWNhtmkyqQexc5oeG06bBYuHayQ6zTJR9K5Kz6P0PllK9og=="],
 
