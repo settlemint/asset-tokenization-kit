@@ -15,7 +15,7 @@ export async function TotalTransfers({ address }: TotalTransfersProps) {
   const chartConfig = {
     totalTransfers: {
       label: t("total-transfers.label"),
-      color: "hsl(var(--chart-2))",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 

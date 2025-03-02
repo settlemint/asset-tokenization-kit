@@ -15,7 +15,7 @@ export async function UsersHistory() {
   const USERS_CHART_CONFIG = {
     users: {
       label: t("users-history.label"),
-      color: "#3b82f6",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 

@@ -11,15 +11,15 @@ export async function AssetActivity() {
   const chartConfig = {
     mintEventCount: {
       label: t("asset-activity.mint"),
-      color: "#0d9488",
+      color: "var(--chart-1)",
     },
     transferEventCount: {
       label: t("asset-activity.transfer"),
-      color: "#3b82f6",
+      color: "var(--chart-2)",
     },
     burnEventCount: {
       label: t("asset-activity.burn"),
-      color: "#06b6d4",
+      color: "var(--chart-3)",
     },
   } satisfies ChartConfig;
 

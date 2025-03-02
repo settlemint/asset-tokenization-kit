@@ -21,7 +21,7 @@ export async function TransactionsHistory({ from }: TransactionsHistoryProps) {
   const TRANSACTIONS_CHART_CONFIG = {
     transaction: {
       label: t("transaction-history.label"),
-      color: "#3B9E99",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 
