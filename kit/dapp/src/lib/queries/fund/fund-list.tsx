@@ -4,8 +4,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   FundFragment,
@@ -48,14 +49,6 @@ const OffchainFundList = hasuraGraphql(
 );
 
 /**
- * Options for fetching fund list
- *
- */
-export interface FundListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
  * Fetches a list of funds from both on-chain and off-chain sources
  *
  * @param options - Options for fetching fund list
@@ -64,98 +57,56 @@ export interface FundListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each fund.
  */
-export async function getFundList({ limit }: FundListOptions = {}) {
-  try {
-    const [theGraphFunds, dbAssets] = await Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(FundList, {
-          first,
-          skip,
-        });
+export const getFundList = cache(async () => {
+  const [theGraphFunds, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(FundList, {
+        first,
+        skip,
+      });
 
-        const funds = result.funds || [];
+      const funds = result.funds || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + funds.length >= limit) {
-          return funds.slice(0, limit - skip);
-        }
+      return funds;
+    }),
 
-        return funds;
-      }, limit),
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainFundList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainFundList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }, limit),
-    ]);
+  // Parse and validate the data using Zod schemas
+  const validatedFunds = theGraphFunds.map((fund) =>
+    safeParseWithLogging(FundFragmentSchema, fund, 'fund')
+  );
 
-    // Parse and validate the data using Zod schemas
-    const validatedFunds = theGraphFunds.map((fund) =>
-      safeParseWithLogging(FundFragmentSchema, fund, 'fund')
-    );
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(OffchainFundFragmentSchema, asset, 'offchain fund')
+  );
 
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(OffchainFundFragmentSchema, asset, 'offchain fund')
-    );
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
+  const funds = validatedFunds.map((fund) => {
+    const dbAsset = assetsById.get(getAddress(fund.id));
 
-    const funds = validatedFunds.map((fund) => {
-      const dbAsset = assetsById.get(getAddress(fund.id));
-
-      return {
-        ...fund,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-      };
-    });
-
-    return funds;
-  } catch (error) {
-    console.error('Error fetching fund list:', error);
-    return [];
-  }
-}
-
-/**
- * Generates a consistent query key for fund list queries
- *
- * @param [options] - Options for the fund list query
- */
-export const getQueryKey = (options?: FundListOptions) =>
-  ['asset', 'fund', options?.limit ?? 'all'] as const;
-
-/**
- * React Query hook for fetching fund list
- *
- * @param [options] - Options for fetching fund list
- *
- * @example
- * ```tsx
- * const { data: funds, isLoading } = useFundList({ limit: 10 });
- * ```
- */
-export function useFundList(options?: FundListOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getFundList(options),
+    return {
+      ...fund,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
 
-  return {
-    ...result,
-    queryKey,
-    // Inline fund config values
-    assetType: 'fund' as const,
-    urlSegment: 'funds',
-    theGraphTypename: 'Fund' as const,
-  };
-}
+  return funds.map((fund) => ({
+    ...fund,
+    // replace all the BigDecimals with formatted strings
+    totalSupply: formatNumber(fund.totalSupply),
+  }));
+});

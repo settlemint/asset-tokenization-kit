@@ -6,9 +6,9 @@ import {
 } from '@/lib/settlemint/the-graph';
 import { formatDate } from '@/lib/utils/date';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import type { Address } from 'viem';
 
+import { cache } from 'react';
 import {
   ApprovalEventFragment,
   ApprovalEventFragmentSchema,
@@ -137,12 +137,8 @@ export interface AssetEventsListProps {
  * @param params - Object containing optional filters and limits
  * @returns Array of normalized asset events
  */
-export async function getAssetEventsList({
-  asset,
-  sender,
-  limit,
-}: AssetEventsListProps) {
-  try {
+export const getAssetEventsList = cache(
+  async ({ asset, sender, limit }: AssetEventsListProps) => {
     const where: Record<string, unknown> = {};
 
     if (asset) {
@@ -319,41 +315,5 @@ export async function getAssetEventsList({
         transactionHash: validatedEvent.id.split('-')[0],
       } as NormalizedEventsListItem;
     });
-  } catch (error) {
-    console.error('Error fetching asset events:', error);
-    return [];
   }
-}
-
-/**
- * Generates a consistent query key for asset events list queries
- *
- * @param params - Object containing optional filters and limits
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ asset, sender, limit }: AssetEventsListProps) =>
-  ['asset', 'events', asset ?? 'all', sender ?? 'all', limit] as const;
-
-/**
- * React Query hook for fetching asset events lists
- *
- * @param params - Object containing optional filters and limits
- * @returns Query result with asset events and query key
- */
-export function useAssetEventsList({
-  asset,
-  sender,
-  limit,
-}: AssetEventsListProps) {
-  const queryKey = getQueryKey({ asset, sender, limit });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetEventsList({ asset, sender, limit }),
-  });
-
-  return {
-    ...result,
-    queryKey,
-  };
-}
+);

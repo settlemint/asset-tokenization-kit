@@ -1,20 +1,23 @@
 import type { Role } from '@/lib/config/roles';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetFragment,
   AssetFragmentSchema,
+  OffchainAssetFragment,
+  OffchainAssetFragmentSchema,
   type Permission,
   PermissionFragmentSchema,
 } from './asset-fragment';
 
 /**
- * GraphQL query to fetch asset details from The Graph
+ * GraphQL query to fetch on-chain asset details from The Graph
  */
 const AssetDetail = theGraphGraphqlStarterkits(
   `
@@ -25,6 +28,20 @@ const AssetDetail = theGraphGraphqlStarterkits(
   }
 `,
   [AssetFragment]
+);
+
+/**
+ * GraphQL query to fetch off-chain asset details from Hasura
+ */
+const OffchainAssetDetail = hasuraGraphql(
+  `
+  query OffchainAssetDetail($id: String!) {
+    asset(where: {id: {_eq: $id}}, limit: 1) {
+      ...OffchainAssetFragment
+    }
+  }
+`,
+  [OffchainAssetFragment]
 );
 
 /**
@@ -44,119 +61,101 @@ export interface PermissionWithRoles extends Permission {
 }
 
 /**
- * Fetches and processes asset data with permission information
+ * Fetches and combines on-chain and off-chain asset data with permission information
  *
  * @param params - Object containing the asset address
- *
+ * @returns Combined asset data with additional permission details
  * @throws Error if fetching or parsing fails
  */
-async function getAssetDetail({ address }: AssetDetailProps) {
-  try {
-    const result = await theGraphClientStarterkits.request(AssetDetail, {
-      id: address,
-    });
+export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
+  const normalizedAddress = getAddress(address);
 
-    if (!result.asset) {
-      throw new Error(`Asset ${address} not found`);
-    }
+  const [onchainData, offchainData] = await Promise.all([
+    theGraphClientStarterkits.request(AssetDetail, { id: address }),
+    hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
+  ]);
 
-    // Parse and validate the asset data with Zod schema
-    const validatedAsset = safeParseWithLogging(
-      AssetFragmentSchema,
-      result.asset,
-      'asset'
-    );
-
-    // Define the role configurations
-    const roleConfigs = [
-      {
-        permissions: validatedAsset.admins,
-        role: 'DEFAULT_ADMIN_ROLE' as const,
-      },
-      {
-        permissions: validatedAsset.supplyManagers,
-        role: 'SUPPLY_MANAGEMENT_ROLE' as const,
-      },
-      {
-        permissions: validatedAsset.userManagers,
-        role: 'USER_MANAGEMENT_ROLE' as const,
-      },
-    ];
-
-    // Create a map to track users with their roles
-    const usersWithRoles = new Map<string, PermissionWithRoles>();
-
-    // Process all role configurations
-    roleConfigs.forEach(({ permissions, role }) => {
-      const validatedPermissions = permissions.map((permission) =>
-        safeParseWithLogging(PermissionFragmentSchema, permission, 'permission')
-      );
-      validatedPermissions.forEach((validatedPermission) => {
-        const userId = validatedPermission.id;
-        const existing = usersWithRoles.get(userId);
-
-        if (existing) {
-          if (!existing.roles.includes(role)) {
-            existing.roles.push(role);
-          }
-        } else {
-          usersWithRoles.set(userId, {
-            ...validatedPermission,
-            roles: [role],
-          });
-        }
-      });
-    });
-
-    return {
-      ...validatedAsset,
-      roles: Array.from(usersWithRoles.values()),
-    };
-  } catch (_error) {
-    // Re-throw with more context
-    throw _error instanceof Error
-      ? _error
-      : new Error(`Failed to fetch asset ${address}`);
+  if (!onchainData.asset) {
+    throw new Error(`Asset ${address} not found`);
   }
-}
 
-/**
- * Generates a consistent query key for asset detail queries
- *
- * @param params - Object containing the asset address
- */
-const getQueryKey = ({ address }: AssetDetailProps) =>
-  ['asset', getAddress(address)] as const;
+  // Parse and validate the asset data with Zod schema
+  const validatedAsset = safeParseWithLogging(
+    AssetFragmentSchema,
+    onchainData.asset,
+    'asset'
+  );
 
-/**
- * React Query hook for fetching asset details
- *
- * @param params - Object containing the asset address
- */
-export function useAssetDetail({ address }: AssetDetailProps) {
-  const queryKey = getQueryKey({ address });
+  const offchainAsset = offchainData.asset[0]
+    ? safeParseWithLogging(
+        OffchainAssetFragmentSchema,
+        offchainData.asset[0],
+        'offchain asset'
+      )
+    : undefined;
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetDetail({ address }),
+  // Define the role configurations
+  const roleConfigs = [
+    {
+      permissions: validatedAsset.admins,
+      role: 'DEFAULT_ADMIN_ROLE' as const,
+    },
+    {
+      permissions: validatedAsset.supplyManagers,
+      role: 'SUPPLY_MANAGEMENT_ROLE' as const,
+    },
+    {
+      permissions: validatedAsset.userManagers,
+      role: 'USER_MANAGEMENT_ROLE' as const,
+    },
+  ];
+
+  // Create a map to track users with their roles
+  const usersWithRoles = new Map<string, PermissionWithRoles>();
+
+  // Process all role configurations
+  roleConfigs.forEach(({ permissions, role }) => {
+    const validatedPermissions = permissions.map((permission) =>
+      safeParseWithLogging(PermissionFragmentSchema, permission, 'permission')
+    );
+    validatedPermissions.forEach((validatedPermission) => {
+      const userId = validatedPermission.id;
+      const existing = usersWithRoles.get(userId);
+
+      if (existing) {
+        if (!existing.roles.includes(role)) {
+          existing.roles.push(role);
+        }
+      } else {
+        usersWithRoles.set(userId, {
+          ...validatedPermission,
+          roles: [role],
+        });
+      }
+    });
   });
 
   return {
-    ...result,
-    queryKey,
+    ...validatedAsset,
+    ...{
+      private: false,
+      ...offchainAsset,
+    },
+    roles: Array.from(usersWithRoles.values()),
   };
-}
+});
 
 /**
- * React Query hook for optionally fetching asset details
- * Returns null instead of throwing if the asset cannot be found
+ * Fetches a user by ID, returning null if not found
  *
- * @param params - Object containing the asset address
+ * @param params - Object containing the user ID
  */
-export function useOptionalAssetDetail({ address }: AssetDetailProps) {
-  try {
-    return useAssetDetail({ address });
-  } catch {
-    return null;
+export const getOptionalAssetDetail = cache(
+  async ({ address }: AssetDetailProps) => {
+    try {
+      return await getAssetDetail({ address });
+    } catch {
+      return null;
+    }
   }
-}
+);

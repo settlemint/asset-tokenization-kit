@@ -4,9 +4,9 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { Pause } from '@/lib/mutations/stablecoin/pause';
-import type { UnPause } from '@/lib/mutations/stablecoin/unpause';
+import type { BlockUserInput } from '@/lib/mutations/stablecoin/block-user/block-user-schema';
 import { DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -16,29 +16,27 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
-  const { control } = useFormContext<Pause | UnPause>();
+  const { control } = useFormContext<BlockUserInput>();
+  const t = useTranslations('admin.stablecoins.holders.block-form.summary');
 
   return (
-    <FormStep
-      title="Review and confirm update proven collateral"
-      description="Verify the details of your update proven collateral before proceeding."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Block"
-        description="Blocking operation details"
+        title={isCurrentlyBlocked ? t('unblock-title') : t('block-title')}
+        description={t('operation-description')}
         icon={<DollarSign className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="Asset"
+          label={t('asset-label')}
           value={<EvmAddress address={address} />}
         />
         <FormSummaryDetailItem
-          label="Current state"
-          value={isCurrentlyBlocked ? 'Blocked' : 'Active'}
+          label={t('current-state-label')}
+          value={isCurrentlyBlocked ? t('state-blocked') : t('state-active')}
         />
         <FormSummaryDetailItem
-          label="Target state"
-          value={isCurrentlyBlocked ? 'Active' : 'Blocked'}
+          label={t('target-state-label')}
+          value={isCurrentlyBlocked ? t('state-active') : t('state-blocked')}
         />
       </FormSummaryDetailCard>
 

@@ -1,14 +1,12 @@
-'use client';
-
 import { BarChartComponent } from '@/components/blocks/charts/bar-charts/horizontal-bar-chart';
 import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
 import type { ChartConfig } from '@/components/ui/chart';
-import { useAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
-import { useTranslations } from 'next-intl';
+import { getAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
+import { getTranslations } from 'next-intl/server';
 
-export function AssetActivity() {
-  const t = useTranslations('admin.dashboard.charts');
-  const { data } = useAssetActivity();
+export async function AssetActivity() {
+  const t = await getTranslations('admin.dashboard.charts');
+  const data = await getAssetActivity();
 
   const chartConfig = {
     mintEventCount: {
@@ -47,25 +45,6 @@ export function AssetActivity() {
     unfrozenEventCount: Number(asset.unfrozenEventCount),
   }));
 
-  // Get asset type plural names from translations
-  const getAssetPluralName = (type: string): string => {
-    const assetType = type.toLowerCase();
-    switch (assetType) {
-      case 'bond':
-        return t('asset-activity.asset-types.bonds');
-      case 'cryptocurrency':
-        return t('asset-activity.asset-types.cryptocurrencies');
-      case 'equity':
-        return t('asset-activity.asset-types.equities');
-      case 'fund':
-        return t('asset-activity.asset-types.funds');
-      case 'stablecoin':
-        return t('asset-activity.asset-types.stablecoins');
-      default:
-        return type;
-    }
-  };
-
   return (
     <BarChartComponent
       data={chartData}
@@ -74,7 +53,7 @@ export function AssetActivity() {
       description={t('asset-activity.description')}
       xAxis={{
         key: 'assetType',
-        tickFormatter: (value: string) => getAssetPluralName(value),
+        assetTypeFormatter: true,
       }}
     />
   );

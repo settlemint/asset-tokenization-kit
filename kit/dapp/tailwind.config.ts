@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import animate from 'tailwindcss-animate';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 export default {
   darkMode: ['class', '.dark'],
@@ -12,15 +13,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Figtree', 'sans-serif'],
-      },
-      backgroundImage: {
-        'lm-gradient-menu':
-          'linear-gradient(83deg, #f9f9fc, #d5e0fa 50%, #cdeadd)',
-        'dm-gradient-menu':
-          'linear-gradient(83deg, #1a1a1a, #1f2937 50%, #1a2e22)',
-        'dm-gradient-menu-hover':
-          'linear-gradient(83deg, #37393d, #384258 50%, #375b7b)',
+        sans: ['Figtree', ...fontFamily.sans],
       },
       colors: {
         // SettleMint Brand Colors
@@ -137,10 +130,6 @@ export default {
       },
       boxShadow: {
         button: '0 -3px 3px 0 rgb(0 0 0 / 21%) inset',
-      },
-      transitionProperty: {
-        theme:
-          'background-image, background-color, color, border-color, text-decoration-color, fill, stroke',
       },
     },
   },

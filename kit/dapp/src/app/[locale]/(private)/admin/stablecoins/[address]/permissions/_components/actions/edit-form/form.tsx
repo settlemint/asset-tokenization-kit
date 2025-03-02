@@ -2,9 +2,11 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { useUpdateRoles } from '@/lib/mutations/stablecoin/update-roles';
-import { useAssetDetail } from '@/lib/queries/asset/asset-detail';
+import type { Role } from '@/lib/config/roles';
+import { updateRoles } from '@/lib/mutations/stablecoin/update-roles/update-roles-action';
+import { UpdateRolesSchema } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
 import { Roles } from './steps/roles';
@@ -13,47 +15,38 @@ import { Summary } from './steps/summary';
 interface EditPermissionsFormProps {
   address: Address;
   account: Address;
+  currentRoles: Role[];
 }
 
 export function EditPermissionsForm({
   address,
   account,
+  currentRoles,
 }: EditPermissionsFormProps) {
-  const updateRolesMutation = useUpdateRoles();
-  const { data: stablecoin } = useAssetDetail({ address });
-  const user = useUser();
   const [open, setOpen] = useState(false);
-
-  if (!user) {
-    return null;
-  }
+  const t = useTranslations('admin.stablecoins.permissions.edit-form');
 
   return (
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel="Edit permissions"
-      title="Edit permissions"
-      description="Edit the permissions for a user"
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
-        mutation={updateRolesMutation}
+        action={updateRoles}
+        resolver={zodResolver(UpdateRolesSchema)}
         buttonLabels={{
-          label: 'Update',
+          label: t('button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
           userAddress: account,
         }}
       >
         <Roles />
-        <Summary
-          userAddress={user.wallet}
-          currentRoles={
-            stablecoin?.roles.find((p) => p.id === user.wallet)?.roles ?? []
-          }
-        />
+        <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>
     </FormSheet>
   );

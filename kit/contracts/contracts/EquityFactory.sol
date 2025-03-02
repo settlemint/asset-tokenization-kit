@@ -36,8 +36,6 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token (e.g., "Company A Common Stock")
     /// @param symbol The symbol of the token (e.g., "CMPNYA")
     /// @param decimals The number of decimals for the token (must be <= 18)
-    /// @param isin The ISIN (International Securities Identification Number) of the equity (must be empty or 12
-    /// characters)
     /// @param equityClass The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @return token The address of the newly created token
@@ -45,7 +43,6 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         string memory equityClass,
         string memory equityCategory
     )
@@ -54,13 +51,13 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(_msgSender(), name, symbol, decimals, isin, equityClass, equityCategory);
+        address predicted = predictAddress(_msgSender(), name, symbol, decimals, equityClass, equityCategory);
         if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
 
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         Equity newToken = new Equity{ salt: salt }(
-            name, symbol, decimals, _msgSender(), isin, equityClass, equityCategory, trustedForwarder()
+            name, symbol, decimals, _msgSender(), equityClass, equityCategory, trustedForwarder()
         );
 
         token = address(newToken);
@@ -76,7 +73,6 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the equity
     /// @param equityClass The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory The equity category (e.g., "Series A", "Seed")
     /// @return predicted The address where the token would be deployed
@@ -85,7 +81,6 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        string memory isin,
         string memory equityClass,
         string memory equityCategory
     )
@@ -93,7 +88,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
         view
         returns (address predicted)
     {
-        bytes32 salt = _calculateSalt(name, symbol, decimals, isin);
+        bytes32 salt = _calculateSalt(name, symbol, decimals);
 
         predicted = address(
             uint160(
@@ -107,14 +102,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
                                 abi.encodePacked(
                                     type(Equity).creationCode,
                                     abi.encode(
-                                        name,
-                                        symbol,
-                                        decimals,
-                                        sender,
-                                        isin,
-                                        equityClass,
-                                        equityCategory,
-                                        trustedForwarder()
+                                        name, symbol, decimals, sender, equityClass, equityCategory, trustedForwarder()
                                     )
                                 )
                             )
@@ -131,18 +119,8 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
-    /// @param isin The ISIN (International Securities Identification Number) of the equity
     /// @return The calculated salt for CREATE2 deployment
-    function _calculateSalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        string memory isin
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(name, symbol, decimals, isin));
+    function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(name, symbol, decimals));
     }
 }

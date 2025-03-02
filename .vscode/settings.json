@@ -93,5 +93,6 @@
   "i18n-ally.enabledFrameworks": ["next-intl"],
   "i18n-ally.pathMatcher": "{locale}.json",
   "i18n-ally.defaultNamespace": "",
-  "i18n-ally.translate.engines": ["openai", "google"]
+  "i18n-ally.translate.engines": ["openai", "google"],
+  "sherlock.previewLanguageTag": "en"
 }

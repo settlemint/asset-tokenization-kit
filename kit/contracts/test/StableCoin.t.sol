@@ -15,7 +15,6 @@ contract StableCoinTest is Test {
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
     uint48 public constant COLLATERAL_LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
-    string public constant VALID_ISIN = "US0378331005";
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -30,8 +29,7 @@ contract StableCoinTest is Test {
         forwarder = new Forwarder();
 
         vm.startPrank(owner);
-        stableCoin =
-            new StableCoin("StableCoin", "STBL", DECIMALS, owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder));
+        stableCoin = new StableCoin("StableCoin", "STBL", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 
@@ -41,7 +39,6 @@ contract StableCoinTest is Test {
         assertEq(stableCoin.symbol(), "STBL");
         assertEq(stableCoin.decimals(), DECIMALS);
         assertEq(stableCoin.totalSupply(), 0);
-        assertEq(stableCoin.isin(), VALID_ISIN);
         assertTrue(stableCoin.hasRole(stableCoin.DEFAULT_ADMIN_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.SUPPLY_MANAGEMENT_ROLE(), owner));
         assertTrue(stableCoin.hasRole(stableCoin.USER_MANAGEMENT_ROLE(), owner));
@@ -56,9 +53,8 @@ contract StableCoinTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            StableCoin newToken = new StableCoin(
-                "StableCoin", "STBL", decimalValues[i], owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder)
-            );
+            StableCoin newToken =
+                new StableCoin("StableCoin", "STBL", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder));
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -67,25 +63,7 @@ contract StableCoinTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(StableCoin.InvalidDecimals.selector, 19));
-        new StableCoin("StableCoin", "STBL", 19, owner, VALID_ISIN, COLLATERAL_LIVENESS, address(forwarder));
-        vm.stopPrank();
-    }
-
-    function test_RevertOnInvalidISIN() public {
-        vm.startPrank(owner);
-
-        StableCoin emptyIsinToken =
-            new StableCoin("StableCoin", "STBL", DECIMALS, owner, "", COLLATERAL_LIVENESS, address(forwarder));
-        assertEq(emptyIsinToken.isin(), "");
-
-        // Test with ISIN that's too short
-        vm.expectRevert(StableCoin.InvalidISIN.selector);
-        new StableCoin("StableCoin", "STBL", DECIMALS, owner, "US03783310", COLLATERAL_LIVENESS, address(forwarder));
-
-        // Test with ISIN that's too long
-        vm.expectRevert(StableCoin.InvalidISIN.selector);
-        new StableCoin("StableCoin", "STBL", DECIMALS, owner, "US0378331005XX", COLLATERAL_LIVENESS, address(forwarder));
-
+        new StableCoin("StableCoin", "STBL", 19, owner, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 

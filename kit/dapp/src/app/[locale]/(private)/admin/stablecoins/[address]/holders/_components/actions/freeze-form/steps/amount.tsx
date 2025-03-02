@@ -1,7 +1,8 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { Burn } from '@/lib/mutations/stablecoin/burn';
+import type { FreezeInput } from '@/lib/mutations/stablecoin/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
 interface AmountProps {
@@ -11,26 +12,23 @@ interface AmountProps {
 }
 
 export function Amount({ balance, frozen, symbol }: AmountProps) {
-  const { control } = useFormContext<Burn>();
+  const { control } = useFormContext<FreezeInput>();
+  const t = useTranslations('admin.stablecoins.holders.freeze-form.amount');
 
   return (
-    <FormStep
-      title="Enter Amount"
-      description="Input the amount you wish to freeze."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <div className="grid grid-cols-1 gap-6">
         <FormInput
           control={control}
           name="amount"
-          label="Amount"
+          label={t('amount-label')}
           type="number"
           min={1}
           max={balance}
-          description={`Available balance: ${formatNumber(balance, {
-            token: symbol,
-          })} Current frozen: ${formatNumber(frozen, {
-            token: symbol,
-          })}`}
+          description={t('balance-description', {
+            balance: formatNumber(balance, { token: symbol }),
+            frozen: formatNumber(frozen, { token: symbol }),
+          })}
         />
       </div>
     </FormStep>

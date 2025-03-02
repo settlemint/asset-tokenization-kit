@@ -68,10 +68,6 @@ contract StableCoin is
     /// @dev Set at deployment and cannot be changed
     uint8 private immutable _decimals;
 
-    /// @notice The optional ISIN (International Securities Identification Number) of the stablecoin
-    /// @dev Must be exactly 12 characters if provided, stored as bytes12 for gas efficiency
-    bytes12 private immutable _isin;
-
     /// @notice The timestamp of the last collateral update
     /// @dev Used to track when collateral was last proven
     uint256 private _lastCollateralUpdate;
@@ -95,8 +91,6 @@ contract StableCoin is
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token (must be <= 18)
     /// @param initialOwner The address that will receive admin rights
-    /// @param isin_ The optional ISIN (International Securities Identification Number) of the stablecoin (must be empty
-    /// or 12 characters)
     /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid (must be > 0)
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(
@@ -104,7 +98,6 @@ contract StableCoin is
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
-        string memory isin_,
         uint48 collateralLivenessSeconds,
         address forwarder
     )
@@ -115,10 +108,8 @@ contract StableCoin is
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
         if (collateralLivenessSeconds == 0) revert InvalidLiveness();
-        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
-        _isin = bytes12(bytes(isin_));
         _lastCollateralUpdate = block.timestamp;
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
@@ -152,20 +143,6 @@ contract StableCoin is
     /// @return The number of decimals
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
-    }
-
-    /// @notice Returns the optional ISIN (International Securities Identification Number) of the stablecoin
-    /// @dev Returns an empty string if ISIN is not set
-    /// @return The ISIN of the stablecoin, or empty string if not set
-    function isin() public view returns (string memory) {
-        bool isEmpty = true;
-        for (uint256 i = 0; i < 12; i++) {
-            if (bytes12(_isin)[i] != 0) {
-                isEmpty = false;
-                break;
-            }
-        }
-        return isEmpty ? "" : string(abi.encodePacked(_isin));
     }
 
     /// @notice Pauses all token transfers

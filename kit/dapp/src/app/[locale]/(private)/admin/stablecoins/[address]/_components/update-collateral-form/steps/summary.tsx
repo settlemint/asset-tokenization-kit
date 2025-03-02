@@ -4,7 +4,7 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { UpdateCollateral } from '@/lib/mutations/stablecoin/update-collateral';
+import type { UpdateCollateralInput } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -16,7 +16,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<UpdateCollateral>();
+  const { control } = useFormContext<UpdateCollateralInput>();
   const t = useTranslations('admin.stablecoins.update-collateral-form.summary');
   const values = useWatch({
     control: control,

@@ -1,6 +1,7 @@
 const date = new Date().toISOString().replace(/(\d{4}-\d{1,2}-\d{1,2}).*/u, '$1');
 const randomValue = (Math.floor(Math.random() * 10_000) + 10_000).toString().slice(1);
-
+const pincode = '123456';
+const password = 'TestPassword123!';
 interface SignUpData {
   name: string;
   email: string;
@@ -18,27 +19,27 @@ interface AdminUser {
 export const signUpData: SignUpData = {
   name: `Test User ${date}-${randomValue}`,
   email: `test-${date}-${randomValue}@settlemint.com`,
-  password: 'TestPassword123!',
-  pincode: '123456',
+  password: password,
+  pincode: pincode,
 } as const;
 
 export const signUpUserData: SignUpData = {
   name: `Test Regular User ${date}-${randomValue}`,
   email: `test-user-${date}-${randomValue}@settlemint.com`,
-  password: 'TestPassword123!',
-  pincode: '123456',
+  password: password,
+  pincode: pincode,
 } as const;
 
 export const signUpTransferUserData: SignUpData = {
-  name: 'Test Transfer User',
+  name: `Test Transfer User ${date}-${randomValue}`,
   email: `test-transfer-user-${date}-${randomValue}@settlemint.com`,
-  password: 'TestPassword123!',
-  pincode: '123456',
+  password: password,
+  pincode: pincode,
 } as const;
 
 export const adminUser: AdminUser = {
-  email: 'test@example.com',
-  password: 'TestPassword123!',
-  name: 'Test User',
-  pincode: '123456',
+  email: 'testadmin@settlemint.com',
+  password: password,
+  name: 'Test Admin User',
+  pincode: pincode,
 };

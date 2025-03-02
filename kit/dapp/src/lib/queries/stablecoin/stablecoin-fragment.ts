@@ -17,7 +17,7 @@ export const StableCoinFragment = theGraphGraphqlStarterkits(`
     totalSupply
     totalSupplyExact
     collateral
-    isin
+    collateralRatio
     lastCollateralUpdate
     liveness
     paused
@@ -42,7 +42,7 @@ export const StableCoinFragmentSchema = z.object({
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
   collateral: z.bigDecimal(),
-  isin: z.isin().nullish(),
+  collateralRatio: z.bigDecimal(),
   lastCollateralUpdate: z.timestamp(),
   liveness: z.coerce.number(),
   paused: z.boolean(),
@@ -70,7 +70,7 @@ export type StableCoin = ZodInfer<typeof StableCoinFragmentSchema>;
 export const OffchainStableCoinFragment = hasuraGraphql(`
   fragment OffchainStableCoinFragment on asset {
     id
-    private
+    isin
   }
 `);
 
@@ -80,7 +80,7 @@ export const OffchainStableCoinFragment = hasuraGraphql(`
  */
 export const OffchainStableCoinFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
+  isin: z.isin().nullish(),
 });
 
 /**

@@ -16,6 +16,7 @@
     "moduleResolution": "bundler",
     "noUncheckedIndexedAccess": false,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "resolveJsonModule": true,
     "jsx": "preserve",
     "incremental": true,

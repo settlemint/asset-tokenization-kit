@@ -2,9 +2,9 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { useBurn } from '@/lib/mutations/stablecoin/burn';
-import { useAssetBalanceDetail } from '@/lib/queries/asset-balance/asset-balance-detail';
+import { burn } from '@/lib/mutations/stablecoin/burn/burn-action';
+import { BurnSchema } from '@/lib/mutations/stablecoin/burn/burn-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
@@ -13,21 +13,12 @@ import { Summary } from './steps/summary';
 
 interface BurnFormProps {
   address: Address;
+  balance: number;
 }
 
-export function BurnForm({ address }: BurnFormProps) {
-  const burn = useBurn();
-  const user = useUser();
+export function BurnForm({ address, balance }: BurnFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations('admin.stablecoins.burn-form');
-  const balance = useAssetBalanceDetail({
-    address,
-    account: user?.wallet,
-  });
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <FormSheet
@@ -38,16 +29,16 @@ export function BurnForm({ address }: BurnFormProps) {
       description={t('description')}
     >
       <Form
-        mutation={burn}
+        action={burn}
+        resolver={zodResolver(BurnSchema)}
         buttonLabels={{
           label: t('button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
         }}
       >
-        <Amount balance={Number(balance?.value ?? 0)} />
+        <Amount maxBurnAmount={balance} />
         <Summary address={address} />
       </Form>
     </FormSheet>

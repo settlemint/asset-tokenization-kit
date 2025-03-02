@@ -2,7 +2,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { formatNumber } from '@/lib/utils/number';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
   AssetBalanceFragment,
@@ -39,18 +41,18 @@ export interface AssetBalanceDetailProps {
  * @param params - Object containing the asset address and account
  * @returns Asset balance data or undefined if not found
  */
-async function getAssetBalanceDetail({
-  address,
-  account,
-}: AssetBalanceDetailProps) {
-  if (!account) {
-    return undefined;
-  }
+export const getAssetBalanceDetail = cache(
+  async ({ address, account }: AssetBalanceDetailProps) => {
+    if (!account) {
+      return undefined;
+    }
 
-  try {
+    const normalizedAddress = getAddress(address);
+    const normalizedAccount = getAddress(account);
+
     const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
-      address,
-      account,
+      address: normalizedAddress,
+      account: normalizedAccount,
     });
 
     // Return undefined if no balance found
@@ -59,53 +61,17 @@ async function getAssetBalanceDetail({
     }
 
     // Parse and validate the balance data
-    const validatedBalance = AssetBalanceFragmentSchema.parse(
-      result.assetBalances[0]
+    const validatedBalance = safeParseWithLogging(
+      AssetBalanceFragmentSchema,
+      result.assetBalances[0],
+      'asset balance'
     );
 
-    return validatedBalance;
-  } catch (error) {
-    console.error(
-      `Error fetching balance for asset ${address} and account ${account}:`,
-      error
-    );
-    return undefined;
+    // Format BigDecimal values
+    return {
+      ...validatedBalance,
+      value: formatNumber(validatedBalance.value),
+      frozen: formatNumber(validatedBalance.frozen),
+    };
   }
-}
-
-/**
- * Generates a consistent query key for asset balance detail queries
- *
- * @param params - Object containing the asset address and account
- * @returns Array representing the query key for React Query
- */
-const getQueryKey = ({ address, account }: AssetBalanceDetailProps) =>
-  [
-    'asset',
-    'balance',
-    getAddress(address),
-    ...(account ? [getAddress(account)] : []),
-  ] as const;
-
-/**
- * React Query hook for fetching asset balance details
- *
- * @param params - Object containing the asset address and account
- * @returns Query result with asset balance data and query key
- */
-export function useAssetBalanceDetail({
-  address,
-  account,
-}: AssetBalanceDetailProps) {
-  const queryKey = getQueryKey({ address, account });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getAssetBalanceDetail({ address, account }),
-  });
-
-  return {
-    ...result.data,
-    queryKey,
-  };
-}
+);

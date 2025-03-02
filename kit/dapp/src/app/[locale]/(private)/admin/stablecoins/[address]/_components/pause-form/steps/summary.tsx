@@ -4,8 +4,8 @@ import { FormOtp } from '@/components/blocks/form/inputs/form-otp';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
-import type { Pause } from '@/lib/mutations/stablecoin/pause';
-import type { UnPause } from '@/lib/mutations/stablecoin/unpause';
+import type { PauseInput } from '@/lib/mutations/stablecoin/pause/pause-schema';
+import type { UnPauseInput } from '@/lib/mutations/stablecoin/unpause/unpause-schema';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -17,7 +17,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const { control } = useFormContext<Pause | UnPause>();
+  const { control } = useFormContext<PauseInput | UnPauseInput>();
   const t = useTranslations('admin.stablecoins.pause-form.summary');
 
   return (

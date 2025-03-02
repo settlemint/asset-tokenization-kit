@@ -1,8 +1,21 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
-dotenv.config();
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../');
+
+dotenv.config({ path: path.join(projectRoot, '.env') });
+dotenv.config({ path: path.join(projectRoot, '.env.local'), override: true });
+
+const requiredEnvVars = ['SETTLEMINT_HASURA_DATABASE_URL', 'SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT'] as const;
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+}
 
 const config: PlaywrightTestConfig = {
   testDir: './tests',
@@ -11,16 +24,16 @@ const config: PlaywrightTestConfig = {
     timeout: 65000,
   },
   retries: 2,
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: process.env.CI ? 3 : undefined,
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI ? 1 : undefined,
   reporter: [['html']],
   use: {
     actionTimeout: 65000,
-    navigationTimeout: 30000,
-    baseURL: 'http://localhost:3000',
+    navigationTimeout: 120000,
+    baseURL: process.env.SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT,
     trace: 'off',
-    viewport: { width: 1280, height: 720 },
+    viewport: { width: 1920, height: 1080 },
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     headless: true,
@@ -43,14 +56,20 @@ const config: PlaywrightTestConfig = {
       },
     },
   ],
-  webServer: {
-    command: 'cd ../dapp && bun run dev',
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  webServer: process.env.CI
+    ? undefined
+    : {
+        command: 'cd ../dapp && bun run dev',
+        port: 3000,
+        reuseExistingServer: true,
+        timeout: 120000,
+        stdout: 'pipe',
+        stderr: 'pipe',
+      },
 };
+
+console.log('\n🌐 Playwright baseURL:', config?.use?.baseURL);
+console.log('🔧 Running in CI:', !!process.env.CI, '\n');
+console.log('👷 Workers:', process.env.CI ? '3' : 'default', '\n');
 
 export default config;

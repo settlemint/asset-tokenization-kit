@@ -1,8 +1,10 @@
+import { DataTable } from '@/components/blocks/data-table/data-table';
+import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
 import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
-import { HoldersTable } from './_components/holders-table';
+import { icons, useHoldersColumns } from './_components/columns';
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -32,5 +34,14 @@ export async function generateMetadata({
 
 export default async function StablecoinHoldersPage({ params }: PageProps) {
   const { address } = await params;
-  return <HoldersTable address={address} />;
+  const balances = await getAssetBalanceList({ address });
+
+  return (
+    <DataTable
+      columnHook={useHoldersColumns}
+      data={balances}
+      icons={icons}
+      name={'Holders'}
+    />
+  );
 }

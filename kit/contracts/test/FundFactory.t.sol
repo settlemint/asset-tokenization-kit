@@ -19,7 +19,6 @@ contract FundFactoryTest is Test {
     // Constants for fund creation
     string constant NAME = "Test Fund";
     string constant SYMBOL = "TFUND";
-    string constant ISIN = "US0378331005";
     uint16 constant MANAGEMENT_FEE_BPS = 200; // 2%
     string constant FUND_CLASS = "Hedge Fund";
     string constant FUND_CATEGORY = "Long/Short Equity";
@@ -41,13 +40,12 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         address predictedAddress =
-            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         vm.expectEmit(true, true, false, false);
         emit FundCreated(predictedAddress, owner);
 
-        address fundAddress =
-            factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+        address fundAddress = factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         assertEq(fundAddress, predictedAddress);
         assertTrue(factory.isFactoryFund(fundAddress));
@@ -56,7 +54,6 @@ contract FundFactoryTest is Test {
         assertEq(fund.name(), NAME);
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
-        assertEq(fund.isin(), ISIN);
         assertEq(fund.fundClass(), FUND_CLASS);
         assertEq(fund.fundCategory(), FUND_CATEGORY);
         assertTrue(fund.hasRole(fund.DEFAULT_ADMIN_ROLE(), owner));
@@ -68,11 +65,11 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         // Create first fund
-        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+        factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         // Try to create duplicate fund
         vm.expectRevert(FundFactory.AddressAlreadyDeployed.selector);
-        factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+        factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         vm.stopPrank();
     }
@@ -81,15 +78,15 @@ contract FundFactoryTest is Test {
         vm.startPrank(owner);
 
         address predicted =
-            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+            factory.predictAddress(owner, NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
-        address actual = factory.create(NAME, SYMBOL, DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
+        address actual = factory.create(NAME, SYMBOL, DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS);
 
         assertEq(actual, predicted);
 
         // Predict address with different parameters
         address predicted2 = factory.predictAddress(
-            owner, "Different Fund", "DFUND", DECIMALS, ISIN, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
+            owner, "Different Fund", "DFUND", DECIMALS, FUND_CLASS, FUND_CATEGORY, MANAGEMENT_FEE_BPS
         );
 
         assertTrue(predicted2 != predicted);
@@ -103,13 +100,13 @@ contract FundFactoryTest is Test {
         string memory fundClass = "Hedge Fund";
         string memory fundCategory = "Long/Short Equity";
 
-        address token1 = factory.create(name, symbol, DECIMALS, ISIN, fundClass, fundCategory, MANAGEMENT_FEE_BPS);
+        address token1 = factory.create(name, symbol, DECIMALS, fundClass, fundCategory, MANAGEMENT_FEE_BPS);
 
         // Create a new factory instance
         FundFactory newFactory = new FundFactory(address(forwarder));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS, ISIN, fundClass, fundCategory, MANAGEMENT_FEE_BPS);
+        address token2 = newFactory.create(name, symbol, DECIMALS, fundClass, fundCategory, MANAGEMENT_FEE_BPS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");

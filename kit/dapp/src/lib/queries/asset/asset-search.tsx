@@ -3,7 +3,8 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { useQuery } from '@tanstack/react-query';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
 import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
 
 /**
@@ -40,55 +41,26 @@ export interface AssetSearchProps {
  * Searches for assets by address, name, or symbol
  *
  * @param params - Object containing the search term
+ * @returns Array of validated assets matching the search term
  */
-async function getAssetSearch({ searchTerm }: AssetSearchProps) {
-  if (!searchTerm) {
-    return [];
-  }
+export const getAssetSearch = cache(
+  async ({ searchTerm }: AssetSearchProps) => {
+    const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
-  try {
-    const result = await theGraphClientStarterkits.request(AssetSearch, {
-      searchAddress: searchTerm,
-      search: searchTerm,
+    if (!sanitizedSearchTerm) {
+      return [];
+    }
+
+    const { assets } = await theGraphClientStarterkits.request(AssetSearch, {
+      searchAddress: sanitizedSearchTerm,
+      search: sanitizedSearchTerm,
     });
 
-    // Parse and validate each asset in the results using Zod schema
-    const validatedAssets = (result.assets || []).map((asset) =>
-      AssetFragmentSchema.parse(asset)
+    // Validate data using Zod schema
+    const validatedAssets = assets.map((asset) =>
+      safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
     );
 
     return validatedAssets;
-  } catch (error) {
-    console.error('Error searching for assets:', error);
-    return [];
   }
-}
-
-/**
- * Generates a consistent query key for asset search queries
- *
- * @param params - Object containing the search term
- */
-const getQueryKey = ({ searchTerm }: AssetSearchProps) =>
-  ['asset', 'search', searchTerm ? searchTerm : 'none'] as const;
-
-/**
- * React Query hook for searching assets
- *
- * @param params - Object containing the search term
- */
-export function useAssetSearch({ searchTerm }: AssetSearchProps) {
-  const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
-  const queryKey = getQueryKey({ searchTerm: sanitizedSearchTerm });
-
-  const result = useQuery({
-    queryKey,
-    queryFn: () => getAssetSearch({ searchTerm: sanitizedSearchTerm }),
-    enabled: !!sanitizedSearchTerm,
-  });
-
-  return {
-    ...result,
-    queryKey,
-  };
-}
+);

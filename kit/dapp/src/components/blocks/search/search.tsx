@@ -8,15 +8,101 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useDebounce } from '@/hooks/use-debounce';
 import { Link } from '@/i18n/routing';
-import { useAssetSearch } from '@/lib/queries/asset/asset-search';
-import { useUserSearch } from '@/lib/queries/user/user-search';
+import type { Asset } from '@/lib/queries/asset/asset-fragment';
+import { getAssetSearch } from '@/lib/queries/asset/asset-search';
+import { getUserSearch } from '@/lib/queries/user/user-search';
 import { cn } from '@/lib/utils';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
 import { useTranslations } from 'next-intl';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { getAddress } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
+
+// Client-side hooks to fetch search results
+function useClientAssetSearch(searchTerm: string) {
+  const [data, setData] = useState<Asset[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchData() {
+      if (!searchTerm) {
+        setData([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const result = await getAssetSearch({ searchTerm });
+        if (isMounted) {
+          setData(result || []);
+        }
+      } catch (error) {
+        console.error('Error searching assets:', error);
+        if (isMounted) {
+          setData([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchTerm]);
+
+  return { data, isLoading };
+}
+
+function useClientUserSearch(searchTerm: string) {
+  const [data, setData] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchData() {
+      if (!searchTerm) {
+        setData([]);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const result = await getUserSearch({ searchTerm });
+        if (isMounted) {
+          setData(result || []);
+        }
+      } catch (error) {
+        console.error('Error searching users:', error);
+        if (isMounted) {
+          setData([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchTerm]);
+
+  return { data, isLoading };
+}
 
 export const Search = () => {
   const form = useForm({
@@ -34,12 +120,10 @@ export const Search = () => {
     name: 'search',
   });
   const debounced = useDebounce(search, 250);
-  const { data: users } = useUserSearch({
-    searchTerm: sanitizeSearchTerm(debounced),
-  });
-  const { data: assets } = useAssetSearch({
-    searchTerm: sanitizeSearchTerm(debounced),
-  });
+  const sanitizedSearchTerm = sanitizeSearchTerm(debounced);
+
+  const { data: users } = useClientUserSearch(sanitizedSearchTerm);
+  const { data: assets } = useClientAssetSearch(sanitizedSearchTerm);
 
   // Get URL segment based on asset type
   const getAssetUrlSegment = (type: string): string => {
@@ -112,7 +196,7 @@ export const Search = () => {
               'absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-lg'
             )}
           >
-            {(assets ?? []).length === 0 && users?.length === 0 && (
+            {(assets ?? []).length === 0 && (users ?? []).length === 0 && (
               <div className="py-6 text-center text-sm">
                 <p className="text-muted-foreground text-sm">
                   {t('no-results')}

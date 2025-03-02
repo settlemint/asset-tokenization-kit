@@ -1,12 +1,22 @@
+import {
+  AccountFragment,
+  AccountFragmentSchema,
+} from '@/lib/queries/accounts/accounts-fragment';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { UserFragment, UserFragmentSchema } from './user-fragment';
+import {
+  theGraphClientStarterkits,
+  theGraphGraphqlStarterkits,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { getAddress, type Address } from 'viem';
+import { UserFragment, UserFragmentSchema, type User } from './user-fragment';
 
 /**
- * GraphQL query to fetch user details from Hasura
+ * GraphQL query to fetch a single user by ID from Hasura
  *
  * @remarks
- * Retrieves a single user by their primary key (ID)
+ * Returns user details like name, email, wallet address, and timestamps
  */
 const UserDetail = hasuraGraphql(
   `
@@ -20,98 +30,130 @@ const UserDetail = hasuraGraphql(
 );
 
 /**
+ * GraphQL query to fetch a single user by ID from Hasura
+ *
+ * @remarks
+ * Returns user details like name, email, wallet address, and timestamps
+ */
+const UserDetailByWallet = hasuraGraphql(
+  `
+  query UserDetailByWallet($address: String!) {
+    user(limit: 1, where: {wallet: {_ilike: $address}}) {
+      ...UserFragment
+    }
+  }
+`,
+  [UserFragment]
+);
+
+/**
+ * GraphQL query to fetch user activity from TheGraph
+ *
+ * @remarks
+ * Retrieves account with its last activity timestamp
+ */
+const UserActivity = theGraphGraphqlStarterkits(
+  `
+  query UserActivity($id: ID!) {
+    account(id: $id) {
+      ...AccountFragment
+    }
+  }
+`,
+  [AccountFragment]
+);
+
+/**
  * Props interface for user detail components
  *
  */
 export interface UserDetailProps {
-  /** User ID */
-  id: string;
+  /** UUID of the user */
+  id?: string;
+  /** EVM address of the user */
+  address?: Address;
 }
 
 /**
- * Fetches and processes user data from the database
+ * Fetches a user by ID
  *
  * @param params - Object containing the user ID
- * @throws {Error} If the user is not found or if fetching/parsing fails
- *
- * @remarks
- * This function validates the response using the UserFragmentSchema
+ * @throws Will throw an error if the user is not found
  */
-async function getUserDetail({ id }: UserDetailProps) {
-  try {
-    const result = await hasuraClient.request(UserDetail, {
-      id,
-    });
-
-    if (!result.user_by_pk) {
-      throw new Error(`User ${id} not found`);
-    }
-
-    // Parse and validate the user data with Zod schema
-    const validatedUser = UserFragmentSchema.parse(result.user_by_pk);
-
-    return validatedUser;
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch user ${id}`);
+export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
+  if (!id && !address) {
+    throw new Error('Either id or address must be provided');
   }
-}
 
-/**
- * Creates a memoized query key for user detail queries
- *
- * @param params - Object containing the user ID
- */
-const getQueryKey = ({ id }: UserDetailProps) => ['user', id] as const;
+  let userData: User;
 
-/**
- * React Query hook for fetching user details
- *
- * @param params - Object containing the user ID
- *
- * @example
- * ```tsx
- * const { data: user, isLoading } = useUserDetail({ id: "user-123" });
- * ```
- */
-export function useUserDetail({ id }: UserDetailProps) {
-  const queryKey = getQueryKey({ id });
+  if (id) {
+    const result = await hasuraClient.request(UserDetail, { id });
+    if (!result.user_by_pk) {
+      throw new Error(`User not found with ID ${id}`);
+    }
+    userData = UserFragmentSchema.parse(result.user_by_pk);
+  } else if (address) {
+    const result = await hasuraClient.request(UserDetailByWallet, {
+      address: getAddress(address),
+    });
+    if (!result.user || result.user.length === 0) {
+      throw new Error(`User not found with wallet address ${address}`);
+    }
+    userData = UserFragmentSchema.parse(result.user[0]);
+  } else {
+    throw new Error('Either id or address must be provided');
+  }
 
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getUserDetail({ id }),
-  });
+  // Fetch activity data if user has wallet address
+  if (userData.wallet) {
+    try {
+      const activityResult = await theGraphClientStarterkits.request(
+        UserActivity,
+        {
+          id: userData.wallet.toLowerCase(),
+        }
+      );
+
+      if (activityResult.account) {
+        // Validate account data
+        const validatedAccount = safeParseWithLogging(
+          AccountFragmentSchema,
+          activityResult.account,
+          'account detail'
+        );
+
+        // Combine validated user data with validated activity data
+        return {
+          ...validatedAccount,
+          ...userData,
+          assetCount: validatedAccount.balancesCount ?? 0,
+          transactionCount: validatedAccount.activityEventsCount ?? 0,
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user activity:', error);
+    }
+  }
 
   return {
-    ...result,
-    queryKey,
+    ...userData,
+    assetCount: 0,
+    transactionCount: 0,
   };
-}
+});
 
 /**
- * React Query hook for optionally fetching user details
+ * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID
- *
- * @remarks
- * Returns null instead of throwing if the user cannot be found
- *
- * @example
- * ```tsx
- * const userResult = useOptionalUserDetail({ id: "user-123" });
- * if (userResult) {
- *   // User exists, use userResult.data
- * } else {
- *   // User not found
- * }
- * ```
  */
-export function useOptionalUserDetail({ id }: UserDetailProps) {
-  try {
-    return useUserDetail({ id });
-  } catch {
-    return null;
+export const getOptionalUserDetail = cache(
+  async ({ id, address }: UserDetailProps) => {
+    try {
+      return await getUserDetail({ id, address });
+    } catch {
+      return null;
+    }
   }
-}
+);

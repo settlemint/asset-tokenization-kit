@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,8 +6,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { ChevronDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
 import { BurnForm } from './burn-form/form';
 import { GrantRoleForm } from './grant-role-form/form';
@@ -21,9 +20,9 @@ interface ManageDropdownProps {
   address: Address;
 }
 
-export function ManageDropdown({ address }: ManageDropdownProps) {
-  const t = useTranslations('admin.stablecoins.manage');
-
+export async function ManageDropdown({ address }: ManageDropdownProps) {
+  const t = await getTranslations('admin.stablecoins.manage');
+  const stableCoin = await getStableCoinDetail({ address });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,21 +31,27 @@ export function ManageDropdown({ address }: ManageDropdownProps) {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown">
-        <DropdownMenuItem asChild className="dropdown-menu-item">
-          <MintForm address={address} />
+      <DropdownMenuContent className="relative right-4 w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown">
+        <DropdownMenuItem>
+          <MintForm
+            address={address}
+            collateralAvailable={Number(stableCoin.collateral)}
+          />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
-          <BurnForm address={address} />
+        <DropdownMenuItem>
+          <BurnForm
+            address={address}
+            balance={Number(stableCoin.totalSupply)}
+          />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
-          <PauseForm address={address} />
+        <DropdownMenuItem>
+          <PauseForm address={address} isPaused={stableCoin.paused} />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <UpdateCollateralForm address={address} />
         </DropdownMenuItem>
         <Separator />
-        <DropdownMenuItem asChild className="dropdown-menu-item">
+        <DropdownMenuItem>
           <GrantRoleForm address={address} />
         </DropdownMenuItem>
       </DropdownMenuContent>

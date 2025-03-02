@@ -64,10 +64,6 @@ contract Fund is
     /// @dev Set at deployment and cannot be changed
     uint16 private immutable _managementFeeBps;
 
-    /// @notice The ISIN (International Securities Identification Number) of the fund
-    /// @dev Must be exactly 12 characters if provided
-    string private _isin;
-
     /// @notice The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @dev Set at deployment and cannot be changed
     string private _fundClass;
@@ -99,8 +95,6 @@ contract Fund is
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token (must be <= 18)
     /// @param initialOwner The address that will receive admin rights
-    /// @param isin_ The ISIN (International Securities Identification Number) of the fund (must be empty or 12
-    /// characters)
     /// @param managementFeeBps_ The management fee in basis points (1 basis point = 0.01%)
     /// @param fundClass_ The class of the fund (e.g., "Hedge Fund", "Mutual Fund")
     /// @param fundCategory_ The category of the fund (e.g., "Long/Short Equity", "Global Macro")
@@ -110,7 +104,6 @@ contract Fund is
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
-        string memory isin_,
         uint16 managementFeeBps_,
         string memory fundClass_,
         string memory fundCategory_,
@@ -121,10 +114,8 @@ contract Fund is
         ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
-        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
-        _isin = isin_;
         _managementFeeBps = managementFeeBps_;
         _fundClass = fundClass_;
         _fundCategory = fundCategory_;
@@ -168,13 +159,6 @@ contract Fund is
     /// @return The fund category as a string (e.g., "Long/Short Equity", "Global Macro")
     function fundCategory() external view returns (string memory) {
         return _fundCategory;
-    }
-
-    /// @notice Returns the ISIN (International Securities Identification Number) of the fund
-    /// @dev The ISIN is immutable after construction
-    /// @return The ISIN of the fund
-    function isin() external view returns (string memory) {
-        return _isin;
     }
 
     /// @notice Returns the number of decimals used for token amounts

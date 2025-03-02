@@ -16,7 +16,6 @@ export const BondFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
-    isin
     paused
     creator {
       id
@@ -38,7 +37,6 @@ export const BondFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
-  isin: z.isin().nullish(),
   paused: z.boolean(),
   creator: z.object({
     id: z.address(),
@@ -64,7 +62,7 @@ export type Bond = ZodInfer<typeof BondFragmentSchema>;
 export const OffchainBondFragment = hasuraGraphql(`
   fragment OffchainBondFragment on asset {
     id
-    private
+    isin
   }
 `);
 
@@ -74,7 +72,7 @@ export const OffchainBondFragment = hasuraGraphql(`
  */
 export const OffchainBondFragmentSchema = z.object({
   id: z.address(),
-  private: z.boolean(),
+  isin: z.isin().nullish(),
 });
 
 /**

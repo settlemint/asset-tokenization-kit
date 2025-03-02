@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
@@ -12,29 +11,24 @@ interface FormSheetProps {
   children: React.ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  triggerLabel: string;
   title: string;
   description: string;
+  triggerLabel?: string;
 }
 
 export function FormSheet({
   children,
   open,
   onOpenChange,
-  triggerLabel,
   title,
   description,
+  triggerLabel,
 }: FormSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          className="dropdown-menu-item w-full justify-start"
-        >
-          {triggerLabel}
-        </Button>
-      </SheetTrigger>
+      {triggerLabel && (
+        <SheetTrigger className="w-full text-left">{triggerLabel}</SheetTrigger>
+      )}
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>

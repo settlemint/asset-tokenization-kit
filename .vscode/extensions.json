@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "biomejs.biome",
     "oven.bun-vscode",
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
@@ -11,7 +10,6 @@
     "shardulm94.trailing-spaces",
     "nomicfoundation.hardhat-solidity",
     "bruceyuhb.hsl-preview",
-    "esbenp.prettier-vscode",
-    "lokalise.i18n-ally"
+    "esbenp.prettier-vscode"
   ]
 }

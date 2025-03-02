@@ -14,13 +14,12 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useRouter } from '@/i18n/routing';
 import { authClient } from '@/lib/auth/client';
-import { usePendingTransactions } from '@/lib/queries/transactions/transactions-pending';
 import { cn } from '@/lib/utils';
 import { shortHex } from '@/lib/utils/hex';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { useUser } from '../blocks/user-context/user-context';
+import type { Address } from 'viem';
 import {
   BookTextIcon,
   type BookTextIconHandle,
@@ -30,7 +29,6 @@ import {
   SquareStackIcon,
   type SquareStackIconHandle,
 } from '../ui/animated-icons/square-stack';
-import { Badge } from '../ui/badge';
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -58,7 +56,9 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const user = useUser();
+  const session = authClient.useSession();
+  const user = session.data?.user;
+
   const router = useRouter();
   const t = useTranslations('layout.user-dropdown');
 
@@ -73,11 +73,6 @@ export function UserDropdown() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const { data: pendingCount } = usePendingTransactions({
-    address: user?.wallet,
-    refetchInterval: 30000,
-  });
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
@@ -110,10 +105,10 @@ export function UserDropdown() {
           <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
             {user ? (
               <AddressAvatar
-                address={user.wallet}
+                address={user.wallet as Address}
                 email={user.email}
                 className="h-8 w-8 rounded-lg"
-                indicator={(pendingCount ?? 0) > 0}
+                indicator={false}
               />
             ) : (
               <Skeleton className="h-8 w-8 rounded-lg" />
@@ -142,25 +137,19 @@ export function UserDropdown() {
       </DropdownMenuTrigger>
       {user && (
         <DropdownMenuContent
-          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl p-0 shadow-dropdown"
+          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown"
           side="bottom"
           align="end"
           sideOffset={4}
         >
           <DropdownMenuGroup>
             <DropdownMenuItem
-              className="dropdown-menu-item"
               onMouseEnter={() => stackIconRef.current?.startAnimation()}
               onMouseLeave={() => stackIconRef.current?.stopAnimation()}
             >
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
                 {t('pending-transactions')}
-                {(pendingCount ?? 0) > 0 && (
-                  <Badge className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
-                    {pendingCount}
-                  </Badge>
-                )}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -169,7 +158,6 @@ export function UserDropdown() {
             <ThemeMenuItem />
             <LanguageMenuItem />
             <DropdownMenuItem
-              className="dropdown-menu-item"
               onMouseEnter={() => bookIconRef.current?.startAnimation()}
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
             >
@@ -182,7 +170,6 @@ export function UserDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
-            className="dropdown-menu-item"
             onMouseEnter={() => logoutIconRef.current?.startAnimation()}
             onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >

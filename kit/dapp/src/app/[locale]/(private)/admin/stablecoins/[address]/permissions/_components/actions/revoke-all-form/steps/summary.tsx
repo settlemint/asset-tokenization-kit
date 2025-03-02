@@ -5,8 +5,9 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import { FormSummarySecurityConfirmation } from '@/components/blocks/form/summary/security-confirmation';
 import { type Role, getRoleDisplayName } from '@/lib/config/roles';
-import type { UpdateRoles } from '@/lib/mutations/stablecoin/update-roles';
+import type { UpdateRolesInput } from '@/lib/mutations/stablecoin/update-roles/update-roles-schema';
 import { Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import type { Address } from 'viem';
 
@@ -17,24 +18,24 @@ export function Summary({
   userAddress: Address;
   currentRoles: Role[];
 }) {
-  const { control } = useFormContext<UpdateRoles>();
+  const { control } = useFormContext<UpdateRolesInput>();
+  const t = useTranslations(
+    'admin.stablecoins.permissions.revoke-all-form.summary'
+  );
 
   return (
-    <FormStep
-      title="Review and confirm"
-      description="Verify the details before proceeding. This action will revoke all permissions for the user."
-    >
+    <FormStep title={t('title')} description={t('description')}>
       <FormSummaryDetailCard
-        title="Revoke All"
-        description="Revoking all permissions operation details"
+        title={t('revoke-title')}
+        description={t('operation-description')}
         icon={<Lock className="h-3 w-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label="User"
+          label={t('user-label')}
           value={<EvmAddress address={userAddress} />}
         />
         <FormSummaryDetailItem
-          label="Roles to revoke"
+          label={t('roles-to-revoke-label')}
           value={
             <div className="flex flex-wrap gap-1">
               {roles.map((role: Role) => (

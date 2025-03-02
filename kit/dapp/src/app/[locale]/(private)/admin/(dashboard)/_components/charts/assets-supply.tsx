@@ -1,6 +1,4 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 // const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
 //   Object.entries(assetConfig).map(([, asset]) => [
@@ -9,8 +7,8 @@ import { useTranslations } from 'next-intl';
 //   ])
 // ) satisfies ChartConfig;
 
-export function AssetsSupply() {
-  const t = useTranslations('admin.dashboard.charts');
+export async function AssetsSupply() {
+  const t = await getTranslations('admin.dashboard.charts');
 
   // const { data } = useSuspenseQuery({
   //   queryKey: queryKey,

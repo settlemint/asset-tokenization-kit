@@ -19,7 +19,6 @@ contract FundTest is Test {
     string constant NAME = "Test Fund";
     string constant SYMBOL = "TFUND";
     uint8 constant DECIMALS = 18;
-    string constant ISIN = "US0378331005";
     uint16 constant MANAGEMENT_FEE_BPS = 200; // 2%
     string constant FUND_CLASS = "Hedge Fund";
     string constant FUND_CATEGORY = "Long/Short Equity";
@@ -41,9 +40,8 @@ contract FundTest is Test {
         forwarder = new Forwarder();
 
         vm.startPrank(owner);
-        fund = new Fund(
-            NAME, SYMBOL, DECIMALS, owner, ISIN, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder)
-        );
+        fund =
+            new Fund(NAME, SYMBOL, DECIMALS, owner, MANAGEMENT_FEE_BPS, FUND_CLASS, FUND_CATEGORY, address(forwarder));
 
         // Initial supply for testing
         fund.mint(address(fund), INITIAL_SUPPLY);
@@ -54,7 +52,6 @@ contract FundTest is Test {
         assertEq(fund.name(), NAME);
         assertEq(fund.symbol(), SYMBOL);
         assertEq(fund.decimals(), DECIMALS);
-        assertEq(fund.isin(), ISIN);
         assertEq(fund.fundClass(), FUND_CLASS);
         assertEq(fund.fundCategory(), FUND_CATEGORY);
         assertTrue(fund.hasRole(fund.DEFAULT_ADMIN_ROLE(), owner));

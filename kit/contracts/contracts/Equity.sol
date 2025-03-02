@@ -64,10 +64,6 @@ contract Equity is
     /// @dev Immutable after construction
     string private _equityCategory;
 
-    /// @notice The ISIN (International Securities Identification Number) of the equity
-    /// @dev Must be exactly 12 characters if provided
-    string private _isin;
-
     /// @notice The number of decimals used for token amounts
     /// @dev Set at deployment and cannot be changed
     uint8 private immutable _decimals;
@@ -79,8 +75,6 @@ contract Equity is
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token (must be <= 18)
     /// @param initialOwner The address that will receive admin rights
-    /// @param isin_ The ISIN (International Securities Identification Number) of the equity (must be empty or 12
-    /// characters)
     /// @param equityClass_ The equity class (e.g., "Common", "Preferred")
     /// @param equityCategory_ The equity category (e.g., "Series A", "Seed")
     /// @param forwarder The address of the trusted forwarder for meta-transactions
@@ -89,7 +83,6 @@ contract Equity is
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
-        string memory isin_,
         string memory equityClass_,
         string memory equityCategory_,
         address forwarder
@@ -99,10 +92,8 @@ contract Equity is
         ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
-        if (bytes(isin_).length != 0 && bytes(isin_).length != 12) revert InvalidISIN();
 
         _decimals = decimals_;
-        _isin = isin_;
         _equityClass = equityClass_;
         _equityCategory = equityCategory_;
 
@@ -151,13 +142,6 @@ contract Equity is
     /// @return The equity category as a string (e.g., "Series A", "Seed")
     function equityCategory() public view returns (string memory) {
         return _equityCategory;
-    }
-
-    /// @notice Returns the ISIN (International Securities Identification Number) of the equity
-    /// @dev The ISIN is immutable after construction
-    /// @return The ISIN of the equity
-    function isin() public view returns (string memory) {
-        return _isin;
     }
 
     /// @notice Pauses all token transfers

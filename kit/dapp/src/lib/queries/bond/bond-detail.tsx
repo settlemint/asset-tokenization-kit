@@ -3,8 +3,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   BondFragment,
@@ -34,7 +35,7 @@ const OffchainBondDetail = hasuraGraphql(
   `
   query OffchainBondDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainBondFragment
+      ...OffchainBondFragment
     }
   }
 `,
@@ -56,78 +57,39 @@ export interface BondDetailProps {
  * @returns Combined bond data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getBondDetail({ address }: BondDetailProps) {
-  try {
-    const normalizedAddress = getAddress(address);
+export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
+  const normalizedAddress = getAddress(address);
 
-    const [data, dbBond] = await Promise.all([
-      theGraphClientStarterkits.request(BondDetail, { id: address }),
-      hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
-    ]);
+  const [data, dbBond] = await Promise.all([
+    theGraphClientStarterkits.request(BondDetail, { id: address }),
+    hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
+  ]);
 
-    const bond = safeParseWithLogging(BondFragmentSchema, data.bond, 'bond');
-    const offchainBond = dbBond.asset[0]
-      ? safeParseWithLogging(
-          OffchainBondFragmentSchema,
-          dbBond.asset[0],
-          'offchain bond'
-        )
-      : undefined;
+  const bond = safeParseWithLogging(BondFragmentSchema, data.bond, 'bond');
+  const offchainBond = dbBond.asset[0]
+    ? safeParseWithLogging(
+        OffchainBondFragmentSchema,
+        dbBond.asset[0],
+        'offchain bond'
+      )
+    : undefined;
 
-    const topHoldersSum = bond.holders.reduce(
-      (sum, holder) => sum + holder.valueExact,
-      0n
-    );
-    const concentration =
-      bond.totalSupplyExact === 0n
-        ? 0
-        : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
-
-    return {
-      ...bond,
-      ...{
-        private: false,
-        ...offchainBond,
-      },
-      concentration,
-    };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch bond with address ${address}`);
-  }
-}
-
-/**
- * Generates a consistent query key for bond detail queries
- *
- * @param params - Object containing the bond address
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ address }: BondDetailProps) =>
-  ['asset', 'detail', 'bond', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching bond details
- *
- * @param params - Object containing the bond address
- * @returns Query result with bond data and query key
- */
-export function useBondDetail({ address }: BondDetailProps) {
-  const queryKey = getQueryKey({ address });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getBondDetail({ address }),
-  });
+  const topHoldersSum = bond.holders.reduce(
+    (sum, holder) => sum + holder.valueExact,
+    0n
+  );
+  const concentration =
+    bond.totalSupplyExact === 0n
+      ? 0
+      : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
 
   return {
-    ...result,
-    queryKey,
-    // Inline bond config values
-    assetType: 'bond' as const,
-    urlSegment: 'bonds',
-    theGraphTypename: 'Bond' as const,
+    ...bond,
+    ...{
+      private: false,
+      ...offchainBond,
+    },
+    concentration,
+    totalSupply: formatNumber(bond.totalSupply),
   };
-}
+});

@@ -1,6 +1,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { useQuery } from '@tanstack/react-query';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
 import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
@@ -46,68 +47,22 @@ export interface UserSearchProps {
  * @remarks
  * Returns an empty array if no address is provided or if an error occurs
  */
-async function getUserSearch({ searchTerm }: UserSearchProps) {
-  if (!searchTerm) {
-    return [];
-  }
-
-  try {
-    const searchValue = `%${searchTerm}%`;
-
-    const result = await hasuraClient.request(UserSearch, {
-      address: searchValue,
-    });
-
-    // Parse and validate each user in the results using Zod schema
-    const validatedUsers = (result.user || []).map((user) =>
-      UserFragmentSchema.parse(user)
-    );
-
-    return validatedUsers;
-  } catch (error) {
-    console.error('Error searching for users:', error);
-    return [];
-  }
-}
-
-/**
- * Creates a memoized query key for user search queries
- *
- * @param params - Object containing the search string
- */
-const getQueryKey = ({ searchTerm }: UserSearchProps) =>
-  ['user', 'search', searchTerm ? searchTerm : 'none'] as const;
-
-/**
- * React Query hook for searching users
- *
- * @param params - Object containing the search string
- *
- * @example
- * ```tsx
- * const { data: users, isLoading } = useUserSearch({
- *   address: "0x123" // or any search term
- * });
- *
- * // Later in your component
- * {users.map(user => (
- *   <UserItem key={user.id} user={user} />
- * ))}
- * ```
- */
-export function useUserSearch({ searchTerm }: UserSearchProps) {
+export const getUserSearch = cache(async ({ searchTerm }: UserSearchProps) => {
   const sanitizedSearchTerm = sanitizeSearchTerm(searchTerm);
 
-  const queryKey = getQueryKey({ searchTerm: sanitizedSearchTerm });
+  if (!sanitizedSearchTerm) {
+    return [];
+  }
 
-  const result = useQuery({
-    queryKey,
-    queryFn: () => getUserSearch({ searchTerm: sanitizedSearchTerm }),
-    enabled: !!sanitizedSearchTerm,
+  const searchValue = `%${searchTerm}%`;
+  const result = await hasuraClient.request(UserSearch, {
+    address: searchValue,
   });
 
-  return {
-    ...result,
-    queryKey,
-  };
-}
+  // Parse and validate each user in the results using Zod schema
+  const validatedUsers = (result.user || []).map((user) =>
+    safeParseWithLogging(UserFragmentSchema, user, 'user search')
+  );
+
+  return validatedUsers;
+});

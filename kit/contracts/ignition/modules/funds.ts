@@ -16,7 +16,6 @@ const FundsModule = buildModule("FundsModule", (m) => {
       "Global Macro Fund",
       "GMF",
       6,
-      "US0378331005",
       "Hedge Fund",
       "Global Macro",
       managementFeeBps,
@@ -24,7 +23,7 @@ const FundsModule = buildModule("FundsModule", (m) => {
     {
       id: "createHedgeFund",
       from: deployer,
-    },
+    }
   );
 
   const readHedgeFundAddress = m.readEventArgument(
@@ -33,7 +32,7 @@ const FundsModule = buildModule("FundsModule", (m) => {
     "token",
     {
       id: "readHedgeFundAddress",
-    },
+    }
   );
   const gmf = m.contractAt("Fund", readHedgeFundAddress, { id: "gmf" });
 

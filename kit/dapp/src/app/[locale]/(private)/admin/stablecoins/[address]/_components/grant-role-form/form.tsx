@@ -2,8 +2,9 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { useUser } from '@/components/blocks/user-context/user-context';
-import { useGrantRole } from '@/lib/mutations/stablecoin/grant-role';
+import { grantRole } from '@/lib/mutations/stablecoin/grant-role/grant-role-action';
+import { GrantRoleSchema } from '@/lib/mutations/stablecoin/grant-role/grant-role-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
@@ -16,14 +17,8 @@ interface GrantRoleFormProps {
 }
 
 export function GrantRoleForm({ address }: GrantRoleFormProps) {
-  const grantRole = useGrantRole();
-  const user = useUser();
   const [open, setOpen] = useState(false);
   const t = useTranslations('admin.stablecoins.grant-role-form');
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <FormSheet
@@ -34,13 +29,13 @@ export function GrantRoleForm({ address }: GrantRoleFormProps) {
       description={t('description')}
     >
       <Form
-        mutation={grantRole}
+        action={grantRole}
+        resolver={zodResolver(GrantRoleSchema)}
         buttonLabels={{
           label: t('button-label'),
         }}
         defaultValues={{
           address,
-          from: user.wallet,
           roles: {
             DEFAULT_ADMIN_ROLE: false,
             SUPPLY_MANAGEMENT_ROLE: false,

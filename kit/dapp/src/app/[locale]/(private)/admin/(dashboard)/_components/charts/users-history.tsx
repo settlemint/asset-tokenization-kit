@@ -1,17 +1,14 @@
-'use client';
 import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { createTimeSeries } from '@/lib/charts';
-import { useUserCount } from '@/lib/queries/user/user-count';
+import { getUserCount } from '@/lib/queries/user/user-count';
 import { startOfDay, subDays } from 'date-fns';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export function UsersHistory() {
-  const t = useTranslations('admin.dashboard.charts');
+export async function UsersHistory() {
+  const t = await getTranslations('admin.dashboard.charts');
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
-  const {
-    data: { users },
-  } = useUserCount({
+  const { users } = await getUserCount({
     since: sevenDaysAgo,
   });
 

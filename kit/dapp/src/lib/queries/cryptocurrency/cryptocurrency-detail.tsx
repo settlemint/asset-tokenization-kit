@@ -3,8 +3,9 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { cache } from 'react';
 import { getAddress, type Address } from 'viem';
 import {
   CryptoCurrencyFragment,
@@ -34,7 +35,7 @@ const OffchainCryptoCurrencyDetail = hasuraGraphql(
   `
   query OffchainCryptoCurrencyDetail($id: String!) {
     asset(where: {id: {_eq: $id}}, limit: 1) {
-        ...OffchainCryptoCurrencyFragment
+      ...OffchainCryptoCurrencyFragment
     }
   }
 `,
@@ -56,10 +57,8 @@ export interface CryptoCurrencyDetailProps {
  * @returns Combined cryptocurrency data with additional calculated metrics
  * @throws Error if fetching or parsing fails
  */
-export async function getCryptoCurrencyDetail({
-  address,
-}: CryptoCurrencyDetailProps) {
-  try {
+export const getCryptoCurrencyDetail = cache(
+  async ({ address }: CryptoCurrencyDetailProps) => {
     const normalizedAddress = getAddress(address);
 
     const [data, dbCryptoCurrency] = await Promise.all([
@@ -98,46 +97,7 @@ export async function getCryptoCurrencyDetail({
         ...offchainCryptoCurrency,
       },
       concentration,
+      totalSupply: formatNumber(cryptocurrency.totalSupply),
     };
-  } catch (error) {
-    // Re-throw with more context
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch cryptocurrency with address ${address}`);
   }
-}
-
-/**
- * Generates a consistent query key for cryptocurrency detail queries
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Array representing the query key for React Query
- */
-export const getQueryKey = ({ address }: CryptoCurrencyDetailProps) =>
-  ['asset', 'detail', 'cryptocurrency', getAddress(address)] as const;
-
-/**
- * React Query hook for fetching cryptocurrency details
- *
- * @param params - Object containing the cryptocurrency address
- * @returns Query result with cryptocurrency data and query key
- */
-export function useCryptoCurrencyDetail({
-  address,
-}: CryptoCurrencyDetailProps) {
-  const queryKey = getQueryKey({ address });
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getCryptoCurrencyDetail({ address }),
-  });
-
-  return {
-    ...result,
-    queryKey,
-    // Inline cryptocurrency config values
-    assetType: 'cryptocurrency' as const,
-    urlSegment: 'cryptocurrencies',
-    theGraphTypename: 'CryptoCurrency' as const,
-  };
-}
+);

@@ -5,8 +5,7 @@ import {
   theGraphGraphqlStarterkits,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import BigDecimal from 'js-big-decimal';
+import { cache } from 'react';
 import { getAddress } from 'viem';
 import {
   OffchainStableCoinFragment,
@@ -49,14 +48,6 @@ const OffchainStableCoinList = hasuraGraphql(
 );
 
 /**
- * Options for fetching stablecoin list
- *
- */
-export interface StableCoinListOptions {
-  limit?: number; // Optional limit to restrict total items fetched
-}
-
-/**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
  *
  * @param options - Options for fetching stablecoin list
@@ -65,111 +56,54 @@ export interface StableCoinListOptions {
  * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
  * then merges the results to provide a complete view of each stablecoin.
  */
-export async function getStableCoinList({ limit }: StableCoinListOptions = {}) {
-  try {
-    const [theGraphStableCoins, dbAssets] = await Promise.all([
-      fetchAllTheGraphPages(async (first, skip) => {
-        const result = await theGraphClientStarterkits.request(StableCoinList, {
-          first,
-          skip,
-        });
+export const getStableCoinList = cache(async () => {
+  const [theGraphStableCoins, dbAssets] = await Promise.all([
+    fetchAllTheGraphPages(async (first, skip) => {
+      const result = await theGraphClientStarterkits.request(StableCoinList, {
+        first,
+        skip,
+      });
 
-        const stableCoins = result.stableCoins || [];
+      const stableCoins = result.stableCoins || [];
 
-        // If we have a limit, check if we should stop
-        if (limit && skip + stableCoins.length >= limit) {
-          return stableCoins.slice(0, limit - skip);
-        }
+      return stableCoins;
+    }),
 
-        return stableCoins;
-      }, limit),
+    fetchAllHasuraPages(async (pageLimit, offset) => {
+      const result = await hasuraClient.request(OffchainStableCoinList, {
+        limit: pageLimit,
+        offset,
+      });
+      return result.asset_aggregate.nodes || [];
+    }),
+  ]);
 
-      fetchAllHasuraPages(async (pageLimit, offset) => {
-        const result = await hasuraClient.request(OffchainStableCoinList, {
-          limit: pageLimit,
-          offset,
-        });
-        return result.asset_aggregate.nodes || [];
-      }, limit),
-    ]);
+  // Parse and validate the data using Zod schemas
+  const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
+    safeParseWithLogging(StableCoinFragmentSchema, stableCoin, 'stablecoin')
+  );
 
-    // Parse and validate the data using Zod schemas
-    const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
-      safeParseWithLogging(StableCoinFragmentSchema, stableCoin, 'stablecoin')
-    );
+  const validatedDbAssets = dbAssets.map((asset) =>
+    safeParseWithLogging(
+      OffchainStableCoinFragmentSchema,
+      asset,
+      'offchain stablecoin'
+    )
+  );
 
-    const validatedDbAssets = dbAssets.map((asset) =>
-      safeParseWithLogging(
-        OffchainStableCoinFragmentSchema,
-        asset,
-        'offchain stablecoin'
-      )
-    );
+  const assetsById = new Map(
+    validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
+  );
 
-    const assetsById = new Map(
-      validatedDbAssets.map((asset) => [getAddress(asset.id), asset])
-    );
+  return validatedStableCoins.map((stableCoin) => {
+    const dbAsset = assetsById.get(getAddress(stableCoin.id));
 
-    const stableCoins = validatedStableCoins.map((stableCoin) => {
-      const dbAsset = assetsById.get(getAddress(stableCoin.id));
-
-      // Calculate collateral ratio similar to stablecoin-detail.tsx
-      const collateralCommittedRatio =
-        stableCoin.collateral.compareTo(new BigDecimal(0)) === 0
-          ? new BigDecimal(100)
-          : stableCoin.totalSupply
-              .divide(stableCoin.collateral)
-              .multiply(new BigDecimal(100));
-
-      return {
-        ...stableCoin,
-        ...{
-          private: false,
-          ...dbAsset,
-        },
-        collateralCommittedRatio,
-      };
-    });
-
-    return stableCoins;
-  } catch (error) {
-    console.error('Error fetching stablecoin list:', error);
-    return [];
-  }
-}
-
-/**
- * Generates a consistent query key for stablecoin list queries
- *
- * @param [options] - Options for the stablecoin list query
- */
-export const getQueryKey = (options?: StableCoinListOptions) =>
-  ['asset', 'stablecoin', options?.limit ?? 'all'] as const;
-
-/**
- * React Query hook for fetching stablecoin list
- *
- * @param [options] - Options for fetching stablecoin list
- *
- * @example
- * ```tsx
- * const { data: stableCoins, isLoading } = useStableCoinList({ limit: 10 });
- * ```
- */
-export function useStableCoinList(options?: StableCoinListOptions) {
-  const queryKey = getQueryKey(options);
-
-  const result = useSuspenseQuery({
-    queryKey,
-    queryFn: () => getStableCoinList(options),
+    return {
+      ...stableCoin,
+      ...{
+        private: false,
+        ...dbAsset,
+      },
+    };
   });
-
-  return {
-    ...result,
-    queryKey,
-    // Inline stablecoin config values
-    assetType: 'stablecoin' as const,
-    urlSegment: 'stablecoins',
-    theGraphTypename: 'StableCoin' as const,
-  };
-}
+});

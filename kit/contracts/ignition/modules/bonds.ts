@@ -17,11 +17,11 @@ const BondsModule = buildModule("BondsModule", (m) => {
   const createStableCoin = m.call(
     stableCoinFactory,
     "create",
-    ["USD Coin", "USDC", 6, "", collateralLivenessSeconds],
+    ["USD Coin", "USDC", 6, collateralLivenessSeconds],
     {
       id: "createStableCoin",
       from: deployer,
-    },
+    }
   );
 
   // Get the StableCoin address from the creation event
@@ -31,7 +31,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
     "token",
     {
       id: "readStableCoinAddress",
-    },
+    }
   );
   const stableCoin = m.contractAt("StableCoin", readStableCoinAddress, {
     id: "stableCoin",
@@ -49,7 +49,6 @@ const BondsModule = buildModule("BondsModule", (m) => {
       "US Treasury Bond",
       "USTB",
       2,
-      "US0378331005",
       maxSupply * 10 ** 2, // Cap is in bond units (2 decimals)
       oneYearFromNow,
       faceValue,
@@ -58,7 +57,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
     {
       id: "createBondUSTB",
       from: deployer,
-    },
+    }
   );
 
   const readBondUSTBAddress = m.readEventArgument(
@@ -67,7 +66,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
     "token",
     {
       id: "readBondUSTBAddress",
-    },
+    }
   );
   const ustb = m.contractAt("Bond", readBondUSTBAddress, { id: "bondUSTB" });
 
@@ -84,7 +83,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
     {
       id: "createYieldSchedule",
       from: deployer,
-    },
+    }
   );
 
   const readYieldScheduleAddress = m.readEventArgument(
@@ -93,7 +92,7 @@ const BondsModule = buildModule("BondsModule", (m) => {
     "schedule",
     {
       id: "readYieldScheduleAddress",
-    },
+    }
   );
   const yieldSchedule = m.contractAt("FixedYield", readYieldScheduleAddress, {
     id: "yieldSchedule",

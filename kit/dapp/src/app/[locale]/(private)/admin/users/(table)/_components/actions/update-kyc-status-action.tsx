@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useRouter } from '@/i18n/routing';
+import type { getUserList } from '@/lib/queries/user/user-list';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { type MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
-import type { ListUser } from '../data';
 
 const UpdateKycStatusMutation = hasuraGraphql(`
   mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
@@ -29,7 +29,7 @@ export function UpdateKycStatusAction({
   user,
   onComplete,
 }: {
-  user: ListUser;
+  user: Awaited<ReturnType<typeof getUserList>>[number];
   onComplete?: () => void;
 }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -67,7 +67,6 @@ export function UpdateKycStatusAction({
           setShowDialog(true);
         }}
         disabled={isLoading}
-        className="dropdown-menu-item"
       >
         {user.kyc_verified ? 'Remove KYC Verification' : 'Verify KYC'}
       </DropdownMenuItem>
