@@ -1,14 +1,7 @@
+import { getAssetColor } from '@/components/blocks/asset-type-icon/asset-color';
 import { PieChartComponent } from '@/components/blocks/charts/pie-chart';
 import { getAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
 import { getTranslations } from 'next-intl/server';
-
-const assetColors = {
-  bond: '#8b5cf6',
-  cryptocurrency: '#2563eb',
-  equity: '#4ade80',
-  fund: '#10b981',
-  stablecoin: '#0ea5e9',
-} as const;
 
 export async function AssetsSupply() {
   const t = await getTranslations('admin.dashboard.charts');
@@ -23,23 +16,23 @@ export async function AssetsSupply() {
   const config: Record<AssetType, { label: string; color: string }> = {
     bond: {
       label: t('asset-types.bonds'),
-      color: assetColors.bond,
+      color: 'hsl(var(--chart-1))',
     },
     cryptocurrency: {
       label: t('asset-types.cryptocurrencies'),
-      color: assetColors.cryptocurrency,
+      color: `hsl(var(--${getAssetColor('cryptocurrency')}))`,
     },
     equity: {
       label: t('asset-types.equities'),
-      color: assetColors.equity,
+      color: `hsl(var(--${getAssetColor('equity')}))`,
     },
     fund: {
       label: t('asset-types.funds'),
-      color: assetColors.fund,
+      color: `hsl(var(--${getAssetColor('fund')}))`,
     },
     stablecoin: {
       label: t('asset-types.stablecoins'),
-      color: assetColors.stablecoin,
+      color: `hsl(var(--${getAssetColor('stablecoin')}))`,
     },
   };
   return (
