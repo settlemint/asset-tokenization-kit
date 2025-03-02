@@ -47,7 +47,7 @@ export function DesignerButton() {
               <SidebarMenuButton
                 onMouseEnter={() => frameIconRef.current?.startAnimation()}
                 onMouseLeave={() => frameIconRef.current?.stopAnimation()}
-                className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-dropdown"
+                className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-dropdown shadow-inset"
               >
                 <FrameIcon ref={frameIconRef} className="size-4" />
                 <span>{t("asset-designer")}</span>

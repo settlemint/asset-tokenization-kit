@@ -26,7 +26,10 @@ export async function ManageDropdown({ address }: ManageDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="default" className="bg-accent text-accent-foreground">
+        <Button
+          variant="default"
+          className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-inset"
+        >
           {t("manage")}
           <ChevronDown className="size-4" />
         </Button>
