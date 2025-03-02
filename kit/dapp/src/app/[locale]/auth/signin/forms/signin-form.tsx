@@ -3,6 +3,7 @@
 import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FingerprintIcon } from "@/components/ui/animated-icons/fingerprint";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Link } from "@/i18n/routing";
@@ -13,6 +14,7 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -121,6 +123,43 @@ export function SignInForm({
             ) : (
               t("submit")
             )}
+          </Button>
+          <div className="text-center text-sm text-muted-foreground">OR</div>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={(e) => {
+              e.preventDefault();
+              authClient.signIn
+                .passkey()
+                .then((result) => {
+                  if (result?.error) {
+                    toast.error(result.error.message);
+                  }
+                  authClient
+                    .getSession()
+                    .then((session) => {
+                      const userRole = session.data?.user.role;
+                      const isAdminOrIssuer =
+                        userRole === "issuer" || userRole === "admin";
+                      const adminRedirect =
+                        decodedRedirectUrl.trim() || `/${locale}/admin`;
+                      const targetUrl = isAdminOrIssuer
+                        ? adminRedirect
+                        : "/portfolio";
+                      window.location.replace(targetUrl);
+                    })
+                    .catch((error) => {
+                      toast.error(error);
+                    });
+                })
+                .catch((error) => {
+                  toast.error(error);
+                });
+            }}
+          >
+            <FingerprintIcon size={16} className="mr-2" />
+            Sign in with passkey
           </Button>
         </div>
         <div className="text-center text-sm">
