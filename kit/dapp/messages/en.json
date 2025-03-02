@@ -1487,6 +1487,24 @@
         "holders": "Holders",
         "permissions": "Permissions"
       },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
+      "related-actions": {
+        "title": "Related actions",
+        "update-collateral": {
+          "title": "Update collateral",
+          "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times."
+        },
+        "increase-supply": {
+          "title": "Increase the supply",
+          "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available."
+        },
+        "decrease-supply": {
+          "title": "Decrease the supply",
+          "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available."
+        }
+      },
       "update-collateral-form": {
         "amount": {
           "amount-label": "Amount",

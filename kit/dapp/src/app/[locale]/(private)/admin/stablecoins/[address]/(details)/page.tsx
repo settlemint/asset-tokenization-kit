@@ -42,29 +42,33 @@ export async function generateMetadata({
 }
 
 export default async function StableCoinDetailPage({ params }: PageProps) {
-  const { address } = await params;
+  const { address, locale } = await params;
   const stableCoin = await getStableCoinDetail({ address });
+  const t = await getTranslations({
+    locale,
+    namespace: "admin.stablecoins",
+  });
 
   return (
     <>
       <Details address={address} />
       <Collateral address={address} />
-      <ChartGrid title="Asset statistics">
+      <ChartGrid title={t("charts.asset-statistics-title")}>
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
       </ChartGrid>
-      <RelatedGrid title="Related actions">
+      <RelatedGrid title={t("related-actions.title")}>
         <RelatedGridItem
-          title="Update collateral"
-          description="A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times."
+          title={t("related-actions.update-collateral.title")}
+          description={t("related-actions.update-collateral.description")}
         >
           <UpdateCollateralForm address={address} asButton />
         </RelatedGridItem>
         <RelatedGridItem
-          title="Increase the supply"
-          description="A supply manager can mint new stablecoins, provided sufficient collateral is available."
+          title={t("related-actions.increase-supply.title")}
+          description={t("related-actions.increase-supply.description")}
         >
           <MintForm
             address={address}
@@ -73,8 +77,8 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
           />
         </RelatedGridItem>
         <RelatedGridItem
-          title="Decrease the supply"
-          description="A supply manager can burn existing stablecoins, provided sufficient collateral is available."
+          title={t("related-actions.decrease-supply.title")}
+          description={t("related-actions.decrease-supply.description")}
         >
           <BurnForm
             address={address}
