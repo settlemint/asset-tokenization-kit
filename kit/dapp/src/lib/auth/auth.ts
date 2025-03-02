@@ -100,5 +100,12 @@ export const auth = betterAuth({
       maxAge: 10 * 60,
     },
   },
-  plugins: [admin(), passkey(), emailHarmony(), nextCookies()],
+  plugins: [
+    admin(),
+    passkey({
+      rpName: metadata.title.default,
+    }),
+    emailHarmony(),
+    nextCookies(),
+  ],
 });
