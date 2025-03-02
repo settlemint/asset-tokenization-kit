@@ -4,6 +4,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -34,6 +35,7 @@ export function FormOtp<T extends FieldValues>({
       {...props}
       render={({ field }) => (
         <FormItem>
+          <FormLabel>{props.label}</FormLabel>
           <FormControl>
             <InputOTP
               maxLength={6}
