@@ -17,7 +17,7 @@ import { topItems } from "./items/top";
 export function AdminSidebar() {
   return (
     <NavSidebar>
-      <SidebarHeader>
+      <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
       <SidebarContent>

@@ -19,9 +19,11 @@ export function NavHeader() {
       <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
         <Logo variant="icon" />
       </div>
-      <div className="mb-2 flex flex-col gap-0.5 leading-none">
+      <div className="flex flex-col leading-none max-w-[180px]">
         <span className="font-bold text-lg">{t("app-name")}</span>
-        <span className="-mt-1 text-md truncate">{t("app-description")}</span>
+        <span className="text-md truncate text-ellipsis overflow-hidden leading-snug -mt-1">
+          {t("app-description")}
+        </span>
       </div>
     </div>
   );
