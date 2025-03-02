@@ -37,17 +37,17 @@ export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
   ): string {
     switch (type) {
       case "bond":
-        return "bg-sm-blue";
+        return "bg-chart-1";
       case "cryptocurrency":
-        return "bg-sm-teal";
+        return "bg-chart-2";
       case "equity":
-        return "bg-sm-orange";
+        return "bg-chart-3";
       case "fund":
-        return "bg-sm-green";
+        return "bg-chart-4";
       case "stablecoin":
-        return "bg-sm-purple";
+        return "bg-chart-5";
       default:
-        return "bg-sm-cyan";
+        return "bg-chart-5";
     }
   }
 
