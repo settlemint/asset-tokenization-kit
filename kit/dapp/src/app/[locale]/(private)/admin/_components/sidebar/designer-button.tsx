@@ -30,7 +30,7 @@ export function DesignerButton() {
   const frameIconRef = useRef<FrameIconHandle>(null);
 
   return (
-    <SidebarGroup className="-mb-4">
+    <SidebarGroup className="-mb-4 mt-8">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           {state === 'expanded' ? (
