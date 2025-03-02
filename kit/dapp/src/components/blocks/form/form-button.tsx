@@ -2,6 +2,7 @@
 "use no memo"; // fixes rerendering with react compiler
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
@@ -95,7 +96,10 @@ export function FormButton({
         variant="default"
         onClick={isLastStep ? undefined : onNextStep}
         aria-label={isLastStep ? finalLabels.label : t("next")}
-        className={currentStep === 0 ? "ml-auto" : ""}
+        className={cn(
+          currentStep === 0 ? "ml-auto" : "",
+          "bg-accent text-accent-foreground shadow-inset"
+        )}
         disabled={disabled}
       >
         {getButtonContent()}

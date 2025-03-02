@@ -127,13 +127,11 @@ export function Form<
     }
   };
 
-  console.debug(form.formState.errors);
-
   return (
     <div className="space-y-6">
-      <div className="container mt-8">
-        <Card className="w-full pt-10">
-          <CardContent>
+      <div className="container">
+        <Card className="mx-4">
+          <CardContent className="px-4">
             <UIForm {...form}>
               <form onSubmit={handleSubmitWithAction}>
                 {totalSteps > 1 && (

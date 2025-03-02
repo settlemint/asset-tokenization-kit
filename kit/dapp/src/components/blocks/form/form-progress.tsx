@@ -38,15 +38,15 @@ const CompletedStep = ({
       <div
         className={cn(
           stepCircleStyles,
-          "border-[hsl(var(--foreground))] bg-[hsl(var(--foreground))]"
+          "border-[var(--foreground)] bg-[var(--foreground)]"
         )}
         aria-label={t("completed-step")}
       >
-        <Check className="size-4 text-[hsl(var(--background))]" />
+        <Check className="size-4 text-[var(--background)]" />
       </div>
       {!isLastStep && (
         <div
-          className={cn(stepLineStyles, "bg-[hsl(var(--foreground))]")}
+          className={cn(stepLineStyles, "bg-[var(--foreground)]")}
           role="presentation"
         />
       )}
@@ -68,16 +68,16 @@ const CurrentStep = ({
       <div
         className={cn(
           stepCircleStyles,
-          "border-[hsl(var(--foreground))] bg-transparent"
+          "border-[var(--foreground)] bg-transparent"
         )}
         aria-label={t("current-step")}
         aria-current="step"
       >
-        <Circle className="size-3 rounded-full bg-[hsl(var(--foreground))] text-[hsl(var(--foreground))]" />
+        <Circle className="size-3 rounded-full bg-[var(--foreground)] text-[var(--foreground)]" />
       </div>
       {index + 1 < totalSteps && (
         <div
-          className={cn(stepLineStyles, "bg-[hsl(var(--input))]")}
+          className={cn(stepLineStyles, "bg-[var(--input)]")}
           role="presentation"
         />
       )}
@@ -97,17 +97,14 @@ const NextStep = ({
   return (
     <>
       <div
-        className={cn(
-          stepCircleStyles,
-          "border-[hsl(var(--input))] bg-transparent"
-        )}
+        className={cn(stepCircleStyles, "border-[var(--input)] bg-transparent")}
         aria-label={t("upcoming-step")}
       >
-        <div className="size-3 rounded-full border-2 border-[hsl(var(--input))]" />
+        <div className="size-3 rounded-full border-2 border-[var(--input)]" />
       </div>
       {index + 1 < totalSteps && (
         <div
-          className={cn(stepLineStyles, "bg-[hsl(var(--input))]")}
+          className={cn(stepLineStyles, "bg-[var(--input)]")}
           role="presentation"
         />
       )}
