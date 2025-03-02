@@ -3,9 +3,12 @@
 import { waitForIndexing } from "@/lib/queries/transactions/wait-for-indexing";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
-import type { FragmentOf } from "@settlemint/sdk-portal";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ReceiptFragment, ReceiptFragmentSchema } from "./transaction-fragment";
+import {
+  ReceiptFragment,
+  ReceiptFragmentSchema,
+  type Receipt,
+} from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -52,7 +55,7 @@ async function waitForSingleTransaction(
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let receipt: FragmentOf<typeof ReceiptFragment> | null = null;
+  let receipt: Receipt | null = null;
   const startTime = Date.now();
 
   while (!receipt) {
@@ -65,7 +68,9 @@ async function waitForSingleTransaction(
     const transaction = await portalClient.request(GetTransaction, {
       transactionHash,
     });
-    receipt = transaction.getTransaction?.receipt ?? null;
+    receipt = ReceiptFragmentSchema.parse(
+      transaction.getTransaction?.receipt ?? null
+    );
 
     if (receipt?.status === "Reverted") {
       throw new Error(

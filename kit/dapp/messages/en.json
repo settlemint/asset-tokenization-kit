@@ -1524,6 +1524,10 @@
         "title": "Update collateral",
         "trigger-label": "Update collateral"
       }
+    },
+    "activity": {
+      "page-title": "Activity",
+      "page-description": "Track activity across all assets."
     }
   },
   "auth": {
