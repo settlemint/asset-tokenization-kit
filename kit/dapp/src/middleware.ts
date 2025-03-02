@@ -1,5 +1,5 @@
 import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
-import { getSessionCookie } from "better-auth";
+import { getSessionCookie } from "better-auth/cookies";
 import { default as createIntlMiddleware } from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { match } from "path-to-regexp";
