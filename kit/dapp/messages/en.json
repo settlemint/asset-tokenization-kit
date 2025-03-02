@@ -469,20 +469,6 @@
       }
     },
     "dashboard": {
-      "widgets": {
-        "assets": {
-          "label": "Assets supply",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
-        },
-        "users": {
-          "label": "Users",
-          "subtext": "{count} in last {days} days"
-        },
-        "transactions": {
-          "label": "Transactions",
-          "subtext": "{count} in last {days} days"
-        }
-      },
       "charts": {
         "asset-activity": {
           "asset-types": {
@@ -499,7 +485,8 @@
           "transfer": "Transfer"
         },
         "assets-supply": {
-          "to-be-moved": "To Be Moved To The Graph"
+          "label": "Assets supply",
+          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "transaction-history": {
           "description": "Overview of transaction volume and trends over the past {interval}.",
