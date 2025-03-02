@@ -636,7 +636,7 @@
     "dashboard": {
       "widgets": {
         "assets": {
-          "label": "Asset-Angebot",
+          "label": "Vermögenswerte Angebot",
           "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
         },
         "users": {
@@ -664,9 +664,8 @@
           }
         },
         "assets-supply": {
-          "label": "Assets supply",
-          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Vermögensarten.",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
+          "label": "Verteilung",
+          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Vermögensarten."
         },
         "transaction-history": {
           "title": "Transaktionen",

@@ -486,7 +486,7 @@
         },
         "assets-supply": {
           "description": "Visualize the distribution of total supply across different asset categories.",
-          "label": "Assets supply",
+          "label": "Distribution",
           "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "transaction-history": {
