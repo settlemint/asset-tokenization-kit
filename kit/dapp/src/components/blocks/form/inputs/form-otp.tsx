@@ -4,6 +4,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import {
@@ -27,13 +28,27 @@ type FormOtp<T extends FieldValues> = Omit<
 
 export function FormOtp<T extends FieldValues>({
   className,
+  label,
   ...props
 }: FormOtp<T>) {
   return (
     <FormField
       {...props}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
+          {label && (
+            <FormLabel
+              className={cn(
+                fieldState.error && 'text-destructive',
+                props.disabled && 'cursor-not-allowed opacity-70'
+              )}
+              htmlFor={field.name}
+              id={`${field.name}-label`}
+            >
+              <span>{label}</span>
+              {props.required && <span className="ml-1 text-red-500">*</span>}
+            </FormLabel>
+          )}
           <FormControl>
             <InputOTP
               maxLength={6}
