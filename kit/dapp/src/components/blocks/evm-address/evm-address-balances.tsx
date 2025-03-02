@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { useEffect, useState } from 'react';
-import type { Address } from 'viem';
-import { getAddress } from 'viem';
+import { Skeleton } from "@/components/ui/skeleton";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { useEffect, useState } from "react";
+import type { Address } from "viem";
+import { getAddress } from "viem";
 
 interface EvmAddressBalancesProps {
   address: Address;
@@ -37,8 +37,8 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
     return (
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between py-1">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-5 w-12" />
+          <Skeleton className="size-56" />
+          <Skeleton className="size-52" />
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
-import { Sidebar } from '@/components/ui/sidebar';
-import type { PropsWithChildren } from 'react';
+import { Sidebar } from "@/components/ui/sidebar";
+import type { PropsWithChildren } from "react";
 
 export default function NavSidebar({ children }: PropsWithChildren) {
   return (

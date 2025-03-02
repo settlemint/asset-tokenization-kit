@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getRoleIdentifier, type Role } from '@/lib/config/roles';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { RevokeRoleSchema } from './revoke-role-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getRoleIdentifier, type Role } from "@/lib/config/roles";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { RevokeRoleSchema } from "./revoke-role-schema";
 
 /**
  * GraphQL mutation for revoking a role from a user for a equity

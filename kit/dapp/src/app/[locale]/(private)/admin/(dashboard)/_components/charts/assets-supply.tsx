@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations } from "next-intl/server";
 
 // const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
 //   Object.entries(assetConfig).map(([, asset]) => [
@@ -8,7 +8,7 @@ import { getTranslations } from 'next-intl/server';
 // ) satisfies ChartConfig;
 
 export async function AssetsSupply() {
-  const t = await getTranslations('admin.dashboard.charts');
+  const t = await getTranslations("admin.dashboard.charts");
 
   // const { data } = useSuspenseQuery({
   //   queryKey: queryKey,
@@ -34,5 +34,5 @@ export async function AssetsSupply() {
   //   />
   // );
 
-  return <div>{t('assets-supply.to-be-moved')}</div>;
+  return <div>{t("assets-supply.to-be-moved")}</div>;
 }

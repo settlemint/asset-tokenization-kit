@@ -1,20 +1,19 @@
-'use client';
+"use client";
 
-import { BanUserAction } from '@/app/[locale]/(private)/admin/users/(table)/_components/actions/ban-user-action';
-import { ChangeRoleAction } from '@/app/[locale]/(private)/admin/users/(table)/_components/actions/change-role-action';
-import { UpdateKycStatusAction } from '@/app/[locale]/(private)/admin/users/(table)/_components/actions/update-kyc-status-action';
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
-import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
-import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import { Badge } from '@/components/ui/badge';
-import { CopyToClipboard } from '@/components/ui/copy';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { getUserList } from '@/lib/queries/user/user-list';
-import { formatDate } from '@/lib/utils/date';
-import { createColumnHelper } from '@tanstack/react-table';
+import { BanUserAction } from "@/app/[locale]/(private)/admin/users/(table)/_components/actions/ban-user-action";
+import { ChangeRoleAction } from "@/app/[locale]/(private)/admin/users/(table)/_components/actions/change-role-action";
+import { UpdateKycStatusAction } from "@/app/[locale]/(private)/admin/users/(table)/_components/actions/update-kyc-status-action";
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
+import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
+import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { getUserList } from "@/lib/queries/user/user-list";
+import { formatDate } from "@/lib/utils/date";
+import { createColumnHelper } from "@tanstack/react-table";
 import {
   BadgeCheck,
   BadgePlus,
@@ -23,8 +22,8 @@ import {
   Check,
   ShieldCheck,
   User2,
-} from 'lucide-react';
-import { Suspense, type ComponentType } from 'react';
+} from "lucide-react";
+import { Suspense, type ComponentType } from "react";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getUserList>>[number]>();
@@ -41,13 +40,13 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 
 export function useUserColumns() {
   return [
-    columnHelper.accessor('name', {
+    columnHelper.accessor("name", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
       ),
       cell: ({ renderValue, row }) => (
         <DataTableColumnCell>
-          <Suspense fallback={<Skeleton className="h-8 w-8 rounded-lg" />}>
+          <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             <AddressAvatar
               email={row.original.email}
               address={row.original.wallet}
@@ -64,7 +63,7 @@ export function useUserColumns() {
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('wallet', {
+    columnHelper.accessor("wallet", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>
       ),
@@ -72,21 +71,20 @@ export function useUserColumns() {
         <DataTableColumnCell>
           {getValue() && (
             <div className="flex items-center">
-              <EvmAddress address={getValue()} prettyNames={false}>
+              <EvmAddress
+                address={getValue()}
+                prettyNames={false}
+                copyToClipboard={true}
+              >
                 <EvmAddressBalances address={getValue()} />
               </EvmAddress>
-              <CopyToClipboard
-                value={getValue()}
-                displayText={''}
-                className="ml-2"
-              />
             </div>
           )}
         </DataTableColumnCell>
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('email', {
+    columnHelper.accessor("email", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>
       ),
@@ -95,7 +93,7 @@ export function useUserColumns() {
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('role', {
+    columnHelper.accessor("role", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>
       ),
@@ -104,31 +102,31 @@ export function useUserColumns() {
         const Icon = role ? icons[role] : null;
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{role}</span>
           </DataTableColumnCell>
         );
       },
       enableColumnFilter: true,
     }),
-    columnHelper.accessor('banned', {
+    columnHelper.accessor("banned", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
       ),
       cell: ({ getValue }) => {
         const banned = getValue();
-        const status = banned ? 'banned' : 'active';
+        const status = banned ? "banned" : "active";
         const Icon = icons[status];
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-            <span>{banned ? 'Banned' : 'Active'}</span>
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
+            <span>{banned ? "Banned" : "Active"}</span>
           </DataTableColumnCell>
         );
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('kyc_verified', {
+    columnHelper.accessor("kyc_verified", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>
           KYC Status
@@ -136,18 +134,18 @@ export function useUserColumns() {
       ),
       cell: ({ getValue }) => {
         const verified = getValue();
-        const status = verified ? 'verified' : 'notVerified';
+        const status = verified ? "verified" : "notVerified";
         const Icon = icons[status];
         return (
           <DataTableColumnCell>
-            {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-            <span>{verified ? 'Verified' : 'Not Verified'}</span>
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
+            <span>{verified ? "Verified" : "Not Verified"}</span>
           </DataTableColumnCell>
         );
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('lastActivity', {
+    columnHelper.accessor("lastActivity", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>
           Last activity
@@ -158,16 +156,16 @@ export function useUserColumns() {
         return (
           <DataTableColumnCell>
             {lastActivity
-              ? formatDate(lastActivity, { type: 'distance' })
-              : '-'}
+              ? formatDate(lastActivity, { type: "distance" })
+              : "-"}
           </DataTableColumnCell>
         );
       },
       enableColumnFilter: false,
     }),
     columnHelper.display({
-      id: 'actions',
-      header: () => '',
+      id: "actions",
+      header: () => "",
       cell: ({ row }) => (
         <DataTableRowActions detailUrl={`/admin/users/${row.original.id}`}>
           {({ close }) => (

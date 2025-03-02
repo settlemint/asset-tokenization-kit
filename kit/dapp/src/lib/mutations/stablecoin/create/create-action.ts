@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { STABLE_COIN_FACTORY_ADDRESS } from '@/lib/contracts';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { CreateStablecoinSchema } from './create-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { CreateStablecoinSchema } from "./create-schema";
 
 /**
  * GraphQL mutation for creating a new stablecoin
@@ -94,7 +94,7 @@ export const createStablecoin = action
         predictedAddress.StableCoinFactory?.predictAddress?.predicted;
 
       if (!newAddress) {
-        throw new Error('Failed to predict the address');
+        throw new Error("Failed to predict the address");
       }
 
       await hasuraClient.request(CreateOffchainStablecoin, {

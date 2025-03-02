@@ -1,14 +1,14 @@
-import { fetchAllTheGraphPages } from '@/lib/pagination';
+import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
 import {
   AssetActivityFragment,
   AssetActivityFragmentSchema,
-} from './asset-activity-fragment';
+} from "./asset-activity-fragment";
 
 /**
  * GraphQL query to fetch asset activity data
@@ -58,7 +58,7 @@ export const getAssetActivity = cache(
 
     // Validate data using Zod schema
     const validatedData = rawData.map((data) =>
-      safeParseWithLogging(AssetActivityFragmentSchema, data, 'asset activity')
+      safeParseWithLogging(AssetActivityFragmentSchema, data, "asset activity")
     );
 
     return validatedData;

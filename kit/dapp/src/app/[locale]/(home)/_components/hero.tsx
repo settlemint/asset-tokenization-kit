@@ -1,22 +1,22 @@
-'use client';
-import { LanguageToggle } from '@/components/blocks/language/language-toggle';
-import { Logo } from '@/components/blocks/logo/logo';
-import { ThemeToggle } from '@/components/blocks/theme/theme-toggle';
-import { Button } from '@/components/ui/button';
+"use client";
+import { LanguageToggle } from "@/components/blocks/language/language-toggle";
+import { Logo } from "@/components/blocks/logo/logo";
+import { ThemeToggle } from "@/components/blocks/theme/theme-toggle";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
-import { Link } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
-import Image, { type StaticImageData } from 'next/image';
-import * as React from 'react';
-import HeroDark from './assets/hero-dark.png';
-import HeroLight from './assets/hero-light.png';
+} from "@/components/ui/navigation-menu";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import Image, { type StaticImageData } from "next/image";
+import * as React from "react";
+import HeroDark from "./assets/hero-dark.png";
+import HeroLight from "./assets/hero-light.png";
 
 interface HeroSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
@@ -94,8 +94,8 @@ const ThemeImage = React.memo(function ThemeImage({
       <Image
         src={light}
         className={cn(
-          'max-w-full shadow-lg transition-opacity duration-300',
-          resolvedTheme === 'dark' ? 'opacity-0' : 'opacity-100'
+          "max-w-full shadow-lg transition-opacity duration-300",
+          resolvedTheme === "dark" ? "opacity-0" : "opacity-100"
         )}
         sizes="(max-width: 1050px) 100vw, 1050px"
         width={1050}
@@ -106,8 +106,8 @@ const ThemeImage = React.memo(function ThemeImage({
       <Image
         src={dark}
         className={cn(
-          'absolute top-0 left-0 max-w-full shadow-lg transition-opacity duration-300',
-          resolvedTheme === 'dark' ? 'opacity-100' : 'opacity-0'
+          "absolute top-0 left-0 max-w-full shadow-lg transition-opacity duration-300",
+          resolvedTheme === "dark" ? "opacity-100" : "opacity-0"
         )}
         sizes="(max-width: 1050px) 100vw, 1050px"
         width={1050}
@@ -125,42 +125,42 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
       className,
       title,
       subtitle = {
-        regular: 'Unlock the power of ',
-        gradient: 'Asset Tokenization.',
+        regular: "Unlock the power of ",
+        gradient: "Asset Tokenization.",
       },
-      description = 'This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.',
-      ctaText = 'bunx @settlemint/sdk-cli@latest create',
-      ctaHref = 'https://github.com/settlemint/starterkit-asset-tokenization',
+      description = "This kit is pre-configured to leverage your SettleMint application and provide an easy way to get started with your own asset tokenization solution.",
+      ctaText = "bunx @settlemint/sdk-cli@latest create",
+      ctaHref = "https://github.com/settlemint/starterkit-asset-tokenization",
       bottomImage = {
         light: HeroLight,
         dark: HeroDark,
       },
       buttons = {
         main: {
-          text: 'My Portfolio',
-          href: '/portfolio',
+          text: "My Portfolio",
+          href: "/portfolio",
         },
         secondary: {
-          text: 'Issuer Portal',
-          href: '/admin',
+          text: "Issuer Portal",
+          href: "/admin",
         },
         tertiary: {
-          text: 'Documentation',
-          href: 'https://console.settlemint.com/documentation',
+          text: "Documentation",
+          href: "https://console.settlemint.com/documentation",
         },
       },
       footerLinks = [
         {
-          href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/',
-          label: 'Terms of Service',
+          href: "https://console.settlemint.com/documentation/docs/terms-and-policies/terms-of-service/",
+          label: "Terms of Service",
         },
         {
-          href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/privacy-policy/',
-          label: 'Privacy Policy',
+          href: "https://console.settlemint.com/documentation/docs/terms-and-policies/privacy-policy/",
+          label: "Privacy Policy",
         },
         {
-          href: 'https://console.settlemint.com/documentation/docs/terms-and-policies/cookie-policy/',
-          label: 'Cookie Policy',
+          href: "https://console.settlemint.com/documentation/docs/terms-and-policies/cookie-policy/",
+          label: "Cookie Policy",
         },
       ],
       ...props
@@ -168,10 +168,10 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
     ref
   ) => {
     return (
-      <div className={cn('relative', className)} ref={ref} {...props}>
-        <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
+      <div className={cn("relative", className)} ref={ref} {...props}>
+        <div className="absolute top-0 z-0 h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
         <section className="relative z-1 mx-auto max-w-full">
-          <div className="z-10 mx-auto max-w-screen-xl gap-12 px-4 py-28 md:px-8 ">
+          <div className="z-10 mx-auto max-w-(--breakpoint-xl) gap-12 px-4 py-28 md:px-8 ">
             <div className="absolute top-8 left-8 flex items-center gap-3">
               <Logo className="w-48" />
               <LanguageToggle size="icon" variant="outline" />
@@ -196,7 +196,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               <h2 className="mx-auto bg-[linear-gradient(180deg,_hsl(var(--foreground))_0%,_hsl(var(--foreground)/75%)_100%)] bg-clip-text font-geist text-4xl text-transparent tracking-tighter md:text-6xl">
                 {subtitle.regular}
                 <br />
-                <span className="bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
                   {subtitle.gradient}
                 </span>
               </h2>
@@ -209,7 +209,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                   <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-background font-medium font-mono text-xs backdrop-blur-3xl">
                     <Link
                       href={ctaHref}
-                      className="group inline-flex w-full items-center justify-center rounded-full border-[1px] border-input bg-gradient-to-tr from-[hsl(var(--accent))/20] via-[hsl(var(--chart-2))/30] to-transparent px-10 py-4 text-center text-foreground transition-all hover:bg-gradient-to-tr hover:from-[hsl(var(--accent))/30] hover:via-[hsl(var(--chart-2))/40] hover:to-transparent sm:w-auto"
+                      className="group inline-flex w-full items-center justify-center rounded-full border-[1px] border-input bg-linear-to-tr from-[hsl(var(--accent))/20] via-[hsl(var(--chart-2))/30] to-transparent px-10 py-4 text-center text-foreground transition-all hover:bg-linear-to-tr hover:from-[hsl(var(--accent))/30] hover:via-[hsl(var(--chart-2))/40] hover:to-transparent sm:w-auto"
                     >
                       {ctaText}
                     </Link>
@@ -225,7 +225,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
           </div>
           <footer className="flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">
             <p className="text-xs">
-              &copy; {new Date().getFullYear()}{' '}
+              &copy; {new Date().getFullYear()}{" "}
               <Link href="https://settlemint.com" className="hover:underline">
                 SettleMint
               </Link>
@@ -236,7 +236,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                 {footerLinks.map(({ href, label }) => (
                   <NavigationMenuItem key={href}>
                     <NavigationMenuLink
-                      className={cn(navigationMenuTriggerStyle(), 'text-xs')}
+                      className={cn(navigationMenuTriggerStyle(), "text-xs")}
                       asChild
                     >
                       <Link href={href}>{label}</Link>
@@ -251,6 +251,6 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
     );
   }
 );
-HeroSection.displayName = 'HeroSection';
+HeroSection.displayName = "HeroSection";
 
 export { HeroSection };

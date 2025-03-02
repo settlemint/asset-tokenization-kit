@@ -193,6 +193,10 @@
           "mint-description": "Details des Prägungsbetriebs",
           "asset-label": "Vermögenswert",
           "amount-label": "Betrag"
+        },
+        "recipients": {
+          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse oder geben Sie manuell eine Wallet-Adresse ein.",
+          "title": "Empfänger auswählen"
         }
       },
       "burn-form": {
@@ -298,7 +302,27 @@
         "paused-status": "Pausiert",
         "active-status": "Aktiv",
         "private-status": "Privat",
-        "public-status": "Öffentlich"
+        "public-status": "Öffentlich",
+        "topinfo-title": "Eine sichere und besicherte digitale Währung",
+        "topinfo-description": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu erhalten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisschwankungen, die typischerweise mit Kryptowährungen verbunden sind. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist, was Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Gelder ermöglicht. Zu den Hauptmerkmalen gehören die besicherte Ausgabe, umfassende rollenbasierte Kontrollen, robuste Pausenmechanismen und die Fähigkeit zur Einhaltung von Vorschriften."
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "related-actions": {
+        "title": "Verwandte Aktionen",
+        "update-collateral": {
+          "title": "Sicherheiten aktualisieren",
+          "description": "Ein Supply-Manager muss die Sicherheiten, die den Stablecoin unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Vermögen jederzeit vollständig besichert bleibt."
+        },
+        "increase-supply": {
+          "title": "Das Angebot erhöhen",
+          "description": "Ein Supply-Manager kann neue Stablecoins prägen, sofern ausreichende Sicherheiten vorhanden sind."
+        },
+        "decrease-supply": {
+          "title": "Das Angebot verringern",
+          "description": "Ein Supply-Manager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind."
+        }
       }
     },
     "funds": {
@@ -1500,6 +1524,10 @@
           }
         }
       }
+    },
+    "activity": {
+      "page-title": "Aktivität",
+      "page-description": "Aktivitäten über alle Vermögenswerte hinweg verfolgen."
     }
   },
   "auth": {
@@ -1727,8 +1755,11 @@
     "success": "Transaktion erfolgreich verarbeitet"
   },
   "theme": {
+    "dark": "Dunkel",
+    "light": "Hell",
     "toggle-label": "Thema umschalten",
-    "switch-to-mode": "Wechseln Sie in den {mode} Modus"
+    "switch-to-mode": "Wechseln Sie in den {mode} Modus",
+    "system": "System"
   },
   "layout": {
     "navigation": {

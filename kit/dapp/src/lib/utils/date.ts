@@ -5,7 +5,7 @@ import {
   formatRelative,
   fromUnixTime,
   parseISO,
-} from 'date-fns';
+} from "date-fns";
 
 const NUMERIC_REGEX = /^\d+$/;
 
@@ -14,7 +14,7 @@ const NUMERIC_REGEX = /^\d+$/;
  */
 export interface DateFormatOptions {
   /** Format type: absolute (default), relative, distance, or unix */
-  readonly type?: 'absolute' | 'relative' | 'distance' | 'unixSeconds';
+  readonly type?: "absolute" | "relative" | "distance" | "unixSeconds";
   /** Custom format string for absolute dates (e.g., 'yyyy-MM-dd HH:mm') */
   readonly formatStr?: string;
 }
@@ -31,35 +31,35 @@ export function formatDate(
   date: string | Date,
   options: DateFormatOptions = {}
 ): string {
-  const { type = 'absolute', formatStr = 'MMMM d, yyyy HH:mm' } = options;
+  const { type = "absolute", formatStr = "MMMM d, yyyy HH:mm" } = options;
 
   try {
     const dateObj =
-      typeof date === 'string'
+      typeof date === "string"
         ? NUMERIC_REGEX.test(date)
           ? fromUnixTime(Number.parseInt(date, 10))
           : parseISO(date)
         : date;
 
     if (Number.isNaN(dateObj.getTime())) {
-      return 'Invalid Date';
+      return "Invalid Date";
     }
 
-    if (type === 'distance') {
+    if (type === "distance") {
       return formatDistance(dateObj, new Date());
     }
 
-    if (type === 'relative') {
+    if (type === "relative") {
       return formatRelative(dateObj, new Date());
     }
 
-    if (type === 'unixSeconds') {
+    if (type === "unixSeconds") {
       return (dateObj.getTime() / 1000).toString();
     }
 
     return format(dateObj, formatStr);
   } catch {
-    return 'Invalid Date';
+    return "Invalid Date";
   }
 }
 
@@ -97,7 +97,7 @@ export function getDateFromTimestamp(timestamp: string | number | Date): Date {
   }
 
   // Try parsing as ISO string first if it's a string
-  if (typeof timestamp === 'string') {
+  if (typeof timestamp === "string") {
     const date = new Date(timestamp);
     if (!Number.isNaN(date.getTime())) {
       return date;
@@ -106,7 +106,7 @@ export function getDateFromTimestamp(timestamp: string | number | Date): Date {
 
   const numericTimestamp = Number(timestamp);
   if (Number.isNaN(numericTimestamp)) {
-    throw new Error('Invalid timestamp format');
+    throw new Error("Invalid timestamp format");
   }
 
   const timestampStr = String(numericTimestamp);

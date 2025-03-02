@@ -1,10 +1,10 @@
-import { DataTable } from '@/components/blocks/data-table/data-table';
-import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { getBondDetail } from '@/lib/queries/bond/bond-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
-import { icons, useHoldersColumns } from './_components/columns';
+import { DataTable } from "@/components/blocks/data-table/data-table";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
+import { icons, useHoldersColumns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -19,14 +19,14 @@ export async function generateMetadata({
   const bond = await getBondDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.bonds.holders',
+    namespace: "admin.bonds.holders",
   });
 
   return {
-    title: t('holders-page-title', {
+    title: t("holders-page-title", {
       name: bond?.name,
     }),
-    description: t('holders-page-description', {
+    description: t("holders-page-description", {
       name: bond?.name,
     }),
   };
@@ -41,7 +41,7 @@ export default async function BondHoldersPage({ params }: PageProps) {
       columnHook={useHoldersColumns}
       data={balances}
       icons={icons}
-      name={'Holders'}
+      name={"Holders"}
     />
   );
 }

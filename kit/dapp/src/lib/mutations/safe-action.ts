@@ -1,24 +1,24 @@
-import { auth } from '@/lib/auth/auth';
-import type { User } from 'better-auth';
-import { createSafeActionClient } from 'next-safe-action';
-import { headers } from 'next/headers';
-import type { Address } from 'viem';
+import { auth } from "@/lib/auth/auth";
+import type { User } from "better-auth";
+import { createSafeActionClient } from "next-safe-action";
+import { headers } from "next/headers";
+import type { Address } from "viem";
 
 export const action = createSafeActionClient({
   throwValidationErrors: true,
-  defaultValidationErrorsShape: 'flattened',
+  defaultValidationErrorsShape: "flattened",
   handleServerError: (error: Error, { clientInput, metadata }) => {
-    console.error('Input ->', redactSensitiveFields(clientInput));
-    console.error('Metadata ->', redactSensitiveFields(metadata));
-    console.error('Error ->', error);
+    console.error("Input ->", redactSensitiveFields(clientInput));
+    console.error("Metadata ->", redactSensitiveFields(metadata));
+    console.error("Error ->", error);
     return `An unexpected error occurred`;
   },
 })
   .use(async ({ next, clientInput, metadata }) => {
     const result = await next({ ctx: undefined });
-    console.log('Input ->', redactSensitiveFields(clientInput));
-    console.log('Metadata ->', redactSensitiveFields(metadata));
-    console.log('Result ->', redactSensitiveFields(result.data));
+    console.log("Input ->", redactSensitiveFields(clientInput));
+    console.log("Metadata ->", redactSensitiveFields(metadata));
+    console.log("Result ->", redactSensitiveFields(result.data));
     return result;
   })
   .use(async ({ next }) => {
@@ -27,12 +27,12 @@ export const action = createSafeActionClient({
     });
 
     if (!session?.user) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     return next({
       ctx: {
-        user: session.user as Omit<User, 'wallet'> & { wallet: Address },
+        user: session.user as Omit<User, "wallet"> & { wallet: Address },
       },
     });
   });
@@ -41,7 +41,7 @@ export const action = createSafeActionClient({
  * Redacts sensitive fields in an object by replacing their values with asterisks
  */
 function redactSensitiveFields(obj: unknown): unknown {
-  if (typeof obj !== 'object' || obj === null) {
+  if (typeof obj !== "object" || obj === null) {
     return obj;
   }
 
@@ -51,10 +51,10 @@ function redactSensitiveFields(obj: unknown): unknown {
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {
-      if (key === 'pincode') {
-        return [key, '******'];
+      if (key === "pincode") {
+        return [key, "******"];
       }
-      if (typeof value === 'object' && value !== null) {
+      if (typeof value === "object" && value !== null) {
         return [key, redactSensitiveFields(value)];
       }
       return [key, value];

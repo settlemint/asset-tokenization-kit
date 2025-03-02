@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import type { Role } from '@/lib/config/roles';
-import { revokeRole } from '@/lib/mutations/fund/revoke-role/revoke-role-action';
-import { RevokeRoleSchema } from '@/lib/mutations/fund/revoke-role/revoke-role-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import type { Role } from "@/lib/config/roles";
+import { revokeRole } from "@/lib/mutations/fund/revoke-role/revoke-role-action";
+import { RevokeRoleSchema } from "@/lib/mutations/fund/revoke-role/revoke-role-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Summary } from "./steps/summary";
 
 interface RevokeAllPermissionsFormProps {
   address: Address;
@@ -23,21 +23,21 @@ export function RevokeAllPermissionsForm({
   currentRoles,
 }: RevokeAllPermissionsFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('admin.funds.permissions.revoke-all-form');
+  const t = useTranslations("admin.funds.permissions.revoke-all-form");
 
   return (
     <FormSheet
       open={open}
       onOpenChange={setOpen}
-      triggerLabel={t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
     >
       <Form
         action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

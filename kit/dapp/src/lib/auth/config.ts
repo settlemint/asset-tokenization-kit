@@ -4,13 +4,13 @@
 class EnvironmentError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'EnvironmentError';
+    this.name = "EnvironmentError";
   }
 }
 
 const REQUIRED_ENV_VARS = [
-  'SETTLEMINT_HASURA_ADMIN_SECRET',
-  'SETTLEMINT_HD_PRIVATE_KEY',
+  "SETTLEMINT_HASURA_ADMIN_SECRET",
+  "SETTLEMINT_HD_PRIVATE_KEY",
 ] as const;
 
 /**
@@ -22,7 +22,7 @@ export function validateEnvironmentVariables(): void {
 
   if (missing.length > 0) {
     throw new EnvironmentError(
-      `Missing required environment variables: ${missing.join(', ')}`
+      `Missing required environment variables: ${missing.join(", ")}`
     );
   }
 }

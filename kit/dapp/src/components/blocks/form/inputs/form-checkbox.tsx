@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
   FormDescription,
@@ -8,11 +8,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { cn } from '@/lib/utils';
-import type { ComponentPropsWithoutRef } from 'react';
-import type { FieldValues } from 'react-hook-form';
-import { getAriaAttributes, type BaseFormInputProps } from './types';
+} from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import type { ComponentPropsWithoutRef } from "react";
+import type { FieldValues } from "react-hook-form";
+import { getAriaAttributes, type BaseFormInputProps } from "./types";
 
 type CheckboxProps = ComponentPropsWithoutRef<typeof Checkbox>;
 
@@ -69,9 +69,9 @@ export function FormCheckbox<T extends FieldValues>({
               {label && (
                 <FormLabel
                   className={cn(
-                    'font-medium text-sm leading-none',
-                    fieldState.error && 'text-destructive',
-                    props.disabled && 'cursor-not-allowed opacity-70'
+                    "font-medium text-sm leading-none",
+                    fieldState.error && "text-destructive",
+                    props.disabled && "cursor-not-allowed opacity-70"
                   )}
                   htmlFor={field.name}
                   id={`${field.name}-label`}

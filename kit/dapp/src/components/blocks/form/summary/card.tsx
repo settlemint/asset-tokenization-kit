@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from "react";
 
 interface FormSummaryDetailCardProps extends PropsWithChildren {
   icon: ReactNode;
@@ -16,7 +16,7 @@ export function FormSummaryDetailCard({
     <div className="space-y-4">
       <div className="rounded-lg border bg-card p-4">
         <div className="mb-3 flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
+          <div className="flex size-6 items-center justify-center rounded-full bg-primary/10">
             {icon}
           </div>
           <div>

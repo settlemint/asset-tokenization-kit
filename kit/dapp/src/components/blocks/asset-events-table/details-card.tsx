@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useTranslations } from 'next-intl';
-import type { ReactNode } from 'react';
-import React from 'react';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import React from "react";
 
 interface DetailItem {
   key: string;
@@ -14,11 +14,11 @@ interface DetailsCardProps {
 }
 
 export function DetailsCard({ details }: DetailsCardProps) {
-  const t = useTranslations('components.asset-events-table.details');
+  const t = useTranslations("components.asset-events-table.details");
 
   return (
     <Card>
-      <CardHeader>{t('details-header')}</CardHeader>
+      <CardHeader>{t("details-header")}</CardHeader>
       <CardContent>
         <dl className="grid grid-cols-[1fr_2fr] gap-4">
           {details.map((item) => (

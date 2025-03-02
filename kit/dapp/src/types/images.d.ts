@@ -1,4 +1,4 @@
-declare module '*.jpg' {
+declare module "*.jpg" {
   const content: {
     src: string;
     height: number;
@@ -8,7 +8,7 @@ declare module '*.jpg' {
   export default content;
 }
 
-declare module '*.jpeg' {
+declare module "*.jpeg" {
   const content: {
     src: string;
     height: number;
@@ -18,7 +18,7 @@ declare module '*.jpeg' {
   export default content;
 }
 
-declare module '*.png' {
+declare module "*.png" {
   const content: {
     src: string;
     height: number;
@@ -28,7 +28,7 @@ declare module '*.png' {
   export default content;
 }
 
-declare module '*.svg' {
+declare module "*.svg" {
   const content: {
     src: string;
     height: number;
@@ -38,7 +38,7 @@ declare module '*.svg' {
   export default content;
 }
 
-declare module '*.gif' {
+declare module "*.gif" {
   const content: {
     src: string;
     height: number;
@@ -48,7 +48,7 @@ declare module '*.gif' {
   export default content;
 }
 
-declare module '*.webp' {
+declare module "*.webp" {
   const content: {
     src: string;
     height: number;

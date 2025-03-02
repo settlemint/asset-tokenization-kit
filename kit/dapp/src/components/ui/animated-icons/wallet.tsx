@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from "@/lib/utils";
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
 export interface WalletIconHandle {
   startAnimation: () => void;
@@ -15,7 +15,7 @@ const pathVariants: Variants = {
   normal: {
     scale: 1,
     transition: {
-      type: 'spring',
+      type: "spring",
       stiffness: 200,
       damping: 13,
     },
@@ -24,7 +24,7 @@ const pathVariants: Variants = {
     scale: [0.9, 1],
     transition: {
       delay: 0.1,
-      type: 'spring',
+      type: "spring",
       stiffness: 200,
       damping: 13,
     },
@@ -40,15 +40,15 @@ const WalletIcon = forwardRef<WalletIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -59,7 +59,7 @@ const WalletIcon = forwardRef<WalletIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -70,7 +70,7 @@ const WalletIcon = forwardRef<WalletIconHandle, HTMLAttributes<HTMLDivElement>>(
     return (
       <div
         className={cn(
-          'cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center',
+          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -99,6 +99,6 @@ const WalletIcon = forwardRef<WalletIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-WalletIcon.displayName = 'WalletIcon';
+WalletIcon.displayName = "WalletIcon";
 
 export { WalletIcon };

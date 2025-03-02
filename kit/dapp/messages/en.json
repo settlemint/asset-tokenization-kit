@@ -1477,13 +1477,33 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "topinfo-title": "A secure and collateralized digital currency",
+        "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities."
       },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
         "permissions": "Permissions"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
+      "related-actions": {
+        "title": "Related actions",
+        "update-collateral": {
+          "title": "Update collateral",
+          "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times."
+        },
+        "increase-supply": {
+          "title": "Increase the supply",
+          "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available."
+        },
+        "decrease-supply": {
+          "title": "Decrease the supply",
+          "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available."
+        }
       },
       "update-collateral-form": {
         "amount": {
@@ -1504,6 +1524,10 @@
         "title": "Update collateral",
         "trigger-label": "Update collateral"
       }
+    },
+    "activity": {
+      "page-title": "Activity",
+      "page-description": "Track activity across all assets."
     }
   },
   "auth": {

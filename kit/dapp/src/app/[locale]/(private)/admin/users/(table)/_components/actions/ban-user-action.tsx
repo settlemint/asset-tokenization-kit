@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,21 +6,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useRouter } from '@/i18n/routing';
-import { authClient } from '@/lib/auth/client';
-import type { getUserList } from '@/lib/queries/user/user-list';
-import { type KeyboardEvent, type MouseEvent, useState } from 'react';
-import { toast } from 'sonner';
+} from "@/components/ui/select";
+import { useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+import type { getUserList } from "@/lib/queries/user/user-list";
+import { type KeyboardEvent, type MouseEvent, useState } from "react";
+import { toast } from "sonner";
 
 export function BanUserAction({
   user,
@@ -30,20 +30,20 @@ export function BanUserAction({
   onComplete?: () => void;
 }) {
   const [showBanDialog, setShowBanDialog] = useState(false);
-  const [banReason, setBanReason] = useState('');
-  const [banDuration, setBanDuration] = useState<string>('forever');
+  const [banReason, setBanReason] = useState("");
+  const [banDuration, setBanDuration] = useState<string>("forever");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const getBanExpiresIn = () => {
     switch (banDuration) {
-      case '1hour':
+      case "1hour":
         return 1000 * 60 * 60;
-      case '1day':
+      case "1day":
         return 1000 * 60 * 60 * 24;
-      case '1week':
+      case "1week":
         return 1000 * 60 * 60 * 24 * 7;
-      case '1month':
+      case "1month":
         return 1000 * 60 * 60 * 24 * 30;
       default:
         return undefined;
@@ -63,14 +63,14 @@ export function BanUserAction({
         banReason: banReason.trim(),
         banExpiresIn: getBanExpiresIn(),
       });
-      toast.success('User banned successfully');
+      toast.success("User banned successfully");
       setShowBanDialog(false);
-      setBanReason('');
+      setBanReason("");
       router.refresh();
       onComplete?.();
     } catch (error) {
       toast.error(
-        `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     } finally {
       setIsLoading(false);
@@ -84,12 +84,12 @@ export function BanUserAction({
       await authClient.admin.unbanUser({
         userId: user.id,
       });
-      toast.success('User unbanned successfully');
+      toast.success("User unbanned successfully");
       router.refresh();
       onComplete?.();
     } catch (error) {
       toast.error(
-        `Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     } finally {
       setIsLoading(false);
@@ -101,7 +101,7 @@ export function BanUserAction({
     if (user.banned) {
       handleUnbanUser(e).catch((error) => {
         toast.error(
-          `Failed to unban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+          `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
         );
       });
     } else {
@@ -112,7 +112,7 @@ export function BanUserAction({
   return (
     <>
       <DropdownMenuItem onClick={handleBanClick} disabled={isLoading}>
-        {user.banned ? (isLoading ? 'Unbanning...' : 'Unban') : 'Ban'}
+        {user.banned ? (isLoading ? "Unbanning..." : "Unban") : "Ban"}
       </DropdownMenuItem>
 
       <Dialog
@@ -136,10 +136,10 @@ export function BanUserAction({
               onChange={(e) => setBanReason(e.target.value)}
               disabled={isLoading}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && banReason.trim()) {
+                if (e.key === "Enter" && banReason.trim()) {
                   handleBanUser(e).catch((error) => {
                     toast.error(
-                      `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+                      `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
                     );
                   });
                 }
@@ -180,13 +180,13 @@ export function BanUserAction({
               onClick={(e) => {
                 handleBanUser(e).catch((error) => {
                   toast.error(
-                    `Failed to ban user: ${error instanceof Error ? error.message : 'Unknown error'}`
+                    `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
                   );
                 });
               }}
               disabled={!banReason.trim() || isLoading}
             >
-              {isLoading ? 'Banning...' : 'Ban User'}
+              {isLoading ? "Banning..." : "Ban User"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,17 +1,15 @@
 'use client';
 
 import { MyAssetsTransferForm } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/transfer';
-import type { QueryKey } from '@tanstack/react-query';
 import type { Address } from 'viem';
 import { useMyAssets } from '../data'; // We'll need to create this hook
 import { MyAssetsCount } from './my-assets-count/count-client';
 
-interface MyAssetsHeaderClientProps {
-  queryKey: QueryKey;
+interface MyAssetsHeaderProps {
   wallet: Address;
 }
 
-export function MyAssetsHeaderClient({ queryKey, wallet }: MyAssetsHeaderClientProps) {
+export function MyAssetsHeader({  wallet }: MyAssetsHeaderProps) {
   const {
     data: { total, balances },
   } = useMyAssets({
