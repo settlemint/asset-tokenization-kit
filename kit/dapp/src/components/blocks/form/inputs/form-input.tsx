@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   FormControl,
@@ -7,19 +7,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
-import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
-import type { FieldValues } from 'react-hook-form';
-import { useFormContext } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import type { FieldValues } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import {
   getAriaAttributes,
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
-} from './types';
+} from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
@@ -59,35 +59,35 @@ export function FormInput<T extends FieldValues>({
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
-  const t = useTranslations('components.form.input');
+  const t = useTranslations("components.form.input");
 
   return (
     <FormField
       {...props}
       rules={{
         ...rules,
-        ...(props.type === 'email' && {
+        ...(props.type === "email" && {
           pattern: {
             value: EMAIL_PATTERN,
-            message: t('valid-email'),
+            message: t("valid-email"),
           },
         }),
         ...(textOnly && {
           pattern: {
             value: TEXT_ONLY_PATTERN,
-            message: t('letters-only'),
+            message: t("letters-only"),
           },
         }),
       }}
       render={({ field, fieldState }) => {
         const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
           const value = e.target.value;
-          if (props.type === 'number') {
+          if (props.type === "number") {
             // Ensure we always pass a number or empty string, never undefined
-            field.onChange(value === '' ? 0 : Number(value));
+            field.onChange(value === "" ? 0 : Number(value));
           } else {
             // Ensure we always pass a string, never undefined
-            field.onChange(value ?? '');
+            field.onChange(value ?? "");
           }
           // Trigger validation immediately after value change
           await form.trigger(field.name);
@@ -109,8 +109,8 @@ export function FormInput<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && 'text-destructive',
-                  props.disabled && 'cursor-not-allowed opacity-70'
+                  fieldState.error && "text-destructive",
+                  props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
@@ -122,8 +122,8 @@ export function FormInput<T extends FieldValues>({
             <FormControl>
               <div
                 className={cn(
-                  'flex rounded-lg shadow-black/5 shadow-xs',
-                  !postfix && 'shadow-none'
+                  "flex rounded-lg shadow-black/5 shadow-xs",
+                  !postfix && "shadow-none"
                 )}
               >
                 <Input
@@ -132,14 +132,14 @@ export function FormInput<T extends FieldValues>({
                   className={cn(
                     className,
                     postfix &&
-                      '-me-px rounded-e-none shadow-none focus:mr-[1px]'
+                      "-me-px rounded-e-none shadow-none focus:mr-[1px]"
                   )}
                   type={props.type}
-                  value={props.defaultValue ? undefined : (field.value ?? '')}
+                  value={props.defaultValue ? undefined : (field.value ?? "")}
                   onChange={handleInputChange}
-                  inputMode={props.type === 'number' ? 'decimal' : 'text'}
+                  inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
-                    props.type === 'number' ? '[0-9]*.?[0-9]*' : undefined
+                    props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
                   }
                   {...ariaAttrs}
                 />

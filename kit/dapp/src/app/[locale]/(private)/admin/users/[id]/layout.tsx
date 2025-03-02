@@ -1,19 +1,19 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
-import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { PageHeader } from '@/components/layout/page-header';
-import { Button } from '@/components/ui/button';
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
+import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { PageHeader } from "@/components/layout/page-header";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { getUserDetail } from '@/lib/queries/user/user-detail';
-import { ChevronDown } from 'lucide-react';
-import type { PropsWithChildren } from 'react';
-import { ChangeRoleAction } from '../(table)/_components/actions/change-role-action';
-import { UpdateKycStatusAction } from '../(table)/_components/actions/update-kyc-status-action';
+} from "@/components/ui/dropdown-menu";
+import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { ChevronDown } from "lucide-react";
+import type { PropsWithChildren } from "react";
+import { ChangeRoleAction } from "../(table)/_components/actions/change-role-action";
+import { UpdateKycStatusAction } from "../(table)/_components/actions/update-kyc-status-action";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -23,19 +23,19 @@ interface LayoutProps extends PropsWithChildren {
 
 const tabs = (id: string): TabItemProps[] => [
   {
-    name: 'Details',
+    name: "Details",
     href: `/admin/users/${id}`,
   },
   {
-    name: 'Holdings',
+    name: "Holdings",
     href: `/admin/users/${id}/holdings`,
   },
   {
-    name: 'Last transactions',
+    name: "Last transactions",
     href: `/admin/users/${id}/last-transactions`,
   },
   {
-    name: 'Permissions',
+    name: "Permissions",
     href: `/admin/users/${id}/token-permissions`,
   },
 ];

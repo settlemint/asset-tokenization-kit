@@ -1,5 +1,5 @@
-import { theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
  * Base GraphQL fragment for asset events
@@ -48,7 +48,7 @@ export const AssetCreatedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const AssetCreatedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('AssetCreatedEvent'),
+  __typename: z.literal("AssetCreatedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -78,7 +78,7 @@ export const ApprovalEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const ApprovalEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('ApprovalEvent'),
+  __typename: z.literal("ApprovalEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -108,7 +108,7 @@ export const BondMaturedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const BondMaturedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('BondMaturedEvent'),
+  __typename: z.literal("BondMaturedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -136,7 +136,7 @@ export const BondRedeemedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const BondRedeemedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('BondRedeemedEvent'),
+  __typename: z.literal("BondRedeemedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -168,7 +168,7 @@ export const BurnEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const BurnEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('BurnEvent'),
+  __typename: z.literal("BurnEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -198,7 +198,7 @@ export const CollateralUpdatedEventFragment = theGraphGraphqlStarterkits(`
  */
 export const CollateralUpdatedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('CollateralUpdatedEvent'),
+    __typename: z.literal("CollateralUpdatedEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -225,7 +225,7 @@ export const ManagementFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
  */
 export const ManagementFeeCollectedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('ManagementFeeCollectedEvent'),
+    __typename: z.literal("ManagementFeeCollectedEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -253,7 +253,7 @@ export const MintEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const MintEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('MintEvent'),
+  __typename: z.literal("MintEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -280,7 +280,7 @@ export const PausedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const PausedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('PausedEvent'),
+  __typename: z.literal("PausedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -305,7 +305,7 @@ export const PerformanceFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
  */
 export const PerformanceFeeCollectedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('PerformanceFeeCollectedEvent'),
+    __typename: z.literal("PerformanceFeeCollectedEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -333,7 +333,7 @@ export const RoleAdminChangedEventFragment = theGraphGraphqlStarterkits(`
  */
 export const RoleAdminChangedEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('RoleAdminChangedEvent'),
+    __typename: z.literal("RoleAdminChangedEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -363,7 +363,7 @@ export const RoleGrantedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const RoleGrantedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('RoleGrantedEvent'),
+  __typename: z.literal("RoleGrantedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -394,7 +394,7 @@ export const RoleRevokedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const RoleRevokedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('RoleRevokedEvent'),
+  __typename: z.literal("RoleRevokedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -431,7 +431,7 @@ export const TokenWithdrawnEventFragment = theGraphGraphqlStarterkits(`
  */
 export const TokenWithdrawnEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('TokenWithdrawnEvent'),
+    __typename: z.literal("TokenWithdrawnEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -467,7 +467,7 @@ export const TokensFrozenEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const TokensFrozenEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('TokensFrozenEvent'),
+  __typename: z.literal("TokensFrozenEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -501,7 +501,7 @@ export const TransferEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const TransferEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('TransferEvent'),
+  __typename: z.literal("TransferEvent"),
   to: z.object({
     id: z.address(),
   }),
@@ -531,7 +531,7 @@ export const UnpausedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const UnpausedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('UnpausedEvent'),
+  __typename: z.literal("UnpausedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -557,7 +557,7 @@ export const UserBlockedEventFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const UserBlockedEventFragmentSchema = AssetEventFragmentSchema.extend({
-  __typename: z.literal('UserBlockedEvent'),
+  __typename: z.literal("UserBlockedEvent"),
   sender: z.object({
     id: z.address(),
   }),
@@ -587,7 +587,7 @@ export const UserUnblockedEventFragment = theGraphGraphqlStarterkits(`
  */
 export const UserUnblockedEventFragmentSchema = AssetEventFragmentSchema.extend(
   {
-    __typename: z.literal('UserUnblockedEvent'),
+    __typename: z.literal("UserUnblockedEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -615,7 +615,7 @@ export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlStarterkits(`
  */
 export const UnderlyingAssetTopUpEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('UnderlyingAssetTopUpEvent'),
+    __typename: z.literal("UnderlyingAssetTopUpEvent"),
     sender: z.object({
       id: z.address(),
     }),
@@ -640,7 +640,7 @@ export const UnderlyingAssetWithdrawnEventFragment =
  */
 export const UnderlyingAssetWithdrawnEventFragmentSchema =
   AssetEventFragmentSchema.extend({
-    __typename: z.literal('UnderlyingAssetWithdrawnEvent'),
+    __typename: z.literal("UnderlyingAssetWithdrawnEvent"),
     sender: z.object({
       id: z.address(),
     }),

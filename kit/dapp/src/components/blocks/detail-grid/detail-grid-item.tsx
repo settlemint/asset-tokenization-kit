@@ -3,10 +3,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import type { PropsWithChildren } from 'react';
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { PropsWithChildren } from "react";
 
 interface DetailGridItemProps extends PropsWithChildren {
   label: string;
@@ -14,7 +14,7 @@ interface DetailGridItemProps extends PropsWithChildren {
 }
 
 export function DetailGridItem({ label, children, info }: DetailGridItemProps) {
-  const t = useTranslations('components.detail-grid');
+  const t = useTranslations("components.detail-grid");
 
   return (
     <div className="space-y-1">
@@ -28,7 +28,7 @@ export function DetailGridItem({ label, children, info }: DetailGridItemProps) {
               <TooltipTrigger asChild>
                 <Info
                   className="h-4 w-4 text-muted-foreground"
-                  aria-label={t('info-icon-label')}
+                  aria-label={t("info-icon-label")}
                 />
               </TooltipTrigger>
               <TooltipContent>

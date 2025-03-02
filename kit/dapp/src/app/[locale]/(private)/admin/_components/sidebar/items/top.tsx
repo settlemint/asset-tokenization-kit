@@ -1,11 +1,11 @@
-import type { NavElement } from '@/components/layout/nav-main';
-import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
+import type { NavElement } from "@/components/layout/nav-main";
+import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
 
 export const topItems: NavElement[] = [
   {
-    label: 'Dashboard',
+    label: "Dashboard",
     icon: <ChartScatterIcon className="h-4 w-4" />,
-    path: '/admin',
+    path: "/admin",
   },
   // {
   //   label: 'Actions',

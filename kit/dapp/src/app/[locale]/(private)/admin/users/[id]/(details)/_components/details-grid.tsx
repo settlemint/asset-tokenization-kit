@@ -1,11 +1,11 @@
-import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
-import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { Badge } from '@/components/ui/badge';
-import { getUserDetail } from '@/lib/queries/user/user-detail';
-import { formatDate } from '@/lib/utils/date';
-import { formatNumber } from '@/lib/utils/number';
-import { Ban, Check } from 'lucide-react';
+import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
+import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { Badge } from "@/components/ui/badge";
+import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { formatDate } from "@/lib/utils/date";
+import { formatNumber } from "@/lib/utils/number";
+import { Ban, Check } from "lucide-react";
 
 type DetailsGridProps = {
   id: string;
@@ -19,7 +19,7 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
       <DetailGridItem label="Name">{user.name}</DetailGridItem>
       <DetailGridItem label="Email">{user.email}</DetailGridItem>
       <DetailGridItem label="Status">
-        <Badge variant={user.banned ? 'destructive' : 'success'}>
+        <Badge variant={user.banned ? "destructive" : "default"}>
           {user.banned ? (
             <>
               <Ban className="mr-1 h-3 w-3" />
@@ -34,12 +34,12 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         </Badge>
       </DetailGridItem>
       <DetailGridItem label="Created at">
-        {formatDate(user.created_at, { type: 'distance' })}
+        {formatDate(user.created_at, { type: "distance" })}
       </DetailGridItem>
       <DetailGridItem label="Verified at">
         {user.kyc_verified
-          ? formatDate(user.kyc_verified, { type: 'distance' })
-          : 'Not Verified'}
+          ? formatDate(user.kyc_verified, { type: "distance" })
+          : "Not Verified"}
       </DetailGridItem>
       <DetailGridItem label="Wallet">
         <EvmAddress
@@ -57,13 +57,13 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
       </DetailGridItem>
       <DetailGridItem label="Last activity">
         {user.lastActivity
-          ? formatDate(user.lastActivity, { type: 'distance' })
-          : 'Never'}
+          ? formatDate(user.lastActivity, { type: "distance" })
+          : "Never"}
       </DetailGridItem>
       <DetailGridItem label="Last login">
         {user.last_login
-          ? formatDate(user.last_login, { type: 'distance' })
-          : 'Never'}
+          ? formatDate(user.last_login, { type: "distance" })
+          : "Never"}
       </DetailGridItem>
     </DetailGrid>
   );

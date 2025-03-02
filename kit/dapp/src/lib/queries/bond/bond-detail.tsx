@@ -1,18 +1,18 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import { formatNumber } from '@/lib/utils/number';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { getAddress, type Address } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { formatNumber } from "@/lib/utils/number";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { getAddress, type Address } from "viem";
 import {
   BondFragment,
   BondFragmentSchema,
   OffchainBondFragment,
   OffchainBondFragmentSchema,
-} from './bond-fragment';
+} from "./bond-fragment";
 
 /**
  * GraphQL query to fetch on-chain bond details from The Graph
@@ -65,12 +65,12 @@ export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
     hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
   ]);
 
-  const bond = safeParseWithLogging(BondFragmentSchema, data.bond, 'bond');
+  const bond = safeParseWithLogging(BondFragmentSchema, data.bond, "bond");
   const offchainBond = dbBond.asset[0]
     ? safeParseWithLogging(
         OffchainBondFragmentSchema,
         dbBond.asset[0],
-        'offchain bond'
+        "offchain bond"
       )
     : undefined;
 

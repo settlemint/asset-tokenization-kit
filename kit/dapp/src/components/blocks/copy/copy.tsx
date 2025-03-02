@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { CopyIcon } from './animated-icons/copy';
-import { Button } from './button';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Check, CopyIcon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface CopyProps {
   value: string;
@@ -25,8 +24,8 @@ interface CopyProps {
 
 export function CopyToClipboard({
   value,
-  displayText = '',
-  successMessage = 'Copied to clipboard!',
+  displayText = "",
+  successMessage = "Copied to clipboard!",
   className,
 }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
@@ -43,7 +42,7 @@ export function CopyToClipboard({
   };
 
   return (
-    <div className={cn('flex items-center justify-between', className)}>
+    <div className={cn("flex items-center justify-between", className)}>
       <div
         className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
         onClick={handleCopy}

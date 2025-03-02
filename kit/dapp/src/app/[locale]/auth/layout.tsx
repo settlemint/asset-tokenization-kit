@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import type { PropsWithChildren } from 'react';
-import AuthPlaceholder from './placeholder.jpg';
+import Image from "next/image";
+import type { PropsWithChildren } from "react";
+import AuthPlaceholder from "./placeholder.jpg";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
   return (

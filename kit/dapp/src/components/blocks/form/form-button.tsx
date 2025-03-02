@@ -1,10 +1,10 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler
+"use client";
+"use no memo"; // fixes rerendering with react compiler
 
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
 export type ButtonLabels = {
   label?: string;
@@ -46,12 +46,12 @@ export function FormButton({
     formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
-  const t = useTranslations('components.form.button');
+  const t = useTranslations("components.form.button");
 
   const defaultLabels = {
-    label: t('send-transaction'),
-    submittingLabel: t('sending-transaction'),
-    processingLabel: t('processing'),
+    label: t("send-transaction"),
+    submittingLabel: t("sending-transaction"),
+    processingLabel: t("processing"),
   };
 
   const finalLabels = {
@@ -71,7 +71,7 @@ export function FormButton({
         </>
       );
     }
-    return isLastStep ? finalLabels.label : t('next');
+    return isLastStep ? finalLabels.label : t("next");
   };
 
   const disabled =
@@ -83,19 +83,19 @@ export function FormButton({
           type="button"
           variant="outline"
           onClick={onPreviousStep}
-          aria-label={t('previous')}
+          aria-label={t("previous")}
           disabled={isSubmitting}
         >
-          {t('previous')}
+          {t("previous")}
         </Button>
       )}
 
       <Button
-        type={isLastStep ? 'submit' : 'button'}
+        type={isLastStep ? "submit" : "button"}
         variant="default"
         onClick={isLastStep ? undefined : onNextStep}
-        aria-label={isLastStep ? finalLabels.label : t('next')}
-        className={currentStep === 0 ? 'ml-auto' : ''}
+        aria-label={isLastStep ? finalLabels.label : t("next")}
+        className={currentStep === 0 ? "ml-auto" : ""}
         disabled={disabled}
       >
         {getButtonContent()}

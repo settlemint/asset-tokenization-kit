@@ -1,32 +1,32 @@
-import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
-import type { ChartConfig } from '@/components/ui/chart';
-import { createTimeSeries } from '@/lib/charts';
-import { getAssetStats } from '@/lib/queries/asset-stats/asset-stats';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
+import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
+import type { ChartConfig } from "@/components/ui/chart";
+import { createTimeSeries } from "@/lib/charts";
+import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 
 interface TotalSupplyProps {
   address: Address;
 }
 
 export async function TotalSupply({ address }: TotalSupplyProps) {
-  const t = await getTranslations('components.charts.assets');
+  const t = await getTranslations("components.charts.assets");
 
   const chartConfig = {
     totalSupply: {
-      label: t('total-supply.label'),
-      color: 'hsl(var(--chart-2))',
+      label: t("total-supply.label"),
+      color: "hsl(var(--chart-2))",
     },
   } satisfies ChartConfig;
 
   const data = await getAssetStats({ address });
 
-  const timeseries = createTimeSeries(data, ['totalSupply'], {
-    granularity: 'hour',
-    intervalType: 'day',
+  const timeseries = createTimeSeries(data, ["totalSupply"], {
+    granularity: "hour",
+    intervalType: "day",
     intervalLength: 1,
-    accumulation: 'max',
-    aggregation: 'first',
+    accumulation: "max",
+    aggregation: "first",
     historical: true,
   });
 
@@ -34,13 +34,13 @@ export async function TotalSupply({ address }: TotalSupplyProps) {
     <AreaChartComponent
       data={timeseries}
       config={chartConfig}
-      title={t('total-supply.title')}
-      description={t('total-supply.description')}
-      xAxis={{ key: 'timestamp' }}
+      title={t("total-supply.title")}
+      description={t("total-supply.description")}
+      xAxis={{ key: "timestamp" }}
       showYAxis={true}
       footer={
         <div className="text-muted-foreground text-xs">
-          {t('last-updated')}: {timeseries.at(-1)?.timestamp}
+          {t("last-updated")}: {timeseries.at(-1)?.timestamp}
         </div>
       }
     />

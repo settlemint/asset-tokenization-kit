@@ -1,11 +1,11 @@
-import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
-import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { PropsWithChildren } from 'react';
-import type { Address } from 'viem';
-import { EquityPageHeader } from './_components/page-header';
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
+import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { PropsWithChildren } from "react";
+import type { Address } from "viem";
+import { EquityPageHeader } from "./_components/page-header";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -21,12 +21,12 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.equities.details',
+    namespace: "admin.equities.details",
   });
 
   return {
     title: equity?.name,
-    description: t('equity-details-description'),
+    description: t("equity-details-description"),
   };
 }
 
@@ -36,24 +36,24 @@ const tabs = async (
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
-    namespace: 'admin.equities.tabs',
+    namespace: "admin.equities.tabs",
   });
 
   return [
     {
-      name: t('details'),
+      name: t("details"),
       href: `/admin/equities/${address}`,
     },
     {
-      name: t('holders'),
+      name: t("holders"),
       href: `/admin/equities/${address}/holders`,
     },
     {
-      name: t('events'),
+      name: t("events"),
       href: `/admin/equities/${address}/events`,
     },
     {
-      name: t('permissions'),
+      name: t("permissions"),
       href: `/admin/equities/${address}/permissions`,
     },
   ];

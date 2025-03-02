@@ -1,17 +1,17 @@
-import type { NavElement } from '@/components/layout/nav-main';
-import { ActivityIcon } from '@/components/ui/animated-icons/activity';
-import { UsersIcon } from '@/components/ui/animated-icons/users';
+import type { NavElement } from "@/components/layout/nav-main";
+import { ActivityIcon } from "@/components/ui/animated-icons/activity";
+import { UsersIcon } from "@/components/ui/animated-icons/users";
 
 export const bottomItems: NavElement[] = [
   {
-    label: 'User management',
+    label: "User management",
     icon: <UsersIcon className="h-4 w-4" />,
-    path: '/admin/users',
+    path: "/admin/users",
   },
   {
-    label: 'Activity',
+    label: "Activity",
     icon: <ActivityIcon className="h-4 w-4" />,
-    path: '/admin/activity',
+    path: "/admin/activity",
   },
   // {
   //   label: 'Settings',

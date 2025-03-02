@@ -1,29 +1,29 @@
-import { proxyMiddleware } from '@settlemint/sdk-next/middlewares/proxy';
-import { getSessionCookie } from 'better-auth';
-import { default as createIntlMiddleware } from 'next-intl/middleware';
-import { NextResponse, type NextRequest } from 'next/server';
-import { match } from 'path-to-regexp';
+import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
+import { getSessionCookie } from "better-auth";
+import { default as createIntlMiddleware } from "next-intl/middleware";
+import { NextResponse, type NextRequest } from "next/server";
+import { match } from "path-to-regexp";
 
 const isPrivateRoute = match([
-  '/:locale/admin',
-  '/:locale/admin/*path',
-  '/:locale/proxy',
-  '/:locale/proxy/*path',
+  "/:locale/admin",
+  "/:locale/admin/*path",
+  "/:locale/proxy",
+  "/:locale/proxy/*path",
 ]);
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
-  locales: ['en', 'de'],
-  defaultLocale: 'en',
+  locales: ["en", "de"],
+  defaultLocale: "en",
   // Add this to ensure root path redirects to the default locale
-  localePrefix: 'always',
+  localePrefix: "always",
 });
 
 export default function middleware(request: NextRequest) {
   const cookies = getSessionCookie(request);
 
   if (isPrivateRoute(request.nextUrl.pathname) && !cookies) {
-    const [, locale] = request.nextUrl.pathname.split('/');
+    const [, locale] = request.nextUrl.pathname.split("/");
     if (locale != null) {
       return NextResponse.redirect(
         new URL(`/auth/signin?rd=${request.nextUrl.pathname}`, request.url)
@@ -37,7 +37,7 @@ export default function middleware(request: NextRequest) {
 
   // Only stop the middleware chain if the response is a rewrite (for proxy routes)
   // NextResponse.next() should be ignored and allow the middleware to continue
-  if (proxyResponse && proxyResponse.headers.get('x-middleware-rewrite')) {
+  if (proxyResponse && proxyResponse.headers.get("x-middleware-rewrite")) {
     return proxyResponse;
   }
 
@@ -46,5 +46,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

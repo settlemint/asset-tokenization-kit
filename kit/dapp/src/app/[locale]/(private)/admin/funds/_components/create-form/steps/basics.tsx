@@ -1,41 +1,41 @@
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
-import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
 export function Basics() {
   const { control } = useFormContext<CreateFundInput>();
-  const t = useTranslations('admin.funds.create-form.basics');
+  const t = useTranslations("admin.funds.create-form.basics");
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t("title")} description={t("description")}>
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
           name="assetName"
-          label={t('name-label')}
-          placeholder={t('name-placeholder')}
+          label={t("name-label")}
+          placeholder={t("name-placeholder")}
         />
         <FormInput
           control={control}
           name="symbol"
-          label={t('symbol-label')}
-          placeholder={t('symbol-placeholder')}
+          label={t("symbol-label")}
+          placeholder={t("symbol-placeholder")}
           textOnly
         />
         <FormInput
           control={control}
           type="number"
           name="decimals"
-          label={t('decimals-label')}
+          label={t("decimals-label")}
           defaultValue={18}
         />
         <FormInput
           control={control}
           name="isin"
-          label={t('isin-label')}
-          placeholder={t('isin-placeholder')}
+          label={t("isin-label")}
+          placeholder={t("isin-placeholder")}
         />
       </div>
     </FormStep>
@@ -43,9 +43,9 @@ export function Basics() {
 }
 
 Basics.validatedFields = [
-  'assetName',
-  'symbol',
-  'decimals',
-  'privateAsset',
-  'isin',
+  "assetName",
+  "symbol",
+  "decimals",
+  "privateAsset",
+  "isin",
 ] as const;

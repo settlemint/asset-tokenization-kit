@@ -1,11 +1,11 @@
-import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
-import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { getBondDetail } from '@/lib/queries/bond/bond-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { PropsWithChildren } from 'react';
-import type { Address } from 'viem';
-import { BondPageHeader } from './_components/page-header';
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
+import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { PropsWithChildren } from "react";
+import type { Address } from "viem";
+import { BondPageHeader } from "./_components/page-header";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -21,12 +21,12 @@ export async function generateMetadata({
   const bond = await getBondDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.bonds.details',
+    namespace: "admin.bonds.details",
   });
 
   return {
     title: bond?.name,
-    description: t('bond-details-description'),
+    description: t("bond-details-description"),
   };
 }
 
@@ -36,24 +36,24 @@ const tabs = async (
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
-    namespace: 'admin.bonds.tabs',
+    namespace: "admin.bonds.tabs",
   });
 
   return [
     {
-      name: t('details'),
+      name: t("details"),
       href: `/admin/bonds/${address}`,
     },
     {
-      name: t('holders'),
+      name: t("holders"),
       href: `/admin/bonds/${address}/holders`,
     },
     {
-      name: t('events'),
+      name: t("events"),
       href: `/admin/bonds/${address}/events`,
     },
     {
-      name: t('permissions'),
+      name: t("permissions"),
       href: `/admin/bonds/${address}/permissions`,
     },
   ];

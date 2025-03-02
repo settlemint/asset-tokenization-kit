@@ -1,18 +1,18 @@
-'use client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Form as UIForm } from '@/components/ui/form';
-import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
-import { z, type ZodInfer } from '@/lib/utils/zod';
-import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
-import { useTranslations } from 'next-intl';
-import type { HookSafeActionFn } from 'next-safe-action/hooks';
-import { useState } from 'react';
-import type { DefaultValues, Path, Resolver } from 'react-hook-form';
-import { toast } from 'sonner';
-import type { Schema } from 'zod';
-import { FormButton, type ButtonLabels } from './form-button';
-import { FormProgress } from './form-progress';
-import type { FormStepElement } from './types';
+"use client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Form as UIForm } from "@/components/ui/form";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { z, type ZodInfer } from "@/lib/utils/zod";
+import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
+import { useTranslations } from "next-intl";
+import type { HookSafeActionFn } from "next-safe-action/hooks";
+import { useState } from "react";
+import type { DefaultValues, Path, Resolver } from "react-hook-form";
+import { toast } from "sonner";
+import type { Schema } from "zod";
+import { FormButton, type ButtonLabels } from "./form-button";
+import { FormProgress } from "./form-progress";
+import type { FormStepElement } from "./types";
 
 interface FormProps<
   ServerError,
@@ -53,14 +53,14 @@ export function Form<
   toastMessages,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const t = useTranslations('transactions');
+  const t = useTranslations("transactions");
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
       formProps: {
-        mode: 'onSubmit',
-        criteriaMode: 'all',
+        mode: "onSubmit",
+        criteriaMode: "all",
         shouldFocusError: false,
         shouldUseNativeValidation: true,
         defaultValues,
@@ -69,20 +69,20 @@ export function Form<
         onSuccess: ({ data }) => {
           const hashes = z.hashes().parse(data);
           toast.promise(waitForTransactions(hashes), {
-            loading: toastMessages?.loading || t('sending'),
-            success: toastMessages?.success || t('success'),
+            loading: toastMessages?.loading || t("sending"),
+            success: toastMessages?.success || t("success"),
             error: (error: Error) => `Failed to submit: ${error.message}`,
           });
           resetFormAndAction();
           onOpenChange?.(false);
         },
         onError: (error) => {
-          let errorMessage = 'Unknown error';
+          let errorMessage = "Unknown error";
 
           if (error?.error?.serverError) {
             errorMessage = error.error.serverError as string;
           } else if (error?.error?.validationErrors) {
-            errorMessage = 'Validation error';
+            errorMessage = "Validation error";
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);

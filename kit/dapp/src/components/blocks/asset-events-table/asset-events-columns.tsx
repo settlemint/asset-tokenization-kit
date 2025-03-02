@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { EventDetailSheet } from '@/components/blocks/asset-events-table/detail-sheet';
-import { DataTableColumnCell } from '@/components/blocks/data-table/data-table-column-cell';
-import { DataTableColumnHeader } from '@/components/blocks/data-table/data-table-column-header';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { getAssetEventsList } from '@/lib/queries/asset-events/asset-events-list';
-import { createColumnHelper } from '@tanstack/react-table';
-import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
+import { EventDetailSheet } from "@/components/blocks/asset-events-table/detail-sheet";
+import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
+import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
@@ -22,14 +22,14 @@ export const icons = {
 };
 
 export function useAssetEventsColumns() {
-  const t = useTranslations('components.asset-events-table');
+  const t = useTranslations("components.asset-events-table");
 
   return [
-    columnHelper.accessor('timestamp', {
+    columnHelper.accessor("timestamp", {
       header: ({ column }) => {
         return (
           <DataTableColumnHeader column={column}>
-            {t('timestamp')}
+            {t("timestamp")}
           </DataTableColumnHeader>
         );
       },
@@ -40,11 +40,11 @@ export function useAssetEventsColumns() {
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('asset', {
+    columnHelper.accessor("asset", {
       header: ({ column }) => {
         return (
           <DataTableColumnHeader column={column}>
-            {t('asset')}
+            {t("asset")}
           </DataTableColumnHeader>
         );
       },
@@ -61,11 +61,11 @@ export function useAssetEventsColumns() {
       },
       enableColumnFilter: true,
     }),
-    columnHelper.accessor('event', {
+    columnHelper.accessor("event", {
       header: ({ column }) => {
         return (
           <DataTableColumnHeader column={column}>
-            {t('event')}
+            {t("event")}
           </DataTableColumnHeader>
         );
       },
@@ -74,11 +74,11 @@ export function useAssetEventsColumns() {
       ),
       enableColumnFilter: true,
     }),
-    columnHelper.accessor('sender', {
+    columnHelper.accessor("sender", {
       header: ({ column }) => {
         return (
           <DataTableColumnHeader column={column}>
-            {t('sender')}
+            {t("sender")}
           </DataTableColumnHeader>
         );
       },
@@ -96,8 +96,8 @@ export function useAssetEventsColumns() {
       enableColumnFilter: true,
     }),
     columnHelper.display({
-      id: 'actions',
-      header: () => '',
+      id: "actions",
+      header: () => "",
       cell: ({ row }) => (
         <DataTableColumnCell>
           <EventDetailSheet

@@ -1,42 +1,42 @@
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
-import { type NavItem, NavMain } from '@/components/layout/nav-main';
-import { getSidebarAssets } from '@/lib/queries/sidebar-assets/sidebar-assets';
-import { getTranslations } from 'next-intl/server';
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
+import { type NavItem, NavMain } from "@/components/layout/nav-main";
+import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
+import { getTranslations } from "next-intl/server";
 
 export async function AssetManagement() {
-  const t = await getTranslations('admin.sidebar.asset-management');
+  const t = await getTranslations("admin.sidebar.asset-management");
   const data = await getSidebarAssets();
 
   // Asset configuration defined inline
   const assetItems: NavItem[] = [
     {
-      assetType: 'bond',
-      label: t('bonds'),
+      assetType: "bond",
+      label: t("bonds"),
       path: `/admin/bonds`,
       icon: <AssetTypeIcon type="bond" />,
     },
     {
-      assetType: 'cryptocurrency',
-      label: t('cryptocurrencies'),
+      assetType: "cryptocurrency",
+      label: t("cryptocurrencies"),
       path: `/admin/cryptocurrencies`,
       icon: <AssetTypeIcon type="cryptocurrency" />,
     },
     {
-      assetType: 'equity',
-      label: t('equities'),
+      assetType: "equity",
+      label: t("equities"),
       path: `/admin/equities`,
       icon: <AssetTypeIcon type="equity" />,
     },
     {
-      assetType: 'fund',
-      label: t('funds'),
+      assetType: "fund",
+      label: t("funds"),
       path: `/admin/funds`,
       icon: <AssetTypeIcon type="fund" />,
     },
     {
-      assetType: 'stablecoin',
-      label: t('stablecoins'),
+      assetType: "stablecoin",
+      label: t("stablecoins"),
       path: `/admin/stablecoins`,
       icon: <AssetTypeIcon type="stablecoin" />,
     },
@@ -54,7 +54,7 @@ export async function AssetManagement() {
       id: asset.id,
       label: (
         <>
-          {asset.name}{' '}
+          {asset.name}{" "}
           <span className="text-muted-foreground text-xs">
             {asset.symbol ?? asset.id}
           </span>
@@ -79,8 +79,8 @@ export async function AssetManagement() {
       // Add the "View all" item only if there are assets
       if (assetsOfSection.count > 0) {
         sectionItem.subItems.push({
-          id: 'view-all',
-          label: t('view-all'),
+          id: "view-all",
+          label: t("view-all"),
           path: section.path,
           icon: <span>→</span>,
         });
@@ -95,7 +95,7 @@ export async function AssetManagement() {
     <NavMain
       items={[
         {
-          groupTitle: t('group-title'),
+          groupTitle: t("group-title"),
           items: processedAssetItems,
         },
       ]}

@@ -1,13 +1,13 @@
-import { TotalSupply } from '@/components/blocks/charts/assets/total-supply';
-import { TotalSupplyChanged } from '@/components/blocks/charts/assets/total-supply-changed';
-import { TotalTransfers } from '@/components/blocks/charts/assets/total-transfers';
-import { TotalVolume } from '@/components/blocks/charts/assets/total-volume';
-import { DetailChartGrid } from '@/components/blocks/detail-grid/detail-chart-grid';
-import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
-import { Details } from './_components/details';
+import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
+import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
+import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
+import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
+import { DetailChartGrid } from "@/components/blocks/detail-grid/detail-chart-grid";
+import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
+import { Details } from "./_components/details";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -22,14 +22,14 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: 'admin.equities.details',
+    namespace: "admin.equities.details",
   });
 
   return {
-    title: t('details-page-title', {
+    title: t("details-page-title", {
       name: equity?.name,
     }),
-    description: t('details-page-description', {
+    description: t("details-page-description", {
       name: equity?.name,
     }),
   };

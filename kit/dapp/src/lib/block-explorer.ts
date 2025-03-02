@@ -8,7 +8,7 @@ function createExplorerUrl(path: string, explorerUrl?: string): string | null {
 }
 
 export function getBlockExplorerAllTxUrl(explorerUrl?: string) {
-  return createExplorerUrl('/transactions', explorerUrl);
+  return createExplorerUrl("/transactions", explorerUrl);
 }
 
 export function getBlockExplorerTxUrl(hash: string, explorerUrl?: string) {

@@ -1,34 +1,34 @@
-import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
-import { TransitionProvider } from '@/components/layout/transition-provider';
-import { routing } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
-import type { Viewport } from 'next';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { Figtree, Geist_Mono } from 'next/font/google';
-import { notFound } from 'next/navigation';
-import type { ReactNode } from 'react';
-import { Toaster } from 'sonner';
-import '../globals.css';
+import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
+import { TransitionProvider } from "@/components/layout/transition-provider";
+import { routing } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import type { Viewport } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { Figtree, Geist_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
+import { Toaster } from "sonner";
+import "../globals.css";
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
 
 const figTree = Figtree({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-figtree',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-figtree",
 });
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export default async function RootLayout({
@@ -56,7 +56,7 @@ export default async function RootLayout({
       </head> */}
       <body
         className={cn(
-          'min-h-screen  antialiased',
+          "min-h-screen  antialiased",
           figTree.variable,
           geistMono.variable
         )}

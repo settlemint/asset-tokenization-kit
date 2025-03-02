@@ -1,6 +1,6 @@
-import { getFundDetail } from '@/lib/queries/fund/fund-detail';
-import type { Address } from 'viem';
-import { PauseForm } from './form';
+import { getFundDetail } from "@/lib/queries/fund/fund-detail";
+import type { Address } from "viem";
+import { PauseForm } from "./form";
 
 interface PauseFormWrapperProps {
   address: Address;

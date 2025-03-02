@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { LanguageMenuItem } from '@/components/blocks/language/language-menu-item';
-import { ThemeMenuItem } from '@/components/blocks/theme/theme-menu-item';
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
+import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,25 +10,25 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Link, useRouter } from '@/i18n/routing';
-import { authClient } from '@/lib/auth/client';
-import { cn } from '@/lib/utils';
-import { shortHex } from '@/lib/utils/hex';
-import { ChevronDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import type { Address } from 'viem';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link, useRouter } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
+import { cn } from "@/lib/utils";
+import { shortHex } from "@/lib/utils/hex";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import type { Address } from "viem";
 import {
   BookTextIcon,
   type BookTextIconHandle,
-} from '../ui/animated-icons/book-text';
-import { LogoutIcon, type LogoutIconHandle } from '../ui/animated-icons/logout';
+} from "../ui/animated-icons/book-text";
+import { LogoutIcon, type LogoutIconHandle } from "../ui/animated-icons/logout";
 import {
   SquareStackIcon,
   type SquareStackIconHandle,
-} from '../ui/animated-icons/square-stack';
+} from "../ui/animated-icons/square-stack";
 
 // Custom text component that renders either content or a skeleton with consistent DOM structure
 function TextOrSkeleton({
@@ -47,7 +47,7 @@ function TextOrSkeleton({
       {condition ? (
         children
       ) : (
-        <span className={cn('block', skeletonClassName)}>
+        <span className={cn("block", skeletonClassName)}>
           <Skeleton className="h-full w-full" />
         </span>
       )}
@@ -60,7 +60,7 @@ export function UserDropdown() {
   const user = session.data?.user;
 
   const router = useRouter();
-  const t = useTranslations('layout.user-dropdown');
+  const t = useTranslations("layout.user-dropdown");
 
   // Use client-side only rendering for user data to avoid hydration mismatches
   const [isClient, setIsClient] = useState(false);
@@ -78,7 +78,7 @@ export function UserDropdown() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push('/'); // redirect to login page
+          router.push("/"); // redirect to login page
         },
       },
     });
@@ -149,7 +149,7 @@ export function UserDropdown() {
             >
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
               <Link href="/admin/activity" prefetch>
-                {t('pending-transactions')}
+                {t("pending-transactions")}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -163,7 +163,7 @@ export function UserDropdown() {
             >
               <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
               <Link href="https://console.settlemint.com/documentation">
-                {t('documentation')}
+                {t("documentation")}
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -174,7 +174,7 @@ export function UserDropdown() {
             onMouseLeave={() => logoutIconRef.current?.stopAnimation()}
           >
             <LogoutIcon ref={logoutIconRef} className="mr-2 size-4" />
-            {t('logout')}
+            {t("logout")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       )}

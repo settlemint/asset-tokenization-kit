@@ -1,23 +1,23 @@
-'use client';
+"use client";
 import {
   SearchIcon,
   type SearchIconHandle,
-} from '@/components/ui/animated-icons/search';
-import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { useDebounce } from '@/hooks/use-debounce';
-import { Link } from '@/i18n/routing';
-import type { Asset } from '@/lib/queries/asset/asset-fragment';
-import { getAssetSearch } from '@/lib/queries/asset/asset-search';
-import { getUserSearch } from '@/lib/queries/user/user-search';
-import { cn } from '@/lib/utils';
-import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { getAddress } from 'viem';
-import { EvmAddress } from '../evm-address/evm-address';
+} from "@/components/ui/animated-icons/search";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Link } from "@/i18n/routing";
+import type { Asset } from "@/lib/queries/asset/asset-fragment";
+import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import { getUserSearch } from "@/lib/queries/user/user-search";
+import { cn } from "@/lib/utils";
+import { sanitizeSearchTerm } from "@/lib/utils/string";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { getAddress } from "viem";
+import { EvmAddress } from "../evm-address/evm-address";
 
 // Client-side hooks to fetch search results
 function useClientAssetSearch(searchTerm: string) {
@@ -40,7 +40,7 @@ function useClientAssetSearch(searchTerm: string) {
           setData(result || []);
         }
       } catch (error) {
-        console.error('Error searching assets:', error);
+        console.error("Error searching assets:", error);
         if (isMounted) {
           setData([]);
         }
@@ -83,7 +83,7 @@ function useClientUserSearch(searchTerm: string) {
           setData(result || []);
         }
       } catch (error) {
-        console.error('Error searching users:', error);
+        console.error("Error searching users:", error);
         if (isMounted) {
           setData([]);
         }
@@ -107,17 +107,17 @@ function useClientUserSearch(searchTerm: string) {
 export const Search = () => {
   const form = useForm({
     defaultValues: {
-      search: '',
+      search: "",
     },
-    mode: 'all',
+    mode: "all",
   });
 
-  const t = useTranslations('components.search');
+  const t = useTranslations("components.search");
   const searchIconRef = useRef<SearchIconHandle>(null);
 
   const search = useWatch({
     control: form.control,
-    name: 'search',
+    name: "search",
   });
   const debounced = useDebounce(search, 250);
   const sanitizedSearchTerm = sanitizeSearchTerm(debounced);
@@ -128,16 +128,16 @@ export const Search = () => {
   // Get URL segment based on asset type
   const getAssetUrlSegment = (type: string): string => {
     switch (type) {
-      case 'bond':
-        return 'bonds';
-      case 'cryptocurrency':
-        return 'cryptocurrencies';
-      case 'equity':
-        return 'equities';
-      case 'fund':
-        return 'funds';
-      case 'stablecoin':
-        return 'stablecoins';
+      case "bond":
+        return "bonds";
+      case "cryptocurrency":
+        return "cryptocurrencies";
+      case "equity":
+        return "equities";
+      case "fund":
+        return "funds";
+      case "stablecoin":
+        return "stablecoins";
       default:
         return type;
     }
@@ -147,7 +147,7 @@ export const Search = () => {
     <Form {...form}>
       <div
         className={cn(
-          'relative flex h-full w-full flex-col overflow-visible rounded-md bg-popover text-popover-foreground'
+          "relative flex h-full w-full flex-col overflow-visible rounded-md bg-popover text-popover-foreground"
         )}
       >
         <form
@@ -155,8 +155,8 @@ export const Search = () => {
             e.preventDefault();
           }}
           className={cn(
-            'flex items-center border border-b px-3 shadow-md focus-within:outline-hidden focus-within:ring-0 md:min-w-[450px]',
-            debounced ? 'rounded-t-lg' : 'rounded-lg'
+            "flex items-center border border-b px-3 shadow-md focus-within:outline-hidden focus-within:ring-0 md:min-w-[450px]",
+            debounced ? "rounded-t-lg" : "rounded-lg"
           )}
           onMouseEnter={() => searchIconRef.current?.startAnimation()}
           onMouseLeave={() => searchIconRef.current?.stopAnimation()}
@@ -172,13 +172,13 @@ export const Search = () => {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder={t('placeholder')}
+                    placeholder={t("placeholder")}
                     {...field}
                     className={cn(
-                      'flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-hidden placeholder:text-muted-foreground focus:outline-hidden focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:min-w-[450px]'
+                      "flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-hidden placeholder:text-muted-foreground focus:outline-hidden focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:min-w-[450px]"
                     )}
                     onChange={(e) => {
-                      form.setValue('search', e.target.value, {
+                      form.setValue("search", e.target.value, {
                         shouldDirty: true,
                         shouldTouch: true,
                         shouldValidate: true,
@@ -193,20 +193,20 @@ export const Search = () => {
         {debounced && (
           <div
             className={cn(
-              'absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-lg'
+              "absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-lg"
             )}
           >
             {(assets ?? []).length === 0 && (users ?? []).length === 0 && (
               <div className="py-6 text-center text-sm">
                 <p className="text-muted-foreground text-sm">
-                  {t('no-results')}
+                  {t("no-results")}
                 </p>
               </div>
             )}
             {(assets ?? []).length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
-                  {t('assets-section')}
+                  {t("assets-section")}
                 </div>
                 {(assets ?? []).map((asset) => (
                   <div
@@ -216,7 +216,7 @@ export const Search = () => {
                     <Link
                       href={`/admin/${getAssetUrlSegment(asset.type)}/${getAddress(asset.id)}`}
                       onClick={() => {
-                        form.setValue('search', '', {
+                        form.setValue("search", "", {
                           shouldDirty: true,
                           shouldTouch: true,
                         });
@@ -236,7 +236,7 @@ export const Search = () => {
             {users && users.length > 0 && (
               <>
                 <div className="overflow-hidden p-1 px-2 py-1.5 font-medium text-muted-foreground text-xs">
-                  {t('users-section')}
+                  {t("users-section")}
                 </div>
                 {users.map((user) => (
                   <div
@@ -246,7 +246,7 @@ export const Search = () => {
                     <Link
                       href={`/admin/users/${user.id}`}
                       onClick={() => {
-                        form.setValue('search', '', {
+                        form.setValue("search", "", {
                           shouldDirty: true,
                           shouldTouch: true,
                           shouldValidate: true,

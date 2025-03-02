@@ -1,11 +1,11 @@
 import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
-} from '@/lib/settlemint/the-graph';
-import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { AssetFragment, AssetFragmentSchema } from './asset-fragment';
+} from "@/lib/settlemint/the-graph";
+import { sanitizeSearchTerm } from "@/lib/utils/string";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { AssetFragment, AssetFragmentSchema } from "./asset-fragment";
 
 /**
  * GraphQL query to search for assets by name, symbol, or address
@@ -58,7 +58,7 @@ export const getAssetSearch = cache(
 
     // Validate data using Zod schema
     const validatedAssets = assets.map((asset) =>
-      safeParseWithLogging(AssetFragmentSchema, asset, 'asset search')
+      safeParseWithLogging(AssetFragmentSchema, asset, "asset search")
     );
 
     return validatedAssets;

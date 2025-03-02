@@ -1,6 +1,6 @@
-import { portalGraphql } from '@/lib/settlemint/portal';
-import { theGraphGraphqlStarterkits } from '@/lib/settlemint/the-graph';
-import { z, type ZodInfer } from '@/lib/utils/zod';
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for transaction data

@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { BlockUserSchema } from './block-user-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { BlockUserSchema } from "./block-user-schema";
 
 /**
  * GraphQL mutation to block a user from a bond

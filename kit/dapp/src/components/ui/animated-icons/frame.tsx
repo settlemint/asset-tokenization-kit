@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import type { Transition } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { cn } from "@/lib/utils";
+import type { Transition } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
 export interface FrameIconHandle {
   startAnimation: () => void;
@@ -12,7 +12,7 @@ export interface FrameIconHandle {
 }
 
 const defaultTransition: Transition = {
-  type: 'spring',
+  type: "spring",
   stiffness: 160,
   damping: 17,
   mass: 1,
@@ -27,15 +27,15 @@ const FrameIcon = forwardRef<FrameIconHandle, HTMLAttributes<HTMLDivElement>>(
       isControlledRef.current = true;
 
       return {
-        startAnimation: () => controls.start('animate'),
-        stopAnimation: () => controls.start('normal'),
+        startAnimation: () => controls.start("animate"),
+        stopAnimation: () => controls.start("normal"),
       };
     });
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('animate');
+          controls.start("animate");
         } else {
           onMouseEnter?.(e);
         }
@@ -46,7 +46,7 @@ const FrameIcon = forwardRef<FrameIconHandle, HTMLAttributes<HTMLDivElement>>(
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isControlledRef.current) {
-          controls.start('normal');
+          controls.start("normal");
         } else {
           onMouseLeave?.(e);
         }
@@ -57,7 +57,7 @@ const FrameIcon = forwardRef<FrameIconHandle, HTMLAttributes<HTMLDivElement>>(
     return (
       <div
         className={cn(
-          'cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center',
+          "cursor-pointer select-none rounded-md transition-colors duration-200 flex items-center justify-center",
           className
         )}
         onMouseEnter={handleMouseEnter}
@@ -145,6 +145,6 @@ const FrameIcon = forwardRef<FrameIconHandle, HTMLAttributes<HTMLDivElement>>(
   }
 );
 
-FrameIcon.displayName = 'FrameIcon';
+FrameIcon.displayName = "FrameIcon";
 
 export { FrameIcon };

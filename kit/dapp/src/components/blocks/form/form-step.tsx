@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from "react";
 
 interface FormStepProps extends PropsWithChildren {
   title: string;
