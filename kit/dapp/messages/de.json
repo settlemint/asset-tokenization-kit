@@ -665,6 +665,7 @@
         },
         "assets-supply": {
           "label": "Assets supply",
+          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Vermögensarten.",
           "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
         },
         "transaction-history": {

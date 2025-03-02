@@ -1,38 +1,40 @@
+import { PieChartComponent } from '@/components/blocks/charts/pie-chart';
+import { getAssetActivity } from '@/lib/queries/asset-activity/asset-activity';
 import { getTranslations } from 'next-intl/server';
 
-// const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
-//   Object.entries(assetConfig).map(([, asset]) => [
-//     asset.pluralName,
-//     { label: asset.pluralName, color: asset.color },
-//   ])
-// ) satisfies ChartConfig;
+const assetColors = {
+  bond: '#8b5cf6',
+  cryptocurrency: '#2563eb',
+  equity: '#4ade80',
+  fund: '#10b981',
+  stablecoin: '#0ea5e9',
+} as const;
 
 export async function AssetsSupply() {
   const t = await getTranslations('admin.dashboard.charts');
+  const data = await getAssetActivity();
+  const chartData = data.map((item) => ({
+    assetType: item.assetType,
+    totalSupply: Number(item.totalSupply),
+  }));
 
-  // const { data } = useSuspenseQuery({
-  //   queryKey: queryKey,
-  //   queryFn: getAssetsWidgetData,
-  // });
-  // const chartData = data.breakdown
-  //   .filter((item) => item.supplyPercentage > 0)
-  //   .map((item) => ({
-  //     ...item,
-  //     fill: ASSET_PIE_CHART_CONFIG[item.type].color,
-  //   }));
-  // if (chartData.length === 0) {
-  //   return <ChartSkeleton title="Distribution" variant="noData" />;
-  // }
-  // return (
-  //   <PieChartComponent
-  //     description="Showing the distribution of assets (in %)"
-  //     title="Distribution"
-  //     data={chartData}
-  //     dataKey="supplyPercentage"
-  //     nameKey="type"
-  //     config={ASSET_PIE_CHART_CONFIG}
-  //   />
-  // );
-
-  return <div>{t('assets-supply.to-be-moved')}</div>;
+  return (
+    <PieChartComponent
+      description={t('assets-supply.description')}
+      title={t('assets-supply.label')}
+      data={chartData}
+      dataKey="totalSupply"
+      nameKey="assetType"
+      config={{
+        bond: { label: 'Bond', color: assetColors.bond },
+        cryptocurrency: {
+          label: 'Cryptocurrency',
+          color: assetColors.cryptocurrency,
+        },
+        equity: { label: 'Equity', color: assetColors.equity },
+        fund: { label: 'Fund', color: assetColors.fund },
+        stablecoin: { label: 'Stablecoin', color: assetColors.stablecoin },
+      }}
+    />
+  );
 }
