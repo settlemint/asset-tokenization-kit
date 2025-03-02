@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": [
-      "es2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -36,6 +32,12 @@
             "tadaTurboLocation": "hasura-cache.d.ts"
           },
           {
+            "name": "thegraph-starterkits",
+            "schema": "the-graph-schema-starterkits.graphql",
+            "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
+            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts"
+          },
+          {
             "name": "portal",
             "schema": "portal-schema.graphql",
             "tadaOutputLocation": "portal-env.d.ts",
@@ -51,12 +53,8 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@schemas/*": [
-        "./*.d.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@schemas/*": ["./*.d.ts"]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -80,7 +78,5 @@
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
