@@ -67,7 +67,7 @@ export function NavFooter() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-[--radix-dropdown-menu-trigger-width] rounded shadow-dropdown"
+            className="w-(--radix-dropdown-menu-trigger-width) rounded shadow-dropdown"
           >
             <DropdownMenuItem asChild>
               <Link

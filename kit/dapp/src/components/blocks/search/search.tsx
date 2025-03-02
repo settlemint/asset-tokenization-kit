@@ -155,7 +155,7 @@ export const Search = () => {
             e.preventDefault();
           }}
           className={cn(
-            'flex items-center border border-b px-3 shadow-md focus-within:outline-none focus-within:ring-0 md:min-w-[450px]',
+            'flex items-center border border-b px-3 shadow-md focus-within:outline-hidden focus-within:ring-0 md:min-w-[450px]',
             debounced ? 'rounded-t-lg' : 'rounded-lg'
           )}
           onMouseEnter={() => searchIconRef.current?.startAnimation()}
@@ -175,7 +175,7 @@ export const Search = () => {
                     placeholder={t('placeholder')}
                     {...field}
                     className={cn(
-                      'flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:min-w-[450px]'
+                      'flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-hidden placeholder:text-muted-foreground focus:outline-hidden focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:min-w-[450px]'
                     )}
                     onChange={(e) => {
                       form.setValue('search', e.target.value, {
@@ -211,7 +211,7 @@ export const Search = () => {
                 {(assets ?? []).map((asset) => (
                   <div
                     key={asset.id}
-                    className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                    className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                   >
                     <Link
                       href={`/admin/${getAssetUrlSegment(asset.type)}/${getAddress(asset.id)}`}
@@ -241,7 +241,7 @@ export const Search = () => {
                 {users.map((user) => (
                   <div
                     key={user.wallet}
-                    className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+                    className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                   >
                     <Link
                       href={`/admin/users/${user.id}`}

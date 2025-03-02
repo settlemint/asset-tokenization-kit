@@ -137,7 +137,7 @@ export function UserDropdown() {
       </DropdownMenuTrigger>
       {user && (
         <DropdownMenuContent
-          className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded shadow-dropdown"
+          className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown"
           side="bottom"
           align="end"
           sideOffset={4}

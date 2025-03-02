@@ -169,9 +169,9 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
   ) => {
     return (
       <div className={cn('relative', className)} ref={ref} {...props}>
-        <div className="absolute top-0 z-[0] h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
+        <div className="absolute top-0 z-0 h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
         <section className="relative z-1 mx-auto max-w-full">
-          <div className="z-10 mx-auto max-w-screen-xl gap-12 px-4 py-28 md:px-8 ">
+          <div className="z-10 mx-auto max-w-(--breakpoint-xl) gap-12 px-4 py-28 md:px-8 ">
             <div className="absolute top-8 left-8 flex items-center gap-3">
               <Logo className="w-48" />
               <LanguageToggle size="icon" variant="outline" />
@@ -196,7 +196,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               <h2 className="mx-auto bg-[linear-gradient(180deg,_hsl(var(--foreground))_0%,_hsl(var(--foreground)/75%)_100%)] bg-clip-text font-geist text-4xl text-transparent tracking-tighter md:text-6xl">
                 {subtitle.regular}
                 <br />
-                <span className="bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
                   {subtitle.gradient}
                 </span>
               </h2>
@@ -209,7 +209,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                   <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-background font-medium font-mono text-xs backdrop-blur-3xl">
                     <Link
                       href={ctaHref}
-                      className="group inline-flex w-full items-center justify-center rounded-full border-[1px] border-input bg-gradient-to-tr from-[hsl(var(--accent))/20] via-[hsl(var(--chart-2))/30] to-transparent px-10 py-4 text-center text-foreground transition-all hover:bg-gradient-to-tr hover:from-[hsl(var(--accent))/30] hover:via-[hsl(var(--chart-2))/40] hover:to-transparent sm:w-auto"
+                      className="group inline-flex w-full items-center justify-center rounded-full border-[1px] border-input bg-linear-to-tr from-[hsl(var(--accent))/20] via-[hsl(var(--chart-2))/30] to-transparent px-10 py-4 text-center text-foreground transition-all hover:bg-linear-to-tr hover:from-[hsl(var(--accent))/30] hover:via-[hsl(var(--chart-2))/40] hover:to-transparent sm:w-auto"
                     >
                       {ctaText}
                     </Link>

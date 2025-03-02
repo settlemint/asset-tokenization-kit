@@ -63,7 +63,7 @@ export function EventDetailSheet({
                 <EvmAddress address={asset as Address} />
               </dd>
               <dt className="text-muted-foreground text-sm">{t('date')}:</dt>
-              <dd className="text-sm [&:first-letter]:uppercase">
+              <dd className="text-sm first-letter:uppercase">
                 {timestamp}
               </dd>
               <dt className="text-muted-foreground text-sm">

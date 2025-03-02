@@ -122,7 +122,7 @@ export function FormInput<T extends FieldValues>({
             <FormControl>
               <div
                 className={cn(
-                  'flex rounded-lg shadow-black/5 shadow-sm',
+                  'flex rounded-lg shadow-black/5 shadow-xs',
                   !postfix && 'shadow-none'
                 )}
               >

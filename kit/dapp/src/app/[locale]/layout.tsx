@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import type { Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { Figtree } from 'next/font/google';
+import { Figtree, Geist_Mono } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
@@ -26,6 +26,11 @@ const figTree = Figtree({
   variable: '--font-figtree',
 });
 
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
 export default async function RootLayout({
   children,
   params,
@@ -44,12 +49,18 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning className={figTree.className}>
+    <html lang={locale} suppressHydrationWarning>
       {/* Can be used to debug rerenders using react-scan
       <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       </head> */}
-      <body className={cn('min-h-screen font-sans antialiased')}>
+      <body
+        className={cn(
+          'min-h-screen  antialiased',
+          figTree.variable,
+          geistMono.variable
+        )}
+      >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
             <TransitionProvider>{children}</TransitionProvider>
