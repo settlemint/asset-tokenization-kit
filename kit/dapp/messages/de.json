@@ -664,7 +664,8 @@
           }
         },
         "assets-supply": {
-          "to-be-moved": "Soll zu The Graph verschoben werden"
+          "label": "Assets supply",
+          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
         },
         "transaction-history": {
           "title": "Transaktionen",
