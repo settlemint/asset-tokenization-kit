@@ -60,11 +60,11 @@ function NavItemComponent({
           asChild
           className={isActiveFn(item.path) ? "font-bold" : undefined}
         >
-          <Link href={item.path}>
+          <Link href={item.path} className="flex w-full items-center">
             {Icon ?? null}
-            <span className="truncate">{item.label}</span>
+            <span className="truncate flex-1 min-w-0">{item.label}</span>
             {item.badge && (
-              <span className="ml-auto text-muted-foreground text-xs">
+              <span className="ml-2 flex-shrink-0 text-muted-foreground text-xs">
                 {item.badge}
               </span>
             )}
@@ -91,43 +91,42 @@ function NavItemComponent({
           <SidebarMenuButton
             className={isGroupActive ? "font-bold" : undefined}
           >
-            <div>{Icon ?? null}</div>
-            <div className="flex w-full items-center justify-between">
-              <div className="truncate">{item.label}</div>
-              <div className="flex shrink-0 items-center gap-2">
-                {item.badge && (
-                  <span className="text-muted-foreground text-xs">
-                    {item.badge}
-                  </span>
-                )}
-                <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-              </div>
-            </div>
+            {Icon ?? null}
+            <span className="truncate flex-1 min-w-0">{item.label}</span>
+            {item.badge && (
+              <span className="ml-2 flex-shrink-0 text-muted-foreground text-xs">
+                {item.badge}
+              </span>
+            )}
+            <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 ml-2 flex-shrink-0" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SidebarMenuSub>
+          <SidebarMenuSub className="mr-0">
             {item.subItems.map((subItem, index) => {
               const SubIcon = subItem.icon ?? undefined;
 
               return (
-                <SidebarMenuSubItem key={subItem.id ?? index}>
+                <SidebarMenuSubItem key={subItem.id ?? index} className="mr-0">
                   <SidebarMenuSubButton
                     asChild
                     className={cn(
                       isActiveFn(subItem.path) ? "font-bold" : undefined
                     )}
                   >
-                    <Link href={subItem.path} className="flex min-w-0 truncate">
+                    <Link
+                      href={subItem.path}
+                      className="flex w-full items-center"
+                    >
                       {SubIcon ?? null}
-                      <span className="truncate">{subItem.label}</span>
-                      <div className="flex shrink-0 items-center gap-2">
-                        {subItem.badge && (
-                          <span className="text-muted-foreground text-xs">
-                            {subItem.badge}
-                          </span>
-                        )}
-                      </div>
+                      <span className="truncate flex-1 min-w-0">
+                        {subItem.label}
+                      </span>
+                      {subItem.badge && (
+                        <span className="ml-2 flex-shrink-0 text-muted-foreground text-xs">
+                          {subItem.badge}
+                        </span>
+                      )}
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
@@ -148,12 +147,12 @@ function NavGroupComponent({
   isActive?: (path: string) => boolean;
 }) {
   return (
-    <div className="my-2">
+    <>
       <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
       {group.items.map((item, index) => (
         <NavItemComponent key={item.id ?? index} item={{ ...item, isActive }} />
       ))}
-    </div>
+    </>
   );
 }
 

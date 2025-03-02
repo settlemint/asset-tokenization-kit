@@ -141,7 +141,12 @@ function AddressAvatarComponent({
         className={addressAvatarVariants({ size: sizeValue })}
         aria-label={altText}
       >
-        <AvatarImage src={avatarSrc} alt={altText} loading="lazy" />
+        <AvatarImage
+          src={avatarSrc}
+          alt={altText}
+          loading="lazy"
+          className="border-1 border-accent-foreground rounded-full"
+        />
         <AvatarFallback>{fallbackText}</AvatarFallback>
       </Avatar>
 

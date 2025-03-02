@@ -12,7 +12,7 @@ export function ActivePill({ paused }: { paused: boolean }): ReactElement {
       variant={paused ? "destructive" : "default"}
       className={cn(
         "bg-destructive/20 text-destructive",
-        paused && "bg-success/20 text-success"
+        !paused && "bg-success/20 text-success"
       )}
     >
       {paused ? (

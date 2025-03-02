@@ -23,7 +23,7 @@ export default function AdminDashboard() {
         <UsersWidget />
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats_heading")}</p>
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-4 lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 2xl:grid-cols-4 lg:divide-x lg:divide-y-0">
         <AssetsSupply />
         <AssetActivity />
         <UsersHistory />

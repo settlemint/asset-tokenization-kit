@@ -52,14 +52,8 @@ export async function AssetManagement() {
 
     const subItems = assetsOfSection.records.map((asset) => ({
       id: asset.id,
-      label: (
-        <>
-          {asset.name}{" "}
-          <span className="text-muted-foreground text-xs">
-            {asset.symbol ?? asset.id}
-          </span>
-        </>
-      ),
+      label: asset.name,
+      badge: asset.symbol ?? asset.id,
       path: `${section.path}/${asset.id}`,
       icon: <AddressAvatar address={asset.id} size="tiny" />,
     }));
