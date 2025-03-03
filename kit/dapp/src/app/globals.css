@@ -21,6 +21,8 @@
   --sm-lightest-gray: oklch(0.83 0 0);
   --sm-input-gray: oklch(0.54 0 0);
   --sm-light-gray: oklch(0.34 0 0);
+  --sm-soft-gray: oklch(92.76% 0.006 264.53);
+  --sm-softer-gray: oklch(97.86% 0.009 264.52);
   --sm-dark-gray: oklch(0.23 0 1);
   --sm-medium-gray: oklch(0.28 0 1);
   /* shadcn colors */
@@ -41,7 +43,7 @@
   --accent-hover: var(--sm-blue);
   --destructive: var(--sm-red);
   --destructive-foreground: var(--sm-white);
-  --border: var(--sm-lightest-gray);
+  --border: var(--sm-soft-gray);
   --input: var(--sm-lightest-gray);
   --ring: var(--sm-blue);
   --chart-1: var(--sm-mint-green);
@@ -171,9 +173,17 @@
     box-shadow: inset 0 -3px 3px 0 rgba(0, 0, 0, 0.21);
   }
 
+  .shadow-md {
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(52, 110, 238, 0.12) 0px 5px 15px 0px
+  }
+
+  .dark .shadow-md {
+    box-shadow: 0 5px 15px rgba(28,28,28,0.87)
+  }
+
   [data-slot="card"] {
     @apply border-0;
-    background: linear-gradient(261deg, oklch(0.98 0.01 0), var(--sm-white));
+    background: linear-gradient(45deg, var(--sm-white) 0%, var(--sm-softer-gray) 100%) 0% 0% no-repeat padding-box;
   }
 
   .dark [data-slot="card"] {
