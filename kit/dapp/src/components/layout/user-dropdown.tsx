@@ -57,7 +57,7 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const { data, isPending } = authClient.useSession();
+  const { data } = authClient.useSession();
   const user = data?.user;
 
   const router = useRouter();
@@ -78,7 +78,7 @@ export function UserDropdown() {
     });
   }, [router]);
 
-  if (isPending) {
+  if (!user) {
     return null;
   }
 
