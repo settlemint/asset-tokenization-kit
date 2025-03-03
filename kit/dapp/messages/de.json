@@ -661,7 +661,7 @@
       "widgets": {
         "assets": {
           "label": "Vermögenswerte Angebot",
-          "subtext": "Datenvisualisierung kommt bald."
+          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
         },
         "users": {
           "label": "Benutzer",
@@ -673,22 +673,23 @@
         }
       },
       "charts": {
+        "asset-types": {
+          "bonds": "Anleihen",
+          "cryptocurrencies": "Kryptowährungen",
+          "equities": "Aktien",
+          "funds": "Fonds",
+          "stablecoins": "Stablecoins"
+        },
         "asset-activity": {
           "title": "Aktivität",
           "description": "Visualisieren Sie kürzliche Minting-, Transfer- und Burning-Aktivitäten über Vermögensarten hinweg.",
           "mint": "Prägen",
           "transfer": "Übertragen",
-          "burn": "Verbrennen",
-          "asset-types": {
-            "bonds": "Anleihen",
-            "cryptocurrencies": "Kryptowährungen",
-            "equities": "Aktien",
-            "funds": "Fonds",
-            "stablecoins": "Stablecoins"
-          }
+          "burn": "Verbrennen"
         },
         "assets-supply": {
-          "to-be-moved": "Soll zu The Graph verschoben werden"
+          "label": "Verteilung",
+          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Vermögensarten."
         },
         "transaction-history": {
           "title": "Transaktionen",

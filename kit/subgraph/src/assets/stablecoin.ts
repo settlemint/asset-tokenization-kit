@@ -1,5 +1,6 @@
 import {
   Address,
+  BigDecimal,
   ByteArray,
   Bytes,
   crypto,
@@ -80,6 +81,12 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.totalSupplyExact,
       stableCoin.decimals
     );
+
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.plus(
+      mint.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
+
     collateralCalculatedFields(stableCoin);
 
     if (!hasBalance(stableCoin.id, to.id)) {
@@ -107,6 +114,13 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.minted = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.mintedExact = event.params.value;
+
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(
+      BigDecimal.zero()
+    )
+      ? BigDecimal.zero()
+      : stableCoin.collateral.div(stableCoin.totalSupply);
+
     assetStats.collateralRatio = stableCoin.collateralRatio;
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
@@ -154,6 +168,10 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.totalSupplyExact,
       stableCoin.decimals
     );
+    assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
+      burn.valueExact
+    );
+    assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
     collateralCalculatedFields(stableCoin);
 
     const balance = fetchAssetBalance(
@@ -176,6 +194,13 @@ export function handleTransfer(event: Transfer): void {
 
     assetStats.burned = toDecimals(event.params.value, stableCoin.decimals);
     assetStats.burnedExact = event.params.value;
+
+    assetStats.collateralRatio = stableCoin.totalSupply.equals(
+      BigDecimal.zero()
+    )
+      ? BigDecimal.zero()
+      : stableCoin.collateral.div(stableCoin.totalSupply);
+
     assetStats.collateralRatio = stableCoin.collateralRatio;
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;

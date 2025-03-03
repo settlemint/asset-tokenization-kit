@@ -1,38 +1,48 @@
+import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
+import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
+import { getAssetActivity } from "@/lib/queries/asset-activity/asset-activity";
 import { getTranslations } from "next-intl/server";
-
-// const ASSET_PIE_CHART_CONFIG = Object.fromEntries(
-//   Object.entries(assetConfig).map(([, asset]) => [
-//     asset.pluralName,
-//     { label: asset.pluralName, color: asset.color },
-//   ])
-// ) satisfies ChartConfig;
 
 export async function AssetsSupply() {
   const t = await getTranslations("admin.dashboard.charts");
-
-  // const { data } = useSuspenseQuery({
-  //   queryKey: queryKey,
-  //   queryFn: getAssetsWidgetData,
-  // });
-  // const chartData = data.breakdown
-  //   .filter((item) => item.supplyPercentage > 0)
-  //   .map((item) => ({
-  //     ...item,
-  //     fill: ASSET_PIE_CHART_CONFIG[item.type].color,
-  //   }));
-  // if (chartData.length === 0) {
-  //   return <ChartSkeleton title="Distribution" variant="noData" />;
-  // }
-  // return (
-  //   <PieChartComponent
-  //     description="Showing the distribution of assets (in %)"
-  //     title="Distribution"
-  //     data={chartData}
-  //     dataKey="supplyPercentage"
-  //     nameKey="type"
-  //     config={ASSET_PIE_CHART_CONFIG}
-  //   />
-  // );
-
-  return <div>{t("assets-supply.to-be-moved")}</div>;
+  const data = await getAssetActivity();
+  const chartData = data.map((item) => ({
+    assetType: item.assetType,
+    totalSupply: Number(item.totalSupply),
+  }));
+  type AssetType = Awaited<
+    ReturnType<typeof getAssetActivity>
+  >[number]["assetType"];
+  const config: Record<AssetType, { label: string; color: string }> = {
+    bond: {
+      label: t("asset-types.bonds"),
+      color: getAssetColor("bond", "color"),
+    },
+    cryptocurrency: {
+      label: t("asset-types.cryptocurrencies"),
+      color: getAssetColor("cryptocurrency", "color"),
+    },
+    equity: {
+      label: t("asset-types.equities"),
+      color: getAssetColor("equity", "color"),
+    },
+    fund: {
+      label: t("asset-types.funds"),
+      color: getAssetColor("fund", "color"),
+    },
+    stablecoin: {
+      label: t("asset-types.stablecoins"),
+      color: getAssetColor("stablecoin", "color"),
+    },
+  };
+  return (
+    <PieChartComponent
+      description={t("assets-supply.description")}
+      title={t("assets-supply.label")}
+      data={chartData}
+      dataKey="totalSupply"
+      nameKey="assetType"
+      config={config}
+    />
+  );
 }

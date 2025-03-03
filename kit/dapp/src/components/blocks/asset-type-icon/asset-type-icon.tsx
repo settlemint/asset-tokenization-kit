@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { getAssetColor } from "./asset-color";
 
 interface AssetTypeIconProps {
   type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
@@ -32,31 +33,12 @@ export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
     }
   }
 
-  function getAssetColorClass(
-    type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"
-  ): string {
-    switch (type) {
-      case "bond":
-        return "bg-chart-1";
-      case "cryptocurrency":
-        return "bg-chart-2";
-      case "equity":
-        return "bg-chart-3";
-      case "fund":
-        return "bg-chart-4";
-      case "stablecoin":
-        return "bg-chart-5";
-      default:
-        return "bg-chart-5";
-    }
-  }
-
   return (
     <Avatar className={`${sizeClass} border border-foreground-muted`}>
       <AvatarFallback
         className={cn(
           "text-[7px] text-white dark:text-sm-dark-gray font-bold",
-          getAssetColorClass(type)
+          getAssetColor(type)
         )}
       >
         {getAssetInitials(type)}

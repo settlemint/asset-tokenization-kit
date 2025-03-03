@@ -470,14 +470,14 @@
     },
     "dashboard": {
       "charts": {
+        "asset-types": {
+          "bonds": "Bonds",
+          "cryptocurrencies": "Cryptocurrencies",
+          "equities": "Equities",
+          "funds": "Funds",
+          "stablecoins": "Stablecoins"
+        },
         "asset-activity": {
-          "asset-types": {
-            "bonds": "Bonds",
-            "cryptocurrencies": "Cryptocurrencies",
-            "equities": "Equities",
-            "funds": "Funds",
-            "stablecoins": "Stablecoins"
-          },
           "burn": "Burn",
           "description": "Visualize recent minting, transfers, and burning activities across asset types.",
           "mint": "Mint",
@@ -485,7 +485,9 @@
           "transfer": "Transfer"
         },
         "assets-supply": {
-          "to-be-moved": "To Be Moved To The Graph"
+          "description": "Visualize the distribution of total supply across different asset categories.",
+          "label": "Distribution",
+          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "transaction-history": {
           "description": "Overview of transaction volume and trends over the past {interval}.",
@@ -511,7 +513,7 @@
       "widgets": {
         "assets": {
           "label": "Assets supply",
-          "subtext": "Data visualization coming soon."
+          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
         },
         "transactions": {
           "label": "Transactions",
