@@ -1,6 +1,6 @@
 import {
+  columns,
   icons,
-  useUserColumns,
 } from "@/app/[locale]/(private)/admin/users/(table)/_components/columns";
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { PageHeader } from "@/components/layout/page-header";
@@ -13,7 +13,7 @@ export default async function UsersPage() {
     <>
       <PageHeader title="Users" />
       <DataTable
-        columnHook={useUserColumns}
+        columns={columns}
         data={users}
         icons={icons}
         name="user"

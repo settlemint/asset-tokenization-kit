@@ -1359,6 +1359,14 @@
           },
           "button-label": "Freeze Funds",
           "description": "Temporarily restrict a user's access to their funds.",
+          "summary": {
+            "amount-label": "Amount",
+            "asset-label": "Asset",
+            "description": "Verify the details of your freeze operation before proceeding.",
+            "freeze-title": "Freeze",
+            "operation-description": "Freezing operation details",
+            "title": "Review and confirm freeze operation"
+          },
           "title": "Restrict User Funds",
           "trigger-label": "Freeze"
         },

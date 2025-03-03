@@ -92,7 +92,7 @@ export function ThemeToggle({
             onClick={() => handleSetTheme(theme)}
             className="capitalize"
           >
-            {t(theme)}
+            {t(theme as "dark" | "light" | "system")}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

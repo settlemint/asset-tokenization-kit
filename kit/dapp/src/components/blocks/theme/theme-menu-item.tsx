@@ -52,7 +52,9 @@ export function ThemeMenuItem() {
       ) : (
         <MoonIcon ref={moonIconRef} className="mr-2 size-4" />
       )}
-      {t("switch-to-mode", { mode: t(nextTheme) })}
+      {t("switch-to-mode", {
+        mode: t(nextTheme as "dark" | "light" | "system"),
+      })}
     </DropdownMenuItem>
   );
 }

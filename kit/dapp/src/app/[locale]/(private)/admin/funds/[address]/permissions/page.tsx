@@ -5,7 +5,7 @@ import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { usePermissionsColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -46,7 +46,7 @@ export default async function FundTokenPermissionsPage({ params }: PageProps) {
         subtitle={t("page-description", { name: fund?.name })}
       />
       <DataTable
-        columnHook={usePermissionsColumns}
+        columns={() => columns(address)}
         data={assetDetail.roles}
         name={t("table-title")}
       />

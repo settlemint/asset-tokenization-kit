@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { useFundColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 export async function generateMetadata({
   params,
@@ -30,7 +30,7 @@ export default async function FundsPage() {
     <>
       <PageHeader title={t("page-title")} />
 
-      <DataTable columnHook={useFundColumns} data={funds} name={"funds"} />
+      <DataTable columns={columns} data={funds} name={"funds"} />
     </>
   );
 }

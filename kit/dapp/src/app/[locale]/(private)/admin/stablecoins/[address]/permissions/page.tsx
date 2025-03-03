@@ -5,7 +5,7 @@ import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail"
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { usePermissionsColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -48,7 +48,7 @@ export default async function StablecoinTokenPermissionsPage({
         subtitle={t("page-description", { name: stableCoin?.name })}
       />
       <DataTable
-        columnHook={usePermissionsColumns}
+        columns={() => columns(address)}
         data={assetDetail.roles}
         name={t("table-title")}
       />
