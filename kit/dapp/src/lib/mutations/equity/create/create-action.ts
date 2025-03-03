@@ -1,7 +1,7 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
@@ -83,7 +83,7 @@ export const createEquity = action
       const predictedAddress = await portalClient.request(
         CreateEquityPredictAddress,
         {
-          address: STABLE_COIN_FACTORY_ADDRESS,
+          address: EQUITY_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
           name: assetName,
@@ -106,7 +106,7 @@ export const createEquity = action
       });
 
       const data = await portalClient.request(EquityFactoryCreate, {
-        address: STABLE_COIN_FACTORY_ADDRESS,
+        address: EQUITY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,
