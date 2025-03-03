@@ -67,7 +67,13 @@ export const createCryptoCurrency = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
+      parsedInput: {
+        assetName,
+        symbol,
+        decimals,
+        pincode,
+        initialSupply = "0",
+      },
       ctx: { user },
     }) => {
       const predictedAddress = await portalClient.request(
@@ -78,7 +84,7 @@ export const createCryptoCurrency = action
           decimals,
           name: assetName,
           symbol,
-          initialSupply: initialSupply ?? "0",
+          initialSupply: initialSupply,
         }
       );
 
@@ -100,7 +106,7 @@ export const createCryptoCurrency = action
         name: assetName,
         symbol,
         decimals,
-        initialSupply: initialSupply ?? "0",
+        initialSupply: initialSupply,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
