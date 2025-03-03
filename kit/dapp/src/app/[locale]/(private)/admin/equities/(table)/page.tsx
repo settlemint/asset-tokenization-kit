@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getEquityList } from "@/lib/queries/equity/equity-list";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { useEquityColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 export async function generateMetadata({
   params,
@@ -30,11 +30,7 @@ export default async function EquitiesPage() {
     <>
       <PageHeader title={t("page-title")} />
 
-      <DataTable
-        columnHook={useEquityColumns}
-        data={equities}
-        name={"equities"}
-      />
+      <DataTable columns={columns} data={equities} name={"equities"} />
     </>
   );
 }

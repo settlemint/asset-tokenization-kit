@@ -20,7 +20,9 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   public: Unlock,
 };
 
-export function useFundColumns() {
+export function columns() {
+  // https://next-intl.dev/docs/environments/server-client-components#shared-components
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("admin.funds.table");
 
   return [

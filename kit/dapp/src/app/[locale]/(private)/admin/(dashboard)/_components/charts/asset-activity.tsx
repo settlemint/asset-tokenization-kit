@@ -36,7 +36,8 @@ export async function AssetActivity() {
 
   // Convert bigint values to numbers for the chart component
   const chartData = data.map((asset) => ({
-    ...asset,
+    id: asset.id,
+    assetType: asset.assetType,
     mintEventCount: Number(asset.mintEventCount),
     burnEventCount: Number(asset.burnEventCount),
     transferEventCount: Number(asset.transferEventCount),

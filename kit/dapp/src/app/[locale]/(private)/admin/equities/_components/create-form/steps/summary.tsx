@@ -5,7 +5,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
 import { DollarSign, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, type MessageKeys } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
@@ -49,7 +49,12 @@ export function Summary() {
           label={t("equity-category-label")}
           value={
             values.equityCategory
-              ? t(`category-${values.equityCategory.toLowerCase()}`)
+              ? t(
+                  `category-${values.equityCategory.toLowerCase()}` as MessageKeys<
+                    "admin.equities.create-form.summary",
+                    "equity-category-label"
+                  >
+                )
               : "-"
           }
         />
@@ -57,7 +62,12 @@ export function Summary() {
           label={t("equity-class-label")}
           value={
             values.equityClass
-              ? t(`class-${values.equityClass.toLowerCase()}`)
+              ? t(
+                  `class-${values.equityClass.toLowerCase()}` as MessageKeys<
+                    "admin.equities.create-form.summary",
+                    "equity-class-label"
+                  >
+                )
               : "-"
           }
         />

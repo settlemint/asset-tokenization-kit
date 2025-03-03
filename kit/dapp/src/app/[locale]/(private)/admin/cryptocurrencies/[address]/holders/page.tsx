@@ -4,7 +4,7 @@ import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurr
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { icons, useHoldersColumns } from "./_components/columns";
+import { columns, icons } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -38,7 +38,7 @@ export default async function CryptoCurrencyHoldersPage({ params }: PageProps) {
 
   return (
     <DataTable
-      columnHook={useHoldersColumns}
+      columns={columns}
       data={balances}
       icons={icons}
       name={"Holders"}

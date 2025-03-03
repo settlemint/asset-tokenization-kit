@@ -7,7 +7,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { DesignerButton } from "./designer-button";
 import { AssetManagement } from "./items/asset-management/asset-management";
@@ -26,7 +25,6 @@ export function AdminSidebar() {
         <AssetManagement />
         <NavMain items={bottomItems} />
       </SidebarContent>
-      <SidebarSeparator />
       <SidebarFooter>
         <NavFooter />
       </SidebarFooter>

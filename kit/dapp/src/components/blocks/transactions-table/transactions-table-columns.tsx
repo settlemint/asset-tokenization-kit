@@ -15,7 +15,7 @@ const columnHelper =
     Awaited<ReturnType<typeof getRecentTransactions>>[number]
   >();
 
-export const columns = [
+export const columns = () => [
   columnHelper.accessor("receipt.status", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
@@ -126,7 +126,3 @@ export const icons = {
   failed: XCircle,
   pending: Clock,
 };
-
-export function useTransactionsColumns() {
-  return columns;
-}

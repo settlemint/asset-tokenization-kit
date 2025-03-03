@@ -5,7 +5,7 @@ import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { usePermissionsColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -48,7 +48,7 @@ export default async function EquityTokenPermissionsPage({
         subtitle={t("page-description", { name: equity?.name })}
       />
       <DataTable
-        columnHook={usePermissionsColumns}
+        columns={() => columns(address)}
         data={assetDetail.roles}
         name={t("table-title")}
       />
