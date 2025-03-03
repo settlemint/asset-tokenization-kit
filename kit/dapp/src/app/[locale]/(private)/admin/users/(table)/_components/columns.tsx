@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   User2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Suspense, type ComponentType } from "react";
 
 const columnHelper =
@@ -39,10 +40,16 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 };
 
 export function columns() {
+  // https://next-intl.dev/docs/environments/server-client-components#shared-components
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const t = useTranslations("admin.users");
+
   return [
     columnHelper.accessor("name", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t("columns.name")}
+        </DataTableColumnHeader>
       ),
       cell: ({ renderValue, row }) => (
         <DataTableColumnCell>
@@ -56,7 +63,7 @@ export function columns() {
           <span>{renderValue()}</span>
           {row.original.banned && (
             <Badge variant="destructive">
-              Banned for {row.original.ban_reason}
+              {t("banned_reason", { reason: row.original.ban_reason })}
             </Badge>
           )}
         </DataTableColumnCell>
@@ -65,7 +72,9 @@ export function columns() {
     }),
     columnHelper.accessor("wallet", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Wallet</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t("columns.wallet")}
+        </DataTableColumnHeader>
       ),
       cell: ({ getValue }) => (
         <DataTableColumnCell>
@@ -86,7 +95,9 @@ export function columns() {
     }),
     columnHelper.accessor("email", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Email</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t("columns.email")}
+        </DataTableColumnHeader>
       ),
       cell: ({ renderValue }) => (
         <DataTableColumnCell>{renderValue()}</DataTableColumnCell>
@@ -95,7 +106,9 @@ export function columns() {
     }),
     columnHelper.accessor("role", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Role</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t("columns.role")}
+        </DataTableColumnHeader>
       ),
       cell: ({ renderValue }) => {
         const role = renderValue();
@@ -103,7 +116,7 @@ export function columns() {
         return (
           <DataTableColumnCell>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{role}</span>
+            <span>{t(`roles.${role as "admin" | "issuer" | "user"}`)}</span>
           </DataTableColumnCell>
         );
       },
@@ -111,7 +124,9 @@ export function columns() {
     }),
     columnHelper.accessor("banned", {
       header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
+        <DataTableColumnHeader column={column}>
+          {t("columns.status")}
+        </DataTableColumnHeader>
       ),
       cell: ({ getValue }) => {
         const banned = getValue();
@@ -120,7 +135,7 @@ export function columns() {
         return (
           <DataTableColumnCell>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{banned ? "Banned" : "Active"}</span>
+            <span>{t(`status.${status}`)}</span>
           </DataTableColumnCell>
         );
       },
@@ -129,7 +144,7 @@ export function columns() {
     columnHelper.accessor("kyc_verified", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>
-          KYC Status
+          {t("columns.kyc_status")}
         </DataTableColumnHeader>
       ),
       cell: ({ getValue }) => {
@@ -139,7 +154,7 @@ export function columns() {
         return (
           <DataTableColumnCell>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{verified ? "Verified" : "Not Verified"}</span>
+            <span>{t(`kyc_status.${status}`)}</span>
           </DataTableColumnCell>
         );
       },
@@ -148,7 +163,7 @@ export function columns() {
     columnHelper.accessor("lastActivity", {
       header: ({ column }) => (
         <DataTableColumnHeader column={column}>
-          Last activity
+          {t("columns.last_activity")}
         </DataTableColumnHeader>
       ),
       cell: ({ getValue }) => {

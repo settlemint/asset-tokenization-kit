@@ -8,7 +8,7 @@ export async function AssetsWidget() {
   const data = await getAssetActivity();
   const allAssetsSupply = data.reduce(
     (acc, asset) => acc + asset.totalSupply,
-    0n
+    0
   );
 
   const getAssetSupply = (assetType: (typeof data)[number]["assetType"]) => {

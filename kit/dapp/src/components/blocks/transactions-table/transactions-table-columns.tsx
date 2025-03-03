@@ -108,7 +108,6 @@ export const columns = () => [
           createdAt={row.original.createdAt}
           from={row.original.from}
           functionName={row.original.functionName}
-          metadata={row.original.metadata}
           transactionHash={row.original.transactionHash}
           updatedAt={row.original.updatedAt}
           receipt={row.original.receipt}

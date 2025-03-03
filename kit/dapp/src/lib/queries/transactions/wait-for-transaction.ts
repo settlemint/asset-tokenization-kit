@@ -68,9 +68,9 @@ async function waitForSingleTransaction(
     const transaction = await portalClient.request(GetTransaction, {
       transactionHash,
     });
-    receipt = ReceiptFragmentSchema.parse(
-      transaction.getTransaction?.receipt ?? null
-    );
+    receipt = transaction.getTransaction?.receipt
+      ? ReceiptFragmentSchema.parse(transaction.getTransaction.receipt)
+      : null;
 
     if (receipt?.status === "Reverted") {
       throw new Error(
