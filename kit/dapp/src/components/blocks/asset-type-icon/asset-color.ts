@@ -1,18 +1,18 @@
 export function getAssetColor(
-  type: 'bond' | 'cryptocurrency' | 'equity' | 'fund' | 'stablecoin'
+  type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"
 ): string {
   switch (type) {
-    case 'bond':
-      return 'chart-1';
-    case 'cryptocurrency':
-      return 'chart-2';
-    case 'equity':
-      return 'chart-3';
-    case 'fund':
-      return 'chart-4';
-    case 'stablecoin':
-      return 'chart-5';
+    case "bond":
+      return "bg-chart-1";
+    case "cryptocurrency":
+      return "bg-chart-2";
+    case "equity":
+      return "bg-chart-3";
+    case "fund":
+      return "bg-chart-4";
+    case "stablecoin":
+      return "bg-chart-5";
     default:
-      return 'chart-5';
+      return "bg-chart-5";
   }
 }

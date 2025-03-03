@@ -38,7 +38,7 @@ export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
       <AvatarFallback
         className={cn(
           "text-[7px] text-white dark:text-sm-dark-gray font-bold",
-          `bg-${getAssetColor(type)}`
+          getAssetColor(type)
         )}
       >
         {getAssetInitials(type)}
