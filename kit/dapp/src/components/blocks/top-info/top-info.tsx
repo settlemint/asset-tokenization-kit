@@ -13,7 +13,7 @@ const topInfoVariants = cva("w-full", {
   variants: {
     variant: {
       default:
-        "bg-[var(--sm-dark-gray)] border-[var(--sm-dark)] [&_[data-state=open]]:text-[var(--sm-dark-blue)] [&_[data-state=closed]]:text-[var(--sm-dark-blue)] rounded-md px-4 mb-4",
+        "bg-[var(--sm-dark-gray)] border-[var(--sm-dark)] [&_[data-state=open]]:text-[var(--sm-dark-blue)] [&_[data-state=closed]]:text-[var(--sm-dark-blue)] rounded-md px-4 mb-4 linear-gradient-related",
       warning:
         "bg-[var(--sm-dark-gray)] border-[var(--sm-orange)] [&_[data-state=open]]:text-[var(--sm-orange)] [&_[data-state=closed]]:text-[var(--sm-orange)] rounded-md px-4 mb-4",
       destructive:

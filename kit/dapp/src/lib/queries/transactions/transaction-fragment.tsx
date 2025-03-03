@@ -26,18 +26,6 @@ export const ReceiptFragment = portalGraphql(`
   }
 `);
 
-export const ReceiptLogSchema = z.object({
-  address: z.string(),
-  topics: z.array(z.string()),
-  data: z.string(),
-  blockNumber: z.coerce.number(),
-  blockHash: z.hash(),
-  removed: z.boolean(),
-  logIndex: z.coerce.number(),
-  transactionHash: z.hash(),
-  transactionIndex: z.coerce.number(),
-});
-
 export const ReceiptFragmentSchema = z.object({
   status: z.string(),
   revertReasonDecoded: z.string().nullish(),
@@ -50,7 +38,7 @@ export const ReceiptFragmentSchema = z.object({
   cumulativeGasUsed: z.coerce.bigint(),
   effectiveGasPrice: z.coerce.bigint(),
   from: z.address(),
-  logs: z.array(ReceiptLogSchema),
+  logs: z.array(z.any()),
   logsBloom: z.string(),
   revertReason: z.string().nullish(),
   root: z.string().nullish(),
@@ -93,12 +81,11 @@ export const TransactionFragment = portalGraphql(
 export const TransactionFragmentSchema = z.object({
   from: z.address(),
   functionName: z.string(),
-  metadata: z.string(),
   transactionHash: z.hash(),
-  updatedAt: z.date(),
+  updatedAt: z.coerce.date(),
   receipt: ReceiptFragmentSchema.optional(),
   address: z.address(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
 });
 
 /**
