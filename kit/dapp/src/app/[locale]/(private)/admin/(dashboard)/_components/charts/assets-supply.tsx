@@ -16,23 +16,23 @@ export async function AssetsSupply() {
   const config: Record<AssetType, { label: string; color: string }> = {
     bond: {
       label: t("asset-types.bonds"),
-      color: getAssetColor("bond"),
+      color: getAssetColor("bond", "color"),
     },
     cryptocurrency: {
       label: t("asset-types.cryptocurrencies"),
-      color: getAssetColor("cryptocurrency"),
+      color: getAssetColor("cryptocurrency", "color"),
     },
     equity: {
       label: t("asset-types.equities"),
-      color: getAssetColor("equity"),
+      color: getAssetColor("equity", "color"),
     },
     fund: {
       label: t("asset-types.funds"),
-      color: getAssetColor("fund"),
+      color: getAssetColor("fund", "color"),
     },
     stablecoin: {
       label: t("asset-types.stablecoins"),
-      color: getAssetColor("stablecoin"),
+      color: getAssetColor("stablecoin", "color"),
     },
   };
   return (
