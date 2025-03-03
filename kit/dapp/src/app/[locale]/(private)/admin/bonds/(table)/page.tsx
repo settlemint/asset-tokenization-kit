@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getBondList } from "@/lib/queries/bond/bond-list";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { useBondColumns } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 export async function generateMetadata({
   params,
@@ -30,7 +30,7 @@ export default async function BondsPage() {
     <>
       <PageHeader title={t("page-title")} />
 
-      <DataTable columnHook={useBondColumns} data={bonds} name={"bonds"} />
+      <DataTable columns={columns} data={bonds} name={"bonds"} />
     </>
   );
 }

@@ -22,7 +22,9 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   public: Unlock,
 };
 
-export function useCryptoCurrencyColumns() {
+export function columns() {
+  // https://next-intl.dev/docs/environments/server-client-components#shared-components
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("admin.cryptocurrencies.table");
 
   return [

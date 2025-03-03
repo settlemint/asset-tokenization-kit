@@ -1,7 +1,6 @@
 "use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -39,7 +38,7 @@ import {
 
 interface DataTableProps<TData> {
   /** The column definitions for the table. */
-  columnHook: () => Parameters<typeof useReactTable<TData>>[0]["columns"];
+  columns: () => Parameters<typeof useReactTable<TData>>[0]["columns"];
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;
@@ -76,9 +75,8 @@ declare module "@tanstack/react-table" {
  * @returns The rendered DataTable component.
  */
 export function DataTable<TData>({
-  columnHook,
+  columns,
   data,
-  isLoading,
   icons,
   name,
   toolbar,
@@ -91,13 +89,12 @@ export function DataTable<TData>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const columns = columnHook();
 
   const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
     data: memoizedData,
-    columns,
+    columns: columns(),
     enableRowSelection: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
@@ -131,18 +128,6 @@ export function DataTable<TData>({
   });
 
   const renderTableBody = () => {
-    if (isLoading) {
-      return Array.from({ length: 5 }).map((_, index) => (
-        <TableRow key={index}>
-          {columns.map((_column, cellIndex) => (
-            <TableCell key={cellIndex}>
-              <Skeleton className="h-4 w-[80%]" />
-            </TableCell>
-          ))}
-        </TableRow>
-      ));
-    }
-
     if (table.getRowModel().rows?.length) {
       return table.getRowModel().rows.map((row) => (
         <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>

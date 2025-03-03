@@ -9,16 +9,16 @@ import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
 import type { Address } from "viem";
 import { EditPermissionsForm } from "./actions/edit-form/form";
 import { RevokeAllPermissionsForm } from "./actions/revoke-all-form/form";
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function usePermissionsColumns() {
+export function columns(address: Address) {
+  // https://next-intl.dev/docs/environments/server-client-components#shared-components
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("admin.funds.permissions");
-  const { address } = useParams<{ address: Address }>();
 
   return [
     columnHelper.accessor("id", {

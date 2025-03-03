@@ -8,6 +8,7 @@ import { getMessages } from "next-intl/server";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { getLangDir } from "rtl-detect";
 import { Toaster } from "sonner";
 import "../globals.css";
 
@@ -40,6 +41,8 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
+  const direction = getLangDir(locale);
+
   // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as any)) {
     notFound();
@@ -52,6 +55,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      dir={direction}
       className={cn(figTree.variable, geistMono.variable)}
       suppressHydrationWarning
     >

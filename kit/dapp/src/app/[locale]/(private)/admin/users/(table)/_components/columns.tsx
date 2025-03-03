@@ -38,7 +38,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
   notVerified: BadgeX,
 };
 
-export function useUserColumns() {
+export function columns() {
   return [
     columnHelper.accessor("name", {
       header: ({ column }) => (

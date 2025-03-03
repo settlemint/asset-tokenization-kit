@@ -5,7 +5,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { DollarSign, Settings } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, type MessageKeys } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
@@ -49,7 +49,12 @@ export function Summary() {
           label={t("fund-category-label")}
           value={
             values.fundCategory
-              ? t(`category-${values.fundCategory.toLowerCase()}`)
+              ? t(
+                  `category-${values.fundCategory.toLowerCase()}` as MessageKeys<
+                    "admin.funds.create-form.summary",
+                    "fund-category-label"
+                  >
+                )
               : "-"
           }
         />
@@ -57,7 +62,12 @@ export function Summary() {
           label={t("fund-class-label")}
           value={
             values.fundClass
-              ? t(`class-${values.fundClass.toLowerCase()}`)
+              ? t(
+                  `class-${values.fundClass.toLowerCase()}` as MessageKeys<
+                    "admin.funds.create-form.summary",
+                    "fund-class-label"
+                  >
+                )
               : "-"
           }
         />

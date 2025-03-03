@@ -4,7 +4,7 @@ import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail"
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { icons, useHoldersColumns } from "./_components/columns";
+import { columns, icons } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -38,7 +38,7 @@ export default async function StablecoinHoldersPage({ params }: PageProps) {
 
   return (
     <DataTable
-      columnHook={useHoldersColumns}
+      columns={columns}
       data={balances}
       icons={icons}
       name={"Holders"}
