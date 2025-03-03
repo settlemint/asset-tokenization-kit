@@ -42,4 +42,4 @@ export const BalanceFragmentSchema = z.object({
 });
 
 
-export type Balance = ZodInfer<typeof BalanceFragmentSchema>;
+export type BalanceFragmentType = ZodInfer<typeof BalanceFragmentSchema>;
