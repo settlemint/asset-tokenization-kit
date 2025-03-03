@@ -1,7 +1,5 @@
 "use client";
 
-import { Basics } from "@/app/[locale]/(private)/admin/stablecoins/_components/create-form/steps/basics";
-import { Configuration } from "@/app/[locale]/(private)/admin/stablecoins/_components/create-form/steps/configuration";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
@@ -10,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import type { TransferFormAssetType } from "./schema";
+import { Amount } from "./steps/amount";
+import { Recipients } from "./steps/recipients";
 import { Summary } from './steps/summary';
 
 export function formatAssetType(type: string) {
@@ -30,6 +30,7 @@ export function formatAssetType(type: string) {
 }
 
 export function TransferForm({
+	open,
 	address,
 	name,
 	symbol,
@@ -38,6 +39,7 @@ export function TransferForm({
 	decimals,
 	onCloseAction,
 }: {
+	open: boolean;
 	address: Address;
 	name: string;
 	symbol: string;
@@ -66,9 +68,9 @@ export function TransferForm({
 					collateralLivenessSeconds: 3600 * 24 * 365,
 				}}
 			>
-				<Basics />
-				<Configuration />
-				<Summary />
+				<Recipients />
+      <Amount balance={balance} />
+      <Summary address={address} assetType={assetType} decimals={decimals} />
 			</Form>
 		</FormSheet>
 	);
