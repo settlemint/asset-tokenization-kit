@@ -13,7 +13,7 @@ export default async function PortfolioDashboard() {
     <>
       <div className="space-y-4">
         <Greeting />
-        <MyAssetsHeader wallet={user.wallet as Address} />
+        <MyAssetsHeader wallet={user.wallet as Address} data={portfolioDashboardData} />
       </div>
     </>
   );

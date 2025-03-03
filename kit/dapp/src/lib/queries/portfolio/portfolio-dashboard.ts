@@ -1,7 +1,7 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+	theGraphClientStarterkits,
+	theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
@@ -22,6 +22,8 @@ const MyAssets = theGraphGraphqlStarterkits(
 );
 
 type AssetType = 'StableCoin' | 'Bond' | 'Fund' | 'Equity' | 'CryptoCurrency';
+
+export type MyAsset = Awaited<ReturnType<typeof getPortfolioDashboardData>>['balances'][number];
 
 
 export const getPortfolioDashboardData = cache(

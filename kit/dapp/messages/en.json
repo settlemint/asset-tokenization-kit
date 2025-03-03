@@ -1786,5 +1786,11 @@
   "transactions": {
     "sending": "Sending transaction",
     "success": "Transaction successfully processed"
+  },
+  "portfolio": {
+    "transfer-form": {
+      "transfer": "Transfer",
+      "transferring": "Transferring..."
+    }
   }
 }

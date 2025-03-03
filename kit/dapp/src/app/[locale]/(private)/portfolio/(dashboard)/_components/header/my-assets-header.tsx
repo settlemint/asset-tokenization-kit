@@ -1,26 +1,25 @@
 'use client';
 
-import { MyAssetsTransferForm } from '@/app/(private)/portfolio/(dashboard)/_components/my-assets-header/transfer-form/transfer';
+import type { BalanceFragmentType } from '@/lib/queries/portfolio/balance-fragment';
 import type { Address } from 'viem';
-import { useMyAssets } from '../data'; // We'll need to create this hook
-import { MyAssetsCount } from './my-assets-count/count-client';
+import { MyAssetsTransferForm } from '../transfer-form/transfer-form';
+import { MyAssetsCount } from './my-assets-count';
 
 interface MyAssetsHeaderProps {
   wallet: Address;
+  data: {
+    total: string;
+    balances: BalanceFragmentType[];
+  };
 }
 
-export function MyAssetsHeader({  wallet }: MyAssetsHeaderProps) {
-  const {
-    data: { total, balances },
-  } = useMyAssets({
-    active: true,
-    wallet,
-  });
+export function MyAssetsHeader({  wallet, data }: MyAssetsHeaderProps) {
+
 
   return (
     <div className="flex items-center justify-between">
-      <MyAssetsCount total={total} />
-      <MyAssetsTransferForm assets={balances} />
+      <MyAssetsCount total={data.total} />
+      <MyAssetsTransferForm assets={data.balances} />
     </div>
   );
 }
