@@ -84,7 +84,7 @@ export const createCryptoCurrency = action
           decimals,
           name: assetName,
           symbol,
-          initialSupply: initialSupply,
+          initialSupply,
         }
       );
 
@@ -106,7 +106,7 @@ export const createCryptoCurrency = action
         name: assetName,
         symbol,
         decimals,
-        initialSupply: initialSupply,
+        initialSupply,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
