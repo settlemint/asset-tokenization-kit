@@ -26,22 +26,34 @@ export const ReceiptFragment = portalGraphql(`
   }
 `);
 
+export const ReceiptLogSchema = z.object({
+  address: z.string(),
+  topics: z.array(z.string()),
+  data: z.string(),
+  blockNumber: z.coerce.number(),
+  blockHash: z.hash(),
+  removed: z.boolean(),
+  logIndex: z.coerce.number(),
+  transactionHash: z.hash(),
+  transactionIndex: z.coerce.number(),
+});
+
 export const ReceiptFragmentSchema = z.object({
   status: z.string(),
   revertReasonDecoded: z.string().nullish(),
   blockNumber: z.coerce.number(),
   gasUsed: z.coerce.bigint(),
-  blobGasPrice: z.coerce.bigint(),
-  blobGasUsed: z.coerce.bigint(),
+  blobGasPrice: z.coerce.bigint().nullish(),
+  blobGasUsed: z.coerce.bigint().nullish(),
   blockHash: z.hash(),
   contractAddress: z.string().nullish(),
   cumulativeGasUsed: z.coerce.bigint(),
   effectiveGasPrice: z.coerce.bigint(),
   from: z.address(),
-  logs: z.array(z.string()),
+  logs: z.array(ReceiptLogSchema),
   logsBloom: z.string(),
   revertReason: z.string().nullish(),
-  root: z.string(),
+  root: z.string().nullish(),
   to: z.address().nullish(),
   transactionHash: z.hash(),
   transactionIndex: z.coerce.number(),
