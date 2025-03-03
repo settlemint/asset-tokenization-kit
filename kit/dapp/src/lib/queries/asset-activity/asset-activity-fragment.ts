@@ -26,18 +26,13 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
  */
 export const AssetActivityFragmentSchema = z.object({
   id: z.string(),
-  assetType: z.string(),
-  totalSupply: z.string().transform((val) => {
-    // Remove decimal point and convert to bigint
-    const [whole = '0', decimal = ''] = val.split('.');
-    const paddedDecimal = decimal.padEnd(18, '0'); // Pad with zeros to handle 18 decimals
-    return BigInt(whole + paddedDecimal);
-  }),
-  burnEventCount: z.number(),
-  mintEventCount: z.number(),
-  transferEventCount: z.number(),
-  frozenEventCount: z.number(),
-  unfrozenEventCount: z.number(),
+  assetType: z.assetType(),
+  totalSupply: z.bigInt(),
+  burnEventCount: z.bigInt(),
+  mintEventCount: z.bigInt(),
+  transferEventCount: z.bigInt(),
+  frozenEventCount: z.bigInt(),
+  unfrozenEventCount: z.bigInt(),
 });
 
 /**

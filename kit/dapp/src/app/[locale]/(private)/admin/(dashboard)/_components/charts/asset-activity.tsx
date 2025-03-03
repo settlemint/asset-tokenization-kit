@@ -25,9 +25,9 @@ export async function AssetActivity() {
 
   const isEmpty = data.every(
     (asset) =>
-      asset.mintEventCount === 0 &&
-      asset.burnEventCount === 0 &&
-      asset.transferEventCount === 0
+      asset.mintEventCount === 0n &&
+      asset.burnEventCount === 0n &&
+      asset.transferEventCount === 0n
   );
 
   if (isEmpty) {
