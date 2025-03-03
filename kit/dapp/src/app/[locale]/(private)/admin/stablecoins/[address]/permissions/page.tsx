@@ -48,7 +48,10 @@ export default async function StablecoinTokenPermissionsPage({
         subtitle={t("page-description", { name: stableCoin?.name })}
       />
       <DataTable
-        columns={() => columns(address)}
+        columnParams={{
+          address,
+        }}
+        columns={columns}
         data={assetDetail.roles}
         name={t("table-title")}
       />

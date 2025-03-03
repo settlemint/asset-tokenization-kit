@@ -27,7 +27,7 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
 export const AssetActivityFragmentSchema = z.object({
   id: z.string(),
   assetType: z.assetType(),
-  totalSupply: z.bigInt(),
+  totalSupply: z.bigDecimal(),
   burnEventCount: z.bigInt(),
   mintEventCount: z.bigInt(),
   transferEventCount: z.bigInt(),

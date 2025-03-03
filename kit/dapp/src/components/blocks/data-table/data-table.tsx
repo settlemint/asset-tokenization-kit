@@ -36,9 +36,14 @@ import {
   type DataTableToolbarOptions,
 } from "./data-table-toolbar";
 
-interface DataTableProps<TData> {
+interface DataTableProps<TData, CParams extends Record<string, unknown>> {
+  columnParams?: CParams;
   /** The column definitions for the table. */
-  columns: () => Parameters<typeof useReactTable<TData>>[0]["columns"];
+  columns:
+    | ((
+        params: CParams
+      ) => Parameters<typeof useReactTable<TData>>[0]["columns"])
+    | (() => Parameters<typeof useReactTable<TData>>[0]["columns"]);
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;
@@ -74,7 +79,8 @@ declare module "@tanstack/react-table" {
  * @param props The component props.
  * @returns The rendered DataTable component.
  */
-export function DataTable<TData>({
+export function DataTable<TData, CParams extends Record<string, unknown>>({
+  columnParams,
   columns,
   data,
   icons,
@@ -82,7 +88,7 @@ export function DataTable<TData>({
   toolbar,
   pagination,
   initialSorting,
-}: DataTableProps<TData>) {
+}: DataTableProps<TData, CParams>) {
   const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
@@ -92,9 +98,12 @@ export function DataTable<TData>({
 
   const memoizedData = useMemo(() => data, [data]);
 
+  const tableColumns = columnParams
+    ? columns(columnParams)
+    : columns({} as CParams);
   const table = useReactTable({
     data: memoizedData,
-    columns: columns(),
+    columns: tableColumns,
     enableRowSelection: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
@@ -153,7 +162,7 @@ export function DataTable<TData>({
 
     return (
       <TableRow>
-        <TableCell colSpan={columns.length} className="h-24 text-center">
+        <TableCell colSpan={tableColumns.length} className="h-24 text-center">
           {t("no-results")}
         </TableCell>
       </TableRow>
