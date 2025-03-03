@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useRef } from "react";
 import type { Address } from "viem";
 import {
   BookTextIcon,
@@ -57,23 +57,16 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const session = authClient.useSession();
-  const user = session.data?.user;
+  const { data, isPending } = authClient.useSession();
+  const user = data?.user;
 
   const router = useRouter();
   const t = useTranslations("layout.user-dropdown");
-
-  // Use client-side only rendering for user data to avoid hydration mismatches
-  const [isClient, setIsClient] = useState(false);
 
   // Create refs for each icon
   const stackIconRef = useRef<SquareStackIconHandle>(null);
   const bookIconRef = useRef<BookTextIconHandle>(null);
   const logoutIconRef = useRef<LogoutIconHandle>(null);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut({
@@ -85,18 +78,8 @@ export function UserDropdown() {
     });
   }, [router]);
 
-  // Don't render anything on the server to avoid hydration mismatches
-  if (!isClient) {
-    return (
-      <div className="flex h-12 items-center gap-2 rounded-md px-2 text-sm">
-        <Skeleton className="size-8 rounded-lg" />
-        <div className="grid flex-1 text-left text-sm leading-tight">
-          <Skeleton className="size-44" />
-          <Skeleton className="size-30" />
-        </div>
-        <ChevronDown className="ml-2 size-4" />
-      </div>
-    );
+  if (isPending) {
+    return null;
   }
 
   return (

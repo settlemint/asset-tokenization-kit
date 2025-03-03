@@ -1,4 +1,3 @@
-"use client";
 import { UserDropdown } from "@/components/layout/user-dropdown";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
