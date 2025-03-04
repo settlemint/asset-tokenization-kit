@@ -181,9 +181,9 @@ const extendedZod = {
       .transform((val) => {
         try {
           const decimal = new BigNumber(val);
-          // Check if it's a valid finite number
+          // Check if it's a valid finite number and convert to normal decimal string
           return decimal.isFinite()
-            ? decimal.toNumber()
+            ? Number(decimal.toFixed(6))
             : new BigNumber(0).toNumber();
         } catch {
           return new BigNumber(0).toNumber();
