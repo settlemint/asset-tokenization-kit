@@ -83,7 +83,6 @@ export const getAssetStats = cache(
 
       return {
         ...validatedItem,
-        totalBurned: validatedItem.totalBurned.toString(),
       };
     });
 

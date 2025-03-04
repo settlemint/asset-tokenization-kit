@@ -1,4 +1,6 @@
+import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
+import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { getTranslations } from "next-intl/server";
@@ -23,6 +25,18 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
   } satisfies ChartConfig;
 
   const data = await getStableCoinDetail({ address });
+
+  if (!data || data.collateral === 0) {
+    return (
+      <ChartSkeleton title={t("collateral-ratio.label")} variant="noData">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <ChartPieIcon className="h-8 w-8 text-muted-foreground" />
+          <p>{t("collateral-ratio.no-data")}</p>
+        </div>
+      </ChartSkeleton>
+    );
+  }
+
   const collateralData = [
     {
       name: "freeCollateral",

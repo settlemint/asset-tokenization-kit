@@ -2,7 +2,8 @@
   "admin": {
     "activity": {
       "page-description": "Aktivitäten über alle Vermögenswerte verfolgen.",
-      "page-title": "Aktivität"
+      "page-title": "Aktivität",
+      "view-all": "Alle Transaktionen im Explorer anzeigen"
     },
     "bonds": {
       "burn-form": {
@@ -510,7 +511,8 @@
       "page": {
         "latest_events_heading": "Neueste Ereignisse",
         "stats_heading": "Statistiken",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "description": "Übersicht des Admin-Dashboards"
       },
       "table": {
         "latest-events": {
@@ -1292,7 +1294,11 @@
         "stablecoin-details-description": "Details für den Stablecoin",
         "symbol": "Symbol",
         "total-supply": "Gesamtangebot",
-        "total-supply-info": "Das Gesamtangebot des Tokens"
+        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "total-burned": "Verbrannter Bestand",
+        "total-burned-info": "Anzahl der Token, die dauerhaft aus dem Umlauf genommen wurden",
+        "total-holders": "# der Inhaber",
+        "total-holders-info": "Anzahl der Adressen, die derzeit die Vermögenswerte halten"
       },
       "events": {
         "events-page-description": "Verfolgen Sie historische Aktivitäten und Transaktionen, die {name} betreffen.",
@@ -1616,7 +1622,9 @@
         "active": "Aktiv",
         "banned": "Verboten"
       },
-      "title": "Benutzer"
+      "title": "Benutzer",
+      "page-description": "Benutzer und deren Rollen verwalten",
+      "page-title": "Benutzer"
     }
   },
   "auth": {
@@ -1732,29 +1740,46 @@
     },
     "charts": {
       "assets": {
+        "collateral-ratio": {
+          "description": "Menge an unbesicherten vs. besicherten Mitteln",
+          "label": "Sicherheitsverhältnis",
+          "no-data": "Keine Sicherungsdaten verfügbar"
+        },
+        "free-collateral-ratio": {
+          "label": "Frei"
+        },
         "last-updated": "Zuletzt aktualisiert",
         "total-supply": {
           "description": "Zeigt das gesamte Angebot des Tokens an",
           "label": "Gesamtangebot",
-          "title": "Gesamtangebot"
+          "title": "Gesamtangebot",
+          "no-data": "Keine Daten in diesem Fenster verfügbar"
         },
         "total-supply-changed": {
           "burned-label": "Insgesamt verbrannt",
           "description": "Zeigt die Angebotsänderung des Tokens an",
           "minted-label": "Insgesamt geprägt",
-          "title": "Angebotsänderungen"
+          "title": "Angebotsänderungen",
+          "no-data": "Keine Daten in diesem Fenster verfügbar"
         },
         "total-transfers": {
           "description": "Zeigt die gesamten Übertragungen des Tokens an",
           "label": "Insgesamt Übertragungen",
-          "title": "Insgesamt Übertragungen"
+          "title": "Insgesamt Übertragungen",
+          "no-data": "Keine Daten in diesem Fenster verfügbar"
         },
         "total-volume": {
           "description": "Zeigt das gesamte Volumen des Tokens an",
           "label": "Insgesamt Volumen",
-          "title": "Insgesamt Volumen"
+          "title": "Insgesamt Volumen",
+          "no-data": "Keine Daten in diesem Fenster verfügbar"
         },
-        "wallet-distribution": "Wallet-Verteilung"
+        "used-collateral-ratio": {
+          "label": "Verpflichtet"
+        },
+        "wallet-distribution": "Verteilung der Wallets",
+        "wallet-distribution-description": "Anzahl der Inhaber im Vergleich zu den Beträgen, die sie halten",
+        "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar"
       }
     },
     "data-table": {

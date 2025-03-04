@@ -1742,7 +1742,8 @@
       "assets": {
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
-          "label": "Collateral Ratio"
+          "label": "Collateral Ratio",
+          "no-data": "No collateral data available"
         },
         "free-collateral-ratio": {
           "label": "Free"
@@ -1751,29 +1752,34 @@
         "total-supply": {
           "description": "Showing the total supply of the token",
           "label": "Total supply",
+          "no-data": "No data available in this window",
           "title": "Total supply"
         },
         "total-supply-changed": {
           "burned-label": "Total burned",
           "description": "Showing the supply change of the token",
           "minted-label": "Total minted",
+          "no-data": "No data available in this window",
           "title": "Supply changes"
         },
         "total-transfers": {
           "description": "Showing the total transfers of the token",
           "label": "Total transfers",
+          "no-data": "No data available in this window",
           "title": "Total transfers"
         },
         "total-volume": {
           "description": "Showing the total volume of the token",
           "label": "Total volume",
+          "no-data": "No data available in this window",
           "title": "Total volume"
         },
         "used-collateral-ratio": {
           "label": "Committed"
         },
         "wallet-distribution": "Wallet Distribution",
-        "wallet-distribution-description": "Amount of holders vs the amounts they hold"
+        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
+        "wallet-distribution-no-data": "No wallet data available"
       }
     },
     "data-table": {

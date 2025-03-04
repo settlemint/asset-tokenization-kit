@@ -1,4 +1,6 @@
 import { BarChartComponent } from "@/components/blocks/charts/bar-charts/horizontal-bar-chart";
+import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getTranslations } from "next-intl/server";
@@ -17,6 +19,18 @@ interface DistributionBucket {
 export async function WalletDistribution({ address }: WalletDistributionProps) {
   const t = await getTranslations("components.charts.assets");
   const data = await getAssetBalanceList({ address });
+
+  // If there's no data, return a skeleton state
+  if (!data || data.length === 0) {
+    return (
+      <ChartSkeleton title={t("wallet-distribution")} variant="noData">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
+          <p>{t("wallet-distribution-no-data")}</p>
+        </div>
+      </ChartSkeleton>
+    );
+  }
 
   // Convert string values to numbers and sort by value
   const sortedBalances = data
@@ -69,9 +83,18 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
   const chartConfig = {
     count: {
       label: "Number of Wallets",
-      color: `var(--chart-${5 - buckets.indexOf(buckets[0])})`,
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
+
+  // Define colors for each bucket
+  const bucketColors = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ];
 
   return (
     <BarChartComponent
@@ -85,6 +108,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
       }}
       showYAxis={true}
       showLegend={false}
+      colors={bucketColors}
     />
   );
 }

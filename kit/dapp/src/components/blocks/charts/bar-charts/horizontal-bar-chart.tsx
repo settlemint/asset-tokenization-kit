@@ -1,6 +1,14 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -40,6 +48,7 @@ interface BarChartProps {
   footer?: ReactNode;
   showYAxis?: boolean;
   showLegend?: boolean;
+  colors?: string[];
 }
 
 const defaultTickFormatter = (value: string) => {
@@ -66,6 +75,7 @@ export function BarChartComponent({
   footer,
   showYAxis,
   showLegend = true,
+  colors,
 }: BarChartProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -134,6 +144,19 @@ export function BarChartComponent({
                   />
                 </linearGradient>
               ))}
+              {colors?.map((color, index) => (
+                <linearGradient
+                  key={`customGradient${index}`}
+                  id={`customGradient${index}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0.4} />
+                </linearGradient>
+              ))}
             </defs>
             {dataKeys.map((key) => (
               <Bar
@@ -144,7 +167,15 @@ export function BarChartComponent({
                 stroke={config[key].color}
                 strokeWidth={1}
                 radius={[2, 2, 0, 0]}
-              />
+              >
+                {colors?.map((color, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={`url(#customGradient${index})`}
+                    stroke={color}
+                  />
+                ))}
+              </Bar>
             ))}
           </BarChart>
         </ChartContainer>

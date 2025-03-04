@@ -3,6 +3,7 @@ files:
   messages/en.json:
     admin.activity.page-description: a514b7d785e4c4bfbdda6d51ee249dae
     admin.activity.page-title: ecfc2dffe568c10a67dbc6d3724cfde2
+    admin.activity.view-all: b99a4bc8c7ecdb5caaeee49de859c4df
     admin.bonds.burn-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.bonds.burn-form.amount.available-balance: 1ffc1c904a2ff558869bfbbb0189f568
     admin.bonds.burn-form.amount.description: 7b2bdac16ef466f0c8ed0881e2a5a68b
@@ -369,6 +370,7 @@ files:
     admin.dashboard.charts.users-history.description: 96919bba1693b4af71ee85bb1adc39ec
     admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
     admin.dashboard.charts.users-history.title: f9aae5fda8d810a29f12d1e61b4ab25f
+    admin.dashboard.page.description: 545a85e068cae32961708bcd47ad0671
     admin.dashboard.page.latest_events_heading: 2f40e60b3c0e56cb651e8f8c4c944afb
     admin.dashboard.page.stats_heading: 452a7601dbc6f2c38aa89e68bda8b603
     admin.dashboard.page.title: 2938c7f7e560ed972f8a4f68e80ff834
@@ -964,6 +966,10 @@ files:
     admin.stablecoins.details.ownership-concentration-info: b90d646020637b7ba884ed881516b76c
     admin.stablecoins.details.stablecoin-details-description: 01e3bb4c6aabf8a93b85da878974b523
     admin.stablecoins.details.symbol: 02c86eb2792f3262c21d030a87e19793
+    admin.stablecoins.details.total-burned: 53f3dba1a782979bb3223db81a9557df
+    admin.stablecoins.details.total-burned-info: e9cc1186d2b4f917dde2d91c41823f5b
+    admin.stablecoins.details.total-holders: 117dccbc2e4ce3b3ce71c530bd61060f
+    admin.stablecoins.details.total-holders-info: b6da72dd95ff5fad30840b1e3166cf97
     admin.stablecoins.details.total-supply: 1ecae95c3c8f236721cce5b740b2deaa
     admin.stablecoins.details.total-supply-info: 2138711f691fc996de09dbdbbe64b888
     admin.stablecoins.events.events-page-description: 6b90fd0a4943ac68576fe950e47826d9
@@ -1185,6 +1191,8 @@ files:
     admin.users.detail.values.wallet: 156e132b014314b1eae89410e54bcc8c
     admin.users.kyc_status.notVerified: 1e410e1b9903e7a99b93857f536b7e1d
     admin.users.kyc_status.verified: 3f68e67dc6c397aaa9d1c24c356f754f
+    admin.users.page-description: 479491b080e378ec92640f51b23616fb
+    admin.users.page-title: f9aae5fda8d810a29f12d1e61b4ab25f
     admin.users.roles.admin: e3afed0047b08059d0fada10f400c1e5
     admin.users.roles.issuer: 51360304ea03557e79bdf5ff9cd2e234
     admin.users.roles.user: 8f9bfe9d1345237cb3b2b205864da075
@@ -1259,20 +1267,32 @@ files:
     components.asset-type-icon.fund-initials: d9d729a2fc731c33ea1360682d73aad5
     components.asset-type-icon.not-available-initials: d4cd0dabcf4caa22ad92fab40844c786
     components.asset-type-icon.stablecoin-initials: 6a65edb0cc17d66c677814115b1477f5
+    components.charts.assets.collateral-ratio.description: 7c2b795ab5e7407ae5a5dbc2618c5b4f
+    components.charts.assets.collateral-ratio.label: 402c0bb389fdb67267e5ced7921d5fbf
+    components.charts.assets.collateral-ratio.no-data: a174e0686d26c92d56bf13366f54f84c
+    components.charts.assets.free-collateral-ratio.label: b24ce0cd392a5b0b8dedc66c25213594
     components.charts.assets.last-updated: ffbb3331182cbfda3ccea5bb0c3eea46
     components.charts.assets.total-supply.description: 2c73005a0303bc52d3f4285cc4a71104
     components.charts.assets.total-supply.label: 1ecae95c3c8f236721cce5b740b2deaa
+    components.charts.assets.total-supply.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-supply.title: 1ecae95c3c8f236721cce5b740b2deaa
     components.charts.assets.total-supply-changed.burned-label: ab0498ab3bff0c238ab63e7712ac768d
     components.charts.assets.total-supply-changed.description: 939eba4c0adec489ab9b92fedf758045
     components.charts.assets.total-supply-changed.minted-label: 59834e22049f8aacc9266205b3a383bb
+    components.charts.assets.total-supply-changed.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-supply-changed.title: 4c51118029494e03ce25e4a441f189e0
     components.charts.assets.total-transfers.description: e0ab3c1d889397e1cfc43894feb45e33
     components.charts.assets.total-transfers.label: 6bcffe1abc54f96bc94f3f3f9f9041f4
+    components.charts.assets.total-transfers.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-transfers.title: 6bcffe1abc54f96bc94f3f3f9f9041f4
     components.charts.assets.total-volume.description: 63c6f61111bba523da47d2483ce1f1ea
     components.charts.assets.total-volume.label: ea4cacf786de47ee79720980514c48d5
+    components.charts.assets.total-volume.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
     components.charts.assets.total-volume.title: ea4cacf786de47ee79720980514c48d5
+    components.charts.assets.used-collateral-ratio.label: fd8f656590df4b2d2b217b060b7204d3
+    components.charts.assets.wallet-distribution: 12fddd8518a4b9e4d5a921eb94641950
+    components.charts.assets.wallet-distribution-description: ebc7b0c11d01b59739f27b425e91a5a1
+    components.charts.assets.wallet-distribution-no-data: 4721df9d7dc81aa627608bf42a932f83
     components.data-table.clear-filters: 0b275442d6556cff30b75f37f1918899
     components.data-table.details: 3ec365dd533ddb7ef3d1c111186ce872
     components.data-table.export: 0095a9fa74d1713e43e370a7d7846224
