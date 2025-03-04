@@ -4,6 +4,7 @@ import { handleChallenge } from "@/lib/challenge";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateCryptoCurrencySchema } from "./create-schema";
 
@@ -70,6 +71,7 @@ export const createCryptoCurrency = action
       parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
       ctx: { user },
     }) => {
+      const initialSupplyExact = parseUnits(initialSupply, decimals).toString();
       const predictedAddress = await portalClient.request(
         CreateCryptoCurrencyPredictAddress,
         {
@@ -78,7 +80,7 @@ export const createCryptoCurrency = action
           decimals,
           name: assetName,
           symbol,
-          initialSupply,
+          initialSupply: initialSupplyExact,
         }
       );
 
@@ -100,7 +102,7 @@ export const createCryptoCurrency = action
         name: assetName,
         symbol,
         decimals,
-        initialSupply,
+        initialSupply: initialSupplyExact,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 

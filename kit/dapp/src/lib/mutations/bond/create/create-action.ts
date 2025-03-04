@@ -4,7 +4,9 @@ import { handleChallenge } from "@/lib/challenge";
 import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { formatDate } from "@/lib/utils/date";
 import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateBondSchema } from "./create-schema";
 
@@ -84,15 +86,20 @@ export const createBond = action
       },
       ctx: { user },
     }) => {
+      const capExact = parseUnits(cap, decimals).toString();
+      const maturityDateTimestamp = formatDate(maturityDate, {
+        type: "unixSeconds",
+      });
+
       const predictedAddress = await portalClient.request(
         CreateBondPredictAddress,
         {
           address: BOND_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
-          cap,
+          cap: capExact,
           faceValue,
-          maturityDate,
+          maturityDate: maturityDateTimestamp,
           underlyingAsset,
           name: assetName,
           symbol,
@@ -117,9 +124,9 @@ export const createBond = action
         name: assetName,
         symbol,
         decimals,
-        cap,
+        cap: capExact,
         faceValue,
-        maturityDate,
+        maturityDate: maturityDateTimestamp,
         underlyingAsset,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
