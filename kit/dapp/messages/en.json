@@ -2,7 +2,8 @@
   "admin": {
     "activity": {
       "page-description": "Track activity across all assets.",
-      "page-title": "Activity"
+      "page-title": "Activity",
+      "view-all": "View all transactions in the explorer"
     },
     "bonds": {
       "burn-form": {
@@ -508,7 +509,8 @@
       "page": {
         "latest_events_heading": "Latest Events",
         "stats_heading": "Stats",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "description": "Admin dashboard overview"
       },
       "table": {
         "latest-events": {
@@ -1594,7 +1596,9 @@
         "active": "Active",
         "banned": "Banned"
       },
-      "title": "Users"
+      "title": "Users",
+      "page-title": "Users",
+      "page-description": "Manage users and their roles"
     }
   },
   "auth": {

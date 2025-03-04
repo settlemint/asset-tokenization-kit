@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { ChevronDown } from "lucide-react";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import { ChangeRoleAction } from "../(table)/_components/actions/change-role-action";
@@ -20,6 +21,18 @@ interface LayoutProps extends PropsWithChildren {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: LayoutProps): Promise<Metadata> {
+  const { id } = await params;
+  const user = await getUserDetail({ id });
+
+  return {
+    title: user?.name,
+    description: `${user?.name} (${user?.email})`,
+  };
 }
 
 const getTabs = async (id: string): Promise<TabItemProps[]> => {
