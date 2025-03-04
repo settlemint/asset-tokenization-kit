@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -5,10 +7,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { ChevronDown } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
 import type { Address } from "viem";
 import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
@@ -18,46 +20,99 @@ import { UpdateCollateralForm } from "./update-collateral-form/form";
 
 interface ManageDropdownProps {
   address: Address;
+  stableCoin: Awaited<ReturnType<typeof getStableCoinDetail>>;
 }
 
-export async function ManageDropdown({ address }: ManageDropdownProps) {
-  const t = await getTranslations("admin.stablecoins.manage");
-  const stableCoin = await getStableCoinDetail({ address });
+export function ManageDropdown({ address, stableCoin }: ManageDropdownProps) {
+  const t = useTranslations("admin.stablecoins.manage");
+
+  const menuItems = useMemo(
+    () =>
+      [
+        {
+          id: "mint",
+          label: t("actions.mint"),
+        },
+        {
+          id: "burn",
+          label: t("actions.burn"),
+        },
+        {
+          id: "pause",
+          label: stableCoin.paused ? t("actions.unpause") : t("actions.pause"),
+        },
+        {
+          id: "update-collateral",
+          label: t("actions.update-collateral"),
+        },
+        {
+          id: "grant-role",
+          label: t("actions.grant-role"),
+        },
+      ] as const,
+    [t, stableCoin.paused]
+  );
+  const [openMenuItem, setOpenMenuItem] = useState<
+    (typeof menuItems)[number]["id"] | null
+  >(null);
+
+  const onFormOpenChange = (open: boolean) => {
+    if (!open) {
+      setOpenMenuItem(null);
+    }
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="default"
-          className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-inset"
-        >
-          {t("manage")}
-          <ChevronDown className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
-        <DropdownMenuItem>
-          <MintForm
-            address={address}
-            collateralAvailable={Number(stableCoin.collateral)}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <BurnForm
-            address={address}
-            balance={Number(stableCoin.totalSupply)}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <PauseForm address={address} isPaused={stableCoin.paused} />
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <UpdateCollateralForm address={address} />
-        </DropdownMenuItem>
-        <Separator />
-        <DropdownMenuItem>
-          <GrantRoleForm address={address} />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="default"
+            className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-inset"
+          >
+            {t("manage")}
+            <ChevronDown className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded p-0 shadow-dropdown">
+          {menuItems.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              onSelect={() => setOpenMenuItem(item.id)}
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <MintForm
+        address={address}
+        collateralAvailable={Number(stableCoin.collateral)}
+        open={openMenuItem === "mint"}
+        onOpenChange={onFormOpenChange}
+      />
+      <BurnForm
+        address={address}
+        balance={Number(stableCoin.totalSupply)}
+        open={openMenuItem === "burn"}
+        onOpenChange={onFormOpenChange}
+      />
+      <PauseForm
+        address={address}
+        isPaused={stableCoin.paused}
+        open={openMenuItem === "pause"}
+        onOpenChange={onFormOpenChange}
+      />
+      <UpdateCollateralForm
+        address={address}
+        open={openMenuItem === "update-collateral"}
+        onOpenChange={onFormOpenChange}
+      />
+      <GrantRoleForm
+        address={address}
+        open={openMenuItem === "grant-role"}
+        onOpenChange={onFormOpenChange}
+      />
+    </>
   );
 }

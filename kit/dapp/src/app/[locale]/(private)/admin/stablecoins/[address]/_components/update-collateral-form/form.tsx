@@ -14,20 +14,27 @@ import { Summary } from "./steps/summary";
 interface UpdateCollateralFormProps {
   address: Address;
   asButton?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function UpdateCollateralForm({
   address,
   asButton = false,
+  open,
+  onOpenChange,
 }: UpdateCollateralFormProps) {
-  const [open, setOpen] = useState(false);
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [internalOpenState, setInternalOpenState] = useState(false);
   const t = useTranslations("admin.stablecoins.update-collateral-form");
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      open={isExternallyControlled ? open : internalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
       title={t("title")}
       description={t("description")}
       asButton={asButton}

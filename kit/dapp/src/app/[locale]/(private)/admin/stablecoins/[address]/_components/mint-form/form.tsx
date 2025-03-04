@@ -16,21 +16,28 @@ interface MintFormProps {
   address: Address;
   collateralAvailable: number;
   asButton?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function MintForm({
   address,
   collateralAvailable,
   asButton = false,
+  open,
+  onOpenChange,
 }: MintFormProps) {
-  const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.mint-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      open={isExternallyControlled ? open : internalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
       title={t("title")}
       description={t("description")}
       asButton={asButton}
@@ -38,7 +45,7 @@ export function MintForm({
       <Form
         action={mint}
         resolver={zodResolver(MintSchema)}
-        onOpenChange={setOpen}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}

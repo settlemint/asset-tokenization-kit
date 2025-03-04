@@ -1213,8 +1213,7 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn",
-        "trigger-label": "Burn"
+        "title": "Burn"
       },
       "charts": {
         "asset-statistics-title": "Asset statistics"
@@ -1310,8 +1309,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "actions-header": "Actions",
@@ -1368,7 +1366,15 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "update-collateral": "Update Collateral",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -1391,15 +1397,13 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "pause-form": {
         "pause": {
           "button-label": "Pause Transactions",
           "description": "Temporarily halt all transactions and interactions for this stablecoin.",
-          "title": "Pause Stablecoin Transactions",
-          "trigger-label": "Pause"
+          "title": "Pause Stablecoin Transactions"
         },
         "summary": {
           "asset-label": "Asset",
@@ -1415,8 +1419,7 @@
         "unpause": {
           "button-label": "Resume Transactions",
           "description": "Resume transactions and interactions for this stablecoin.",
-          "title": "Resume Stablecoin Transactions",
-          "trigger-label": "Unpause"
+          "title": "Resume Stablecoin Transactions"
         }
       },
       "permissions": {
@@ -1518,8 +1521,7 @@
           "update-description": "Updating collateral operation details",
           "update-title": "Update Collateral"
         },
-        "title": "Update collateral",
-        "trigger-label": "Update collateral"
+        "title": "Update collateral"
       }
     },
     "users": {

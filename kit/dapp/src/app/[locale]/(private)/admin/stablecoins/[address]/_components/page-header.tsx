@@ -27,7 +27,7 @@ export async function StableCoinPageHeader({ address }: PageHeaderProps) {
         </EvmAddress>
       }
       pill={<ActivePill paused={stableCoin.paused} />}
-      button={<ManageDropdown address={address} />}
+      button={<ManageDropdown address={address} stableCoin={stableCoin} />}
     />
   );
 }
