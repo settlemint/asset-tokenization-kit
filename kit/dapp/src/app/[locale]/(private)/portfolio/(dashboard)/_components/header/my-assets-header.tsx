@@ -1,6 +1,6 @@
 'use client';
 
-import type { BalanceFragmentType } from '@/lib/queries/portfolio/balance-fragment';
+import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
 import type { Address } from 'viem';
 import { MyAssetsTransferForm } from '../transfer-form/transfer-form';
 import { MyAssetsCount } from './my-assets-count';
@@ -9,7 +9,7 @@ interface MyAssetsHeaderProps {
   wallet: Address;
   data: {
     total: string;
-    balances: BalanceFragmentType[];
+    balances: AssetBalance[];
   };
 }
 

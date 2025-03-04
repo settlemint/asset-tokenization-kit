@@ -1,4 +1,5 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
+import { AssetBalanceFragment, AssetBalanceFragmentSchema } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
 	theGraphClientStarterkits,
 	theGraphGraphqlStarterkits,
@@ -7,19 +8,18 @@ import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from 'bignumber.js';
 import { cache } from "react";
 import type { Address } from "viem";
-import { BalanceFragment, BalanceFragmentSchema } from "./balance-fragment";
 
 const MyAssets = theGraphGraphqlStarterkits(
 	`
   query MyAssets($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
       balances(first: $first, skip: $skip) {
-        ...BalanceFragment
+        ...AssetBalanceFragment
       }
     }
   }
 `,
-	[BalanceFragment],
+	[AssetBalanceFragment],
 );
 
 type AssetType = 'StableCoin' | 'Bond' | 'Fund' | 'Equity' | 'CryptoCurrency';
@@ -42,7 +42,7 @@ export const getPortfolioDashboardData = cache(
 
 		// Parse and validate the data using Zod schemas
 		let validatedMyAssets = myAssets.map((asset) =>
-			safeParseWithLogging(BalanceFragmentSchema, asset, "balance"),
+			safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance"),
 		);
 
 		if (!validatedMyAssets.length) {

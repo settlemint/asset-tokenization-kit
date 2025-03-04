@@ -1,5 +1,5 @@
 import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for asset balance data from The Graph
@@ -13,14 +13,29 @@ export const AssetBalanceFragment = theGraphGraphqlStarterkits(`
     blocked
     frozen
     value
+
     account {
       id
       lastActivity
     }
     asset {
       id
+      name
       symbol
       decimals
+      type
+      ... on StableCoin {
+        paused
+      }
+      ... on Bond {
+        paused
+      }
+      ... on Fund {
+        paused
+      }
+      ... on Equity {
+        paused
+      }
     }
   }
 `);
@@ -39,8 +54,11 @@ export const AssetBalanceFragmentSchema = z.object({
   }),
   asset: z.object({
     id: z.address(),
+    name: z.string(),
     symbol: z.symbol(),
     decimals: z.number(),
+    type: z.string(),
+    paused: z.boolean().optional(),
   }),
 });
 
