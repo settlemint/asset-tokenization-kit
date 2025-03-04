@@ -37,6 +37,7 @@ export function EditPermissionsForm({
       <Form
         action={updateRoles}
         resolver={zodResolver(UpdateRolesSchema)}
+        onOpenChange={setOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

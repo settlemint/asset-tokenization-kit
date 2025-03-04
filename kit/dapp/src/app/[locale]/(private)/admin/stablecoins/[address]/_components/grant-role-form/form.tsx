@@ -34,6 +34,7 @@ export function GrantRoleForm({
       <Form
         action={grantRole}
         resolver={zodResolver(GrantRoleSchema)}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}

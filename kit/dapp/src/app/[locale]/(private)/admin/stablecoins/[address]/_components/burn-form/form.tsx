@@ -37,7 +37,7 @@ export function BurnForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={!isExternallyControlled ? t("trigger-label") : undefined}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
       asButton={asButton}
@@ -45,6 +45,9 @@ export function BurnForm({
       <Form
         action={burn}
         resolver={zodResolver(BurnSchema)}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}

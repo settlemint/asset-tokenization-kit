@@ -31,8 +31,9 @@ export function FreezeForm({
 
   // Convert to numbers for component use
   const balanceNum =
-    typeof balance === "string" ? parseFloat(balance) : balance;
-  const frozenNum = typeof frozen === "string" ? parseFloat(frozen) : frozen;
+    typeof balance === "string" ? Number.parseFloat(balance) : balance;
+  const frozenNum =
+    typeof frozen === "string" ? Number.parseFloat(frozen) : frozen;
 
   return (
     <FormSheet
@@ -45,6 +46,7 @@ export function FreezeForm({
       <Form
         action={freeze}
         resolver={zodResolver(FreezeSchema)}
+        onOpenChange={setOpen}
         buttonLabels={{
           label: t("button-label"),
         }}
