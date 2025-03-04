@@ -6,24 +6,23 @@ import { mint } from "@/lib/mutations/cryptocurrency/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/cryptocurrency/mint/mint-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 
 interface MintFormProps {
   address: Address;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function MintForm({ address }: MintFormProps) {
-  const [open, setOpen] = useState(false);
+export function MintForm({ address, open, onOpenChange }: MintFormProps) {
   const t = useTranslations("admin.cryptocurrencies.mint-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      onOpenChange={onOpenChange}
       title={t("title")}
       description={t("description")}
     >

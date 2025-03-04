@@ -366,8 +366,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "active-status": "Active",
@@ -381,7 +380,11 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -399,8 +402,7 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "permissions": {
         "actions-header": "Actions",
