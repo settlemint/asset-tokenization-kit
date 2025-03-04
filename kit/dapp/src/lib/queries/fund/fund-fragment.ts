@@ -16,6 +16,8 @@ export const FundFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
+    totalBurned
+    totalBurnedExact
     paused
     fundCategory
     fundClass
@@ -40,6 +42,8 @@ export const FundFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
+  totalBurned: z.bigDecimal(),
+  totalBurnedExact: z.bigInt(),
   paused: z.boolean(),
   fundCategory: z.string(),
   fundClass: z.string(),

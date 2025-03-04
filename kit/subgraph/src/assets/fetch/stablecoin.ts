@@ -29,6 +29,8 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.userManagers = [];
     stableCoin.lastActivity = BigInt.zero();
     stableCoin.creator = Address.zero();
+    stableCoin.totalBurned = BigDecimal.zero();
+    stableCoin.totalBurnedExact = BigInt.zero();
 
     // StableCoin-specific fields
     stableCoin.collateralExact = BigInt.zero();

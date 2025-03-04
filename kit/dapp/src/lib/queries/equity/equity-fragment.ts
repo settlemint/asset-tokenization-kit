@@ -16,6 +16,8 @@ export const EquityFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
+    totalBurned
+    totalBurnedExact
     paused
     equityCategory
     equityClass
@@ -39,6 +41,8 @@ export const EquityFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
+  totalBurned: z.bigDecimal(),
+  totalBurnedExact: z.bigInt(),
   paused: z.boolean(),
   equityCategory: z.string(),
   equityClass: z.string(),

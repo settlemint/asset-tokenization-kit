@@ -146,6 +146,14 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.totalSupplyExact,
       cryptoCurrency.decimals
     );
+    cryptoCurrency.totalBurnedExact = cryptoCurrency.totalBurnedExact.plus(
+      burn.valueExact
+    );
+    cryptoCurrency.totalBurned = toDecimals(
+      cryptoCurrency.totalBurnedExact,
+      cryptoCurrency.decimals
+    );
+
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
       burn.valueExact
     );

@@ -16,6 +16,8 @@ export const BondFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
+    totalBurned
+    totalBurnedExact
     paused
     creator {
       id
@@ -37,6 +39,8 @@ export const BondFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
+  totalBurned: z.bigDecimal(),
+  totalBurnedExact: z.bigInt(),
   paused: z.boolean(),
   creator: z.object({
     id: z.address(),

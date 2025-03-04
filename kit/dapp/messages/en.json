@@ -509,10 +509,10 @@
         }
       },
       "page": {
+        "description": "Admin dashboard overview",
         "latest_events_heading": "Latest Events",
         "stats_heading": "Stats",
-        "title": "Dashboard",
-        "description": "Admin dashboard overview"
+        "title": "Dashboard"
       },
       "table": {
         "latest-events": {
@@ -1293,6 +1293,8 @@
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
         "stablecoin-details-description": "Details for the stablecoin",
         "symbol": "Symbol",
+        "total-burned": "Burned supply",
+        "total-burned-info": "Amount of tokens permanently removed from circulation",
         "total-supply": "Total supply",
         "total-supply-info": "The total supply of the token"
       },
@@ -1609,6 +1611,8 @@
         "notVerified": "Not Verified",
         "verified": "Verified"
       },
+      "page-description": "Manage users and their roles",
+      "page-title": "Users",
       "roles": {
         "admin": "Admin",
         "issuer": "Issuer",
@@ -1618,9 +1622,7 @@
         "active": "Active",
         "banned": "Banned"
       },
-      "title": "Users",
-      "page-title": "Users",
-      "page-description": "Manage users and their roles"
+      "title": "Users"
     }
   },
   "auth": {

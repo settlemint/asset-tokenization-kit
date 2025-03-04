@@ -160,6 +160,14 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.totalSupplyExact,
       stableCoin.decimals
     );
+    stableCoin.totalBurnedExact = stableCoin.totalBurnedExact.plus(
+      burn.valueExact
+    );
+    stableCoin.totalBurned = toDecimals(
+      stableCoin.totalBurnedExact,
+      stableCoin.decimals
+    );
+
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
       burn.valueExact
     );
