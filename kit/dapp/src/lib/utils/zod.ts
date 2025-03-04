@@ -182,9 +182,11 @@ const extendedZod = {
         try {
           const decimal = new BigNumber(val);
           // Check if it's a valid finite number
-          return decimal.isFinite() ? decimal : new BigNumber(0);
+          return decimal.isFinite()
+            ? decimal.toNumber()
+            : new BigNumber(0).toNumber();
         } catch {
-          return new BigNumber(0);
+          return new BigNumber(0).toNumber();
         }
       }),
 
