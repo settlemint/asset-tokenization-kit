@@ -27,15 +27,15 @@ export const AssetStatsFragment = theGraphGraphqlStarterkits(`
  *
  */
 export const AssetStatsFragmentSchema = z.object({
-  totalBurned: z.bigInt(),
-  totalCollateral: z.bigInt(),
-  totalFrozen: z.bigInt(),
-  totalLocked: z.bigInt(),
-  totalMinted: z.bigInt(),
-  totalSupply: z.bigInt(),
-  totalTransfers: z.bigInt(),
-  totalUnfrozen: z.bigInt(),
-  totalVolume: z.bigInt(),
+  totalBurned: z.bigDecimal(),
+  totalCollateral: z.bigDecimal(),
+  totalFrozen: z.bigDecimal(),
+  totalLocked: z.bigDecimal(),
+  totalMinted: z.bigDecimal(),
+  totalSupply: z.bigDecimal(),
+  totalTransfers: z.bigDecimal(),
+  totalUnfrozen: z.bigDecimal(),
+  totalVolume: z.bigDecimal(),
   timestamp: z.timestamp(),
 });
 
