@@ -637,6 +637,8 @@ type AssetStatsData @entity(timeseries: true) {
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
 }
 
 type AssetStats

@@ -7,7 +7,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import type { PropsWithChildren } from "react";
 
 interface FormSheetProps extends PropsWithChildren {
@@ -30,16 +29,11 @@ export function FormSheet({
 }: FormSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      {triggerLabel &&
-        (asButton ? (
-          <SheetTrigger asChild>
-            <Button variant="secondary">{triggerLabel}</Button>
-          </SheetTrigger>
-        ) : (
-          <SheetTrigger className={cn("w-full text-left")}>
-            {triggerLabel}
-          </SheetTrigger>
-        ))}
+      {triggerLabel && asButton && (
+        <SheetTrigger asChild>
+          <Button variant="secondary">{triggerLabel}</Button>
+        </SheetTrigger>
+      )}
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>

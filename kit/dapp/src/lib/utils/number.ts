@@ -58,5 +58,22 @@ export function formatNumber(
     minimumFractionDigits: decimals,
   }).format(numberValue);
 
+  // Check if the number is very small (less than the smallest displayable value based on decimals)
+  const minimumValue = new BigNumber(1).div(Math.pow(10, decimals));
+  if (
+    value.isGreaterThan(0) &&
+    value.isLessThan(percentage ? minimumValue : minimumValue)
+  ) {
+    const minFormatted = new Intl.NumberFormat(locale, {
+      style: percentage ? "percent" : currency ? "currency" : "decimal",
+      currency,
+      currencyDisplay: currency ? "symbol" : undefined,
+      maximumFractionDigits: decimals,
+      minimumFractionDigits: decimals,
+    }).format(percentage ? 0.0001 : minimumValue.toNumber());
+
+    return token ? `< ${minFormatted} ${token}` : `< ${minFormatted}`;
+  }
+
   return token ? `${formattedNumber} ${token}` : formattedNumber;
 }
