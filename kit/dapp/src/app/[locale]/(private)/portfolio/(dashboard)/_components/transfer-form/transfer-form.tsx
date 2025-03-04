@@ -44,6 +44,7 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
               </SheetDescription>
             </SheetHeader>
             <TransferForm
+              open={open}
               address={selectedAsset.asset.id}
               name={selectedAsset.asset.name}
               symbol={selectedAsset.asset.symbol}

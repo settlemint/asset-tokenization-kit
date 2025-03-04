@@ -1,8 +1,10 @@
-import { AssetFormInput } from '@/components/blocks/asset-form/inputs/asset-form-input';
+import { FormStep } from '@/components/blocks/form/form-step';
+import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { DollarSign, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
 import type { TransferFormAssetType, TransferFormType } from '../schema';
@@ -13,19 +15,13 @@ export function Summary({
   decimals,
 }: { address: Address; assetType: TransferFormAssetType; decimals: number }) {
   const { control } = useFormContext<TransferFormType>();
+  const t = useTranslations("portfolio.transfer-form.summary");
   const values = useWatch({
     control: control,
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-semibold text-base">Review and confirm transfer</h2>
-        <p className="text-muted-foreground text-xs">
-          Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.
-        </p>
-      </div>
-
+    <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-4">
         <div className="rounded-lg border bg-card p-4">
           <div className="mb-3 flex items-center gap-2">
@@ -64,9 +60,9 @@ export function Summary({
             </div>
           </div>
 
-          <AssetFormInput control={control} name="address" type="hidden" defaultValue={address} />
-          <AssetFormInput control={control} name="assetType" type="hidden" defaultValue={assetType} />
-          <AssetFormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
+          <FormInput control={control} name="address" type="hidden" defaultValue={address} />
+          <FormInput control={control} name="assetType" type="hidden" defaultValue={assetType} />
+          <FormInput control={control} name="decimals" type="hidden" defaultValue={decimals} />
 
           <FormField
             control={control}
@@ -82,7 +78,7 @@ export function Summary({
           />
         </div>
       </div>
-    </div>
+    </FormStep>
   );
 }
 

@@ -1833,6 +1833,21 @@
   },
   "portfolio": {
     "transfer-form": {
+      "amount": {
+        "title": "Enter Amount",
+        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
+        "amount-label": "Amount",
+        "balance-description": "Balance:"
+      },
+      "recipients": {
+        "title": "Select Recipients",
+        "description": "Enter a wallet address to send tokens directly.",
+        "wallet-address-label": "Wallet Address"
+      },
+      "summary": {
+        "title": "Review and confirm transfer",
+        "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct."
+      },
       "transfer": "Transfer",
       "transferring": "Transferring..."
     }
