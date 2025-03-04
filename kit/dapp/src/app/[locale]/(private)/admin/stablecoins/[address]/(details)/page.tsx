@@ -1,5 +1,6 @@
 import { UpdateCollateralForm } from "@/app/[locale]/(private)/admin/stablecoins/[address]/_components/update-collateral-form/form";
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
+import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
@@ -54,6 +55,7 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
       <Details address={address} />
       <Collateral address={address} />
       <ChartGrid title={t("charts.asset-statistics-title")}>
+        <CollateralRatio address={address} />
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <TotalTransfers address={address} />
