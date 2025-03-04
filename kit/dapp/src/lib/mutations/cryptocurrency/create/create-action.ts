@@ -2,9 +2,9 @@
 
 import { handleChallenge } from "@/lib/challenge";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
-import { parseEther } from "@/lib/ether";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateCryptoCurrencySchema } from "./create-schema";
 
@@ -71,7 +71,7 @@ export const createCryptoCurrency = action
       parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
       ctx: { user },
     }) => {
-      const initialSupplyExact = parseEther(initialSupply, decimals);
+      const initialSupplyExact = parseUnits(initialSupply, decimals).toString();
       const predictedAddress = await portalClient.request(
         CreateCryptoCurrencyPredictAddress,
         {
