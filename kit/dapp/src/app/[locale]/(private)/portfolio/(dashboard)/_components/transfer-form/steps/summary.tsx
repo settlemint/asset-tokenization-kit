@@ -2,12 +2,12 @@ import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { OTPInput } from '@/components/blocks/otp-input/otp-input';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import type { TransferFormAssetType, TransferFormType } from '@/lib/mutations/asset/transfer/transfer-schema';
 import { formatAssetType } from '@/lib/utils/format-asset-type';
 import { DollarSign, Lock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import type { Address } from 'viem';
-import type { TransferFormAssetType, TransferFormType } from '../schema';
 
 export function Summary({
   address,

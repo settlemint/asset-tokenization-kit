@@ -2,11 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import type { TransferFormAssetType } from '@/lib/mutations/asset/transfer/transfer-schema';
 import type { MyAsset } from '@/lib/queries/portfolio/portfolio-dashboard';
 import { ArrowLeftRight } from 'lucide-react';
 import { useState } from 'react';
 import { TransferForm } from './form';
-import type { TransferFormAssetType } from './schema';
 import { SelectAsset } from './select-asset';
 
 interface TransferFormProps {

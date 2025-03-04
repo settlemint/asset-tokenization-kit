@@ -1,10 +1,8 @@
-import { assetConfig } from '@/lib/config/assets';
-import type { NonEmptyArray } from '@/lib/non-empty-array.type';
-import { z } from 'zod';
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 const PIN_CODE_REGEX = /^\d+$/;
+const assetKeys = ["bond", "cryptocurrency", "equity", "fund", "stablecoin"] as const;
 
-const assetKeys = Object.keys(assetConfig) as NonEmptyArray<keyof typeof assetConfig>;
 export const getTransferFormSchema = (balance?: string) => {
   return z.object({
     address: z.string().min(1, { message: 'Address is required' }),
@@ -29,8 +27,6 @@ export const getTransferFormSchema = (balance?: string) => {
 };
 
 export type TransferFormSchema = ReturnType<typeof getTransferFormSchema>;
-export type TransferFormType = z.infer<TransferFormSchema>;
-export type TransferFormAssetType = z.infer<TransferFormSchema>['assetType'];
+export type TransferFormType = ZodInfer<TransferFormSchema>;
+export type TransferFormAssetType = ZodInfer<TransferFormSchema>['assetType'];
 
-export const TransferOutputSchema = z.string();
-export type TransferOutputType = z.infer<typeof TransferOutputSchema>;

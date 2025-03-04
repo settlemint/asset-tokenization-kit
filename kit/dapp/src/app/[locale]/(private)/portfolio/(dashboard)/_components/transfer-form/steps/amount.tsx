@@ -1,8 +1,8 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import type { TransferFormType } from '@/lib/mutations/asset/transfer/transfer-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
-import type { TransferFormType } from '../schema';
 
 export function Amount({ balance }: { balance: string }) {
   const { control } = useFormContext<TransferFormType>();
