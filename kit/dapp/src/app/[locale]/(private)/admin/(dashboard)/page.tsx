@@ -1,5 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
+import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { AssetActivity } from "./_components/charts/asset-activity";
 import { AssetsSupply } from "./_components/charts/assets-supply";
 import { TransactionsHistory } from "./_components/charts/transaction-history";
@@ -10,6 +12,23 @@ import { TransactionsWidget } from "./_components/widgets/transactions";
 import { UsersWidget } from "./_components/widgets/users";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "admin.dashboard.page",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function AdminDashboard() {
   const t = useTranslations("admin.dashboard.page");
