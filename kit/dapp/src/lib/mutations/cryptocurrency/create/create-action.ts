@@ -71,7 +71,9 @@ export const createCryptoCurrency = action
       parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
       ctx: { user },
     }) => {
-      const initialSupplyExact = parseUnits(initialSupply, decimals).toString();
+      const initialSupplyExact = String(
+        parseUnits(String(initialSupply), decimals)
+      );
       const predictedAddress = await portalClient.request(
         CreateCryptoCurrencyPredictAddress,
         {

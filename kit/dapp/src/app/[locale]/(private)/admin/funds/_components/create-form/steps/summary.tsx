@@ -50,7 +50,7 @@ export function Summary() {
           value={
             values.fundCategory
               ? t(
-                  `category-${values.fundCategory.toLowerCase()}` as MessageKeys<
+                  `category-${values.fundCategory.toLowerCase().replace(/_/g, "-")}` as MessageKeys<
                     "admin.funds.create-form.summary",
                     "fund-category-label"
                   >
@@ -63,7 +63,7 @@ export function Summary() {
           value={
             values.fundClass
               ? t(
-                  `class-${values.fundClass.toLowerCase()}` as MessageKeys<
+                  `class-${values.fundClass.toLowerCase().replace(/_/g, "-")}` as MessageKeys<
                     "admin.funds.create-form.summary",
                     "fund-class-label"
                   >

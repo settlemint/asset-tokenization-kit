@@ -47,12 +47,6 @@ export function FormCheckbox<T extends FieldValues>({
       {...props}
       rules={rules}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(
-          field.name,
-          !!fieldState.error,
-          props.disabled
-        );
-
         return (
           <FormItem className="flex flex-row items-start space-x-3 space-y-1 rounded-md">
             <FormControl>
@@ -62,7 +56,11 @@ export function FormCheckbox<T extends FieldValues>({
                 checked={field.value}
                 onCheckedChange={field.onChange}
                 className={cn(className)}
-                {...ariaAttrs}
+                {...getAriaAttributes(
+                  field.name,
+                  !!fieldState.error,
+                  props.disabled
+                )}
               />
             </FormControl>
             <div className="space-y-1 leading-none">

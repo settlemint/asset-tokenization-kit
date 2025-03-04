@@ -1,4 +1,5 @@
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
+import { isFuture } from "date-fns";
 
 /**
  * Zod schema for validating bond creation inputs
@@ -19,10 +20,12 @@ export const CreateBondSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  cap: z.string(),
-  faceValue: z.string(),
-  maturityDate: z.string(),
-  underlyingAsset: z.string(),
+  cap: z.coerce.number().min(1, { message: "Must be at least 1" }),
+  faceValue: z.coerce.number().min(1, { message: "Must be at least 1" }),
+  maturityDate: z
+    .string()
+    .refine(isFuture, { message: "Maturity date must be in the future" }),
+  underlyingAsset: z.address(),
 });
 
 export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;
