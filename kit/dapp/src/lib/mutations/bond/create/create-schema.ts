@@ -19,10 +19,10 @@ export const CreateBondSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  cap: z.string(),
-  faceValue: z.string(),
-  maturityDate: z.string(),
-  underlyingAsset: z.string(),
+  cap: z.amount(),
+  faceValue: z.amount(),
+  maturityDate: z.date(),
+  underlyingAsset: z.address(),
 });
 
 export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;
