@@ -72,7 +72,7 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
         >
           <MintForm
             address={address}
-            collateralAvailable={stableCoin.collateral}
+            collateralAvailable={stableCoin.collateral.toNumber()}
             asButton
           />
         </RelatedGridItem>
@@ -82,7 +82,7 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
         >
           <BurnForm
             address={address}
-            balance={stableCoin.totalSupply}
+            balance={stableCoin.totalSupply.toNumber()}
             asButton
           />
         </RelatedGridItem>

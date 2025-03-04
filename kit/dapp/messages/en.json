@@ -1655,6 +1655,9 @@
     }
   },
   "components": {
+    "area-chart": {
+      "info-icon-label": "Info"
+    },
     "active-pill": {
       "active": "Active",
       "paused": "Paused"

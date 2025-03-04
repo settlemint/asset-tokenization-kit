@@ -1,15 +1,15 @@
 import { Progress } from "@/components/ui/progress";
 import { formatNumber } from "@/lib/utils/number";
-import type bigDecimal from "js-big-decimal";
+import type { BigNumber } from "bignumber.js";
 interface PercentageProgressBarProps {
-  percentage: number | bigDecimal;
+  percentage: number | BigNumber;
 }
 
 export function PercentageProgressBar({
   percentage,
 }: PercentageProgressBarProps) {
   const percentageNumber =
-    typeof percentage === "number" ? percentage : Number(percentage.getValue());
+    typeof percentage === "number" ? percentage : Number(percentage.toString());
 
   return (
     <div className="grid w-full grid-cols-4 items-center">

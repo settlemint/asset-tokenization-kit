@@ -5,6 +5,7 @@
  * It extends the standard Zod library with specialized validators for Ethereum addresses,
  * transaction hashes, financial identifiers, and other domain-specific data types.
  */
+import { BigNumber } from "bignumber.js";
 import { fromUnixTime } from "date-fns";
 import type { Address, Hash } from "viem";
 import { getAddress, isAddress, isHash } from "viem";
@@ -157,11 +158,35 @@ const extendedZod = {
   bigInt: () => z.coerce.bigint(),
 
   /**
-   * Validates and transforms a string to a BigDecimal
+   * Validates and transforms a string to a BigNumber
    *
-   * @returns A Zod schema that validates and transforms a string to a BigDecimal
+   * This validator:
+   * 1. Coerces the input to a string
+   * 2. Validates it's a valid decimal number
+   * 3. Converts it to a BigNumber for precise decimal handling
+   * 4. Returns 0 if the result would be NaN or invalid
+   *
+   * @returns A Zod schema that validates and transforms a string to a BigNumber
    */
-  bigDecimal: () => z.coerce.number(),
+  bigDecimal: () =>
+    z.coerce
+      .string()
+      .refine(
+        (val) => {
+          // Check if it's a valid decimal string
+          return /^-?\d*\.?\d+$/.test(val);
+        },
+        { message: "Invalid decimal number format" }
+      )
+      .transform((val) => {
+        try {
+          const decimal = new BigNumber(val);
+          // Check if it's a valid finite number
+          return decimal.isFinite() ? decimal : new BigNumber(0);
+        } catch {
+          return new BigNumber(0);
+        }
+      }),
 
   /**
    * Validates and transforms a timestamp to a Date object
