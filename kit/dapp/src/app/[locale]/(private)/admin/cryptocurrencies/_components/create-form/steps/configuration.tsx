@@ -14,6 +14,7 @@ export function Configuration() {
         <FormInput
           control={control}
           name="initialSupply"
+          type="number"
           label={t("initial-supply-label")}
           description={t("initial-supply-description")}
         />
@@ -22,9 +23,4 @@ export function Configuration() {
   );
 }
 
-Configuration.validatedFields = [
-  "cap",
-  "faceValue",
-  "maturityDate",
-  "underlyingAsset",
-] as const;
+Configuration.validatedFields = ["initialSupply"] as const;
