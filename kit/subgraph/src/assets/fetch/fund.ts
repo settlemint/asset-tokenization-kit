@@ -33,6 +33,7 @@ export function fetchFund(address: Address): Fund {
     fund.creator = Address.zero();
     fund.totalBurned = BigDecimal.zero();
     fund.totalBurnedExact = BigInt.zero();
+    fund.totalHolders = 0;
 
     // Fund-specific fields
     fund.fundClass = fundClass.reverted ? "" : fundClass.value;

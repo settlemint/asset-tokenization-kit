@@ -37,6 +37,7 @@ export function fetchBond(address: Address): Bond {
     bond.creator = Address.zero();
     bond.totalBurned = BigDecimal.zero();
     bond.totalBurnedExact = BigInt.zero();
+    bond.totalHolders = 0;
 
     // Bond-specific fields
     bond.capExact = cap.reverted ? BigInt.zero() : cap.value;

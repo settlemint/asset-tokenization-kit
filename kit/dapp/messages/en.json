@@ -1295,6 +1295,8 @@
         "symbol": "Symbol",
         "total-burned": "Burned supply",
         "total-burned-info": "Amount of tokens permanently removed from circulation",
+        "total-holders": "# of holders",
+        "total-holders-info": "Amount of addresses currently holding the assets",
         "total-supply": "Total supply",
         "total-supply-info": "The total supply of the token"
       },

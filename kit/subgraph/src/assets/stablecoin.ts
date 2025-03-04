@@ -1,5 +1,6 @@
 import {
   Address,
+  BigInt,
   ByteArray,
   Bytes,
   crypto,
@@ -90,6 +91,7 @@ export function handleTransfer(event: Transfer): void {
 
     if (!hasBalance(stableCoin.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
+      stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.save();
     }
 
@@ -211,6 +213,10 @@ export function handleTransfer(event: Transfer): void {
       AssetType.stablecoin,
       stableCoin.id
     );
+
+    if (balance.valueExact.equals(BigInt.zero())) {
+      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+    }
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -239,6 +245,7 @@ export function handleTransfer(event: Transfer): void {
 
     if (!hasBalance(stableCoin.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
+      stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.save();
     }
 
@@ -250,6 +257,10 @@ export function handleTransfer(event: Transfer): void {
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, stableCoin.decimals);
     fromBalance.save();
+
+    if (fromBalance.valueExact.equals(BigInt.zero())) {
+      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+    }
 
     const fromPortfolioStats = newPortfolioStatsData(
       from.id,

@@ -16,6 +16,7 @@ export const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
+    totalHolders
     creator {
       id
     }
@@ -36,6 +37,7 @@ export const CryptoCurrencyFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
+  totalHolders: z.number(),
   creator: z.object({
     id: z.address(),
   }),

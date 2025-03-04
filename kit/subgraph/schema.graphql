@@ -16,6 +16,7 @@ interface Asset {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -46,6 +47,7 @@ type Bond implements Asset @entity {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -77,6 +79,7 @@ type Equity implements Asset @entity {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -101,6 +104,7 @@ type Fund implements Asset @entity {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -127,6 +131,7 @@ type StableCoin implements Asset @entity {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -156,6 +161,7 @@ type CryptoCurrency implements Asset @entity {
   creator: Account!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
