@@ -19,7 +19,6 @@ export function TransactionDetailSheet({
   createdAt,
   from,
   functionName,
-  metadata,
   receipt,
 }: Transaction) {
   return (
@@ -60,14 +59,6 @@ export function TransactionDetailSheet({
                 <dd className="text-sm">
                   <TransactionHash hash={transactionHash} />
                 </dd>
-                {metadata && (
-                  <>
-                    <dt className="text-muted-foreground text-sm">Metadata:</dt>
-                    <dd className="whitespace-pre-wrap font-mono text-sm">
-                      {JSON.stringify(metadata, null, 2)}
-                    </dd>
-                  </>
-                )}
               </dl>
             </CardContent>
           </Card>

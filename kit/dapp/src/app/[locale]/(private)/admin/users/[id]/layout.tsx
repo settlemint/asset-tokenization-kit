@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
 import { ChevronDown } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import { ChangeRoleAction } from "../(table)/_components/actions/change-role-action";
 import { UpdateKycStatusAction } from "../(table)/_components/actions/update-kyc-status-action";
@@ -21,24 +22,27 @@ interface LayoutProps extends PropsWithChildren {
   }>;
 }
 
-const tabs = (id: string): TabItemProps[] => [
-  {
-    name: "Details",
-    href: `/admin/users/${id}`,
-  },
-  {
-    name: "Holdings",
-    href: `/admin/users/${id}/holdings`,
-  },
-  {
-    name: "Last transactions",
-    href: `/admin/users/${id}/last-transactions`,
-  },
-  {
-    name: "Permissions",
-    href: `/admin/users/${id}/token-permissions`,
-  },
-];
+const getTabs = async (id: string): Promise<TabItemProps[]> => {
+  const t = await getTranslations("admin.users.detail.tabs");
+  return [
+    {
+      name: t("details"),
+      href: `/admin/users/${id}`,
+    },
+    {
+      name: t("holdings"),
+      href: `/admin/users/${id}/holdings`,
+    },
+    {
+      name: t("last_transactions"),
+      href: `/admin/users/${id}/last-transactions`,
+    },
+    {
+      name: t("permissions"),
+      href: `/admin/users/${id}/token-permissions`,
+    },
+  ];
+};
 
 export default async function UserDetailLayout({
   children,
@@ -46,6 +50,8 @@ export default async function UserDetailLayout({
 }: LayoutProps) {
   const { id } = await params;
   const user = await getUserDetail({ id });
+  const t = await getTranslations("admin.users.detail");
+  const tabs = await getTabs(id);
 
   return (
     <div>
@@ -60,7 +66,7 @@ export default async function UserDetailLayout({
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="self-end">
               <Button variant="default">
-                Edit user
+                {t("edit_user")}
                 <ChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -73,7 +79,7 @@ export default async function UserDetailLayout({
       />
 
       <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabs(id)} />
+        <TabNavigation items={tabs} />
       </div>
       {children}
     </div>

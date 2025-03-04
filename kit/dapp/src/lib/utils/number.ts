@@ -58,7 +58,7 @@ export function formatNumber(
     let percentageValue: number;
     if (value.getValue() !== "0") {
       // Divide by 100 for percentage
-      percentageValue = parseFloat(value.getValue()) / 100;
+      percentageValue = Number.parseFloat(value.getValue()) / 100;
     } else {
       percentageValue = 0;
     }
@@ -71,7 +71,7 @@ export function formatNumber(
   }
 
   // Convert BigDecimal to number for formatting
-  const numberValue = parseFloat(value.getValue());
+  const numberValue = Number.parseFloat(value.getValue());
 
   const formattedNumber = new Intl.NumberFormat(locale, {
     style: currency ? "currency" : "decimal",

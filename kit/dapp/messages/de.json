@@ -80,6 +80,14 @@
             "description": "Geben Sie den Betrag ein, den Sie einfrieren möchten.",
             "amount-label": "Betrag",
             "balance-description": "Verfügbarer Saldo: {balance} Derzeit eingefroren: {frozen}"
+          },
+          "summary": {
+            "amount-label": "Betrag",
+            "asset-label": "Vermögenswert",
+            "description": "Überprüfen Sie die Einzelheiten Ihrer Freeze-Operation, bevor Sie fortfahren.",
+            "freeze-title": "Einfrieren",
+            "operation-description": "Einzelheiten der Einfrieroperation",
+            "title": "Überprüfen und bestätigen Sie die Einfrieroperation"
           }
         }
       },
@@ -689,7 +697,8 @@
         },
         "assets-supply": {
           "label": "Verteilung",
-          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Vermögensarten."
+          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Anlagekategorien.",
+          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
         },
         "transaction-history": {
           "title": "Transaktionen",
@@ -928,7 +937,7 @@
           "button-label": "Zugriff widerrufen",
           "summary": {
             "title": "Überprüfen und bestätigen",
-            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion widerruft alle Berechtigungen für den Benutzer.",
+            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion ändert die Rollen für den Benutzer.",
             "revoke-title": "Alle widerrufen",
             "operation-description": "Einzelheiten zum Widerrufen aller Berechtigungen",
             "user-label": "Benutzer",
@@ -1529,6 +1538,67 @@
     "activity": {
       "page-title": "Aktivität",
       "page-description": "Aktivitäten über alle Vermögenswerte hinweg verfolgen."
+    },
+    "users": {
+      "title": "Benutzer",
+      "columns": {
+        "name": "Name",
+        "wallet": "Wallet",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "status": "Status",
+        "kyc_status": "KYC-Status",
+        "last_activity": "Letzte Aktivität"
+      },
+      "roles": {
+        "admin": "Admin",
+        "issuer": "Emittent",
+        "user": "Benutzer"
+      },
+      "status": {
+        "active": "Aktiv",
+        "banned": "Gesperrt"
+      },
+      "kyc_status": {
+        "verified": "Verifiziert",
+        "notVerified": "Nicht verifiziert"
+      },
+      "banned_reason": "Gesperrt wegen {reason}",
+      "detail": {
+        "tabs": {
+          "details": "Einzelheiten",
+          "holdings": "Bestände",
+          "last_transactions": "Letzte Transaktionen",
+          "permissions": "Berechtigungen"
+        },
+        "edit_user": "Benutzer bearbeiten",
+        "fields": {
+          "name": "Name",
+          "email": "E-Mail",
+          "status": "Status",
+          "created_at": "Erstellt am",
+          "verified_at": "Verifiziert am",
+          "wallet": "Wallet",
+          "asset_supply": "Vermögenswertangebot",
+          "transactions": "Transaktionen",
+          "last_activity": "Letzte Aktivität",
+          "last_login": "Letzter Login"
+        },
+        "values": {
+          "not_verified": "Nicht verifiziert",
+          "never": "Nie",
+          "email": "E-Mail",
+          "name": "Name",
+          "status": "Status",
+          "created_at": "Erstellt am",
+          "verified_at": "Verifiziert am",
+          "wallet": "Wallet",
+          "asset_supply": "Vermögenswertangebot",
+          "transactions": "Transaktionen",
+          "last_activity": "Letzte Aktivität",
+          "last_login": "Letzter Login"
+        }
+      }
     }
   },
   "auth": {

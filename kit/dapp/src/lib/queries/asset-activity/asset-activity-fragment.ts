@@ -1,5 +1,5 @@
 import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for asset activity data from The Graph
@@ -27,7 +27,7 @@ export const AssetActivityFragment = theGraphGraphqlStarterkits(`
 export const AssetActivityFragmentSchema = z.object({
   id: z.string(),
   assetType: z.assetType(),
-  totalSupply: z.bigInt(),
+  totalSupply: z.bigDecimal(),
   burnEventCount: z.bigInt(),
   mintEventCount: z.bigInt(),
   transferEventCount: z.bigInt(),

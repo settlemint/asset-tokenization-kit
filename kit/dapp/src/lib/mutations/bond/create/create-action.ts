@@ -1,7 +1,7 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
@@ -87,7 +87,7 @@ export const createBond = action
       const predictedAddress = await portalClient.request(
         CreateBondPredictAddress,
         {
-          address: STABLE_COIN_FACTORY_ADDRESS,
+          address: BOND_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
           cap,
@@ -112,7 +112,7 @@ export const createBond = action
       });
 
       const data = await portalClient.request(BondFactoryCreate, {
-        address: STABLE_COIN_FACTORY_ADDRESS,
+        address: BOND_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,

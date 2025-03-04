@@ -1,7 +1,7 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
+import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
@@ -67,15 +67,13 @@ export const createCryptoCurrency = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode },
+      parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
       ctx: { user },
     }) => {
-      const initialSupply = "0"; // Set initial supply to zero or appropriate default
-
       const predictedAddress = await portalClient.request(
         CreateCryptoCurrencyPredictAddress,
         {
-          address: STABLE_COIN_FACTORY_ADDRESS,
+          address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
           sender: user.wallet,
           decimals,
           name: assetName,
@@ -97,7 +95,7 @@ export const createCryptoCurrency = action
       // });
 
       const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
-        address: STABLE_COIN_FACTORY_ADDRESS,
+        address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
         from: user.wallet,
         name: assetName,
         symbol,

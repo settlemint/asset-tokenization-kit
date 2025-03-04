@@ -1,5 +1,9 @@
 {
   "admin": {
+    "activity": {
+      "page-description": "Track activity across all assets.",
+      "page-title": "Activity"
+    },
     "bonds": {
       "burn-form": {
         "amount": {
@@ -29,8 +33,6 @@
           "isin-placeholder": "e.g. US000000AA00",
           "name-label": "Asset name",
           "name-placeholder": "e.g. Company XYZ Bond 2023",
-          "private-token-description": "Private tokens require KYC before transfer",
-          "private-token-label": "Private token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "e.g. XYZ23",
           "title": "Basic information"
@@ -38,7 +40,7 @@
         "button-label": "Create Bond",
         "configuration": {
           "cap-description": "Maximum amount of tokens that can be issued",
-          "cap-label": "Cap",
+          "cap-label": "Maximum supply",
           "description": "Configure the properties of the bond",
           "face-value-description": "Nominal value of a single bond unit",
           "face-value-label": "Face value",
@@ -60,15 +62,11 @@
           "isin-label": "ISIN",
           "maturity-date-label": "Maturity date",
           "name-label": "Name",
-          "no": "No",
-          "private-label": "Private token",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "underlying-asset-label": "Underlying asset",
-          "yes": "Yes"
+          "underlying-asset-label": "Underlying asset"
         },
-        "title": "Create new bond",
-        "trigger-label": "Create Bond"
+        "title": "Create new bond"
       },
       "details": {
         "bond-details-description": "Details for the bond",
@@ -323,8 +321,7 @@
           "title": "Review and confirm",
           "yes": "Yes"
         },
-        "title": "Create Cryptocurrency",
-        "trigger-label": "Create Cryptocurrency"
+        "title": "Create Cryptocurrency"
       },
       "details": {
         "contract-address": "Contract address",
@@ -470,19 +467,19 @@
     },
     "dashboard": {
       "charts": {
-        "asset-types": {
-          "bonds": "Bonds",
-          "cryptocurrencies": "Cryptocurrencies",
-          "equities": "Equities",
-          "funds": "Funds",
-          "stablecoins": "Stablecoins"
-        },
         "asset-activity": {
           "burn": "Burn",
           "description": "Visualize recent minting, transfers, and burning activities across asset types.",
           "mint": "Mint",
           "title": "Activity",
           "transfer": "Transfer"
+        },
+        "asset-types": {
+          "bonds": "Bonds",
+          "cryptocurrencies": "Cryptocurrencies",
+          "equities": "Equities",
+          "funds": "Funds",
+          "stablecoins": "Stablecoins"
         },
         "assets-supply": {
           "description": "Visualize the distribution of total supply across different asset categories.",
@@ -554,8 +551,6 @@
           "isin-placeholder": "US1234567890",
           "name-label": "Name",
           "name-placeholder": "Global Equity",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "GLEQ",
           "title": "Basic Information"
@@ -626,14 +621,10 @@
           "equity-class-label": "Equity Class",
           "isin-label": "ISIN",
           "name-label": "Name",
-          "no": "No",
-          "private-label": "Private",
           "symbol-label": "Symbol",
-          "title": "Review and confirm",
-          "yes": "Yes"
+          "title": "Review and confirm"
         },
-        "title": "Create new equity",
-        "trigger-label": "Create Equity"
+        "title": "Create new equity"
       },
       "details": {
         "contract-address": "Contract address",
@@ -880,8 +871,6 @@
           "isin-placeholder": "US1234567890",
           "name-label": "Name",
           "name-placeholder": "Global Growth Fund",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "GGF",
           "title": "Basic Information"
@@ -957,14 +946,10 @@
           "isin-label": "ISIN",
           "management-fee-label": "Management Fee",
           "name-label": "Name",
-          "no": "No",
-          "private-label": "Private",
           "symbol-label": "Symbol",
-          "title": "Review and confirm",
-          "yes": "Yes"
+          "title": "Review and confirm"
         },
-        "title": "Create Fund",
-        "trigger-label": "Create Fund"
+        "title": "Create Fund"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1223,6 +1208,9 @@
         "title": "Burn",
         "trigger-label": "Burn"
       },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
       "collateral": {
         "collateral-proof-expiration": "Collateral proof expiration",
         "collateral-proof-expiration-info": "From this point the collateral proof is invalid",
@@ -1243,8 +1231,6 @@
           "isin-placeholder": "DEFI4EVER2024",
           "name-label": "Name",
           "name-placeholder": "TotallyNotTether",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "SAFU",
           "title": "Basic Information"
@@ -1266,15 +1252,11 @@
           "description": "Review and confirm the details of your new stablecoin before creation.",
           "isin-label": "ISIN",
           "name-label": "Name",
-          "no": "No",
-          "private-label": "Private",
           "seconds": "seconds",
           "symbol-label": "Symbol",
-          "title": "Review and confirm the details of your new stablecoin before creation.",
-          "yes": "Yes"
+          "title": "Review and confirm the details of your new stablecoin before creation."
         },
-        "title": "Create Stablecoin",
-        "trigger-label": "Create Stablecoin"
+        "title": "Create Stablecoin"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1473,6 +1455,21 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
+          "title": "Decrease the supply"
+        },
+        "increase-supply": {
+          "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
+          "title": "Increase the supply"
+        },
+        "title": "Related actions",
+        "update-collateral": {
+          "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
+          "title": "Update collateral"
+        }
+      },
       "table": {
         "actions-header": "Actions",
         "active-status": "Active",
@@ -1487,33 +1484,15 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
         "topinfo-title": "A secure and collateralized digital currency",
-        "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
         "permissions": "Permissions"
-      },
-      "charts": {
-        "asset-statistics-title": "Asset statistics"
-      },
-      "related-actions": {
-        "title": "Related actions",
-        "update-collateral": {
-          "title": "Update collateral",
-          "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times."
-        },
-        "increase-supply": {
-          "title": "Increase the supply",
-          "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available."
-        },
-        "decrease-supply": {
-          "title": "Decrease the supply",
-          "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available."
-        }
       },
       "update-collateral-form": {
         "amount": {
@@ -1535,9 +1514,66 @@
         "trigger-label": "Update collateral"
       }
     },
-    "activity": {
-      "page-title": "Activity",
-      "page-description": "Track activity across all assets."
+    "users": {
+      "banned_reason": "Banned for {reason}",
+      "columns": {
+        "email": "Email",
+        "kyc_status": "KYC Status",
+        "last_activity": "Last activity",
+        "name": "Name",
+        "role": "Role",
+        "status": "Status",
+        "wallet": "Wallet"
+      },
+      "detail": {
+        "edit_user": "Edit user",
+        "fields": {
+          "asset_supply": "Asset supply",
+          "created_at": "Created at",
+          "email": "Email",
+          "last_activity": "Last activity",
+          "last_login": "Last login",
+          "name": "Name",
+          "status": "Status",
+          "transactions": "Transactions",
+          "verified_at": "Verified at",
+          "wallet": "Wallet"
+        },
+        "tabs": {
+          "details": "Details",
+          "holdings": "Holdings",
+          "last_transactions": "Last transactions",
+          "permissions": "Permissions"
+        },
+        "values": {
+          "asset_supply": "Asset supply",
+          "created_at": "Created at",
+          "email": "Email",
+          "last_activity": "Last activity",
+          "last_login": "Last login",
+          "name": "Name",
+          "never": "Never",
+          "not_verified": "Not Verified",
+          "status": "Status",
+          "transactions": "Transactions",
+          "verified_at": "Verified at",
+          "wallet": "Wallet"
+        }
+      },
+      "kyc_status": {
+        "notVerified": "Not Verified",
+        "verified": "Verified"
+      },
+      "roles": {
+        "admin": "Admin",
+        "issuer": "Issuer",
+        "user": "User"
+      },
+      "status": {
+        "active": "Active",
+        "banned": "Banned"
+      },
+      "title": "Users"
     }
   },
   "auth": {
@@ -1548,12 +1584,6 @@
         "placeholder": "m@example.com"
       },
       "no-account": "Don't have an account?",
-      "page": {
-        "alert": {
-          "description": "The first user to sign up will be the given the admin role. You can add other admins later.",
-          "title": "Just created this dAPP?"
-        }
-      },
       "password": {
         "label": "Password"
       },
@@ -1708,6 +1738,12 @@
       "info-icon-label": "Additional information"
     },
     "form": {
+      "assets": {
+        "default-placeholder": "Select an option",
+        "loading": "Loading...",
+        "no-asset-found": "No asset found.",
+        "search-placeholder": "Search for an asset..."
+      },
       "button": {
         "next": "Next",
         "previous": "Previous",

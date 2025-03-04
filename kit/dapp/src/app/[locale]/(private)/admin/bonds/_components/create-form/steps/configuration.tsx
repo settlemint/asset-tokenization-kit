@@ -13,14 +13,12 @@ export function Configuration() {
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
-          type="number"
           name="cap"
           label={t("cap-label")}
           description={t("cap-description")}
         />
         <FormInput
           control={control}
-          type="number"
           name="faceValue"
           label={t("face-value-label")}
           description={t("face-value-description")}

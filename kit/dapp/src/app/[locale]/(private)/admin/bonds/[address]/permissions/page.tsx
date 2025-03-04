@@ -46,7 +46,10 @@ export default async function BondTokenPermissionsPage({ params }: PageProps) {
         subtitle={t("page-description", { name: bond?.name })}
       />
       <DataTable
-        columns={() => columns(address)}
+        columnParams={{
+          address,
+        }}
+        columns={columns}
         data={assetDetail.roles}
         name={t("table-title")}
       />

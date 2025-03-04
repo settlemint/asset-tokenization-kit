@@ -105,7 +105,7 @@ export function FormInput<T extends FieldValues>({
         );
 
         return (
-          <FormItem>
+          <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
                 className={cn(
