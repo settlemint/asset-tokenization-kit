@@ -82,7 +82,7 @@ export function SignInForm({
         {form.formState.errors.root && (
           <Alert
             variant="destructive"
-            className="border-destructive text-destructive"
+            className="text-destructive border-destructive"
           >
             <AlertTitle>{form.formState.errors.root.message}</AlertTitle>
           </Alert>
