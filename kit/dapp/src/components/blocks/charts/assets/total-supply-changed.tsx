@@ -39,8 +39,8 @@ export async function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
   }
 
   const timeseries = createTimeSeries(data, ["totalMinted", "totalBurned"], {
-    granularity: "hour",
-    intervalType: "day",
+    granularity: "day",
+    intervalType: "week",
     intervalLength: 1,
     aggregation: "first",
   });

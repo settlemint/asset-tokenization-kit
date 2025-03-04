@@ -35,8 +35,8 @@ export async function TotalSupply({ address }: TotalSupplyProps) {
   }
 
   const timeseries = createTimeSeries(data, ["totalSupply"], {
-    granularity: "hour",
-    intervalType: "day",
+    granularity: "day",
+    intervalType: "week",
     intervalLength: 1,
     accumulation: "max",
     aggregation: "first",

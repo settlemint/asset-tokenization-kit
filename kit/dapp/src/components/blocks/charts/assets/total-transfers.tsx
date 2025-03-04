@@ -35,8 +35,8 @@ export async function TotalTransfers({ address }: TotalTransfersProps) {
   }
 
   const timeseries = createTimeSeries(data, ["totalTransfers"], {
-    granularity: "hour",
-    intervalType: "day",
+    granularity: "day",
+    intervalType: "week",
     intervalLength: 1,
     aggregation: "first",
   });

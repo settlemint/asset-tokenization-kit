@@ -35,8 +35,8 @@ export async function TotalVolume({ address }: TotalVolumeProps) {
   }
 
   const timeseries = createTimeSeries(data, ["totalVolume"], {
-    granularity: "hour",
-    intervalType: "day",
+    granularity: "day",
+    intervalType: "week",
     intervalLength: 1,
     aggregation: "first",
   });
