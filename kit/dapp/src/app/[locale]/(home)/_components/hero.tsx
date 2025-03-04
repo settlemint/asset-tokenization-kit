@@ -146,7 +146,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
         },
         tertiary: {
           text: "Documentation",
-          href: "https://console.settlemint.com/documentation",
+          href: "https://console.settlemint.com/documentation/",
         },
       },
       footerLinks = [

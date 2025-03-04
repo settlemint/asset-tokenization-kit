@@ -4,6 +4,7 @@ import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar
 import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
 import { PasskeyModal } from "@/components/blocks/passkeys/passkey-modal";
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Suspense, useCallback, useRef } from "react";
+import { Suspense, useCallback, useEffect, useRef } from "react";
 import type { Address } from "viem";
 import {
   BookTextIcon,
@@ -57,7 +58,7 @@ function TextOrSkeleton({
 }
 
 export function UserDropdown() {
-  const { data } = authClient.useSession();
+  const { data, error, isPending, refetch } = authClient.useSession();
   const user = data?.user;
 
   const router = useRouter();
@@ -78,8 +79,18 @@ export function UserDropdown() {
     });
   }, [router]);
 
-  if (!user) {
-    return null;
+  useEffect(() => {
+    if (isPending && !user?.id) {
+      refetch();
+    }
+  }, [isPending, refetch, user?.id]);
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error.message}</AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -146,7 +157,7 @@ export function UserDropdown() {
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
             >
               <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
-              <Link href="https://console.settlemint.com/documentation">
+              <Link href="https://console.settlemint.com/documentation/">
                 {t("documentation")}
               </Link>
             </DropdownMenuItem>

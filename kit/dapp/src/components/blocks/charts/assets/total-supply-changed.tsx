@@ -40,11 +40,7 @@ export async function TotalSupplyChanged({ address }: TotalSupplyChangedProps) {
       description={t("total-supply-changed.description")}
       xAxis={{ key: "timestamp" }}
       showYAxis={true}
-      footer={
-        <div className="text-muted-foreground text-xs">
-          {t("last-updated")}: {timeseries.at(-1)?.timestamp}
-        </div>
-      }
+      info={`${t("last-updated")}: ${timeseries.at(-1)?.timestamp}`}
     />
   );
 }

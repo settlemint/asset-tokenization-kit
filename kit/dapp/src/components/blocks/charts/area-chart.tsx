@@ -15,6 +15,14 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 export interface AreaChartData {
@@ -36,6 +44,7 @@ interface AreaChartProps {
   xAxis: XAxisConfig;
   className?: string;
   footer?: ReactNode;
+  info?: string;
   showYAxis?: boolean;
   stacked?: boolean;
   chartContainerClassName?: string;
@@ -51,10 +60,12 @@ export function AreaChartComponent({
   description,
   xAxis,
   footer,
+  info,
   showYAxis,
   stacked,
   chartContainerClassName,
 }: AreaChartProps) {
+  const t = useTranslations("components.area-chart");
   const dataKeys = Object.keys(config);
   const {
     key,
@@ -65,10 +76,27 @@ export function AreaChartComponent({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{title}</CardTitle>
+          {info && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info
+                    className="size-4 text-muted-foreground"
+                    aria-label={t("info-icon-label")}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-accent-foreground text-xs">{info}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="p-0 pr-4 pb-4">
+      <CardContent className="p-0 pr-4">
         <ChartContainer config={config} className={chartContainerClassName}>
           <AreaChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />

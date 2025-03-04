@@ -1,3 +1,4 @@
+import { redirect } from "@/i18n/routing";
 import * as authSchema from "@/lib/db/schema-auth";
 import { betterAuth } from "better-auth";
 import { emailHarmony } from "better-auth-harmony";
@@ -8,7 +9,7 @@ import { admin } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import type { RedirectType } from 'next/navigation';
 import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { validateEnvironmentVariables } from "./config";
@@ -22,7 +23,7 @@ validateEnvironmentVariables();
  */
 export const auth = betterAuth({
   appName: metadata.title.default,
-  secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET!,
+  secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET ?? '',
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   database: drizzleAdapter(db, {
@@ -55,7 +56,7 @@ export const auth = betterAuth({
         before: async (user) => {
           try {
             const wallet = await createUserWallet({
-              keyVaultId: process.env.SETTLEMINT_HD_PRIVATE_KEY!,
+              keyVaultId: process.env.SETTLEMINT_HD_PRIVATE_KEY ?? '',
               name: user.email,
             });
 
@@ -122,12 +123,11 @@ export async function getSession() {
   });
 
   if (!session) {
-    redirect('/auth/signin');
+    redirect({ href: '/auth/signin', locale: 'en' }, 'replace' as RedirectType);
   }
 
-  return session;
+  return session as NonNullable<typeof session>;
 }
-
 
 /**
  * Get the currently authenticated user
@@ -138,7 +138,7 @@ export async function getAuthenticatedUser() {
   const session = await getSession();
 
   if (!session?.user) {
-    redirect('/auth/signin');
+    redirect({ href: '/auth/signin', locale: 'en' }, 'replace' as RedirectType);
   }
 
   return session.user;

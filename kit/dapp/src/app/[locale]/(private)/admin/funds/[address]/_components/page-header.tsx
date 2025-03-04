@@ -27,7 +27,7 @@ export async function FundPageHeader({ address }: PageHeaderProps) {
         </EvmAddress>
       }
       pill={<ActivePill paused={fund.paused} />}
-      button={<ManageDropdown address={address} />}
+      button={<ManageDropdown address={address} fund={fund} />}
     />
   );
 }

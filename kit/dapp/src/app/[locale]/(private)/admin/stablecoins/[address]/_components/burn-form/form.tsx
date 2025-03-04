@@ -15,21 +15,29 @@ interface BurnFormProps {
   address: Address;
   balance: number;
   asButton?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function BurnForm({
   address,
   balance,
   asButton = false,
+  open,
+  onOpenChange,
 }: BurnFormProps) {
-  const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.burn-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      open={isExternallyControlled ? open : internalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
+      triggerLabel={!isExternallyControlled ? t("trigger-label") : undefined}
       title={t("title")}
       description={t("description")}
       asButton={asButton}

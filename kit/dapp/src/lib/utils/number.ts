@@ -1,5 +1,4 @@
-import type bigDecimal from "js-big-decimal";
-import BigDecimal from "js-big-decimal";
+import { BigNumber } from "bignumber.js";
 
 /**
  * Options for currency formatting
@@ -23,10 +22,9 @@ export interface FormatOptions {
  * @param amount - The amount to format as a string
  * @param options - Formatting options including currency and locale
  * @returns Formatted currency string
- * @throws {Error} If the amount is not a valid number
  */
 export function formatNumber(
-  amount?: string | bigint | number | bigDecimal | null,
+  amount?: string | bigint | number | BigNumber | null,
   options: FormatOptions = {}
 ): string {
   const {
@@ -37,53 +35,28 @@ export function formatNumber(
     percentage = false,
   } = options;
 
-  // Convert the amount to a BigDecimal
-  let value: BigDecimal;
-  try {
-    // Safely convert amount to string, handling null, undefined, and objects
-    const amountStr =
-      amount === null || amount === undefined
-        ? "0"
-        : typeof amount === "object" && amount !== null && "getValue" in amount
-          ? amount.getValue()
-          : String(amount);
-
-    value = new BigDecimal(amountStr);
-  } catch (_error) {
-    // Use underscore prefix for unused variable
-    value = new BigDecimal("0");
-  }
-
-  if (percentage) {
-    let percentageValue: number;
-    if (value.getValue() !== "0") {
-      // Divide by 100 for percentage
-      percentageValue = Number.parseFloat(value.getValue()) / 100;
-    } else {
-      percentageValue = 0;
+  // Convert input to BigNumber safely
+  const value = (() => {
+    try {
+      if (amount instanceof BigNumber) return amount;
+      if (amount === null || amount === undefined) return new BigNumber(0);
+      return new BigNumber(
+        typeof amount === "bigint" ? amount.toString() : amount
+      );
+    } catch {
+      return new BigNumber(0);
     }
+  })();
 
-    return new Intl.NumberFormat(locale, {
-      style: "percent",
-      maximumFractionDigits: decimals,
-      minimumFractionDigits: decimals,
-    }).format(percentageValue);
-  }
-
-  // Convert BigDecimal to number for formatting
-  const numberValue = Number.parseFloat(value.getValue());
-
+  // Format number with appropriate options
+  const numberValue = percentage ? value.div(100).toNumber() : value.toNumber();
   const formattedNumber = new Intl.NumberFormat(locale, {
-    style: currency ? "currency" : "decimal",
+    style: percentage ? "percent" : currency ? "currency" : "decimal",
     currency,
     currencyDisplay: currency ? "symbol" : undefined,
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(numberValue);
 
-  if (token) {
-    return `${formattedNumber} ${token}`;
-  }
-
-  return formattedNumber;
+  return token ? `${formattedNumber} ${token}` : formattedNumber;
 }
