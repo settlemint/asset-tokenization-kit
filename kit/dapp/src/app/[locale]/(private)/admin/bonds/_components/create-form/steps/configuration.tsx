@@ -1,4 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
+import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { useTranslations } from "next-intl";
@@ -29,7 +30,7 @@ export function Configuration() {
           name="maturityDate"
           label={t("maturity-date-label")}
         />
-        <FormInput
+        <FormAssets
           control={control}
           name="underlyingAsset"
           label={t("underlying-asset-label")}

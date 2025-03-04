@@ -8,11 +8,10 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
-import { getOptionalAssetDetail } from "@/lib/queries/asset/asset-detail";
-import { getOptionalUserDetail } from "@/lib/queries/user/user-detail";
+import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
 import { type FC, type PropsWithChildren, useEffect, useState } from "react";
 import type { Address } from "viem";
@@ -55,26 +54,39 @@ export function EvmAddress({
   copyToClipboard = false,
 }: EvmAddressProps) {
   // State for user and asset data
-  const [user, setUser] =
-    useState<Awaited<ReturnType<typeof getOptionalUserDetail>>>();
-  const [asset, setAsset] =
-    useState<Awaited<ReturnType<typeof getOptionalAssetDetail>>>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<
+    Awaited<ReturnType<typeof getUserSearch>>[number] | null
+  >();
+  const [asset, setAsset] = useState<
+    Awaited<ReturnType<typeof getAssetSearch>>[number] | null
+  >();
 
   // Effect to fetch user and asset data
   useEffect(() => {
     async function fetchData() {
-      setIsLoading(true);
-      try {
-        const [userResult, assetResult] = await Promise.all([
-          getOptionalUserDetail({ address: getAddress(address) }),
-          getOptionalAssetDetail({ address: getAddress(address) }),
-        ]);
+      const userResult = await getUserSearch({
+        searchTerm: getAddress(address),
+      });
+      if (userResult.length > 0) {
+        setUser(userResult[0]);
+      } else {
+        setUser(null);
+      }
+    }
 
-        setUser(userResult);
-        setAsset(assetResult);
-      } finally {
-        setIsLoading(false);
+    // Call the fetch function
+    void fetchData();
+  }, [address]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const assetResult = await getAssetSearch({
+        searchTerm: getAddress(address),
+      });
+      if (assetResult.length > 0) {
+        setAsset(assetResult[0]);
+      } else {
+        setAsset(null);
       }
     }
 
@@ -94,15 +106,11 @@ export function EvmAddress({
   const MainView: FC = () => {
     return (
       <div className="flex items-center space-x-2">
-        {isLoading ? (
-          <Skeleton className="size-4 rounded-lg" />
-        ) : (
-          <AddressAvatar
-            address={getAddress(address)}
-            size={iconSize}
-            email={displayEmail}
-          />
-        )}
+        <AddressAvatar
+          address={getAddress(address)}
+          size={iconSize}
+          email={displayEmail}
+        />
         {!displayName && (
           <span className="font-mono">
             {shortHex(getAddress(address), { prefixLength, suffixLength })}
@@ -138,16 +146,12 @@ export function EvmAddress({
       <HoverCardContent className="w-120">
         <div className="flex items-start">
           <h4 className="grid grid-cols-[auto_1fr] items-start gap-x-2 font-semibold text-sm">
-            {isLoading ? (
-              <Skeleton className="size-8 rounded-lg" />
-            ) : (
-              <AddressAvatar
-                address={getAddress(address)}
-                size="big"
-                email={displayEmail}
-                className="row-span-2"
-              />
-            )}
+            <AddressAvatar
+              address={getAddress(address)}
+              size="big"
+              email={displayEmail}
+              className="row-span-2"
+            />
             <div className="flex flex-col">
               <span className="font-mono">{getAddress(address)}</span>
               {displayName && (
