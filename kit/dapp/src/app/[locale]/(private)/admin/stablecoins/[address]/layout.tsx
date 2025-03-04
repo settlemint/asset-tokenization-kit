@@ -71,10 +71,7 @@ export default async function FundsDetailLayout({
   return (
     <>
       <StableCoinPageHeader address={address} />
-
-      <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabItems} />
-      </div>
+      <TabNavigation items={tabItems} />
       {children}
     </>
   );
