@@ -54,12 +54,6 @@ export function FormSwitch<T extends FieldValues>({
       {...props}
       rules={rules}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(
-          field.name,
-          !!fieldState.error,
-          props.disabled
-        );
-
         return (
           <FormItem className="flex flex-col space-y-1">
             {label && (
@@ -83,7 +77,11 @@ export function FormSwitch<T extends FieldValues>({
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   className={cn(className)}
-                  {...ariaAttrs}
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    props.disabled
+                  )}
                 />
                 {helperText && (
                   <span

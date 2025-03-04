@@ -77,12 +77,6 @@ export function FormSelect<T extends FieldValues>({
       {...props}
       defaultValue={defaultValue}
       render={({ field, fieldState }) => {
-        const ariaAttrs = getAriaAttributes(
-          field.name,
-          !!fieldState.error,
-          props.disabled
-        );
-
         return (
           <FormItem className="flex flex-col space-y-1">
             {label && (
@@ -112,7 +106,11 @@ export function FormSelect<T extends FieldValues>({
                     props.disabled && "cursor-not-allowed opacity-50",
                     className
                   )}
-                  {...ariaAttrs}
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    props.disabled
+                  )}
                 >
                   <SelectValue
                     placeholder={placeholder || defaultPlaceholder}
