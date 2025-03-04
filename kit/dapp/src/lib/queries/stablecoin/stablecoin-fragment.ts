@@ -18,6 +18,7 @@ export const StableCoinFragment = theGraphGraphqlStarterkits(`
     totalSupplyExact
     collateral
     collateralRatio
+    freeCollateral
     lastCollateralUpdate
     liveness
     paused
@@ -43,6 +44,7 @@ export const StableCoinFragmentSchema = z.object({
   totalSupplyExact: z.bigInt(),
   collateral: z.bigDecimal(),
   collateralRatio: z.bigDecimal(),
+  freeCollateral: z.bigDecimal(),
   lastCollateralUpdate: z.timestamp(),
   liveness: z.coerce.number(),
   paused: z.boolean(),

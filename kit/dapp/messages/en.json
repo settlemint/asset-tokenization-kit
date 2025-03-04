@@ -36,7 +36,6 @@
           "symbol-placeholder": "e.g. XYZ23",
           "title": "Basic information"
         },
-        "trigger-label": "Issue a new bond",
         "button-label": "Issue a new bond",
         "configuration": {
           "cap-description": "Maximum amount of tokens that can be issued",
@@ -66,7 +65,8 @@
           "title": "Review and confirm",
           "underlying-asset-label": "Underlying asset"
         },
-        "title": "Create new bond"
+        "title": "Create new bond",
+        "trigger-label": "Issue a new bond"
       },
       "details": {
         "bond-details-description": "Details for the bond",
@@ -169,14 +169,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -276,9 +276,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total supply",
+        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
         "topinfo-title": "A digital fixed-income security asset",
-        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions."
+        "total-supply-header": "Total supply"
       },
       "tabs": {
         "details": "Details",
@@ -302,7 +302,6 @@
           "symbol-placeholder": "BTC",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new cryptocurrency",
         "button-label": "Issue a new cryptocurrency",
         "configuration": {
           "description": "Specify advanced settings for your cryptocurrency.",
@@ -327,7 +326,8 @@
           "title": "Review and confirm",
           "yes": "Yes"
         },
-        "title": "Create Cryptocurrency"
+        "title": "Create Cryptocurrency",
+        "trigger-label": "Issue a new cryptocurrency"
       },
       "details": {
         "contract-address": "Contract address",
@@ -386,11 +386,11 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
-          "grant-role": "Grant Role"
-        }
+          "grant-role": "Grant Role",
+          "mint": "Mint"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -464,9 +464,9 @@
         "private-status": "Private",
         "public-status": "Public",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
         "topinfo-title": "A customizable and secure digital asset",
-        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -564,7 +564,6 @@
           "symbol-placeholder": "GLEQ",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new equity",
         "button-label": "Issue a new equity",
         "configuration": {
           "category-blend-equity": "Blend Equity",
@@ -634,7 +633,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm"
         },
-        "title": "Create new equity"
+        "title": "Create new equity",
+        "trigger-label": "Issue a new equity"
       },
       "details": {
         "contract-address": "Contract address",
@@ -737,14 +737,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -846,9 +846,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
         "topinfo-title": "Institutional-grade digital equity management",
-        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -889,7 +889,6 @@
           "symbol-placeholder": "GGF",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new fund",
         "button-label": "Issue a new fund",
         "configuration": {
           "basis-points": "bps",
@@ -964,7 +963,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm"
         },
-        "title": "Create Fund"
+        "title": "Create Fund",
+        "trigger-label": "Issue a new fund"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1067,14 +1067,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -1177,9 +1177,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
         "topinfo-title": "Digital asset for institutional fund management",
-        "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -1255,7 +1255,6 @@
           "symbol-placeholder": "SAFU",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new stablecoin",
         "button-label": "Issue a new stablecoin",
         "configuration": {
           "collateral-proof-validity-label": "Collateral Proof Validity",
@@ -1277,7 +1276,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm the details of your new stablecoin before creation."
         },
-        "title": "Create Stablecoin"
+        "title": "Create Stablecoin",
+        "trigger-label": "Issue a new stablecoin"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1380,15 +1380,15 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
           "unpause": "Unpause",
-          "update-collateral": "Update Collateral",
-          "grant-role": "Grant Role"
-        }
+          "update-collateral": "Update Collateral"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -1500,7 +1500,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
-        "committed-collateral-header": "Committed collateral",
+        "committed-collateral-header": "Collateral consumed",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your stablecoin assets.",
         "page-title": "Stable Coins",
@@ -1508,28 +1508,28 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
+            "title": "Issue a new stablecoin"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
+            "title": "Stablecoin mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
+            "title": "Usecases"
+          }
+        },
         "status-header": "Status",
         "symbol-header": "Symbol",
         "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
         "topinfo-title": "A secure and collateralized digital currency",
-        "total-supply-header": "Total Supply",
-        "related-actions": {
-          "title": "Related Actions",
-          "issue-new": {
-            "title": "Issue a new stablecoin",
-            "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments."
-          },
-          "mechanics": {
-            "title": "Stablecoin mechanics",
-            "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
-            "button": "Learn more"
-          },
-          "usecases": {
-            "title": "Usecases",
-            "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
-            "button": "Explore"
-          }
-        }
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -1677,15 +1677,15 @@
     }
   },
   "components": {
-    "area-chart": {
-      "info-icon-label": "Info"
-    },
     "active-pill": {
       "active": "Active",
       "paused": "Paused"
     },
     "address-avatar": {
       "avatar": "Avatar"
+    },
+    "area-chart": {
+      "info-icon-label": "Info"
     },
     "asset-events-table": {
       "asset": "Asset",

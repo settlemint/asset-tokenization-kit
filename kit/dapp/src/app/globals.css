@@ -43,6 +43,10 @@
   --accent-hover: var(--sm-blue);
   --destructive: var(--sm-red);
   --destructive-foreground: var(--sm-white);
+  --success: var(--sm-green);
+  --success-foreground: var(--sm-white);
+  --warning: var(--sm-orange);
+  --warning-foreground: var(--sm-white);
   --border: var(--sm-soft-gray);
   --input: var(--sm-lightest-gray);
   --ring: var(--sm-blue);
@@ -80,6 +84,10 @@
   --accent-hover: var(--sm-royal-blue);
   --destructive: var(--sm-red);
   --destructive-foreground: var(--sm-white);
+  --success: var(--sm-green);
+  --success-foreground: var(--sm-white);
+  --warning: var(--sm-orange);
+  --warning-foreground: var(--sm-white);
   --border: var(--sm-dark-gray);
   --input: var(--sm-input-gray);
   --ring: var(--sm-blue);
@@ -100,23 +108,25 @@
 
 @theme inline {
   /* SettleMint Brand Colors */
-  --color-sm-mint-green: var(--sm-mint-green);
-  --color-sm-blue: var(--sm-blue);
-  --color-sm-orange: var(--sm-orange);
-  --color-sm-teal: var(--sm-teal);
-  --color-sm-light-blue: var(--sm-light-blue);
-  --color-sm-white: var(--sm-white);
-  --color-sm-off-white: var(--sm-off-white);
-  --color-sm-green: var(--sm-green);
-  --color-sm-royal-blue: var(--sm-royal-blue);
-  --color-sm-purple: var(--sm-purple);
-  --color-sm-cyan: var(--sm-cyan);
-  --color-sm-red: var(--sm-red);
-  --color-sm-lightest-gray: var(--sm-lightest-gray);
-  --color-sm-input-gray: var(--sm-input-gray);
-  --color-sm-light-gray: var(--sm-light-gray);
-  --color-sm-dark-gray: var(--sm-dark-gray);
-  --color-sm-medium-gray: var(--sm-medium-gray);
+  --color-sm-mint-green: var(--color-sm-mint-green);
+  --color-sm-blue: var(--color-sm-blue);
+  --color-sm-orange: var(--color-sm-orange);
+  --color-sm-teal: var(--color-sm-teal);
+  --color-sm-light-blue: var(--color-sm-light-blue);
+  --color-sm-white: var(--color-sm-white);
+  --color-sm-off-white: var(--color-sm-off-white);
+  --color-sm-green: var(--color-sm-green);
+  --color-sm-royal-blue: var(--color-sm-royal-blue);
+  --color-sm-purple: var(--color-sm-purple);
+  --color-sm-cyan: var(--color-sm-cyan);
+  --color-sm-red: var(--color-sm-red);
+  --color-sm-lightest-gray: var(--color-sm-lightest-gray);
+  --color-sm-input-gray: var(--color-sm-input-gray);
+  --color-sm-light-gray: var(--color-sm-light-gray);
+  --color-sm-soft-gray: var(--color-sm-soft-gray);
+  --color-sm-softer-gray: var(--color-sm-softer-gray);
+  --color-sm-dark-gray: var(--color-sm-dark-gray);
+  --color-sm-medium-gray: var(--color-sm-medium-gray);
   /* shadcn colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -134,6 +144,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

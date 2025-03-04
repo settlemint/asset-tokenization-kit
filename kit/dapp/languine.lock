@@ -25,7 +25,6 @@ files:
     admin.bonds.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.bonds.create-form.basics.symbol-placeholder: 0c886633cc0ae5805b99ac04fc8d8c57
     admin.bonds.create-form.basics.title: 807402b2447c57bd90060f83ba51c561
-    admin.bonds.create-form.trigger-label: b38c95d64d359f3d59cad0069599499a
     admin.bonds.create-form.button-label: b38c95d64d359f3d59cad0069599499a
     admin.bonds.create-form.configuration.cap-description: 82b7fe1f7cfda8c9e489661cf1b0d016
     admin.bonds.create-form.configuration.cap-label: f04f4fa8773b053c388af823485c70ea
@@ -52,6 +51,7 @@ files:
     admin.bonds.create-form.summary.title: 7a347de1c6bc1d7b6abbf6bef2f05646
     admin.bonds.create-form.summary.underlying-asset-label: 7b350ed595b03937afb12262eb0f0960
     admin.bonds.create-form.title: e9da0b3cdedca192d5912869d0b1a506
+    admin.bonds.create-form.trigger-label: b38c95d64d359f3d59cad0069599499a
     admin.bonds.details.bond-details-description: 6fe654c414bea421430a6e5714f8d072
     admin.bonds.details.contract-address: d7e1286efec604c15ddab7ef2b290021
     admin.bonds.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
@@ -128,12 +128,12 @@ files:
     admin.bonds.holders.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
     admin.bonds.holders.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.bonds.holders.wallet-header: 156e132b014314b1eae89410e54bcc8c
-    admin.bonds.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
-    admin.bonds.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.bonds.manage.actions.burn: 11635778f116ce6922f6068638a39028
+    admin.bonds.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.bonds.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.bonds.manage.actions.pause: 105b296a83f9c105355403f3332af50f
     admin.bonds.manage.actions.unpause: 648ff76ea7617136d7a5e0cbff92606f
-    admin.bonds.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.bonds.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     admin.bonds.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.bonds.mint-form.amount.description: de023495109b6579a169c08395cd7b79
     admin.bonds.mint-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
@@ -205,9 +205,9 @@ files:
     admin.bonds.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
     admin.bonds.table.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.bonds.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
-    admin.bonds.table.total-supply-header: 1ecae95c3c8f236721cce5b740b2deaa
-    admin.bonds.table.topinfo-title: 9c7082a1716b0aaa413358023fab9f05
     admin.bonds.table.topinfo-description: 02f83369cc0b4196389a63173ca6394a
+    admin.bonds.table.topinfo-title: 9c7082a1716b0aaa413358023fab9f05
+    admin.bonds.table.total-supply-header: 1ecae95c3c8f236721cce5b740b2deaa
     admin.bonds.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.bonds.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.bonds.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
@@ -223,7 +223,6 @@ files:
     admin.cryptocurrencies.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.cryptocurrencies.create-form.basics.symbol-placeholder: 4b9169eb3e07e0e885eb62f7bfc41a33
     admin.cryptocurrencies.create-form.basics.title: 87cabb0c5e5abac7a37df3f21bf09d17
-    admin.cryptocurrencies.create-form.trigger-label: 3e15a776bcf13c6c55f1dba304804bac
     admin.cryptocurrencies.create-form.button-label: 3e15a776bcf13c6c55f1dba304804bac
     admin.cryptocurrencies.create-form.configuration.description: 2325573841d981d35143e13a19fbf5d1
     admin.cryptocurrencies.create-form.configuration.initial-supply-description: de01307111ed9250d01951178971e503
@@ -245,6 +244,7 @@ files:
     admin.cryptocurrencies.create-form.summary.title: 7a347de1c6bc1d7b6abbf6bef2f05646
     admin.cryptocurrencies.create-form.summary.yes: 93cba07454f06a4a960172bbd6e2a435
     admin.cryptocurrencies.create-form.title: 82011c781a201b4efcdaec70460023b0
+    admin.cryptocurrencies.create-form.trigger-label: 3e15a776bcf13c6c55f1dba304804bac
     admin.cryptocurrencies.details.contract-address: d7e1286efec604c15ddab7ef2b290021
     admin.cryptocurrencies.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
     admin.cryptocurrencies.details.cryptocurrency-details-description: 8d320431488cb42f57d36f8554024810
@@ -287,9 +287,9 @@ files:
     admin.cryptocurrencies.holders.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
     admin.cryptocurrencies.holders.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.cryptocurrencies.holders.wallet-header: 156e132b014314b1eae89410e54bcc8c
-    admin.cryptocurrencies.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
-    admin.cryptocurrencies.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.cryptocurrencies.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.cryptocurrencies.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
+    admin.cryptocurrencies.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     admin.cryptocurrencies.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.cryptocurrencies.mint-form.amount.description: de023495109b6579a169c08395cd7b79
     admin.cryptocurrencies.mint-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
@@ -343,9 +343,9 @@ files:
     admin.cryptocurrencies.table.private-status: 47f9082fc380ca62d531096aa1d110f1
     admin.cryptocurrencies.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
     admin.cryptocurrencies.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
-    admin.cryptocurrencies.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
-    admin.cryptocurrencies.table.topinfo-title: 808b05e1459f37a892dbbf0b7ff4f09c
     admin.cryptocurrencies.table.topinfo-description: 32f6c295a1eb4b1917c52640a63c9fd6
+    admin.cryptocurrencies.table.topinfo-title: 808b05e1459f37a892dbbf0b7ff4f09c
+    admin.cryptocurrencies.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
     admin.cryptocurrencies.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.cryptocurrencies.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.cryptocurrencies.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
@@ -401,7 +401,6 @@ files:
     admin.equities.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.equities.create-form.basics.symbol-placeholder: bbf472b37eeddcdfdbca7cd3e6d8ca94
     admin.equities.create-form.basics.title: 87cabb0c5e5abac7a37df3f21bf09d17
-    admin.equities.create-form.trigger-label: d496cdfdec3d654ef92ca471980789d8
     admin.equities.create-form.button-label: d496cdfdec3d654ef92ca471980789d8
     admin.equities.create-form.configuration.category-blend-equity: 0eaaa36b984c9773310dcc172a531c1f
     admin.equities.create-form.configuration.category-communication-services: fe647a13f093fce98ed8ba1340f63b18
@@ -468,6 +467,7 @@ files:
     admin.equities.create-form.summary.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.equities.create-form.summary.title: 7a347de1c6bc1d7b6abbf6bef2f05646
     admin.equities.create-form.title: 417efeb627ea6ba7547dd18c033dd1b9
+    admin.equities.create-form.trigger-label: d496cdfdec3d654ef92ca471980789d8
     admin.equities.details.contract-address: d7e1286efec604c15ddab7ef2b290021
     admin.equities.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
     admin.equities.details.decimals: 2b417805040de3a3df31c8fd3626b57c
@@ -544,12 +544,12 @@ files:
     admin.equities.holders.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
     admin.equities.holders.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.equities.holders.wallet-header: 156e132b014314b1eae89410e54bcc8c
-    admin.equities.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
-    admin.equities.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.equities.manage.actions.burn: 11635778f116ce6922f6068638a39028
+    admin.equities.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.equities.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.equities.manage.actions.pause: 105b296a83f9c105355403f3332af50f
     admin.equities.manage.actions.unpause: 648ff76ea7617136d7a5e0cbff92606f
-    admin.equities.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.equities.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     admin.equities.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.equities.mint-form.amount.description: de023495109b6579a169c08395cd7b79
     admin.equities.mint-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
@@ -623,9 +623,9 @@ files:
     admin.equities.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
     admin.equities.table.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.equities.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
-    admin.equities.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
-    admin.equities.table.topinfo-title: 312c92df8efe98841244aa0d8d46425d
     admin.equities.table.topinfo-description: 733a23481639c91d4b0af1e4605bbfb5
+    admin.equities.table.topinfo-title: 312c92df8efe98841244aa0d8d46425d
+    admin.equities.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
     admin.equities.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.equities.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.equities.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
@@ -652,7 +652,6 @@ files:
     admin.funds.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.funds.create-form.basics.symbol-placeholder: ce5b8b6bda60deed2b234d93562954b8
     admin.funds.create-form.basics.title: 87cabb0c5e5abac7a37df3f21bf09d17
-    admin.funds.create-form.trigger-label: 09acc2618c648e5193d0a282ebd8ee98
     admin.funds.create-form.button-label: 09acc2618c648e5193d0a282ebd8ee98
     admin.funds.create-form.configuration.basis-points: ecf6fbc4690b6ecd2245d8db1602bda7
     admin.funds.create-form.configuration.category-activist: a8fd83594a106729f90966e72f37c4c3
@@ -724,6 +723,7 @@ files:
     admin.funds.create-form.summary.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.funds.create-form.summary.title: 7a347de1c6bc1d7b6abbf6bef2f05646
     admin.funds.create-form.title: 7a40b4873bad8ef6238ef9cc5777b441
+    admin.funds.create-form.trigger-label: 09acc2618c648e5193d0a282ebd8ee98
     admin.funds.details.contract-address: d7e1286efec604c15ddab7ef2b290021
     admin.funds.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
     admin.funds.details.decimals: 2b417805040de3a3df31c8fd3626b57c
@@ -800,12 +800,12 @@ files:
     admin.funds.holders.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
     admin.funds.holders.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.funds.holders.wallet-header: 156e132b014314b1eae89410e54bcc8c
-    admin.funds.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
-    admin.funds.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.funds.manage.actions.burn: 11635778f116ce6922f6068638a39028
+    admin.funds.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.funds.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.funds.manage.actions.pause: 105b296a83f9c105355403f3332af50f
     admin.funds.manage.actions.unpause: 648ff76ea7617136d7a5e0cbff92606f
-    admin.funds.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.funds.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     admin.funds.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.funds.mint-form.amount.description: de023495109b6579a169c08395cd7b79
     admin.funds.mint-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
@@ -880,9 +880,9 @@ files:
     admin.funds.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
     admin.funds.table.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.funds.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
-    admin.funds.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
-    admin.funds.table.topinfo-title: 29bb67fc502cc282055b5c9721ef9fcb
     admin.funds.table.topinfo-description: 6fe711b5b1a17c8cbc33a96dc55d8dea
+    admin.funds.table.topinfo-title: 29bb67fc502cc282055b5c9721ef9fcb
+    admin.funds.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
     admin.funds.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.funds.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.funds.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
@@ -934,7 +934,6 @@ files:
     admin.stablecoins.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.stablecoins.create-form.basics.symbol-placeholder: 9ff0ceaed2d507591981be28fa7bfa59
     admin.stablecoins.create-form.basics.title: 87cabb0c5e5abac7a37df3f21bf09d17
-    admin.stablecoins.create-form.trigger-label: 35a6a544456ca20488e29b5a41e37bfc
     admin.stablecoins.create-form.button-label: 35a6a544456ca20488e29b5a41e37bfc
     admin.stablecoins.create-form.configuration.collateral-proof-validity-label: 26474433a06130575098ff6e0c2ef190
     admin.stablecoins.create-form.configuration.description: 2ee59bbec7ce7504ea2cd856f4d42604
@@ -953,6 +952,7 @@ files:
     admin.stablecoins.create-form.summary.symbol-label: 02c86eb2792f3262c21d030a87e19793
     admin.stablecoins.create-form.summary.title: 0ef25f61bca990e05d074482bcc994f8
     admin.stablecoins.create-form.title: 6dd350c2fb3cc793a8f5c23e83cb9635
+    admin.stablecoins.create-form.trigger-label: 35a6a544456ca20488e29b5a41e37bfc
     admin.stablecoins.details.contract-address: d7e1286efec604c15ddab7ef2b290021
     admin.stablecoins.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
     admin.stablecoins.details.decimals: 2b417805040de3a3df31c8fd3626b57c
@@ -1029,13 +1029,13 @@ files:
     admin.stablecoins.holders.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
     admin.stablecoins.holders.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.stablecoins.holders.wallet-header: 156e132b014314b1eae89410e54bcc8c
-    admin.stablecoins.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
-    admin.stablecoins.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.stablecoins.manage.actions.burn: 11635778f116ce6922f6068638a39028
+    admin.stablecoins.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.stablecoins.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
     admin.stablecoins.manage.actions.pause: 105b296a83f9c105355403f3332af50f
     admin.stablecoins.manage.actions.unpause: 648ff76ea7617136d7a5e0cbff92606f
     admin.stablecoins.manage.actions.update-collateral: f3b7824a339c8a003b6994bce1c8f90a
-    admin.stablecoins.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.stablecoins.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
     admin.stablecoins.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.stablecoins.mint-form.amount.collateral-available: 110f8aeca39ff5035625eb9b1175a609
     admin.stablecoins.mint-form.amount.description: de023495109b6579a169c08395cd7b79
@@ -1109,7 +1109,7 @@ files:
     admin.stablecoins.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.stablecoins.table.active-status: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.stablecoins.table.address-header: dd7bf230fde8d4836917806aff6a6b27
-    admin.stablecoins.table.committed-collateral-header: 71ff3f229e117c8a0fdcba3a73c065f5
+    admin.stablecoins.table.committed-collateral-header: 7b561d2b6c4a5642db35332822d170a8
     admin.stablecoins.table.name-header: 49ee3087348e8d44e1feda1917443987
     admin.stablecoins.table.page-description: 14b1a69fc7f3d2f9ce42a9e58f4fbb94
     admin.stablecoins.table.page-title: 9402b88637cc074f3185da6dd3b5f9c8
@@ -1117,20 +1117,20 @@ files:
     admin.stablecoins.table.private-header: 47f9082fc380ca62d531096aa1d110f1
     admin.stablecoins.table.private-status: 47f9082fc380ca62d531096aa1d110f1
     admin.stablecoins.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
+    admin.stablecoins.table.related-actions.issue-new.description: c18506de879417d3ac7ea6d5a898a59b
+    admin.stablecoins.table.related-actions.issue-new.title: 35a6a544456ca20488e29b5a41e37bfc
+    admin.stablecoins.table.related-actions.mechanics.button: d59048f21fd887ad520398ce677be586
+    admin.stablecoins.table.related-actions.mechanics.description: 11dc745585d5e80683d8d6b9cc280737
+    admin.stablecoins.table.related-actions.mechanics.title: 1e611122e6b3fa0a646908d46fe483b3
+    admin.stablecoins.table.related-actions.title: a2005fe8651d38ccc7a7e285d2e51db8
+    admin.stablecoins.table.related-actions.usecases.button: 1819001b72329e2ef5799fe504238035
+    admin.stablecoins.table.related-actions.usecases.description: facfab3650eeada3c11de0d087f61116
+    admin.stablecoins.table.related-actions.usecases.title: 5cb617d22da857ea5d75209d6b70acb4
     admin.stablecoins.table.status-header: ec53a8c4f07baed5d8825072c89799be
     admin.stablecoins.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
     admin.stablecoins.table.topinfo-description: c19137c40d26f0ed7b3133cb9b437578
     admin.stablecoins.table.topinfo-title: 6f6022eaec5ef1ee3228ec932584ae1e
     admin.stablecoins.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
-    admin.stablecoins.table.related-actions.title: a2005fe8651d38ccc7a7e285d2e51db8
-    admin.stablecoins.table.related-actions.issue-new.title: 35a6a544456ca20488e29b5a41e37bfc
-    admin.stablecoins.table.related-actions.issue-new.description: c18506de879417d3ac7ea6d5a898a59b
-    admin.stablecoins.table.related-actions.mechanics.title: 1e611122e6b3fa0a646908d46fe483b3
-    admin.stablecoins.table.related-actions.mechanics.description: 11dc745585d5e80683d8d6b9cc280737
-    admin.stablecoins.table.related-actions.mechanics.button: d59048f21fd887ad520398ce677be586
-    admin.stablecoins.table.related-actions.usecases.title: 5cb617d22da857ea5d75209d6b70acb4
-    admin.stablecoins.table.related-actions.usecases.description: facfab3650eeada3c11de0d087f61116
-    admin.stablecoins.table.related-actions.usecases.button: 1819001b72329e2ef5799fe504238035
     admin.stablecoins.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.stablecoins.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.stablecoins.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
@@ -1220,10 +1220,10 @@ files:
     auth.wrong-role.description: 71e3a48127b41103924a109e915bd5dc
     auth.wrong-role.go-to-portfolio: 2e62ec9b6c3c559c8a430439b71dc1bb
     auth.wrong-role.title: d5591d98b2f74d48205cfba7803045cf
-    components.area-chart.info-icon-label: 4059b0251f66a18cb56f544728796875
     components.active-pill.active: 4d3d769b812b6faa6b76e1a8abaece2d
     components.active-pill.paused: e99180abf47a8b3a856e0bcb2656990a
     components.address-avatar.avatar: 32036005d1f6ed59803ba3e13c80993e
+    components.area-chart.info-icon-label: 4059b0251f66a18cb56f544728796875
     components.asset-events-table.asset: 26e9054be7f40079575582b7ad3f7363
     components.asset-events-table.detail-sheet.asset: 26e9054be7f40079575582b7ad3f7363
     components.asset-events-table.detail-sheet.date: 44749712dbec183e983dcd78a7736c41
