@@ -24,12 +24,14 @@ export const TabItem: FC<TabItemProps> = ({ href, name, badge, active }) => (
         active ? "text-primary! font-bold after:w-full" : "after:w-0"
       )}
     >
-      {name}
-      {badge !== undefined && (
-        <Badge variant="outline" className="ml-2 border-card">
-          {badge}
-        </Badge>
-      )}
+      <span className="inline-flex items-center gap-2">
+        {name}
+        {badge !== undefined && (
+          <Badge variant="outline" className="border-card">
+            {badge}
+          </Badge>
+        )}
+      </span>
     </NavigationMenuLink>
   </NavigationMenuItem>
 );

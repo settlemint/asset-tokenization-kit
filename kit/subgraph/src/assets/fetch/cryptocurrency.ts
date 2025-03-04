@@ -29,6 +29,9 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.userManagers = [];
     cryptoCurrency.lastActivity = BigInt.zero();
     cryptoCurrency.creator = Address.zero();
+    cryptoCurrency.totalBurned = BigDecimal.zero();
+    cryptoCurrency.totalBurnedExact = BigInt.zero();
+    cryptoCurrency.totalHolders = 0;
 
     cryptoCurrency.save();
 
@@ -39,7 +42,7 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
   fetchAssetBalance(
     cryptoCurrency.id,
     cryptoCurrency.id,
-    cryptoCurrency.decimals,
+    cryptoCurrency.decimals
   );
 
   return cryptoCurrency;

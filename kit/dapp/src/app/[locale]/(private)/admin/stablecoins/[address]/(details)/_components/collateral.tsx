@@ -1,5 +1,6 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
+import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatDate, formatDuration } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
@@ -22,7 +23,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t("proven-collateral")}
           info={t("proven-collateral-info")}
         >
-          {formatNumber(stableCoin.collateral)}
+          {formatNumber(stableCoin.collateral, { token: stableCoin.symbol })}
         </DetailGridItem>
         <DetailGridItem
           label={t("required-collateral-threshold")}
@@ -34,10 +35,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t("committed-collateral-ratio")}
           info={t("committed-collateral-ratio-info")}
         >
-          {formatNumber(stableCoin.collateralRatio, {
-            percentage: true,
-            decimals: 2,
-          })}
+          <PercentageProgressBar percentage={stableCoin.collateralRatio} />
         </DetailGridItem>
         <DetailGridItem
           label={t("collateral-proof-expiration")}

@@ -13,34 +13,33 @@ import { Summary } from "./steps/summary";
 
 interface CreateStablecoinFormProps {
   open?: boolean;
-  onCloseAction?: () => void;
+  onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
 }
 
 export function CreateStablecoinForm({
   open,
-  onCloseAction,
+  onOpenChange,
   asButton = false,
 }: CreateStablecoinFormProps) {
   const t = useTranslations("admin.stablecoins.create-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
 
   return (
     <FormSheet
       open={open || localOpen}
-      onOpenChange={(open) => {
-        onCloseAction?.();
-        setLocalOpen(open);
-      }}
+      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
       asButton={asButton}
-      triggerLabel={t("trigger-label")}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
     >
       <Form
         action={createStablecoin}
         resolver={zodResolver(CreateStablecoinSchema)}
-        onOpenChange={onCloseAction}
+        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

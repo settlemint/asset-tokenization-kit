@@ -22,7 +22,7 @@ export function RelatedGridItem({
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow">{description}</CardContent>
+      <CardContent className="flex-grow text-sm">{description}</CardContent>
       <CardFooter>{children}</CardFooter>
     </Card>
   );

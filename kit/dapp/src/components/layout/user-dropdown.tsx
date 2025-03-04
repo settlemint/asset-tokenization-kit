@@ -4,7 +4,7 @@ import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar
 import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
 import { PasskeyModal } from "@/components/blocks/passkeys/passkey-modal";
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,8 +87,11 @@ export function UserDropdown() {
 
   if (error) {
     return (
-      <Alert variant="destructive">
-        <AlertDescription>{error.message}</AlertDescription>
+      <Alert
+        variant="destructive"
+        className="text-destructive border-destructive"
+      >
+        <AlertTitle>{error.message}</AlertTitle>
       </Alert>
     );
   }
