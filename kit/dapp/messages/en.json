@@ -1740,6 +1740,13 @@
     },
     "charts": {
       "assets": {
+        "collateral-ratio": {
+          "description": "Amount of collateral free vs used",
+          "label": "Collateral Ratio"
+        },
+        "free-collateral-ratio": {
+          "label": "Free"
+        },
         "last-updated": "Last updated",
         "total-supply": {
           "description": "Showing the total supply of the token",
@@ -1761,6 +1768,9 @@
           "description": "Showing the total volume of the token",
           "label": "Total volume",
           "title": "Total volume"
+        },
+        "used-collateral-ratio": {
+          "label": "Committed"
         }
       }
     },
