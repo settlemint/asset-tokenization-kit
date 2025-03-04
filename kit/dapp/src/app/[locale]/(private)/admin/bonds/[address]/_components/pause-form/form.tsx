@@ -8,25 +8,29 @@ import { unpause } from "@/lib/mutations/bond/unpause/unpause-action";
 import { UnPauseSchema } from "@/lib/mutations/bond/unpause/unpause-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 
 interface PauseFormProps {
   address: Address;
   isPaused: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function PauseForm({ address, isPaused }: PauseFormProps) {
-  const [open, setOpen] = useState(false);
+export function PauseForm({
+  address,
+  isPaused,
+  open,
+  onOpenChange,
+}: PauseFormProps) {
   const t = useTranslations("admin.bonds.pause-form");
 
   if (isPaused) {
     return (
       <FormSheet
         open={open}
-        onOpenChange={setOpen}
-        triggerLabel={t("unpause.trigger-label")}
+        onOpenChange={onOpenChange}
         title={t("unpause.title")}
         description={t("unpause.description")}
       >
@@ -49,8 +53,7 @@ export function PauseForm({ address, isPaused }: PauseFormProps) {
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("pause.trigger-label")}
+      onOpenChange={onOpenChange}
       title={t("pause.title")}
       description={t("pause.description")}
     >
