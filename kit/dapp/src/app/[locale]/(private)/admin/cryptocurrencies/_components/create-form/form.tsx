@@ -6,32 +6,36 @@ import { createCryptoCurrency } from "@/lib/mutations/cryptocurrency/create/crea
 import { CreateCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 
 interface CreateCryptoCurrencyFormProps {
   open: boolean;
-  onCloseAction: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function CreateCryptoCurrencyForm({
   open,
-  onCloseAction,
+  onOpenChange,
 }: CreateCryptoCurrencyFormProps) {
   const t = useTranslations("admin.cryptocurrencies.create-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [localOpen, setLocalOpen] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={onCloseAction}
+      open={isExternallyControlled ? open : localOpen}
+      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
     >
       <Form
         action={createCryptoCurrency}
         resolver={zodResolver(CreateCryptoCurrencySchema)}
-        onOpenChange={onCloseAction}
+        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

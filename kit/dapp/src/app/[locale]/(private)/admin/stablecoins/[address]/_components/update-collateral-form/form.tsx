@@ -43,6 +43,9 @@ export function UpdateCollateralForm({
       <Form
         action={updateCollateral}
         resolver={zodResolver(UpdateCollateralSchema)}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}
