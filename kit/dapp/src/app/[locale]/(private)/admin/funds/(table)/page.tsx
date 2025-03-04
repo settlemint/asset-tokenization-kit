@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
+import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
 import { getFundList } from "@/lib/queries/fund/fund-list";
 import type { Metadata } from "next";
@@ -29,7 +30,9 @@ export default async function FundsPage() {
   return (
     <>
       <PageHeader title={t("page-title")} />
-
+      <TopInfo title={t("topinfo-title")}>
+        <p>{t("topinfo-description")}</p>
+      </TopInfo>
       <DataTable columns={columns} data={funds} name={"funds"} />
     </>
   );
