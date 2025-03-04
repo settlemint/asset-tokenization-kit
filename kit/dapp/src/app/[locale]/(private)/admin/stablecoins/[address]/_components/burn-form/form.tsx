@@ -37,7 +37,7 @@ export function BurnForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={!isExternallyControlled ? t("trigger-label") : undefined}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
       asButton={asButton}

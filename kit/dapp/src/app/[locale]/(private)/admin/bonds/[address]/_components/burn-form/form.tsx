@@ -35,6 +35,7 @@ export function BurnForm({
       <Form
         action={burn}
         resolver={zodResolver(BurnSchema)}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}

@@ -35,6 +35,7 @@ export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
       <Form
         action={blockUser}
         resolver={zodResolver(BlockUserSchema)}
+        onOpenChange={setOpen}
         buttonLabels={{
           label: isBlocked
             ? t("unblock-button-label")

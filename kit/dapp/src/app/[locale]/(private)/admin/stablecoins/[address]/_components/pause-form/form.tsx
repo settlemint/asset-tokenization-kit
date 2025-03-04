@@ -61,6 +61,7 @@ export function PauseForm({
       <Form
         action={pause}
         resolver={zodResolver(PauseSchema)}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("pause.button-label"),
         }}
