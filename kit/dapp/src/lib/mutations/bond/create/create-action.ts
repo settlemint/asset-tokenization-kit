@@ -86,7 +86,7 @@ export const createBond = action
       },
       ctx: { user },
     }) => {
-      const capExact = parseUnits(cap, decimals).toString();
+      const capExact = String(parseUnits(String(cap), decimals));
       const maturityDateTimestamp = formatDate(maturityDate, {
         type: "unixSeconds",
       });
@@ -98,7 +98,7 @@ export const createBond = action
           sender: user.wallet,
           decimals,
           cap: capExact,
-          faceValue,
+          faceValue: String(faceValue),
           maturityDate: maturityDateTimestamp,
           underlyingAsset,
           name: assetName,
@@ -125,7 +125,7 @@ export const createBond = action
         symbol,
         decimals,
         cap: capExact,
-        faceValue,
+        faceValue: String(faceValue),
         maturityDate: maturityDateTimestamp,
         underlyingAsset,
         challengeResponse: await handleChallenge(user.wallet, pincode),

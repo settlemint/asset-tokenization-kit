@@ -54,7 +54,7 @@
         "summary": {
           "asset-basics-description": "Basic information about the bond",
           "asset-basics-title": "Basic information",
-          "cap-label": "Cap",
+          "cap-label": "Maximum supply",
           "configuration-description": "Technical configuration of the bond",
           "configuration-title": "Bond configuration",
           "decimals-label": "Decimals",

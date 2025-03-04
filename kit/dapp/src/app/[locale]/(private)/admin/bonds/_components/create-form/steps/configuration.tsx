@@ -15,12 +15,14 @@ export function Configuration() {
         <FormInput
           control={control}
           name="cap"
+          type="number"
           label={t("cap-label")}
           description={t("cap-description")}
         />
         <FormInput
           control={control}
           name="faceValue"
+          type="number"
           label={t("face-value-label")}
           description={t("face-value-description")}
         />
