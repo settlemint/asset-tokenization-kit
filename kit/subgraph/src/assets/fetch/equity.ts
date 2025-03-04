@@ -30,6 +30,8 @@ export function fetchEquity(address: Address): Equity {
     equity.userManagers = [];
     equity.lastActivity = BigInt.zero();
     equity.creator = Address.zero();
+    equity.totalBurned = BigDecimal.zero();
+    equity.totalBurnedExact = BigInt.zero();
 
     // Equity-specific fields
     equity.equityClass = equityClass.reverted ? "" : equityClass.value;

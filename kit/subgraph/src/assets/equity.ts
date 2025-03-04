@@ -138,6 +138,9 @@ export function handleTransfer(event: Transfer): void {
     // decrease total supply
     equity.totalSupplyExact = equity.totalSupplyExact.minus(burn.valueExact);
     equity.totalSupply = toDecimals(equity.totalSupplyExact, equity.decimals);
+    equity.totalBurnedExact = equity.totalBurnedExact.plus(burn.valueExact);
+    equity.totalBurned = toDecimals(equity.totalBurnedExact, equity.decimals);
+
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
       burn.valueExact
     );

@@ -16,6 +16,8 @@ export const StableCoinFragment = theGraphGraphqlStarterkits(`
     decimals
     totalSupply
     totalSupplyExact
+    totalBurned
+    totalBurnedExact
     collateral
     collateralRatio
     freeCollateral
@@ -42,6 +44,8 @@ export const StableCoinFragmentSchema = z.object({
   decimals: z.decimals(),
   totalSupply: z.bigDecimal(),
   totalSupplyExact: z.bigInt(),
+  totalBurned: z.bigDecimal(),
+  totalBurnedExact: z.bigInt(),
   collateral: z.bigDecimal(),
   collateralRatio: z.bigDecimal(),
   freeCollateral: z.bigDecimal(),

@@ -31,6 +31,8 @@ export function fetchFund(address: Address): Fund {
     fund.userManagers = [];
     fund.lastActivity = BigInt.zero();
     fund.creator = Address.zero();
+    fund.totalBurned = BigDecimal.zero();
+    fund.totalBurnedExact = BigInt.zero();
 
     // Fund-specific fields
     fund.fundClass = fundClass.reverted ? "" : fundClass.value;

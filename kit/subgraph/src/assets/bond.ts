@@ -141,6 +141,9 @@ export function handleTransfer(event: Transfer): void {
     // decrease total supply
     bond.totalSupplyExact = bond.totalSupplyExact.minus(burn.valueExact);
     bond.totalSupply = toDecimals(bond.totalSupplyExact, bond.decimals);
+    bond.totalBurnedExact = bond.totalBurnedExact.plus(burn.valueExact);
+    bond.totalBurned = toDecimals(bond.totalBurnedExact, bond.decimals);
+
     assetActivity.totalSupplyExact = assetActivity.totalSupplyExact.minus(
       burn.valueExact
     );

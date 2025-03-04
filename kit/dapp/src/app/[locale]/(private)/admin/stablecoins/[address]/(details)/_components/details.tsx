@@ -43,6 +43,9 @@ export async function Details({ address }: DetailsProps) {
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
           {formatNumber(stableCoin.totalSupply)}
         </DetailGridItem>
+        <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>
+          {formatNumber(stableCoin.totalBurned)}
+        </DetailGridItem>
         <DetailGridItem
           label={t("ownership-concentration")}
           info={t("ownership-concentration-info")}
