@@ -1,5 +1,7 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -38,7 +40,12 @@ const tabs = async (
     locale,
     namespace: "admin.stablecoins.tabs",
   });
-  const stableCoin = await getStableCoinDetail({ address });
+
+  const [stableCoin, balances, events] = await Promise.all([
+    getStableCoinDetail({ address }),
+    getAssetBalanceList({ wallet: address }),
+    getAssetEventsList({ asset: address }),
+  ]);
 
   return [
     {
@@ -53,10 +60,16 @@ const tabs = async (
     {
       name: t("events"),
       href: `/admin/stablecoins/${address}/events`,
+      badge: events.length,
     },
     {
       name: t("permissions"),
       href: `/admin/stablecoins/${address}/permissions`,
+    },
+    {
+      name: t("underlying-assets"),
+      href: `/admin/stablecoins/${address}/underlying-assets`,
+      badge: balances.length,
     },
   ];
 };

@@ -35,7 +35,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
   // Convert string values to numbers and sort by value
   const sortedBalances = data
     .map((balance) => ({
-      value: parseFloat(balance.value),
+      value: balance.value,
       account: balance.account.id,
     }))
     .sort((a, b) => b.value - a.value);
