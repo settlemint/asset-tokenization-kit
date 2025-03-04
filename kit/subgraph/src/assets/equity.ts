@@ -1,5 +1,6 @@
 import {
   Address,
+  BigInt,
   ByteArray,
   Bytes,
   crypto,
@@ -81,6 +82,7 @@ export function handleTransfer(event: Transfer): void {
 
     if (!hasBalance(equity.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
+      equity.totalHolders = equity.totalHolders + 1;
       to.save();
     }
 
@@ -151,6 +153,10 @@ export function handleTransfer(event: Transfer): void {
     balance.value = toDecimals(balance.valueExact, equity.decimals);
     balance.save();
 
+    if (balance.valueExact.equals(BigInt.zero())) {
+      equity.totalHolders = equity.totalHolders - 1;
+    }
+
     const portfolioStats = newPortfolioStatsData(
       from.id,
       equity.id,
@@ -206,6 +212,7 @@ export function handleTransfer(event: Transfer): void {
 
     if (!hasBalance(equity.id, to.id)) {
       to.balancesCount = to.balancesCount + 1;
+      equity.totalHolders = equity.totalHolders + 1;
       to.save();
     }
 
@@ -213,6 +220,10 @@ export function handleTransfer(event: Transfer): void {
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, equity.decimals);
     fromBalance.save();
+
+    if (fromBalance.valueExact.equals(BigInt.zero())) {
+      equity.totalHolders = equity.totalHolders - 1;
+    }
 
     const fromPortfolioStats = newPortfolioStatsData(
       from.id,

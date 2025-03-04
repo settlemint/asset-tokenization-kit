@@ -31,13 +31,14 @@ export async function generateMetadata({
 }
 
 const tabs = async (
-  address: string,
+  address: Address,
   locale: string
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
     namespace: "admin.stablecoins.tabs",
   });
+  const stableCoin = await getStableCoinDetail({ address });
 
   return [
     {
@@ -47,6 +48,7 @@ const tabs = async (
     {
       name: t("holders"),
       href: `/admin/stablecoins/${address}/holders`,
+      badge: stableCoin.totalHolders,
     },
     {
       name: t("events"),
