@@ -80,30 +80,6 @@ export function FormInput<T extends FieldValues>({
         }),
       }}
       render={({ field, fieldState }) => {
-        const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
-          const value = e.target.value;
-          if (props.type === "number") {
-            // Ensure we always pass a number or empty string, never undefined
-            field.onChange(value === "" ? 0 : Number(value));
-          } else {
-            // Ensure we always pass a string, never undefined
-            field.onChange(value ?? "");
-          }
-          // Trigger validation immediately after value change
-          await form.trigger(field.name);
-        };
-
-        // Wrapper function that doesn't return the Promise
-        const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-          void handleChange(e);
-        };
-
-        const ariaAttrs = getAriaAttributes(
-          field.name,
-          !!fieldState.error,
-          props.disabled
-        );
-
         return (
           <FormItem className="flex flex-col space-y-1">
             {label && (
@@ -136,12 +112,19 @@ export function FormInput<T extends FieldValues>({
                   )}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? "")}
-                  onChange={handleInputChange}
+                  onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(evt);
+                    await form.trigger(field.name);
+                  }}
                   inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
                     props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
                   }
-                  {...ariaAttrs}
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    props.disabled
+                  )}
                 />
                 {postfix && (
                   <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">
