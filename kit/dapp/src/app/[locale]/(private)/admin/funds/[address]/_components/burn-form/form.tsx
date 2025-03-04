@@ -6,7 +6,6 @@ import { burn } from "@/lib/mutations/fund/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/fund/burn/burn-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -14,17 +13,22 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   balance: number;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function BurnForm({ address, balance }: BurnFormProps) {
-  const [open, setOpen] = useState(false);
+export function BurnForm({
+  address,
+  balance,
+  open,
+  onOpenChange,
+}: BurnFormProps) {
   const t = useTranslations("admin.funds.burn-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      onOpenChange={onOpenChange}
       title={t("title")}
       description={t("description")}
     >

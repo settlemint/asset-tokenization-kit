@@ -27,7 +27,7 @@ export async function BondPageHeader({ address }: PageHeaderProps) {
         </EvmAddress>
       }
       pill={<ActivePill paused={bond.paused} />}
-      button={<ManageDropdown address={address} />}
+      button={<ManageDropdown address={address} bond={bond} />}
     />
   );
 }

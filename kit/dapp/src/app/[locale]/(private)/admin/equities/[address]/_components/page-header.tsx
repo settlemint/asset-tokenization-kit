@@ -27,7 +27,7 @@ export async function EquityPageHeader({ address }: PageHeaderProps) {
         </EvmAddress>
       }
       pill={<ActivePill paused={equity.paused} />}
-      button={<ManageDropdown address={address} />}
+      button={<ManageDropdown address={address} equity={equity} />}
     />
   );
 }

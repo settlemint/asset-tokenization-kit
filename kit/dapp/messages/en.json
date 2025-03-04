@@ -22,8 +22,7 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn",
-        "trigger-label": "Burn"
+        "title": "Burn"
       },
       "create-form": {
         "basics": {
@@ -112,8 +111,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "actions-header": "Actions",
@@ -170,7 +168,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -188,15 +193,13 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "pause-form": {
         "pause": {
           "button-label": "Pause Transactions",
           "description": "Temporarily halt all transactions and interactions for this bond.",
-          "title": "Pause Bond Transactions",
-          "trigger-label": "Pause"
+          "title": "Pause Bond Transactions"
         },
         "summary": {
           "asset-label": "Asset",
@@ -212,8 +215,7 @@
         "unpause": {
           "button-label": "Resume Transactions",
           "description": "Resume transactions and interactions for this bond.",
-          "title": "Resume Bond Transactions",
-          "trigger-label": "Unpause"
+          "title": "Resume Bond Transactions"
         }
       },
       "permissions": {
@@ -368,8 +370,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "active-status": "Active",
@@ -383,7 +384,11 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -401,8 +406,7 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "permissions": {
         "actions-header": "Actions",
@@ -544,8 +548,7 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn",
-        "trigger-label": "Burn"
+        "title": "Burn"
       },
       "create-form": {
         "basics": {
@@ -674,8 +677,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "actions-header": "Actions",
@@ -732,7 +734,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -750,15 +759,13 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "pause-form": {
         "pause": {
           "button-label": "Pause Transactions",
           "description": "Temporarily halt all transactions and interactions for this equity.",
-          "title": "Pause Equity Transactions",
-          "trigger-label": "Pause"
+          "title": "Pause Equity Transactions"
         },
         "summary": {
           "asset-label": "Asset",
@@ -774,8 +781,7 @@
         "unpause": {
           "button-label": "Resume Transactions",
           "description": "Resume transactions and interactions for this equity.",
-          "title": "Resume Equity Transactions",
-          "trigger-label": "Unpause"
+          "title": "Resume Equity Transactions"
         }
       },
       "permissions": {
@@ -866,8 +872,7 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn",
-        "trigger-label": "Burn"
+        "title": "Burn"
       },
       "create-form": {
         "basics": {
@@ -1001,8 +1006,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "actions-header": "Actions",
@@ -1059,7 +1063,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -1077,15 +1088,13 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint",
-        "trigger-label": "Mint"
+        "title": "Mint"
       },
       "pause-form": {
         "pause": {
           "button-label": "Pause Transactions",
           "description": "Temporarily halt all transactions and interactions for this fund.",
-          "title": "Pause Fund Transactions",
-          "trigger-label": "Pause"
+          "title": "Pause Fund Transactions"
         },
         "summary": {
           "asset-label": "Asset",
@@ -1101,8 +1110,7 @@
         "unpause": {
           "button-label": "Resume Transactions",
           "description": "Resume transactions and interactions for this fund.",
-          "title": "Resume Fund Transactions",
-          "trigger-label": "Unpause"
+          "title": "Resume Fund Transactions"
         }
       },
       "permissions": {
@@ -1310,8 +1318,7 @@
           "roles-label": "Roles",
           "title": "Review and confirm role grant"
         },
-        "title": "Grant Role",
-        "trigger-label": "Grant Role"
+        "title": "Grant Role"
       },
       "holders": {
         "actions-header": "Actions",
@@ -1368,7 +1375,15 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage"
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "update-collateral": "Update Collateral",
+          "grant-role": "Grant Role"
+        }
       },
       "mint-form": {
         "amount": {
@@ -1398,8 +1413,7 @@
         "pause": {
           "button-label": "Pause Transactions",
           "description": "Temporarily halt all transactions and interactions for this stablecoin.",
-          "title": "Pause Stablecoin Transactions",
-          "trigger-label": "Pause"
+          "title": "Pause Stablecoin Transactions"
         },
         "summary": {
           "asset-label": "Asset",
@@ -1415,8 +1429,7 @@
         "unpause": {
           "button-label": "Resume Transactions",
           "description": "Resume transactions and interactions for this stablecoin.",
-          "title": "Resume Stablecoin Transactions",
-          "trigger-label": "Unpause"
+          "title": "Resume Stablecoin Transactions"
         }
       },
       "permissions": {

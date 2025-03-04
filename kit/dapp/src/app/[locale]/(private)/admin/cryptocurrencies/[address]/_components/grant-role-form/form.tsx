@@ -6,7 +6,6 @@ import { grantRole } from "@/lib/mutations/cryptocurrency/grant-role/grant-role-
 import { GrantRoleSchema } from "@/lib/mutations/cryptocurrency/grant-role/grant-role-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { AdminAddress } from "./steps/address";
 import { AdminRoles } from "./steps/roles";
@@ -14,17 +13,21 @@ import { Summary } from "./steps/summary";
 
 interface GrantRoleFormProps {
   address: Address;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function GrantRoleForm({ address }: GrantRoleFormProps) {
-  const [open, setOpen] = useState(false);
+export function GrantRoleForm({
+  address,
+  open,
+  onOpenChange,
+}: GrantRoleFormProps) {
   const t = useTranslations("admin.cryptocurrencies.grant-role-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
-      triggerLabel={t("trigger-label")}
+      onOpenChange={onOpenChange}
       title={t("title")}
       description={t("description")}
     >
