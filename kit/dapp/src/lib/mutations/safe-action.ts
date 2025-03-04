@@ -11,7 +11,8 @@ export const action = createSafeActionClient({
     console.error("Input ->", redactSensitiveFields(clientInput));
     console.error("Metadata ->", redactSensitiveFields(metadata));
     console.error("Error ->", error);
-    return `An unexpected error occurred`;
+
+    return getErrorMessage(error);
   },
 })
   .use(async ({ next, clientInput, metadata }) => {
@@ -36,6 +37,23 @@ export const action = createSafeActionClient({
       },
     });
   });
+
+/**
+ * Maps error messages to user-friendly messages based on error content
+ */
+function getErrorMessage(error: Error): string {
+  if (!(error instanceof Error)) {
+    return "An unexpected error occurred";
+  }
+
+  const msg = error.message;
+
+  if (msg.includes("AccessControlUnauthorizedAccount")) {
+    return "You are not authorized to perform this action";
+  }
+
+  return "An unexpected error occurred";
+}
 
 /**
  * Redacts sensitive fields in an object by replacing their values with asterisks
