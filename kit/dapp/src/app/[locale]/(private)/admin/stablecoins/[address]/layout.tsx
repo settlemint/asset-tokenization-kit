@@ -1,5 +1,6 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -39,6 +40,7 @@ const tabs = async (
     namespace: "admin.stablecoins.tabs",
   });
   const stableCoin = await getStableCoinDetail({ address });
+  const balances = await getAssetBalanceList({ wallet: address });
 
   return [
     {
@@ -57,6 +59,11 @@ const tabs = async (
     {
       name: t("permissions"),
       href: `/admin/stablecoins/${address}/permissions`,
+    },
+    {
+      name: t("underlying-assets"),
+      href: `/admin/stablecoins/${address}/underlying-assets`,
+      badge: balances.length,
     },
   ];
 };

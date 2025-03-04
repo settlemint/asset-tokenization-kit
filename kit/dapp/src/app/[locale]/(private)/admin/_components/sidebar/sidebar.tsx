@@ -19,7 +19,7 @@ export function AdminSidebar() {
       <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="pt-4">
         <DesignerButton />
         <NavMain items={topItems} />
         <AssetManagement />

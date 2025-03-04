@@ -624,16 +624,6 @@
         "summary": {
           "asset-basics-description": "Basic asset information and settings.",
           "asset-basics-title": "Asset Basics",
-          "configuration-description": "Equity classification details.",
-          "configuration-title": "Configuration",
-          "decimals-label": "Decimals",
-          "description": "Review and confirm the details of your new equity before creation.",
-          "equity-category-label": "Equity Category",
-          "equity-class-label": "Equity Class",
-          "isin-label": "ISIN",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "title": "Review and confirm",
           "category-blend-equity": "Blend Equity",
           "category-communication-services": "Communication Services",
           "category-consumer-discretionary": "Consumer Discretionary",
@@ -680,7 +670,17 @@
           "class-market-capitalization-equity": "Market Capitalization Equity",
           "class-preferred-equity": "Preferred Equity",
           "class-sector-industry-equity": "Sector/Industry Equity",
-          "class-special-classes-equity": "Special Classes of Equity"
+          "class-special-classes-equity": "Special Classes of Equity",
+          "configuration-description": "Equity classification details.",
+          "configuration-title": "Configuration",
+          "decimals-label": "Decimals",
+          "description": "Review and confirm the details of your new equity before creation.",
+          "equity-category-label": "Equity Category",
+          "equity-class-label": "Equity Class",
+          "isin-label": "ISIN",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "title": "Review and confirm"
         },
         "title": "Create new equity",
         "trigger-label": "Issue a new equity"
@@ -1000,17 +1000,6 @@
           "asset-basics-description": "Basic asset information and settings.",
           "asset-basics-title": "Asset Basics",
           "basis-points": "bps",
-          "configuration-description": "Fund category, class, and fee settings.",
-          "configuration-title": "Fund Configuration",
-          "decimals-label": "Decimals",
-          "description": "Review and confirm the details of your new fund before creation.",
-          "fund-category-label": "Fund Category",
-          "fund-class-label": "Fund Class",
-          "isin-label": "ISIN",
-          "management-fee-label": "Management Fee",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "title": "Review and confirm",
           "category-activist": "Activist",
           "category-commodity-trading": "Commodity Trading",
           "category-convertible-arbitrage": "Convertible Arbitrage",
@@ -1057,7 +1046,18 @@
           "class-short-equity": "Short Equity",
           "class-small-cap": "Small-Cap",
           "class-tactical-asset-allocation": "Tactical Asset Allocation",
-          "class-value-focused": "Value-Focused"
+          "class-value-focused": "Value-Focused",
+          "configuration-description": "Fund category, class, and fee settings.",
+          "configuration-title": "Fund Configuration",
+          "decimals-label": "Decimals",
+          "description": "Review and confirm the details of your new fund before creation.",
+          "fund-category-label": "Fund Category",
+          "fund-class-label": "Fund Class",
+          "isin-label": "ISIN",
+          "management-fee-label": "Management Fee",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "title": "Review and confirm"
         },
         "title": "Create Fund",
         "trigger-label": "Issue a new fund"
@@ -1635,7 +1635,8 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       },
       "update-collateral-form": {
         "amount": {

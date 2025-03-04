@@ -39,7 +39,7 @@ files:
     admin.bonds.create-form.description: 2867ea15b4c62680596f429502ee26ac
     admin.bonds.create-form.summary.asset-basics-description: d6b6e2223792a9724f82f6cd54edfc45
     admin.bonds.create-form.summary.asset-basics-title: 807402b2447c57bd90060f83ba51c561
-    admin.bonds.create-form.summary.cap-label: 88d53497f4a92958c67c73a9f2f52df3
+    admin.bonds.create-form.summary.cap-label: f04f4fa8773b053c388af823485c70ea
     admin.bonds.create-form.summary.configuration-description: 4f9b26aae8d6aa509738292dbf277c0e
     admin.bonds.create-form.summary.configuration-title: f8a901f4f21ee6409e5c5fb8100180fd
     admin.bonds.create-form.summary.decimals-label: 2b417805040de3a3df31c8fd3626b57c
@@ -458,6 +458,53 @@ files:
     admin.equities.create-form.description: 5de469c5efa5ff4fdb1c9f415fd09abe
     admin.equities.create-form.summary.asset-basics-description: 8c1b1f7b456f832a2b00d3352b7542c5
     admin.equities.create-form.summary.asset-basics-title: 7f5c9260cb98413030db829edc806293
+    admin.equities.create-form.summary.category-blend-equity: 0eaaa36b984c9773310dcc172a531c1f
+    admin.equities.create-form.summary.category-communication-services: fe647a13f093fce98ed8ba1340f63b18
+    admin.equities.create-form.summary.category-consumer-discretionary: 042cabbd998bc59d3c57fcf290fb0a2b
+    admin.equities.create-form.summary.category-consumer-staples: 235a5366a1bc856beeca1056c4408319
+    admin.equities.create-form.summary.category-convertible-preferred-stock: 2bc4e642c966d757897fdf90f86affd2
+    admin.equities.create-form.summary.category-cumulative-preferred-stock: 9c312dbfca11175e925321e364133ad1
+    admin.equities.create-form.summary.category-distressed-equity: d873e0bc39f8b51b993c6799e59927ab
+    admin.equities.create-form.summary.category-domestic-equity: 7e6a5d61cea9f6192955b115cff77df0
+    admin.equities.create-form.summary.category-dual-class-shares: 9501bbb4e9ccd745df13858007c74a8d
+    admin.equities.create-form.summary.category-emerging-market-equity: 4bd7c29950dab18e428095d66acd4676
+    admin.equities.create-form.summary.category-energy: 5cc28f31113ec7cd7e546b836ccae2b9
+    admin.equities.create-form.summary.category-esop-shares: 459f2f1d1417b0acbd7c054429a45ae2
+    admin.equities.create-form.summary.category-financials: 5974cb9ed1e0bf75d06d24c0004be0ab
+    admin.equities.create-form.summary.category-frontier-market-equity: 3808c1a4865e568babf05bdcde00240f
+    admin.equities.create-form.summary.category-global-equity: e13b591494c8b09125e52b9de6e448af
+    admin.equities.create-form.summary.category-growth-capital: 02e51efb9504845d3648f67c41069d9a
+    admin.equities.create-form.summary.category-growth-equity: c444b52c4b8f23e3596530b471176e02
+    admin.equities.create-form.summary.category-healthcare: 4ee2a6c7bb7c40af94c5a15dbf7eb673
+    admin.equities.create-form.summary.category-income-equity: 6c6ea75e344138193fc628425f396171
+    admin.equities.create-form.summary.category-industrials: fc649afd5dd543f74114a778f65bd784
+    admin.equities.create-form.summary.category-international-equity: 04272ebf1f1f4ba83747db56fa665c67
+    admin.equities.create-form.summary.category-large-cap-equity: 55aab89be70dc2581d1efe93c64a918f
+    admin.equities.create-form.summary.category-leveraged-buyouts: dbfad47b68c18955111eaa8577d25744
+    admin.equities.create-form.summary.category-materials: 23ce0eb7d180f3dc8391d4af48572d21
+    admin.equities.create-form.summary.category-mezzanine-financing: 1c21db1dc1868547339e2b4340f350d6
+    admin.equities.create-form.summary.category-micro-cap-equity: 4a1c40ea31329f893e28f98c5ef143ab
+    admin.equities.create-form.summary.category-mid-cap-equity: 6da88898a850d172dd58aa2a2cb7015c
+    admin.equities.create-form.summary.category-non-cumulative-preferred-stock: 4c18eb8a0a449ead90463370b670a39e
+    admin.equities.create-form.summary.category-non-voting-common-stock: df873e6464d096a1c87741708eb301ab
+    admin.equities.create-form.summary.category-real-estate: d84514acf6dd2dbbac51a77bd394e0ac
+    admin.equities.create-form.summary.category-redeemable-preferred-stock: aee344c322a853ea23c20016f2636131
+    admin.equities.create-form.summary.category-restricted-stock: bc35a6a1f0a172c9a9eb37d50497b120
+    admin.equities.create-form.summary.category-small-cap-equity: 3907887bc96eac902d350db42926a294
+    admin.equities.create-form.summary.category-technology: e7e767d7c0e58b16e57d3ab16150db80
+    admin.equities.create-form.summary.category-tracking-stocks: 78a4b060a6cebcee077d380acede7b36
+    admin.equities.create-form.summary.category-utilities: ceba282b7418b7f199798b645e1cba56
+    admin.equities.create-form.summary.category-value-equity: 32e30f464e7364fe3c9f1480d1926a93
+    admin.equities.create-form.summary.category-venture-capital: 5b49036c3dd8d6a67be3f15f112b35b1
+    admin.equities.create-form.summary.category-voting-common-stock: f60852c83716623161e8e216821bfa51
+    admin.equities.create-form.summary.class-common-equity: 63332e00e867f47dd0935678c9278476
+    admin.equities.create-form.summary.class-geographic-equity: 9da343a3fb22b9e464cf58c2911bde4a
+    admin.equities.create-form.summary.class-investment-stage-private-equity: bb2f0ece0a276c60091b7461df28b957
+    admin.equities.create-form.summary.class-investment-style-equity: 0a6088d60e88ddaf8be0944394a5e4f3
+    admin.equities.create-form.summary.class-market-capitalization-equity: 72f4b37e819bada7f80550e8fc869873
+    admin.equities.create-form.summary.class-preferred-equity: 3a877176973c9a36f8249e6a93b01b8c
+    admin.equities.create-form.summary.class-sector-industry-equity: 78a4ba8e2400b2ffa54598198a690b49
+    admin.equities.create-form.summary.class-special-classes-equity: 2d8fb5bb729e69be72b24063b30a4f18
     admin.equities.create-form.summary.configuration-description: af4264b173d2ce9efcc7326c00e10696
     admin.equities.create-form.summary.configuration-title: 254f642527b45bc260048e30704edb39
     admin.equities.create-form.summary.decimals-label: 2b417805040de3a3df31c8fd3626b57c
@@ -713,6 +760,53 @@ files:
     admin.funds.create-form.summary.asset-basics-description: 8c1b1f7b456f832a2b00d3352b7542c5
     admin.funds.create-form.summary.asset-basics-title: 7f5c9260cb98413030db829edc806293
     admin.funds.create-form.summary.basis-points: ecf6fbc4690b6ecd2245d8db1602bda7
+    admin.funds.create-form.summary.category-activist: a8fd83594a106729f90966e72f37c4c3
+    admin.funds.create-form.summary.category-commodity-trading: 4731655fefba80ad83e2e58d6b1ea475
+    admin.funds.create-form.summary.category-convertible-arbitrage: f0dcd1639c70e8c9871dcbf61056716e
+    admin.funds.create-form.summary.category-credit: 0a90b1bc4078f74b6f0d117ec7df65af
+    admin.funds.create-form.summary.category-currency-fx: 62262702970556e4fa72cba40127ba79
+    admin.funds.create-form.summary.category-distressed-debt: b5ce6fafe90e9f0471cb08323ff10d87
+    admin.funds.create-form.summary.category-emerging-markets: 0bce80143cb901200d9a331930aa0315
+    admin.funds.create-form.summary.category-equity-hedge: 12d80e656cb60894af7aa5dc1305929e
+    admin.funds.create-form.summary.category-event-driven: 332aea2c3b181c2813e98cd15565f1a4
+    admin.funds.create-form.summary.category-fixed-income-arbitrage: 89f72e7512bf37940cd49cc89716d671
+    admin.funds.create-form.summary.category-fund-of-funds: 7aaee74a3665cd4a8ba22a5ffe79e3fb
+    admin.funds.create-form.summary.category-global-macro: 461e523cc8a7756c432e9b76aeffdbd0
+    admin.funds.create-form.summary.category-high-frequency-trading: 8d04661bdf9e9836d2656846b8b794ac
+    admin.funds.create-form.summary.category-managed-futures-cta: 77aa47d8c57c2e852e7de24cd9397af0
+    admin.funds.create-form.summary.category-market-neutral: 30ca0be7230bba8d8ee4665092ac296a
+    admin.funds.create-form.summary.category-merger-arbitrage: 543773a0e037ccbfadfcef93766139ea
+    admin.funds.create-form.summary.category-multi-strategy: 18c9ba45c2e92465265ca1e290f46882
+    admin.funds.create-form.summary.category-private-equity: 0fd952d87e4e3278142724029db405f1
+    admin.funds.create-form.summary.category-quantitative-systematic: 7236b47ee7d8046e8bacf6703d9c4519
+    admin.funds.create-form.summary.category-relative-value: 600933bd6d59b689f21ace25350e259b
+    admin.funds.create-form.summary.category-statistical-arbitrage: 4d79b7be69782938b1091e827909a851
+    admin.funds.create-form.summary.category-structured-credit: 0e050efdf7ef3750f1d901672069bc16
+    admin.funds.create-form.summary.category-venture-capital: bb5358d3e2cd921596959bbf207c9c57
+    admin.funds.create-form.summary.class-absolute-return: 723e5e447f47ec3b3ecaac02c96759f5
+    admin.funds.create-form.summary.class-core-blend: f886122dd3e486be812429dcef4d6769
+    admin.funds.create-form.summary.class-diversified: af2ae384b7ff97b6331dfb3e504ed418
+    admin.funds.create-form.summary.class-early-stage: ff1d710b7167e5809b29489e541b715a
+    admin.funds.create-form.summary.class-factor-based: 07ad48718e751ae8f6131e31879007ae
+    admin.funds.create-form.summary.class-growth-focused: 454a3a7e176ea6fdc836c4af1813ba76
+    admin.funds.create-form.summary.class-income-focused: 55e824f033563a005b2696ca36a96a07
+    admin.funds.create-form.summary.class-large-cap: f27cf8788ce7983eebc3d3e068b5cab8
+    admin.funds.create-form.summary.class-long-equity: c8095df6243a33321e0e33b7ca5e2f83
+    admin.funds.create-form.summary.class-long-short-equity: ef0a6ef70f0a7f2beba0fede51ac44d5
+    admin.funds.create-form.summary.class-market-neutral: 30ca0be7230bba8d8ee4665092ac296a
+    admin.funds.create-form.summary.class-mid-cap: d93c46f608c702218a6d5f2eb5ed233b
+    admin.funds.create-form.summary.class-momentum-oriented: 9db4f3bf659aa791a5504761d1f4a63d
+    admin.funds.create-form.summary.class-opportunistic: 608b78c79e4f1e603430b0ad35ba1aac
+    admin.funds.create-form.summary.class-pre-series-b: 3e756d15b8aa1d3e3daf2a10b5c3b011
+    admin.funds.create-form.summary.class-quantitative-algorithmic: beaba5efdb9bda6a2c6093035b9efa18
+    admin.funds.create-form.summary.class-regional: 9c1c6794d4b1fb6ed518d57daa87b628
+    admin.funds.create-form.summary.class-sector-specific: 425dfb5ca354f727eb9dc72e552f321e
+    admin.funds.create-form.summary.class-seed-pre-seed: ac63eb417853e416ec6b7f1dd51c1eed
+    admin.funds.create-form.summary.class-series-b-late-stage: dec87a76066c04a350366847d785e1bb
+    admin.funds.create-form.summary.class-short-equity: 7713f016b57a04145bbf2a1b8a6c327f
+    admin.funds.create-form.summary.class-small-cap: b138794f2a164dcc1e75a341e9038e00
+    admin.funds.create-form.summary.class-tactical-asset-allocation: 2d4caf9ca83e1cf6d9ea54c52e073659
+    admin.funds.create-form.summary.class-value-focused: 51fd7ec62b8b6f6d37caea889d482bb0
     admin.funds.create-form.summary.configuration-description: d147e01067bddb251ad6b07a0b5a5b91
     admin.funds.create-form.summary.configuration-title: b8da1b5f2ab9241cc4dc231bbc8a7190
     admin.funds.create-form.summary.decimals-label: 2b417805040de3a3df31c8fd3626b57c
@@ -1141,6 +1235,7 @@ files:
     admin.stablecoins.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
     admin.stablecoins.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
     admin.stablecoins.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
+    admin.stablecoins.tabs.underlying-assets: 513b5e27362967b94ab332c4f3790a4f
     admin.stablecoins.update-collateral-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.stablecoins.update-collateral-form.amount.description: 79a739dfe12982ffa4bc0b5a76c849bc
     admin.stablecoins.update-collateral-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
