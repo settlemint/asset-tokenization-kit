@@ -1,10 +1,10 @@
 "use client";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
-import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { Link } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
@@ -134,11 +134,14 @@ export function SignUpForm({
           </p>
         </div>
         {form.formState.errors.root && (
-          <Alert variant="destructive">
-            <AlertDescription>
+          <Alert
+            variant="destructive"
+            className="text-destructive border-destructive"
+          >
+            <AlertTitle>
               {form.formState.errors.root.message?.toString() ||
                 t("error.generic")}
-            </AlertDescription>
+            </AlertTitle>
           </Alert>
         )}
         <div className="grid gap-6">

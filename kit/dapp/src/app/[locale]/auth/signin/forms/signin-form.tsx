@@ -2,7 +2,7 @@
 
 import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { FingerprintIcon } from "@/components/ui/animated-icons/fingerprint";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -80,10 +80,11 @@ export function SignInForm({
           </p>
         </div>
         {form.formState.errors.root && (
-          <Alert variant="destructive">
-            <AlertDescription>
-              {form.formState.errors.root.message}
-            </AlertDescription>
+          <Alert
+            variant="destructive"
+            className="border-destructive text-destructive"
+          >
+            <AlertTitle>{form.formState.errors.root.message}</AlertTitle>
           </Alert>
         )}
         <div className="grid gap-6">
