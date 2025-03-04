@@ -22,7 +22,7 @@ import { z } from "zod";
 export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
   schema: z.ZodType<Output, Def, Input>,
   data: unknown,
-  context: string = "data"
+  context = "data"
 ): Output {
   try {
     return schema.parse(data);
@@ -219,5 +219,6 @@ export { extendedZod as z };
 /**
  * Type utility for inferring the type of a Zod schema
  */
-export type { infer as ZodInfer } from "zod";
+  export type { infer as ZodInfer } from "zod";
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type ZodType = z.ZodType<any, any, any>;

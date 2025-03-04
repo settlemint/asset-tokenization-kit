@@ -4,6 +4,7 @@ import {
 	theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
+import BigNumber from 'bignumber.js';
 import { cache } from "react";
 import type { Address } from "viem";
 import { BalanceFragment, BalanceFragmentSchema } from "./balance-fragment";
@@ -64,33 +65,31 @@ export const getPortfolioDashboardData = cache(
 
 		// Group and sum balances by asset type
 		const assetTypeBalances = validatedMyAssets.reduce<
-			Record<AssetType, number>
+			Record<AssetType, BigNumber>
 		>(
 			(acc, balance) => {
 				const assetType = balance.asset.type as AssetType;
 				if (!acc[assetType]) {
-					acc[assetType] = 0;
+					acc[assetType] = BigNumber(0);
 				}
-				acc[assetType] = acc[assetType] + Number(balance.value.toString());
+				acc[assetType] = acc[assetType].plus(BigNumber(balance.value.toString()));
 				return acc;
 			},
-			{} as Record<AssetType, number>,
+			{} as Record<AssetType, BigNumber>,
 		);
 
 		// Calculate total across all types
 		const total = Object.values(assetTypeBalances).reduce(
-			(acc, value) => acc + value,
-			0,
+			(acc, value) => acc.plus(value),
+			BigNumber(0),
 		);
 
 		// Calculate distribution percentages by type
 		const distribution = Object.entries(assetTypeBalances).map(
 			([type, value]) => ({
 				asset: { type: type as AssetType },
-				value: Number(value.toString()),
-				percentage: total > 0
-					? ((value / total) * 100).toFixed(2)
-					: "0",
+				value: value.toString(),
+    		percentage: total.gt(0) ? Number.parseFloat(value.div(total).multipliedBy(100).toFixed(2)) : 0,
 			}),
 		);
 
