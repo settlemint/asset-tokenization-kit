@@ -15,7 +15,7 @@ export const CreateStablecoinSchema = z.object({
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),
-  collateralLivenessSeconds: z.number(),
+  collateralLivenessSeconds: z.coerce.number().min(0),
   pincode: z.pincode(),
 });
 
