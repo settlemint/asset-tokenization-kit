@@ -1753,7 +1753,8 @@
           "description": "Zeigt das gesamte Volumen des Tokens an",
           "label": "Insgesamt Volumen",
           "title": "Insgesamt Volumen"
-        }
+        },
+        "wallet-distribution": "Wallet-Verteilung"
       }
     },
     "data-table": {

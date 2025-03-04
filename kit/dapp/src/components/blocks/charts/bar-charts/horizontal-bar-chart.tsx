@@ -39,6 +39,7 @@ interface BarChartProps {
   className?: string;
   footer?: ReactNode;
   showYAxis?: boolean;
+  showLegend?: boolean;
 }
 
 const defaultTickFormatter = (value: string) => {
@@ -64,6 +65,7 @@ export function BarChartComponent({
   xAxis,
   footer,
   showYAxis,
+  showLegend = true,
 }: BarChartProps) {
   const dataKeys = Object.keys(config);
   const {
@@ -92,7 +94,7 @@ export function BarChartComponent({
         <ChartContainer config={config}>
           <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
-            {dataKeys.length > 1 && (
+            {showLegend && dataKeys.length > 1 && (
               <Legend
                 align="center"
                 verticalAlign="bottom"
