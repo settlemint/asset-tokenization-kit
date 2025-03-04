@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { SignUpForm } from "./forms/signup-form";
 
@@ -10,6 +11,21 @@ interface SignUpPageProps {
   params: Promise<{
     locale: string;
   }>;
+}
+
+export async function generateMetadata({
+  params,
+}: SignUpPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "auth.signup",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
 }
 
 export default async function SignUp({
