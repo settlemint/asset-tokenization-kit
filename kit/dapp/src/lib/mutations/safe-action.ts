@@ -47,12 +47,12 @@ function getErrorMessage(error: Error): string {
   }
 
   const msg = error.message;
-
-  if (msg.includes("AccessControlUnauthorizedAccount")) {
-    return "You are not authorized to perform this action";
+  switch (true) {
+    case msg.includes("AccessControlUnauthorizedAccount"):
+      return "You are not authorized to perform this action";
+    default:
+      return "An unexpected error occurred";
   }
-
-  return "An unexpected error occurred";
 }
 
 /**
