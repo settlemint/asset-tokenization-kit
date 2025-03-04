@@ -34,9 +34,15 @@ export function ManageDropdown({ address }: ManageDropdownProps) {
       ] as const,
     [t]
   );
-  const [selectedItem, setSelectedItem] = useState<
+  const [openMenuItem, setOpenMenuItem] = useState<
     (typeof menuItems)[number]["id"] | null
   >(null);
+
+  const onFormOpenChange = (open: boolean) => {
+    if (!open) {
+      setOpenMenuItem(null);
+    }
+  };
 
   return (
     <>
@@ -54,7 +60,7 @@ export function ManageDropdown({ address }: ManageDropdownProps) {
           {menuItems.map((item) => (
             <DropdownMenuItem
               key={item.id}
-              onSelect={() => setSelectedItem(item.id)}
+              onSelect={() => setOpenMenuItem(item.id)}
             >
               {item.label}
             </DropdownMenuItem>
@@ -63,13 +69,13 @@ export function ManageDropdown({ address }: ManageDropdownProps) {
       </DropdownMenu>
       <MintForm
         address={address}
-        open={selectedItem === "mint"}
-        onOpenChange={() => setSelectedItem(null)}
+        open={openMenuItem === "mint"}
+        onOpenChange={onFormOpenChange}
       />
       <GrantRoleForm
         address={address}
-        open={selectedItem === "grant-role"}
-        onOpenChange={() => setSelectedItem(null)}
+        open={openMenuItem === "grant-role"}
+        onOpenChange={onFormOpenChange}
       />
     </>
   );
