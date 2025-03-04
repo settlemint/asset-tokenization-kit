@@ -57,6 +57,7 @@ export function PieChartComponent({
               dataKey={dataKey}
               nameKey={nameKey}
               strokeWidth={1}
+              innerRadius={50}
             >
               {data.map((entry, index) => (
                 <Cell
