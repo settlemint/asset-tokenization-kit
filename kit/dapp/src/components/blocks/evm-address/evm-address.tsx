@@ -13,10 +13,32 @@ import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
-import { type FC, type PropsWithChildren, useEffect, useState } from "react";
+import {
+  cache,
+  type FC,
+  type PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
 import type { Address } from "viem";
 import { getAddress } from "viem";
 import { CopyToClipboard } from "../copy/copy";
+
+// Cache the user search function
+const cachedUserSearch = cache(async (address: Address) => {
+  const userResult = await getUserSearch({
+    searchTerm: getAddress(address),
+  });
+  return userResult.length > 0 ? userResult[0] : null;
+});
+
+// Cache the asset search function
+const cachedAssetSearch = cache(async (address: Address) => {
+  const assetResult = await getAssetSearch({
+    searchTerm: getAddress(address),
+  });
+  return assetResult.length > 0 ? assetResult[0] : null;
+});
 
 interface EvmAddressProps extends PropsWithChildren {
   /** The EVM address to display. */
@@ -64,14 +86,8 @@ export function EvmAddress({
   // Effect to fetch user and asset data
   useEffect(() => {
     async function fetchData() {
-      const userResult = await getUserSearch({
-        searchTerm: getAddress(address),
-      });
-      if (userResult.length > 0) {
-        setUser(userResult[0]);
-      } else {
-        setUser(null);
-      }
+      const userResult = await cachedUserSearch(getAddress(address));
+      setUser(userResult);
     }
 
     // Call the fetch function
@@ -80,14 +96,8 @@ export function EvmAddress({
 
   useEffect(() => {
     async function fetchData() {
-      const assetResult = await getAssetSearch({
-        searchTerm: getAddress(address),
-      });
-      if (assetResult.length > 0) {
-        setAsset(assetResult[0]);
-      } else {
-        setAsset(null);
-      }
+      const assetResult = await cachedAssetSearch(getAddress(address));
+      setAsset(assetResult);
     }
 
     // Call the fetch function
