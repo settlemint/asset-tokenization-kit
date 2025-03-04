@@ -1213,7 +1213,8 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
       },
       "charts": {
         "asset-statistics-title": "Asset statistics"
@@ -1397,7 +1398,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -1521,7 +1523,8 @@
           "update-description": "Updating collateral operation details",
           "update-title": "Update Collateral"
         },
-        "title": "Update collateral"
+        "title": "Update collateral",
+        "trigger-label": "Update collateral"
       }
     },
     "users": {

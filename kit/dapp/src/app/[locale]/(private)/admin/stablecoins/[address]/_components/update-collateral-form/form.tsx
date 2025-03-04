@@ -36,6 +36,7 @@ export function UpdateCollateralForm({
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
       title={t("title")}
+      triggerLabel={!isExternallyControlled ? t("trigger-label") : undefined}
       description={t("description")}
       asButton={asButton}
     >
