@@ -146,7 +146,7 @@ export function UserDropdown() {
               onMouseLeave={() => bookIconRef.current?.stopAnimation()}
             >
               <BookTextIcon ref={bookIconRef} className="mr-2 size-4" />
-              <Link href="https://console.settlemint.com/documentation">
+              <Link href="https://console.settlemint.com/documentation/">
                 {t("documentation")}
               </Link>
             </DropdownMenuItem>
