@@ -54,7 +54,7 @@ export function FormCheckbox<T extends FieldValues>({
         );
 
         return (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+          <FormItem className="flex flex-row items-start space-x-3 space-y-1 rounded-md">
             <FormControl>
               <Checkbox
                 {...field}

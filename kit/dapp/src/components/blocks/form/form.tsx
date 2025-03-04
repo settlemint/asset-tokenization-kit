@@ -62,7 +62,6 @@ export function Form<
         mode: "onSubmit",
         criteriaMode: "all",
         shouldFocusError: false,
-        shouldUseNativeValidation: true,
         defaultValues,
       },
       actionProps: {

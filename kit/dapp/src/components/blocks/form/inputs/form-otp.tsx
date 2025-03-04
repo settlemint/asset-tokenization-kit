@@ -34,7 +34,7 @@ export function FormOtp<T extends FieldValues>({
     <FormField
       {...props}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col space-y-1">
           <FormLabel>{props.label}</FormLabel>
           <FormControl>
             <InputOTP

@@ -142,10 +142,12 @@ const extendedZod = {
   isin: () =>
     z
       .string()
-      .regex(/^[A-Z0-9]+$/, {
+      .refine((val) => val === "" || /^[A-Z0-9]+$/.test(val), {
         message: "ISIN must contain only uppercase letters and numbers",
       })
-      .length(12, { message: "ISIN must be exactly 12 characters" }),
+      .refine((val) => val === "" || val.length === 12, {
+        message: "ISIN must be exactly 12 characters",
+      }),
 
   /**
    * Validates and transforms a string to a BigInt
