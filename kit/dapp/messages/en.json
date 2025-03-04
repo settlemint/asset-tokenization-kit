@@ -273,7 +273,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total supply"
+        "total-supply-header": "Total supply",
+        "topinfo-title": "A digital fixed-income security asset",
+        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions."
       },
       "tabs": {
         "details": "Details",
@@ -456,7 +458,9 @@
         "private-status": "Private",
         "public-status": "Public",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "topinfo-title": "A customizable and secure digital asset",
+        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes."
       },
       "tabs": {
         "details": "Details",
@@ -833,7 +837,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "topinfo-title": "Institutional-grade digital equity management",
+        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation."
       },
       "tabs": {
         "details": "Details",
@@ -1159,7 +1165,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "topinfo-title": "Digital asset for institutional fund management",
+        "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency."
       },
       "tabs": {
         "details": "Details",

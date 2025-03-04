@@ -169,7 +169,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
   ) => {
     return (
       <div className={cn("relative", className)} ref={ref} {...props}>
-        <div className="absolute top-0 z-0 h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,hsl(var(--sidebar-ring))_5%,transparent_70%)]" />
+        <div className="absolute top-0 z-0 h-screen w-screen bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,var(--accent)_3%,transparent_70%)] dark:bg-[radial-gradient(ellipse_50%_80%_at_50%_-20%,var(--accent)_5%,transparent_70%)]" />
         <section className="relative z-1 mx-auto max-w-full">
           <div className="z-10 mx-auto max-w-(--breakpoint-xl) gap-12 px-4 py-28 md:px-8 ">
             <div className="absolute top-8 left-8 flex items-center gap-3">
@@ -188,15 +188,15 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
                   {buttons.secondary.text}
                 </Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="text-accent-foreground">
                 <Link href={buttons.main.href}>{buttons.main.text}</Link>
               </Button>
             </div>
             <div className="mx-auto max-w-3xl space-y-5 text-center leading-0 lg:leading-5">
-              <h2 className="mx-auto bg-[linear-gradient(180deg,_hsl(var(--foreground))_0%,_hsl(var(--foreground)/75%)_100%)] bg-clip-text font-geist text-4xl text-transparent tracking-tighter md:text-6xl">
+              <h2 className="mx-auto bg-[linear-gradient(180deg,_hsl(var(--foreground))_0%,_(var(--foreground)/75%)_100%)] bg-clip-text text-4xl tracking-tighter md:text-6xl">
                 {subtitle.regular}
                 <br />
-                <span className="bg-linear-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-2))] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[var(--accent)] to-[var(--chart-2)] bg-clip-text text-transparent font-bold">
                   {subtitle.gradient}
                 </span>
               </h2>
@@ -205,7 +205,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               </p>
               <div className="items-center justify-center gap-x-3 space-y-3 sm:flex sm:space-y-0">
                 <span className="relative inline-block overflow-hidden rounded-full p-[1.5px]">
-                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--accent))_0%,hsl(var(--chart-2))_50%,hsl(var(--accent))_100%)]" />
+                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,var(--accent)_0%,var(--chart-2)_50%,var(--accent)_100%)]" />
                   <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-background font-medium font-mono text-xs backdrop-blur-3xl">
                     <Link
                       href={ctaHref}
