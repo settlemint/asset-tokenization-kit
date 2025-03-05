@@ -1981,7 +1981,9 @@
     "error-id": "Fehler-ID",
     "go-home": "Gehe nach Hause",
     "title": "Etwas ist schiefgelaufen!",
-    "try-again": "Erneut versuchen"
+    "try-again": "Erneut versuchen",
+    "validation-errors": "Validierungsfehler",
+    "unknown-error": "Unbekannter Fehler"
   },
   "layout": {
     "header": {
