@@ -1,6 +1,8 @@
 "use client";
 
+import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { MyAsset } from "@/lib/queries/portfolio/portfolio-dashboard";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TransferForm } from "./form";
 import { SelectAsset } from "./select-asset";
@@ -10,6 +12,7 @@ interface TransferFormProps {
 }
 
 export function MyAssetsTransferForm({ assets }: TransferFormProps) {
+  const t = useTranslations("portfolio.transfer-form");
   const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -30,7 +33,14 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
           }}
         />
       ) : (
-        <SelectAsset assets={assets} onSelect={setSelectedAsset} />
+        <FormSheet
+          open={open}
+          onOpenChange={setOpen}
+          title={t("select-asset.title")}
+          description={t("select-asset.description")}
+        >
+          <SelectAsset assets={assets} onSelect={setSelectedAsset} />
+        </FormSheet>
       )}
     </>
   );
