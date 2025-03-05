@@ -30,15 +30,21 @@ export function CopyToClipboard({
 }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(value);
-    setHasCopied(true);
-    toast.success(successMessage);
-
-    // Reset copy icon after 2 seconds
-    setTimeout(() => {
-      setHasCopied(false);
-    }, 2000);
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
+        setHasCopied(true);
+        toast.success(successMessage);
+        // Reset copy icon after 2 seconds
+        setTimeout(() => {
+          setHasCopied(false);
+        }, 2000);
+      })
+      .catch((error: Error) => {
+        console.error("copy to clipboard failed", error);
+        toast.error("Failed to copy to clipboard");
+      });
   };
 
   return (
