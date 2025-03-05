@@ -12,7 +12,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v5
@@ -55,7 +55,7 @@ jobs:
     runs-on: namespace-profile-atk
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
@@ -163,7 +163,7 @@ jobs:
           PAT_TOKEN: op://platform/github-commit-pat/credential
 
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
         with:
           token: ${{ env.PAT_TOKEN }}
 
