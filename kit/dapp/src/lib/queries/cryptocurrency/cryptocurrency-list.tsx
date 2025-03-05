@@ -115,7 +115,5 @@ export const getCryptoCurrencyList = cache(async () => {
     };
   });
 
-  return cryptoCurrencies.map((cryptocurrency) => ({
-    ...cryptocurrency,
-  }));
+  return cryptoCurrencies;
 });

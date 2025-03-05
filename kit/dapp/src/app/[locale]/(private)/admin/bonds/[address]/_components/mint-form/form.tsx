@@ -6,30 +6,46 @@ import { mint } from "@/lib/mutations/bond/mint/mint-action";
 import { MintSchema } from "@/lib/mutations/bond/mint/mint-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 
 interface MintFormProps {
   address: Address;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  asButton?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function MintForm({ address, open, onOpenChange }: MintFormProps) {
+export function MintForm({
+  address,
+  asButton = false,
+  open,
+  onOpenChange,
+}: MintFormProps) {
   const t = useTranslations("admin.bonds.mint-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
+      open={isExternallyControlled ? open : internalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
     >
       <Form
         action={mint}
         resolver={zodResolver(MintSchema)}
-        onOpenChange={onOpenChange}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}

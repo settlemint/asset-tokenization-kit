@@ -4,7 +4,6 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -109,9 +108,5 @@ export const getFundList = cache(async () => {
     };
   });
 
-  return funds.map((fund) => ({
-    ...fund,
-    // replace all the BigDecimals with formatted strings
-    totalSupply: formatNumber(fund.totalSupply),
-  }));
+  return funds;
 });
