@@ -1,5 +1,5 @@
 import { getUser } from "@/lib/auth/utils";
-import { getPortfolioDashboardData } from "@/lib/queries/portfolio/portfolio-dashboard";
+import { getMyAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-my";
 import type { Address } from "viem";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
@@ -15,14 +15,12 @@ export default async function PortfolioDashboard({
 }: PortfolioDashboardProps) {
   const { locale } = await params;
   const user = await getUser(locale);
-  const portfolioDashboardData = await getPortfolioDashboardData(
-    user.wallet as Address
-  );
+  const myAssetsBalance = await getMyAssetsBalance(user.wallet as Address);
   return (
     <>
       <div className="space-y-4">
         <Greeting />
-        <MyAssetsHeader data={portfolioDashboardData} />
+        <MyAssetsHeader data={myAssetsBalance} />
       </div>
     </>
   );
