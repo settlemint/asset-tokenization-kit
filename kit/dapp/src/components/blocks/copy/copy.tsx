@@ -46,13 +46,18 @@ export function CopyToClipboard({
       <div
         className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
         onClick={handleCopy}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleCopy();
+          }
+        }}
       >
         <span className="text-xs">{displayText ?? value}</span>
       </div>
       <Button
         variant="ghost"
         size="icon"
-        className="size-8 hover:bg-theme-accent-background ml-1"
+        className="size-4 hover:bg-theme-accent-background ml-1 cursor-pointer"
         onClick={handleCopy}
         title="Copy to clipboard"
       >
