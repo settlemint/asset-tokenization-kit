@@ -59,10 +59,19 @@ export default async function RootLayout({
       className={cn(figTree.variable, geistMono.variable)}
       suppressHydrationWarning
     >
-      {/* Can be used to debug rerenders using react-scan
+      Can be used to debug rerenders using react-scan
       <head>
-        <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
-      </head> */}
+        {(process.env.NODE_ENV === "development" ||
+          process.env.VERCEL_ENV === "preview") && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script
+            data-recording-token="wjC9jxOhQkSBu4OX2q8RwSMLqmuXMajbq8DdIMli"
+            data-is-production-environment="false"
+            src="https://snippet.meticulous.ai/v1/meticulous.js"
+          />
+        )}
+        {/* <script src="https://unpkg.com/react-scan/dist/auto.global.js" /> */}
+      </head>
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
