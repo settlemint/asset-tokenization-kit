@@ -44,6 +44,7 @@ export function FormOtp<T extends FieldValues>({
               onChange={field.onChange}
               className={cn("justify-center gap-1.5", className)}
               autoComplete="off"
+              required
             >
               <InputOTPGroup>
                 <InputOTPSlot index={0} className="size-8" />
