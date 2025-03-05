@@ -11,7 +11,7 @@ export class SignInPage extends BasePage {
   async signIn(options: { email: string; password: string; name: string }) {
     await this.page.getByLabel('Email').fill(options.email);
     await this.page.getByLabel('Password').fill(options.password);
-    await this.page.getByRole('button', { name: 'Sign in' }).click();
+    await this.page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await this.page.waitForURL('**/admin');
     await expect(this.page.locator('div.grid span.truncate.font-semibold', { hasText: options.name })).toBeVisible();
   }
