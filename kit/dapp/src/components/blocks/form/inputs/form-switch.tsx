@@ -76,7 +76,7 @@ export function FormSwitch<T extends FieldValues>({
                   {...props}
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className={cn(className)}
+                  className={cn("w-9", className)}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,

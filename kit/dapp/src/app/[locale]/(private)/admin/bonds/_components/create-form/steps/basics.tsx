@@ -45,10 +45,4 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = [
-  "assetName",
-  "symbol",
-  "decimals",
-  "privateAsset",
-  "isin",
-] as const;
+Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;

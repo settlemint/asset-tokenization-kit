@@ -26,6 +26,7 @@ export function Amount({ collateralAvailable }: AmountProps) {
           description={t("collateral-available", {
             collateral: formatNumber(collateralAvailable),
           })}
+          required
         />
       </div>
     </FormStep>
