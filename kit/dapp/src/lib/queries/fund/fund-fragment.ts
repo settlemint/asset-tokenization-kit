@@ -29,6 +29,11 @@ export const FundFragment = theGraphGraphqlStarterkits(`
     holders(first: 5, orderBy: valueExact, orderDirection: desc) {
       valueExact
     }
+    asAccount {
+      balances {
+        value
+      }
+    }
   }
 `);
 
@@ -58,6 +63,13 @@ export const FundFragmentSchema = z.object({
       valueExact: z.bigInt(),
     })
   ),
+  asAccount: z.object({
+    balances: z.array(
+      z.object({
+        value: z.bigDecimal(),
+      })
+    ),
+  }),
 });
 
 /**

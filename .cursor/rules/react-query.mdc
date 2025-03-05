@@ -1,9 +1,0 @@
----
-description: Best practices for managing data with React Query
-globs: *.ts,*.tsx
-alwaysApply: false
----
-- Use `useSuspenseQuery` for fetching data and `useMutation` for data modifications.
-- Implement proper caching strategies with `queryClient`.
-- Utilize `useQueryClient` for manual cache updates.
-- Leverage `persistQueryClient` for offline support.
