@@ -93,12 +93,14 @@ export function Configuration() {
           name="fundCategory"
           label={t("fund-category-label")}
           options={fundCategories}
+          required
         />
         <FormSelect
           control={control}
           name="fundClass"
           label={t("fund-class-label")}
           options={fundClasses}
+          required
         />
         <FormInput
           control={control}
@@ -107,6 +109,7 @@ export function Configuration() {
           label={t("management-fee-label")}
           description={t("management-fee-description")}
           postfix={t("basis-points")}
+          required
         />
       </div>
     </FormStep>

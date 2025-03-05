@@ -17,6 +17,7 @@ export function Configuration() {
           name="collateralLivenessSeconds"
           label={t("collateral-proof-validity-label")}
           postfix="seconds"
+          required
         />
       </div>
     </FormStep>

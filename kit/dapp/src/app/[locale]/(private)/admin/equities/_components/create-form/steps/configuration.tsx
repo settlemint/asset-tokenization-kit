@@ -131,12 +131,14 @@ export function Configuration() {
           name="equityClass"
           label={t("equity-class-label")}
           options={equityClasses}
+          required
         />
         <FormSelect
           control={control}
           name="equityCategory"
           label={t("equity-category-label")}
           options={equityCategories}
+          required
         />
       </div>
     </FormStep>

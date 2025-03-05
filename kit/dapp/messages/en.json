@@ -319,8 +319,6 @@
           "isin-placeholder": "CRYPTO123456",
           "name-label": "Name",
           "name-placeholder": "Bitcoin",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "BTC",
           "title": "Basic Information"
@@ -1983,7 +1981,9 @@
     "error-id": "Error ID",
     "go-home": "Go home",
     "title": "Something went wrong!",
-    "try-again": "Try again"
+    "try-again": "Try again",
+    "validation-errors": "Validation errors",
+    "unknown-error": "Unknown error"
   },
   "layout": {
     "header": {
