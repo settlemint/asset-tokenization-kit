@@ -301,7 +301,24 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
         "topinfo-title": "A digital fixed-income security asset",
-        "total-supply-header": "Total supply"
+        "total-supply-header": "Total supply",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new bond with defined maturity, coupon rates, and face value. Streamline bond issuance with automated interest payments and redemption schedules.",
+            "title": "Issue new bond"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage bond parameters, interest distributions, maturity dates, and redemption processes for fixed-income securities.",
+            "title": "Bond mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in fixed-income markets, from corporate debt to structured products. Maximize efficiency in interest payments, maturity management, and regulatory compliance.",
+            "title": "Bond usecases"
+          }
+        }
       },
       "tabs": {
         "details": "Details",
@@ -487,7 +504,24 @@
         "symbol-header": "Symbol",
         "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
         "topinfo-title": "A customizable and secure digital asset",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new cryptocurrency token with customizable parameters and security features. Streamline token deployment with configurable supply mechanisms and transfer controls.",
+            "title": "Issue new cryptocurrency"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage token economics, supply controls, transfer restrictions, and security features for your cryptocurrency.",
+            "title": "Token mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in digital payments, rewards systems, and tokenized services. Maximize utility through programmable transactions and institutional-grade security features.",
+            "title": "Cryptocurrency usecases"
+          }
+        }
       },
       "tabs": {
         "details": "Details",
@@ -917,7 +951,71 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
         "topinfo-title": "Institutional-grade digital equity management",
-        "total-supply-header": "Total Supply"
+        "total-supply-header": "Total Supply",
+        "category-blend-equity": "Blend Equity",
+        "category-communication-services": "Communication Services",
+        "category-consumer-discretionary": "Consumer Discretionary",
+        "category-consumer-staples": "Consumer Staples",
+        "category-convertible-preferred-stock": "Convertible Preferred Stock",
+        "category-cumulative-preferred-stock": "Cumulative Preferred Stock",
+        "category-distressed-equity": "Distressed Equity",
+        "category-domestic-equity": "Domestic Equity",
+        "category-dual-class-shares": "Dual-Class Shares",
+        "category-emerging-market-equity": "Emerging Market Equity",
+        "category-energy": "Energy",
+        "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
+        "category-financials": "Financials",
+        "category-frontier-market-equity": "Frontier Market Equity",
+        "category-global-equity": "Global Equity",
+        "category-growth-capital": "Growth Capital",
+        "category-growth-equity": "Growth Equity",
+        "category-healthcare": "Healthcare",
+        "category-income-equity": "Income Equity",
+        "category-industrials": "Industrials",
+        "category-international-equity": "International Equity",
+        "category-large-cap-equity": "Large-Cap Equity",
+        "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+        "category-materials": "Materials",
+        "category-mezzanine-financing": "Mezzanine Financing",
+        "category-micro-cap-equity": "Micro-Cap Equity",
+        "category-mid-cap-equity": "Mid-Cap Equity",
+        "category-non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
+        "category-non-voting-common-stock": "Non-Voting Common Stock",
+        "category-real-estate": "Real Estate",
+        "category-redeemable-preferred-stock": "Redeemable Preferred Stock",
+        "category-restricted-stock": "Restricted Stock",
+        "category-small-cap-equity": "Small-Cap Equity",
+        "category-technology": "Technology",
+        "category-tracking-stocks": "Tracking Stocks",
+        "category-utilities": "Utilities",
+        "category-value-equity": "Value Equity",
+        "category-venture-capital": "Venture Capital",
+        "category-voting-common-stock": "Voting Common Stock",
+        "class-common-equity": "Common Equity",
+        "class-geographic-equity": "Geographic Equity",
+        "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
+        "class-investment-style-equity": "Investment Style Equity",
+        "class-market-capitalization-equity": "Market Capitalization Equity",
+        "class-preferred-equity": "Preferred Equity",
+        "class-sector-industry-equity": "Sector/Industry Equity",
+        "class-special-classes-equity": "Special Classes of Equity",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
+            "title": "Issue new equity tokens"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage shareholder rights, voting mechanisms, dividend distributions, and equity ownership structures.",
+            "title": "Equity mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
+            "title": "Equity usecases"
+          }
+        }
       },
       "tabs": {
         "details": "Details",

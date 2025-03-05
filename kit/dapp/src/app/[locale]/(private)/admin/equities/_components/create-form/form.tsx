@@ -12,13 +12,15 @@ import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 
 interface CreateEquityFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  asButton?: boolean;
 }
 
 export function CreateEquityForm({
   open,
   onOpenChange,
+  asButton = false,
 }: CreateEquityFormProps) {
   const t = useTranslations("admin.equities.create-form");
   const isExternallyControlled =
@@ -26,10 +28,12 @@ export function CreateEquityForm({
   const [localOpen, setLocalOpen] = useState(false);
   return (
     <FormSheet
-      open={isExternallyControlled ? open : localOpen}
+      open={open || localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
     >
       <Form
         action={createEquity}

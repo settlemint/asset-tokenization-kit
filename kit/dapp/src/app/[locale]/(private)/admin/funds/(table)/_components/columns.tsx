@@ -70,7 +70,7 @@ export function columns() {
             "category-header"
           >
         ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("fundClass", {
       header: t("class-header"),
@@ -81,7 +81,7 @@ export function columns() {
             "class-header"
           >
         ),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("managementFeeBps", {
       header: t("management-fee-header"),
