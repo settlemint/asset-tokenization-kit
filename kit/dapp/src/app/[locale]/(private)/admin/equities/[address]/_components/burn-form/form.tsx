@@ -6,6 +6,7 @@ import { burn } from "@/lib/mutations/equity/burn/burn-action";
 import { BurnSchema } from "@/lib/mutations/equity/burn/burn-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -13,29 +14,40 @@ import { Summary } from "./steps/summary";
 interface BurnFormProps {
   address: Address;
   balance: number;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  asButton?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function BurnForm({
   address,
   balance,
+  asButton = false,
   open,
   onOpenChange,
 }: BurnFormProps) {
   const t = useTranslations("admin.equities.burn-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
+      open={isExternallyControlled ? open : internalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
+      asButton={asButton}
     >
       <Form
         action={burn}
         resolver={zodResolver(BurnSchema)}
-        onOpenChange={onOpenChange}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}

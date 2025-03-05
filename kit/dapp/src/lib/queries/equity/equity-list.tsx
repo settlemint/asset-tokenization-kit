@@ -103,7 +103,5 @@ export const getEquityList = cache(async () => {
     };
   });
 
-  return equitys.map((equity) => ({
-    ...equity,
-  }));
+  return equitys;
 });
