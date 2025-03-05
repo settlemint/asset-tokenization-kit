@@ -12,7 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
 import type { FieldValues } from "react-hook-form";
-import { getAriaAttributes, type BaseFormInputProps } from "./types";
+import { type BaseFormInputProps, getAriaAttributes } from "./types";
 
 type CheckboxProps = ComponentPropsWithoutRef<typeof Checkbox>;
 
@@ -88,7 +88,11 @@ export function FormCheckbox<T extends FieldValues>({
                   {description}
                 </FormDescription>
               )}
-              <FormMessage id={`${field.name}-error`} aria-live="polite" />
+              <FormMessage
+                id={`${field.name}-error`}
+                aria-live="polite"
+                className="text-destructive"
+              />
             </div>
           </FormItem>
         );

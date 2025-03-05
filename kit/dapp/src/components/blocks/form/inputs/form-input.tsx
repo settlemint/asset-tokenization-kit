@@ -15,10 +15,10 @@ import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
 import type { FieldValues } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
 import {
-  getAriaAttributes,
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
+  getAriaAttributes,
 } from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -138,7 +138,11 @@ export function FormInput<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage id={`${field.name}-error`} aria-live="polite" />
+            <FormMessage
+              id={`${field.name}-error`}
+              aria-live="polite"
+              className="text-destructive"
+            />
           </FormItem>
         );
       }}

@@ -56,7 +56,7 @@ export function FormOtp<T extends FieldValues>({
               </InputOTPGroup>
             </InputOTP>
           </FormControl>
-          <FormMessage />
+          <FormMessage className="text-destructive" />
         </FormItem>
       )}
     />
