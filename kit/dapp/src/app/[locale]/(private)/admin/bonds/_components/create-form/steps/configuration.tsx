@@ -18,6 +18,7 @@ export function Configuration() {
           type="number"
           label={t("cap-label")}
           description={t("cap-description")}
+          required
         />
         <FormInput
           control={control}
@@ -25,18 +26,21 @@ export function Configuration() {
           type="number"
           label={t("face-value-label")}
           description={t("face-value-description")}
+          required
         />
         <FormInput
           control={control}
           type="date"
           name="maturityDate"
           label={t("maturity-date-label")}
+          required
         />
         <FormAssets
           control={control}
           name="underlyingAsset"
           label={t("underlying-asset-label")}
           description={t("underlying-asset-description")}
+          required
         />
       </div>
     </FormStep>

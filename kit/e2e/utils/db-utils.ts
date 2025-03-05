@@ -97,7 +97,7 @@ export async function ensureUserIsAdmin(email: string = adminUser.email): Promis
 
     if (!hasAdminRole) {
       await updateUserRole(email, 'admin');
-      return true; // Role was updated
+      return true;
     }
 
     return false;

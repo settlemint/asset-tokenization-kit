@@ -55,21 +55,6 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("private", {
-      header: t("private-header"),
-      cell: ({ getValue }) => {
-        const privateAsset: boolean = !!getValue();
-        const Icon = icons[privateAsset ? "private" : "public"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>
-              {privateAsset ? t("private-status") : t("public-status")}
-            </span>
-          </>
-        );
-      },
-    }),
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),

@@ -1,8 +1,9 @@
 "use client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
@@ -10,7 +11,7 @@ import { useState } from "react";
 import type { DefaultValues, Path, Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import type { Schema } from "zod";
-import { FormButton, type ButtonLabels } from "./form-button";
+import { type ButtonLabels, FormButton } from "./form-button";
 import { FormProgress } from "./form-progress";
 import type { FormStepElement } from "./types";
 
@@ -54,6 +55,7 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
+  const tError = useTranslations("error");
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
@@ -126,6 +128,8 @@ export function Form<
     }
   };
 
+  const hasError = Object.keys(form.formState.errors).length > 0;
+
   return (
     <div className="space-y-6">
       <div className="container">
@@ -140,6 +144,23 @@ export function Form<
                   />
                 )}
                 <div className="min-h-[400px]">
+                  {hasError && (
+                    <Alert
+                      variant="destructive"
+                      className="text-destructive border-destructive mb-4"
+                    >
+                      <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                      <AlertDescription className="whitespace-pre-wrap">
+                        {Object.entries(form.formState.errors)
+                          .map(
+                            ([key, error]) =>
+                              `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
+                          )
+                          .filter(Boolean)
+                          .join("\n")}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   {Array.isArray(children) ? children[currentStep] : children}
                 </div>
                 <FormButton
@@ -147,7 +168,9 @@ export function Form<
                   totalSteps={totalSteps}
                   onPreviousStep={handlePrev}
                   onNextStep={() => {
-                    void handleNext();
+                    handleNext().catch((error: Error) => {
+                      console.error("Error in handleNext:", error);
+                    });
                   }}
                   labels={buttonLabels}
                 />
