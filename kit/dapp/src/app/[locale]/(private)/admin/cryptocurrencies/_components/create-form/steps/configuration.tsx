@@ -17,6 +17,7 @@ export function Configuration() {
           type="number"
           label={t("initial-supply-label")}
           description={t("initial-supply-description")}
+          required
         />
       </div>
     </FormStep>

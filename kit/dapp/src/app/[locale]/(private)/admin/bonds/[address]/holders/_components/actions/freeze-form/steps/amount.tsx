@@ -29,6 +29,7 @@ export function Amount({ balance, frozen, symbol }: AmountProps) {
             balance: formatNumber(balance, { token: symbol }),
             frozen: formatNumber(frozen, { token: symbol }),
           })}
+          required
         />
       </div>
     </FormStep>
