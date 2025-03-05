@@ -26,8 +26,7 @@ permissions:
 jobs:
   test:
     name: Report diffs
-    runs-on: ubuntu-latest
-
+    runs-on: namespace-profile-atk
     steps:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v6
