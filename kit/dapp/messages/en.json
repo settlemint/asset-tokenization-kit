@@ -3,7 +3,29 @@
     "activity": {
       "page-description": "Track activity across all assets.",
       "page-title": "Activity",
-      "view-all": "View all transactions in the explorer"
+      "view-all": "View all transactions in the explorer",
+      "transaction-details": {
+        "block-hash-label": "Block hash",
+        "block-number-label": "Block number",
+        "blob-gas-price-label": "Blob gas price",
+        "blob-gas-used-label": "Blob gas used",
+        "contract-label": "Contract",
+        "created-at-label": "Created at",
+        "description": "View the details of a transaction",
+        "effective-gas-price-label": "Effective gas price",
+        "from-label": "From",
+        "function-label": "Function",
+        "gas-used-label": "Gas used",
+        "receipt-title": "Receipt",
+        "revert-reason-label": "Revert reason",
+        "status-label": "Status",
+        "title": "Transactions",
+        "transaction-hash-label": "Transaction hash",
+        "transaction-index-label": "Transaction index",
+        "transaction-title": "Transaction",
+        "trigger-label": "Details",
+        "type-label": "Type"
+      }
     },
     "bonds": {
       "burn-form": {

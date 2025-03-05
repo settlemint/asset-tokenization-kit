@@ -102,7 +102,11 @@ export function FormAssets<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage id={`${field.name}-error`} aria-live="polite" />
+            <FormMessage
+              id={`${field.name}-error`}
+              aria-live="polite"
+              className="text-destructive"
+            />
           </FormItem>
         );
       }}

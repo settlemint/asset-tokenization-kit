@@ -3,6 +3,7 @@ import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { Badge } from "@/components/ui/badge";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { Ban, Check } from "lucide-react";
@@ -23,7 +24,13 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
       <DetailGridItem label={t("name")}>{user.name}</DetailGridItem>
       <DetailGridItem label={t("email")}>{user.email}</DetailGridItem>
       <DetailGridItem label={t("status")}>
-        <Badge variant={user.banned ? "destructive" : "default"}>
+        <Badge
+          variant={user.banned ? "destructive" : "default"}
+          className={cn(
+            "bg-destructive/20 text-destructive",
+            !user.banned && "bg-success/20 text-success"
+          )}
+        >
           {user.banned ? (
             <>
               <Ban className="mr-1 size-3" />
