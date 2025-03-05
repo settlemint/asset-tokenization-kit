@@ -615,7 +615,9 @@
         "asset-activity": {
           "mint": "Mint",
           "transfer": "Transfer",
-          "burn": "Burn"
+          "burn": "Burn",
+          "title": "Asset activity",
+          "description": "Asset activity"
         }
       },
       "page": {
