@@ -45,7 +45,8 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
       },
       "create-form": {
         "basics": {
@@ -217,7 +218,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -320,14 +322,48 @@
         "topinfo-title": "A digital fixed-income security asset",
         "total-supply-header": "Total supply"
       },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+          "title": "Redeem Bonds"
+        },
+        "increase-supply": {
+          "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+          "title": "Issue Bonds"
+        },
+        "title": "Related actions"
+      },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
         "permissions": "Permissions"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       }
     },
     "cryptocurrencies": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}",
+          "description": "Input the amount you wish to burn.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Burn Assets",
+        "description": "Permanently remove tokens from circulation to reduce supply.",
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "burn-description": "Burning operation details",
+          "burn-title": "Burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "title": "Review and confirm burn"
+        },
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
       "create-form": {
         "basics": {
           "decimals-label": "Decimals",
@@ -446,7 +482,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "permissions": {
         "actions-header": "Actions",
@@ -492,6 +529,9 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
       "table": {
         "actions-header": "Actions",
         "address-header": "Address",
@@ -529,6 +569,13 @@
         "holders": "Holders",
         "permissions": "Permissions",
         "underlying-assets": "Underlying assets"
+      },
+      "related-actions": {
+        "increase-supply": {
+          "description": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
+          "title": "Mint Tokens"
+        },
+        "title": "Related actions"
       }
     },
     "dashboard": {
@@ -590,6 +637,17 @@
       }
     },
     "equities": {
+      "related-actions": {
+        "decrease-supply": {
+          "description": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
+          "title": "Reduce Share Supply"
+        },
+        "increase-supply": {
+          "description": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
+          "title": "Issue New Shares"
+        },
+        "title": "Related actions"
+      },
       "burn-form": {
         "amount": {
           "amount-label": "Amount",
@@ -607,7 +665,8 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
       },
       "create-form": {
         "basics": {
@@ -738,7 +797,7 @@
           "title": "Review and confirm"
         },
         "title": "Create new equity",
-        "trigger-label": "Issue a new equity"
+        "trigger-label": "Mint"
       },
       "details": {
         "contract-address": "Contract address",
@@ -866,7 +925,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -1024,6 +1084,9 @@
         "holders": "Holders",
         "permissions": "Permissions",
         "underlying-assets": "Underlying assets"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       }
     },
     "funds": {
@@ -1044,7 +1107,11 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       },
       "create-form": {
         "basics": {
@@ -1308,7 +1375,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -1376,6 +1444,17 @@
         "roles-header": "Roles",
         "table-title": "Permissions",
         "wallet-header": "Wallet"
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+          "title": "Redeem Bonds"
+        },
+        "increase-supply": {
+          "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+          "title": "Issue Bonds"
+        },
+        "title": "Related actions"
       },
       "table": {
         "actions-header": "Actions",
@@ -1469,6 +1548,9 @@
         "permissions": "Permissions",
         "underlying-assets": "Underlying assets"
       }
+    },
+    "charts": {
+      "asset-statistics-title": "Asset statistics"
     },
     "sidebar": {
       "asset-designer": "Asset Designer",
