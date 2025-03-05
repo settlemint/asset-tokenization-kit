@@ -16,6 +16,7 @@ export function Basics() {
           name="assetName"
           label={t("name-label")}
           placeholder={t("name-placeholder")}
+          required
         />
         <FormInput
           control={control}
@@ -23,6 +24,7 @@ export function Basics() {
           label={t("symbol-label")}
           placeholder={t("symbol-placeholder")}
           textOnly
+          required
         />
         <FormInput
           control={control}
@@ -30,6 +32,7 @@ export function Basics() {
           name="decimals"
           label={t("decimals-label")}
           defaultValue={18}
+          required
         />
         <FormInput
           control={control}
@@ -42,10 +45,4 @@ export function Basics() {
   );
 }
 
-Basics.validatedFields = [
-  "assetName",
-  "symbol",
-  "decimals",
-  "privateAsset",
-  "isin",
-] as const;
+Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;

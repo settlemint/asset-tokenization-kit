@@ -3,7 +3,6 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
@@ -97,7 +96,6 @@ export const getCryptoCurrencyDetail = cache(
         ...offchainCryptoCurrency,
       },
       concentration,
-      totalSupply: formatNumber(cryptocurrency.totalSupply),
     };
   }
 );

@@ -17,6 +17,7 @@ export function Amount() {
           label={t("amount-label")}
           type="number"
           min={1}
+          required
         />
       </div>
     </FormStep>

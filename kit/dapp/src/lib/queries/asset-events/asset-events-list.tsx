@@ -26,6 +26,7 @@ import {
   ManagementFeeCollectedEventFragmentSchema,
   MintEventFragment,
   MintEventFragmentSchema,
+  type NormalizedEventsListItem,
   PausedEventFragment,
   PausedEventFragmentSchema,
   PerformanceFeeCollectedEventFragment,
@@ -52,7 +53,6 @@ import {
   UserBlockedEventFragmentSchema,
   UserUnblockedEventFragment,
   UserUnblockedEventFragmentSchema,
-  type NormalizedEventsListItem,
 } from "./asset-events-fragments";
 
 /**
@@ -299,13 +299,13 @@ export const getAssetEventsList = cache(
               "UnderlyingAssetWithdrawnEvent"
             );
           default:
-            console.warn(`Unknown event type`);
+            console.warn("Unknown event type");
             return null;
         }
       })
-      .filter(Boolean);
+      .filter((event) => event !== null);
 
-    return validatedEvents.map((validatedEvent: any) => {
+    return validatedEvents.map((validatedEvent): NormalizedEventsListItem => {
       return {
         event: validatedEvent.__typename,
         timestamp: formatDate(validatedEvent.timestamp),
@@ -313,7 +313,7 @@ export const getAssetEventsList = cache(
         sender: validatedEvent.sender?.id || "System",
         details: validatedEvent,
         transactionHash: validatedEvent.id.split("-")[0],
-      } as NormalizedEventsListItem;
+      };
     });
   }
 );

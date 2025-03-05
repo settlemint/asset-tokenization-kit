@@ -1,5 +1,3 @@
-"use client";
-
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

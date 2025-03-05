@@ -17,6 +17,7 @@ const columnHelper =
 
 export const columns = () => [
   columnHelper.accessor("receipt.status", {
+    id: "status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
     ),

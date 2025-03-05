@@ -30,15 +30,21 @@ export function CopyToClipboard({
 }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(value);
-    setHasCopied(true);
-    toast.success(successMessage);
-
-    // Reset copy icon after 2 seconds
-    setTimeout(() => {
-      setHasCopied(false);
-    }, 2000);
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(value)
+      .then(() => {
+        setHasCopied(true);
+        toast.success(successMessage);
+        // Reset copy icon after 2 seconds
+        setTimeout(() => {
+          setHasCopied(false);
+        }, 2000);
+      })
+      .catch((error: Error) => {
+        console.error("copy to clipboard failed", error);
+        toast.error("Failed to copy to clipboard");
+      });
   };
 
   return (
@@ -46,13 +52,18 @@ export function CopyToClipboard({
       <div
         className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
         onClick={handleCopy}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleCopy();
+          }
+        }}
       >
         <span className="text-xs">{displayText ?? value}</span>
       </div>
       <Button
         variant="ghost"
         size="icon"
-        className="size-8 hover:bg-theme-accent-background ml-1"
+        className="size-4 hover:bg-theme-accent-background ml-1 cursor-pointer"
         onClick={handleCopy}
         title="Copy to clipboard"
       >

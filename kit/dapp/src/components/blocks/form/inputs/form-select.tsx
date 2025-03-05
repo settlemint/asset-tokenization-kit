@@ -20,9 +20,9 @@ import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import type { FieldValues } from "react-hook-form";
 import {
-  getAriaAttributes,
   type BaseFormInputProps,
   type WithPlaceholderProps,
+  getAriaAttributes,
 } from "./types";
 
 type Option = {
@@ -130,7 +130,11 @@ export function FormSelect<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage id={`${field.name}-error`} aria-live="polite" />
+            <FormMessage
+              id={`${field.name}-error`}
+              aria-live="polite"
+              className="text-destructive"
+            />
           </FormItem>
         );
       }}

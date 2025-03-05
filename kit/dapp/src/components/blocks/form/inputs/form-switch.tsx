@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
 import type { FieldValues } from "react-hook-form";
 import {
-  getAriaAttributes,
   type BaseFormInputProps,
   type WithHelperTextProps,
+  getAriaAttributes,
 } from "./types";
 
 type SwitchProps = ComponentPropsWithoutRef<typeof Switch>;
@@ -76,7 +76,7 @@ export function FormSwitch<T extends FieldValues>({
                   {...props}
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className={cn(className)}
+                  className={cn("w-9", className)}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
@@ -98,7 +98,11 @@ export function FormSwitch<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage id={`${field.name}-error`} aria-live="polite" />
+            <FormMessage
+              id={`${field.name}-error`}
+              aria-live="polite"
+              className="text-destructive"
+            />
           </FormItem>
         );
       }}

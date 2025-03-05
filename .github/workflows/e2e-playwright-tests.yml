@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   schedule:
-    - cron: '0 0 * * 1-5' # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+    - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
   pull_request:
     types: [labeled]
   workflow_dispatch:
@@ -15,14 +15,14 @@ jobs:
     name: Playwright Tests
     runs-on: namespace-profile-starterkit
     environment: staging
-    timeout-minutes: 60  # 1 hour maximum runtime
+    timeout-minutes: 60 # 1 hour maximum runtime
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
     strategy:
       fail-fast: false
 
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -50,11 +50,29 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
+      - name: Install dapp dependencies
+        run: bun install
+        working-directory: kit/dapp
+
+      - name: Start Next.js dev server
+        run: |
+          nohup bun run dev > server.log 2>&1 &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          echo "Waiting for dev server to be ready..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 2; done'
+          echo "Dev server is ready!"
+        working-directory: kit/dapp
+
       - name: Run Playwright tests
         run: bun playwright test tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
+
+      - name: Stop dev server
+        if: always()
+        run: kill ${{ env.SERVER_PID }} || true
+        working-directory: kit/dapp
 
       - name: Upload test results
         if: always()

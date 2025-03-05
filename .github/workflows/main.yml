@@ -16,7 +16,7 @@ jobs:
     environment: staging
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
@@ -124,7 +124,7 @@ jobs:
     runs-on: namespace-profile-atk-trivy
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.29.0
