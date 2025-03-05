@@ -2256,5 +2256,41 @@
   "transactions": {
     "sending": "Sending transaction",
     "success": "Transaction successfully processed"
+  },
+  "portfolio": {
+    "asset-types": {
+      "bond": "Bond",
+      "stablecoin": "Stablecoin",
+      "equity": "Equity",
+      "cryptocurrency": "Cryptocurrency",
+      "fund": "Fund",
+      "unknown": "Unknown"
+    },
+    "transfer-form": {
+      "select-asset": {
+        "title": "Select Asset",
+        "description": "Choose the asset you want to transfer",
+        "asset-label": "Asset",
+        "asset-description": "Select an asset from your portfolio"
+      },
+      "amount": {
+        "title": "Enter Amount",
+        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
+        "amount-label": "Amount",
+        "balance-description": "Balance:"
+      },
+      "recipients": {
+        "title": "Select Recipients",
+        "description": "Enter a wallet address to send tokens directly.",
+        "wallet-address-label": "Wallet Address"
+      },
+      "summary": {
+        "title": "Review and confirm transfer",
+        "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct."
+      },
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount."
+    }
   }
 }
