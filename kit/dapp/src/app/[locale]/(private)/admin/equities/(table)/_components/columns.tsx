@@ -7,7 +7,7 @@ import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, type MessageKeys } from "next-intl";
 import type { ComponentType } from "react";
 
 const columnHelper =
@@ -55,13 +55,25 @@ export function columns() {
     }),
     columnHelper.accessor("equityCategory", {
       header: t("category-header"),
-      cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      cell: ({ getValue }) =>
+        t(
+          `category-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.equities.table",
+            "category-header"
+          >
+        ),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("equityClass", {
       header: t("class-header"),
-      cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      cell: ({ getValue }) =>
+        t(
+          `class-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.equities.table",
+            "class-header"
+          >
+        ),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("paused", {
       header: t("status-header"),
