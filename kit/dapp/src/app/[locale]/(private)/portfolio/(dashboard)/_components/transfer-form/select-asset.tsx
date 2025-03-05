@@ -15,7 +15,7 @@ interface SelectAssetProps {
 export function SelectAsset({ onSelect }: SelectAssetProps) {
   const { control } = useFormContext();
   const t = useTranslations("portfolio.transfer-form.select-asset");
-  const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
+  const [selectedAsset] = useState<MyAsset | null>(null);
 
   const handleConfirm = () => {
     if (selectedAsset) {

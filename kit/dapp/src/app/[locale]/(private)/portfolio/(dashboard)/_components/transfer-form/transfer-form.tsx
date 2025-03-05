@@ -1,6 +1,5 @@
 "use client";
 
-import type { TransferFormAssetType } from "@/lib/mutations/asset/transfer/transfer-schema";
 import type { MyAsset } from "@/lib/queries/portfolio/portfolio-dashboard";
 import { useState } from "react";
 import { TransferForm } from "./form";
@@ -22,7 +21,7 @@ export function MyAssetsTransferForm({ assets }: TransferFormProps) {
           address={selectedAsset.asset.id}
           name={selectedAsset.asset.name}
           symbol={selectedAsset.asset.symbol}
-          assetType={selectedAsset.asset.type as TransferFormAssetType}
+          assetType={selectedAsset.asset.type}
           balance={selectedAsset.value.toString()}
           decimals={selectedAsset.asset.decimals}
           onCloseAction={() => {
