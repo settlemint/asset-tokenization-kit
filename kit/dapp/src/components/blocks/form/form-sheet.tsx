@@ -39,7 +39,7 @@ export function FormSheet({
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        {children}
+        <div className="overflow-auto">{children}</div>
       </SheetContent>
     </Sheet>
   );
