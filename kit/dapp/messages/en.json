@@ -3,12 +3,11 @@
     "activity": {
       "page-description": "Track activity across all assets.",
       "page-title": "Activity",
-      "view-all": "View all transactions in the explorer",
       "transaction-details": {
-        "block-hash-label": "Block hash",
-        "block-number-label": "Block number",
         "blob-gas-price-label": "Blob gas price",
         "blob-gas-used-label": "Blob gas used",
+        "block-hash-label": "Block hash",
+        "block-number-label": "Block number",
         "contract-label": "Contract",
         "created-at-label": "Created at",
         "description": "View the details of a transaction",
@@ -25,7 +24,8 @@
         "transaction-title": "Transaction",
         "trigger-label": "Details",
         "type-label": "Type"
-      }
+      },
+      "view-all": "View all transactions in the explorer"
     },
     "bonds": {
       "burn-form": {
@@ -297,11 +297,6 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
-        "status-header": "Status",
-        "symbol-header": "Symbol",
-        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
-        "topinfo-title": "A digital fixed-income security asset",
-        "total-supply-header": "Total supply",
         "related-actions": {
           "issue-new": {
             "description": "Create and launch a new bond with defined maturity, coupon rates, and face value. Streamline bond issuance with automated interest payments and redemption schedules.",
@@ -318,7 +313,12 @@
             "description": "Explore applications in fixed-income markets, from corporate debt to structured products. Maximize efficiency in interest payments, maturity management, and regulatory compliance.",
             "title": "Bond usecases"
           }
-        }
+        },
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
+        "topinfo-title": "A digital fixed-income security asset",
+        "total-supply-header": "Total supply"
       },
       "tabs": {
         "details": "Details",
@@ -501,10 +501,6 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
-        "symbol-header": "Symbol",
-        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
-        "topinfo-title": "A customizable and secure digital asset",
-        "total-supply-header": "Total Supply",
         "related-actions": {
           "issue-new": {
             "description": "Create and launch a new cryptocurrency token with customizable parameters and security features. Streamline token deployment with configurable supply mechanisms and transfer controls.",
@@ -521,13 +517,18 @@
             "description": "Explore applications in digital payments, rewards systems, and tokenized services. Maximize utility through programmable transactions and institutional-grade security features.",
             "title": "Cryptocurrency usecases"
           }
-        }
+        },
+        "symbol-header": "Symbol",
+        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
+        "topinfo-title": "A customizable and secure digital asset",
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "dashboard": {
@@ -938,20 +939,6 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
-        "category-header": "Equity Category",
-        "class-header": "Equity Class",
-        "name-header": "Name",
-        "page-description": "Overview and administrative actions for your equity assets.",
-        "page-title": "Equities",
-        "paused-status": "Paused",
-        "private-header": "Private",
-        "private-status": "Private",
-        "public-status": "Public",
-        "status-header": "Status",
-        "symbol-header": "Symbol",
-        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
-        "topinfo-title": "Institutional-grade digital equity management",
-        "total-supply-header": "Total Supply",
         "category-blend-equity": "Blend Equity",
         "category-communication-services": "Communication Services",
         "category-consumer-discretionary": "Consumer Discretionary",
@@ -969,6 +956,7 @@
         "category-global-equity": "Global Equity",
         "category-growth-capital": "Growth Capital",
         "category-growth-equity": "Growth Equity",
+        "category-header": "Equity Category",
         "category-healthcare": "Healthcare",
         "category-income-equity": "Income Equity",
         "category-industrials": "Industrials",
@@ -993,12 +981,20 @@
         "category-voting-common-stock": "Voting Common Stock",
         "class-common-equity": "Common Equity",
         "class-geographic-equity": "Geographic Equity",
+        "class-header": "Equity Class",
         "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
         "class-investment-style-equity": "Investment Style Equity",
         "class-market-capitalization-equity": "Market Capitalization Equity",
         "class-preferred-equity": "Preferred Equity",
         "class-sector-industry-equity": "Sector/Industry Equity",
         "class-special-classes-equity": "Special Classes of Equity",
+        "name-header": "Name",
+        "page-description": "Overview and administrative actions for your equity assets.",
+        "page-title": "Equities",
+        "paused-status": "Paused",
+        "private-header": "Private",
+        "private-status": "Private",
+        "public-status": "Public",
         "related-actions": {
           "issue-new": {
             "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
@@ -1015,13 +1011,19 @@
             "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
             "title": "Equity usecases"
           }
-        }
+        },
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
+        "topinfo-title": "Institutional-grade digital equity management",
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "funds": {
@@ -1464,7 +1466,8 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "sidebar": {
@@ -2145,8 +2148,8 @@
     "go-home": "Go home",
     "title": "Something went wrong!",
     "try-again": "Try again",
-    "validation-errors": "Validation errors",
-    "unknown-error": "Unknown error"
+    "unknown-error": "Unknown error",
+    "validation-errors": "Validation errors"
   },
   "layout": {
     "header": {

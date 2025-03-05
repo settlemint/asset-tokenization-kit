@@ -1,5 +1,7 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -31,13 +33,19 @@ export async function generateMetadata({
 }
 
 const tabs = async (
-  address: string,
+  address: Address,
   locale: string
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
     namespace: "admin.equities.tabs",
   });
+
+  const [equity, balances, events] = await Promise.all([
+    getEquityDetail({ address }),
+    getAssetBalanceList({ wallet: address }),
+    getAssetEventsList({ asset: address }),
+  ]);
 
   return [
     {
@@ -47,14 +55,21 @@ const tabs = async (
     {
       name: t("holders"),
       href: `/admin/equities/${address}/holders`,
+      badge: equity.totalHolders,
     },
     {
       name: t("events"),
       href: `/admin/equities/${address}/events`,
+      badge: events.length,
     },
     {
       name: t("permissions"),
       href: `/admin/equities/${address}/permissions`,
+    },
+    {
+      name: t("underlying-assets"),
+      href: `/admin/equities/${address}/underlying-assets`,
+      badge: balances.length,
     },
   ];
 };
