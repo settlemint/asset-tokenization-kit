@@ -246,6 +246,5 @@ export { extendedZod as z };
 /**
  * Type utility for inferring the type of a Zod schema
  */
-  export type { infer as ZodInfer } from "zod";
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export type { infer as ZodInfer } from "zod";
 export type ZodType = z.ZodType<any, any, any>;

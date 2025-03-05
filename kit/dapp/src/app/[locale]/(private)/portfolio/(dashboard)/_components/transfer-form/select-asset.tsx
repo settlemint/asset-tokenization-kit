@@ -1,21 +1,21 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import type { MyAsset } from '@/lib/queries/portfolio/portfolio-dashboard';
-import { useState } from 'react';
-import { AssetsSearchSelect } from './search-asset';
+import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import type { MyAsset } from "@/lib/queries/portfolio/portfolio-dashboard";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 
 interface SelectAssetProps {
   assets: MyAsset[];
   onSelect: (asset: MyAsset) => void;
 }
 
-export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
+export function SelectAsset({ onSelect }: SelectAssetProps) {
+  const { control } = useFormContext();
+  const t = useTranslations("portfolio.transfer-form.select-asset");
   const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
-
-  const handleAssetClick = (asset: MyAsset) => {
-    setSelectedAsset(asset);
-  };
 
   const handleConfirm = () => {
     if (selectedAsset) {
@@ -28,7 +28,12 @@ export function SelectAsset({ assets, onSelect }: SelectAssetProps) {
       <CardContent className="pt-6">
         <div className="space-y-2">
           <Label>Asset</Label>
-          <AssetsSearchSelect assets={assets} selectedAsset={selectedAsset} onSelect={handleAssetClick} />
+          <FormAssets
+            control={control}
+            name="asset"
+            label={t("asset-label")}
+            description={t("asset-description")}
+          />
         </div>
 
         <div className="mt-6 text-right">

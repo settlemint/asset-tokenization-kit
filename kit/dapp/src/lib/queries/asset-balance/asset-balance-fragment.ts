@@ -13,7 +13,6 @@ export const AssetBalanceFragment = theGraphGraphqlStarterkits(`
     blocked
     frozen
     value
-
     account {
       id
       lastActivity
@@ -57,8 +56,8 @@ export const AssetBalanceFragmentSchema = z.object({
     name: z.string(),
     symbol: z.symbol(),
     decimals: z.number(),
-    type: z.string(),
-    paused: z.boolean().optional(),
+    type: z.assetType(),
+    paused: z.boolean().optional().default(false),
   }),
 });
 

@@ -1,21 +1,17 @@
-'use client';
+"use client";
 
-import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
-import type { Address } from 'viem';
-import { MyAssetsTransferForm } from '../transfer-form/transfer-form';
-import { MyAssetsCount } from './my-assets-count';
+import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-fragment";
+import { MyAssetsTransferForm } from "../transfer-form/transfer-form";
+import { MyAssetsCount } from "./my-assets-count";
 
 interface MyAssetsHeaderProps {
-  wallet: Address;
   data: {
     total: string;
     balances: AssetBalance[];
   };
 }
 
-export function MyAssetsHeader({  wallet, data }: MyAssetsHeaderProps) {
-
-
+export function MyAssetsHeader({ data }: MyAssetsHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <MyAssetsCount total={data.total} />

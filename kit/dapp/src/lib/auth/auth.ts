@@ -9,23 +9,23 @@ import { admin } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import type { RedirectType } from 'next/navigation';
+import type { RedirectType } from "next/navigation";
+import { getEnvironment, validateEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
 import { db } from "../db";
-import { validateEnvironmentVariables } from "./config";
 import { createUserWallet } from "./portal";
 
 // Validate environment variables at startup
-validateEnvironmentVariables();
+validateEnvironment();
 
 /**
  * Authentication configuration using better-auth
  */
 export const auth = betterAuth({
   appName: metadata.title.default,
-  secret: process.env.SETTLEMINT_HASURA_ADMIN_SECRET ?? '',
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+  secret: getEnvironment().SETTLEMINT_HASURA_ADMIN_SECRET,
+  baseURL: getEnvironment().BETTER_AUTH_URL,
+  trustedOrigins: [getEnvironment().BETTER_AUTH_URL],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: authSchema,
@@ -56,7 +56,7 @@ export const auth = betterAuth({
         before: async (user) => {
           try {
             const wallet = await createUserWallet({
-              keyVaultId: process.env.SETTLEMINT_HD_PRIVATE_KEY ?? '',
+              keyVaultId: getEnvironment().SETTLEMINT_HD_PRIVATE_KEY,
               name: user.email,
             });
 
@@ -114,32 +114,21 @@ export const auth = betterAuth({
 });
 
 /**
- * Get the current session from the request headers
- * @throws {AuthError} If no session is found
+ * @returns The authenticated user
+ * @throws Redirects to signin if not authenticated
  */
-export async function getSession() {
+export async function getAuthenticatedUser() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!session) {
-    redirect({ href: '/auth/signin', locale: 'en' }, 'replace' as RedirectType);
-  }
-
-  return session as NonNullable<typeof session>;
-}
-
-/**
- * Get the currently authenticated user
- * @returns The authenticated user
- * @throws {AuthError} If user is not authenticated
- */
-export async function getAuthenticatedUser() {
-  const session = await getSession();
-
   if (!session?.user) {
-    redirect({ href: '/auth/signin', locale: 'en' }, 'replace' as RedirectType);
+    redirect({ href: "/auth/signin", locale: "en" }, "replace" as RedirectType);
   }
 
-  return session.user;
+  return (
+    session?.user ?? {
+      wallet: "0x0000000000000000000000000000000000000000",
+    }
+  );
 }
