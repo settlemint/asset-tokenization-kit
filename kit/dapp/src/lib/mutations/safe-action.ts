@@ -50,6 +50,8 @@ function getErrorMessage(error: Error): string {
   switch (true) {
     case msg.includes("AccessControlUnauthorizedAccount"):
       return "You are not authorized to perform this action";
+    case msg.includes("AddressAlreadyDeployed"):
+      return "Please try again with a different name, symbol, or decimals.";
     default:
       return "An unexpected error occurred";
   }
