@@ -223,7 +223,7 @@
       "permissions": {
         "actions-header": "Aktionen",
         "edit-form": {
-          "button-label": "Berechtigungen speichern",
+          "button-label": "Berechtigungen bearbeiten",
           "description": "Aktualisieren Sie die Berechtigungen und Zugriffsrechte, die diesem Benutzer zugewiesen sind.",
           "roles": {
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden.",
@@ -414,7 +414,7 @@
       "permissions": {
         "actions-header": "Aktionen",
         "edit-form": {
-          "button-label": "Berechtigungen speichern",
+          "button-label": "Berechtigungen bearbeiten",
           "description": "Aktualisieren Sie die Berechtigungen und Zugriffslevel, die diesem Benutzer zugewiesen sind.",
           "roles": {
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Es muss mindestens eine Rolle ausgewählt werden.",
@@ -839,7 +839,7 @@
       "permissions": {
         "actions-header": "Aktionen",
         "edit-form": {
-          "button-label": "Berechtigungen speichern",
+          "button-label": "Berechtigungen bearbeiten",
           "description": "Aktualisieren Sie die Berechtigungen und Zugriffslevel, die diesem Benutzer zugewiesen sind.",
           "roles": {
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden.",
@@ -1216,7 +1216,7 @@
       "permissions": {
         "actions-header": "Aktionen",
         "edit-form": {
-          "button-label": "Berechtigungen speichern",
+          "button-label": "Berechtigungen bearbeiten",
           "description": "Aktualisieren Sie die Berechtigungen und Zugriffsrechte, die diesem Benutzer zugewiesen sind.",
           "roles": {
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden.",
@@ -1540,7 +1540,7 @@
       "permissions": {
         "actions-header": "Aktionen",
         "edit-form": {
-          "button-label": "Berechtigungen speichern",
+          "button-label": "Berechtigungen bearbeiten",
           "description": "Aktualisieren Sie die Berechtigungen und Zugriffslevel, die diesem Benutzer zugewiesen sind.",
           "roles": {
             "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden.",

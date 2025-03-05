@@ -80,7 +80,7 @@ export function DataTableRowActions({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-[160px] dark:bg-theme-accent-background "
+            className="w-[160px] dark:bg-theme-accent-background"
           >
             {typeof children === "function"
               ? children({ close: () => setIsOpen(false) })

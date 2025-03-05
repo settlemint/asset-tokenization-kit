@@ -7,22 +7,28 @@ import { revokeRole } from "@/lib/mutations/stablecoin/revoke-role/revoke-role-a
 import { RevokeRoleSchema } from "@/lib/mutations/stablecoin/revoke-role/revoke-role-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 
-interface RevokeAllPermissionsFormProps {
+export interface RevokeAllPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
+}
+
+interface RevokeAllPermissionsFormPropsWithOpen
+  extends RevokeAllPermissionsFormProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export function RevokeAllPermissionsForm({
   address,
   account,
   currentRoles,
-}: RevokeAllPermissionsFormProps) {
-  const [open, setOpen] = useState(false);
+  open,
+  setOpen,
+}: RevokeAllPermissionsFormPropsWithOpen) {
   const t = useTranslations("admin.stablecoins.permissions.revoke-all-form");
 
   return (

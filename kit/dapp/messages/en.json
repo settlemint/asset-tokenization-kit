@@ -245,7 +245,7 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Save Permissions",
+          "button-label": "Edit Permissions",
           "description": "Update the permissions and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",
@@ -436,7 +436,7 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Save Permissions",
+          "button-label": "Edit Permissions",
           "description": "Update the permissions and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",
@@ -861,7 +861,7 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Save Permissions",
+          "button-label": "Edit Permissions",
           "description": "Update the permissions and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",
@@ -1238,7 +1238,7 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Save Permissions",
+          "button-label": "Edit Permissions",
           "description": "Update the permissions and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",
@@ -1562,7 +1562,7 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Save Permissions",
+          "button-label": "Edit Permissions",
           "description": "Update the permissions and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",

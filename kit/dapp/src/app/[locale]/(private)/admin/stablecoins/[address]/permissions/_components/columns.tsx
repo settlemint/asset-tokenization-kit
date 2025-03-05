@@ -1,5 +1,6 @@
 "use client";
 
+import { RevokeAllPermissionsAction } from "@/app/[locale]/(private)/admin/stablecoins/[address]/permissions/_components/actions/revoke-all-form/action";
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
@@ -10,8 +11,7 @@ import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
-import { EditPermissionsForm } from "./actions/edit-form/form";
-import { RevokeAllPermissionsForm } from "./actions/revoke-all-form/form";
+import { EditPermissionsAction } from "./actions/edit-form/action";
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
@@ -62,12 +62,12 @@ export function columns({ address }: { address: Address }) {
       cell: ({ row }) => {
         return (
           <DataTableRowActions>
-            <EditPermissionsForm
+            <EditPermissionsAction
               address={address}
               account={row.original.id}
               currentRoles={row.original.roles}
             />
-            <RevokeAllPermissionsForm
+            <RevokeAllPermissionsAction
               address={address}
               account={row.original.id}
               currentRoles={row.original.roles}
