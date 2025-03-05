@@ -1,5 +1,5 @@
 "use client";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
@@ -149,8 +149,8 @@ export function Form<
                       variant="destructive"
                       className="text-destructive border-destructive mb-4"
                     >
-                      <AlertTitle>
-                        {tError("validation-errors")}
+                      <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                      <AlertDescription className="whitespace-pre-wrap">
                         {Object.entries(form.formState.errors)
                           .map(
                             ([key, error]) =>
@@ -158,7 +158,7 @@ export function Form<
                           )
                           .filter(Boolean)
                           .join("\n")}
-                      </AlertTitle>
+                      </AlertDescription>
                     </Alert>
                   )}
                   {Array.isArray(children) ? children[currentStep] : children}
