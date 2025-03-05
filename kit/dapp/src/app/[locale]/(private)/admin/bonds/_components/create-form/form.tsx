@@ -6,29 +6,33 @@ import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Basics } from "./steps/basics";
 import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 
 interface CreateBondFormProps {
   open: boolean;
-  onCloseAction: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function CreateBondForm({ open, onCloseAction }: CreateBondFormProps) {
+export function CreateBondForm({ open, onOpenChange }: CreateBondFormProps) {
   const t = useTranslations("admin.bonds.create-form");
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
+  const [localOpen, setLocalOpen] = useState(false);
 
   return (
     <FormSheet
-      open={open}
-      onOpenChange={onCloseAction}
+      open={isExternallyControlled ? open : localOpen}
+      onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
     >
       <Form
         action={createBond}
         resolver={zodResolver(CreateBondSchema)}
-        onOpenChange={onCloseAction}
+        onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

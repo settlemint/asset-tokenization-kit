@@ -36,6 +36,7 @@ export function RevokeAllPermissionsForm({
       <Form
         action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
+        onOpenChange={setOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

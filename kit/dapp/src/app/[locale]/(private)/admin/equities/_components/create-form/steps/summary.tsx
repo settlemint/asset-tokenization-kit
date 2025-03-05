@@ -50,7 +50,7 @@ export function Summary() {
           value={
             values.equityCategory
               ? t(
-                  `category-${values.equityCategory.toLowerCase()}` as MessageKeys<
+                  `category-${values.equityCategory.toLowerCase().replace(/_/g, "-")}` as MessageKeys<
                     "admin.equities.create-form.summary",
                     "equity-category-label"
                   >
@@ -63,7 +63,7 @@ export function Summary() {
           value={
             values.equityClass
               ? t(
-                  `class-${values.equityClass.toLowerCase()}` as MessageKeys<
+                  `class-${values.equityClass.toLowerCase().replace(/_/g, "-")}` as MessageKeys<
                     "admin.equities.create-form.summary",
                     "equity-class-label"
                   >

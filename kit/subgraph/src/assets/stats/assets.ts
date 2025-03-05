@@ -1,11 +1,11 @@
 import { BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AssetStatsData } from "../../../generated/schema";
+import { AssetStatsData, StableCoin } from "../../../generated/schema";
 
 export function newAssetStatsData(
   asset: Bytes,
   assetType: string,
   assetCategory: string = "",
-  assetClass: string = "",
+  assetClass: string = ""
 ): AssetStatsData {
   const assetStats = new AssetStatsData("auto");
 
@@ -40,6 +40,22 @@ export function newAssetStatsData(
   assetStats.collateral = BigDecimal.zero();
   assetStats.collateralExact = BigInt.zero();
   assetStats.collateralRatio = BigDecimal.zero();
+  assetStats.freeCollateral = BigDecimal.zero();
+  assetStats.freeCollateralExact = BigInt.zero();
+
+  return assetStats;
+}
+
+export function updateCollateralData(
+  assetStats: AssetStatsData,
+  stableCoin: StableCoin
+): AssetStatsData {
+  // Collateral
+  assetStats.collateral = stableCoin.collateral;
+  assetStats.collateralExact = stableCoin.collateralExact;
+  assetStats.freeCollateral = stableCoin.freeCollateral;
+  assetStats.freeCollateralExact = stableCoin.freeCollateralExact;
+  assetStats.collateralRatio = stableCoin.collateralRatio;
 
   return assetStats;
 }

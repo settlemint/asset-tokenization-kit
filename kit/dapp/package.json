@@ -51,7 +51,7 @@
     "@settlemint/sdk-portal": "1.1.13",
     "@settlemint/sdk-thegraph": "1.1.13",
     "@tanstack/react-table": "8.21.2",
-    "better-auth": "1.2.2",
+    "better-auth": "1.2.3",
     "better-auth-harmony": "1.2.3",
     "bignumber.js": "9.1.2",
     "class-variance-authority": "0.7.1",
@@ -81,7 +81,7 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@better-auth/cli": "1.2.2",
+    "@better-auth/cli": "1.2.3",
     "@eslint/eslintrc": "3.3.0",
     "@eslint/js": "9.21.0",
     "@tailwindcss/postcss": "4.0.9",

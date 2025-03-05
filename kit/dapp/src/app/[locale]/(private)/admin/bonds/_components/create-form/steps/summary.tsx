@@ -4,6 +4,7 @@ import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { formatDate } from "@/lib/utils/date";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -55,7 +56,7 @@ export function Summary() {
         />
         <FormSummaryDetailItem
           label={t("maturity-date-label")}
-          value={values.maturityDate || "-"}
+          value={values.maturityDate ? formatDate(values.maturityDate) : "-"}
         />
         <FormSummaryDetailItem
           label={t("underlying-asset-label")}

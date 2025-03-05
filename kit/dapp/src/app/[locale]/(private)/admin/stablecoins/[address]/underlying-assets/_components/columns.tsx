@@ -11,8 +11,6 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ComponentType } from "react";
 import { getAddress } from "viem";
-import { BlockForm } from "./actions/block-form/form";
-import { FreezeForm } from "./actions/freeze-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
@@ -28,7 +26,7 @@ export function columns() {
   const t = useTranslations("admin.stablecoins.holders");
 
   return [
-    columnHelper.accessor("account.id", {
+    columnHelper.accessor("asset.id", {
       header: t("wallet-header"),
       cell: ({ getValue }) => {
         const wallet = getAddress(getValue());
@@ -86,20 +84,9 @@ export function columns() {
       header: t("actions-header"),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions>
-            <BlockForm
-              address={row.original.asset.id}
-              account={row.original.account.id}
-              isBlocked={row.original.blocked}
-            />
-            <FreezeForm
-              address={row.original.asset.id}
-              userAddress={row.original.account.id}
-              balance={row.original.value}
-              frozen={row.original.frozen}
-              symbol={row.original.asset.symbol}
-            />
-          </DataTableRowActions>
+          <DataTableRowActions
+            detailUrl={`/admin/assets/${row.original.asset.id}`}
+          />
         );
       },
       meta: {

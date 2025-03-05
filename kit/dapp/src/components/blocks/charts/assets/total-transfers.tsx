@@ -1,4 +1,6 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
+import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
 import type { ChartConfig } from "@/components/ui/chart";
 import { createTimeSeries } from "@/lib/charts";
 import { getAssetStats } from "@/lib/queries/asset-stats/asset-stats";
@@ -21,9 +23,20 @@ export async function TotalTransfers({ address }: TotalTransfersProps) {
 
   const data = await getAssetStats({ address });
 
+  if (!data || data.every((d) => d.totalTransfers === 0)) {
+    return (
+      <ChartSkeleton title={t("total-transfers.title")} variant="noData">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
+          <p>{t("total-transfers.no-data")}</p>
+        </div>
+      </ChartSkeleton>
+    );
+  }
+
   const timeseries = createTimeSeries(data, ["totalTransfers"], {
-    granularity: "hour",
-    intervalType: "day",
+    granularity: "day",
+    intervalType: "week",
     intervalLength: 1,
     aggregation: "first",
   });

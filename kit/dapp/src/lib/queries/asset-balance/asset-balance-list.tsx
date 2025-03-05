@@ -4,7 +4,6 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -19,10 +18,10 @@ import {
 const AssetBalanceList = theGraphGraphqlStarterkits(
   `
   query Balances($address: String, $wallet: String) {
-    assetBalances(where: {asset: $address}) {
+    assetBalances(where: {asset: $address, valueExact_gt: "0"}) {
       ...AssetBalanceFragment
     }
-    userBalances: assetBalances(where: {account: $wallet}) {
+    userBalances: assetBalances(where: {account: $wallet, valueExact_gt: "0"}) {
       ...AssetBalanceFragment
     }
   }
@@ -67,8 +66,6 @@ export const getAssetBalanceList = cache(
       );
       return {
         ...validatedBalance,
-        value: formatNumber(validatedBalance.value),
-        frozen: formatNumber(validatedBalance.frozen),
       };
     });
 
@@ -80,8 +77,6 @@ export const getAssetBalanceList = cache(
       );
       return {
         ...validatedBalance,
-        value: formatNumber(validatedBalance.value),
-        frozen: formatNumber(validatedBalance.frozen),
       };
     });
 

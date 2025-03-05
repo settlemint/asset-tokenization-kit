@@ -14,6 +14,9 @@ interface Asset {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -42,6 +45,9 @@ type Bond implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -71,6 +77,9 @@ type Equity implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -93,6 +102,9 @@ type Fund implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -117,6 +129,9 @@ type StableCoin implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -144,6 +159,9 @@ type CryptoCurrency implements Asset @entity {
   totalSupplyExact: BigInt!
   lastActivity: BigInt!
   creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -637,6 +655,8 @@ type AssetStatsData @entity(timeseries: true) {
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
 }
 
 type AssetStats

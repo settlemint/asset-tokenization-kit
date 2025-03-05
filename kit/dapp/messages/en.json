@@ -37,7 +37,6 @@
           "symbol-placeholder": "e.g. XYZ23",
           "title": "Basic information"
         },
-        "trigger-label": "Issue a new bond",
         "button-label": "Issue a new bond",
         "configuration": {
           "cap-description": "Maximum amount of tokens that can be issued",
@@ -54,7 +53,7 @@
         "summary": {
           "asset-basics-description": "Basic information about the bond",
           "asset-basics-title": "Basic information",
-          "cap-label": "Cap",
+          "cap-label": "Maximum supply",
           "configuration-description": "Technical configuration of the bond",
           "configuration-title": "Bond configuration",
           "decimals-label": "Decimals",
@@ -67,7 +66,8 @@
           "title": "Review and confirm",
           "underlying-asset-label": "Underlying asset"
         },
-        "title": "Create new bond"
+        "title": "Create new bond",
+        "trigger-label": "Issue a new bond"
       },
       "details": {
         "bond-details-description": "Details for the bond",
@@ -170,14 +170,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -277,9 +277,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total supply",
+        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
         "topinfo-title": "A digital fixed-income security asset",
-        "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions."
+        "total-supply-header": "Total supply"
       },
       "tabs": {
         "details": "Details",
@@ -303,7 +303,6 @@
           "symbol-placeholder": "BTC",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new cryptocurrency",
         "button-label": "Issue a new cryptocurrency",
         "configuration": {
           "description": "Specify advanced settings for your cryptocurrency.",
@@ -328,7 +327,8 @@
           "title": "Review and confirm",
           "yes": "Yes"
         },
-        "title": "Create Cryptocurrency"
+        "title": "Create Cryptocurrency",
+        "trigger-label": "Issue a new cryptocurrency"
       },
       "details": {
         "contract-address": "Contract address",
@@ -387,11 +387,11 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
-          "grant-role": "Grant Role"
-        }
+          "grant-role": "Grant Role",
+          "mint": "Mint"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -465,9 +465,9 @@
         "private-status": "Private",
         "public-status": "Public",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
         "topinfo-title": "A customizable and secure digital asset",
-        "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -509,10 +509,10 @@
         }
       },
       "page": {
+        "description": "Admin dashboard overview",
         "latest_events_heading": "Latest Events",
         "stats_heading": "Stats",
-        "title": "Dashboard",
-        "description": "Admin dashboard overview"
+        "title": "Dashboard"
       },
       "table": {
         "latest-events": {
@@ -566,7 +566,6 @@
           "symbol-placeholder": "GLEQ",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new equity",
         "button-label": "Issue a new equity",
         "configuration": {
           "category-blend-equity": "Blend Equity",
@@ -625,6 +624,53 @@
         "summary": {
           "asset-basics-description": "Basic asset information and settings.",
           "asset-basics-title": "Asset Basics",
+          "category-blend-equity": "Blend Equity",
+          "category-communication-services": "Communication Services",
+          "category-consumer-discretionary": "Consumer Discretionary",
+          "category-consumer-staples": "Consumer Staples",
+          "category-convertible-preferred-stock": "Convertible Preferred Stock",
+          "category-cumulative-preferred-stock": "Cumulative Preferred Stock",
+          "category-distressed-equity": "Distressed Equity",
+          "category-domestic-equity": "Domestic Equity",
+          "category-dual-class-shares": "Dual-Class Shares",
+          "category-emerging-market-equity": "Emerging Market Equity",
+          "category-energy": "Energy",
+          "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
+          "category-financials": "Financials",
+          "category-frontier-market-equity": "Frontier Market Equity",
+          "category-global-equity": "Global Equity",
+          "category-growth-capital": "Growth Capital",
+          "category-growth-equity": "Growth Equity",
+          "category-healthcare": "Healthcare",
+          "category-income-equity": "Income Equity",
+          "category-industrials": "Industrials",
+          "category-international-equity": "International Equity",
+          "category-large-cap-equity": "Large-Cap Equity",
+          "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+          "category-materials": "Materials",
+          "category-mezzanine-financing": "Mezzanine Financing",
+          "category-micro-cap-equity": "Micro-Cap Equity",
+          "category-mid-cap-equity": "Mid-Cap Equity",
+          "category-non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
+          "category-non-voting-common-stock": "Non-Voting Common Stock",
+          "category-real-estate": "Real Estate",
+          "category-redeemable-preferred-stock": "Redeemable Preferred Stock",
+          "category-restricted-stock": "Restricted Stock",
+          "category-small-cap-equity": "Small-Cap Equity",
+          "category-technology": "Technology",
+          "category-tracking-stocks": "Tracking Stocks",
+          "category-utilities": "Utilities",
+          "category-value-equity": "Value Equity",
+          "category-venture-capital": "Venture Capital",
+          "category-voting-common-stock": "Voting Common Stock",
+          "class-common-equity": "Common Equity",
+          "class-geographic-equity": "Geographic Equity",
+          "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
+          "class-investment-style-equity": "Investment Style Equity",
+          "class-market-capitalization-equity": "Market Capitalization Equity",
+          "class-preferred-equity": "Preferred Equity",
+          "class-sector-industry-equity": "Sector/Industry Equity",
+          "class-special-classes-equity": "Special Classes of Equity",
           "configuration-description": "Equity classification details.",
           "configuration-title": "Configuration",
           "decimals-label": "Decimals",
@@ -636,7 +682,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm"
         },
-        "title": "Create new equity"
+        "title": "Create new equity",
+        "trigger-label": "Issue a new equity"
       },
       "details": {
         "contract-address": "Contract address",
@@ -739,14 +786,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -848,9 +895,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
         "topinfo-title": "Institutional-grade digital equity management",
-        "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -891,7 +938,6 @@
           "symbol-placeholder": "GGF",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new fund",
         "button-label": "Issue a new fund",
         "configuration": {
           "basis-points": "bps",
@@ -954,6 +1000,53 @@
           "asset-basics-description": "Basic asset information and settings.",
           "asset-basics-title": "Asset Basics",
           "basis-points": "bps",
+          "category-activist": "Activist",
+          "category-commodity-trading": "Commodity Trading",
+          "category-convertible-arbitrage": "Convertible Arbitrage",
+          "category-credit": "Credit",
+          "category-currency-fx": "Currency / FX",
+          "category-distressed-debt": "Distressed Debt",
+          "category-emerging-markets": "Emerging Markets",
+          "category-equity-hedge": "Equity Hedge",
+          "category-event-driven": "Event-Driven",
+          "category-fixed-income-arbitrage": "Fixed Income Arbitrage",
+          "category-fund-of-funds": "Fund of Funds",
+          "category-global-macro": "Global Macro",
+          "category-high-frequency-trading": "High-Frequency Trading (HFT)",
+          "category-managed-futures-cta": "Managed Futures / CTA",
+          "category-market-neutral": "Market Neutral",
+          "category-merger-arbitrage": "Merger Arbitrage",
+          "category-multi-strategy": "Multi-Strategy",
+          "category-private-equity": "Private Equity (PE)",
+          "category-quantitative-systematic": "Quantitative/Systematic",
+          "category-relative-value": "Relative Value",
+          "category-statistical-arbitrage": "Statistical Arbitrage",
+          "category-structured-credit": "Structured Credit",
+          "category-venture-capital": "Venture Capital (VC)",
+          "class-absolute-return": "Absolute Return",
+          "class-core-blend": "Core / Blend",
+          "class-diversified": "Diversified",
+          "class-early-stage": "Early Stage",
+          "class-factor-based": "Factor-Based",
+          "class-growth-focused": "Growth-Focused",
+          "class-income-focused": "Income-Focused",
+          "class-large-cap": "Large-Cap",
+          "class-long-equity": "Long Equity (Long Only)",
+          "class-long-short-equity": "Long/Short Equity",
+          "class-market-neutral": "Market Neutral",
+          "class-mid-cap": "Mid-Cap",
+          "class-momentum-oriented": "Momentum-Oriented",
+          "class-opportunistic": "Opportunistic",
+          "class-pre-series-b": "Pre-Series B",
+          "class-quantitative-algorithmic": "Quantitative / Algorithmic",
+          "class-regional": "Regional",
+          "class-sector-specific": "Sector-Specific",
+          "class-seed-pre-seed": "Seed / Pre-Seed",
+          "class-series-b-late-stage": "Series B / Late Stage",
+          "class-short-equity": "Short Equity",
+          "class-small-cap": "Small-Cap",
+          "class-tactical-asset-allocation": "Tactical Asset Allocation",
+          "class-value-focused": "Value-Focused",
           "configuration-description": "Fund category, class, and fee settings.",
           "configuration-title": "Fund Configuration",
           "decimals-label": "Decimals",
@@ -966,7 +1059,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm"
         },
-        "title": "Create Fund"
+        "title": "Create Fund",
+        "trigger-label": "Issue a new fund"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1069,14 +1163,14 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant Role"
-        }
+          "unpause": "Unpause"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -1179,9 +1273,9 @@
         "public-status": "Public",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "total-supply-header": "Total Supply",
+        "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
         "topinfo-title": "Digital asset for institutional fund management",
-        "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency."
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
@@ -1257,7 +1351,6 @@
           "symbol-placeholder": "SAFU",
           "title": "Basic Information"
         },
-        "trigger-label": "Issue a new stablecoin",
         "button-label": "Issue a new stablecoin",
         "configuration": {
           "collateral-proof-validity-label": "Collateral Proof Validity",
@@ -1279,7 +1372,8 @@
           "symbol-label": "Symbol",
           "title": "Review and confirm the details of your new stablecoin before creation."
         },
-        "title": "Create Stablecoin"
+        "title": "Create Stablecoin",
+        "trigger-label": "Issue a new stablecoin"
       },
       "details": {
         "contract-address": "Contract address",
@@ -1293,6 +1387,10 @@
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
         "stablecoin-details-description": "Details for the stablecoin",
         "symbol": "Symbol",
+        "total-burned": "Burned supply",
+        "total-burned-info": "Amount of tokens permanently removed from circulation",
+        "total-holders": "# of holders",
+        "total-holders-info": "Amount of addresses currently holding the assets",
         "total-supply": "Total supply",
         "total-supply-info": "The total supply of the token"
       },
@@ -1382,15 +1480,15 @@
         "wallet-header": "Wallet"
       },
       "manage": {
-        "manage": "Manage",
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
           "pause": "Pause",
           "unpause": "Unpause",
-          "update-collateral": "Update Collateral",
-          "grant-role": "Grant Role"
-        }
+          "update-collateral": "Update Collateral"
+        },
+        "manage": "Manage"
       },
       "mint-form": {
         "amount": {
@@ -1502,7 +1600,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
-        "committed-collateral-header": "Committed collateral",
+        "committed-collateral-header": "Collateral consumed",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your stablecoin assets.",
         "page-title": "Stable Coins",
@@ -1510,34 +1608,35 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
+            "title": "Issue a new stablecoin"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
+            "title": "Stablecoin mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
+            "title": "Usecases"
+          }
+        },
         "status-header": "Status",
         "symbol-header": "Symbol",
         "topinfo-description": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
         "topinfo-title": "A secure and collateralized digital currency",
-        "total-supply-header": "Total Supply",
-        "related-actions": {
-          "title": "Related Actions",
-          "issue-new": {
-            "title": "Issue a new stablecoin",
-            "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments."
-          },
-          "mechanics": {
-            "title": "Stablecoin mechanics",
-            "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
-            "button": "Learn more"
-          },
-          "usecases": {
-            "title": "Usecases",
-            "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
-            "button": "Explore"
-          }
-        }
+        "total-supply-header": "Total Supply"
       },
       "tabs": {
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       },
       "update-collateral-form": {
         "amount": {
@@ -1609,6 +1708,8 @@
         "notVerified": "Not Verified",
         "verified": "Verified"
       },
+      "page-description": "Manage users and their roles",
+      "page-title": "Users",
       "roles": {
         "admin": "Admin",
         "issuer": "Issuer",
@@ -1618,9 +1719,7 @@
         "active": "Active",
         "banned": "Banned"
       },
-      "title": "Users",
-      "page-title": "Users",
-      "page-description": "Manage users and their roles"
+      "title": "Users"
     }
   },
   "auth": {
@@ -1681,15 +1780,15 @@
     }
   },
   "components": {
-    "area-chart": {
-      "info-icon-label": "Info"
-    },
     "active-pill": {
       "active": "Active",
       "paused": "Paused"
     },
     "address-avatar": {
       "avatar": "Avatar"
+    },
+    "area-chart": {
+      "info-icon-label": "Info"
     },
     "asset-events-table": {
       "asset": "Asset",
@@ -1736,28 +1835,46 @@
     },
     "charts": {
       "assets": {
+        "collateral-ratio": {
+          "description": "Amount of collateral free vs used",
+          "label": "Collateral Ratio",
+          "no-data": "No collateral data available"
+        },
+        "free-collateral-ratio": {
+          "label": "Free"
+        },
         "last-updated": "Last updated",
         "total-supply": {
           "description": "Showing the total supply of the token",
           "label": "Total supply",
+          "no-data": "No data available in this window",
           "title": "Total supply"
         },
         "total-supply-changed": {
           "burned-label": "Total burned",
           "description": "Showing the supply change of the token",
           "minted-label": "Total minted",
+          "no-data": "No data available in this window",
           "title": "Supply changes"
         },
         "total-transfers": {
           "description": "Showing the total transfers of the token",
           "label": "Total transfers",
+          "no-data": "No data available in this window",
           "title": "Total transfers"
         },
         "total-volume": {
           "description": "Showing the total volume of the token",
           "label": "Total volume",
+          "no-data": "No data available in this window",
           "title": "Total volume"
-        }
+        },
+        "used-collateral-ratio": {
+          "label": "Committed"
+        },
+        "wallet-distribution": "Wallet Distribution",
+        "wallet-distribution-description": "Amount of holders vs the amounts they hold",
+        "wallet-distribution-no-data": "No wallet data available"
       }
     },
     "data-table": {

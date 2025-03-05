@@ -1,5 +1,7 @@
 import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -31,13 +33,19 @@ export async function generateMetadata({
 }
 
 const tabs = async (
-  address: string,
+  address: Address,
   locale: string
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
     namespace: "admin.stablecoins.tabs",
   });
+
+  const [stableCoin, balances, events] = await Promise.all([
+    getStableCoinDetail({ address }),
+    getAssetBalanceList({ wallet: address }),
+    getAssetEventsList({ asset: address }),
+  ]);
 
   return [
     {
@@ -47,14 +55,21 @@ const tabs = async (
     {
       name: t("holders"),
       href: `/admin/stablecoins/${address}/holders`,
+      badge: stableCoin.totalHolders,
     },
     {
       name: t("events"),
       href: `/admin/stablecoins/${address}/events`,
+      badge: events.length,
     },
     {
       name: t("permissions"),
       href: `/admin/stablecoins/${address}/permissions`,
+    },
+    {
+      name: t("underlying-assets"),
+      href: `/admin/stablecoins/${address}/underlying-assets`,
+      badge: balances.length,
     },
   ];
 };
@@ -69,10 +84,7 @@ export default async function FundsDetailLayout({
   return (
     <>
       <StableCoinPageHeader address={address} />
-
-      <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabItems} />
-      </div>
+      <TabNavigation items={tabItems} />
       {children}
     </>
   );

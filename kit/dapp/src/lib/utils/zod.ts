@@ -90,7 +90,7 @@ const extendedZod = {
    * @returns A Zod schema that validates token decimal places with a default of 18
    */
   decimals: () =>
-    z
+    z.coerce
       .number()
       .min(0, { message: "Must be at least 0" })
       .max(18, { message: "Must be between 0 and 18" })
@@ -101,7 +101,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates positive amounts
    */
-  amount: () => z.number().min(1, { message: "Must be at least 1" }),
+  amount: () => z.coerce.number().min(1, { message: "Must be at least 1" }),
 
   /**
    * Validates user roles selection

@@ -37,7 +37,11 @@ export function DesignerButton() {
     "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin" | null
   >(null);
   const frameIconRef = useRef<FrameIconHandle>(null);
-
+  const onFormOpenChange = (open: boolean) => {
+    if (!open) {
+      setTokenType(null);
+    }
+  };
   return (
     <SidebarGroup className="mt-2">
       <SidebarMenu>
@@ -81,23 +85,23 @@ export function DesignerButton() {
 
       <CreateBondForm
         open={tokenType === "bond"}
-        onCloseAction={() => setTokenType(null)}
+        onOpenChange={onFormOpenChange}
       />
       <CreateCryptoCurrencyForm
         open={tokenType === "cryptocurrency"}
-        onCloseAction={() => setTokenType(null)}
+        onOpenChange={onFormOpenChange}
       />
       <CreateEquityForm
         open={tokenType === "equity"}
-        onCloseAction={() => setTokenType(null)}
+        onOpenChange={onFormOpenChange}
       />
       <CreateFundForm
         open={tokenType === "fund"}
-        onCloseAction={() => setTokenType(null)}
+        onOpenChange={onFormOpenChange}
       />
       <CreateStablecoinForm
         open={tokenType === "stablecoin"}
-        onCloseAction={() => setTokenType(null)}
+        onOpenChange={onFormOpenChange}
       />
     </SidebarGroup>
   );

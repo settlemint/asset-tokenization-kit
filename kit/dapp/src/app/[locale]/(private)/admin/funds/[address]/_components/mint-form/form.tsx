@@ -30,6 +30,7 @@ export function MintForm({ address, open, onOpenChange }: MintFormProps) {
       <Form
         action={mint}
         resolver={zodResolver(MintSchema)}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}
