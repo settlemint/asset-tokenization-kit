@@ -3,7 +3,29 @@
     "activity": {
       "page-description": "Aktivitäten über alle Vermögenswerte verfolgen.",
       "page-title": "Aktivität",
-      "view-all": "Alle Transaktionen im Explorer anzeigen"
+      "view-all": "Alle Transaktionen im Explorer anzeigen",
+      "transaction-details": {
+        "block-hash-label": "Block-Hash",
+        "block-number-label": "Blocknummer",
+        "blob-gas-price-label": "Blob-Gas-Preis",
+        "blob-gas-used-label": "Verbrauchtes Blob-Gas",
+        "contract-label": "Vertrag",
+        "created-at-label": "Erstellt am",
+        "description": "Details einer Transaktion anzeigen",
+        "effective-gas-price-label": "Effektiver Gas-Preis",
+        "from-label": "Von",
+        "function-label": "Funktion",
+        "gas-used-label": "Verbrauchtes Gas",
+        "receipt-title": "Quittung",
+        "revert-reason-label": "Rückgabegrund",
+        "status-label": "Status",
+        "title": "Transaktionen",
+        "transaction-hash-label": "Transaktions-Hash",
+        "transaction-index-label": "Transaktionsindex",
+        "transaction-title": "Transaktion",
+        "trigger-label": "Details",
+        "type-label": "Typ"
+      }
     },
     "bonds": {
       "burn-form": {
@@ -297,8 +319,6 @@
           "isin-placeholder": "CRYPTO123456",
           "name-label": "Name",
           "name-placeholder": "Bitcoin",
-          "private-token-description": "Andere Organisationen werden dieses Asset nicht sehen",
-          "private-token-label": "Privater Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "BTC",
           "title": "Grundinformationen"
@@ -509,10 +529,10 @@
         }
       },
       "page": {
+        "description": "Übersicht des Admin-Dashboards",
         "latest_events_heading": "Neueste Ereignisse",
         "stats_heading": "Statistiken",
-        "title": "Dashboard",
-        "description": "Übersicht des Admin-Dashboards"
+        "title": "Dashboard"
       },
       "table": {
         "latest-events": {
@@ -624,16 +644,6 @@
         "summary": {
           "asset-basics-description": "Grundlegende Vermögensinformationen und Einstellungen.",
           "asset-basics-title": "Vermögensgrundlagen",
-          "configuration-description": "Details zur Eigenkapitalklassifizierung.",
-          "configuration-title": "Konfiguration",
-          "decimals-label": "Dezimalstellen",
-          "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen Eigenkapitalausgabe vor der Erstellung.",
-          "equity-category-label": "Eigenkapitalkategorie",
-          "equity-class-label": "Eigenkapitalklasse",
-          "isin-label": "ISIN",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "title": "Überprüfen und bestätigen",
           "category-blend-equity": "Blend-Eigenkapital",
           "category-communication-services": "Kommunikationsdienste",
           "category-consumer-discretionary": "Verbraucher discretionary",
@@ -680,7 +690,17 @@
           "class-market-capitalization-equity": "Marktkapitalisierung Eigenkapital",
           "class-preferred-equity": "Bevorzugtes Eigenkapital",
           "class-sector-industry-equity": "Sektor-/Branchen-Eigenkapital",
-          "class-special-classes-equity": "Sonderklassen von Eigenkapital"
+          "class-special-classes-equity": "Sonderklassen von Eigenkapital",
+          "configuration-description": "Details zur Eigenkapitalklassifizierung.",
+          "configuration-title": "Konfiguration",
+          "decimals-label": "Dezimalstellen",
+          "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen Eigenkapitalausgabe vor der Erstellung.",
+          "equity-category-label": "Eigenkapitalkategorie",
+          "equity-class-label": "Eigenkapitalklasse",
+          "isin-label": "ISIN",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "title": "Überprüfen und bestätigen"
         },
         "title": "Neue Eigenkapitalausgabe erstellen",
         "trigger-label": "Geben Sie eine neue Eigenkapitalausgabe aus"
@@ -1000,17 +1020,6 @@
           "asset-basics-description": "Grundlegende Vermögensinformationen und Einstellungen.",
           "asset-basics-title": "Vermögensgrundlagen",
           "basis-points": "bps",
-          "configuration-description": "Einstellungen für Fonds-Kategorie, Klasse und Gebühr.",
-          "configuration-title": "Fonds-Konfiguration",
-          "decimals-label": "Dezimalstellen",
-          "description": "Überprüfen und bestätigen Sie die Einzelheiten Ihres neuen Fonds vor der Erstellung.",
-          "fund-category-label": "Fonds-Kategorie",
-          "fund-class-label": "Fonds-Klasse",
-          "isin-label": "ISIN",
-          "management-fee-label": "Verwaltungsgebühr",
-          "name-label": "Name",
-          "symbol-label": "Symbol",
-          "title": "Überprüfen und bestätigen",
           "category-activist": "Aktivist",
           "category-commodity-trading": "Rohstoffhandel",
           "category-convertible-arbitrage": "Wandelarbitrage",
@@ -1057,7 +1066,18 @@
           "class-short-equity": "Short Equity",
           "class-small-cap": "Small-Cap",
           "class-tactical-asset-allocation": "Taktische Vermögensallokation",
-          "class-value-focused": "Wert-orientiert"
+          "class-value-focused": "Wert-orientiert",
+          "configuration-description": "Einstellungen für Fonds-Kategorie, Klasse und Gebühr.",
+          "configuration-title": "Fonds-Konfiguration",
+          "decimals-label": "Dezimalstellen",
+          "description": "Überprüfen und bestätigen Sie die Einzelheiten Ihres neuen Fonds vor der Erstellung.",
+          "fund-category-label": "Fonds-Kategorie",
+          "fund-class-label": "Fonds-Klasse",
+          "isin-label": "ISIN",
+          "management-fee-label": "Verwaltungsgebühr",
+          "name-label": "Name",
+          "symbol-label": "Symbol",
+          "title": "Überprüfen und bestätigen"
         },
         "title": "Fonds erstellen",
         "trigger-label": "Einen neuen Fonds ausgeben"
@@ -1387,12 +1407,12 @@
         "ownership-concentration-info": "Prozentsatz, der den Top 5 Inhabern gehört",
         "stablecoin-details-description": "Details für den Stablecoin",
         "symbol": "Symbol",
-        "total-supply": "Gesamtangebot",
-        "total-supply-info": "Das Gesamtangebot des Tokens",
         "total-burned": "Verbrannter Bestand",
         "total-burned-info": "Anzahl der Token, die dauerhaft aus dem Umlauf genommen wurden",
         "total-holders": "# der Inhaber",
-        "total-holders-info": "Anzahl der Adressen, die derzeit die Vermögenswerte halten"
+        "total-holders-info": "Anzahl der Adressen, die derzeit die Vermögenswerte halten",
+        "total-supply": "Gesamtangebot",
+        "total-supply-info": "Das Gesamtangebot des Tokens"
       },
       "events": {
         "events-page-description": "Verfolgen Sie historische Aktivitäten und Transaktionen, die {name} betreffen.",
@@ -1708,6 +1728,8 @@
         "notVerified": "Nicht verifiziert",
         "verified": "Verifiziert"
       },
+      "page-description": "Benutzer und deren Rollen verwalten",
+      "page-title": "Benutzer",
       "roles": {
         "admin": "Admin",
         "issuer": "Ausgeber",
@@ -1717,9 +1739,7 @@
         "active": "Aktiv",
         "banned": "Verboten"
       },
-      "title": "Benutzer",
-      "page-description": "Benutzer und deren Rollen verwalten",
-      "page-title": "Benutzer"
+      "title": "Benutzer"
     }
   },
   "auth": {
@@ -1847,27 +1867,27 @@
         "total-supply": {
           "description": "Zeigt das gesamte Angebot des Tokens an",
           "label": "Gesamtangebot",
-          "title": "Gesamtangebot",
-          "no-data": "Keine Daten in diesem Fenster verfügbar"
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "title": "Gesamtangebot"
         },
         "total-supply-changed": {
           "burned-label": "Insgesamt verbrannt",
           "description": "Zeigt die Angebotsänderung des Tokens an",
           "minted-label": "Insgesamt geprägt",
-          "title": "Angebotsänderungen",
-          "no-data": "Keine Daten in diesem Fenster verfügbar"
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "title": "Angebotsänderungen"
         },
         "total-transfers": {
           "description": "Zeigt die gesamten Übertragungen des Tokens an",
           "label": "Insgesamt Übertragungen",
-          "title": "Insgesamt Übertragungen",
-          "no-data": "Keine Daten in diesem Fenster verfügbar"
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "title": "Insgesamt Übertragungen"
         },
         "total-volume": {
           "description": "Zeigt das gesamte Volumen des Tokens an",
           "label": "Insgesamt Volumen",
-          "title": "Insgesamt Volumen",
-          "no-data": "Keine Daten in diesem Fenster verfügbar"
+          "no-data": "Keine Daten in diesem Fenster verfügbar",
+          "title": "Insgesamt Volumen"
         },
         "used-collateral-ratio": {
           "label": "Verpflichtet"

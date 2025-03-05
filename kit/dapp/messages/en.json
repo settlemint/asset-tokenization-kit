@@ -319,8 +319,6 @@
           "isin-placeholder": "CRYPTO123456",
           "name-label": "Name",
           "name-placeholder": "Bitcoin",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "BTC",
           "title": "Basic Information"
