@@ -7,7 +7,7 @@ import type { getFundList } from "@/lib/queries/fund/fund-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, type MessageKeys } from "next-intl";
 import type { ComponentType } from "react";
 
 const columnHelper =
@@ -53,14 +53,34 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
+    columnHelper.accessor("assetsUnderManagement", {
+      header: t("assets-under-management-header"),
+      meta: {
+        variant: "numeric",
+      },
+      cell: ({ getValue }) => formatNumber(getValue()),
+      enableColumnFilter: false,
+    }),
     columnHelper.accessor("fundCategory", {
       header: t("category-header"),
-      cell: ({ getValue }) => getValue(),
+      cell: ({ getValue }) =>
+        t(
+          `category-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.funds.table",
+            "category-header"
+          >
+        ),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("fundClass", {
       header: t("class-header"),
-      cell: ({ getValue }) => getValue(),
+      cell: ({ getValue }) =>
+        t(
+          `class-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.funds.table",
+            "class-header"
+          >
+        ),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("managementFeeBps", {

@@ -3,7 +3,6 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
@@ -83,6 +82,11 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
       ? 0
       : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
 
+  const assetsUnderManagement = fund.asAccount.balances.reduce(
+    (acc, balance) => acc + balance.value,
+    0
+  );
+
   return {
     ...fund,
     ...{
@@ -90,6 +94,6 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
       ...offchainFund,
     },
     concentration,
-    totalSupply: formatNumber(fund.totalSupply),
+    assetsUnderManagement,
   };
 });
