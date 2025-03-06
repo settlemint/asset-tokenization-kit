@@ -26,7 +26,7 @@
         "custom-deployment",
         "update",
         "--image-path",
-        "ghcr.io/settlemint/kit-asset-tokenization:main",
+        "ghcr.io/settlemint/asset-tokenization-kit:main",
         "--port",
         "3000"
       ],
