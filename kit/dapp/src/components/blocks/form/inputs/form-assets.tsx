@@ -152,7 +152,6 @@ function FormUsersList({
     setIsLoading(true);
     try {
       const results = await getAssetSearch({ searchTerm: debounced });
-      console.log("results", results);
       setAssets(results);
     } catch (error) {
       console.error("Error fetching assets:", error);

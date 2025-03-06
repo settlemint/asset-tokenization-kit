@@ -73,7 +73,6 @@ export const getAssetSearch = cache(
     const validatedAssets = assets.map((asset) =>
       safeParseWithLogging(AssetFragmentSchema, asset, "asset search")
     );
-    console.log("validatedAssets", validatedAssets);
     return validatedAssets;
   }
 );
