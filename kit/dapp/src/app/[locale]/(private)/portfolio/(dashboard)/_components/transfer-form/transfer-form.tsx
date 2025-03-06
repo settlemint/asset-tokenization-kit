@@ -22,7 +22,6 @@ export function MyAssetsTransferForm() {
   const tAssetTypes = useTranslations("portfolio.asset-types");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [open, setOpen] = useState(false);
-  console.log("selectedAsset", selectedAsset);
   return (
     <>
       {selectedAsset ? (
