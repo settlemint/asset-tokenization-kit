@@ -3,21 +3,21 @@
 import { useTranslations } from "next-intl";
 
 export function useAssetTypeFormatter() {
-  const t = useTranslations("admin.dashboard.charts");
+  const t = useTranslations("admin.charts.asset-type-formatter");
 
   const formatAssetType = (type: string): string => {
     const assetType = type.toLowerCase();
     switch (assetType) {
       case "bond":
-        return t("asset-types.bonds");
+        return t("bonds");
       case "cryptocurrency":
-        return t("asset-types.cryptocurrencies");
+        return t("cryptocurrencies");
       case "equity":
-        return t("asset-types.equities");
+        return t("equities");
       case "fund":
-        return t("asset-types.funds");
+        return t("funds");
       case "stablecoin":
-        return t("asset-types.stablecoins");
+        return t("stablecoins");
       default:
         return type;
     }

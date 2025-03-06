@@ -1,7 +1,7 @@
 "use client";
 
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import type { MyAsset } from "@/lib/queries/portfolio/portfolio-dashboard";
+import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TransferForm } from "./form";

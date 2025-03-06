@@ -2,7 +2,7 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import type { MyAsset } from "@/lib/queries/portfolio/portfolio-dashboard";
+import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";

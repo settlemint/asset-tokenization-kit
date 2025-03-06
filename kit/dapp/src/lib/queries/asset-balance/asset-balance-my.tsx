@@ -12,9 +12,9 @@ import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 
-const MyAssets = theGraphGraphqlStarterkits(
+const MyAssetsBalance = theGraphGraphqlStarterkits(
   `
-  query MyAssets($accountId: ID!, $first: Int, $skip: Int) {
+  query MyAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
       balances(first: $first, skip: $skip) {
         ...AssetBalanceFragment
@@ -37,26 +37,29 @@ type PausableAssetType =
   typeof PAUSABLE_ASSET_TYPES extends Set<infer T> ? T : never;
 
 export type MyAsset = Awaited<
-  ReturnType<typeof getPortfolioDashboardData>
+  ReturnType<typeof getMyAssetsBalance>
 >["balances"][number];
 
-export const getPortfolioDashboardData = cache(
+export const getMyAssetsBalance = cache(
   async (wallet: Address, active = true) => {
-    const myAssets = await fetchAllTheGraphPages(async (first, skip) => {
-      const pageResult = await theGraphClientStarterkits.request(MyAssets, {
-        accountId: getAddress(wallet),
-        first,
-        skip,
-      });
+    const myAssetsBalance = await fetchAllTheGraphPages(async (first, skip) => {
+      const pageResult = await theGraphClientStarterkits.request(
+        MyAssetsBalance,
+        {
+          accountId: getAddress(wallet),
+          first,
+          skip,
+        }
+      );
       return pageResult.account?.balances ?? [];
     });
 
     // Parse and validate the data using Zod schemas
-    let validatedMyAssets = myAssets.map((asset) =>
+    let validatedMyAssetsBalance = myAssetsBalance.map((asset) =>
       safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
     );
 
-    if (!validatedMyAssets.length) {
+    if (!validatedMyAssetsBalance.length) {
       return {
         balances: [],
         distribution: [],
@@ -65,7 +68,7 @@ export const getPortfolioDashboardData = cache(
     }
 
     if (active) {
-      validatedMyAssets = validatedMyAssets.filter((balance) => {
+      validatedMyAssetsBalance = validatedMyAssetsBalance.filter((balance) => {
         const asset = balance.asset;
         if (PAUSABLE_ASSET_TYPES.has(asset.type as PausableAssetType)) {
           return true;
@@ -75,7 +78,7 @@ export const getPortfolioDashboardData = cache(
     }
 
     // Group and sum balances by asset type
-    const assetTypeBalances = validatedMyAssets.reduce<
+    const assetTypeBalances = validatedMyAssetsBalance.reduce<
       Record<PausableAssetType, BigNumber>
     >(
       (acc, balance) => {
@@ -109,7 +112,7 @@ export const getPortfolioDashboardData = cache(
     );
 
     return {
-      balances: validatedMyAssets,
+      balances: validatedMyAssetsBalance,
       distribution,
       total: total.toString(),
     };

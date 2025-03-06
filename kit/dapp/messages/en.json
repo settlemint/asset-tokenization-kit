@@ -344,7 +344,14 @@
       }
     },
     "charts": {
-      "asset-statistics-title": "Asset statistics"
+      "asset-statistics-title": "Asset statistics",
+      "asset-type-formatter": {
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins"
+      }
     },
     "cryptocurrencies": {
       "burn-form": {
@@ -583,12 +590,15 @@
     },
     "dashboard": {
       "charts": {
-        "asset-activity": {
-          "burn": "Burn",
-          "description": "Visualize recent minting, transfers, and burning activities across asset types.",
-          "mint": "Mint",
-          "title": "Activity",
-          "transfer": "Transfer"
+        "users-history": {
+          "label": "Users",
+          "title": "Users history",
+          "description": "Users history"
+        },
+        "transaction-history": {
+          "label": "Transactions",
+          "title": "Transaction history",
+          "description": "Transaction history"
         },
         "asset-types": {
           "bonds": "Bonds",
@@ -598,44 +608,41 @@
           "stablecoins": "Stablecoins"
         },
         "assets-supply": {
-          "description": "Visualize the distribution of total supply across different asset categories.",
-          "label": "Distribution",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
+          "label": "Assets",
+          "title": "Assets supply",
+          "description": "Assets supply"
         },
-        "transaction-history": {
-          "description": "Overview of transaction volume and trends over the past {interval}.",
-          "label": "Transactions",
-          "title": "Transactions"
-        },
-        "users-history": {
-          "description": "User registration trends over the past week.",
-          "label": "Users",
-          "title": "Users"
+        "asset-activity": {
+          "mint": "Mint",
+          "transfer": "Transfer",
+          "burn": "Burn",
+          "title": "Asset activity",
+          "description": "Asset activity"
         }
       },
       "page": {
-        "description": "Admin dashboard overview",
-        "latest_events_heading": "Latest Events",
-        "stats_heading": "Stats",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "description": "Welcome to the dashboard",
+        "stats-heading": "Stats",
+        "latest-events-heading": "Latest events"
       },
       "table": {
         "latest-events": {
-          "view-all": "View all events →"
+          "view-all": "View all"
         }
       },
       "widgets": {
         "assets": {
-          "label": "Assets supply",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
+          "label": "Assets",
+          "subtext": "Total assets: {totalAssets}"
         },
         "transactions": {
           "label": "Transactions",
-          "subtext": "{count} transactions processed in the past {days} days."
+          "subtext": "Total transactions: {totalTransactions}"
         },
         "users": {
           "label": "Users",
-          "subtext": "{count} new users in the past {days} days."
+          "subtext": "Total users: {totalUsers}"
         }
       }
     },
@@ -2287,6 +2294,10 @@
       },
       "transfer": "Transfer",
       "transferring": "Transferring..."
+    },
+    "my-assets": {
+      "title": "My Assets",
+      "description": "View and manage your digital assets"
     }
   },
   "theme": {
