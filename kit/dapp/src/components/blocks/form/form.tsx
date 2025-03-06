@@ -87,8 +87,6 @@ export function Form<
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);
-          resetFormAndAction();
-          onOpenChange?.(false);
         },
       },
     });
@@ -132,7 +130,13 @@ export function Form<
   };
 
   const isLastStep = currentStep === totalSteps - 1;
-  const hasError = Object.keys(form.formState.errors).length > 0;
+  const CurrentStep = Array.isArray(children)
+    ? children[currentStep].type
+    : children.type;
+  const hasError =
+    Object.keys(form.formState.errors).filter(
+      (fieldName) => !CurrentStep.validatedFields.includes(fieldName as never)
+    ).length > 0;
 
   return (
     <div className="space-y-6">
