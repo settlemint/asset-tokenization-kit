@@ -11,13 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import type { ComponentPropsWithoutRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import { useFormContext, type FieldValues } from "react-hook-form";
 import {
+  getAriaAttributes,
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
-  getAriaAttributes,
 } from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -57,6 +57,7 @@ export function FormInput<T extends FieldValues>({
   textOnly,
   ...props
 }: FormInputProps<T>) {
+  const form = useFormContext<T>();
   const t = useTranslations("components.form.input");
 
   return (
@@ -110,6 +111,12 @@ export function FormInput<T extends FieldValues>({
                   )}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? "")}
+                  onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(evt);
+                    if (form.formState.errors[field.name]) {
+                      await form.trigger(field.name);
+                    }
+                  }}
                   inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
                     props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
