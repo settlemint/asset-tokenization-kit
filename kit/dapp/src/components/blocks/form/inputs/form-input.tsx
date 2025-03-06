@@ -1,12 +1,12 @@
 "use client";
 
+import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -132,7 +132,7 @@ export function FormInput<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage
+            <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
               className="text-destructive"
