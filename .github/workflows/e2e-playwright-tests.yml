@@ -106,7 +106,7 @@ jobs:
         working-directory: kit/dapp
 
       - name: Run Playwright tests
-        run: bun playwright test tests/sign-up.spec.ts --retries 2 --reporter=html
+        run: bun playwright test tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
