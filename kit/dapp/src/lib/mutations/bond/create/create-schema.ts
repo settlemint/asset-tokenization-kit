@@ -15,7 +15,7 @@ import { isFuture } from "date-fns";
  * @property {string} underlyingAsset - Underlying asset of the bond
  */
 export const CreateBondSchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),

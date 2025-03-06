@@ -19,7 +19,7 @@ import { z } from "zod";
 
 const signInSchema = z.object({
   email: z.string().email("valid-email"),
-  password: z.string().min(1),
+  password: z.string().nonempty(),
   rememberMe: z.boolean().default(false),
 });
 

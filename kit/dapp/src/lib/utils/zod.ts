@@ -143,10 +143,12 @@ const extendedZod = {
    * @returns A Zod schema that validates token symbols
    */
   symbol: () =>
-    z.string().regex(/^[A-Z0-9]+$/, {
-      message: "Symbol must contain only uppercase letters and numbers",
-    }),
-
+    z
+      .string()
+      .nonempty()
+      .regex(/^[A-Z0-9]+$/, {
+        message: "Symbol must contain only uppercase letters and numbers",
+      }),
   /**
    * Validates an International Securities Identification Number (ISIN)
    *

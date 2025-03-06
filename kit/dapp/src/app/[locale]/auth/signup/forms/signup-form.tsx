@@ -20,7 +20,7 @@ const signUpSchema = z
   .object({
     email: z.string().email("valid-email"),
     password: z.string().min(6, "password-min-length"),
-    name: z.string().min(1),
+    name: z.string().nonempty(),
     walletPincode: z.string().length(6, "pin-code-length"),
     walletPincodeConfirm: z.string().length(6, "pin-code-length"),
   })
