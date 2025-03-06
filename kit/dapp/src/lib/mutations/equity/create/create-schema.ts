@@ -12,13 +12,13 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @property {string} equityClass - The class of the equity
  */
 export const CreateEquitySchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  equityCategory: z.string(),
-  equityClass: z.string(),
+  equityCategory: z.string().nonempty(),
+  equityClass: z.string().nonempty(),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;

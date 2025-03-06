@@ -1,12 +1,12 @@
 "use client";
 
+import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -130,7 +130,7 @@ export function FormSelect<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage
+            <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
               className="text-destructive"

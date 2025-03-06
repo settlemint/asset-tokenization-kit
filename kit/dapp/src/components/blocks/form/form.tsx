@@ -124,10 +124,14 @@ export function Form<
     );
 
     if (results.every(Boolean)) {
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      // Prevent the form from being auto submitted when going to the final step
+      setTimeout(() => {
+        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      }, 10);
     }
   };
 
+  const isLastStep = currentStep === totalSteps - 1;
   const hasError = Object.keys(form.formState.errors).length > 0;
 
   return (
@@ -136,7 +140,7 @@ export function Form<
         <Card className="mx-4">
           <CardContent className="px-4">
             <UIForm {...form}>
-              <form onSubmit={handleSubmitWithAction}>
+              <form onSubmit={handleSubmitWithAction} noValidate>
                 {totalSteps > 1 && (
                   <FormProgress
                     currentStep={currentStep}
@@ -144,7 +148,7 @@ export function Form<
                   />
                 )}
                 <div className="min-h-[400px]">
-                  {hasError && (
+                  {isLastStep && hasError && (
                     <Alert
                       variant="destructive"
                       className="text-destructive border-destructive mb-4"

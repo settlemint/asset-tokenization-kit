@@ -13,17 +13,22 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @property {number} managementFeeBps - Management fee in basis points
  */
 export const CreateFundSchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  fundCategory: z.string(),
-  fundClass: z.string(),
-  managementFeeBps: z.coerce
+  fundCategory: z.string().nonempty(),
+  fundClass: z.string().nonempty(),
+  managementFeeBps: z
     .number()
-    .min(0)
-    .max(100 * 100), // 100 bps = 1%
+    .or(z.string())
+    .pipe(
+      z.coerce
+        .number()
+        .min(0)
+        .max(100 * 100) // 100 bps = 1%
+    ),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

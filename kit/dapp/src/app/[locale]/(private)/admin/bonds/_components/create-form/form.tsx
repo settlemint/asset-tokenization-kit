@@ -29,7 +29,7 @@ export function CreateBondForm({
 
   return (
     <FormSheet
-      open={open || localOpen}
+      open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
