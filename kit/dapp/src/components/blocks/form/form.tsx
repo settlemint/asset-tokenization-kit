@@ -124,7 +124,10 @@ export function Form<
     );
 
     if (results.every(Boolean)) {
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      // Prevent the form from being auto submitted when going to the final step
+      setTimeout(() => {
+        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      }, 10);
     }
   };
 

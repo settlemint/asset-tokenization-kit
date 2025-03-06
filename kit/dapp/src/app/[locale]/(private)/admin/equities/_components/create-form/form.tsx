@@ -28,7 +28,7 @@ export function CreateEquityForm({
   const [localOpen, setLocalOpen] = useState(false);
   return (
     <FormSheet
-      open={open || localOpen}
+      open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
       title={t("title")}
       description={t("description")}
