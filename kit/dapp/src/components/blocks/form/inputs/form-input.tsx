@@ -11,9 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import type { FieldValues } from "react-hook-form";
-import { useFormContext } from "react-hook-form";
 import {
   type BaseFormInputProps,
   type WithPostfixProps,
@@ -58,7 +57,6 @@ export function FormInput<T extends FieldValues>({
   textOnly,
   ...props
 }: FormInputProps<T>) {
-  const form = useFormContext<T>();
   const t = useTranslations("components.form.input");
 
   return (
@@ -112,10 +110,6 @@ export function FormInput<T extends FieldValues>({
                   )}
                   type={props.type}
                   value={props.defaultValue ? undefined : (field.value ?? "")}
-                  onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
-                    field.onChange(evt);
-                    await form.trigger(field.name);
-                  }}
                   inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
                     props.type === "number" ? "[0-9]*.?[0-9]*" : undefined

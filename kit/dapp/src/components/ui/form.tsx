@@ -146,6 +146,9 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     return null;
   }
 
+  const translatedMessage =
+    typeof body === "string" ? t(body as never) : undefined;
+
   return (
     <p
       data-slot="form-message"
@@ -153,7 +156,10 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
       className={cn("text-destructive-foreground text-sm", className)}
       {...props}
     >
-      {typeof body === "string" ? t(body as never) : body}
+      {translatedMessage &&
+      !translatedMessage.startsWith("components.form.input")
+        ? translatedMessage
+        : body}
     </p>
   );
 }

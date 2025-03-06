@@ -137,7 +137,7 @@ export function Form<
         <Card className="mx-4">
           <CardContent className="px-4">
             <UIForm {...form}>
-              <form onSubmit={handleSubmitWithAction}>
+              <form onSubmit={handleSubmitWithAction} noValidate>
                 {totalSteps > 1 && (
                   <FormProgress
                     currentStep={currentStep}
