@@ -8,6 +8,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import type { RedirectType } from "next/navigation";
 import { getEnvironment, validateEnvironment } from "../config/environment";
@@ -90,6 +91,7 @@ export const auth = betterAuth({
             .update(authSchema.user)
             .set({ lastLoginAt: new Date() })
             .where(eq(authSchema.user.id, session.userId));
+          revalidateTag("user");
           return {
             data: session,
           };
