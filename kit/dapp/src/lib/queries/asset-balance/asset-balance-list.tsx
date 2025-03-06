@@ -1,15 +1,15 @@
 "use server"; // because this needs to be fetched client side in the address hover
 
 import {
-    theGraphClientKits,
-    theGraphGraphqlKits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "./asset-balance-fragment";
 
 /**
@@ -41,6 +41,11 @@ export interface AssetBalanceListProps {
   limit?: number;
 }
 
+interface AssetBalanceListResponse {
+  assetBalances: unknown[];
+  userBalances: unknown[];
+}
+
 /**
  * Fetches and processes asset balance data
  *
@@ -49,7 +54,7 @@ export interface AssetBalanceListProps {
  */
 export const getAssetBalanceList = cache(
   async ({ address, wallet }: AssetBalanceListProps) => {
-    const result = await theGraphClientKits.request(AssetBalanceList, {
+    const result = await theGraphClientKits.request<AssetBalanceListResponse>(AssetBalanceList, {
       address: address,
       wallet: wallet,
     });

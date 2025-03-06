@@ -207,7 +207,7 @@ function FormUsersList({
   // Memoize the asset list to prevent unnecessary re-renders
   const memoizedAssetList = useMemo(
     () =>
-      assets.map((asset) => (
+      assets.map((asset: Awaited<ReturnType<typeof getAssetSearch>>[number]) => (
         <AssetItem
           key={asset.id}
           asset={asset}

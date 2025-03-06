@@ -1,16 +1,16 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-  CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
-  OffchainCryptoCurrencyFragment,
-  OffchainCryptoCurrencyFragmentSchema,
+    CryptoCurrencyFragment,
+    CryptoCurrencyFragmentSchema,
+    OffchainCryptoCurrencyFragment,
+    OffchainCryptoCurrencyFragmentSchema,
 } from "./cryptocurrency-fragment";
 
 /**
@@ -49,6 +49,10 @@ export interface CryptoCurrencyDetailProps {
   address: Address;
 }
 
+interface CryptoCurrencyDetailResponse {
+  cryptocurrency: unknown;
+}
+
 /**
  * Fetches and combines on-chain and off-chain cryptocurrency data
  *
@@ -61,15 +65,13 @@ export const getCryptoCurrencyDetail = cache(
     const normalizedAddress = getAddress(address);
 
     const [data, dbCryptoCurrency] = await Promise.all([
-      theGraphClientKits.request(CryptoCurrencyDetail, { id: address }),
-      hasuraClient.request(OffchainCryptoCurrencyDetail, {
-        id: normalizedAddress,
-      }),
+      theGraphClientKits.request<CryptoCurrencyDetailResponse>(CryptoCurrencyDetail, { id: address }),
+      hasuraClient.request(OffchainCryptoCurrencyDetail, { id: normalizedAddress }),
     ]);
 
     const cryptocurrency = safeParseWithLogging(
       CryptoCurrencyFragmentSchema,
-      data.cryptoCurrency,
+      data.cryptocurrency,
       "cryptocurrency"
     );
     const offchainCryptoCurrency = dbCryptoCurrency.asset[0]

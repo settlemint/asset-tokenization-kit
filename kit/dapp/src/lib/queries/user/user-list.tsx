@@ -1,12 +1,12 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-  AccountFragment,
-  AccountFragmentSchema,
+    AccountFragment,
+    AccountFragmentSchema,
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
@@ -46,6 +46,10 @@ const UserActivity = theGraphGraphqlKits(
   [AccountFragment]
 );
 
+interface UserActivityResponse {
+  accounts: unknown[];
+}
+
 /**
  * Fetches a list of users from Hasura with their last activity
  *
@@ -63,7 +67,7 @@ export const getUserList = cache(async () => {
       return result.user || [];
     }),
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(UserActivity, {
+      const result = await theGraphClientKits.request<UserActivityResponse>(UserActivity, {
         first,
         skip,
       });

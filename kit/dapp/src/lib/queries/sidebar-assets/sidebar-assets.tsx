@@ -1,22 +1,22 @@
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z, type ZodInfer } from "@/lib/utils/zod";
 import { cache } from "react";
 import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
 import {
-  CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
+    CryptoCurrencyFragment,
+    CryptoCurrencyFragmentSchema,
 } from "../cryptocurrency/cryptocurrency-fragment";
 import {
-  EquityFragment,
-  EquityFragmentSchema,
+    EquityFragment,
+    EquityFragmentSchema,
 } from "../equity/equity-fragment";
 import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
 import {
-  StableCoinFragment,
-  StableCoinFragmentSchema,
+    StableCoinFragment,
+    StableCoinFragmentSchema,
 } from "../stablecoin/stablecoin-fragment";
 
 /**
@@ -76,6 +76,15 @@ export interface SidebarAssetsOptions {
   limit?: number;
 }
 
+interface SidebarAssetsResponse {
+  stableCoins: unknown[];
+  bonds: unknown[];
+  equities: unknown[];
+  funds: unknown[];
+  cryptoCurrencies: unknown[];
+  assetCounts: unknown[];
+}
+
 /**
  * Fetches sidebar assets data
  *
@@ -84,28 +93,32 @@ export interface SidebarAssetsOptions {
  */
 export const getSidebarAssets = cache(
   async (options?: SidebarAssetsOptions) => {
-    const result = await theGraphClientKits.request(SidebarAssets);
+    const result = await theGraphClientKits.request<SidebarAssetsResponse>(SidebarAssets);
     const { limit = 10 } = options || {};
 
     // Validate stableCoins with Zod schema
-    const validatedStableCoins = (result.stableCoins || []).map((coin) =>
+    const validatedStableCoins = (result.stableCoins || []).map((coin: unknown) =>
       safeParseWithLogging(StableCoinFragmentSchema, coin, "stablecoin")
     );
 
-    const validatedBonds = (result.bonds || []).map((bond) =>
+    // Validate bonds with Zod schema
+    const validatedBonds = (result.bonds || []).map((bond: unknown) =>
       safeParseWithLogging(BondFragmentSchema, bond, "bond")
     );
 
-    const validatedEquities = (result.equities || []).map((equity) =>
+    // Validate equities with Zod schema
+    const validatedEquities = (result.equities || []).map((equity: unknown) =>
       safeParseWithLogging(EquityFragmentSchema, equity, "equity")
     );
 
-    const validatedFunds = (result.funds || []).map((fund) =>
+    // Validate funds with Zod schema
+    const validatedFunds = (result.funds || []).map((fund: unknown) =>
       safeParseWithLogging(FundFragmentSchema, fund, "fund")
     );
 
+    // Validate cryptocurrencies with Zod schema
     const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
-      (currency) =>
+      (currency: unknown) =>
         safeParseWithLogging(
           CryptoCurrencyFragmentSchema,
           currency,
@@ -113,62 +126,40 @@ export const getSidebarAssets = cache(
         )
     );
 
-    // Validate assetCounts with Zod schema
-    const validatedAssetCounts = (result.assetCounts || []).map((count) =>
-      safeParseWithLogging(AssetCountSchema, count, "assetCount")
+    // Validate asset counts with Zod schema
+    const validatedAssetCounts = (result.assetCounts || []).map((count: unknown) =>
+      safeParseWithLogging(AssetCountSchema, count, "asset count")
     );
 
-    // Limit the number of records if requested
-    const limitedStableCoins = limit
-      ? validatedStableCoins.slice(0, limit)
-      : validatedStableCoins;
-
-    const limitedBonds = limit
-      ? validatedBonds.slice(0, limit)
-      : validatedBonds;
-
-    const limitedEquities = limit
-      ? validatedEquities.slice(0, limit)
-      : validatedEquities;
-
-    const limitedFunds = limit
-      ? validatedFunds.slice(0, limit)
-      : validatedFunds;
-
-    const limitedCryptoCurrencies = limit
-      ? validatedCryptoCurrencies.slice(0, limit)
-      : validatedCryptoCurrencies;
-
-    /**
-     * Helper function to get the count for a specific asset type
-     */
-    const getCount = (
-      assetType: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"
-    ) =>
-      validatedAssetCounts.find((asset) => asset.assetType === assetType)
-        ?.count ?? 0;
-
-    return {
-      stablecoin: {
-        records: limitedStableCoins,
-        count: getCount("stablecoin"),
+    // Create a map of asset counts by type
+    const assetCountsByType = validatedAssetCounts.reduce<Record<string, number>>(
+      (acc, count) => {
+        acc[count.assetType] = count.count;
+        return acc;
       },
-      equity: {
-        records: limitedEquities,
-        count: getCount("equity"),
-      },
-      bond: {
-        records: limitedBonds,
-        count: getCount("bond"),
-      },
-      fund: {
-        records: limitedFunds,
-        count: getCount("fund"),
-      },
-      cryptocurrency: {
-        records: limitedCryptoCurrencies,
-        count: getCount("cryptocurrency"),
-      },
+      {}
+    );
+
+    // Create a map of assets by type
+    const assetsByType = {
+      stablecoin: validatedStableCoins,
+      bond: validatedBonds,
+      equity: validatedEquities,
+      fund: validatedFunds,
+      cryptocurrency: validatedCryptoCurrencies,
     };
+
+    // Create a map of assets by type with counts
+    const assetsByTypeWithCounts = Object.entries(assetsByType).reduce<
+      Record<string, { records: unknown[]; count: number }>
+    >((acc, [type, assets]) => {
+      acc[type] = {
+        records: assets.slice(0, limit),
+        count: assetCountsByType[type] || 0,
+      };
+      return acc;
+    }, {});
+
+    return assetsByTypeWithCounts;
   }
 );

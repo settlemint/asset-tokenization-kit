@@ -34,14 +34,14 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
 
   // Convert string values to numbers and sort by value
   const sortedBalances = data
-    .map((balance) => ({
+    .map((balance: { value: number; account: { id: string } }) => ({
       value: balance.value,
       account: balance.account.id,
     }))
-    .sort((a, b) => b.value - a.value);
+    .sort((a: { value: number }, b: { value: number }) => b.value - a.value);
 
   // Calculate the maximum value and create dynamic ranges
-  const maxValue = Math.max(...sortedBalances.map((b) => b.value));
+  const maxValue = Math.max(...sortedBalances.map((b: { value: number }) => b.value));
 
   // Create 5 ranges from 0 to maxValue
   const ranges = [
@@ -61,7 +61,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
     const maxValue = ranges[i + 1];
     // Count holders that fall within this specific range
     const count = sortedBalances.filter(
-      (b) => b.value >= minValue && b.value < maxValue
+      (b: { value: number }) => b.value >= minValue && b.value < maxValue
     ).length;
 
     buckets.push({
@@ -76,7 +76,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
     const [min, max] = lastBucket.range.split("-").map(Number);
     // Recount the last bucket to include holders with exactly the maximum value
     lastBucket.count = sortedBalances.filter(
-      (b) => b.value >= min && b.value <= max
+      (b: { value: number }) => b.value >= min && b.value <= max
     ).length;
   }
 

@@ -1,16 +1,16 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-  EquityFragment,
-  EquityFragmentSchema,
-  OffchainEquityFragment,
-  OffchainEquityFragmentSchema,
+    EquityFragment,
+    EquityFragmentSchema,
+    OffchainEquityFragment,
+    OffchainEquityFragmentSchema,
 } from "./equity-fragment";
 
 /**
@@ -49,6 +49,10 @@ export interface EquityDetailProps {
   address: Address;
 }
 
+interface EquityDetailResponse {
+  equity: unknown;
+}
+
 /**
  * Fetches and combines on-chain and off-chain equity data
  *
@@ -60,7 +64,7 @@ export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbEquity] = await Promise.all([
-    theGraphClientKits.request(EquityDetail, { id: address }),
+    theGraphClientKits.request<EquityDetailResponse>(EquityDetail, { id: address }),
     hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
   ]);
 

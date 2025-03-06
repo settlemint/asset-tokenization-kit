@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-  EquityFragment,
-  EquityFragmentSchema,
-  OffchainEquityFragment,
-  OffchainEquityFragmentSchema,
+    EquityFragment,
+    EquityFragmentSchema,
+    OffchainEquityFragment,
+    OffchainEquityFragmentSchema,
 } from "./equity-fragment";
 
 /**
@@ -47,6 +47,10 @@ const OffchainEquityList = hasuraGraphql(
   [OffchainEquityFragment]
 );
 
+interface EquityListResponse {
+  equities: unknown[];
+}
+
 /**
  * Fetches a list of equitys from both on-chain and off-chain sources
  *
@@ -59,7 +63,7 @@ const OffchainEquityList = hasuraGraphql(
 export const getEquityList = cache(async () => {
   const [theGraphEquitys, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(EquityList, {
+      const result = await theGraphClientKits.request<EquityListResponse>(EquityList, {
         first,
         skip,
       });

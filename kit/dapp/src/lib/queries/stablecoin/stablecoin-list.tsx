@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-  OffchainStableCoinFragment,
-  OffchainStableCoinFragmentSchema,
-  StableCoinFragment,
-  StableCoinFragmentSchema,
+    OffchainStableCoinFragment,
+    OffchainStableCoinFragmentSchema,
+    StableCoinFragment,
+    StableCoinFragmentSchema,
 } from "./stablecoin-fragment";
 
 /**
@@ -47,6 +47,10 @@ const OffchainStableCoinList = hasuraGraphql(
   [OffchainStableCoinFragment]
 );
 
+interface StableCoinListResponse {
+  stableCoins: unknown[];
+}
+
 /**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
  *
@@ -57,9 +61,9 @@ const OffchainStableCoinList = hasuraGraphql(
  * then merges the results to provide a complete view of each stablecoin.
  */
 export const getStableCoinList = cache(async () => {
-  const [theGraphStableCoins, dbAssets] = await Promise.all([
+  const [theGraphStablecoins, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(StableCoinList, {
+      const result = await theGraphClientKits.request<StableCoinListResponse>(StableCoinList, {
         first,
         skip,
       });
@@ -79,7 +83,7 @@ export const getStableCoinList = cache(async () => {
   ]);
 
   // Parse and validate the data using Zod schemas
-  const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
+  const validatedStableCoins = theGraphStablecoins.map((stableCoin) =>
     safeParseWithLogging(StableCoinFragmentSchema, stableCoin, "stablecoin")
   );
 

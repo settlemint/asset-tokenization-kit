@@ -1,13 +1,13 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-    theGraphClientKits,
-    theGraphGraphqlKits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import {
-    AssetActivityFragment,
-    AssetActivityFragmentSchema,
+  AssetActivityFragment,
+  AssetActivityFragmentSchema,
 } from "./asset-activity-fragment";
 
 /**
@@ -32,6 +32,10 @@ export interface AssetActivityOptions {
   limit?: number;
 }
 
+interface AssetActivityResponse {
+  assetActivityDatas: unknown[];
+}
+
 /**
  * Fetches and processes asset activity data
  *
@@ -41,7 +45,7 @@ export interface AssetActivityOptions {
 export const getAssetActivity = cache(
   async ({ limit }: AssetActivityOptions = {}) => {
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientKits.request(AssetActivity, {
+      const response = await theGraphClientKits.request<AssetActivityResponse>(AssetActivity, {
         first,
         skip,
       });

@@ -1,11 +1,11 @@
 import {
-  AccountFragment,
-  AccountFragmentSchema,
+    AccountFragment,
+    AccountFragmentSchema,
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { unstable_cache } from "next/cache";
@@ -75,6 +75,10 @@ export interface UserDetailProps {
   address?: Address;
 }
 
+interface UserActivityResponse {
+  account: unknown;
+}
+
 /**
  * Fetches a user by ID
  *
@@ -124,7 +128,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
     try {
       const activityResult = await unstable_cache(
         () =>
-          theGraphClientKits.request(UserActivity, {
+          theGraphClientKits.request<UserActivityResponse>(UserActivity, {
             id: userData.wallet.toLowerCase(),
           }),
         ["user", "user-activity", userData.wallet.toLowerCase()],

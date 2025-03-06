@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits
+    theGraphClientKits,
+    theGraphGraphqlKits
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-  FundFragment,
-  FundFragmentSchema,
-  OffchainFundFragment,
-  OffchainFundFragmentSchema,
+    FundFragment,
+    FundFragmentSchema,
+    OffchainFundFragment,
+    OffchainFundFragmentSchema,
 } from "./fund-fragment";
 
 /**
@@ -47,6 +47,10 @@ const OffchainFundList = hasuraGraphql(
   [OffchainFundFragment]
 );
 
+interface FundListResponse {
+  funds: unknown[];
+}
+
 /**
  * Fetches a list of funds from both on-chain and off-chain sources
  *
@@ -59,7 +63,7 @@ const OffchainFundList = hasuraGraphql(
 export const getFundList = cache(async () => {
   const [theGraphFunds, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(FundList, {
+      const result = await theGraphClientKits.request<FundListResponse>(FundList, {
         first,
         skip,
       });

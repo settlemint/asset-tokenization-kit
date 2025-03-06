@@ -1,16 +1,16 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-    theGraphClientKits,
-    theGraphGraphqlKits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-    BondFragment,
-    BondFragmentSchema,
-    OffchainBondFragment,
-    OffchainBondFragmentSchema,
+  BondFragment,
+  BondFragmentSchema,
+  OffchainBondFragment,
+  OffchainBondFragmentSchema,
 } from "./bond-fragment";
 
 /**
@@ -49,6 +49,10 @@ export interface BondDetailProps {
   address: Address;
 }
 
+interface BondDetailResponse {
+  bond: unknown;
+}
+
 /**
  * Fetches and combines on-chain and off-chain bond data
  *
@@ -60,7 +64,7 @@ export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbBond] = await Promise.all([
-    theGraphClientKits.request(BondDetail, { id: address }),
+    theGraphClientKits.request<BondDetailResponse>(BondDetail, { id: address }),
     hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
   ]);
 

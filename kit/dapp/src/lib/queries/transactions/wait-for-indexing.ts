@@ -39,6 +39,14 @@ export interface IndexingMonitoringOptions {
   pollingIntervalMs?: number;
 }
 
+interface IndexingStatusResponse {
+  _meta: {
+    indexingStatus: {
+      synced: boolean;
+    };
+  };
+}
+
 /**
  * Waits for a single transaction to be mined
  * @internal Use waitForTransactions for external calls
@@ -61,7 +69,7 @@ export async function waitForIndexing(
       );
     }
 
-    const status = await theGraphClientKits.request(GetIndexingStatus);
+    const status = await theGraphClientKits.request<IndexingStatusResponse>(GetIndexingStatus);
     if (status && typeof status === 'object' && '_meta' in status) {
       const meta = status._meta as { block?: z.infer<typeof IndexingFragmentSchema> | null };
       indexedBlock = meta.block ?? null;

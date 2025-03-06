@@ -1,20 +1,19 @@
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-  AssetFragment,
-  AssetFragmentSchema,
-  OffchainAssetFragment,
-  OffchainAssetFragmentSchema,
-  type Permission,
-  PermissionFragmentSchema,
+    AssetFragment,
+    AssetFragmentSchema,
+    OffchainAssetFragment,
+    OffchainAssetFragmentSchema,
+    type Permission,
+    PermissionFragmentSchema,
 } from "./asset-fragment";
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
@@ -60,6 +59,10 @@ export interface PermissionWithRoles extends Permission {
   roles: Role[];
 }
 
+interface AssetDetailResponse {
+  asset: unknown;
+}
+
 /**
  * Fetches and combines on-chain and off-chain asset data with permission information
  *
@@ -70,39 +73,26 @@ export interface PermissionWithRoles extends Permission {
 export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const normalizedAddress = getAddress(address);
 
-  const [onchainData, offchainData] = await Promise.all([
-    unstable_cache(
-      () => theGraphClientKits.request(AssetDetail, { id: address }),
-      ["asset", "asset-detail", address],
-      {
-        revalidate: 60 * 60 * 24, // 24 hours
-      }
-    )(),
-    unstable_cache(
-      () =>
-        hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
-      ["asset", "offchain-asset-detail", normalizedAddress],
-      {
-        revalidate: 60 * 60 * 24, // 24 hours
-      }
-    )(),
+  const [data, dbAsset] = await Promise.all([
+    theGraphClientKits.request<AssetDetailResponse>(AssetDetail, { id: address }),
+    hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
   ]);
 
-  if (!onchainData.asset) {
+  if (!data.asset) {
     throw new Error(`Asset ${address} not found`);
   }
 
   // Parse and validate the asset data with Zod schema
   const validatedAsset = safeParseWithLogging(
     AssetFragmentSchema,
-    onchainData.asset,
+    data.asset,
     "asset"
   );
 
-  const offchainAsset = offchainData.asset[0]
+  const offchainAsset = dbAsset.asset[0]
     ? safeParseWithLogging(
         OffchainAssetFragmentSchema,
-        offchainData.asset[0],
+        dbAsset.asset[0],
         "offchain asset"
       )
     : undefined;

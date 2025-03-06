@@ -1,16 +1,16 @@
 import {
-  type Interval,
-  eachDayOfInterval,
-  eachHourOfInterval,
-  format,
-  isSameDay,
-  isSameHour,
-  isSameMonth,
-  startOfDay,
-  startOfHour,
-  subDays,
-  subMonths,
-  subWeeks,
+    type Interval,
+    eachDayOfInterval,
+    eachHourOfInterval,
+    format,
+    isSameDay,
+    isSameHour,
+    isSameMonth,
+    startOfDay,
+    startOfHour,
+    subDays,
+    subMonths,
+    subWeeks,
 } from "date-fns";
 import { getDateFromTimestamp } from "./utils/date";
 

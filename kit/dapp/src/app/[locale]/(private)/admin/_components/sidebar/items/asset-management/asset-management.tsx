@@ -1,4 +1,3 @@
-import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
 import { type NavItem, NavMain } from "@/components/layout/nav-main";
 import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
@@ -50,12 +49,12 @@ export async function AssetManagement() {
     const assetType = section.assetType;
     const assetsOfSection = data[assetType];
 
-    const subItems = assetsOfSection.records.map((asset) => ({
+    const subItems = (assetsOfSection.records as Array<{ id: string; name: string; symbol?: string }>).map((asset) => ({
       id: asset.id,
       label: asset.name,
-      badge: asset.symbol ?? asset.id,
-      path: `${section.path}/${asset.id}`,
-      icon: <AddressAvatar address={asset.id} size="tiny" />,
+      badge: asset.symbol || "",
+      path: `/admin/asset-management/${assetType}/${asset.id}`,
+      icon: <AssetTypeIcon type={assetType} />,
     }));
 
     // Create a predictable object structure to ensure consistent rendering between server and client

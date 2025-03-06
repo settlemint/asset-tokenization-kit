@@ -1,14 +1,14 @@
 import {
-    theGraphClientKits,
-    theGraphGraphqlKits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "./asset-balance-fragment";
 
 /**
@@ -35,6 +35,10 @@ export interface AssetBalanceDetailProps {
   account?: Address;
 }
 
+interface AssetBalanceDetailResponse {
+  assetBalances: unknown[];
+}
+
 /**
  * Fetches and processes asset balance data for a specific address and account
  *
@@ -50,7 +54,7 @@ export const getAssetBalanceDetail = cache(
     const normalizedAddress = getAddress(address);
     const normalizedAccount = getAddress(account);
 
-    const result = await theGraphClientKits.request(AssetBalanceDetail, {
+    const result = await theGraphClientKits.request<AssetBalanceDetailResponse>(AssetBalanceDetail, {
       address: normalizedAddress,
       account: normalizedAccount,
     });

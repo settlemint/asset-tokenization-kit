@@ -1,16 +1,16 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientKits,
-  theGraphGraphqlKits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-  FundFragment,
-  FundFragmentSchema,
-  OffchainFundFragment,
-  OffchainFundFragmentSchema,
+    FundFragment,
+    FundFragmentSchema,
+    OffchainFundFragment,
+    OffchainFundFragmentSchema,
 } from "./fund-fragment";
 
 /**
@@ -49,6 +49,10 @@ export interface FundDetailProps {
   address: Address;
 }
 
+interface FundDetailResponse {
+  fund: unknown;
+}
+
 /**
  * Fetches and combines on-chain and off-chain fund data
  *
@@ -60,7 +64,7 @@ export const getFundDetail = cache(async ({ address }: FundDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbFund] = await Promise.all([
-    theGraphClientKits.request(FundDetail, { id: address }),
+    theGraphClientKits.request<FundDetailResponse>(FundDetail, { id: address }),
     hasuraClient.request(OffchainFundDetail, { id: normalizedAddress }),
   ]);
 

@@ -1,8 +1,6 @@
-
 import { theGraphClientKits, theGraphGraphqlKits } from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParseWithLogging } from "@/lib/utils/zod";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { cache } from "react";
 import { isAddress } from "viem";
 import { AssetFragment, AssetFragmentSchema } from "./asset-fragment";
@@ -37,6 +35,15 @@ export interface AssetSearchProps {
   searchTerm: string;
 }
 
+interface AssetSearchResponse {
+  assets: unknown[];
+}
+
+interface AssetSearchVariables {
+  search: string;
+  searchAddress?: string;
+}
+
 /**
  * Searches for assets by address, name, or symbol
  *
@@ -50,7 +57,8 @@ export const getAssetSearch = cache(
     if (!sanitizedSearchTerm) {
       return [];
     }
-    const search: VariablesOf<typeof AssetSearch> = {
+
+    const search: AssetSearchVariables = {
       search: sanitizedSearchTerm,
     };
 
@@ -58,7 +66,7 @@ export const getAssetSearch = cache(
       search.searchAddress = sanitizedSearchTerm;
     }
 
-    const { assets } = await theGraphClientKits.request(
+    const { assets } = await theGraphClientKits.request<AssetSearchResponse>(
       AssetSearch,
       search
     );

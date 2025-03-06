@@ -131,6 +131,16 @@ export interface AssetEventsListProps {
   limit?: number;
 }
 
+interface AssetEventsListResponse {
+  assetEvents: Array<{
+    __typename: string;
+    id: string;
+    timestamp: string;
+    emitter: { id: string };
+    sender?: { id: string };
+  }>;
+}
+
 /**
  * Fetches and processes asset event data
  *
@@ -150,7 +160,7 @@ export const getAssetEventsList = cache(
     }
 
     const events = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(AssetEventsList, {
+      const result = await theGraphClientKits.request<AssetEventsListResponse>(AssetEventsList, {
         first,
         skip,
         where,

@@ -54,7 +54,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
 
   return (
     <div className="flex flex-col gap-1">
-      {balances.map((balance, index) => (
+      {balances.map((balance: Awaited<ReturnType<typeof getAssetBalanceList>>[number], index: number) => (
         <div key={index} className="flex items-center justify-between">
           <span className="text-sm font-medium">{balance.asset.symbol}</span>
           <span className="text-sm text-muted-foreground">{balance.value}</span>

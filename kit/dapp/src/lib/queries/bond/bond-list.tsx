@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-    theGraphClientKits,
-    theGraphGraphqlKits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-    BondFragment,
-    BondFragmentSchema,
-    OffchainBondFragment,
-    OffchainBondFragmentSchema,
+  BondFragment,
+  BondFragmentSchema,
+  OffchainBondFragment,
+  OffchainBondFragmentSchema,
 } from "./bond-fragment";
 
 /**
@@ -47,6 +47,10 @@ const OffchainBondList = hasuraGraphql(
   [OffchainBondFragment]
 );
 
+interface BondListResponse {
+  bonds: unknown[];
+}
+
 /**
  * Fetches a list of bonds from both on-chain and off-chain sources
  *
@@ -59,7 +63,7 @@ const OffchainBondList = hasuraGraphql(
 export const getBondList = cache(async () => {
   const [theGraphBonds, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(BondList, {
+      const result = await theGraphClientKits.request<BondListResponse>(BondList, {
         first,
         skip,
       });

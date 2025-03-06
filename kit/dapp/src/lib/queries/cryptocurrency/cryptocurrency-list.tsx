@@ -47,6 +47,10 @@ const OffchainCryptocurrencyList = hasuraGraphql(
   [OffchainCryptoCurrencyFragment]
 );
 
+interface CryptoCurrencyListResponse {
+  cryptoCurrencies: unknown[];
+}
+
 /**
  * Fetches a list of cryptocurrencys from both on-chain and off-chain sources
  *
@@ -57,15 +61,12 @@ const OffchainCryptocurrencyList = hasuraGraphql(
  * then merges the results to provide a complete view of each cryptocurrency.
  */
 export const getCryptoCurrencyList = cache(async () => {
-  const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
+  const [theGraphCryptocurrencies, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKits.request(
-        CryptoCurrencyList,
-        {
-          first,
-          skip,
-        }
-      );
+      const result = await theGraphClientKits.request<CryptoCurrencyListResponse>(CryptoCurrencyList, {
+        first,
+        skip,
+      });
 
       const cryptoCurrencies = result.cryptoCurrencies || [];
 
@@ -82,7 +83,7 @@ export const getCryptoCurrencyList = cache(async () => {
   ]);
 
   // Parse and validate the data using Zod schemas
-  const validatedCryptoCurrencies = theGraphCryptoCurrencies.map(
+  const validatedCryptoCurrencies = theGraphCryptocurrencies.map(
     (cryptocurrency) =>
       safeParseWithLogging(
         CryptoCurrencyFragmentSchema,
