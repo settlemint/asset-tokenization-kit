@@ -63,17 +63,19 @@ jobs:
       - name: Start dev server
         run: |
           echo "Starting dev server..."
-          nohup bun dev > server.log 2>&1 &
+          nohup bun dev --port 3000 --hostname 0.0.0.0 > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
-
-          # Wait for up to 3 minutes for the server to start
-          timeout_seconds=180
+          echo "Waiting 30 seconds for Next.js to initialize all routes..."
+          sleep 30
+          echo "Performing initial server check..."
+          curl -v http://localhost:3000/ || echo "Initial check failed, will retry"
+          timeout_seconds=120
           elapsed=0
           success=false
 
           while [ $elapsed -lt $timeout_seconds ]; do
             echo "Checking server status (${elapsed}s elapsed)..."
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "failed")
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "failed")
 
             if [ "$status" = "200" ]; then
               echo "Server is ready! Status: $status"
@@ -81,17 +83,16 @@ jobs:
               break
             fi
 
-            # Show recent server logs for debugging
             echo "Server not ready yet (status: $status). Recent logs:"
             tail -n 10 server.log || true
-
-            sleep 10
-            elapsed=$((elapsed + 10))
+            sleep 15
+            elapsed=$((elapsed + 15))
           done
-
           if [ "$success" = false ]; then
             echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
             cat server.log
+            echo "Attempting final direct check with verbose output:"
+            curl -v http://localhost:3000/ || echo "Final check failed"
             exit 1
           fi
 
