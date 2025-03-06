@@ -1,6 +1,8 @@
 import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
 import { routing } from "@/i18n/routing";
+import { AuthProvider } from "@/lib/auth/_components/AuthProvider";
+import { getEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -52,6 +54,8 @@ export default async function RootLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
 
+  const env = getEnvironment();
+
   return (
     <html
       lang={locale}
@@ -66,7 +70,19 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
-            <TransitionProvider>{children}</TransitionProvider>
+            <TransitionProvider>
+              <AuthProvider
+                emailEnabled={!!env.RESEND_API_KEY}
+                googleEnabled={
+                  !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
+                }
+                githubEnabled={
+                  !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
+                }
+              >
+                {children}
+              </AuthProvider>
+            </TransitionProvider>
           </ThemeProvider>
           <Toaster richColors />
         </NextIntlClientProvider>

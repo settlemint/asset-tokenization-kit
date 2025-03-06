@@ -55,6 +55,16 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load secrets
+        uses: 1password/load-secrets-action@581a835fb51b8e7ec56b71cf2ffddd7e68bb25e0 # v2
+        env:
+          RESEND_API_KEY: op://platform/resend/password
+
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis abi-output
 

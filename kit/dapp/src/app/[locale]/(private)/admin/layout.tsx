@@ -1,6 +1,6 @@
 import NavInset from "@/components/layout/nav-inset";
 import NavProvider from "@/components/layout/nav-provider";
-import { getUser } from "@/lib/auth/utils";
+import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
@@ -25,14 +25,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function AdminLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
-  await getUser(locale, ["admin", "issuer"]);
-
+export default function AdminLayout({ children }: LayoutProps) {
   return (
-    <NavProvider>
-      <AdminSidebar />
-      <NavInset>{children}</NavInset>
-    </NavProvider>
+    <>
+      <RedirectToSignIn />
+      <SignedIn>
+        <NavProvider>
+          <AdminSidebar />
+          <NavInset>{children}</NavInset>
+        </NavProvider>
+      </SignedIn>
+    </>
   );
 }

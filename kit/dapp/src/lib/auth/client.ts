@@ -1,9 +1,11 @@
 import {
   adminClient,
   inferAdditionalFields,
+  magicLinkClient,
   passkeyClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { getEnvironment } from "../config/environment";
 import type { auth } from "./auth";
 
 /**
@@ -15,12 +17,8 @@ const getBaseURL = (): string => {
     return window.location.origin;
   }
 
-  const envURL = process.env.BETTER_AUTH_URL;
-  if (!envURL) {
-    return "http://localhost:3000";
-  }
-
-  return envURL;
+  const env = getEnvironment();
+  return env.BETTER_AUTH_URL;
 };
 
 /**
@@ -32,5 +30,6 @@ export const authClient = createAuthClient({
     inferAdditionalFields<typeof auth>(),
     adminClient(),
     passkeyClient(),
+    magicLinkClient(),
   ],
 });
