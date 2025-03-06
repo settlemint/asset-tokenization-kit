@@ -47,7 +47,7 @@ echo "FixedYieldFactory: $FIXED_YIELD_FACTORY_ADDRESS"
 echo "---"
 
 bun graph codegen
-bun graph create --node http://localhost:8020 starterkit
-bun graph deploy --version-label v1.0.$(date +%s) --node http://localhost:8020 --ipfs https://ipfs.console.settlemint.com starterkit subgraph.yaml
+bun graph create --node http://localhost:8020 kit
+bun graph deploy --version-label v1.0.$(date +%s) --node http://localhost:8020 --ipfs https://ipfs.console.settlemint.com kit subgraph.yaml
 
-echo 'Check it out on http://localhost:8000/subgraphs/name/starterkit/'
+echo 'Check it out on http://localhost:8000/subgraphs/name/kit/'
