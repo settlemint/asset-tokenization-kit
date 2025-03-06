@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth/auth";
 import type { User } from "better-auth";
 import { createSafeActionClient } from "next-safe-action";
 import { headers } from "next/headers";
+import { unauthorized } from "next/navigation";
 import type { Address } from "viem";
 
 export const action = createSafeActionClient({
@@ -28,7 +29,7 @@ export const action = createSafeActionClient({
     });
 
     if (!session?.user) {
-      throw new Error("Unauthorized");
+      unauthorized();
     }
 
     return next({
@@ -46,13 +47,26 @@ function getErrorMessage(error: Error): string {
     return "An unexpected error occurred";
   }
 
-  const msg = error.message;
-  switch (true) {
-    case msg.includes("AccessControlUnauthorizedAccount"):
-      return "You are not authorized to perform this action";
-    default:
-      return "An unexpected error occurred";
+  if (error.message.includes("Invalid challenge response")) {
+    return "Invalid pincode or OTP";
   }
+
+  const revertReason = getRevertReason(error);
+  if (revertReason?.includes("AccessControlUnauthorizedAccount")) {
+    return "You are not authorized to perform this action";
+  }
+  return revertReason ?? "An unexpected error occurred";
+}
+
+const REVERT_REGEX =
+  /^The\s+contract\s+function\s+\".*?\"\s+reverted\.\s+Error:\s+(.*?)\(/i;
+
+function getRevertReason(error: Error): string | undefined {
+  const match = error.message.replace("\n", " ").match(REVERT_REGEX);
+  if (match) {
+    return match[1];
+  }
+  return undefined;
 }
 
 /**

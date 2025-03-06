@@ -171,7 +171,8 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates and transforms a string to a BigInt
    */
-  bigInt: () => z.number().or(z.string()).pipe(z.coerce.bigint()),
+  bigInt: () =>
+    z.number().or(z.string()).or(z.bigint()).pipe(z.coerce.bigint()),
 
   /**
    * Validates and transforms a string/number to a BigNumber
