@@ -634,15 +634,15 @@
       "widgets": {
         "assets": {
           "label": "Assets",
-          "subtext": "Total assets: {totalAssets}"
+          "subtext": "{bonds} bonds, {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
         },
         "transactions": {
           "label": "Transactions",
-          "subtext": "Total transactions: {totalTransactions}"
+          "subtext": "{count} transactions processed in the last {days} days"
         },
         "users": {
           "label": "Users",
-          "subtext": "Total users: {totalUsers}"
+          "subtext": "{count} users in the last {days} days"
         }
       }
     },
