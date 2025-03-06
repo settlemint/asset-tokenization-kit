@@ -51,6 +51,13 @@ export const AssetFragment = theGraphGraphqlStarterkits(
     userManagers {
       ...PermissionFragment
     }
+    holders {
+      id
+      value
+      account {
+        id
+      }
+    }
   }
 `,
   [PermissionFragment]
@@ -68,6 +75,15 @@ export const AssetFragmentSchema = z.object({
   admins: z.array(PermissionFragmentSchema),
   supplyManagers: z.array(PermissionFragmentSchema),
   userManagers: z.array(PermissionFragmentSchema),
+  holders: z.array(
+    z.object({
+      id: z.string(),
+      value: z.string(),
+      account: z.object({
+        id: z.address(),
+      }),
+    })
+  ),
 });
 
 /**

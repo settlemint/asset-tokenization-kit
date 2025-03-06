@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/use-debounce";
+import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
@@ -34,7 +35,12 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
     defaultValue?: string;
+    onSelect: (asset: Asset) => void;
   };
+
+type Asset = MyAsset["asset"] & {
+  holders: { value: number; account: { id: string } }[];
+};
 
 export function FormAssets<T extends FieldValues>({
   label,
@@ -42,6 +48,7 @@ export function FormAssets<T extends FieldValues>({
   required,
   placeholder,
   defaultValue,
+  onSelect,
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
@@ -93,6 +100,7 @@ export function FormAssets<T extends FieldValues>({
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
+                    onSelect={(asset) => onSelect(asset as unknown as Asset)}
                   />
                 </Command>
               </PopoverContent>
@@ -119,10 +127,12 @@ function FormUsersList({
   onValueChange,
   setOpen,
   value,
+  onSelect,
 }: {
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
+  onSelect: (asset: MyAsset) => void;
 }) {
   const search = (useCommandState((state) => state.search) || "") as string;
   const debounced = useDebounce<string>(search, 250);
@@ -142,6 +152,7 @@ function FormUsersList({
     setIsLoading(true);
     try {
       const results = await getAssetSearch({ searchTerm: debounced });
+      console.log("results", results);
       setAssets(results);
     } catch (error) {
       console.error("Error fetching assets:", error);
@@ -168,11 +179,14 @@ function FormUsersList({
 
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
-    (currentValue: string) => {
+    (currentValue: string, asset: MyAsset) => {
+      if (onSelect) {
+        onSelect(asset);
+      }
       onValueChange(currentValue);
       setOpen(false);
     },
-    [onValueChange, setOpen]
+    [onValueChange, setOpen, onSelect]
   );
 
   // Memoized asset item component to prevent re-renders
@@ -212,7 +226,9 @@ function FormUsersList({
           key={asset.id}
           asset={asset}
           value={value}
-          onSelect={handleSelect}
+          onSelect={(currentValue) =>
+            handleSelect(currentValue, asset as unknown as MyAsset)
+          }
         />
       )),
     [assets, value, handleSelect, AssetItem]

@@ -15,7 +15,7 @@ export function MyAssetsHeader({ data }: MyAssetsHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <MyAssetsCount total={data.total} />
-      <MyAssetsTransferForm assets={data.balances} />
+      <MyAssetsTransferForm />
     </div>
   );
 }

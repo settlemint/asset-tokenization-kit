@@ -2274,6 +2274,7 @@
       "unknown": "Unknown"
     },
     "transfer-form": {
+      "asset-types": "{type} {name} ({symbol})",
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
@@ -2290,7 +2291,8 @@
         "asset-description": "Select an asset from your portfolio",
         "asset-label": "Asset",
         "description": "Choose the asset you want to transfer",
-        "title": "Select Asset"
+        "title": "Select Asset",
+        "trigger-label": "Transfer Assets"
       },
       "summary": {
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",

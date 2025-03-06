@@ -1,47 +1,52 @@
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface SelectAssetProps {
-  assets: MyAsset[];
-  onSelect: (asset: MyAsset) => void;
+  onSelect: (asset: Asset) => void;
 }
 
+type Asset = MyAsset["asset"] & {
+  holders: { value: number; account: { id: string } }[];
+};
+
 export function SelectAsset({ onSelect }: SelectAssetProps) {
-  const { control } = useFormContext();
+  const { control, getValues } = useFormContext();
   const t = useTranslations("portfolio.transfer-form.select-asset");
-  const [selectedAsset] = useState<MyAsset | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+
+  useEffect(() => {
+    if (onSelect && selectedAsset) {
+      onSelect(selectedAsset);
+    }
+  }, [selectedAsset, onSelect]);
 
   const handleConfirm = () => {
-    if (selectedAsset) {
+    if (onSelect && selectedAsset) {
       onSelect(selectedAsset);
+    } else {
+      setSelectedAsset(selectedAsset);
     }
   };
 
   return (
-    <Card className="mt-6">
-      <CardContent className="pt-6">
-        <div className="space-y-2">
-          <Label>Asset</Label>
-          <FormAssets
-            control={control}
-            name="asset"
-            label={t("asset-label")}
-            description={t("asset-description")}
-          />
-        </div>
+    <>
+      <FormAssets
+        control={control}
+        name="asset"
+        label={t("asset-label")}
+        description={t("asset-description")}
+        onSelect={onSelect}
+      />
 
-        <div className="mt-6 text-right">
-          <Button onClick={handleConfirm} disabled={!selectedAsset}>
-            Confirm
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="mt-6 text-right">
+        <Button onClick={handleConfirm} disabled={!getValues()}>
+          Confirm
+        </Button>
+      </div>
+    </>
   );
 }
