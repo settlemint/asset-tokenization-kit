@@ -5,7 +5,7 @@ import { emailHarmony } from "better-auth-harmony";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
@@ -166,5 +166,10 @@ export const auth = betterAuth({
     }),
     emailHarmony(),
     nextCookies(),
+    magicLink({
+      sendMagicLink: async ({ email, token, url }, request) => {
+        // send email to user
+      },
+    }),
   ],
 });
