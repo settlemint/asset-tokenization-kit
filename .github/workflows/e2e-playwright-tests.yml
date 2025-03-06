@@ -54,13 +54,48 @@ jobs:
         run: bun install
         working-directory: kit/dapp
 
+      - name: Generate SettleMint code and addresses
+        run: |
+          bun codegen:settlemint
+          bun addresses
+        working-directory: kit/dapp
+
       - name: Start dev server
         run: |
-          nohup bun run dev > server.log 2>&1 &
+          echo "Starting dev server..."
+          nohup bun dev > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
-          echo "Waiting for dev server to be ready..."
-          timeout 90 bash -c 'until curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep "200"; do echo "Waiting for server..."; sleep 3; done'
-          echo "Dev server is ready!"
+
+          # Wait for up to 3 minutes for the server to start
+          timeout_seconds=180
+          elapsed=0
+          success=false
+
+          while [ $elapsed -lt $timeout_seconds ]; do
+            echo "Checking server status (${elapsed}s elapsed)..."
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "failed")
+
+            if [ "$status" = "200" ]; then
+              echo "Server is ready! Status: $status"
+              success=true
+              break
+            fi
+
+            # Show recent server logs for debugging
+            echo "Server not ready yet (status: $status). Recent logs:"
+            tail -n 10 server.log || true
+
+            sleep 10
+            elapsed=$((elapsed + 10))
+          done
+
+          if [ "$success" = false ]; then
+            echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
+            cat server.log
+            exit 1
+          fi
+
+          echo "Dev server is ready at http://localhost:3000!"
         working-directory: kit/dapp
 
       - name: Run Playwright tests
