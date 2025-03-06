@@ -76,12 +76,14 @@ export function EvmAddress({
   copyToClipboard = false,
 }: EvmAddressProps) {
   // State for user and asset data
-  const [user, setUser] = useState<
-    Awaited<ReturnType<typeof getUserSearch>>[number] | null
-  >();
-  const [asset, setAsset] = useState<
-    Awaited<ReturnType<typeof getAssetSearch>>[number] | null
-  >();
+  const [user, setUser] = useState<{
+    name?: string;
+    email?: string;
+  } | null>(null);
+  const [asset, setAsset] = useState<{
+    name?: string;
+    symbol?: string;
+  } | null>(null);
 
   // Effect to fetch user and asset data
   useEffect(() => {
