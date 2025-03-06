@@ -57,7 +57,7 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         bytes32 salt = _calculateSalt(name, symbol, decimals);
         address predicted =
             predictAddress(_msgSender(), name, symbol, decimals, cap, maturityDate, faceValue, underlyingAsset);
-        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
+        if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
             name, symbol, decimals, _msgSender(), cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()
@@ -118,5 +118,13 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
     /// @return The calculated salt for CREATE2 deployment
     function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(name, symbol, decimals));
+    }
+
+    /// @notice Checks if an address was deployed by this factory
+    /// @dev Returns true if the address was created by this factory, false otherwise
+    /// @param predicted The address to check
+    /// @return True if the address was created by this factory, false otherwise
+    function isAddressDeployed(address predicted) public view returns (bool) {
+        return isFactoryToken[predicted];
     }
 }
