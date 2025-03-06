@@ -1,7 +1,7 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { addSeconds } from "date-fns";
@@ -17,7 +17,7 @@ import {
 /**
  * GraphQL query to fetch on-chain stablecoin details from The Graph
  */
-const StableCoinDetail = theGraphGraphqlStarterkits(
+const StableCoinDetail = theGraphGraphqlKits(
   `
   query StableCoinDetail($id: ID!) {
     stableCoin(id: $id) {
@@ -62,7 +62,7 @@ export const getStableCoinDetail = cache(
     const normalizedAddress = getAddress(address);
 
     const [data, dbStableCoin] = await Promise.all([
-      theGraphClientStarterkits.request(StableCoinDetail, { id: address }),
+      theGraphClientKits.request(StableCoinDetail, { id: address }),
       hasuraClient.request(OffchainStableCoinDetail, { id: normalizedAddress }),
     ]);
 

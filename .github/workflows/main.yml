@@ -86,7 +86,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/settlemint/starterkit-asset-tokenization
+            ghcr.io/settlemint/kit-asset-tokenization
           tags: |
             type=raw,value=${{ env.VERSION }}
 

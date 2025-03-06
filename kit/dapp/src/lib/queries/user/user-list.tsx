@@ -5,8 +5,8 @@ import {
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
@@ -35,7 +35,7 @@ const UserList = hasuraGraphql(
  * @remarks
  * Retrieves accounts with their last activity timestamp
  */
-const UserActivity = theGraphGraphqlStarterkits(
+const UserActivity = theGraphGraphqlKits(
   `
   query UserActivity($first: Int, $skip: Int) {
     accounts(where: { isContract: false }, first: $first, skip: $skip) {
@@ -63,7 +63,7 @@ export const getUserList = cache(async () => {
       return result.user || [];
     }),
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(UserActivity, {
+      const result = await theGraphClientKits.request(UserActivity, {
         first,
         skip,
       });

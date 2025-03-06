@@ -1,18 +1,18 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKits,
+    theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-  BondFragment,
-  BondFragmentSchema,
-  OffchainBondFragment,
-  OffchainBondFragmentSchema,
+    BondFragment,
+    BondFragmentSchema,
+    OffchainBondFragment,
+    OffchainBondFragmentSchema,
 } from "./bond-fragment";
 
 /**
@@ -21,7 +21,7 @@ import {
  * @remarks
  * Retrieves bonds ordered by total supply in descending order
  */
-const BondList = theGraphGraphqlStarterkits(
+const BondList = theGraphGraphqlKits(
   `
   query BondList($first: Int, $skip: Int) {
     bonds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
@@ -60,7 +60,7 @@ const OffchainBondList = hasuraGraphql(
 export const getBondList = cache(async () => {
   const [theGraphBonds, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(BondList, {
+      const result = await theGraphClientKits.request(BondList, {
         first,
         skip,
       });

@@ -1,4 +1,4 @@
-import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKits } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -7,7 +7,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @remarks
  * Contains common fields shared by all asset events
  */
-export const AssetEventFragment = theGraphGraphqlStarterkits(`
+export const AssetEventFragment = theGraphGraphqlKits(`
   fragment AssetEventFragment on AssetEvent {
     id
     emitter {
@@ -34,7 +34,7 @@ export const AssetEventFragmentSchema = z.object({
 /**
  * GraphQL fragment for asset creation events
  */
-export const AssetCreatedEventFragment = theGraphGraphqlStarterkits(`
+export const AssetCreatedEventFragment = theGraphGraphqlKits(`
   fragment AssetCreatedEventFragment on AssetCreatedEvent {
     __typename
     sender {
@@ -57,7 +57,7 @@ export const AssetCreatedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for approval events
  */
-export const ApprovalEventFragment = theGraphGraphqlStarterkits(`
+export const ApprovalEventFragment = theGraphGraphqlKits(`
   fragment ApprovalEventFragment on ApprovalEvent {
     __typename
     sender {
@@ -94,7 +94,7 @@ export const ApprovalEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for bond matured events
  */
-export const BondMaturedEventFragment = theGraphGraphqlStarterkits(`
+export const BondMaturedEventFragment = theGraphGraphqlKits(`
   fragment BondMaturedEventFragment on BondMaturedEvent {
     __typename
     sender {
@@ -117,7 +117,7 @@ export const BondMaturedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for bond redemption events
  */
-export const BondRedeemedEventFragment = theGraphGraphqlStarterkits(`
+export const BondRedeemedEventFragment = theGraphGraphqlKits(`
   fragment BondRedeemedEventFragment on BondRedeemedEvent {
     __typename
     sender {
@@ -150,7 +150,7 @@ export const BondRedeemedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for burn events
  */
-export const BurnEventFragment = theGraphGraphqlStarterkits(`
+export const BurnEventFragment = theGraphGraphqlKits(`
   fragment BurnEventFragment on BurnEvent {
     __typename
     sender {
@@ -181,7 +181,7 @@ export const BurnEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for collateral update events
  */
-export const CollateralUpdatedEventFragment = theGraphGraphqlStarterkits(`
+export const CollateralUpdatedEventFragment = theGraphGraphqlKits(`
   fragment CollateralUpdatedEventFragment on CollateralUpdatedEvent {
     __typename
     sender {
@@ -209,7 +209,7 @@ export const CollateralUpdatedEventFragmentSchema =
 /**
  * GraphQL fragment for management fee collection events
  */
-export const ManagementFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
+export const ManagementFeeCollectedEventFragment = theGraphGraphqlKits(`
   fragment ManagementFeeCollectedEventFragment on ManagementFeeCollectedEvent {
     __typename
     sender {
@@ -235,7 +235,7 @@ export const ManagementFeeCollectedEventFragmentSchema =
 /**
  * GraphQL fragment for mint events
  */
-export const MintEventFragment = theGraphGraphqlStarterkits(`
+export const MintEventFragment = theGraphGraphqlKits(`
   fragment MintEventFragment on MintEvent {
     __typename
     sender {
@@ -266,7 +266,7 @@ export const MintEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for paused events
  */
-export const PausedEventFragment = theGraphGraphqlStarterkits(`
+export const PausedEventFragment = theGraphGraphqlKits(`
   fragment PausedEventFragment on PausedEvent {
     __typename
     sender {
@@ -289,7 +289,7 @@ export const PausedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for performance fee collection events
  */
-export const PerformanceFeeCollectedEventFragment = theGraphGraphqlStarterkits(`
+export const PerformanceFeeCollectedEventFragment = theGraphGraphqlKits(`
   fragment PerformanceFeeCollectedEventFragment on PerformanceFeeCollectedEvent {
     __typename
     sender {
@@ -315,7 +315,7 @@ export const PerformanceFeeCollectedEventFragmentSchema =
 /**
  * GraphQL fragment for role admin change events
  */
-export const RoleAdminChangedEventFragment = theGraphGraphqlStarterkits(`
+export const RoleAdminChangedEventFragment = theGraphGraphqlKits(`
   fragment RoleAdminChangedEventFragment on RoleAdminChangedEvent {
     __typename
     sender {
@@ -345,7 +345,7 @@ export const RoleAdminChangedEventFragmentSchema =
 /**
  * GraphQL fragment for role granted events
  */
-export const RoleGrantedEventFragment = theGraphGraphqlStarterkits(`
+export const RoleGrantedEventFragment = theGraphGraphqlKits(`
   fragment RoleGrantedEventFragment on RoleGrantedEvent {
     __typename
     sender {
@@ -376,7 +376,7 @@ export const RoleGrantedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for role revoked events
  */
-export const RoleRevokedEventFragment = theGraphGraphqlStarterkits(`
+export const RoleRevokedEventFragment = theGraphGraphqlKits(`
   fragment RoleRevokedEventFragment on RoleRevokedEvent {
     __typename
     sender {
@@ -407,7 +407,7 @@ export const RoleRevokedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for token withdrawal events
  */
-export const TokenWithdrawnEventFragment = theGraphGraphqlStarterkits(`
+export const TokenWithdrawnEventFragment = theGraphGraphqlKits(`
   fragment TokenWithdrawnEventFragment on TokenWithdrawnEvent {
     __typename
     sender {
@@ -449,7 +449,7 @@ export const TokenWithdrawnEventFragmentSchema =
 /**
  * GraphQL fragment for token freezing events
  */
-export const TokensFrozenEventFragment = theGraphGraphqlStarterkits(`
+export const TokensFrozenEventFragment = theGraphGraphqlKits(`
   fragment TokensFrozenEventFragment on TokensFrozenEvent {
     __typename
     sender {
@@ -480,7 +480,7 @@ export const TokensFrozenEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for transfer events
  */
-export const TransferEventFragment = theGraphGraphqlStarterkits(`
+export const TransferEventFragment = theGraphGraphqlKits(`
   fragment TransferEventFragment on TransferEvent {
     __typename
     to {
@@ -517,7 +517,7 @@ export const TransferEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for unpaused events
  */
-export const UnpausedEventFragment = theGraphGraphqlStarterkits(`
+export const UnpausedEventFragment = theGraphGraphqlKits(`
   fragment UnpausedEventFragment on UnpausedEvent {
     __typename
     sender {
@@ -540,7 +540,7 @@ export const UnpausedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for user blocked events
  */
-export const UserBlockedEventFragment = theGraphGraphqlStarterkits(`
+export const UserBlockedEventFragment = theGraphGraphqlKits(`
   fragment UserBlockedEventFragment on UserBlockedEvent {
     __typename
     sender {
@@ -569,7 +569,7 @@ export const UserBlockedEventFragmentSchema = AssetEventFragmentSchema.extend({
 /**
  * GraphQL fragment for user unblocked events
  */
-export const UserUnblockedEventFragment = theGraphGraphqlStarterkits(`
+export const UserUnblockedEventFragment = theGraphGraphqlKits(`
   fragment UserUnblockedEventFragment on UserUnblockedEvent {
     __typename
     sender {
@@ -600,7 +600,7 @@ export const UserUnblockedEventFragmentSchema = AssetEventFragmentSchema.extend(
 /**
  * GraphQL fragment for underlying asset top-up events
  */
-export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlStarterkits(`
+export const UnderlyingAssetTopUpEventFragment = theGraphGraphqlKits(`
   fragment UnderlyingAssetTopUpEventFragment on UnderlyingAssetTopUpEvent {
     __typename
     sender {
@@ -625,7 +625,7 @@ export const UnderlyingAssetTopUpEventFragmentSchema =
  * GraphQL fragment for underlying asset withdrawal events
  */
 export const UnderlyingAssetWithdrawnEventFragment =
-  theGraphGraphqlStarterkits(`
+  theGraphGraphqlKits(`
   fragment UnderlyingAssetWithdrawnEventFragment on UnderlyingAssetWithdrawnEvent {
     __typename
     sender {

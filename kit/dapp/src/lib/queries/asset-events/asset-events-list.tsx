@@ -1,8 +1,8 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetEventFragment } from "@/lib/queries/asset-events/asset-events-fragments";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+  theGraphClientKits,
+  theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging } from "@/lib/utils/zod";
@@ -58,7 +58,7 @@ import {
 /**
  * GraphQL query to fetch asset events
  */
-const AssetEventsList = theGraphGraphqlStarterkits(
+const AssetEventsList = theGraphGraphqlKits(
   `
 query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
   assetEvents(
@@ -150,7 +150,7 @@ export const getAssetEventsList = cache(
     }
 
     const events = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetEventsList, {
+      const result = await theGraphClientKits.request(AssetEventsList, {
         first,
         skip,
         where,

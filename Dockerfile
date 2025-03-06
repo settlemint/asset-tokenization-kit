@@ -30,7 +30,7 @@ RUN mkdir -p /root/.svm && \
   bun run compile:forge
 
 FROM busybox:1.37.0
-LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
+LABEL org.opencontainers.image.source="https://github.com/settlemint/kit-asset-tokenization"
 
 COPY --from=build /usecase /usecase
 COPY --from=build /root/.svm /usecase-svm
