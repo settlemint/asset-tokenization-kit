@@ -18,16 +18,14 @@ import { z } from "zod";
 
 const signUpSchema = z
   .object({
-    email: z.string().email("Please enter a valid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    name: z.string().min(1, "Name is required"),
-    walletPincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-    walletPincodeConfirm: z
-      .string()
-      .length(6, "PIN code must be exactly 6 digits"),
+    email: z.string().email("valid-email"),
+    password: z.string().min(6, "password-min-length"),
+    name: z.string().min(1),
+    walletPincode: z.string().length(6, "pin-code-length"),
+    walletPincodeConfirm: z.string().length(6, "pin-code-length"),
   })
   .refine((data) => data.walletPincode === data.walletPincodeConfirm, {
-    message: "PIN codes don't match",
+    message: "pin-code-match",
     path: ["walletPincodeConfirm"],
   });
 

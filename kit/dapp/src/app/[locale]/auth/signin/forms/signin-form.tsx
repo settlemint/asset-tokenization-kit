@@ -18,8 +18,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("valid-email"),
+  password: z.string().min(1),
   rememberMe: z.boolean().default(false),
 });
 
@@ -160,7 +160,7 @@ export function SignInForm({
             }}
           >
             <FingerprintIcon size={16} className="mr-2" />
-            Sign in with passkey
+            {t("sign-in-with-passkey")}
           </Button>
         </div>
         <div className="text-center text-sm">

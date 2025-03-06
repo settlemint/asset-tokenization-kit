@@ -165,14 +165,14 @@ const extendedZod = {
       }),
 
   /**
-   * Validates and transforms a string to a BigInt
+   * Validates and transforms a string/number to a BigInt
    *
    * @returns A Zod schema that validates and transforms a string to a BigInt
    */
-  bigInt: () => z.string().pipe(z.coerce.bigint()),
+  bigInt: () => z.number().or(z.string()).pipe(z.coerce.bigint()),
 
   /**
-   * Validates and transforms a string to a BigNumber
+   * Validates and transforms a string/number to a BigNumber
    *
    * This validator:
    * 1. Coerces the input to a string
@@ -183,28 +183,31 @@ const extendedZod = {
    * @returns A Zod schema that validates and transforms a string to a BigNumber
    */
   bigDecimal: () =>
-    z.string().pipe(
-      z.coerce
-        .string()
-        .refine(
-          (val) => {
-            // Check if it's a valid decimal string
-            return /^-?\d*\.?\d+$/.test(val);
-          },
-          { message: "Invalid decimal number format" }
-        )
-        .transform((val) => {
-          try {
-            const decimal = new BigNumber(val);
-            // Check if it's a valid finite number and convert to normal decimal string
-            return decimal.isFinite()
-              ? Number(decimal.toFixed(6))
-              : new BigNumber(0).toNumber();
-          } catch {
-            return new BigNumber(0).toNumber();
-          }
-        })
-    ),
+    z
+      .number()
+      .or(z.string())
+      .pipe(
+        z.coerce
+          .string()
+          .refine(
+            (val) => {
+              // Check if it's a valid decimal string
+              return /^-?\d*\.?\d+$/.test(val);
+            },
+            { message: "Invalid decimal number format" }
+          )
+          .transform((val) => {
+            try {
+              const decimal = new BigNumber(val);
+              // Check if it's a valid finite number and convert to normal decimal string
+              return decimal.isFinite()
+                ? Number(decimal.toFixed(6))
+                : new BigNumber(0).toNumber();
+            } catch {
+              return new BigNumber(0).toNumber();
+            }
+          })
+      ),
 
   /**
    * Validates and transforms a timestamp to a Date object

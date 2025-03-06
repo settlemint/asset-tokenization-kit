@@ -2009,6 +2009,7 @@
         "label": "Password"
       },
       "remember-me": "Remember me",
+      "sign-in-with-passkey": "Sign in with passkey",
       "sign-up": "Sign up",
       "submit": "Sign in",
       "submitting": "Signing in...",
@@ -2195,7 +2196,10 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
-        "valid-email": "Please enter a valid email address"
+        "valid-email": "Please enter a valid email address",
+        "password-min-length": "Password must be at least 6 characters long",
+        "pin-code-match": "PIN codes don't match",
+        "pin-code-length": "PIN code must be exactly 6 digits"
       },
       "progress": {
         "completed-step": "Completed step",
