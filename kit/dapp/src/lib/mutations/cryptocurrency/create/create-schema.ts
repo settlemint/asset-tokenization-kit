@@ -16,7 +16,10 @@ export const CreateCryptoCurrencySchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  initialSupply: z.coerce.number().optional().default(0),
+  initialSupply: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().optional().default(0)),
 });
 
 export type CreateCryptoCurrencyInput = ZodInfer<

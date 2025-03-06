@@ -128,6 +128,7 @@ export function Form<
     }
   };
 
+  const isLastStep = currentStep === totalSteps - 1;
   const hasError = Object.keys(form.formState.errors).length > 0;
 
   return (
@@ -144,7 +145,7 @@ export function Form<
                   />
                 )}
                 <div className="min-h-[400px]">
-                  {hasError && (
+                  {isLastStep && hasError && (
                     <Alert
                       variant="destructive"
                       className="text-destructive border-destructive mb-4"

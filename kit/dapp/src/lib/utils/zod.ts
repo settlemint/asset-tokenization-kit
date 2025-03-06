@@ -79,10 +79,15 @@ const extendedZod = {
    * @returns A Zod schema that validates 6-digit pincodes
    */
   pincode: () =>
-    z.coerce
+    z
       .number()
-      .min(100000, { message: "Invalid pincode" })
-      .max(999999, { message: "Invalid pincode" }),
+      .or(z.string())
+      .pipe(
+        z.coerce
+          .number()
+          .min(100000, { message: "Invalid pincode" })
+          .max(999999, { message: "Invalid pincode" })
+      ),
 
   /**
    * Validates token decimals (0-18)
@@ -90,18 +95,27 @@ const extendedZod = {
    * @returns A Zod schema that validates token decimal places with a default of 18
    */
   decimals: () =>
-    z.coerce
+    z
       .number()
-      .min(0, { message: "Must be at least 0" })
-      .max(18, { message: "Must be between 0 and 18" })
-      .default(18),
+      .or(z.string())
+      .pipe(
+        z.coerce
+          .number()
+          .min(0, { message: "Must be at least 0" })
+          .max(18, { message: "Must be between 0 and 18" })
+          .default(18)
+      ),
 
   /**
    * Validates a positive amount (minimum 1)
    *
    * @returns A Zod schema that validates positive amounts
    */
-  amount: () => z.coerce.number().min(1, { message: "Must be at least 1" }),
+  amount: () =>
+    z
+      .number()
+      .or(z.string())
+      .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
 
   /**
    * Validates user roles selection
@@ -155,7 +169,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates and transforms a string to a BigInt
    */
-  bigInt: () => z.coerce.bigint(),
+  bigInt: () => z.string().pipe(z.coerce.bigint()),
 
   /**
    * Validates and transforms a string to a BigNumber
@@ -169,26 +183,28 @@ const extendedZod = {
    * @returns A Zod schema that validates and transforms a string to a BigNumber
    */
   bigDecimal: () =>
-    z.coerce
-      .string()
-      .refine(
-        (val) => {
-          // Check if it's a valid decimal string
-          return /^-?\d*\.?\d+$/.test(val);
-        },
-        { message: "Invalid decimal number format" }
-      )
-      .transform((val) => {
-        try {
-          const decimal = new BigNumber(val);
-          // Check if it's a valid finite number and convert to normal decimal string
-          return decimal.isFinite()
-            ? Number(decimal.toFixed(6))
-            : new BigNumber(0).toNumber();
-        } catch {
-          return new BigNumber(0).toNumber();
-        }
-      }),
+    z.string().pipe(
+      z.coerce
+        .string()
+        .refine(
+          (val) => {
+            // Check if it's a valid decimal string
+            return /^-?\d*\.?\d+$/.test(val);
+          },
+          { message: "Invalid decimal number format" }
+        )
+        .transform((val) => {
+          try {
+            const decimal = new BigNumber(val);
+            // Check if it's a valid finite number and convert to normal decimal string
+            return decimal.isFinite()
+              ? Number(decimal.toFixed(6))
+              : new BigNumber(0).toNumber();
+          } catch {
+            return new BigNumber(0).toNumber();
+          }
+        })
+    ),
 
   /**
    * Validates and transforms a timestamp to a Date object

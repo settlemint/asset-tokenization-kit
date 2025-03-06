@@ -20,10 +20,15 @@ export const CreateFundSchema = z.object({
   pincode: z.pincode(),
   fundCategory: z.string(),
   fundClass: z.string(),
-  managementFeeBps: z.coerce
+  managementFeeBps: z
     .number()
-    .min(0)
-    .max(100 * 100), // 100 bps = 1%
+    .or(z.string())
+    .pipe(
+      z.coerce
+        .number()
+        .min(0)
+        .max(100 * 100) // 100 bps = 1%
+    ),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

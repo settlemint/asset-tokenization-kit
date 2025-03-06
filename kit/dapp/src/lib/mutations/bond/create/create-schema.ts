@@ -20,8 +20,14 @@ export const CreateBondSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
-  cap: z.coerce.number().min(1, { message: "Must be at least 1" }),
-  faceValue: z.coerce.number().min(1, { message: "Must be at least 1" }),
+  cap: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+  faceValue: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
   maturityDate: z
     .string()
     .refine(isFuture, { message: "Maturity date must be in the future" }),
