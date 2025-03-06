@@ -75,10 +75,16 @@ jobs:
 
           while [ $elapsed -lt $timeout_seconds ]; do
             echo "Checking server status (${elapsed}s elapsed)..."
-            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "failed")
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/en || echo "failed")
 
             if [ "$status" = "200" ]; then
               echo "Server is ready! Status: $status"
+              success=true
+              break
+            fi
+
+            if [ "$status" = "307" ]; then
+              echo "Server is ready (with redirect)! Status: $status"
               success=true
               break
             fi
@@ -92,7 +98,7 @@ jobs:
             echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
             cat server.log
             echo "Attempting final direct check with verbose output:"
-            curl -v http://localhost:3000/ || echo "Final check failed"
+            curl -v http://localhost:3000/en || echo "Final check failed"
             exit 1
           fi
 
