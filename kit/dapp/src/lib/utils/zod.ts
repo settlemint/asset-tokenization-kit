@@ -23,7 +23,7 @@ import { z } from "zod";
 export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
   schema: z.ZodType<Output, Def, Input>,
   data: unknown,
-  context: string = "data"
+  context = "data"
 ): Output {
   try {
     return schema.parse(data);

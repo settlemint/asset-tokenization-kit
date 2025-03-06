@@ -4,7 +4,6 @@ import {
     theGraphClientKits,
     theGraphGraphqlKits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -104,9 +103,5 @@ export const getBondList = cache(async () => {
     };
   });
 
-  return bonds.map((bond) => ({
-    ...bond,
-    // replace all the BigDecimals with formatted strings
-    totalSupply: formatNumber(bond.totalSupply),
-  }));
+  return bonds;
 });

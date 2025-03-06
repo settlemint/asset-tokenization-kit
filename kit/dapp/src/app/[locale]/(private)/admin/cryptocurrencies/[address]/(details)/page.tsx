@@ -3,10 +3,14 @@ import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
 import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
+import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
+import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
+import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { MintForm } from "../_components/mint-form/form";
 import { Details } from "./_components/details";
 
 interface PageProps {
@@ -36,17 +40,30 @@ export async function generateMetadata({
 }
 
 export default async function CryptoCurrencyDetailPage({ params }: PageProps) {
-  const { address } = await params;
+  const { address, locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "admin.cryptocurrencies",
+  });
 
   return (
     <>
       <Details address={address} />
-      <ChartGrid title="Asset statistics">
+      <ChartGrid title={t("charts.asset-statistics-title")}>
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
+        <WalletDistribution address={address} />
         <TotalTransfers address={address} />
         <TotalVolume address={address} />
       </ChartGrid>
+      <RelatedGrid title={t("related-actions.title")}>
+        <RelatedGridItem
+          title={t("related-actions.increase-supply.title")}
+          description={t("related-actions.increase-supply.description")}
+        >
+          <MintForm address={address} asButton />
+        </RelatedGridItem>
+      </RelatedGrid>
     </>
   );
 }

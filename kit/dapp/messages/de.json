@@ -7,12 +7,12 @@
       "transaction-details": {
         "block-hash-label": "Block-Hash",
         "block-number-label": "Blocknummer",
-        "blob-gas-price-label": "Blob-Gas-Preis",
-        "blob-gas-used-label": "Verbrauchtes Blob-Gas",
+        "blob-gas-price-label": "Blob-Gaspreis",
+        "blob-gas-used-label": "Blob-Gasverbrauch",
         "contract-label": "Vertrag",
         "created-at-label": "Erstellt am",
         "description": "Details einer Transaktion anzeigen",
-        "effective-gas-price-label": "Effektiver Gas-Preis",
+        "effective-gas-price-label": "Effektiver Gaspreis",
         "from-label": "Von",
         "function-label": "Funktion",
         "gas-used-label": "Verbrauchtes Gas",
@@ -45,7 +45,8 @@
           "description": "Überprüfen Sie die Details Ihrer Verbrennung, bevor Sie fortfahren.",
           "title": "Überprüfung und Bestätigung der Verbrennung"
         },
-        "title": "Verbrennen"
+        "title": "Verbrennen",
+        "trigger-label": "Verbrennen"
       },
       "create-form": {
         "basics": {
@@ -217,7 +218,8 @@
           "mint-title": "Prägen",
           "title": "Überprüfen und bestätigen Sie die Prägung"
         },
-        "title": "Prägen"
+        "title": "Prägen",
+        "trigger-label": "Prägen"
       },
       "pause-form": {
         "pause": {
@@ -301,13 +303,44 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Digitale Anleihen repräsentieren traditionelle festverzinsliche Wertpapiere sicher auf der Blockchain, die durch reale Sicherheiten gedeckt sind. Sie kombinieren die Transparenz der Blockchain mit vorhersehbaren Renditen, Einlösung bei Fälligkeit und automatisierter Ertragsverteilung. Dieses Anleihe-Asset gewährleistet eine sichere Emission, präzises Fälligkeitsmanagement, umfassende Compliance-Funktionen und investorenfreundliche Einlösungsprozesse, die speziell für Finanzinstitute zugeschnitten sind.",
         "topinfo-title": "Ein digitales festverzinsliches Wertpapier-Asset",
-        "total-supply-header": "Gesamtangebot"
+        "total-supply-header": "Gesamtangebot",
+        "related-actions": {
+          "issue-new": {
+            "description": "Erstellen und starten Sie eine neue Anleihe mit festgelegter Fälligkeit, Kuponraten und Nennwert. Optimieren Sie die Anleiheausgabe mit automatisierten Zinszahlungen und Rückzahlungsplänen.",
+            "title": "Neue Anleihe ausgeben"
+          },
+          "mechanics": {
+            "button": "Mehr erfahren",
+            "description": "Erfahren Sie, wie Sie Anleiheparameter, Zinsverteilungen, Fälligkeitstermine und Rückzahlungsprozesse für festverzinsliche Wertpapiere verwalten.",
+            "title": "Anleihemechanik"
+          },
+          "title": "Verwandte Aktionen",
+          "usecases": {
+            "button": "Erforschen",
+            "description": "Erforschen Sie Anwendungen in den Märkten für festverzinsliche Wertpapiere, von Unternehmensschulden bis hin zu strukturierten Produkten. Maximieren Sie die Effizienz bei Zinszahlungen, Fälligkeitsmanagement und regulatorischer Compliance.",
+            "title": "Anwendungsfälle für Anleihen"
+          }
+        }
       },
       "tabs": {
         "details": "Einzelheiten",
         "events": "Ereignisse",
         "holders": "Inhaber",
         "permissions": "Berechtigungen"
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleiherückzahlungen bei Fälligkeit oder vorzeitige Rückkaufprogramme reduzieren.",
+          "title": "Anleihen einlösen"
+        },
+        "increase-supply": {
+          "description": "Ein Anleihemanager kann neue Anleihen durch Primärausgaben oder Tap-Ausgaben mit festgelegtem Nennwert und Fälligkeit ausgeben.",
+          "title": "Anleihen ausgeben"
+        },
+        "title": "Verwandte Aktionen"
       }
     },
     "cryptocurrencies": {
@@ -429,7 +462,8 @@
           "mint-title": "Prägen",
           "title": "Überprüfen und bestätigen Sie die Prägung"
         },
-        "title": "Münze"
+        "title": "Münze",
+        "trigger-label": "Prägen"
       },
       "permissions": {
         "actions-header": "Aktionen",
@@ -487,13 +521,61 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Krypto-Währungsanlagen sind anpassbare digitale Instrumente, die kontrolliertes Minting, robuste Sicherheit und vollständige regulatorische Konformität bieten, ideal für institutionelle Nutzung. Sie optimieren Finanzoperationen durch programmierbare Transaktionen, verbesserte Transparenz und integrierte Meta-Transaktionen für eine verbesserte Benutzerfreundlichkeit. Zu den Hauptmerkmalen gehören rollenbasierte Zugriffsverwaltung, sichere Ausgabe und einfache Integration in institutionelle Zahlungsprozesse.",
         "topinfo-title": "Ein anpassbares und sicheres digitales Asset",
-        "total-supply-header": "Gesamtangebot"
+        "total-supply-header": "Gesamtangebot",
+        "related-actions": {
+          "issue-new": {
+            "description": "Erstellen und starten Sie einen neuen Kryptowährungs-Token mit anpassbaren Parametern und Sicherheitsfunktionen. Optimieren Sie die Token-Bereitstellung mit konfigurierbaren Angebotsmechanismen und Übertragungssteuerungen.",
+            "title": "Neue Kryptowährung ausgeben"
+          },
+          "mechanics": {
+            "button": "Mehr erfahren",
+            "description": "Erfahren Sie, wie Sie Token-Ökonomie, Angebotskontrollen, Übertragungsbeschränkungen und Sicherheitsfunktionen für Ihre Kryptowährung verwalten.",
+            "title": "Token-Mechanik"
+          },
+          "title": "Verwandte Aktionen",
+          "usecases": {
+            "button": "Erforschen",
+            "description": "Erforschen Sie Anwendungen in digitalen Zahlungen, Belohnungssystemen und tokenisierten Dienstleistungen. Maximieren Sie den Nutzen durch programmierbare Transaktionen und Sicherheitsfunktionen auf institutionellem Niveau.",
+            "title": "Anwendungsfälle für Kryptowährungen"
+          }
+        }
       },
       "tabs": {
         "details": "Einzelheiten",
         "events": "Ereignisse",
         "holders": "Inhaber",
-        "permissions": "Berechtigungen"
+        "permissions": "Berechtigungen",
+        "underlying-assets": "Unterliegende Vermögenswerte"
+      },
+      "burn-form": {
+        "amount": {
+          "amount-label": "Betrag",
+          "available-balance": "Verfügbarer Saldo: {balance}",
+          "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
+          "title": "Betrag eingeben"
+        },
+        "button-label": "Vermögenswerte verbrennen",
+        "description": "Tokens dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+        "summary": {
+          "amount-label": "Betrag",
+          "asset-label": "Vermögenswert",
+          "burn-description": "Details der Verbrennungsoperation",
+          "burn-title": "Verbrennen",
+          "description": "Überprüfen Sie die Details Ihrer Verbrennung, bevor Sie fortfahren.",
+          "title": "Überprüfung und Bestätigung der Verbrennung"
+        },
+        "title": "Verbrennen",
+        "trigger-label": "Verbrennen"
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "related-actions": {
+        "increase-supply": {
+          "description": "Ein Token-Manager kann neue Tokens gemäß dem Tokenomics-Plan und dem Emissionszeitplan prägen.",
+          "title": "Tokens prägen"
+        },
+        "title": "Verwandte Aktionen"
       }
     },
     "dashboard": {
@@ -572,7 +654,8 @@
           "description": "Überprüfen Sie die Einzelheiten Ihrer Verbrennung, bevor Sie fortfahren.",
           "title": "Überprüfen und Verbrennung bestätigen"
         },
-        "title": "Verbrennen"
+        "title": "Verbrennen",
+        "trigger-label": "Verbrennen"
       },
       "create-form": {
         "basics": {
@@ -703,7 +786,7 @@
           "title": "Überprüfen und bestätigen"
         },
         "title": "Neue Eigenkapitalausgabe erstellen",
-        "trigger-label": "Geben Sie eine neue Eigenkapitalausgabe aus"
+        "trigger-label": "Prägen"
       },
       "details": {
         "contract-address": "Vertragsadresse",
@@ -831,7 +914,8 @@
           "mint-title": "Prägen",
           "title": "Überprüfen und bestätigen Sie die Prägung"
         },
-        "title": "Prägen"
+        "title": "Prägen",
+        "trigger-label": "Prägen"
       },
       "pause-form": {
         "pause": {
@@ -917,13 +1001,92 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Eigenkapitalanlagen digitalisieren traditionelle Eigenkapitalwerte und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Sie sind für institutionelle Investoren konzipiert und bieten eine sichere Eigenkapitalemission, Stimmrechte für Aktionäre, detaillierte Zugriffskontrollen und Mechanismen zur Einhaltung von Vorschriften. Dieses Asset vereinfacht das Eigenkapitalmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
         "topinfo-title": "Institutionen-geeignetes digitales Eigenkapitalmanagement",
-        "total-supply-header": "Gesamtangebot"
+        "total-supply-header": "Gesamtangebot",
+        "category-blend-equity": "Aktien mischen",
+        "category-communication-services": "Kommunikationsdienste",
+        "category-consumer-discretionary": "Verbraucher discretionary",
+        "category-consumer-staples": "Verbraucher staples",
+        "category-convertible-preferred-stock": "Wandelanleihen",
+        "category-cumulative-preferred-stock": "Kumulative Vorzugsaktien",
+        "category-distressed-equity": "Notleidende Aktien",
+        "category-domestic-equity": "Inländische Aktien",
+        "category-dual-class-shares": "Dual-Class-Aktien",
+        "category-emerging-market-equity": "Aktien aus Schwellenländern",
+        "category-energy": "Energie",
+        "category-esop-shares": "Mitarbeiterbeteiligungsplan (ESOP) Aktien",
+        "category-financials": "Finanzen",
+        "category-frontier-market-equity": "Aktien aus Grenzmärkten",
+        "category-global-equity": "Globale Aktien",
+        "category-growth-capital": "Wachstumskapital",
+        "category-growth-equity": "Wachstumsaktien",
+        "category-healthcare": "Gesundheitswesen",
+        "category-income-equity": "Einkommensaktien",
+        "category-industrials": "Industrie",
+        "category-international-equity": "Internationale Aktien",
+        "category-large-cap-equity": "Large-Cap-Aktien",
+        "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+        "category-materials": "Materialien",
+        "category-mezzanine-financing": "Mezzanine-Finanzierung",
+        "category-micro-cap-equity": "Mikrokapital-Aktien",
+        "category-mid-cap-equity": "Mittelgroße Aktien",
+        "category-non-cumulative-preferred-stock": "Nicht kumulierte Vorzugsaktien",
+        "category-non-voting-common-stock": "Stimmrechtslose Stammaktien",
+        "category-real-estate": "Immobilien",
+        "category-redeemable-preferred-stock": "Einlösbare Vorzugsaktien",
+        "category-restricted-stock": "Eingeschränkte Aktien",
+        "category-small-cap-equity": "Kleinere Aktien",
+        "category-technology": "Technologie",
+        "category-tracking-stocks": "Tracking-Aktien",
+        "category-utilities": "Versorgungsunternehmen",
+        "category-value-equity": "Wertaktien",
+        "category-venture-capital": "Risikokapital",
+        "category-voting-common-stock": "Stimmrechtsfähige Stammaktien",
+        "class-common-equity": "Stammaktien",
+        "class-geographic-equity": "Geografische Aktien",
+        "class-investment-stage-private-equity": "Investitionsphase (Private Equity)",
+        "class-investment-style-equity": "Investitionsstil Aktien",
+        "class-market-capitalization-equity": "Marktkapitalisierungsaktien",
+        "class-preferred-equity": "Bevorzugte Aktien",
+        "class-sector-industry-equity": "Sektor-/Branchenaktien",
+        "class-special-classes-equity": "Sonderklassen von Aktien",
+        "related-actions": {
+          "issue-new": {
+            "description": "Erstellen und starten Sie ein neues Aktien-Token mit definierten Aktienklassen und Eigentumsrechten. Optimieren Sie die Aktienausgabe zur Unterstützung der Aktionärsverteilung und der Unternehmensführung.",
+            "title": "Neue Aktien-Token ausgeben"
+          },
+          "mechanics": {
+            "button": "Erfahren Sie mehr",
+            "description": "Erfahren Sie, wie Sie die Rechte der Aktionäre, Abstmechanismen, Dividendenverteilungen und Eigentumsstrukturen verwalten.",
+            "title": "Aktienmechanik"
+          },
+          "title": "Verwandte Aktionen",
+          "usecases": {
+            "button": "Erforschen",
+            "description": "Erforschen Sie Anwendungen im Bereich des Unternehmensaktienmanagements, von der Aktienausgabe bis zur Stakeholder-Governance. Maximieren Sie die Effizienz in der Aktienverwaltung, den Stimmrechten und der Dividendenverteilung.",
+            "title": "Aktienanwendungsfälle"
+          }
+        }
       },
       "tabs": {
         "details": "Details",
         "events": "Ereignisse",
         "holders": "Inhaber",
-        "permissions": "Berechtigungen"
+        "permissions": "Berechtigungen",
+        "underlying-assets": "Unterliegende Vermögenswerte"
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "Ein Aktienmanager kann das Gesamtangebot an Aktien durch ein Rückkaufprogramm oder eine Kapitalherabsetzung reduzieren.",
+          "title": "Aktienangebot reduzieren"
+        },
+        "increase-supply": {
+          "description": "Ein Aktienmanager kann neue Aktien durch verschiedene Mechanismen wie Bezugsrechte, Privatplatzierungen oder Aktiensplits ausgeben.",
+          "title": "Neue Aktien ausgeben"
+        },
+        "title": "Verwandte Aktionen"
       }
     },
     "funds": {
@@ -944,7 +1107,8 @@
           "description": "Überprüfen Sie die Details Ihrer Verbrennung, bevor Sie fortfahren.",
           "title": "Verbrennung überprüfen und bestätigen"
         },
-        "title": "Verbrennen"
+        "title": "Verbrennen",
+        "trigger-label": "Verbrennen"
       },
       "create-form": {
         "basics": {
@@ -1208,7 +1372,8 @@
           "mint-title": "Präge",
           "title": "Prägung überprüfen und bestätigen"
         },
-        "title": "Präge"
+        "title": "Präge",
+        "trigger-label": "Prägen"
       },
       "pause-form": {
         "pause": {
@@ -1295,13 +1460,93 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Fondsvermögen digitalisieren Investmentfondsanteile, bieten automatisierte Verwaltung von Gebühren, Anlegergovernance und umfassende regulatorische Compliance. Ideal für Finanzinstitute, optimieren sie administrative Prozesse, gewährleisten eine transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Anleger. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
         "topinfo-title": "Digitale Vermögenswerte für das institutionelle Fondsmanagement",
-        "total-supply-header": "Gesamtangebot"
+        "total-supply-header": "Gesamtangebot",
+        "assets-under-management-header": "AUM",
+        "category-activist": "Aktivist",
+        "category-commodity-trading": "Rohstoffhandel",
+        "category-convertible-arbitrage": "Wandelarbitrage",
+        "category-credit": "Kredit",
+        "category-currency-fx": "Währung / FX",
+        "category-distressed-debt": "Notleidende Schulden",
+        "category-emerging-markets": "Schwellenländer",
+        "category-equity-hedge": "Aktienabsicherung",
+        "category-event-driven": "Ereignisgesteuert",
+        "category-fixed-income-arbitrage": "Festzinsarbitrage",
+        "category-fund-of-funds": "Fond von Fonds",
+        "category-global-macro": "Global Macro",
+        "category-high-frequency-trading": "Hochfrequenzhandel (HFT)",
+        "category-managed-futures-cta": "Verwaltete Futures / CTA",
+        "category-market-neutral": "Marktneutral",
+        "category-merger-arbitrage": "Fusionsarbitrage",
+        "category-multi-strategy": "Multi-Strategie",
+        "category-private-equity": "Private Equity (PE)",
+        "category-quantitative-systematic": "Quantitativ/Systematisch",
+        "category-relative-value": "Relative Wert",
+        "category-statistical-arbitrage": "Statistische Arbitrage",
+        "category-structured-credit": "Strukturierte Kredite",
+        "category-venture-capital": "Risikokapital (VC)",
+        "class-absolute-return": "Absolute Rendite",
+        "class-core-blend": "Kern / Mischung",
+        "class-diversified": "Diversifiziert",
+        "class-early-stage": "Frühphase",
+        "class-factor-based": "Faktor-basiert",
+        "class-growth-focused": "Wachstumsorientiert",
+        "class-income-focused": "Einkommensorientiert",
+        "class-large-cap": "Großkapital",
+        "class-long-equity": "Long Equity (Nur Long)",
+        "class-long-short-equity": "Long/Short Equity",
+        "class-market-neutral": "Marktneutral",
+        "class-mid-cap": "Mittelgroß",
+        "class-momentum-oriented": "Momentum-orientiert",
+        "class-opportunistic": "Opportunistisch",
+        "class-pre-series-b": "Vor-Serie B",
+        "class-quantitative-algorithmic": "Quantitativ / Algorithmisch",
+        "class-regional": "Regional",
+        "class-sector-specific": "Sektor-spezifisch",
+        "class-seed-pre-seed": "Seed / Pre-Seed",
+        "class-series-b-late-stage": "Serie B / Spätphase",
+        "class-short-equity": "Short Equity",
+        "class-small-cap": "Klein-Kapital",
+        "class-tactical-asset-allocation": "Taktische Vermögensallokation",
+        "class-value-focused": "Wertorientiert",
+        "related-actions": {
+          "issue-new": {
+            "description": "Erstellen und starten Sie einen neuen Fonds mit definierten Parametern und Vermögensunterlegung. Optimieren Sie die Fondsbereitstellung zur Unterstützung neuer Investitionsmöglichkeiten und Marktsegmente.",
+            "title": "Einen neuen Fonds ausgeben"
+          },
+          "mechanics": {
+            "button": "Erfahren Sie mehr",
+            "description": "Erfahren Sie, wie Sie wichtige Fondsparameter, Methoden der Vermögensallokation und Strukturen der Verwaltungsgebühren anpassen.",
+            "title": "Fondsmechanik"
+          },
+          "title": "Verwandte Aktionen",
+          "usecases": {
+            "button": "Erforschen",
+            "description": "Erforschen Sie die praktischen Anwendungen und Integrationen digitaler Fonds. Maximieren Sie den Nutzen in den Bereichen Investmentmanagement, Vermögens-Tokenisierung und institutionelle Finanzökosysteme.",
+            "title": "Anwendungsfälle"
+          }
+        }
       },
       "tabs": {
         "details": "Einzelheiten",
         "events": "Ereignisse",
         "holders": "Inhaber",
-        "permissions": "Berechtigungen"
+        "permissions": "Berechtigungen",
+        "underlying-assets": "Unterliegende Vermögenswerte"
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleiheerückzahlungen bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
+          "title": "Anleihen einlösen"
+        },
+        "increase-supply": {
+          "description": "Ein Anleihemanager kann neue Anleihen durch Primärausgaben oder Tap-Ausgaben mit definiertem Nennwert und Fälligkeit ausgeben.",
+          "title": "Anleihen ausgeben"
+        },
+        "title": "Verwandte Aktionen"
       }
     },
     "sidebar": {
@@ -1740,6 +1985,9 @@
         "banned": "Verboten"
       },
       "title": "Benutzer"
+    },
+    "charts": {
+      "asset-statistics-title": "Vermögensstatistiken"
     }
   },
   "auth": {
@@ -2011,5 +2259,45 @@
   "transactions": {
     "sending": "Transaktion wird gesendet",
     "success": "Transaktion erfolgreich verarbeitet"
+  },
+  "portfolio": {
+    "activity": {
+      "page-description": "Ihre Aktivität auf der Kette",
+      "page-title": "Aktivität"
+    },
+    "asset-types": {
+      "bond": "Anleihe",
+      "cryptocurrency": "Kryptowährung",
+      "equity": "Eigenkapital",
+      "fund": "Fonds",
+      "stablecoin": "Stablecoin",
+      "unknown": "Unbekannt"
+    },
+    "transfer-form": {
+      "amount": {
+        "amount-label": "Betrag",
+        "balance-description": "Saldo:",
+        "description": "Geben Sie den Betrag an, den Sie überweisen möchten. Er darf nicht größer sein als Ihr aktueller Saldo.",
+        "title": "Betrag eingeben"
+      },
+      "description": "Überweisen Sie einfach einen Betrag von {type} {name} ({symbol}), indem Sie einen Empfänger auswählen und den Betrag angeben.",
+      "recipients": {
+        "description": "Geben Sie eine Wallet-Adresse ein, um Token direkt zu senden.",
+        "title": "Empfänger auswählen",
+        "wallet-address-label": "Wallet-Adresse"
+      },
+      "select-asset": {
+        "asset-description": "Wählen Sie ein Asset aus Ihrem Portfolio",
+        "asset-label": "Asset",
+        "description": "Wählen Sie das Asset aus, das Sie überweisen möchten",
+        "title": "Asset auswählen"
+      },
+      "summary": {
+        "description": "Überprüfen Sie die Einzelheiten Ihrer Überweisung, bevor Sie fortfahren. Stellen Sie sicher, dass der Empfänger und der Betrag korrekt sind.",
+        "title": "Überweisung überprüfen und bestätigen"
+      },
+      "transfer": "Überweisung",
+      "transferring": "Übertrage..."
+    }
   }
 }
