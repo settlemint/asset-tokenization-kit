@@ -4,17 +4,8 @@ import type { Address } from "viem";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
 
-interface PortfolioDashboardProps {
-  params: Promise<{ locale: string }>;
-}
-
-export const dynamic = "force-dynamic";
-
-export default async function PortfolioDashboard({
-  params,
-}: PortfolioDashboardProps) {
-  const { locale } = await params;
-  const user = await getUser(locale);
+export default async function PortfolioDashboard() {
+  const user = await getUser();
   const myAssetsBalance = await getMyAssetsBalance(user.wallet as Address);
   return (
     <>
