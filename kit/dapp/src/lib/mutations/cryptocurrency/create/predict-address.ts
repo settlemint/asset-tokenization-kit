@@ -27,9 +27,7 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
   }
 `);
 
-export const getPredictedAddress = async (
-  data: Omit<CreateCryptoCurrencyInput, "predictedAddress" | "pincode">
-) => {
+export const getPredictedAddress = async (data: CreateCryptoCurrencyInput) => {
   const { assetName: name, symbol, decimals, initialSupply } = data;
 
   const user = await getUser("en"); // TODO: hardcoding the locale is not ideal
