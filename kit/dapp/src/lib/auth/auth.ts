@@ -16,14 +16,16 @@ import { metadata } from "../config/metadata";
 import { db } from "../db";
 import { createUserWallet } from "./portal";
 
+const serverEnvironment = getServerEnvironment();
+
 /**
  * Authentication configuration using better-auth
  */
 export const auth = betterAuth({
   appName: metadata.title.default,
-  secret: getServerEnvironment().SETTLEMINT_HASURA_ADMIN_SECRET,
-  baseURL: getServerEnvironment().APP_URL,
-  trustedOrigins: [getServerEnvironment().APP_URL],
+  secret: serverEnvironment.SETTLEMINT_HASURA_ADMIN_SECRET,
+  baseURL: serverEnvironment.APP_URL,
+  trustedOrigins: [serverEnvironment.APP_URL],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: authSchema,
@@ -54,7 +56,7 @@ export const auth = betterAuth({
         before: async (user) => {
           try {
             const wallet = await createUserWallet({
-              keyVaultId: getServerEnvironment().SETTLEMINT_HD_PRIVATE_KEY,
+              keyVaultId: serverEnvironment.SETTLEMINT_HD_PRIVATE_KEY,
               name: user.email,
             });
 
