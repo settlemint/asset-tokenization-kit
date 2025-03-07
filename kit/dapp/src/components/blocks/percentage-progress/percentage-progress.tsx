@@ -20,12 +20,12 @@ export function PercentageProgressBar({
           className={cn(
             "relative h-2 w-full overflow-hidden rounded-full",
             percentageNumber === 0
-              ? "bg-background/40"
+              ? "bg-background"
               : percentageNumber > 90
-                ? "bg-destructive/20"
+                ? "bg-destructive"
                 : percentageNumber > 75
-                  ? "bg-warning/20"
-                  : "bg-success/20"
+                  ? "bg-warning"
+                  : "bg-success"
           )}
         >
           <ProgressPrimitive.Indicator
@@ -33,12 +33,12 @@ export function PercentageProgressBar({
             className={cn(
               "bg-primary h-full w-full flex-1 transition-all",
               percentageNumber === 0
-                ? "bg-background"
+                ? "bg-primary"
                 : percentageNumber > 90
-                  ? "bg-destructive"
+                  ? "bg-destructive-foreground"
                   : percentageNumber > 75
-                    ? "bg-warning"
-                    : "bg-success"
+                    ? "bg-warning-foreground"
+                    : "bg-success-foreground"
             )}
             style={{
               transform: `translateX(-${100 - (percentageNumber || 0)}%)`,

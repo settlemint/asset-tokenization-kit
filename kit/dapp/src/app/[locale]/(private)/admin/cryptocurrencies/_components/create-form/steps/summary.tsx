@@ -34,10 +34,6 @@ export function Summary() {
           label={t("decimals-label")}
           value={values.decimals}
         />
-        <FormSummaryDetailItem
-          label={t("isin-label")}
-          value={values.isin === "" ? "-" : values.isin}
-        />
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard

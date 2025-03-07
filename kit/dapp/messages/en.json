@@ -634,7 +634,7 @@
       "widgets": {
         "assets": {
           "label": "Assets",
-          "subtext": "{bonds} bonds, {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
+          "subtext": "{bonds} bonds {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
         },
         "transactions": {
           "label": "Transactions",
