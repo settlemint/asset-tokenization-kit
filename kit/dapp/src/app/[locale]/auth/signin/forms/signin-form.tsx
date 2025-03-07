@@ -114,7 +114,7 @@ export function SignInForm({
           />
           <Button
             type="submit"
-            className="w-full"
+            className="w-full text-sm-background-lightest"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? (
