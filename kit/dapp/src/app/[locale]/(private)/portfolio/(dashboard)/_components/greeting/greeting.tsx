@@ -1,6 +1,6 @@
-'use client';
-import { Skeleton } from '@/components/ui/skeleton';
-import { authClient } from '@/lib/auth/client';
+"use client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth/client";
 
 export function Greeting() {
   const session = authClient.useSession();
@@ -9,8 +9,12 @@ export function Greeting() {
   return (
     <div>
       {getGreeting()},
-      {name ? <span className="ml-1 font-semibold">{name}</span> : <Skeleton className="mx-1 inline-block h-6 w-24" />}.
-      You have
+      {name ? (
+        <span className="ml-1 font-semibold">{name}</span>
+      ) : (
+        <Skeleton className="mx-1 inline-block h-6 w-24" />
+      )}
+      . You have
     </div>
   );
 }
@@ -18,10 +22,10 @@ export function Greeting() {
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 12) {
-    return 'Good morning';
+    return "Good morning";
   }
   if (hour < 17) {
-    return 'Good afternoon';
+    return "Good afternoon";
   }
-  return 'Good evening';
+  return "Good evening";
 }

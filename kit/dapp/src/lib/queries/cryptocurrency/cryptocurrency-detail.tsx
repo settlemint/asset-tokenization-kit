@@ -1,16 +1,16 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-    theGraphClientKit,
-    theGraphGraphqlKit,
+  theGraphClientKit,
+  theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-    CryptoCurrencyFragment,
-    CryptoCurrencyFragmentSchema,
-    OffchainCryptoCurrencyFragment,
-    OffchainCryptoCurrencyFragmentSchema,
+  CryptoCurrencyFragment,
+  CryptoCurrencyFragmentSchema,
+  OffchainCryptoCurrencyFragment,
+  OffchainCryptoCurrencyFragmentSchema,
 } from "./cryptocurrency-fragment";
 
 /**

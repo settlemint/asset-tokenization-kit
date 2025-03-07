@@ -1,15 +1,15 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-    theGraphClientKit,
-    theGraphGraphqlKit,
+  theGraphClientKit,
+  theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-    AssetStatsFragment,
-    AssetStatsFragmentSchema,
+  AssetStatsFragment,
+  AssetStatsFragmentSchema,
 } from "./asset-stats-fragment";
 
 /**

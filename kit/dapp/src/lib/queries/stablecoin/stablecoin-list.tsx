@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-    theGraphClientKit,
-    theGraphGraphqlKit,
+  theGraphClientKit,
+  theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-    OffchainStableCoinFragment,
-    OffchainStableCoinFragmentSchema,
-    StableCoinFragment,
-    StableCoinFragmentSchema,
+  OffchainStableCoinFragment,
+  OffchainStableCoinFragmentSchema,
+  StableCoinFragment,
+  StableCoinFragmentSchema,
 } from "./stablecoin-fragment";
 
 /**

@@ -1,13 +1,13 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-    theGraphClientKit,
-    theGraphGraphqlKit,
+  theGraphClientKit,
+  theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import {
-    AssetActivityFragment,
-    AssetActivityFragmentSchema,
+  AssetActivityFragment,
+  AssetActivityFragmentSchema,
 } from "./asset-activity-fragment";
 
 /**

@@ -624,8 +624,7 @@ export const UnderlyingAssetTopUpEventFragmentSchema =
 /**
  * GraphQL fragment for underlying asset withdrawal events
  */
-export const UnderlyingAssetWithdrawnEventFragment =
-  theGraphGraphqlKit(`
+export const UnderlyingAssetWithdrawnEventFragment = theGraphGraphqlKit(`
   fragment UnderlyingAssetWithdrawnEventFragment on UnderlyingAssetWithdrawnEvent {
     __typename
     sender {

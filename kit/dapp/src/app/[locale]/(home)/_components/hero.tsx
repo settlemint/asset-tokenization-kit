@@ -4,11 +4,11 @@ import { Logo } from "@/components/blocks/logo/logo";
 import { ThemeToggle } from "@/components/blocks/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    navigationMenuTriggerStyle,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
