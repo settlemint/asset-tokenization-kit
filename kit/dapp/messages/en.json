@@ -2280,8 +2280,10 @@
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
-        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
-        "title": "Enter Amount"
+        "description": "Specify the amount you want to transfer",
+        "title": "Enter Amount",
+        "decimals-label": "Decimals",
+        "decimals-description": "Number of decimal places for the token"
       },
       "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
