@@ -1,9 +1,10 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
-import { CalculatingAddressIndicator } from "@/components/blocks/form/loading/calculating-address";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { getPredictedAddress } from "@/lib/mutations/cryptocurrency/create/predict-address";
@@ -60,8 +61,18 @@ export function Summary() {
         />
       </FormSummaryDetailCard>
 
-      {isCalculating || error ? (
-        <CalculatingAddressIndicator error={error} />
+      {isCalculating ? (
+        <Skeleton className="h-32 w-full" />
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertTitle>
+            A Cryptocurrency with the same details already exists.
+          </AlertTitle>
+          <AlertDescription>
+            A Cryptocurrency with the same details already exists. Please try
+            again with at least one different parameter.
+          </AlertDescription>
+        </Alert>
       ) : (
         <FormSummarySecurityConfirmation>
           <FormOtp control={control} name="pincode" />
