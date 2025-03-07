@@ -1,8 +1,7 @@
 import { proxyMiddleware } from "@settlemint/sdk-next/middlewares/proxy";
 import { getSessionCookie } from "better-auth/cookies";
 import { default as createIntlMiddleware } from "next-intl/middleware";
-import { unauthorized } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 // Create the Next Intl middleware outside the main middleware function
 const intlMiddleware = createIntlMiddleware({
@@ -22,7 +21,7 @@ export default function middleware(request: NextRequest) {
   if (proxyResponse && proxyResponse.headers.get("x-middleware-rewrite")) {
     const cookies = getSessionCookie(request);
     if (!cookies) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return proxyResponse;
   }
