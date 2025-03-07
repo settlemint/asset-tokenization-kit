@@ -1,6 +1,6 @@
 import {
-    theGraphClientKit,
-    theGraphGraphqlKit,
+  theGraphClientKit,
+  theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import type { FragmentOf } from "@settlemint/sdk-portal";
 import { IndexingFragment } from "./transaction-fragment";
@@ -64,7 +64,7 @@ export async function waitForIndexing(
     indexedBlock = status._meta?.block ?? null;
 
     if ((indexedBlock?.number ?? 0) < blockNumber) {
-      await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+      await new Promise<void>((resolve) => setTimeout(resolve, pollingIntervalMs));
     }
   }
   return indexedBlock.number;
