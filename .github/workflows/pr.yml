@@ -55,6 +55,11 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
+      - name: Clear caches
+        run: |
+          rm -rf .turbo
+          rm -rf ~/.bun/install/cache
+
       - name: Turbo!
         run: bunx turbo dependencies lint build test genesis abi-output
 
