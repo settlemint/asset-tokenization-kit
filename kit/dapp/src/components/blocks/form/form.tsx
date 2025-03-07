@@ -150,7 +150,7 @@ export function Form<
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
-              {isLastStep && hasError && (
+              {isLastStep && hasError && !form.formState.isValidating && (
                 <Alert
                   variant="destructive"
                   className="text-destructive border-destructive mb-4"
