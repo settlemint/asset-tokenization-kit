@@ -1,5 +1,5 @@
+import { isAddressDeployed } from "@/lib/mutations/cryptocurrency/create/address-deployed";
 import { type ZodInfer, z } from "@/lib/utils/zod";
-import { predictCryptoCurrencyAddress } from "./predict-address";
 
 const CryptoCurrencySchema = z.object({
   assetName: z.string().nonempty(),
@@ -24,16 +24,17 @@ export type CryptoCurrencyInput = ZodInfer<typeof CryptoCurrencySchema>;
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
  */
-export const CreateCryptoCurrencySchema = CryptoCurrencySchema.refine(
-  async (data) => {
-    console.log("inside refine");
-    const result = await predictCryptoCurrencyAddress(data);
-    console.log({ result });
-    return result !== false;
-  },
-  {
-    message: "Failed to predict the address",
-    path: ["assetName"], // This will show the error under the assetName field
+export const CreateCryptoCurrencySchema = CryptoCurrencySchema.superRefine(
+  async (data, ctx) => {
+    const addressDeployed = await isAddressDeployed(data);
+
+    if (addressDeployed) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "A cryptocurrency with these parameters already exists. Please try a different name, symbol, or decimals.",
+      });
+    }
   }
 );
 
