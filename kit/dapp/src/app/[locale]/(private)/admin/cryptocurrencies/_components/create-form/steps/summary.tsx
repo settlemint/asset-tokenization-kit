@@ -6,14 +6,19 @@ import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summar
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
-  const { control } = useFormContext<CreateCryptoCurrencyInput>();
+  const { control, trigger } = useFormContext<CreateCryptoCurrencyInput>();
   const values = useWatch({
     control: control,
   });
   const t = useTranslations("admin.cryptocurrencies.create-form.summary");
+
+  useEffect(() => {
+    trigger();
+  }, [trigger]);
 
   return (
     <FormStep title={t("title")} description={t("description")}>
