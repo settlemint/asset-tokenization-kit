@@ -42,12 +42,7 @@ export function FormOtp<T extends FieldValues>({
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS}
               value={(field.value ?? "").toString()}
-              onChange={async (value: string) => {
-                field.onChange(value);
-                if (formState.errors[field.name]) {
-                  await form.trigger(field.name);
-                }
-              }}
+              onChange={field.onChange}
               className={cn("justify-center gap-1.5", className)}
               autoComplete="off"
               required
