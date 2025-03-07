@@ -1,6 +1,15 @@
 import { isAddressDeployed } from "@/lib/mutations/cryptocurrency/create/address-deployed";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
+/**
+ * Base schema for cryptocurrency creation with basic token parameters
+ *
+ * @property {string} assetName - The name of the cryptocurrency
+ * @property {string} symbol - The symbol/ticker of the cryptocurrency (e.g., BTC, ETH)
+ * @property {number} decimals - Number of decimal places for token amounts
+ * @property {string} pincode - Pincode required for transaction signing
+ * @property {number} [initialSupply=0] - Initial token supply (optional, defaults to 0)
+ */
 const CryptoCurrencySchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
@@ -15,14 +24,13 @@ const CryptoCurrencySchema = z.object({
 export type CryptoCurrencyInput = ZodInfer<typeof CryptoCurrencySchema>;
 
 /**
- * Zod schema for validating cryptocurrency creation inputs
+ * Extended schema for cryptocurrency creation with additional validation
  *
- * @property {string} assetName - The name of the cryptocurrency
- * @property {string} symbol - The symbol of the cryptocurrency (ticker)
- * @property {number} decimals - The number of decimal places for the token
- * @property {string} [isin] - Optional International Securities Identification Number
- * @property {string} pincode - The pincode for signing the transaction
- * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
+ * This schema extends the base CryptoCurrencySchema with additional validation
+ * to ensure the cryptocurrency hasn't already been deployed on the blockchain.
+ *
+ * The validation is performed using superRefine which allows for async validation
+ * of the entire form data object.
  */
 export const CreateCryptoCurrencySchema = CryptoCurrencySchema.superRefine(
   async (data, ctx) => {

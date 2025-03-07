@@ -7,6 +7,7 @@ import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateCryptoCurrencySchema } from "./create-schema";
+import { CreateCryptoCurrencyPredictAddress } from "./predict-address";
 
 /**
  * GraphQL mutation for creating a new cryptocurrency
@@ -23,28 +24,6 @@ const CryptoCurrencyFactoryCreate = portalGraphql(`
       challengeResponse: $challengeResponse
     ) {
       transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL query for predicting the address of a new cryptocurrency
- *
- * @remarks
- * Uses deterministic deployment to predict the contract address before creation
- */
-const CreateCryptoCurrencyPredictAddress = portalGraphql(`
-  query CreateCryptoCurrencyPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $initialSupply: String!) {
-    CryptoCurrencyFactory(address: $address) {
-      predictAddress(
-        sender: $sender
-        decimals: $decimals
-        name: $name
-        symbol: $symbol
-        initialSupply: $initialSupply
-      ) {
-        predicted
-      }
     }
   }
 `);
