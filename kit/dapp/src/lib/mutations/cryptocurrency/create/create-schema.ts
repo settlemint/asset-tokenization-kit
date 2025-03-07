@@ -1,4 +1,4 @@
-import { isAddressDeployed } from "@/lib/mutations/cryptocurrency/create/address-deployed";
+import { isAddressDeployed } from "@/lib/queries/cryptocurrency-factory/address-deployed";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**

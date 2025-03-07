@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
-import { getPredictedAddress } from "@/lib/mutations/cryptocurrency/create/predict-address";
+import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";

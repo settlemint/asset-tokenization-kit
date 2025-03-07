@@ -1,9 +1,9 @@
 "use server";
 import { getUser } from "@/lib/auth/utils";
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
+import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { parseUnits, type Address } from "viem";
-import type { CreateCryptoCurrencyInput } from "./create-schema";
 
 /**
  * GraphQL query for predicting the address of a new cryptocurrency
@@ -30,7 +30,7 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
 export const getPredictedAddress = async (data: CreateCryptoCurrencyInput) => {
   const { assetName: name, symbol, decimals, initialSupply } = data;
 
-  const user = await getUser();
+  const user = await getUser("en");
   const initialSupplyExact = String(
     parseUnits(String(initialSupply), decimals)
   );
