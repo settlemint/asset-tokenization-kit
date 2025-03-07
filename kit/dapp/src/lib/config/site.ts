@@ -1,3 +1,5 @@
+import { getServerEnvironment } from "./environment";
+
 /**
  * Interface defining the site's configuration
  */
@@ -16,9 +18,5 @@ interface SiteConfig {
 export const siteConfig = {
   name: "Asset Tokenization",
   description: "SettleMint Asset Tokenization Kit",
-  url:
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.BETTER_AUTH_URL ??
-    process.env.NEXTAUTH_URL ??
-    "http://localhost:3000",
+  url: getServerEnvironment().APP_URL,
 } as const satisfies SiteConfig;
