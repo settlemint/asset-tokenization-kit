@@ -4,7 +4,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin, magicLink } from "better-auth/plugins";
+import { admin, magicLink, multiSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
@@ -82,6 +82,32 @@ export const auth = betterAuth({
     sendOnSignUp: true,
   },
   user: {
+    deleteUser: {
+      enabled: hasEmailConfigured,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+        if (!hasEmailConfigured || !resend) {
+          throw new Error("Email is not configured");
+        }
+
+        await resend.emails.send({
+          from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
+          to: user.email,
+          subject: `Sign in to ${siteConfig.name}`,
+          react: EmailTemplate({
+            action: "Sign in to SettleMint",
+            content: (
+              <>
+                <p>{`Hello,`}</p>
+
+                <p>Click the button below to sign in to your account.</p>
+              </>
+            ),
+            heading: `Sign in to ${siteConfig.name}`,
+            url,
+          }),
+        });
+      },
+    },
     additionalFields: {
       wallet: {
         type: "string",
@@ -190,6 +216,7 @@ export const auth = betterAuth({
         });
       },
     }),
+    multiSession(),
     nextCookies(),
   ],
 });
