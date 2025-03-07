@@ -50,7 +50,7 @@ export async function waitForIndexing(
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let indexedBlock: FragmentOf<typeof IndexingFragment> | null = null;
+  let indexedBlock = null as FragmentOf<typeof IndexingFragment> | null;
   const startTime = Date.now();
 
   while (!indexedBlock || indexedBlock.number < blockNumber) {
