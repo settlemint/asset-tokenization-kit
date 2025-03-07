@@ -14,7 +14,7 @@ type Asset = MyAsset["asset"] & {
 };
 
 export function SelectAsset({ onSelect }: SelectAssetProps) {
-  const { control, getValues } = useFormContext();
+  const { control } = useFormContext();
   const t = useTranslations("portfolio.transfer-form.select-asset");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
 
@@ -43,7 +43,7 @@ export function SelectAsset({ onSelect }: SelectAssetProps) {
       />
 
       <div className="mt-6 text-right">
-        <Button onClick={handleConfirm} disabled={!getValues()}>
+        <Button onClick={handleConfirm} disabled={!selectedAsset}>
           Confirm
         </Button>
       </div>
