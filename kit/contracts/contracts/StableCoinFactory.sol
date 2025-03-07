@@ -120,4 +120,12 @@ contract StableCoinFactory is ReentrancyGuard, ERC2771Context {
     function _calculateSalt(string memory name, string memory symbol, uint8 decimals) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(name, symbol, decimals));
     }
+
+    /// @notice Checks if an address was deployed by this factory
+    /// @dev Returns true if the address was created by this factory, false otherwise
+    /// @param token The address to check
+    /// @return True if the address was created by this factory, false otherwise
+    function isAddressDeployed(address token) public view returns (bool) {
+        return isFactoryToken[token];
+    }
 }
