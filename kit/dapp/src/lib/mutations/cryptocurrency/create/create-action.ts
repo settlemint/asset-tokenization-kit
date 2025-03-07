@@ -93,11 +93,6 @@ export const createCryptoCurrency = action
         throw new Error("Failed to predict the address");
       }
 
-      // await hasuraClient.request(CreateOffchainCryptoCurrency, {
-      //   id: newAddress,
-      //   isin,
-      // });
-
       const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
         from: user.wallet,

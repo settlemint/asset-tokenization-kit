@@ -160,7 +160,7 @@ export function Form<
                     {Object.entries(form.formState.errors)
                       .map(
                         ([key, error]) =>
-                          `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
+                          `${key ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
                       )
                       .filter(Boolean)
                       .join("\n")}
