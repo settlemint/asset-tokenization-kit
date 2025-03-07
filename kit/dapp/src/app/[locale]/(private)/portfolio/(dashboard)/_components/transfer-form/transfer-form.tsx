@@ -83,9 +83,7 @@ export function MyAssetsTransferForm() {
             action={createStablecoin}
             resolver={zodResolver(CreateStablecoinSchema)}
             onOpenChange={setOpen}
-            buttonLabels={{
-              label: t("transfer"),
-            }}
+            hideButtons
             defaultValues={{
               collateralLivenessSeconds: 3600 * 24 * 365,
             }}
