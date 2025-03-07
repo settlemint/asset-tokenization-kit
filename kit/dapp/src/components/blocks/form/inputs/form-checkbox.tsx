@@ -1,5 +1,6 @@
 "use client";
 
+import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -7,7 +8,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
@@ -88,7 +88,7 @@ export function FormCheckbox<T extends FieldValues>({
                   {description}
                 </FormDescription>
               )}
-              <FormMessage
+              <TranslatableFormMessage
                 id={`${field.name}-error`}
                 aria-live="polite"
                 className="text-destructive"

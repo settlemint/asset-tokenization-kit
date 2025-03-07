@@ -193,7 +193,7 @@ export const Search = () => {
         {debounced && (
           <div
             className={cn(
-              "absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-lg"
+              "absolute top-full right-0 left-0 z-50 max-h-[300px] overflow-y-auto overflow-x-hidden rounded-b-lg border border-t-0 bg-popover shadow-md"
             )}
           >
             {(assets ?? []).length === 0 && (users ?? []).length === 0 && (

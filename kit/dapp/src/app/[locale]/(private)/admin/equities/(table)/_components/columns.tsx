@@ -7,7 +7,7 @@ import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, type MessageKeys } from "next-intl";
 import type { ComponentType } from "react";
 
 const columnHelper =
@@ -55,13 +55,25 @@ export function columns() {
     }),
     columnHelper.accessor("equityCategory", {
       header: t("category-header"),
-      cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      cell: ({ getValue }) =>
+        t(
+          `category-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.equities.table",
+            "category-header"
+          >
+        ),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("equityClass", {
       header: t("class-header"),
-      cell: ({ getValue }) => getValue(),
-      enableColumnFilter: false,
+      cell: ({ getValue }) =>
+        t(
+          `class-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
+            "admin.equities.table",
+            "class-header"
+          >
+        ),
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("paused", {
       header: t("status-header"),
@@ -72,21 +84,6 @@ export function columns() {
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{paused ? t("paused-status") : t("active-status")}</span>
-          </>
-        );
-      },
-    }),
-    columnHelper.accessor("private", {
-      header: t("private-header"),
-      cell: ({ getValue }) => {
-        const privateAsset: boolean = !!getValue();
-        const Icon = icons[privateAsset ? "private" : "public"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>
-              {privateAsset ? t("private-status") : t("public-status")}
-            </span>
           </>
         );
       },

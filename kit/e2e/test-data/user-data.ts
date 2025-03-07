@@ -1,7 +1,11 @@
-const date = new Date().toISOString().replace(/(\d{4}-\d{1,2}-\d{1,2}).*/u, '$1');
-const randomValue = (Math.floor(Math.random() * 10_000) + 10_000).toString().slice(1);
-const pincode = '123456';
-const password = 'TestPassword123!';
+const date = new Date()
+  .toISOString()
+  .replace(/(\d{4}-\d{1,2}-\d{1,2}).*/u, "$1");
+const randomValue = (Math.floor(Math.random() * 10_000) + 10_000)
+  .toString()
+  .slice(1);
+const pincode = "123456";
+const password = "TestPassword123!";
 interface SignUpData {
   name: string;
   email: string;
@@ -38,8 +42,8 @@ export const signUpTransferUserData: SignUpData = {
 } as const;
 
 export const adminUser: AdminUser = {
-  email: 'testadmin@settlemint.com',
+  email: "testadmin@settlemint.com",
   password: password,
-  name: 'Test Admin User',
+  name: "Test Admin User",
   pincode: pincode,
 };

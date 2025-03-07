@@ -38,7 +38,7 @@ export async function AssetsSupply() {
   return (
     <PieChartComponent
       description={t("assets-supply.description")}
-      title={t("assets-supply.label")}
+      title={t("assets-supply.title")}
       data={chartData}
       dataKey="totalSupply"
       nameKey="assetType"

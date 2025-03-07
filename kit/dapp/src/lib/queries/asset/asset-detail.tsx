@@ -76,6 +76,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
       ["asset", "asset-detail", address],
       {
         revalidate: 60 * 60 * 24, // 24 hours
+        tags: ["asset"],
       }
     )(),
     unstable_cache(
@@ -84,6 +85,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
       ["asset", "offchain-asset-detail", normalizedAddress],
       {
         revalidate: 60 * 60 * 24, // 24 hours
+        tags: ["asset"],
       }
     )(),
   ]);

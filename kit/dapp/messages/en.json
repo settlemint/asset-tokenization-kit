@@ -3,12 +3,11 @@
     "activity": {
       "page-description": "Track activity across all assets.",
       "page-title": "Activity",
-      "view-all": "View all transactions in the explorer",
       "transaction-details": {
-        "block-hash-label": "Block hash",
-        "block-number-label": "Block number",
         "blob-gas-price-label": "Blob gas price",
         "blob-gas-used-label": "Blob gas used",
+        "block-hash-label": "Block hash",
+        "block-number-label": "Block number",
         "contract-label": "Contract",
         "created-at-label": "Created at",
         "description": "View the details of a transaction",
@@ -25,7 +24,8 @@
         "transaction-title": "Transaction",
         "trigger-label": "Details",
         "type-label": "Type"
-      }
+      },
+      "view-all": "View all transactions in the explorer"
     },
     "bonds": {
       "burn-form": {
@@ -45,7 +45,11 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       },
       "create-form": {
         "basics": {
@@ -217,7 +221,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -286,6 +291,17 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+          "title": "Redeem Bonds"
+        },
+        "increase-supply": {
+          "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+          "title": "Issue Bonds"
+        },
+        "title": "Related actions"
+      },
       "table": {
         "actions-header": "Actions",
         "active-status": "Active",
@@ -297,6 +313,23 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new bond with defined maturity, coupon rates, and face value. Streamline bond issuance with automated interest payments and redemption schedules.",
+            "title": "Issue new bond"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage bond parameters, interest distributions, maturity dates, and redemption processes for fixed-income securities.",
+            "title": "Bond mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in fixed-income markets, from corporate debt to structured products. Maximize efficiency in interest payments, maturity management, and regulatory compliance.",
+            "title": "Bond usecases"
+          }
+        },
         "status-header": "Status",
         "symbol-header": "Symbol",
         "topinfo-description": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
@@ -310,7 +343,40 @@
         "permissions": "Permissions"
       }
     },
+    "charts": {
+      "asset-statistics-title": "Asset statistics",
+      "asset-type-formatter": {
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins"
+      }
+    },
     "cryptocurrencies": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}",
+          "description": "Input the amount you wish to burn.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Burn Assets",
+        "description": "Permanently remove tokens from circulation to reduce supply.",
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "burn-description": "Burning operation details",
+          "burn-title": "Burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "title": "Review and confirm burn"
+        },
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
       "create-form": {
         "basics": {
           "decimals-label": "Decimals",
@@ -319,8 +385,6 @@
           "isin-placeholder": "CRYPTO123456",
           "name-label": "Name",
           "name-placeholder": "Bitcoin",
-          "private-token-description": "Other organisations won't see this asset",
-          "private-token-label": "Private Token",
           "symbol-label": "Symbol",
           "symbol-placeholder": "BTC",
           "title": "Basic Information"
@@ -431,7 +495,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "permissions": {
         "actions-header": "Actions",
@@ -477,6 +542,13 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "related-actions": {
+        "increase-supply": {
+          "description": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
+          "title": "Mint Tokens"
+        },
+        "title": "Related actions"
+      },
       "table": {
         "actions-header": "Actions",
         "address-header": "Address",
@@ -486,6 +558,23 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new cryptocurrency token with customizable parameters and security features. Streamline token deployment with configurable supply mechanisms and transfer controls.",
+            "title": "Issue new cryptocurrency"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage token economics, supply controls, transfer restrictions, and security features for your cryptocurrency.",
+            "title": "Token mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in digital payments, rewards systems, and tokenized services. Maximize utility through programmable transactions and institutional-grade security features.",
+            "title": "Cryptocurrency usecases"
+          }
+        },
         "symbol-header": "Symbol",
         "topinfo-description": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
         "topinfo-title": "A customizable and secure digital asset",
@@ -495,17 +584,21 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "dashboard": {
       "charts": {
-        "asset-activity": {
-          "burn": "Burn",
-          "description": "Visualize recent minting, transfers, and burning activities across asset types.",
-          "mint": "Mint",
-          "title": "Activity",
-          "transfer": "Transfer"
+        "users-history": {
+          "label": "Users",
+          "title": "Users history",
+          "description": "Users history"
+        },
+        "transaction-history": {
+          "label": "Transactions",
+          "title": "Transaction history",
+          "description": "Transaction history"
         },
         "asset-types": {
           "bonds": "Bonds",
@@ -515,44 +608,41 @@
           "stablecoins": "Stablecoins"
         },
         "assets-supply": {
-          "description": "Visualize the distribution of total supply across different asset categories.",
-          "label": "Distribution",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
+          "label": "Assets",
+          "title": "Assets supply",
+          "description": "Assets supply"
         },
-        "transaction-history": {
-          "description": "Overview of transaction volume and trends over the past {interval}.",
-          "label": "Transactions",
-          "title": "Transactions"
-        },
-        "users-history": {
-          "description": "User registration trends over the past week.",
-          "label": "Users",
-          "title": "Users"
+        "asset-activity": {
+          "mint": "Mint",
+          "transfer": "Transfer",
+          "burn": "Burn",
+          "title": "Asset activity",
+          "description": "Asset activity"
         }
       },
       "page": {
-        "description": "Admin dashboard overview",
-        "latest_events_heading": "Latest Events",
-        "stats_heading": "Stats",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "description": "Welcome to the dashboard",
+        "stats-heading": "Stats",
+        "latest-events-heading": "Latest events"
       },
       "table": {
         "latest-events": {
-          "view-all": "View all events →"
+          "view-all": "View all"
         }
       },
       "widgets": {
         "assets": {
-          "label": "Assets supply",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Bonds | {cryptocurrencies} Cryptocurrencies | {equities} Equities | {funds} Funds"
+          "label": "Assets",
+          "subtext": "{bonds} bonds {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
         },
         "transactions": {
           "label": "Transactions",
-          "subtext": "{count} transactions processed in the past {days} days."
+          "subtext": "{count} transactions processed in the last {days} days"
         },
         "users": {
           "label": "Users",
-          "subtext": "{count} new users in the past {days} days."
+          "subtext": "{count} users in the last {days} days"
         }
       }
     },
@@ -574,7 +664,11 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       },
       "create-form": {
         "basics": {
@@ -705,7 +799,7 @@
           "title": "Review and confirm"
         },
         "title": "Create new equity",
-        "trigger-label": "Issue a new equity"
+        "trigger-label": "Mint"
       },
       "details": {
         "contract-address": "Contract address",
@@ -833,7 +927,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -902,12 +997,70 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
+          "title": "Reduce Share Supply"
+        },
+        "increase-supply": {
+          "description": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
+          "title": "Issue New Shares"
+        },
+        "title": "Related actions"
+      },
       "table": {
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "category-blend-equity": "Blend Equity",
+        "category-communication-services": "Communication Services",
+        "category-consumer-discretionary": "Consumer Discretionary",
+        "category-consumer-staples": "Consumer Staples",
+        "category-convertible-preferred-stock": "Convertible Preferred Stock",
+        "category-cumulative-preferred-stock": "Cumulative Preferred Stock",
+        "category-distressed-equity": "Distressed Equity",
+        "category-domestic-equity": "Domestic Equity",
+        "category-dual-class-shares": "Dual-Class Shares",
+        "category-emerging-market-equity": "Emerging Market Equity",
+        "category-energy": "Energy",
+        "category-esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
+        "category-financials": "Financials",
+        "category-frontier-market-equity": "Frontier Market Equity",
+        "category-global-equity": "Global Equity",
+        "category-growth-capital": "Growth Capital",
+        "category-growth-equity": "Growth Equity",
         "category-header": "Equity Category",
+        "category-healthcare": "Healthcare",
+        "category-income-equity": "Income Equity",
+        "category-industrials": "Industrials",
+        "category-international-equity": "International Equity",
+        "category-large-cap-equity": "Large-Cap Equity",
+        "category-leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+        "category-materials": "Materials",
+        "category-mezzanine-financing": "Mezzanine Financing",
+        "category-micro-cap-equity": "Micro-Cap Equity",
+        "category-mid-cap-equity": "Mid-Cap Equity",
+        "category-non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
+        "category-non-voting-common-stock": "Non-Voting Common Stock",
+        "category-real-estate": "Real Estate",
+        "category-redeemable-preferred-stock": "Redeemable Preferred Stock",
+        "category-restricted-stock": "Restricted Stock",
+        "category-small-cap-equity": "Small-Cap Equity",
+        "category-technology": "Technology",
+        "category-tracking-stocks": "Tracking Stocks",
+        "category-utilities": "Utilities",
+        "category-value-equity": "Value Equity",
+        "category-venture-capital": "Venture Capital",
+        "category-voting-common-stock": "Voting Common Stock",
+        "class-common-equity": "Common Equity",
+        "class-geographic-equity": "Geographic Equity",
         "class-header": "Equity Class",
+        "class-investment-stage-private-equity": "Investment Stage (Private Equity)",
+        "class-investment-style-equity": "Investment Style Equity",
+        "class-market-capitalization-equity": "Market Capitalization Equity",
+        "class-preferred-equity": "Preferred Equity",
+        "class-sector-industry-equity": "Sector/Industry Equity",
+        "class-special-classes-equity": "Special Classes of Equity",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your equity assets.",
         "page-title": "Equities",
@@ -915,6 +1068,23 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
+            "title": "Issue new equity tokens"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to manage shareholder rights, voting mechanisms, dividend distributions, and equity ownership structures.",
+            "title": "Equity mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
+            "title": "Equity usecases"
+          }
+        },
         "status-header": "Status",
         "symbol-header": "Symbol",
         "topinfo-description": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
@@ -925,7 +1095,8 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "funds": {
@@ -946,7 +1117,11 @@
           "description": "Verify the details of your burn before proceeding.",
           "title": "Review and confirm burn"
         },
-        "title": "Burn"
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
       },
       "create-form": {
         "basics": {
@@ -1210,7 +1385,8 @@
           "mint-title": "Mint",
           "title": "Review and confirm mint"
         },
-        "title": "Mint"
+        "title": "Mint",
+        "trigger-label": "Mint"
       },
       "pause-form": {
         "pause": {
@@ -1279,12 +1455,71 @@
         "table-title": "Permissions",
         "wallet-header": "Wallet"
       },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+          "title": "Redeem Bonds"
+        },
+        "increase-supply": {
+          "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+          "title": "Issue Bonds"
+        },
+        "title": "Related actions"
+      },
       "table": {
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "assets-under-management-header": "AUM",
+        "category-activist": "Activist",
+        "category-commodity-trading": "Commodity Trading",
+        "category-convertible-arbitrage": "Convertible Arbitrage",
+        "category-credit": "Credit",
+        "category-currency-fx": "Currency / FX",
+        "category-distressed-debt": "Distressed Debt",
+        "category-emerging-markets": "Emerging Markets",
+        "category-equity-hedge": "Equity Hedge",
+        "category-event-driven": "Event-Driven",
+        "category-fixed-income-arbitrage": "Fixed Income Arbitrage",
+        "category-fund-of-funds": "Fund of Funds",
+        "category-global-macro": "Global Macro",
         "category-header": "Fund Category",
+        "category-high-frequency-trading": "High-Frequency Trading (HFT)",
+        "category-managed-futures-cta": "Managed Futures / CTA",
+        "category-market-neutral": "Market Neutral",
+        "category-merger-arbitrage": "Merger Arbitrage",
+        "category-multi-strategy": "Multi-Strategy",
+        "category-private-equity": "Private Equity (PE)",
+        "category-quantitative-systematic": "Quantitative/Systematic",
+        "category-relative-value": "Relative Value",
+        "category-statistical-arbitrage": "Statistical Arbitrage",
+        "category-structured-credit": "Structured Credit",
+        "category-venture-capital": "Venture Capital (VC)",
+        "class-absolute-return": "Absolute Return",
+        "class-core-blend": "Core / Blend",
+        "class-diversified": "Diversified",
+        "class-early-stage": "Early Stage",
+        "class-factor-based": "Factor-Based",
+        "class-growth-focused": "Growth-Focused",
         "class-header": "Fund Class",
+        "class-income-focused": "Income-Focused",
+        "class-large-cap": "Large-Cap",
+        "class-long-equity": "Long Equity (Long Only)",
+        "class-long-short-equity": "Long/Short Equity",
+        "class-market-neutral": "Market Neutral",
+        "class-mid-cap": "Mid-Cap",
+        "class-momentum-oriented": "Momentum-Oriented",
+        "class-opportunistic": "Opportunistic",
+        "class-pre-series-b": "Pre-Series B",
+        "class-quantitative-algorithmic": "Quantitative / Algorithmic",
+        "class-regional": "Regional",
+        "class-sector-specific": "Sector-Specific",
+        "class-seed-pre-seed": "Seed / Pre-Seed",
+        "class-series-b-late-stage": "Series B / Late Stage",
+        "class-short-equity": "Short Equity",
+        "class-small-cap": "Small-Cap",
+        "class-tactical-asset-allocation": "Tactical Asset Allocation",
+        "class-value-focused": "Value-Focused",
         "management-fee-header": "Management Fee",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your fund assets.",
@@ -1293,6 +1528,23 @@
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new fund with defined parameters and asset backing. Streamline fund deployment to support new investment opportunities and market segments.",
+            "title": "Issue a new fund"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to adjust key fund parameters, asset allocation methods, and management fee structures.",
+            "title": "Fund mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore the practical applications and integrations of digital funds. Maximize utility across investment management, asset tokenization, and institutional finance ecosystems.",
+            "title": "Usecases"
+          }
+        },
         "status-header": "Status",
         "symbol-header": "Symbol",
         "topinfo-description": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
@@ -1303,7 +1555,8 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "sidebar": {
@@ -1756,6 +2009,7 @@
         "label": "Password"
       },
       "remember-me": "Remember me",
+      "sign-in-with-passkey": "Sign in with passkey",
       "sign-up": "Sign up",
       "submit": "Sign in",
       "submitting": "Signing in...",
@@ -1942,7 +2196,10 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
-        "valid-email": "Please enter a valid email address"
+        "valid-email": "Please enter a valid email address",
+        "password-min-length": "Password must be at least 6 characters long",
+        "pin-code-match": "PIN codes don't match",
+        "pin-code-length": "PIN code must be exactly 6 digits"
       },
       "progress": {
         "completed-step": "Completed step",
@@ -1983,12 +2240,16 @@
     "error-id": "Error ID",
     "go-home": "Go home",
     "title": "Something went wrong!",
-    "try-again": "Try again"
+    "try-again": "Try again",
+    "unknown-error": "Unknown error",
+    "validation-errors": "Validation errors"
   },
   "layout": {
     "header": {
       "app-description": "Asset Tokenization",
-      "app-name": "SettleMint"
+      "app-name": "SettleMint",
+      "home": "Home",
+      "issuer-portal": "Issuer portal"
     },
     "navigation": {
       "admin": "Issuer portal",
@@ -1999,6 +2260,50 @@
       "documentation": "Documentation",
       "logout": "Log out",
       "pending-transactions": "Pending Transactions"
+    }
+  },
+  "portfolio": {
+    "activity": {
+      "page-description": "Your activity on chain",
+      "page-title": "Activity"
+    },
+    "asset-types": {
+      "bond": "Bond",
+      "cryptocurrency": "Cryptocurrency",
+      "equity": "Equity",
+      "fund": "Fund",
+      "stablecoin": "Stablecoin",
+      "unknown": "Unknown"
+    },
+    "transfer-form": {
+      "amount": {
+        "amount-label": "Amount",
+        "balance-description": "Balance:",
+        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
+        "title": "Enter Amount"
+      },
+      "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
+      "recipients": {
+        "description": "Enter a wallet address to send tokens directly.",
+        "title": "Select Recipients",
+        "wallet-address-label": "Wallet Address"
+      },
+      "select-asset": {
+        "asset-description": "Select an asset from your portfolio",
+        "asset-label": "Asset",
+        "description": "Choose the asset you want to transfer",
+        "title": "Select Asset"
+      },
+      "summary": {
+        "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
+        "title": "Review and confirm transfer"
+      },
+      "transfer": "Transfer",
+      "transferring": "Transferring..."
+    },
+    "my-assets": {
+      "title": "My Assets",
+      "description": "View and manage your digital assets"
     }
   },
   "theme": {

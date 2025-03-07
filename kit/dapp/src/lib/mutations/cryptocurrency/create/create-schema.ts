@@ -1,4 +1,4 @@
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating cryptocurrency creation inputs
@@ -8,17 +8,17 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @property {number} decimals - The number of decimal places for the token
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {string} pincode - The pincode for signing the transaction
- * @property {boolean} privateAsset - Whether the asset should be private
  * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
  */
 export const CreateCryptoCurrencySchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
-  isin: z.isin().optional(),
   pincode: z.pincode(),
-  privateAsset: z.boolean(),
-  initialSupply: z.coerce.number().optional().default(0),
+  initialSupply: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().optional().default(0)),
 });
 
 export type CreateCryptoCurrencyInput = ZodInfer<

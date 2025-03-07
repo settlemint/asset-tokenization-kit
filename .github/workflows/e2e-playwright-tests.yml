@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   schedule:
-    - cron: '0 0 * * 1-5' # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+    - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
   pull_request:
     types: [labeled]
   workflow_dispatch:
@@ -15,14 +15,14 @@ jobs:
     name: Playwright Tests
     runs-on: namespace-profile-starterkit
     environment: staging
-    timeout-minutes: 60  # 1 hour maximum runtime
+    timeout-minutes: 60 # 1 hour maximum runtime
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
     strategy:
       fail-fast: false
 
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v5
+        uses: namespacelabs/nscloud-checkout-action@v6
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -50,11 +50,71 @@ jobs:
           dotEnvFile: ${{ secrets.ENV_FILE }}
           dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
+      - name: Install dapp dependencies
+        run: bun install
+        working-directory: kit/dapp
+
+      - name: Generate SettleMint code and addresses
+        run: |
+          bun codegen:settlemint
+          bun addresses
+        working-directory: kit/dapp
+
+      - name: Start dev server
+        run: |
+          echo "Starting dev server..."
+          nohup bun dev --port 3000 --hostname 0.0.0.0 > server.log 2>&1 &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          echo "Waiting 30 seconds for Next.js to initialize all routes..."
+          sleep 30
+          echo "Performing initial server check..."
+          curl -v http://localhost:3000/ || echo "Initial check failed, will retry"
+          timeout_seconds=120
+          elapsed=0
+          success=false
+
+          while [ $elapsed -lt $timeout_seconds ]; do
+            echo "Checking server status (${elapsed}s elapsed)..."
+            status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/en || echo "failed")
+
+            if [ "$status" = "200" ]; then
+              echo "Server is ready! Status: $status"
+              success=true
+              break
+            fi
+
+            if [ "$status" = "307" ]; then
+              echo "Server is ready (with redirect)! Status: $status"
+              success=true
+              break
+            fi
+
+            echo "Server not ready yet (status: $status). Recent logs:"
+            tail -n 10 server.log || true
+            sleep 15
+            elapsed=$((elapsed + 15))
+          done
+          if [ "$success" = false ]; then
+            echo "Server failed to start within $timeout_seconds seconds. Last server logs:"
+            cat server.log
+            echo "Attempting final direct check with verbose output:"
+            curl -v http://localhost:3000/en || echo "Final check failed"
+            exit 1
+          fi
+
+          echo "Dev server is ready at http://localhost:3000!"
+        working-directory: kit/dapp
+
       - name: Run Playwright tests
         run: bun playwright test tests --retries 2 --reporter=html
         working-directory: kit/e2e
         env:
           CI: true
+
+      - name: Stop dev server
+        if: always()
+        run: kill ${{ env.SERVER_PID }} || true
+        working-directory: kit/dapp
 
       - name: Upload test results
         if: always()
@@ -64,4 +124,5 @@ jobs:
           path: |
             kit/e2e/playwright-report/
             kit/e2e/test-results/
+            kit/dapp/server.log
           retention-days: 1

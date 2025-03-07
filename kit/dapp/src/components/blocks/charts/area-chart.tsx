@@ -156,6 +156,7 @@ export function AreaChartComponent({
                 fill={`url(#fill${key})`}
                 fillOpacity={0.4}
                 stroke={config[key].color}
+                strokeWidth={2}
                 stackId={stacked ? "a" : key}
               />
             ))}

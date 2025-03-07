@@ -10,7 +10,7 @@ export function Basics() {
 
   return (
     <FormStep title={t("title")} description={t("description")}>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <FormInput
           control={control}
           name="assetName"
@@ -18,14 +18,22 @@ export function Basics() {
           placeholder={t("name-placeholder")}
           required
         />
-        <FormInput
-          control={control}
-          name="symbol"
-          label={t("symbol-label")}
-          placeholder={t("symbol-placeholder")}
-          textOnly
-          required
-        />
+        <div className="grid grid-cols-2 gap-6">
+          <FormInput
+            control={control}
+            name="symbol"
+            label={t("symbol-label")}
+            placeholder={t("symbol-placeholder")}
+            textOnly
+            required
+          />
+          <FormInput
+            control={control}
+            name="isin"
+            label={t("isin-label")}
+            placeholder={t("isin-placeholder")}
+          />
+        </div>
         <FormInput
           control={control}
           type="number"
@@ -34,21 +42,9 @@ export function Basics() {
           defaultValue={18}
           required
         />
-        <FormInput
-          control={control}
-          name="isin"
-          label={t("isin-label")}
-          placeholder={t("isin-placeholder")}
-        />
       </div>
     </FormStep>
   );
 }
 
-Basics.validatedFields = [
-  "assetName",
-  "symbol",
-  "decimals",
-  "privateAsset",
-  "isin",
-] as const;
+Basics.validatedFields = ["assetName", "symbol", "decimals", "isin"] as const;

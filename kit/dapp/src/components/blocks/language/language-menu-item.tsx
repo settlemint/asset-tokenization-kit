@@ -57,11 +57,11 @@ export function LanguageMenuItem() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         disabled={isPending}
-        className="px-2 py-4"
+        className="p-2"
       >
         <EarthIcon
           ref={globeIconRef}
-          className="mr-2 size-4 text-muted-foreground"
+          className="mr-4 size-4 text-muted-foreground"
         />
         <span>{isPending ? "Changing..." : "Language"}</span>
       </DropdownMenuSubTrigger>

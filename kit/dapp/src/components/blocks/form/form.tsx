@@ -1,8 +1,8 @@
 "use client";
-import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
@@ -10,7 +10,7 @@ import { useState } from "react";
 import type { DefaultValues, Path, Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import type { Schema } from "zod";
-import { FormButton, type ButtonLabels } from "./form-button";
+import { type ButtonLabels, FormButton } from "./form-button";
 import { FormProgress } from "./form-progress";
 import type { FormStepElement } from "./types";
 
@@ -54,6 +54,7 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
+  const tError = useTranslations("error");
   const totalSteps = Array.isArray(children) ? children.length : 1;
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
@@ -85,8 +86,6 @@ export function Form<
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);
-          resetFormAndAction();
-          onOpenChange?.(false);
         },
       },
     });
@@ -122,39 +121,69 @@ export function Form<
     );
 
     if (results.every(Boolean)) {
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      // Prevent the form from being auto submitted when going to the final step
+      setTimeout(() => {
+        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      }, 10);
     }
   };
 
+  const isLastStep = currentStep === totalSteps - 1;
+  const CurrentStep = Array.isArray(children)
+    ? children[currentStep].type
+    : children.type;
+  const hasError =
+    Object.keys(form.formState.errors).filter(
+      (fieldName) => !CurrentStep.validatedFields.includes(fieldName as never)
+    ).length > 0;
+
   return (
-    <div className="space-y-6">
-      <div className="container">
-        <Card className="mx-4">
-          <CardContent className="px-4">
-            <UIForm {...form}>
-              <form onSubmit={handleSubmitWithAction}>
-                {totalSteps > 1 && (
-                  <FormProgress
-                    currentStep={currentStep}
-                    totalSteps={totalSteps}
-                  />
-                )}
-                <div className="min-h-[400px]">
-                  {Array.isArray(children) ? children[currentStep] : children}
-                </div>
-                <FormButton
-                  currentStep={currentStep}
-                  totalSteps={totalSteps}
-                  onPreviousStep={handlePrev}
-                  onNextStep={() => {
-                    void handleNext();
-                  }}
-                  labels={buttonLabels}
-                />
-              </form>
-            </UIForm>
-          </CardContent>
-        </Card>
+    <div className="space-y-6 h-full">
+      <div className="container p-6 flex flex-col h-full">
+        <UIForm {...form}>
+          <form
+            onSubmit={handleSubmitWithAction}
+            noValidate
+            className="flex flex-col flex-1"
+          >
+            {totalSteps > 1 && (
+              <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
+            )}
+            <div className="flex-1">
+              {isLastStep && hasError && (
+                <Alert
+                  variant="destructive"
+                  className="text-destructive border-destructive mb-4"
+                >
+                  <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                  <AlertDescription className="whitespace-pre-wrap">
+                    {Object.entries(form.formState.errors)
+                      .map(
+                        ([key, error]) =>
+                          `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
+                      )
+                      .filter(Boolean)
+                      .join("\n")}
+                  </AlertDescription>
+                </Alert>
+              )}
+              {Array.isArray(children) ? children[currentStep] : children}
+            </div>
+            <div className="mt-auto pt-6">
+              <FormButton
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                onPreviousStep={handlePrev}
+                onNextStep={() => {
+                  handleNext().catch((error: Error) => {
+                    console.error("Error in handleNext:", error);
+                  });
+                }}
+                labels={buttonLabels}
+              />
+            </div>
+          </form>
+        </UIForm>
       </div>
     </div>
   );

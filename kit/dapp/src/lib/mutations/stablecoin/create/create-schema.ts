@@ -11,11 +11,14 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @property {string} pincode - The pincode for signing the transaction
  */
 export const CreateStablecoinSchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
   isin: z.isin().optional(),
-  collateralLivenessSeconds: z.coerce.number().min(0),
+  collateralLivenessSeconds: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().min(0)),
   pincode: z.pincode(),
 });
 

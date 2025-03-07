@@ -1,6 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import { FormSwitch } from "@/components/blocks/form/inputs/form-switch";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
@@ -11,7 +10,7 @@ export function Basics() {
 
   return (
     <FormStep title={t("title")} description={t("description")}>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <FormInput
           control={control}
           name="assetName"
@@ -35,28 +34,9 @@ export function Basics() {
           defaultValue={18}
           required
         />
-        <FormInput
-          control={control}
-          name="isin"
-          label={t("isin-label")}
-          placeholder={t("isin-placeholder")}
-        />
       </div>
-      <FormSwitch
-        control={control}
-        name="privateAsset"
-        label={t("private-token-label")}
-        description={t("private-token-description")}
-        defaultValue={true}
-      />
     </FormStep>
   );
 }
 
-Basics.validatedFields = [
-  "assetName",
-  "symbol",
-  "decimals",
-  "privateAsset",
-  "isin",
-] as const;
+Basics.validatedFields = ["assetName", "symbol", "decimals"] as const;

@@ -1,12 +1,12 @@
 "use client";
 
+import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -76,7 +76,7 @@ export function FormSwitch<T extends FieldValues>({
                   {...props}
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className={cn(className)}
+                  className={cn("w-9", className)}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
@@ -98,7 +98,7 @@ export function FormSwitch<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage
+            <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
               className="text-destructive"

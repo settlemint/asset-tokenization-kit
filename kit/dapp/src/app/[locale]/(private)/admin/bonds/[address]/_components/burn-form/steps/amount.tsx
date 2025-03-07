@@ -26,6 +26,7 @@ export function Amount({ maxBurnAmount }: AmountProps) {
           description={t("available-balance", {
             balance: formatNumber(maxBurnAmount),
           })}
+          required
         />
       </div>
     </FormStep>
