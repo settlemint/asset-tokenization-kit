@@ -634,7 +634,7 @@
       "widgets": {
         "assets": {
           "label": "Assets",
-          "subtext": "{bonds} bonds, {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
+          "subtext": "{bonds} bonds {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
         },
         "transactions": {
           "label": "Transactions",
@@ -2247,7 +2247,9 @@
   "layout": {
     "header": {
       "app-description": "Asset Tokenization",
-      "app-name": "SettleMint"
+      "app-name": "SettleMint",
+      "home": "Home",
+      "issuer-portal": "Issuer portal"
     },
     "navigation": {
       "admin": "Issuer portal",

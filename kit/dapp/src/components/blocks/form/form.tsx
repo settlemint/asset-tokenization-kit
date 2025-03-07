@@ -1,6 +1,5 @@
 "use client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
 import { Form as UIForm } from "@/components/ui/form";
 import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
 import { type ZodInfer, z } from "@/lib/utils/zod";
@@ -139,53 +138,52 @@ export function Form<
     ).length > 0;
 
   return (
-    <div className="space-y-6">
-      <div className="container">
-        <Card className="mx-4">
-          <CardContent className="px-4">
-            <UIForm {...form}>
-              <form onSubmit={handleSubmitWithAction} noValidate>
-                {totalSteps > 1 && (
-                  <FormProgress
-                    currentStep={currentStep}
-                    totalSteps={totalSteps}
-                  />
-                )}
-                <div className="min-h-[400px]">
-                  {isLastStep && hasError && (
-                    <Alert
-                      variant="destructive"
-                      className="text-destructive border-destructive mb-4"
-                    >
-                      <AlertTitle>{tError("validation-errors")}</AlertTitle>
-                      <AlertDescription className="whitespace-pre-wrap">
-                        {Object.entries(form.formState.errors)
-                          .map(
-                            ([key, error]) =>
-                              `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
-                          )
-                          .filter(Boolean)
-                          .join("\n")}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  {Array.isArray(children) ? children[currentStep] : children}
-                </div>
-                <FormButton
-                  currentStep={currentStep}
-                  totalSteps={totalSteps}
-                  onPreviousStep={handlePrev}
-                  onNextStep={() => {
-                    handleNext().catch((error: Error) => {
-                      console.error("Error in handleNext:", error);
-                    });
-                  }}
-                  labels={buttonLabels}
-                />
-              </form>
-            </UIForm>
-          </CardContent>
-        </Card>
+    <div className="space-y-6 h-full">
+      <div className="container p-6 flex flex-col h-full">
+        <UIForm {...form}>
+          <form
+            onSubmit={handleSubmitWithAction}
+            noValidate
+            className="flex flex-col flex-1"
+          >
+            {totalSteps > 1 && (
+              <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
+            )}
+            <div className="flex-1">
+              {isLastStep && hasError && (
+                <Alert
+                  variant="destructive"
+                  className="text-destructive border-destructive mb-4"
+                >
+                  <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                  <AlertDescription className="whitespace-pre-wrap">
+                    {Object.entries(form.formState.errors)
+                      .map(
+                        ([key, error]) =>
+                          `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
+                      )
+                      .filter(Boolean)
+                      .join("\n")}
+                  </AlertDescription>
+                </Alert>
+              )}
+              {Array.isArray(children) ? children[currentStep] : children}
+            </div>
+            <div className="mt-auto pt-6">
+              <FormButton
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                onPreviousStep={handlePrev}
+                onNextStep={() => {
+                  handleNext().catch((error: Error) => {
+                    console.error("Error in handleNext:", error);
+                  });
+                }}
+                labels={buttonLabels}
+              />
+            </div>
+          </form>
+        </UIForm>
       </div>
     </div>
   );

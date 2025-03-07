@@ -17,11 +17,13 @@ import LogoVerticalLight from "./logos/settlemint-logo-v-lm.svg";
 interface LogoProps {
   className?: string;
   variant?: "horizontal" | "vertical" | "icon";
+  forcedColorMode?: "light" | "dark";
 }
 
 export function Logo({
   className = "",
   variant = "horizontal",
+  forcedColorMode,
 }: PropsWithChildren<LogoProps>) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -39,11 +41,17 @@ export function Logo({
     const isDark = resolvedTheme === "dark";
     switch (variant) {
       case "horizontal":
-        return isDark ? LogoHorizontalDark : LogoHorizontalLight;
+        return isDark || forcedColorMode === "dark"
+          ? LogoHorizontalDark
+          : LogoHorizontalLight;
       case "vertical":
-        return isDark ? LogoVerticalDark : LogoVerticalLight;
+        return isDark || forcedColorMode === "dark"
+          ? LogoVerticalDark
+          : LogoVerticalLight;
       case "icon":
-        return isDark ? LogoIconDark : LogoIconLight;
+        return isDark || forcedColorMode === "dark"
+          ? LogoIconDark
+          : LogoIconLight;
       default:
         return LogoHorizontalLight;
     }
