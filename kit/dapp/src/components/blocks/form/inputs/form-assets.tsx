@@ -35,7 +35,7 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
     defaultValue?: string;
-    onSelect: (asset: Asset) => void;
+    onSelect?: (asset: Asset) => void;
   };
 
 type Asset = MyAsset["asset"] & {
@@ -100,7 +100,7 @@ export function FormAssets<T extends FieldValues>({
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
-                    onSelect={(asset) => onSelect(asset as unknown as Asset)}
+                    onSelect={(asset) => onSelect?.(asset as unknown as Asset)}
                   />
                 </Command>
               </PopoverContent>
