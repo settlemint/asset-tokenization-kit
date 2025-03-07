@@ -1,30 +1,44 @@
 import { z } from "zod";
 
-const environmentSchema = z.object({
-  // Auth related
-  BETTER_AUTH_URL: z.string().url().default("http://localhost:3000"),
-  SETTLEMINT_HASURA_ADMIN_SECRET: z.string().min(1),
+const serverEnvironmentSchema = z
+  .object({
+    BETTER_AUTH_URL: z.string().url().optional(),
+    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+    NEXTAUTH_URL: z.string().url().optional(),
+    SETTLEMINT_HASURA_ADMIN_SECRET: z.string().min(1),
+    SETTLEMINT_HD_PRIVATE_KEY: z.string().min(1),
+  })
+  .transform((env) => ({
+    ...env,
+    APP_URL:
+      env.NEXT_PUBLIC_APP_URL ??
+      env.BETTER_AUTH_URL ??
+      env.NEXTAUTH_URL ??
+      "http://localhost:3000",
+  }));
 
-  // Wallet related
-  SETTLEMINT_HD_PRIVATE_KEY: z.string().min(1),
+type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 
-  // Add other environment variables as needed
-});
+const clientEnvironmentSchema = z
+  .object({
+    NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
+    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  })
+  .transform((env) => ({
+    ...env,
+    APP_URL: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  }));
 
-type Environment = z.infer<typeof environmentSchema>;
+type ClientEnvironment = z.infer<typeof clientEnvironmentSchema>;
 
 /**
  * Validates and returns typed environment variables
  * @throws If environment variables are invalid
  */
-export function getEnvironment(): Environment {
-  return environmentSchema.parse(process.env);
+export function getServerEnvironment(): ServerEnvironment {
+  return serverEnvironmentSchema.parse(process.env);
 }
 
-/**
- * Use this to check if environment is properly configured at startup
- * @throws If environment variables are invalid
- */
-export function validateEnvironment(): void {
-  getEnvironment();
+export function getClientEnvironment(): ClientEnvironment {
+  return clientEnvironmentSchema.parse(process.env);
 }
