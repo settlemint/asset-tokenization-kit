@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Link, usePathname } from "@/i18n/routing";
+import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -36,6 +37,9 @@ export function NavFooter() {
   const pathname = usePathname();
   const { state } = useSidebar();
   const t = useTranslations("layout.navigation");
+  const { data: session } = authClient.useSession();
+  const userRole = session?.user?.role;
+  const hasAdminAccess = userRole === "admin" || userRole === "issuer";
 
   // Create refs for each icon
   const homeIconRef = useRef<HomeIconHandle>(null);
@@ -84,21 +88,23 @@ export function NavFooter() {
                 {pathname === "/" && <Check />}
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/admin"
-                className={cn(
-                  menuItemStyles,
-                  isAdmin && "bg-sidebar-accent font-medium"
-                )}
-                onMouseEnter={() => adminIconRef.current?.startAnimation()}
-                onMouseLeave={() => adminIconRef.current?.stopAnimation()}
-              >
-                <SettingsGearIcon ref={adminIconRef} className="size-4" />
-                {t("admin")}
-                {isAdmin && <Check />}
-              </Link>
-            </DropdownMenuItem>
+            {hasAdminAccess && (
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/admin"
+                  className={cn(
+                    menuItemStyles,
+                    isAdmin && "bg-sidebar-accent font-medium"
+                  )}
+                  onMouseEnter={() => adminIconRef.current?.startAnimation()}
+                  onMouseLeave={() => adminIconRef.current?.stopAnimation()}
+                >
+                  <SettingsGearIcon ref={adminIconRef} className="size-4" />
+                  {t("admin")}
+                  {isAdmin && <Check />}
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem asChild>
               <Link
                 href="/portfolio"

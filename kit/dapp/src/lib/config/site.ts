@@ -10,6 +10,10 @@ interface SiteConfig {
   description: string;
   /** The base URL of the site */
   url: string;
+  /** The email of the site */
+  email: string;
+  /** The publisher of the site */
+  publisher: string;
 }
 
 const serverEnvironment = getServerEnvironment();
@@ -18,7 +22,9 @@ const serverEnvironment = getServerEnvironment();
  * The main site configuration
  */
 export const siteConfig = {
+  publisher: "SettleMint",
   name: "Asset Tokenization",
   description: "SettleMint Asset Tokenization Kit",
   url: serverEnvironment.APP_URL,
+  email: "no-reply@tokenmint.be",
 } as const satisfies SiteConfig;

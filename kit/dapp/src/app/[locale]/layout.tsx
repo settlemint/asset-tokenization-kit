@@ -1,6 +1,8 @@
+import { AuthProvider } from "@/components/blocks/auth/auth-provider";
 import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
 import { TransitionProvider } from "@/components/layout/transition-provider";
 import { routing } from "@/i18n/routing";
+import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -42,6 +44,7 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params;
   const direction = getLangDir(locale);
+  const env = getServerEnvironment();
 
   // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as any)) {
@@ -66,7 +69,19 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" enableColorScheme enableSystem>
-            <TransitionProvider>{children}</TransitionProvider>
+            <TransitionProvider>
+              <AuthProvider
+                emailEnabled={!!env.RESEND_API_KEY}
+                googleEnabled={
+                  !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)
+                }
+                githubEnabled={
+                  !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET)
+                }
+              >
+                {children}
+              </AuthProvider>
+            </TransitionProvider>
           </ThemeProvider>
           <Toaster richColors />
         </NextIntlClientProvider>

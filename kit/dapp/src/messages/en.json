@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "wallet-security": {
+      "verification-required": "Verification Required",
+      "verification-description": "Please set up a pincode to secure your wallet.",
+      "setup-pincode": "Setup Pincode",
+      "pincode-instruction": "Enter a 6-digit pincode to secure your wallet."
+    },
+    "pincode-form": {
+      "name-label": "Pincode Name",
+      "pincode-label": "Pincode",
+      "setting-up": "Setting up...",
+      "submit": "Setup Pincode"
+    }
+  }
+}
