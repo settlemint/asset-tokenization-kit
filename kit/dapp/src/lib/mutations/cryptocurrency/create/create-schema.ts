@@ -9,8 +9,9 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {number} decimals - Number of decimal places for token amounts
  * @property {string} pincode - Pincode required for transaction signing
  * @property {number} [initialSupply=0] - Initial token supply (optional, defaults to 0)
+ * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
-const CryptoCurrencySchema = z.object({
+export const CreateCryptoCurrencySchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
@@ -19,31 +20,17 @@ const CryptoCurrencySchema = z.object({
     .number()
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
-});
-
-export type CryptoCurrencyInput = ZodInfer<typeof CryptoCurrencySchema>;
-
-/**
- * Extended schema for cryptocurrency creation with additional validation
- *
- * This schema extends the base CryptoCurrencySchema with additional validation
- * to ensure the cryptocurrency hasn't already been deployed on the blockchain.
- *
- * The validation is performed using superRefine which allows for async validation
- * of the entire form data object.
- */
-export const CreateCryptoCurrencySchema = CryptoCurrencySchema.superRefine(
-  async (data, ctx) => {
-    const isDeployed = await isAddressDeployed(data);
-    if (isDeployed) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "A cryptocurrency with these parameters already exists. Please try a different name, symbol, or decimals.",
-      });
+  predictedAddress: z.address().refine(
+    async (address) => {
+      const isDeployed = await isAddressDeployed(address);
+      return !isDeployed;
+    },
+    {
+      message:
+        "A cryptocurrency with these details already exists. Please change at least one of the values.",
     }
-  }
-);
+  ),
+});
 
 export type CreateCryptoCurrencyInput = ZodInfer<
   typeof CreateCryptoCurrencySchema

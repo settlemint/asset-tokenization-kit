@@ -7,7 +7,6 @@ import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { CreateCryptoCurrencySchema } from "./create-schema";
-import { CreateCryptoCurrencyPredictAddress } from "./predict-address";
 
 /**
  * GraphQL mutation for creating a new cryptocurrency
@@ -47,30 +46,19 @@ export const createCryptoCurrency = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
+      parsedInput: {
+        assetName,
+        symbol,
+        decimals,
+        pincode,
+        initialSupply,
+        predictedAddress,
+      },
       ctx: { user },
     }) => {
       const initialSupplyExact = String(
         parseUnits(String(initialSupply), decimals)
       );
-      const predictedAddress = await portalClient.request(
-        CreateCryptoCurrencyPredictAddress,
-        {
-          address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-          sender: user.wallet,
-          decimals,
-          name: assetName,
-          symbol,
-          initialSupply: initialSupplyExact,
-        }
-      );
-
-      const newAddress =
-        predictedAddress.CryptoCurrencyFactory?.predictAddress?.predicted;
-
-      if (!newAddress) {
-        throw new Error("Failed to predict the address");
-      }
 
       const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
