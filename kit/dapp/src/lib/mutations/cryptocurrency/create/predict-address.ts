@@ -30,7 +30,7 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
 export const getPredictedAddress = async (data: CreateCryptoCurrencyInput) => {
   const { assetName: name, symbol, decimals, initialSupply } = data;
 
-  const user = await getUser("en"); // TODO: hardcoding the locale is not ideal
+  const user = await getUser();
   const initialSupplyExact = String(
     parseUnits(String(initialSupply), decimals)
   );
