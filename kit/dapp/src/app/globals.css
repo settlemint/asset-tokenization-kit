@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+h1: text-3xl
+h2: text-2xl
+h3: text-xl
+*/
+
 :root {
   /* SettleMint Brand Colors */
   --sm-text: oklch(0.2264 0 87);
@@ -264,9 +270,9 @@
     background: transparent
       linear-gradient(
         40deg,
-        var(--sm-background-lightest),
-        var(--sm-background-darkest) 70%,
-        var(--sm-state-success-background) 100%
+        var(--sm-background-gradient-start),
+        oklch(90.64% 0.0375 267.35) 70%,
+        oklch(91.33% 0.0398 159.2) 100%
       )
       0 0 no-repeat padding-box;
   }
@@ -275,9 +281,9 @@
     background: transparent
       linear-gradient(
         40deg,
-        var(--sm-background-darkest),
-        oklch(0.39 0.04 262.42) 70%,
-        var(--sm-graphics-tertiary) 100%
+        var(--sm-background-gradient-start),
+        oklch(38.57% 0.0445 262.4) 70%,
+        oklch(45.83% 0.067 246.69) 100%
       )
       0 0 no-repeat padding-box;
   }
