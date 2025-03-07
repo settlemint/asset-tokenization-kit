@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import type { ComponentPropsWithoutRef } from "react";
-import { type FieldValues, useFormContext } from "react-hook-form";
+import type { FieldValues } from "react-hook-form";
 import type { BaseFormInputProps } from "./types";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
@@ -30,11 +30,10 @@ export function FormOtp<T extends FieldValues>({
   className,
   ...props
 }: FormOtp<T>) {
-  const form = useFormContext<T>();
   return (
     <FormField
       {...props}
-      render={({ field, formState }) => (
+      render={({ field }) => (
         <FormItem className="flex flex-col space-y-1">
           <FormLabel>{props.label}</FormLabel>
           <FormControl>

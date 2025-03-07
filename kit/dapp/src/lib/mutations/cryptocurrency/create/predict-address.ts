@@ -36,6 +36,7 @@ export const getPredictedAddress = async (
   const initialSupplyExact = String(
     parseUnits(String(initialSupply), decimals)
   );
+
   const predicted = await portalClient.request(
     CreateCryptoCurrencyPredictAddress,
     {
