@@ -5,14 +5,13 @@ import { Recipients } from "@/app/[locale]/(private)/portfolio/(dashboard)/_comp
 import { Summary } from "@/app/[locale]/(private)/portfolio/(dashboard)/_components/transfer-form/steps/summary";
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
+import { transferAsset } from "@/lib/mutations/asset/transfer/transfer-action";
+import { getTransferFormSchema } from "@/lib/mutations/asset/transfer/transfer-schema";
 import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { SelectAsset } from "./select-asset";
-
 type Asset = MyAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
@@ -42,14 +41,11 @@ export function MyAssetsTransferForm() {
           })}
         >
           <Form
-            action={createStablecoin}
-            resolver={zodResolver(CreateStablecoinSchema)}
+            action={transferAsset}
+            resolver={zodResolver(getTransferFormSchema())}
             onOpenChange={setOpen}
             buttonLabels={{
               label: t("transfer"),
-            }}
-            defaultValues={{
-              collateralLivenessSeconds: 3600 * 24 * 365,
             }}
           >
             <Recipients />
@@ -80,13 +76,10 @@ export function MyAssetsTransferForm() {
           description={t("select-asset.description")}
         >
           <Form
-            action={createStablecoin}
-            resolver={zodResolver(CreateStablecoinSchema)}
+            action={transferAsset}
+            resolver={zodResolver(getTransferFormSchema())}
             onOpenChange={setOpen}
             hideButtons
-            defaultValues={{
-              collateralLivenessSeconds: 3600 * 24 * 365,
-            }}
           >
             <SelectAsset onSelect={setSelectedAsset} />
           </Form>
