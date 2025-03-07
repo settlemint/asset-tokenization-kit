@@ -16,7 +16,7 @@ jobs:
     environment: staging
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: actions/checkout@v4
 
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
@@ -46,9 +46,6 @@ jobs:
 
       - name: Install Bun dependencies
         run: bun install
-
-      - name: Generate text-based lockfile
-        run: bun install --lockfile
 
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
@@ -127,7 +124,7 @@ jobs:
     runs-on: namespace-profile-atk-trivy
     steps:
       - name: Checkout repository
-        uses: namespacelabs/nscloud-checkout-action@v6
+        uses: actions/checkout@v4
 
       - name: Secret Scanning (Trivy)
         uses: aquasecurity/trivy-action@0.29.0
