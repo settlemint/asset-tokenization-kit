@@ -14,7 +14,6 @@ export const CreateCryptoCurrencySchema = z.object({
   assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
-  isin: z.isin().optional(),
   pincode: z.pincode(),
   initialSupply: z
     .number()
