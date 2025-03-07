@@ -47,6 +47,9 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
+      - name: Generate text-based lockfile
+        run: bun install --lockfile
+
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
