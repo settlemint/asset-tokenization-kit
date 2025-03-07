@@ -3,7 +3,7 @@ import {
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import type { z } from "zod";
-import { IndexingFragment, IndexingFragmentSchema } from "./transaction-fragment";
+import { type IndexingFragment, IndexingFragmentSchema } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
