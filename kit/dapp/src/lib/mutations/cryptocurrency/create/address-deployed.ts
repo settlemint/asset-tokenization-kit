@@ -2,7 +2,7 @@
 
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { type Address } from "viem";
+import type { Address } from "viem";
 
 /**
  * GraphQL mutation for creating a new cryptocurrency
