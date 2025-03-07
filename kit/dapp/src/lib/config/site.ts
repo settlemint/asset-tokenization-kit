@@ -12,11 +12,13 @@ interface SiteConfig {
   url: string;
 }
 
+const serverEnvironment = getServerEnvironment();
+
 /**
  * The main site configuration
  */
 export const siteConfig = {
   name: "Asset Tokenization",
   description: "SettleMint Asset Tokenization Kit",
-  url: getServerEnvironment().APP_URL,
+  url: serverEnvironment.APP_URL,
 } as const satisfies SiteConfig;
