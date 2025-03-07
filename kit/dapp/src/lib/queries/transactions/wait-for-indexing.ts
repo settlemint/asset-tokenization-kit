@@ -2,8 +2,8 @@ import {
   theGraphClientKit,
   theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
-import type { FragmentOf } from "@settlemint/sdk-portal";
-import { IndexingFragment } from "./transaction-fragment";
+import type { z } from "zod";
+import { IndexingFragment, IndexingFragmentSchema } from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -50,7 +50,7 @@ export async function waitForIndexing(
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let indexedBlock: FragmentOf<typeof IndexingFragment> | null = null;
+  let indexedBlock: z.infer<typeof IndexingFragmentSchema> | null = null;
   const startTime = Date.now();
 
   while (!indexedBlock || indexedBlock.number < blockNumber) {
