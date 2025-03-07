@@ -1,6 +1,6 @@
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import type { FragmentOf } from "@settlemint/sdk-portal";
 import { IndexingFragment } from "./transaction-fragment";
@@ -15,7 +15,7 @@ const POLLING_DEFAULTS = {
   INTERVAL_MS: 500,
 } as const;
 
-const GetIndexingStatus = theGraphGraphqlStarterkits(
+const GetIndexingStatus = theGraphGraphqlKit(
   `
   query GetIndexingStatus {
     _meta {
@@ -60,7 +60,7 @@ export async function waitForIndexing(
       );
     }
 
-    const status = await theGraphClientStarterkits.request(GetIndexingStatus);
+    const status = await theGraphClientKit.request(GetIndexingStatus);
     indexedBlock = status._meta?.block ?? null;
 
     if ((indexedBlock?.number ?? 0) < blockNumber) {

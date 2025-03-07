@@ -1,8 +1,8 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetEventFragment } from "@/lib/queries/asset-events/asset-events-fragments";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging } from "@/lib/utils/zod";
@@ -10,55 +10,55 @@ import type { Address } from "viem";
 
 import { cache } from "react";
 import {
-  ApprovalEventFragment,
-  ApprovalEventFragmentSchema,
-  AssetCreatedEventFragment,
-  AssetCreatedEventFragmentSchema,
-  BondMaturedEventFragment,
-  BondMaturedEventFragmentSchema,
-  BondRedeemedEventFragment,
-  BondRedeemedEventFragmentSchema,
-  BurnEventFragment,
-  BurnEventFragmentSchema,
-  CollateralUpdatedEventFragment,
-  CollateralUpdatedEventFragmentSchema,
-  ManagementFeeCollectedEventFragment,
-  ManagementFeeCollectedEventFragmentSchema,
-  MintEventFragment,
-  MintEventFragmentSchema,
-  type NormalizedEventsListItem,
-  PausedEventFragment,
-  PausedEventFragmentSchema,
-  PerformanceFeeCollectedEventFragment,
-  PerformanceFeeCollectedEventFragmentSchema,
-  RoleAdminChangedEventFragment,
-  RoleAdminChangedEventFragmentSchema,
-  RoleGrantedEventFragment,
-  RoleGrantedEventFragmentSchema,
-  RoleRevokedEventFragment,
-  RoleRevokedEventFragmentSchema,
-  TokenWithdrawnEventFragment,
-  TokenWithdrawnEventFragmentSchema,
-  TokensFrozenEventFragment,
-  TokensFrozenEventFragmentSchema,
-  TransferEventFragment,
-  TransferEventFragmentSchema,
-  UnderlyingAssetTopUpEventFragment,
-  UnderlyingAssetTopUpEventFragmentSchema,
-  UnderlyingAssetWithdrawnEventFragment,
-  UnderlyingAssetWithdrawnEventFragmentSchema,
-  UnpausedEventFragment,
-  UnpausedEventFragmentSchema,
-  UserBlockedEventFragment,
-  UserBlockedEventFragmentSchema,
-  UserUnblockedEventFragment,
-  UserUnblockedEventFragmentSchema,
+    ApprovalEventFragment,
+    ApprovalEventFragmentSchema,
+    AssetCreatedEventFragment,
+    AssetCreatedEventFragmentSchema,
+    BondMaturedEventFragment,
+    BondMaturedEventFragmentSchema,
+    BondRedeemedEventFragment,
+    BondRedeemedEventFragmentSchema,
+    BurnEventFragment,
+    BurnEventFragmentSchema,
+    CollateralUpdatedEventFragment,
+    CollateralUpdatedEventFragmentSchema,
+    ManagementFeeCollectedEventFragment,
+    ManagementFeeCollectedEventFragmentSchema,
+    MintEventFragment,
+    MintEventFragmentSchema,
+    type NormalizedEventsListItem,
+    PausedEventFragment,
+    PausedEventFragmentSchema,
+    PerformanceFeeCollectedEventFragment,
+    PerformanceFeeCollectedEventFragmentSchema,
+    RoleAdminChangedEventFragment,
+    RoleAdminChangedEventFragmentSchema,
+    RoleGrantedEventFragment,
+    RoleGrantedEventFragmentSchema,
+    RoleRevokedEventFragment,
+    RoleRevokedEventFragmentSchema,
+    TokenWithdrawnEventFragment,
+    TokenWithdrawnEventFragmentSchema,
+    TokensFrozenEventFragment,
+    TokensFrozenEventFragmentSchema,
+    TransferEventFragment,
+    TransferEventFragmentSchema,
+    UnderlyingAssetTopUpEventFragment,
+    UnderlyingAssetTopUpEventFragmentSchema,
+    UnderlyingAssetWithdrawnEventFragment,
+    UnderlyingAssetWithdrawnEventFragmentSchema,
+    UnpausedEventFragment,
+    UnpausedEventFragmentSchema,
+    UserBlockedEventFragment,
+    UserBlockedEventFragmentSchema,
+    UserUnblockedEventFragment,
+    UserUnblockedEventFragmentSchema,
 } from "./asset-events-fragments";
 
 /**
  * GraphQL query to fetch asset events
  */
-const AssetEventsList = theGraphGraphqlStarterkits(
+const AssetEventsList = theGraphGraphqlKit(
   `
 query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
   assetEvents(
@@ -150,7 +150,7 @@ export const getAssetEventsList = cache(
     }
 
     const events = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(AssetEventsList, {
+      const result = await theGraphClientKit.request(AssetEventsList, {
         first,
         skip,
         where,

@@ -1,15 +1,15 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { getUnixTime, startOfDay, subDays } from "date-fns";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-  AssetStatsFragment,
-  AssetStatsFragmentSchema,
+    AssetStatsFragment,
+    AssetStatsFragmentSchema,
 } from "./asset-stats-fragment";
 
 /**
@@ -18,7 +18,7 @@ import {
  * @remarks
  * Retrieves hourly statistics for an asset within a specified time range
  */
-const AssetStats = theGraphGraphqlStarterkits(
+const AssetStats = theGraphGraphqlKit(
   `
 query AssetStats($asset: String!, $timestamp_gte: Timestamp!, $first: Int, $skip: Int) {
   assetStats_collection(
@@ -63,7 +63,7 @@ export const getAssetStats = cache(
     const timestampGte = getUnixTime(startOfDay(startDate)).toString();
 
     const result = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientStarterkits.request(AssetStats, {
+      const response = await theGraphClientKit.request(AssetStats, {
         asset: normalizedAddress,
         timestamp_gte: timestampGte,
         first,

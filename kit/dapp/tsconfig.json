@@ -36,10 +36,10 @@
             "tadaTurboLocation": "hasura-cache.d.ts"
           },
           {
-            "name": "thegraph-starterkits",
-            "schema": "the-graph-schema-starterkits.graphql",
-            "tadaOutputLocation": "the-graph-env-starterkits.d.ts",
-            "tadaTurboLocation": "the-graph-cache-starterkits.d.ts"
+            "name": "thegraph-kit",
+            "schema": "the-graph-schema-kit.graphql",
+            "tadaOutputLocation": "the-graph-env-kit.d.ts",
+            "tadaTurboLocation": "the-graph-cache-kit.d.ts"
           },
           {
             "name": "portal",

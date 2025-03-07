@@ -1,17 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-  FundFragment,
-  FundFragmentSchema,
-  OffchainFundFragment,
-  OffchainFundFragmentSchema,
+    FundFragment,
+    FundFragmentSchema,
+    OffchainFundFragment,
+    OffchainFundFragmentSchema,
 } from "./fund-fragment";
 
 /**
@@ -20,7 +20,7 @@ import {
  * @remarks
  * Retrieves funds ordered by total supply in descending order
  */
-const FundList = theGraphGraphqlStarterkits(
+const FundList = theGraphGraphqlKit(
   `
   query FundList($first: Int, $skip: Int) {
     funds(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
@@ -59,7 +59,7 @@ const OffchainFundList = hasuraGraphql(
 export const getFundList = cache(async () => {
   const [theGraphFunds, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(FundList, {
+      const result = await theGraphClientKit.request(FundList, {
         first,
         skip,
       });

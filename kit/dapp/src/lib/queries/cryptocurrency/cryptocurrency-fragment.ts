@@ -1,5 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -8,7 +8,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @remarks
  * Contains core stablecoin properties including ID, name, symbol, supply, and holders
  */
-export const CryptoCurrencyFragment = theGraphGraphqlStarterkits(`
+export const CryptoCurrencyFragment = theGraphGraphqlKit(`
   fragment CryptoCurrencyFragment on CryptoCurrency {
     id
     name

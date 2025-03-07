@@ -1,4 +1,4 @@
-import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -8,7 +8,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * Contains information about an account's balance for a specific asset,
  * including blocked and frozen status
  */
-export const AssetBalanceFragment = theGraphGraphqlStarterkits(`
+export const AssetBalanceFragment = theGraphGraphqlKit(`
   fragment AssetBalanceFragment on AssetBalance {
     blocked
     frozen

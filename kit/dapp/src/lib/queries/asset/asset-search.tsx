@@ -1,6 +1,6 @@
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParseWithLogging } from "@/lib/utils/zod";
@@ -12,7 +12,7 @@ import { AssetFragment, AssetFragmentSchema } from "./asset-fragment";
 /**
  * GraphQL query to search for assets by name, symbol, or address
  */
-const AssetSearch = theGraphGraphqlStarterkits(
+const AssetSearch = theGraphGraphqlKit(
   `
   query SearchAssets($searchAddress: Bytes, $search: String!) {
     assets(
@@ -60,7 +60,7 @@ export const getAssetSearch = cache(
       search.searchAddress = sanitizedSearchTerm;
     }
 
-    const { assets } = await theGraphClientStarterkits.request(
+    const { assets } = await theGraphClientKit.request(
       AssetSearch,
       search
     );

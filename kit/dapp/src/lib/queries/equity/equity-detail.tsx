@@ -1,22 +1,22 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
+    theGraphClientKit,
+    theGraphGraphqlKit,
 } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
 import {
-  EquityFragment,
-  EquityFragmentSchema,
-  OffchainEquityFragment,
-  OffchainEquityFragmentSchema,
+    EquityFragment,
+    EquityFragmentSchema,
+    OffchainEquityFragment,
+    OffchainEquityFragmentSchema,
 } from "./equity-fragment";
 
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
  */
-const EquityDetail = theGraphGraphqlStarterkits(
+const EquityDetail = theGraphGraphqlKit(
   `
   query EquityDetail($id: ID!) {
     equity(id: $id) {
@@ -60,7 +60,7 @@ export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbEquity] = await Promise.all([
-    theGraphClientStarterkits.request(EquityDetail, { id: address }),
+    theGraphClientKit.request(EquityDetail, { id: address }),
     hasuraClient.request(OffchainEquityDetail, { id: normalizedAddress }),
   ]);
 
