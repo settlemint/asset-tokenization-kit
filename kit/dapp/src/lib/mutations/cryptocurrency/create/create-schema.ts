@@ -2,13 +2,14 @@ import { isAddressDeployed } from "@/lib/mutations/cryptocurrency/create/address
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
- * Base schema for cryptocurrency creation with basic token parameters
+ * Zod schema for validating cryptocurrency creation inputs
  *
  * @property {string} assetName - The name of the cryptocurrency
- * @property {string} symbol - The symbol/ticker of the cryptocurrency (e.g., BTC, ETH)
- * @property {number} decimals - Number of decimal places for token amounts
- * @property {string} pincode - Pincode required for transaction signing
- * @property {number} [initialSupply=0] - Initial token supply (optional, defaults to 0)
+ * @property {string} symbol - The symbol of the cryptocurrency (ticker)
+ * @property {number} decimals - The number of decimal places for the token
+ * @property {string} [isin] - Optional International Securities Identification Number
+ * @property {string} pincode - The pincode for signing the transaction
+ * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
  * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
 export const CreateCryptoCurrencySchema = z.object({
