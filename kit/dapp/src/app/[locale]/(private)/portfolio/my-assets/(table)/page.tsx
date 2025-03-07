@@ -14,7 +14,7 @@ export default async function MyAssetsPage({ params }: MyAssetsPageProps) {
     locale,
     namespace: "portfolio.my-assets",
   });
-  const user = await getUser(locale);
+  const user = await getUser();
 
   return (
     <>

@@ -1,6 +1,7 @@
+import { RoleGuard } from "@/components/blocks/auth/role-guard";
 import NavInset from "@/components/layout/nav-inset";
 import NavProvider from "@/components/layout/nav-provider";
-import { getUser } from "@/lib/auth/utils";
+import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
@@ -16,23 +17,27 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({
     locale,
-    namespace: "admin.users",
+    namespace: "layout.navigation",
   });
 
   return {
-    title: t("page-title"),
-    description: t("page-description"),
+    title: t("admin"),
+    description: t("admin"),
   };
 }
 
-export default async function AdminLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
-  await getUser(locale, ["admin", "issuer"]);
-
+export default function AdminLayout({ children }: LayoutProps) {
   return (
-    <NavProvider>
-      <AdminSidebar />
-      <NavInset>{children}</NavInset>
-    </NavProvider>
+    <>
+      <RedirectToSignIn />
+      <SignedIn>
+        <RoleGuard requiredRoles={["admin", "issuer"]}>
+          <NavProvider>
+            <AdminSidebar />
+            <NavInset>{children}</NavInset>
+          </NavProvider>
+        </RoleGuard>
+      </SignedIn>
+    </>
   );
 }

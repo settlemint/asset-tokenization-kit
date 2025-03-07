@@ -18,7 +18,7 @@ export default async function TransactionsPage({
     locale,
     namespace: "admin.activity",
   });
-  const user = await getUser(locale);
+  const user = await getUser();
 
   return (
     <>
