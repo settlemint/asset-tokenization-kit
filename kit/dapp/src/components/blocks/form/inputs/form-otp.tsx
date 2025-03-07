@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import type { ComponentPropsWithoutRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import { type FieldValues, useFormContext } from "react-hook-form";
 import type { BaseFormInputProps } from "./types";
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
@@ -30,10 +30,11 @@ export function FormOtp<T extends FieldValues>({
   className,
   ...props
 }: FormOtp<T>) {
+  const form = useFormContext<T>();
   return (
     <FormField
       {...props}
-      render={({ field }) => (
+      render={({ field, formState }) => (
         <FormItem className="flex flex-col space-y-1">
           <FormLabel>{props.label}</FormLabel>
           <FormControl>
@@ -41,7 +42,12 @@ export function FormOtp<T extends FieldValues>({
               maxLength={6}
               pattern={REGEXP_ONLY_DIGITS}
               value={(field.value ?? "").toString()}
-              onChange={field.onChange}
+              onChange={async (value: string) => {
+                field.onChange(value);
+                if (formState.errors[field.name]) {
+                  await form.trigger(field.name);
+                }
+              }}
               className={cn("justify-center gap-1.5", className)}
               autoComplete="off"
               required

@@ -26,8 +26,8 @@ export type CryptoCurrencyInput = ZodInfer<typeof CryptoCurrencySchema>;
  */
 export const CreateCryptoCurrencySchema = CryptoCurrencySchema.superRefine(
   async (data, ctx) => {
-    const addressDeployed = await isAddressDeployed(data);
-    if (addressDeployed) {
+    const isDeployed = await isAddressDeployed(data);
+    if (isDeployed) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:

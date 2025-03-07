@@ -43,33 +43,32 @@ const CreateCryptoCurrencyPredictAddress = portalGraphql(`
 `);
 
 export const isAddressDeployed = async (data: CryptoCurrencyInput) => {
-  const { assetName, symbol, decimals, initialSupply } = data;
+  const { assetName: name, symbol, decimals, initialSupply } = data;
+
   const user = await getUser("en"); // TODO: hardcoding the locale is not ideal
   const initialSupplyExact = String(
     parseUnits(String(initialSupply), decimals)
   );
-  const predictedAddress = await portalClient.request(
+  const predicted = await portalClient.request(
     CreateCryptoCurrencyPredictAddress,
     {
       address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
       sender: user.wallet,
       decimals,
-      name: assetName,
+      name,
       symbol,
       initialSupply: initialSupplyExact,
     }
   );
 
-  const newAddress =
-    predictedAddress.CryptoCurrencyFactory?.predictAddress?.predicted;
-
-  if (!newAddress) {
+  const address = predicted.CryptoCurrencyFactory?.predictAddress?.predicted;
+  if (!address) {
     throw new Error("Failed to predict the address");
   }
 
   const isDeployed = await portalClient.request(IsAddressDeployed, {
     address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-    predicted: newAddress,
+    predicted: address,
   });
 
   return isDeployed.CryptoCurrencyFactory?.isAddressDeployed;

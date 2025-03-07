@@ -18,7 +18,7 @@ export function Summary() {
 
   useEffect(() => {
     trigger();
-  }, [trigger]);
+  }, []);
 
   return (
     <FormStep title={t("title")} description={t("description")}>
