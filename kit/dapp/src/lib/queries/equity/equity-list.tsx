@@ -4,7 +4,6 @@ import {
   theGraphClientStarterkits,
   theGraphGraphqlStarterkits,
 } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -104,9 +103,5 @@ export const getEquityList = cache(async () => {
     };
   });
 
-  return equitys.map((equity) => ({
-    ...equity,
-    // replace all the BigDecimals with formatted strings
-    totalSupply: formatNumber(equity.totalSupply),
-  }));
+  return equitys;
 });

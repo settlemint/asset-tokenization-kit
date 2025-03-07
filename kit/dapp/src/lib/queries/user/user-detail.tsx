@@ -94,6 +94,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
       ["user", "user-detail", id],
       {
         revalidate: 60 * 60 * 24, // 24 hours
+        tags: ["user"],
       }
     )();
     if (!result.user_by_pk) {
@@ -109,6 +110,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
       ["user", "user-detail-by-wallet", address],
       {
         revalidate: 60 * 60 * 24, // 24 hours
+        tags: ["user"],
       }
     )();
     if (!result.user || result.user.length === 0) {
@@ -130,6 +132,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
         ["user", "user-activity", userData.wallet.toLowerCase()],
         {
           revalidate: 60 * 60 * 24, // 24 hours
+          tags: ["user-activity"],
         }
       )();
 

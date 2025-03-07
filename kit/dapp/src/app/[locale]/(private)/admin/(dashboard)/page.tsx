@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         <TransactionsWidget />
         <UsersWidget />
       </div>
-      <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats_heading")}</p>
+      <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p>
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 2xl:grid-cols-4 lg:divide-x lg:divide-y-0">
         <AssetsSupply />
         <AssetActivity />
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
         <TransactionsHistory />
       </div>
       <p className="mt-8 mb-4 font-semibold text-2xl">
-        {t("latest_events_heading")}
+        {t("latest-events-heading")}
       </p>
       <LatestEvents />
     </>

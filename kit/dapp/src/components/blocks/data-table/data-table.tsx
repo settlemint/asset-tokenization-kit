@@ -172,38 +172,39 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} {...toolbar} />
-      <div className="overflow-x-auto">
-        <div className="w-full rounded-md bg-card text-sidebar-foreground shadow-lg">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder ? null : typeof header.column
-                            .columnDef.header === "string" ? (
-                          <DataTableColumnHeader
-                            column={header.column}
-                            variant={header.column.columnDef.meta?.variant}
-                          >
-                            {header.column.columnDef.header}
-                          </DataTableColumnHeader>
-                        ) : (
-                          flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
-                        )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>{renderTableBody()}</TableBody>
-          </Table>
-        </div>
+      <div
+        data-slot="data-table"
+        className="w-full rounded-xl bg-card text-sidebar-foreground shadow-sm overflow-x-auto"
+      >
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : typeof header.column
+                          .columnDef.header === "string" ? (
+                        <DataTableColumnHeader
+                          column={header.column}
+                          variant={header.column.columnDef.meta?.variant}
+                        >
+                          {header.column.columnDef.header}
+                        </DataTableColumnHeader>
+                      ) : (
+                        flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )
+                      )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>{renderTableBody()}</TableBody>
+        </Table>
       </div>
       {table.getRowModel().rows?.length > 0 && (
         <DataTablePagination table={table} {...pagination} />

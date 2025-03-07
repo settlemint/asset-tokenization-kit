@@ -17,7 +17,7 @@ export function PortfolioSidebar() {
       <SidebarHeader className="h-16">
         <NavHeader />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="mt-4">
         <NavMain items={topItems} />
       </SidebarContent>
       <SidebarSeparator />

@@ -2,12 +2,14 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
 import { predictCryptoCurrencyAddress } from "./predict-address";
 
 const CryptoCurrencySchema = z.object({
-  assetName: z.string(),
+  assetName: z.string().nonempty(),
   symbol: z.symbol(),
   decimals: z.decimals(),
-  isin: z.isin().optional(),
   pincode: z.pincode(),
-  initialSupply: z.coerce.number().optional().default(0),
+  initialSupply: z
+    .number()
+    .or(z.string())
+    .pipe(z.coerce.number().optional().default(0)),
 });
 
 export type CryptoCurrencyInput = ZodInfer<typeof CryptoCurrencySchema>;

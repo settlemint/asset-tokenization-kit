@@ -41,10 +41,12 @@ export default async function SignUp({
       <div className="w-full">
         <SignUpForm redirectUrl={rd} locale={locale} />
       </div>
-      <Alert variant="destructive" className="mt-8 bg-warning/20 text-warning">
+      <Alert className="mt-8 bg-warning text-warning-foreground">
         <AlertTriangle className="size-4" />
         <AlertTitle>{t("alert.title")}</AlertTitle>
-        <AlertDescription>{t("alert.description")}</AlertDescription>
+        <AlertDescription className="text-warning-foreground">
+          {t("alert.description")}
+        </AlertDescription>
       </Alert>
     </>
   );

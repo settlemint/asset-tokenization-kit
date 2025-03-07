@@ -1,24 +1,23 @@
 "use client";
 
+import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
-import type { FieldValues } from "react-hook-form";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, type FieldValues } from "react-hook-form";
 import {
+  getAriaAttributes,
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
-  getAriaAttributes,
 } from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -114,7 +113,9 @@ export function FormInput<T extends FieldValues>({
                   value={props.defaultValue ? undefined : (field.value ?? "")}
                   onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
                     field.onChange(evt);
-                    await form.trigger(field.name);
+                    if (form.formState.errors[field.name]) {
+                      await form.trigger(field.name);
+                    }
                   }}
                   inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
@@ -138,7 +139,7 @@ export function FormInput<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <FormMessage
+            <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
               className="text-destructive"
