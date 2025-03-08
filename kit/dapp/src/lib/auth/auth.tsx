@@ -51,62 +51,66 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: hasEmailConfigured,
   },
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
-      if (!hasEmailConfigured || !resend) {
-        throw new Error("Email is not configured");
-      }
-      const name =
-        (user.name || user.email.split("@")[0]).charAt(0).toUpperCase() +
-        (user.name || user.email.split("@")[0]).slice(1);
-
-      await resend.emails.send({
-        from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
-        to: user.email,
-        subject: "Verify your email address",
-        react: EmailTemplate({
-          action: "Verify Email",
-          content: (
-            <>
-              <p>{`Hello ${name},`}</p>
-
-              <p>Click the button below to verify your email address.</p>
-            </>
-          ),
-          heading: "Verify Email",
-          url,
-        }),
-      });
-    },
-    autoSignInAfterVerification: true,
-    sendOnSignUp: true,
-  },
-  user: {
-    deleteUser: {
-      enabled: hasEmailConfigured,
-      sendDeleteAccountVerification: async ({ user, url }) => {
+  ...(hasEmailConfigured && {
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url }) => {
         if (!hasEmailConfigured || !resend) {
           throw new Error("Email is not configured");
         }
+        const name =
+          (user.name || user.email.split("@")[0]).charAt(0).toUpperCase() +
+          (user.name || user.email.split("@")[0]).slice(1);
 
         await resend.emails.send({
           from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
           to: user.email,
-          subject: `Sign in to ${siteConfig.name}`,
+          subject: "Verify your email address",
           react: EmailTemplate({
-            action: "Sign in to SettleMint",
+            action: "Verify Email",
             content: (
               <>
-                <p>{`Hello,`}</p>
+                <p>{`Hello ${name},`}</p>
 
-                <p>Click the button below to sign in to your account.</p>
+                <p>Click the button below to verify your email address.</p>
               </>
             ),
-            heading: `Sign in to ${siteConfig.name}`,
+            heading: "Verify Email",
             url,
           }),
         });
       },
+      autoSignInAfterVerification: true,
+      sendOnSignUp: true,
+    },
+  }),
+  user: {
+    deleteUser: {
+      enabled: true,
+      ...(hasEmailConfigured && {
+        sendDeleteAccountVerification: async ({ user, url }) => {
+          if (!hasEmailConfigured || !resend) {
+            throw new Error("Email is not configured");
+          }
+
+          await resend.emails.send({
+            from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
+            to: user.email,
+            subject: `Sign in to ${siteConfig.name}`,
+            react: EmailTemplate({
+              action: "Sign in to SettleMint",
+              content: (
+                <>
+                  <p>{`Hello,`}</p>
+
+                  <p>Click the button below to sign in to your account.</p>
+                </>
+              ),
+              heading: `Sign in to ${siteConfig.name}`,
+              url,
+            }),
+          });
+        },
+      }),
     },
     additionalFields: {
       wallet: {

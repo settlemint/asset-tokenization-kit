@@ -1,6 +1,6 @@
 FROM oven/bun:1.2.4
 
-LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
+LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

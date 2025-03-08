@@ -33,7 +33,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/settlemint/codestudio-starterkit-asset-tokenization
+            ghcr.io/settlemint/codestudio-asset-tokenization-kit
           tags: |
             type=raw,value=${{ env.VERSION }}
             type=raw,value=latest
@@ -113,7 +113,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/settlemint/starterkit-asset-tokenization
+            ghcr.io/settlemint/asset-tokenization-kit
           tags: |
             type=raw,value=${{ env.VERSION }}
             type=raw,value=latest
