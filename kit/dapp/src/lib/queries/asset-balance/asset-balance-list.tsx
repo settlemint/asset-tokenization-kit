@@ -1,9 +1,6 @@
 "use server"; // because this needs to be fetched client side in the address hover
 
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -15,7 +12,7 @@ import {
 /**
  * GraphQL query to fetch asset balances
  */
-const AssetBalanceList = theGraphGraphqlKit(
+const AssetBalanceList = theGraphGraphql(
   `
   query Balances($address: String, $wallet: String) {
     assetBalances(where: {asset: $address, valueExact_gt: "0"}) {
@@ -49,7 +46,7 @@ export interface AssetBalanceListProps {
  */
 export const getAssetBalanceList = cache(
   async ({ address, wallet }: AssetBalanceListProps) => {
-    const result = await theGraphClientKit.request(AssetBalanceList, {
+    const result = await theGraphClient.request(AssetBalanceList, {
       address: address,
       wallet: wallet,
     });

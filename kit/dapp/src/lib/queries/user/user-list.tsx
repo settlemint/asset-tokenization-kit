@@ -4,10 +4,7 @@ import {
   AccountFragmentSchema,
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { UserFragment, UserFragmentSchema } from "./user-fragment";
@@ -35,7 +32,7 @@ const UserList = hasuraGraphql(
  * @remarks
  * Retrieves accounts with their last activity timestamp
  */
-const UserActivity = theGraphGraphqlKit(
+const UserActivity = theGraphGraphql(
   `
   query UserActivity($first: Int, $skip: Int) {
     accounts(where: { isContract: false }, first: $first, skip: $skip) {
@@ -63,7 +60,7 @@ export const getUserList = cache(async () => {
       return result.user || [];
     }),
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(UserActivity, {
+      const result = await theGraphClient.request(UserActivity, {
         first,
         skip,
       });

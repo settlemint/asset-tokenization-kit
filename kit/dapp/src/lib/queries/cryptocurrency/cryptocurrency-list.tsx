@@ -1,9 +1,6 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -20,7 +17,7 @@ import {
  * @remarks
  * Retrieves cryptocurrencys ordered by total supply in descending order
  */
-const CryptoCurrencyList = theGraphGraphqlKit(
+const CryptoCurrencyList = theGraphGraphql(
   `
   query CryptoCurrencyList($first: Int, $skip: Int) {
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
@@ -59,7 +56,7 @@ const OffchainCryptocurrencyList = hasuraGraphql(
 export const getCryptoCurrencyList = cache(async () => {
   const [theGraphCryptoCurrencies, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientKit.request(CryptoCurrencyList, {
+      const result = await theGraphClient.request(CryptoCurrencyList, {
         first,
         skip,
       });

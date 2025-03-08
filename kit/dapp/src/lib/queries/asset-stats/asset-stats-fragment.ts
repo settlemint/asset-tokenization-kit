@@ -1,4 +1,4 @@
-import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -7,7 +7,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @remarks
  * Contains comprehensive statistics about an asset's activity and supply metrics
  */
-export const AssetStatsFragment = theGraphGraphqlKit(`
+export const AssetStatsFragment = theGraphGraphql(`
   fragment AssetStatsFragment on AssetStats {
     totalBurned
     totalCollateral

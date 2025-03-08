@@ -1,4 +1,4 @@
-import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -7,7 +7,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @remarks
  * Contains aggregated event counts for different types of asset activities
  */
-export const AssetActivityFragment = theGraphGraphqlKit(`
+export const AssetActivityFragment = theGraphGraphql(`
   fragment AssetActivityFragment on AssetActivityData {
     id
     assetType

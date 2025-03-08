@@ -1,8 +1,5 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import {
@@ -13,7 +10,7 @@ import {
 /**
  * GraphQL query to fetch asset activity data
  */
-const AssetActivity = theGraphGraphqlKit(
+const AssetActivity = theGraphGraphql(
   `
   query AssetActivity($first: Int, $skip: Int) {
     assetActivityDatas(first: $first, skip: $skip) {
@@ -41,7 +38,7 @@ export interface AssetActivityOptions {
 export const getAssetActivity = cache(
   async ({ limit }: AssetActivityOptions = {}) => {
     const rawData = await fetchAllTheGraphPages(async (first, skip) => {
-      const response = await theGraphClientKit.request(AssetActivity, {
+      const response = await theGraphClient.request(AssetActivity, {
         first,
         skip,
       });

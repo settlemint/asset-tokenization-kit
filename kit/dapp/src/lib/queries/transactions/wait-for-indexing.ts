@@ -1,9 +1,9 @@
-import {
-  theGraphClientKit,
-  theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { z } from "zod";
-import { IndexingFragment, type IndexingFragmentSchema } from "./transaction-fragment";
+import {
+  IndexingFragment,
+  type IndexingFragmentSchema,
+} from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -15,7 +15,7 @@ const POLLING_DEFAULTS = {
   INTERVAL_MS: 500,
 } as const;
 
-const GetIndexingStatus = theGraphGraphqlKit(
+const GetIndexingStatus = theGraphGraphql(
   `
   query GetIndexingStatus {
     _meta {
@@ -60,7 +60,7 @@ export async function waitForIndexing(
       );
     }
 
-    const status = await theGraphClientKit.request(GetIndexingStatus);
+    const status = await theGraphClient.request(GetIndexingStatus);
     indexedBlock = status._meta?.block ?? null;
 
     if ((indexedBlock?.number ?? 0) < blockNumber) {

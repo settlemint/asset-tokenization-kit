@@ -1,4 +1,4 @@
-import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -7,7 +7,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @remarks
  * Contains basic account information for permission checks
  */
-export const AccountFragment = theGraphGraphqlKit(`
+export const AccountFragment = theGraphGraphql(`
   fragment AccountFragment on Account {
     id
     lastActivity
