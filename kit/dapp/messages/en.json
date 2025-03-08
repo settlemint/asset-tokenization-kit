@@ -2012,7 +2012,7 @@
     "current-password-placeholder": "Enter your current password",
     "current-session": "Current Session",
     "delete-account": "Delete Account",
-    "delete-account-description": "Permanently remove your account and all of its contents. This action is not reversible, so please continue with caution.",
+    "delete-account-description": "Permanently remove your account and all of its contents. This WILL remove your access to your private key and you WILL lose access to your assets! This action is not reversible, so please continue with caution.",
     "delete-account-instructions": "Please confirm the deletion of your account. This action is not reversible, so please continue with caution.",
     "delete-account-email": "Please check your email to verify the deletion of your account.",
     "delete-account-success": "Your account has been deleted.",
@@ -2079,6 +2079,9 @@
     "unlink": "Unlink",
     "username": "Username",
     "username-description": "Enter the username you want to use to log in.",
+    "username-instructions": "Please use 32 characters at maximum.",
+    "username-placeholder": "John Doe",
+    "username-sign-in-placeholder": "Username or email",
 
     "signin": {
       "description": "Enter your email below to login to your account",
