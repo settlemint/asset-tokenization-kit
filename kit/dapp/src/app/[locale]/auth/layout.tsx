@@ -16,7 +16,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
             <Logo variant="icon" />
           </div>
-          <div className="flex flex-col leading-none max-w-[180px] text-sm-background-lightest">
+          <div className="flex flex-col leading-none max-w-[180px] text-foreground">
             <span className="font-bold text-lg">{t("app-name")}</span>
             <span className="text-md truncate text-ellipsis overflow-hidden leading-snug text-sm -mt-1">
               {t("app-description")}
@@ -36,12 +36,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
         <ThemeToggle />
       </div>
       <div className="flex min-h-screen items-center justify-center">
-        <div
-          data-slot="card"
-          className="mx-auto grid gap-6 p-12 w-[500px] rounded-xl"
-        >
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );

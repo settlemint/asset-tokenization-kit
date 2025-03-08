@@ -1,38 +1,41 @@
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
-import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({
-    locale,
-    namespace: "auth.wrong-role",
-  });
-
+export async function generateMetadata() {
+  const t = await getTranslations("auth.wrong-role");
   return {
     title: t("title"),
-    description: t("description"),
   };
 }
 
-export default function WrongRolePage() {
-  const t = useTranslations("auth.wrong-role");
+export default async function WrongRolePage() {
+  const t = await getTranslations("auth.wrong-role");
 
   return (
-    <div className="w-full max-w-xs">
-      <h1 className="font-semibold text-xl">{t("title")}</h1>
-      <p className="mt-2 text-muted-foreground text-sm">{t("description")}</p>
-      <div className="mx-auto mt-8 flex gap-4">
-        <Button asChild variant="default">
-          <Link href="/portfolio">{t("go-to-portfolio")}</Link>
-        </Button>
-      </div>
+    <div className="container flex h-screen flex-col items-center justify-center">
+      <Card className="mx-auto w-full max-w-md">
+        <CardHeader>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
+        </CardContent>
+        <CardFooter>
+          <Button asChild className="w-full">
+            <Link href="/portfolio">{t("go-to-portfolio")}</Link>
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

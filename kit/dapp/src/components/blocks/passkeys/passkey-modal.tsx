@@ -74,7 +74,7 @@ export function PasskeyModal() {
                   }
                   variant="destructive"
                 >
-                  <TrashIcon className="h-4 w-4" />
+                  <TrashIcon className="size-4" />
                 </Button>
               </div>
             ))}

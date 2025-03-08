@@ -1,7 +1,6 @@
 @import "tailwindcss";
-
 @plugin "tailwindcss-animate";
-
+@source "./node_modules/@daveyplate/better-auth-ui/dist/**/*.{js,ts,jsx,tsx,mdx}";
 @custom-variant dark (&:is(.dark *));
 
 /*

@@ -8,7 +8,7 @@ interface EventsPageProps {
 
 export default async function ActivityPage({ params }: EventsPageProps) {
   const { locale } = await params;
-  const user = await getUser(locale);
+  const user = await getUser();
 
   return <AssetEventsTable sender={user.wallet as Address} />;
 }
