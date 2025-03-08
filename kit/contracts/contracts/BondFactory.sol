@@ -57,7 +57,7 @@ contract BondFactory is ReentrancyGuard, ERC2771Context {
         bytes32 salt = _calculateSalt(name, symbol, decimals);
         address predicted =
             predictAddress(_msgSender(), name, symbol, decimals, cap, maturityDate, faceValue, underlyingAsset);
-        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
+        if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
         Bond newBond = new Bond{ salt: salt }(
             name, symbol, decimals, _msgSender(), cap, maturityDate, faceValue, underlyingAsset, trustedForwarder()

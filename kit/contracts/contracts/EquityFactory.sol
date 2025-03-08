@@ -52,7 +52,7 @@ contract EquityFactory is ReentrancyGuard, ERC2771Context {
     {
         // Check if address is already deployed
         address predicted = predictAddress(_msgSender(), name, symbol, decimals, equityClass, equityCategory);
-        if (isFactoryToken[predicted]) revert AddressAlreadyDeployed();
+        if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
