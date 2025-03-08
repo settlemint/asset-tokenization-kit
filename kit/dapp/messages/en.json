@@ -2079,6 +2079,9 @@
     "unlink": "Unlink",
     "username": "Username",
     "username-description": "Enter the username you want to use to log in.",
+    "username-instructions": "Please use 32 characters at maximum.",
+    "username-placeholder": "John Doe",
+    "username-sign-in-placeholder": "Username or email",
 
     "signin": {
       "description": "Enter your email below to login to your account",

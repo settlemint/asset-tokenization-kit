@@ -4,7 +4,6 @@ import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
 import { SettingsGearIcon } from "@/components/ui/animated-icons/settings-gear";
 import { UsersIcon } from "@/components/ui/animated-icons/users";
 import { WalletIcon } from "@/components/ui/animated-icons/wallet";
-import { TrashIcon } from "lucide-react";
 
 export const topItems: NavElement[] = [
   {
@@ -31,11 +30,6 @@ export const topItems: NavElement[] = [
         label: "Profile",
         icon: <UsersIcon className="size-4" />,
         path: "/portfolio/settings/profile",
-      },
-      {
-        label: "Delete Account",
-        icon: <TrashIcon className="size-4" />,
-        path: "/portfolio/settings/delete",
       },
     ],
   },

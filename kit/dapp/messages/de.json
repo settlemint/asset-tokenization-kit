@@ -582,9 +582,9 @@
       "charts": {
         "asset-activity": {
           "burn": "Verbrennen",
-          "description": "Visualisieren Sie die jüngsten Minting-, Transfer- und Verbrennungsaktivitäten über verschiedene Asset-Typen.",
+          "description": "Aktivitäten der Vermögenswerte",
           "mint": "Münze",
-          "title": "Aktivität",
+          "title": "Aktivitäten der Vermögenswerte",
           "transfer": "Übertragen"
         },
         "asset-types": {
@@ -595,44 +595,47 @@
           "stablecoins": "Stablecoins"
         },
         "assets-supply": {
-          "description": "Visualisieren Sie die Verteilung des Gesamtangebots über verschiedene Asset-Kategorien.",
-          "label": "Verteilung",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
+          "description": "Vermögensangebot",
+          "label": "Vermögenswerte",
+          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds",
+          "title": "Vermögensangebot"
         },
         "transaction-history": {
-          "description": "Überblick über das Transaktionsvolumen und die Trends der letzten {interval}.",
+          "description": "Transaktionshistorie",
           "label": "Transaktionen",
-          "title": "Transaktionen"
+          "title": "Transaktionshistorie"
         },
         "users-history": {
-          "description": "Benutzerregistrierungstrends der letzten Woche.",
+          "description": "Nutzerhistorie",
           "label": "Benutzer",
-          "title": "Benutzer"
+          "title": "Nutzerhistorie"
         }
       },
       "page": {
-        "description": "Übersicht des Admin-Dashboards",
+        "description": "Willkommen im Dashboard",
         "latest_events_heading": "Neueste Ereignisse",
         "stats_heading": "Statistiken",
-        "title": "Dashboard"
+        "title": "Dashboard",
+        "stats-heading": "Statistiken",
+        "latest-events-heading": "Neueste Ereignisse"
       },
       "table": {
         "latest-events": {
-          "view-all": "Alle Ereignisse anzeigen →"
+          "view-all": "Alle anzeigen"
         }
       },
       "widgets": {
         "assets": {
-          "label": "Vorrat an Vermögenswerten",
-          "subtext": "{stableCoins} Stablecoins | {bonds} Anleihen | {cryptocurrencies} Kryptowährungen | {equities} Aktien | {funds} Fonds"
+          "label": "Vermögenswerte",
+          "subtext": "{bonds} Anleihen {cryptocurrencies} Kryptowährungen, {equities} Aktien, {funds} Fonds, {stableCoins} Stablecoins"
         },
         "transactions": {
           "label": "Transaktionen",
-          "subtext": "{count} Transaktionen in den letzten {days} Tagen verarbeitet."
+          "subtext": "{count} Transaktionen in den letzten {days} Tagen verarbeitet"
         },
         "users": {
           "label": "Benutzer",
-          "subtext": "{count} neue Benutzer in den letzten {days} Tagen."
+          "subtext": "{count} Nutzer in den letzten {days} Tagen"
         }
       }
     },
@@ -1987,7 +1990,14 @@
       "title": "Benutzer"
     },
     "charts": {
-      "asset-statistics-title": "Vermögensstatistiken"
+      "asset-statistics-title": "Vermögensstatistiken",
+      "asset-type-formatter": {
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins"
+      }
     }
   },
   "auth": {
@@ -2005,7 +2015,8 @@
       "sign-up": "Registrieren",
       "submit": "Anmelden",
       "submitting": "Anmeldung...",
-      "title": "Melden Sie sich in Ihrem Konto an"
+      "title": "Melden Sie sich in Ihrem Konto an",
+      "sign-in-with-passkey": "Mit Passkey anmelden"
     },
     "signup": {
       "description": "Geben Sie die Informationen unten ein, um Ihr Konto und Ihre verwaltete Blockchain-Brieftasche zu erstellen",
@@ -2045,6 +2056,103 @@
       "description": "Sie haben nicht die erforderliche Rolle, um auf diese Seite zuzugreifen. Bitte melden Sie sich mit einem Konto an, das über die entsprechenden Berechtigungen verfügt.",
       "go-to-portfolio": "Gehe zu Portfolio",
       "title": "Sie sind nicht berechtigt, auf diese Seite zuzugreifen"
+    },
+    "account": "Konto",
+    "add-account": "Konto hinzufügen",
+    "already-have-account": "Haben Sie bereits ein Konto?",
+    "avatar": "Avatar",
+    "avatar-description": "Klicken Sie auf den Avatar, um einen benutzerdefinierten hochzuladen.",
+    "avatar-instructions": "Ein Avatar ist optional, wird aber dringend empfohlen.",
+    "change-password": "Passwort ändern",
+    "change-password-description": "Geben Sie Ihr aktuelles Passwort und ein neues Passwort ein.",
+    "change-password-instructions": "Bitte verwenden Sie mindestens 8 Zeichen.",
+    "change-password-success": "Ihr Passwort wurde geändert.",
+    "current-password": "Aktuelles Passwort",
+    "current-password-placeholder": "Geben Sie Ihr aktuelles Passwort ein",
+    "current-session": "Aktuelle Sitzung",
+    "delete-account": "Konto löschen",
+    "delete-account-description": "Entfernen Sie Ihr Konto und alle Inhalte dauerhaft. Dies WIRD Ihren Zugriff auf Ihren privaten Schlüssel entfernen und Sie WERDEN den Zugriff auf Ihre Vermögenswerte verlieren! Diese Aktion ist nicht umkehrbar, also fahren Sie bitte mit Vorsicht fort.",
+    "delete-account-instructions": "Bitte bestätigen Sie die Löschung Ihres Kontos. Diese Aktion ist nicht umkehrbar, also fahren Sie bitte mit Vorsicht fort.",
+    "delete-account-email": "Bitte überprüfen Sie Ihre E-Mail, um die Löschung Ihres Kontos zu bestätigen.",
+    "delete-account-success": "Ihr Konto wurde gelöscht.",
+    "delete-account-not-fresh": "Sie müssen sich kürzlich angemeldet haben, um Ihr Konto zu löschen.",
+    "disabled-credentials-description": "Wählen Sie einen Anbieter, um sich in Ihr Konto einzuloggen",
+    "dont-have-account": "Haben Sie kein Konto?",
+    "email": "E-Mail",
+    "email-description": "Geben Sie die E-Mail-Adresse ein, die Sie zum Anmelden verwenden möchten.",
+    "email-instructions": "Bitte verwenden Sie eine gültige E-Mail-Adresse.",
+    "email-placeholder": "m@example.com",
+    "email-verify-change": "Bitte überprüfen Sie Ihre E-Mail, um die Änderung zu bestätigen.",
+    "email-verification": "Bitte überprüfen Sie Ihre E-Mail auf den Bestätigungslink.",
+    "failed-to-validate": "Validierung fehlgeschlagen",
+    "forgot-password": "Passwort vergessen",
+    "forgot-password-action": "Link zum Zurücksetzen senden",
+    "forgot-password-description": "Geben Sie Ihre E-Mail ein, um Ihr Passwort zurückzusetzen",
+    "forgot-password-email": "Überprüfen Sie Ihre E-Mail auf den Link zum Zurücksetzen des Passworts.",
+    "forgot-password-link": "Haben Sie Ihr Passwort vergessen?",
+    "link": "Link",
+    "magic-link": "Magischer Link",
+    "magic-link-action": "Magischen Link senden",
+    "magic-link-description": "Geben Sie Ihre E-Mail ein, um einen magischen Link zu erhalten",
+    "magic-link-email": "Überprüfen Sie Ihre E-Mail auf den magischen Link",
+    "name": "Name",
+    "name-description": "Bitte geben Sie Ihren vollständigen Namen oder einen Anzeigenamen ein.",
+    "name-instructions": "Bitte verwenden Sie maximal 32 Zeichen.",
+    "name-placeholder": "John Doe",
+    "new-password": "Neues Passwort",
+    "new-password-placeholder": "Geben Sie Ihr neues Passwort ein",
+    "passkey": "Passwortschlüssel",
+    "password": "Passwort",
+    "password-description": "Geben Sie Ihr aktuelles Passwort ein.",
+    "password-instructions": "Bitte verwenden Sie mindestens 8 Zeichen.",
+    "password-placeholder": "Geben Sie Ihr Passwort ein",
+    "providers": "Anbieter",
+    "providers-description": "Verbinden Sie Ihr Konto mit einem Drittanbieterdienst.",
+    "provider-link-success": "Anbieter erfolgreich verknüpft.",
+    "provider-unlink-success": "Anbieter erfolgreich getrennt.",
+    "providers-loading-error": "Konto-Informationen konnten nicht geladen werden",
+    "remember-me": "Erinnere dich an mich",
+    "reset-password": "Passwort zurücksetzen",
+    "reset-password-action": "Neues Passwort speichern",
+    "reset-password-description": "Geben Sie Ihr neues Passwort unten ein",
+    "reset-password-invalid-token": "Ungültiger Link zum Zurücksetzen des Passworts",
+    "reset-password-success": "Passwort erfolgreich zurückgesetzt",
+    "revoke": "Widerrufen",
+    "sign-in": "Anmelden",
+    "sign-in-action": "Einloggen",
+    "sign-in-description": "Geben Sie Ihre E-Mail unten ein, um sich in Ihr Konto einzuloggen",
+    "sign-in-username-description": "Geben Sie Ihren Benutzernamen unten ein, um sich in Ihr Konto einzuloggen",
+    "sign-in-with": "Mit anmelden",
+    "sign-out": "Abmelden",
+    "sign-up": "Registrieren",
+    "sign-up-action": "Ein Konto erstellen",
+    "sign-up-description": "Geben Sie Ihre Informationen ein, um ein Konto zu erstellen",
+    "sign-up-email": "Überprüfen Sie Ihre E-Mail auf den Bestätigungslink.",
+    "sessions": "Sitzungen",
+    "sessions-description": "Verwalten Sie Ihre aktiven Sitzungen und widerrufen Sie den Zugriff.",
+    "set-password": "Passwort festlegen",
+    "set-password-description": "Überprüfen Sie Ihre E-Mail, um Ihr Passwort festzulegen.",
+    "set-password-email-sent": "Überprüfen Sie Ihre E-Mail, um Ihr Passwort festzulegen.",
+    "settings": "Einstellungen",
+    "save": "Speichern",
+    "unlink": "Trennen",
+    "username": "Benutzername",
+    "username-description": "Geben Sie den Benutzernamen ein, den Sie zum Anmelden verwenden möchten.",
+    "username-instructions": "Bitte verwenden Sie maximal 32 Zeichen.",
+    "username-placeholder": "John Doe",
+    "username-sign-in-placeholder": "Benutzername oder E-Mail",
+    "wallet-security": {
+      "verification-required": "Verifizierung erforderlich",
+      "verification-description": "Bitte richten Sie einen PIN-Code ein, um Ihre Brieftasche zu sichern.",
+      "setup-pincode": "PIN-Code einrichten",
+      "pincode-instruction": "Geben Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftasche zu sichern.",
+      "pincode-set": "PIN-Code erfolgreich gesetzt"
+    },
+    "pincode-form": {
+      "name-label": "Name des PIN-Codes",
+      "pincode-label": "PIN-Code",
+      "setting-up": "Wird eingerichtet...",
+      "submit": "PIN-Code einrichten"
     }
   },
   "components": {
@@ -2188,7 +2296,10 @@
       },
       "input": {
         "letters-only": "Bitte nur Buchstaben eingeben",
-        "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+        "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "password-min-length": "Das Passwort muss mindestens 6 Zeichen lang sein",
+        "pin-code-match": "PIN-Codes stimmen nicht überein",
+        "pin-code-length": "Der PIN-Code muss genau 6 Ziffern haben"
       },
       "progress": {
         "completed-step": "Abgeschlossener Schritt",
@@ -2236,7 +2347,9 @@
   "layout": {
     "header": {
       "app-description": "Tokenisierung von Vermögenswerten",
-      "app-name": "SettleMint"
+      "app-name": "SettleMint",
+      "home": "Startseite",
+      "issuer-portal": "Ausstellerportal"
     },
     "navigation": {
       "admin": "Ausstellerportal",
@@ -2298,6 +2411,10 @@
       },
       "transfer": "Überweisung",
       "transferring": "Übertrage..."
+    },
+    "my-assets": {
+      "title": "Meine Vermögenswerte",
+      "description": "Sehen Sie sich Ihre digitalen Vermögenswerte an und verwalten Sie diese"
     }
   }
 }
