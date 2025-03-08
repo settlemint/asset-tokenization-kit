@@ -146,7 +146,7 @@ export function UserDropdown() {
               onMouseLeave={() => stackIconRef.current?.stopAnimation()}
             >
               <SquareStackIcon ref={stackIconRef} className="mr-2 size-4" />
-              <Link href="/admin/activity" prefetch>
+              <Link href="/portfolio/my-activity" prefetch>
                 {t("pending-transactions")}
               </Link>
             </DropdownMenuItem>

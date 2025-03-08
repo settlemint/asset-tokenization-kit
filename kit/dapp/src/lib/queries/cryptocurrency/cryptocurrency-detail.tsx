@@ -1,8 +1,5 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
@@ -16,7 +13,7 @@ import {
 /**
  * GraphQL query to fetch on-chain cryptocurrency details from The Graph
  */
-const CryptoCurrencyDetail = theGraphGraphqlStarterkits(
+const CryptoCurrencyDetail = theGraphGraphql(
   `
   query CryptoCurrencyDetail($id: ID!) {
     cryptoCurrency(id: $id) {
@@ -61,7 +58,7 @@ export const getCryptoCurrencyDetail = cache(
     const normalizedAddress = getAddress(address);
 
     const [data, dbCryptoCurrency] = await Promise.all([
-      theGraphClientStarterkits.request(CryptoCurrencyDetail, { id: address }),
+      theGraphClient.request(CryptoCurrencyDetail, { id: address }),
       hasuraClient.request(OffchainCryptoCurrencyDetail, {
         id: normalizedAddress,
       }),

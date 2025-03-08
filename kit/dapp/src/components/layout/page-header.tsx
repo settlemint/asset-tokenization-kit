@@ -21,7 +21,9 @@ export function PageHeader({
   return (
     <div className={cn("relative flex justify-between pb-6", className)}>
       <div>
-        {section && <div className="mb-2">{section}</div>}
+        {section && (
+          <div className="mb-0 text-xs text-muted-foreground">{section}</div>
+        )}
         <h1 className="flex items-center font-bold text-2xl">
           {title}
           {pill && (

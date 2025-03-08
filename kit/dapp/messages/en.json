@@ -1,8 +1,9 @@
 {
   "admin": {
     "activity": {
+      "asset-management": "Asset management",
       "page-description": "Track activity across all assets.",
-      "page-title": "Activity",
+      "page-title": "Asset activity",
       "transaction-details": {
         "blob-gas-price-label": "Blob gas price",
         "blob-gas-used-label": "Blob gas used",
@@ -306,6 +307,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "asset-management": "Asset management",
         "name-header": "Name",
         "page-description": "Create, view, and manage bond assets on the blockchain",
         "page-title": "Bonds Management",
@@ -552,6 +554,7 @@
       "table": {
         "actions-header": "Actions",
         "address-header": "Address",
+        "asset-management": "Asset management",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your cryptocurrency assets.",
         "page-title": "Cryptocurrencies",
@@ -590,15 +593,12 @@
     },
     "dashboard": {
       "charts": {
-        "users-history": {
-          "label": "Users",
-          "title": "Users history",
-          "description": "Users history"
-        },
-        "transaction-history": {
-          "label": "Transactions",
-          "title": "Transaction history",
-          "description": "Transaction history"
+        "asset-activity": {
+          "burn": "Burn",
+          "description": "Asset activity",
+          "mint": "Mint",
+          "title": "Asset activity",
+          "transfer": "Transfer"
         },
         "asset-types": {
           "bonds": "Bonds",
@@ -608,23 +608,28 @@
           "stablecoins": "Stablecoins"
         },
         "assets-supply": {
+          "description": "Assets supply",
           "label": "Assets",
-          "title": "Assets supply",
-          "description": "Assets supply"
+          "title": "Assets supply"
         },
-        "asset-activity": {
-          "mint": "Mint",
-          "transfer": "Transfer",
-          "burn": "Burn",
-          "title": "Asset activity",
-          "description": "Asset activity"
+        "transaction-history": {
+          "description": "Transaction history",
+          "label": "Transactions",
+          "title": "Transaction history"
+        },
+        "users-history": {
+          "description": "Users history",
+          "label": "Users",
+          "title": "Users history"
         }
       },
       "page": {
-        "title": "Dashboard",
+        "asset-management": "Asset management",
         "description": "Welcome to the dashboard",
+        "latest-events-heading": "Latest events",
+        "my-portfolio": "My portfolio",
         "stats-heading": "Stats",
-        "latest-events-heading": "Latest events"
+        "title": "Dashboard"
       },
       "table": {
         "latest-events": {
@@ -1012,6 +1017,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "asset-management": "Asset management",
         "category-blend-equity": "Blend Equity",
         "category-communication-services": "Communication Services",
         "category-consumer-discretionary": "Consumer Discretionary",
@@ -1470,6 +1476,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "asset-management": "Asset management",
         "assets-under-management-header": "AUM",
         "category-activist": "Activist",
         "category-commodity-trading": "Commodity Trading",
@@ -1559,14 +1566,21 @@
         "underlying-assets": "Underlying assets"
       }
     },
+    "platform": {
+      "settings": {
+        "platform-management": "Platform management"
+      }
+    },
     "sidebar": {
       "asset-designer": "Asset Designer",
       "asset-management": {
+        "asset-activity": "Asset activity",
         "bonds": "Bonds",
         "cryptocurrencies": "Cryptocurrencies",
+        "dashboard": "Dashboard",
         "equities": "Equities",
         "funds": "Funds",
-        "group-title": "Asset Management",
+        "group-title": "Asset management",
         "stablecoins": "Stablecoins",
         "view-all": "View all"
       },
@@ -1576,6 +1590,17 @@
         "equity": "Equity",
         "fund": "Fund",
         "stablecoin": "Stablecoin"
+      },
+      "platform-management": {
+        "group-title": "Platform management",
+        "settings": "Settings",
+        "user-management": "User management"
+      },
+      "portfolio-management": {
+        "dashboard": "Dashboard",
+        "group-title": "My portfolio",
+        "my-activity": "My activity",
+        "my-assets": "My assets"
       }
     },
     "stablecoins": {
@@ -1875,6 +1900,7 @@
         "actions-header": "Actions",
         "active-status": "Active",
         "address-header": "Address",
+        "asset-management": "Asset management",
         "committed-collateral-header": "Collateral consumed",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your stablecoin assets.",
@@ -1958,6 +1984,7 @@
           "verified_at": "Verified at",
           "wallet": "Wallet"
         },
+        "platform-management": "Platform management",
         "tabs": {
           "details": "Details",
           "holdings": "Holdings",
@@ -1985,6 +2012,7 @@
       },
       "page-description": "Manage users and their roles",
       "page-title": "Users",
+      "platform-management": "Platform management",
       "roles": {
         "admin": "Admin",
         "issuer": "Issuer",
@@ -1997,6 +2025,7 @@
       "title": "Users"
     }
   },
+  "asset-management": "Asset management",
   "auth": {
     "account": "Account",
     "add-account": "Add Account",
@@ -2012,19 +2041,19 @@
     "current-password-placeholder": "Enter your current password",
     "current-session": "Current Session",
     "delete-account": "Delete Account",
-    "delete-account-description": "Permanently remove your account and all of its contents. This action is not reversible, so please continue with caution.",
-    "delete-account-instructions": "Please confirm the deletion of your account. This action is not reversible, so please continue with caution.",
+    "delete-account-description": "Permanently remove your account and all of its contents. This WILL remove your access to your private key and you WILL lose access to your assets! This action is not reversible, so please continue with caution.",
     "delete-account-email": "Please check your email to verify the deletion of your account.",
-    "delete-account-success": "Your account has been deleted.",
+    "delete-account-instructions": "Please confirm the deletion of your account. This action is not reversible, so please continue with caution.",
     "delete-account-not-fresh": "You must be recently logged in to delete your account.",
+    "delete-account-success": "Your account has been deleted.",
     "disabled-credentials-description": "Choose a provider to login to your account",
     "dont-have-account": "Don't have an account?",
     "email": "Email",
     "email-description": "Enter the email address you want to use to log in.",
     "email-instructions": "Please use a valid email address.",
     "email-placeholder": "m@example.com",
-    "email-verify-change": "Please check your email to verify the change.",
     "email-verification": "Please check your email for the verification link.",
+    "email-verify-change": "Please check your email to verify the change.",
     "failed-to-validate": "Failed to validate",
     "forgot-password": "Forgot Password",
     "forgot-password-action": "Send reset link",
@@ -2047,10 +2076,16 @@
     "password-description": "Enter your current password.",
     "password-instructions": "Please use 8 characters at minimum.",
     "password-placeholder": "Enter your password",
-    "providers": "Providers",
-    "providers-description": "Connect your account with a third-party service.",
+    "pincode-form": {
+      "name-label": "Pincode Name",
+      "pincode-label": "Pincode",
+      "setting-up": "Setting up...",
+      "submit": "Setup Pincode"
+    },
     "provider-link-success": "Provider linked successfully.",
     "provider-unlink-success": "Provider unlinked successfully.",
+    "providers": "Providers",
+    "providers-description": "Connect your account with a third-party service.",
     "providers-loading-error": "Could not load account info",
     "remember-me": "Remember me",
     "reset-password": "Reset Password",
@@ -2059,6 +2094,13 @@
     "reset-password-invalid-token": "Invalid reset password link",
     "reset-password-success": "Password reset successfully",
     "revoke": "Revoke",
+    "save": "Save",
+    "sessions": "Sessions",
+    "sessions-description": "Manage your active sessions and revoke access.",
+    "set-password": "Set Password",
+    "set-password-description": "Check your email to set your password.",
+    "set-password-email-sent": "Check your email to set your password.",
+    "settings": "Settings",
     "sign-in": "Sign In",
     "sign-in-action": "Login",
     "sign-in-description": "Enter your email below to login to your account",
@@ -2069,17 +2111,6 @@
     "sign-up-action": "Create an account",
     "sign-up-description": "Enter your information to create an account",
     "sign-up-email": "Check your email for the verification link.",
-    "sessions": "Sessions",
-    "sessions-description": "Manage your active sessions and revoke access.",
-    "set-password": "Set Password",
-    "set-password-description": "Check your email to set your password.",
-    "set-password-email-sent": "Check your email to set your password.",
-    "settings": "Settings",
-    "save": "Save",
-    "unlink": "Unlink",
-    "username": "Username",
-    "username-description": "Enter the username you want to use to log in.",
-
     "signin": {
       "description": "Enter your email below to login to your account",
       "email": {
@@ -2131,23 +2162,23 @@
         "label": "Confirm wallet PIN code"
       }
     },
+    "unlink": "Unlink",
+    "username": "Username",
+    "username-description": "Enter the username you want to use to log in.",
+    "username-instructions": "Please use 32 characters at maximum.",
+    "username-placeholder": "John Doe",
+    "username-sign-in-placeholder": "Username or email",
+    "wallet-security": {
+      "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
+      "pincode-set": "Pincode set successfully",
+      "setup-pincode": "Setup Pincode",
+      "verification-description": "Please set up a pincode to secure your wallet.",
+      "verification-required": "Verification Required"
+    },
     "wrong-role": {
       "description": "You don't have the required role to access this page. Please sign in with an account that has the appropriate permissions.",
       "go-to-portfolio": "Go to portfolio",
       "title": "You are not authorized to access this page"
-    },
-    "wallet-security": {
-      "verification-required": "Verification Required",
-      "verification-description": "Please set up a pincode to secure your wallet.",
-      "setup-pincode": "Setup Pincode",
-      "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
-      "pincode-set": "Pincode set successfully"
-    },
-    "pincode-form": {
-      "name-label": "Pincode Name",
-      "pincode-label": "Pincode",
-      "setting-up": "Setting up...",
-      "submit": "Setup Pincode"
     }
   },
   "components": {
@@ -2291,10 +2322,10 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
-        "valid-email": "Please enter a valid email address",
         "password-min-length": "Password must be at least 6 characters long",
+        "pin-code-length": "PIN code must be exactly 6 digits",
         "pin-code-match": "PIN codes don't match",
-        "pin-code-length": "PIN code must be exactly 6 digits"
+        "valid-email": "Please enter a valid email address"
       },
       "progress": {
         "completed-step": "Completed step",
@@ -2360,7 +2391,8 @@
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",
-      "page-title": "Activity"
+      "page-title": "Activity",
+      "portfolio-management": "Portfolio management"
     },
     "asset-types": {
       "bond": "Bond",
@@ -2369,6 +2401,17 @@
       "fund": "Fund",
       "stablecoin": "Stablecoin",
       "unknown": "Unknown"
+    },
+    "my-assets": {
+      "description": "View and manage your digital assets",
+      "portfolio-management": "Portfolio management",
+      "title": "My Assets"
+    },
+    "settings": {
+      "profile": {
+        "portfolio-management": "Portfolio management",
+        "title": "Profile"
+      }
     },
     "transfer-form": {
       "amount": {
@@ -2395,10 +2438,6 @@
       },
       "transfer": "Transfer",
       "transferring": "Transferring..."
-    },
-    "my-assets": {
-      "title": "My Assets",
-      "description": "View and manage your digital assets"
     }
   },
   "theme": {

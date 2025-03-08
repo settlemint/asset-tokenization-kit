@@ -1,7 +1,4 @@
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
@@ -14,7 +11,7 @@ import {
 /**
  * GraphQL query to fetch a specific asset balance
  */
-const AssetBalanceDetail = theGraphGraphqlStarterkits(
+const AssetBalanceDetail = theGraphGraphql(
   `
   query Balance($address: String!, $account: String!) {
     assetBalances(where: {asset: $address, account: $account}) {
@@ -50,7 +47,7 @@ export const getAssetBalanceDetail = cache(
     const normalizedAddress = getAddress(address);
     const normalizedAccount = getAddress(account);
 
-    const result = await theGraphClientStarterkits.request(AssetBalanceDetail, {
+    const result = await theGraphClient.request(AssetBalanceDetail, {
       address: normalizedAddress,
       account: normalizedAccount,
     });

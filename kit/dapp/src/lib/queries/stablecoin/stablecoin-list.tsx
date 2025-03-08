@@ -1,9 +1,6 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
@@ -20,7 +17,7 @@ import {
  * @remarks
  * Retrieves stablecoins ordered by total supply in descending order
  */
-const StableCoinList = theGraphGraphqlStarterkits(
+const StableCoinList = theGraphGraphql(
   `
   query StableCoinList($first: Int, $skip: Int) {
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: $first, skip: $skip) {
@@ -59,7 +56,7 @@ const OffchainStableCoinList = hasuraGraphql(
 export const getStableCoinList = cache(async () => {
   const [theGraphStableCoins, dbAssets] = await Promise.all([
     fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClientStarterkits.request(StableCoinList, {
+      const result = await theGraphClient.request(StableCoinList, {
         first,
         skip,
       });

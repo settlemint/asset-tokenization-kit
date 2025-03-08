@@ -18,7 +18,7 @@ export default async function MyAssetsPage({ params }: MyAssetsPageProps) {
 
   return (
     <>
-      <PageHeader title={t("title")} />
+      <PageHeader title={t("title")} section={t("portfolio-management")} />
       <MyAssetsTable wallet={user.wallet as Address} title={t("title")} />
     </>
   );

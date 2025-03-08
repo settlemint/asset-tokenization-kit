@@ -47,6 +47,9 @@ jobs:
       - name: Install Bun dependencies
         run: bun install
 
+      - name: Generate text-based lockfile
+        run: bun install --lockfile
+
       - name: Connect to SettleMint
         uses: settlemint/settlemint-action@main
         with:
@@ -86,7 +89,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/settlemint/starterkit-asset-tokenization
+            ghcr.io/settlemint/asset-tokenization-kit
           tags: |
             type=raw,value=${{ env.VERSION }}
 
