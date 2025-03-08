@@ -6,7 +6,7 @@ export default function NavInset({ children }: PropsWithChildren) {
   return (
     <SidebarInset className="bg-sidebar">
       <Header />
-      <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col rounded-tl-xl bg-background py-8 px-8">
+      <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col rounded-tl-xl bg-background py-4 px-8">
         {children}
       </main>
     </SidebarInset>

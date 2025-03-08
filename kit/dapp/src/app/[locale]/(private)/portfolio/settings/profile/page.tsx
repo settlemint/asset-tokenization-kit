@@ -6,11 +6,13 @@ import {
   ProvidersCard,
   UpdateNameCard,
 } from "@daveyplate/better-auth-ui";
+import { getTranslations } from "next-intl/server";
 
-export default function SecuritySettingsPage() {
+export default async function SecuritySettingsPage() {
+  const t = await getTranslations("portfolio.settings.profile");
   return (
     <>
-      <PageHeader title="Profile" section="Settings" />
+      <PageHeader title={t("title")} section={t("portfolio-management")} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <UpdateNameCard
           classNames={{
