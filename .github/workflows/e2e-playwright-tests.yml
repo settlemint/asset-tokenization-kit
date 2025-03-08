@@ -13,7 +13,7 @@ concurrency:
 jobs:
   test:
     name: Playwright Tests
-    runs-on: namespace-profile-kit
+    runs-on: namespace-profile-atk
     environment: staging
     timeout-minutes: 60 # 1 hour maximum runtime
     if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'run-playwright-tests') }}
