@@ -2,7 +2,7 @@
   "admin": {
     "activity": {
       "page-description": "Aktivitäten über alle Vermögenswerte verfolgen.",
-      "page-title": "Aktivität",
+      "page-title": "Vermögensaktivität",
       "view-all": "Alle Transaktionen im Explorer anzeigen",
       "transaction-details": {
         "block-hash-label": "Block-Hash",
@@ -25,7 +25,8 @@
         "transaction-title": "Transaktion",
         "trigger-label": "Details",
         "type-label": "Typ"
-      }
+      },
+      "asset-management": "Vermögensverwaltung"
     },
     "bonds": {
       "burn-form": {
@@ -320,7 +321,8 @@
             "description": "Erforschen Sie Anwendungen in den Märkten für festverzinsliche Wertpapiere, von Unternehmensschulden bis hin zu strukturierten Produkten. Maximieren Sie die Effizienz bei Zinszahlungen, Fälligkeitsmanagement und regulatorischer Compliance.",
             "title": "Anwendungsfälle für Anleihen"
           }
-        }
+        },
+        "asset-management": "Vermögensverwaltung"
       },
       "tabs": {
         "details": "Einzelheiten",
@@ -538,7 +540,8 @@
             "description": "Erforschen Sie Anwendungen in digitalen Zahlungen, Belohnungssystemen und tokenisierten Dienstleistungen. Maximieren Sie den Nutzen durch programmierbare Transaktionen und Sicherheitsfunktionen auf institutionellem Niveau.",
             "title": "Anwendungsfälle für Kryptowährungen"
           }
-        }
+        },
+        "asset-management": "Vermögensverwaltung"
       },
       "tabs": {
         "details": "Einzelheiten",
@@ -617,7 +620,9 @@
         "stats_heading": "Statistiken",
         "title": "Dashboard",
         "stats-heading": "Statistiken",
-        "latest-events-heading": "Neueste Ereignisse"
+        "latest-events-heading": "Neueste Ereignisse",
+        "asset-management": "Vermögensverwaltung",
+        "my-portfolio": "Mein Portfolio"
       },
       "table": {
         "latest-events": {
@@ -1068,7 +1073,8 @@
             "description": "Erforschen Sie Anwendungen im Bereich des Unternehmensaktienmanagements, von der Aktienausgabe bis zur Stakeholder-Governance. Maximieren Sie die Effizienz in der Aktienverwaltung, den Stimmrechten und der Dividendenverteilung.",
             "title": "Aktienanwendungsfälle"
           }
-        }
+        },
+        "asset-management": "Vermögensverwaltung"
       },
       "tabs": {
         "details": "Details",
@@ -1528,7 +1534,8 @@
             "description": "Erforschen Sie die praktischen Anwendungen und Integrationen digitaler Fonds. Maximieren Sie den Nutzen in den Bereichen Investmentmanagement, Vermögens-Tokenisierung und institutionelle Finanzökosysteme.",
             "title": "Anwendungsfälle"
           }
-        }
+        },
+        "asset-management": "Vermögensverwaltung"
       },
       "tabs": {
         "details": "Einzelheiten",
@@ -1561,7 +1568,9 @@
         "funds": "Fonds",
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
-        "view-all": "Alle anzeigen"
+        "view-all": "Alle anzeigen",
+        "asset-activity": "Vermögensaktivität",
+        "dashboard": "Dashboard"
       },
       "asset-types": {
         "bond": "Anleihe",
@@ -1569,6 +1578,17 @@
         "equity": "Aktie",
         "fund": "Fonds",
         "stablecoin": "Stablecoin"
+      },
+      "platform-management": {
+        "group-title": "Plattformverwaltung",
+        "settings": "Einstellungen",
+        "user-management": "Benutzerverwaltung"
+      },
+      "portfolio-management": {
+        "dashboard": "Dashboard",
+        "group-title": "Mein Portfolio",
+        "my-activity": "Meine Aktivität",
+        "my-assets": "Meine Vermögenswerte"
       }
     },
     "stablecoins": {
@@ -1897,7 +1917,8 @@
         "symbol-header": "Symbol",
         "topinfo-description": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu halten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Assets – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisvolatilität, die typischerweise mit Kryptowährungen verbunden ist. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist, was Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Gelder bietet. Zu den Hauptmerkmalen gehören die besicherte Ausgabe, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und regulatorische Compliance-Funktionen.",
         "topinfo-title": "Eine sichere und besicherte digitale Währung",
-        "total-supply-header": "Gesamtangebot"
+        "total-supply-header": "Gesamtangebot",
+        "asset-management": "Vermögensverwaltung"
       },
       "tabs": {
         "details": "Details",
@@ -1970,7 +1991,8 @@
           "transactions": "Transaktionen",
           "verified_at": "Verifiziert am",
           "wallet": "Wallet"
-        }
+        },
+        "platform-management": "Plattformverwaltung"
       },
       "kyc_status": {
         "notVerified": "Nicht verifiziert",
@@ -1987,7 +2009,8 @@
         "active": "Aktiv",
         "banned": "Verboten"
       },
-      "title": "Benutzer"
+      "title": "Benutzer",
+      "platform-management": "Plattformverwaltung"
     },
     "charts": {
       "asset-statistics-title": "Vermögensstatistiken",
@@ -1997,6 +2020,11 @@
         "equities": "Aktien",
         "funds": "Fonds",
         "stablecoins": "Stablecoins"
+      }
+    },
+    "platform": {
+      "settings": {
+        "platform-management": "Plattformverwaltung"
       }
     }
   },
@@ -2376,7 +2404,8 @@
   "portfolio": {
     "activity": {
       "page-description": "Ihre Aktivität auf der Kette",
-      "page-title": "Aktivität"
+      "page-title": "Aktivität",
+      "portfolio-management": "Portfoliomanagement"
     },
     "asset-types": {
       "bond": "Anleihe",
@@ -2414,7 +2443,15 @@
     },
     "my-assets": {
       "title": "Meine Vermögenswerte",
-      "description": "Sehen Sie sich Ihre digitalen Vermögenswerte an und verwalten Sie diese"
+      "description": "Sehen Sie sich Ihre digitalen Vermögenswerte an und verwalten Sie diese",
+      "portfolio-management": "Portfoliomanagement"
+    },
+    "settings": {
+      "profile": {
+        "portfolio-management": "Portfoliomanagement",
+        "title": "Profil"
+      }
     }
-  }
+  },
+  "asset-management": "Vermögensverwaltung"
 }

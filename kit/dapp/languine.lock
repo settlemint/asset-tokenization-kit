@@ -1,8 +1,9 @@
 version: 1
 files:
   messages/en.json:
+    admin.activity.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.activity.page-description: a514b7d785e4c4bfbdda6d51ee249dae
-    admin.activity.page-title: ecfc2dffe568c10a67dbc6d3724cfde2
+    admin.activity.page-title: 0af652d4c797a0c6b75cff690129f572
     admin.activity.transaction-details.blob-gas-price-label: d1b6efe73a5f82be48fac142a002c2d5
     admin.activity.transaction-details.blob-gas-used-label: 8c5a1f00dd1fff4ff27d906c76388b98
     admin.activity.transaction-details.block-hash-label: 696440cdffe7cdbf3e773880447dbf3f
@@ -225,6 +226,7 @@ files:
     admin.bonds.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.bonds.table.active-status: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.bonds.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.bonds.table.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.bonds.table.name-header: 49ee3087348e8d44e1feda1917443987
     admin.bonds.table.page-description: 2c03586967df69dcde168da0cf88e920
     admin.bonds.table.page-title: 02874ad9feff5092f18b841f8be055cf
@@ -397,6 +399,7 @@ files:
     admin.cryptocurrencies.related-actions.title: 0a5bafcb047751c696456bbf5f2ff673
     admin.cryptocurrencies.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.cryptocurrencies.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.cryptocurrencies.table.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.cryptocurrencies.table.name-header: 49ee3087348e8d44e1feda1917443987
     admin.cryptocurrencies.table.page-description: 94cc72cab1ddaea6cc06b5d226ea23cd
     admin.cryptocurrencies.table.page-title: 69ab3e648e5586bd2a099fc9b21b7440
@@ -421,29 +424,31 @@ files:
     admin.cryptocurrencies.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
     admin.cryptocurrencies.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
     admin.cryptocurrencies.tabs.underlying-assets: 513b5e27362967b94ab332c4f3790a4f
-    admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
-    admin.dashboard.charts.users-history.title: 44fb29646871b901dd1d53849d62a43e
-    admin.dashboard.charts.users-history.description: 44fb29646871b901dd1d53849d62a43e
-    admin.dashboard.charts.transaction-history.label: 31112aca11d0e9e6eb7db96f317dda49
-    admin.dashboard.charts.transaction-history.title: ed431c9f4d10a2ead0eb3643f5e33f33
-    admin.dashboard.charts.transaction-history.description: ed431c9f4d10a2ead0eb3643f5e33f33
+    admin.dashboard.charts.asset-activity.burn: 11635778f116ce6922f6068638a39028
+    admin.dashboard.charts.asset-activity.description: 0af652d4c797a0c6b75cff690129f572
+    admin.dashboard.charts.asset-activity.mint: ca8a196f97a48b2bb489f3e849a68418
+    admin.dashboard.charts.asset-activity.title: 0af652d4c797a0c6b75cff690129f572
+    admin.dashboard.charts.asset-activity.transfer: 6950810f0d2bba97a6f710c7b965b84e
     admin.dashboard.charts.asset-types.bonds: b98e3a37b62f7207c8a0a27e0c0d8777
     admin.dashboard.charts.asset-types.cryptocurrencies: 69ab3e648e5586bd2a099fc9b21b7440
     admin.dashboard.charts.asset-types.equities: f38992a52cef8611666b2db431b493a6
     admin.dashboard.charts.asset-types.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.dashboard.charts.asset-types.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
+    admin.dashboard.charts.assets-supply.description: cebd7e01de0cd31b3c8f27428ab5ac76
     admin.dashboard.charts.assets-supply.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.charts.assets-supply.title: cebd7e01de0cd31b3c8f27428ab5ac76
-    admin.dashboard.charts.assets-supply.description: cebd7e01de0cd31b3c8f27428ab5ac76
-    admin.dashboard.charts.asset-activity.mint: ca8a196f97a48b2bb489f3e849a68418
-    admin.dashboard.charts.asset-activity.transfer: 6950810f0d2bba97a6f710c7b965b84e
-    admin.dashboard.charts.asset-activity.burn: 11635778f116ce6922f6068638a39028
-    admin.dashboard.charts.asset-activity.title: 0af652d4c797a0c6b75cff690129f572
-    admin.dashboard.charts.asset-activity.description: 0af652d4c797a0c6b75cff690129f572
-    admin.dashboard.page.title: 2938c7f7e560ed972f8a4f68e80ff834
+    admin.dashboard.charts.transaction-history.description: ed431c9f4d10a2ead0eb3643f5e33f33
+    admin.dashboard.charts.transaction-history.label: 31112aca11d0e9e6eb7db96f317dda49
+    admin.dashboard.charts.transaction-history.title: ed431c9f4d10a2ead0eb3643f5e33f33
+    admin.dashboard.charts.users-history.description: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
+    admin.dashboard.charts.users-history.title: 44fb29646871b901dd1d53849d62a43e
+    admin.dashboard.page.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.dashboard.page.description: 0205b0dd64032285b929ef0dd5c6ac11
-    admin.dashboard.page.stats-heading: 452a7601dbc6f2c38aa89e68bda8b603
     admin.dashboard.page.latest-events-heading: 8b0807a79d36ca9fece2ab62e26bdd9f
+    admin.dashboard.page.my-portfolio: 654b240dd044565e9ba2ff98858003c3
+    admin.dashboard.page.stats-heading: 452a7601dbc6f2c38aa89e68bda8b603
+    admin.dashboard.page.title: 2938c7f7e560ed972f8a4f68e80ff834
     admin.dashboard.table.latest-events.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.dashboard.widgets.assets.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.widgets.assets.subtext: d982ec82265596eb2db78fcfcb180bf8
@@ -739,6 +744,7 @@ files:
     admin.equities.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.equities.table.active-status: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.equities.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.equities.table.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.equities.table.category-blend-equity: 0eaaa36b984c9773310dcc172a531c1f
     admin.equities.table.category-communication-services: fe647a13f093fce98ed8ba1340f63b18
     admin.equities.table.category-consumer-discretionary: 042cabbd998bc59d3c57fcf290fb0a2b
@@ -1107,6 +1113,7 @@ files:
     admin.funds.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.funds.table.active-status: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.funds.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.funds.table.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.funds.table.assets-under-management-header: f15183c5a6be743d77dba87b74d6bcc0
     admin.funds.table.category-activist: a8fd83594a106729f90966e72f37c4c3
     admin.funds.table.category-commodity-trading: 4731655fefba80ad83e2e58d6b1ea475
@@ -1184,12 +1191,15 @@ files:
     admin.funds.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
     admin.funds.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
     admin.funds.tabs.underlying-assets: 513b5e27362967b94ab332c4f3790a4f
+    admin.platform.settings.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
     admin.sidebar.asset-designer: aaafe0ea551fc6b5888b36c5ffc9961a
+    admin.sidebar.asset-management.asset-activity: 0af652d4c797a0c6b75cff690129f572
     admin.sidebar.asset-management.bonds: b98e3a37b62f7207c8a0a27e0c0d8777
     admin.sidebar.asset-management.cryptocurrencies: 69ab3e648e5586bd2a099fc9b21b7440
+    admin.sidebar.asset-management.dashboard: 2938c7f7e560ed972f8a4f68e80ff834
     admin.sidebar.asset-management.equities: f38992a52cef8611666b2db431b493a6
     admin.sidebar.asset-management.funds: d42b2bb7ac17fc34a099909c0a2f1de9
-    admin.sidebar.asset-management.group-title: 1e1a97e508b3d959b9fc916092948c35
+    admin.sidebar.asset-management.group-title: 177512b9add0b40c38dad61838bf7d79
     admin.sidebar.asset-management.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
     admin.sidebar.asset-management.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.sidebar.asset-types.bond: 7a3b691731db2969498907b960183633
@@ -1197,6 +1207,13 @@ files:
     admin.sidebar.asset-types.equity: d9df825203724a2f3412de3fc7a7a2be
     admin.sidebar.asset-types.fund: c1098dd48f0fb20eeea79235055d02ca
     admin.sidebar.asset-types.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
+    admin.sidebar.platform-management.group-title: bf6ba0d41ffdc7a03e03f87c569e0c3a
+    admin.sidebar.platform-management.settings: f4f70727dc34561dfde1a3c529b6205c
+    admin.sidebar.platform-management.user-management: dd73732ca9c03f026b85fa08e24b4f98
+    admin.sidebar.portfolio-management.dashboard: 2938c7f7e560ed972f8a4f68e80ff834
+    admin.sidebar.portfolio-management.group-title: 654b240dd044565e9ba2ff98858003c3
+    admin.sidebar.portfolio-management.my-activity: c9ddda1b1f76481bd82fa329a6ad4bc8
+    admin.sidebar.portfolio-management.my-assets: c13bec88b2b106c9a25dc6c64c2eb243
     admin.stablecoins.burn-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     admin.stablecoins.burn-form.amount.available-balance: 1ffc1c904a2ff558869bfbbb0189f568
     admin.stablecoins.burn-form.amount.description: 7b2bdac16ef466f0c8ed0881e2a5a68b
@@ -1410,6 +1427,7 @@ files:
     admin.stablecoins.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.stablecoins.table.active-status: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.stablecoins.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.stablecoins.table.asset-management: 177512b9add0b40c38dad61838bf7d79
     admin.stablecoins.table.committed-collateral-header: 7b561d2b6c4a5642db35332822d170a8
     admin.stablecoins.table.name-header: 49ee3087348e8d44e1feda1917443987
     admin.stablecoins.table.page-description: 14b1a69fc7f3d2f9ce42a9e58f4fbb94
@@ -1469,6 +1487,7 @@ files:
     admin.users.detail.fields.transactions: 31112aca11d0e9e6eb7db96f317dda49
     admin.users.detail.fields.verified_at: f3b51254827bd09f30accc598f65d682
     admin.users.detail.fields.wallet: 156e132b014314b1eae89410e54bcc8c
+    admin.users.detail.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
     admin.users.detail.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
     admin.users.detail.tabs.holdings: 063215beb567e666b3c937ae83163e92
     admin.users.detail.tabs.last_transactions: 456045e7ea5b0df398bdfa3cd8983c75
@@ -1489,12 +1508,14 @@ files:
     admin.users.kyc_status.verified: 3f68e67dc6c397aaa9d1c24c356f754f
     admin.users.page-description: 479491b080e378ec92640f51b23616fb
     admin.users.page-title: f9aae5fda8d810a29f12d1e61b4ab25f
+    admin.users.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
     admin.users.roles.admin: e3afed0047b08059d0fada10f400c1e5
     admin.users.roles.issuer: 51360304ea03557e79bdf5ff9cd2e234
     admin.users.roles.user: 8f9bfe9d1345237cb3b2b205864da075
     admin.users.status.active: 4d3d769b812b6faa6b76e1a8abaece2d
     admin.users.status.banned: a6f2b2df29609876b609c318bdbdf9a1
     admin.users.title: f9aae5fda8d810a29f12d1e61b4ab25f
+    asset-management: 177512b9add0b40c38dad61838bf7d79
     auth.account: 08bd40c7543007ad06e4fce31618f6ec
     auth.add-account: 1f78ae0500c549603a85262981982518
     auth.already-have-account: 21bdc5689c12595ae14298354d5550d5
@@ -1510,18 +1531,18 @@ files:
     auth.current-session: c620aba920847791d92fee85fd52208d
     auth.delete-account: bee04ef1315b3f9562be34e2e28a7831
     auth.delete-account-description: 98499cdd327a7477f65d822e085d696b
-    auth.delete-account-instructions: 1d5dfb6d7fbffd533fd1c3f028e58e34
     auth.delete-account-email: 644b3ef8c4e09c9a409d7c987850d272
-    auth.delete-account-success: cdac6e038678e7fde876bb5b4b06c116
+    auth.delete-account-instructions: 1d5dfb6d7fbffd533fd1c3f028e58e34
     auth.delete-account-not-fresh: 0e11bc62594319513432d0802a2ea5e2
+    auth.delete-account-success: cdac6e038678e7fde876bb5b4b06c116
     auth.disabled-credentials-description: 9d9fb655d2415c410742929bf5148fc9
     auth.dont-have-account: a5f61298da21626d0f490ebd06ecd811
     auth.email: ce8ae9da5b7cd6c3df2929543a9af92d
     auth.email-description: adb752af25dfcb4f350a2432b2ba78e1
     auth.email-instructions: 8f5e0f5301f9c2aa765ebc8a142f9dbc
     auth.email-placeholder: 0bc74af958460034621b0b7257bc178b
-    auth.email-verify-change: 754d1630d4db197e64cff8740689f942
     auth.email-verification: ae3bf409b7047299d860de058118f8e4
+    auth.email-verify-change: 754d1630d4db197e64cff8740689f942
     auth.failed-to-validate: fa7c2c1185ef4b841e4eb5118b5bf522
     auth.forgot-password: 9ec54ec336b65da6179cf750de33ecd7
     auth.forgot-password-action: 733ae3eecadd5777cea5ce9a32379d7a
@@ -1544,10 +1565,14 @@ files:
     auth.password-description: d33329ec0c775d62b858bf4db5084a69
     auth.password-instructions: 9314a77b365ea98c193a7e7537d27c16
     auth.password-placeholder: e8d28194f9b3498d21fbda21321d0226
-    auth.providers: ebb4c7315a13fbb6d59f702992052318
-    auth.providers-description: bce05168fd5bab0f0cb80dfd2293dfe8
+    auth.pincode-form.name-label: c2d3a824b74ba6b9d459542106ea5e81
+    auth.pincode-form.pincode-label: b24b02b4891848b998020073afa52d9c
+    auth.pincode-form.setting-up: 7f1650ee875e9a88e5b2c0899dbca37d
+    auth.pincode-form.submit: afbf8375e2309f2a64e18911ffa9fd98
     auth.provider-link-success: eda8c1cee8b710eeff65c10574bd108a
     auth.provider-unlink-success: 4f8c335dcb86a03f3f04d6c2a7b50645
+    auth.providers: ebb4c7315a13fbb6d59f702992052318
+    auth.providers-description: bce05168fd5bab0f0cb80dfd2293dfe8
     auth.providers-loading-error: 1d6f0554e732b9999daa0184d3fb9be0
     auth.remember-me: 878530871f0db73f004f5bd6591eeb76
     auth.reset-password: 6072e83b7f35887c76e64920bd370f4a
@@ -1556,6 +1581,13 @@ files:
     auth.reset-password-invalid-token: f5b8fcf8e7d16873a6f43796b6c619f5
     auth.reset-password-success: b086e39450cc1801a75d6eb86f9642b8
     auth.revoke: 21313f76b111bc0df501bf89fc96ba46
+    auth.save: c9cc8cce247e49bae79f15173ce97354
+    auth.sessions: a9c4b6c9fbd990849d1f128dfc4ed3e7
+    auth.sessions-description: 84d33a513406e51ce0be6f7046b0705a
+    auth.set-password: af214972865d03cc4eb63ed9f0b75554
+    auth.set-password-description: c1914344a145a09324886746adb6ef4d
+    auth.set-password-email-sent: c1914344a145a09324886746adb6ef4d
+    auth.settings: f4f70727dc34561dfde1a3c529b6205c
     auth.sign-in: f2fdea440d768b85591e936a803c3631
     auth.sign-in-action: 99dea78007133396a7b8ed70578ac6ae
     auth.sign-in-description: dffc023a39b961ea424d84bfcaa35ecf
@@ -1566,19 +1598,6 @@ files:
     auth.sign-up-action: 2fdfd506efea08144c0794c32ca8250a
     auth.sign-up-description: 59662631c17b489090002ce3cc7221f3
     auth.sign-up-email: 1bfdea4b3c28f272245b479442b6c21e
-    auth.sessions: a9c4b6c9fbd990849d1f128dfc4ed3e7
-    auth.sessions-description: 84d33a513406e51ce0be6f7046b0705a
-    auth.set-password: af214972865d03cc4eb63ed9f0b75554
-    auth.set-password-description: c1914344a145a09324886746adb6ef4d
-    auth.set-password-email-sent: c1914344a145a09324886746adb6ef4d
-    auth.settings: f4f70727dc34561dfde1a3c529b6205c
-    auth.save: c9cc8cce247e49bae79f15173ce97354
-    auth.unlink: c1a39b6a60f8b2f87e23d60ab649d994
-    auth.username: f6039d44b29456b20f8f373155ae4973
-    auth.username-description: 0c88986397d088646f31cc5c728070e6
-    auth.username-instructions: 1d9872bc27d142b25b907943cf7a0675
-    auth.username-placeholder: 4c2a904bafba06591225113ad17b5cec
-    auth.username-sign-in-placeholder: c8b1d00cf350d4af96cd763852d9c520
     auth.signin.description: dffc023a39b961ea424d84bfcaa35ecf
     auth.signin.email.label: ce8ae9da5b7cd6c3df2929543a9af92d
     auth.signin.email.placeholder: 0bc74af958460034621b0b7257bc178b
@@ -1606,18 +1625,20 @@ files:
     auth.signup.title: 2fdfd506efea08144c0794c32ca8250a
     auth.signup.wallet-pin.label: 7f1fab2d71015f5b0d72306593058b9a
     auth.signup.wallet-pin-confirm.label: 431fa740b6ab5034cd82d2bcfe916206
+    auth.unlink: c1a39b6a60f8b2f87e23d60ab649d994
+    auth.username: f6039d44b29456b20f8f373155ae4973
+    auth.username-description: 0c88986397d088646f31cc5c728070e6
+    auth.username-instructions: 1d9872bc27d142b25b907943cf7a0675
+    auth.username-placeholder: 4c2a904bafba06591225113ad17b5cec
+    auth.username-sign-in-placeholder: c8b1d00cf350d4af96cd763852d9c520
+    auth.wallet-security.pincode-instruction: 1835fd81901c702bdfe2f09ec8e37cbd
+    auth.wallet-security.pincode-set: a5c7192ea095028d2c5958503263f57c
+    auth.wallet-security.setup-pincode: afbf8375e2309f2a64e18911ffa9fd98
+    auth.wallet-security.verification-description: 6d416e6359291fc4163564cd91f20a66
+    auth.wallet-security.verification-required: 701f8281f0bad533563d46c082fa45f2
     auth.wrong-role.description: 71e3a48127b41103924a109e915bd5dc
     auth.wrong-role.go-to-portfolio: 2e62ec9b6c3c559c8a430439b71dc1bb
     auth.wrong-role.title: d5591d98b2f74d48205cfba7803045cf
-    auth.wallet-security.verification-required: 701f8281f0bad533563d46c082fa45f2
-    auth.wallet-security.verification-description: 6d416e6359291fc4163564cd91f20a66
-    auth.wallet-security.setup-pincode: afbf8375e2309f2a64e18911ffa9fd98
-    auth.wallet-security.pincode-instruction: 1835fd81901c702bdfe2f09ec8e37cbd
-    auth.wallet-security.pincode-set: a5c7192ea095028d2c5958503263f57c
-    auth.pincode-form.name-label: c2d3a824b74ba6b9d459542106ea5e81
-    auth.pincode-form.pincode-label: b24b02b4891848b998020073afa52d9c
-    auth.pincode-form.setting-up: 7f1650ee875e9a88e5b2c0899dbca37d
-    auth.pincode-form.submit: afbf8375e2309f2a64e18911ffa9fd98
     components.active-pill.active: 4d3d769b812b6faa6b76e1a8abaece2d
     components.active-pill.paused: e99180abf47a8b3a856e0bcb2656990a
     components.address-avatar.avatar: 32036005d1f6ed59803ba3e13c80993e
@@ -1716,10 +1737,10 @@ files:
     components.form.button.send-transaction: 5882456ac7d6cb3b72ebb749ea2ae795
     components.form.button.sending-transaction: 838f5dfdf348bac768f078b5eab87211
     components.form.input.letters-only: 3018601c9aef68d0a7338681c25a8dc6
-    components.form.input.valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
     components.form.input.password-min-length: 9da13f69c73b4142f65417777996e658
-    components.form.input.pin-code-match: e32be2f902a7704ce34defa42d7cc2b0
     components.form.input.pin-code-length: fedcd7c1d5f6887e66c9eb0d89adac89
+    components.form.input.pin-code-match: e32be2f902a7704ce34defa42d7cc2b0
+    components.form.input.valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
     components.form.progress.completed-step: 11da564a254921897afcf5f9f1082860
     components.form.progress.current-step: efd1e491da96a6b4c7e3e2363b06bcc3
     components.form.progress.step-of-total: 5dd5b5cd70ce1c14f436a43f0329ec17
@@ -1755,12 +1776,18 @@ files:
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
     portfolio.activity.page-description: bd7b3322b15dd585fb1b8a886fbb608c
     portfolio.activity.page-title: ecfc2dffe568c10a67dbc6d3724cfde2
+    portfolio.activity.portfolio-management: 6c5ab982f3620a6b2ff8dfc4b0f7e342
     portfolio.asset-types.bond: 7a3b691731db2969498907b960183633
     portfolio.asset-types.cryptocurrency: 4c11904ee0b793fc10046d533cae723e
     portfolio.asset-types.equity: d9df825203724a2f3412de3fc7a7a2be
     portfolio.asset-types.fund: c1098dd48f0fb20eeea79235055d02ca
     portfolio.asset-types.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
     portfolio.asset-types.unknown: 88183b946cc5f0e8c96b2e66e1c74a7e
+    portfolio.my-assets.description: 50d864b6c3f2b1f8fe74e7b6c901e73a
+    portfolio.my-assets.portfolio-management: 6c5ab982f3620a6b2ff8dfc4b0f7e342
+    portfolio.my-assets.title: 73fe13baa319e5c115fdc62077f0e1ec
+    portfolio.settings.profile.portfolio-management: 6c5ab982f3620a6b2ff8dfc4b0f7e342
+    portfolio.settings.profile.title: cce99c598cfdb9773ab041d54c3d973a
     portfolio.transfer-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
     portfolio.transfer-form.amount.balance-description: b5397350cbd6dcc4fe899771c728f5d1
     portfolio.transfer-form.amount.description: f709fb248375fb743e5ce32bef8d4ff3
@@ -1777,8 +1804,6 @@ files:
     portfolio.transfer-form.summary.title: 9a70d04b8aa584ec566fb222399890cc
     portfolio.transfer-form.transfer: 6950810f0d2bba97a6f710c7b965b84e
     portfolio.transfer-form.transferring: 7dcd22b96a9090c921e232ddf9252381
-    portfolio.my-assets.title: 73fe13baa319e5c115fdc62077f0e1ec
-    portfolio.my-assets.description: 50d864b6c3f2b1f8fe74e7b6c901e73a
     theme.dark: a18366b217ebf811ad1886e4f4f865b2
     theme.light: 9914a0ce04a7b7b6a8e39bec55064b82
     theme.switch-to-mode: 66a8b43baa23b85e40869726ded57e76

@@ -12,7 +12,7 @@ interface AssetTypeIconProps {
 
 export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
   const t = useTranslations("components.asset-type-icon");
-  const sizeClass = size === "sm" ? "size-5" : "size-6";
+  const sizeClass = size === "sm" ? "size-4" : "size-6";
 
   function getAssetInitials(
     type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"

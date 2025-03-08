@@ -142,7 +142,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
         },
         secondary: {
           text: "Issuer Portal",
-          href: "/admin",
+          href: "/assets",
         },
         tertiary: {
           text: "Documentation",

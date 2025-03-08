@@ -119,7 +119,7 @@ export async function waitForTransactions(
   revalidateTag("asset");
   revalidateTag("user-activity");
   // Now revalidate paths after clearing cache
-  revalidatePath("/[locale]/admin", "layout");
+  revalidatePath("/[locale]/assets", "layout");
   revalidatePath("/[locale]/portfolio", "layout");
 
   return response;
