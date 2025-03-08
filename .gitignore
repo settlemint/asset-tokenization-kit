@@ -40,3 +40,4 @@ yarn-error.log*
 .npmrc
 .idea
 .specstory
+bun.lockb

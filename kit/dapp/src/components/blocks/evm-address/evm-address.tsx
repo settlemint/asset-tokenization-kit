@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "@/i18n/routing";
 import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
+import type { Asset } from "@/lib/queries/asset/asset-fragment";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { User } from "@/lib/queries/user/user-fragment";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
 import {
@@ -76,12 +78,8 @@ export function EvmAddress({
   copyToClipboard = false,
 }: EvmAddressProps) {
   // State for user and asset data
-  const [user, setUser] = useState<
-    Awaited<ReturnType<typeof getUserSearch>>[number] | null
-  >();
-  const [asset, setAsset] = useState<
-    Awaited<ReturnType<typeof getAssetSearch>>[number] | null
-  >();
+  const [user, setUser] = useState<User | null>(null);
+  const [asset, setAsset] = useState<Asset | null>(null);
 
   // Effect to fetch user and asset data
   useEffect(() => {

@@ -1,9 +1,84 @@
 ---
-description: Best practices for React development
-globs: *.ts,*.tsx
+description: Coding Standards & Rules for React 19
+globs: **/*.tsx, **/*.jsx, **/*.ts, **/*.js
 alwaysApply: false
 ---
-- Use functional components with hooks instead of class components.
-- Implement proper state management using `useState` and `useReducer`.
-- Utilize `useCallback` and `useMemo` for performance optimization.
-- Implement error boundaries with `react-error-boundary`.
+You are a senior React 19 developer with extensive expertise in modern React development, TypeScript, and web development best practices for 2025. Follow these optimized coding standards for all React 19 development to ensure optimized and maintainable applications.
+
+Component Architecture
+- Leverage Server Components for data fetching and heavy computations. Example: `app/users/page.tsx` should fetch user data directly in the Server Component.
+- Use Client Components only when needed for interactivity or browser APIs. Example: `'use client'` directive only in components that need event handlers or state.
+- Implement proper component boundaries between Server and Client Components to optimize performance.
+
+React 19 Specific Features
+- Use the new use hook for promise handling in Server Components. Example: `const data = use(fetch('api/data'))`.
+- Implement useFormStatus and useFormState for enhanced form handling. Example: `const { pending } = useFormStatus()`.
+- Leverage useOptimistic for immediate UI updates. Example: `const [optimisticLikes, addOptimisticLike] = useOptimistic(likes)`.
+
+State Management and Data Fetching
+- Use Server Components with async/await for initial data fetching.
+- Implement React Query or SWR for client-side data management. Example:
+```tsx
+const { data, isLoading } = useQuery({
+  queryKey: ['todos'],
+  queryFn: fetchTodos
+})
+```
+- Use Context selectively for global state, prefer Server Components for static data.
+
+Performance Optimization
+- Let React 19 Compiler handle most optimizations automatically.
+- Use React.memo only for expensive computations that the compiler cannot optimize.
+- Implement proper code splitting with dynamic imports for large feature sets.
+
+TypeScript Integration
+- Use TypeScript for all components and maintain strict type checking.
+- Define proper interfaces for props and state. Example:
+```tsx
+interface UserCardProps {
+  user: {
+    id: string
+    name: string
+    email: string
+  }
+  onUpdate: (id: string) => Promise<void>
+}
+```
+
+SEO Optimization
+- Use metadata objects in Server Components for dynamic SEO. Example:
+```tsx
+export const metadata = {
+  title: 'Dynamic Page Title',
+  description: 'Dynamic page description'
+}
+```
+- Implement proper semantic HTML structure in components.
+- Use structured data with JSON-LD for rich search results.
+
+Project Structure
+- Organize by features rather than technical concerns.
+- Keep related files close to their components.
+
+Testing Best Practices
+- Use React Testing Library with TypeScript for component testing.
+- Test Server Components separately from Client Components.
+- Example test:
+```tsx
+test('UserProfile renders user data', async () => {
+  render(<UserProfile user={mockUser} />)
+  expect(await screen.findByText(mockUser.name)).toBeInTheDocument()
+})
+```
+
+Dos
+- Use TypeScript for all new components and features.
+- Implement proper error boundaries for fallback UIs.
+- Follow React 19's new Server/Client Component patterns.
+- Use proper semantic HTML elements for accessibility.
+
+Donts
+- Avoid mixing Server and Client Component logic.
+- Never expose sensitive data in Client Components.
+- Avoid premature optimization when React 19 Compiler can handle it.
+- Do not use class components for new features.

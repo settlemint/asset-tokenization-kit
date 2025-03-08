@@ -1,8 +1,5 @@
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress, type Address } from "viem";
@@ -16,7 +13,7 @@ import {
 /**
  * GraphQL query to fetch on-chain bond details from The Graph
  */
-const BondDetail = theGraphGraphqlStarterkits(
+const BondDetail = theGraphGraphql(
   `
   query BondDetail($id: ID!) {
     bond(id: $id) {
@@ -60,7 +57,7 @@ export const getBondDetail = cache(async ({ address }: BondDetailProps) => {
   const normalizedAddress = getAddress(address);
 
   const [data, dbBond] = await Promise.all([
-    theGraphClientStarterkits.request(BondDetail, { id: address }),
+    theGraphClient.request(BondDetail, { id: address }),
     hasuraClient.request(OffchainBondDetail, { id: normalizedAddress }),
   ]);
 
