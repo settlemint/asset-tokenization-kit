@@ -3,6 +3,8 @@ import { getUser } from "@/lib/auth/utils";
 import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -27,26 +29,40 @@ const CreateStablecoinPredictAddress = portalGraphql(`
   }
 `);
 
-export const getPredictedAddress = async (data: CreateStablecoinInput) => {
-  const { assetName, symbol, decimals, collateralLivenessSeconds } = data;
-  const user = await getUser("en");
+const PredictedAddressSchema = z.object({
+  StableCoinFactory: z.object({
+    predictAddress: z.object({
+      predicted: z.address(),
+    }),
+  }),
+});
 
-  const predictedAddress = await portalClient.request(
-    CreateStablecoinPredictAddress,
-    {
+/**
+ * Predicts the address of a new stablecoin
+ *
+ * @param input - The data for creating a new stablecoin
+ * @returns The predicted address of the new stablecoin
+ */
+export const getPredictedAddress = cache(
+  async (input: CreateStablecoinInput) => {
+    const { assetName, symbol, decimals, collateralLivenessSeconds } = input;
+    const user = await getUser();
+
+    const data = await portalClient.request(CreateStablecoinPredictAddress, {
       address: STABLE_COIN_FACTORY_ADDRESS,
-      sender: user.wallet,
+      sender: user.wallet as Address,
       decimals,
       collateralLivenessSeconds,
       name: assetName,
       symbol,
-    }
-  );
+    });
 
-  const address = predictedAddress.StableCoinFactory?.predictAddress?.predicted;
-  if (!address) {
-    throw new Error("Failed to predict the address");
+    const predictedAddress = safeParseWithLogging(
+      PredictedAddressSchema,
+      data,
+      "stablecoin"
+    );
+
+    return predictedAddress.StableCoinFactory.predictAddress.predicted;
   }
-
-  return address as Address;
-};
+);

@@ -3,6 +3,8 @@ import { getUser } from "@/lib/auth/utils";
 import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -29,7 +31,21 @@ const CreateFundPredictAddress = portalGraphql(`
   }
 `);
 
-export const getPredictedAddress = async (data: CreateFundInput) => {
+const PredictedAddressSchema = z.object({
+  FundFactory: z.object({
+    predictAddress: z.object({
+      predicted: z.address(),
+    }),
+  }),
+});
+
+/**
+ * Predicts the address of a new fund
+ *
+ * @param input - The data for creating a new fund
+ * @returns The predicted address of the new fund
+ */
+export const getPredictedAddress = cache(async (input: CreateFundInput) => {
   const {
     assetName,
     symbol,
@@ -37,28 +53,26 @@ export const getPredictedAddress = async (data: CreateFundInput) => {
     fundCategory,
     fundClass,
     managementFeeBps,
-  } = data;
+  } = input;
 
-  const user = await getUser("en");
+  const user = await getUser();
 
-  const predictedAddress = await portalClient.request(
-    CreateFundPredictAddress,
-    {
-      address: FUND_FACTORY_ADDRESS,
-      sender: user.wallet,
-      decimals,
-      name: assetName,
-      symbol,
-      fundCategory,
-      fundClass,
-      managementFeeBps,
-    }
+  const data = await portalClient.request(CreateFundPredictAddress, {
+    address: FUND_FACTORY_ADDRESS,
+    sender: user.wallet as Address,
+    decimals,
+    name: assetName,
+    symbol,
+    fundCategory,
+    fundClass,
+    managementFeeBps,
+  });
+
+  const predictedAddress = safeParseWithLogging(
+    PredictedAddressSchema,
+    data,
+    "fund"
   );
 
-  const address = predictedAddress.FundFactory?.predictAddress?.predicted;
-  if (!address) {
-    throw new Error("Failed to predict the address");
-  }
-
-  return address as Address;
-};
+  return predictedAddress.FundFactory.predictAddress.predicted;
+});
