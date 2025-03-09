@@ -37,6 +37,5 @@ export const isAddressAvailable = cache(async (address: Address) => {
     data,
     "bond factory"
   );
-  console.log({ isAddressDeployed });
   return !isAddressDeployed.BondFactory.isAddressDeployed;
 });
