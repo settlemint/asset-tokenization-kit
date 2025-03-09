@@ -3,7 +3,7 @@ import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
@@ -13,13 +13,13 @@ import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
-  const { control, formState } = useFormContext<CreateCryptoCurrencyInput>();
+  const { control } = useFormContext<CreateCryptoCurrencyInput>();
   const values = useWatch({
     control: control,
   });
   const t = useTranslations("admin.cryptocurrencies.create-form.summary");
 
-  const { isCalculating, error } = usePredictedAddress({
+  const { isCalculatingAddress, error } = usePredictedAddress({
     calculateAddress: getPredictedAddress,
     fieldName: "predictedAddress",
   });
@@ -43,11 +43,6 @@ export function Summary() {
           label={t("decimals-label")}
           value={values.decimals}
         />
-        {formState.errors.predictedAddress && (
-          <div className="text-red-400 text-sm">
-            {formState.errors.predictedAddress.message}
-          </div>
-        )}
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard
@@ -61,17 +56,11 @@ export function Summary() {
         />
       </FormSummaryDetailCard>
 
-      {isCalculating ? (
+      {isCalculatingAddress ? (
         <Skeleton className="h-32 w-full" />
       ) : error ? (
         <Alert variant="destructive">
-          <AlertTitle>
-            A Cryptocurrency with the same details already exists.
-          </AlertTitle>
-          <AlertDescription>
-            A Cryptocurrency with the same details already exists. Please try
-            again with at least one different parameter.
-          </AlertDescription>
+          <AlertDescription>{t("error-duplicate")}</AlertDescription>
         </Alert>
       ) : (
         <FormSummarySecurityConfirmation>

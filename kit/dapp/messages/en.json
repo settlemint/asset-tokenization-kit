@@ -413,7 +413,8 @@
           "private-label": "Private",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "yes": "Yes"
+          "yes": "Yes",
+          "error-duplicate": "A Cryptocurrency with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create Cryptocurrency",
         "trigger-label": "Issue a new cryptocurrency"

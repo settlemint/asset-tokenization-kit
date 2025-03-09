@@ -15,14 +15,20 @@ export function usePredictedAddress<T extends FieldValues>({
   calculateAddress,
   fieldName,
 }: UsePredictedAddressProps<T>) {
-  const [isCalculating, setIsCalculating] = useState(false);
-  const { setValue, setError, getValues, getFieldState } = useFormContext<T>();
+  const [isCalculatingAddress, setIsCalculatingAddress] = useState(false);
+  const {
+    setValue,
+    setError,
+    getValues,
+    getFieldState,
+    formState: { isValidating },
+  } = useFormContext<T>();
   const values = getValues();
   const fieldState = getFieldState(fieldName);
 
   useEffect(() => {
     const calculate = async () => {
-      setIsCalculating(true);
+      setIsCalculatingAddress(true);
       try {
         const predictedAddress = await calculateAddress(values);
         setValue(fieldName, predictedAddress as PathValue<T, Path<T>>, {
@@ -33,7 +39,7 @@ export function usePredictedAddress<T extends FieldValues>({
           message: "Failed to calculate predicted address",
         });
       } finally {
-        setIsCalculating(false);
+        setIsCalculatingAddress(false);
       }
     };
 
@@ -42,7 +48,7 @@ export function usePredictedAddress<T extends FieldValues>({
   }, []);
 
   return {
-    isCalculating,
+    isCalculatingAddress: isCalculatingAddress || isValidating,
     error: fieldState.error?.message,
   };
 }
