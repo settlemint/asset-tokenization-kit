@@ -26,7 +26,7 @@ const IsAddressDeployedSchema = z.object({
   }),
 });
 
-export const isAddressDeployed = cache(async (address: Address) => {
+export const isAddressAvailable = cache(async (address: Address) => {
   const data = await portalClient.request(IsAddressDeployed, {
     address: BOND_FACTORY_ADDRESS,
     token: address,
@@ -37,6 +37,6 @@ export const isAddressDeployed = cache(async (address: Address) => {
     data,
     "bond factory"
   );
-
-  return isAddressDeployed.BondFactory.isAddressDeployed;
+  console.log({ isAddressDeployed });
+  return !isAddressDeployed.BondFactory.isAddressDeployed;
 });

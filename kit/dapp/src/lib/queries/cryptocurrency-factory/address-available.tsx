@@ -3,7 +3,6 @@
 import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -26,7 +25,7 @@ const IsAddressDeployedSchema = z.object({
   }),
 });
 
-export const isAddressDeployed = cache(async (address: Address) => {
+export const isAddressAvailable = async (address: Address) => {
   const data = await portalClient.request(IsAddressDeployed, {
     address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
     token: address,
@@ -38,5 +37,5 @@ export const isAddressDeployed = cache(async (address: Address) => {
     "cryptocurrency factory"
   );
 
-  return isAddressDeployed.CryptoCurrencyFactory.isAddressDeployed;
-});
+  return !isAddressDeployed.CryptoCurrencyFactory.isAddressDeployed;
+};

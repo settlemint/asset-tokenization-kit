@@ -26,7 +26,7 @@ const IsAddressDeployedSchema = z.object({
   }),
 });
 
-export const isAddressDeployed = cache(async (address: Address) => {
+export const isAddressAvailable = cache(async (address: Address) => {
   const data = await portalClient.request(IsAddressDeployed, {
     address: FUND_FACTORY_ADDRESS,
     token: address,
@@ -38,5 +38,5 @@ export const isAddressDeployed = cache(async (address: Address) => {
     "fund factory"
   );
 
-  return isAddressDeployed.FundFactory.isAddressDeployed;
+  return !isAddressDeployed.FundFactory.isAddressDeployed;
 });

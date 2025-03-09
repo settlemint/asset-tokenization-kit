@@ -1,4 +1,4 @@
-import { isAddressDeployed } from "@/lib/queries/cryptocurrency-factory/address-deployed";
+import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -21,16 +21,7 @@ export const CreateCryptoCurrencySchema = z.object({
     .number()
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
-  predictedAddress: z.address().refine(
-    async (address) => {
-      const isDeployed = await isAddressDeployed(address);
-      return !isDeployed;
-    },
-    {
-      message:
-        "A cryptocurrency with these details already exists. Please change at least one of the values.",
-    }
-  ),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateCryptoCurrencyInput = ZodInfer<
