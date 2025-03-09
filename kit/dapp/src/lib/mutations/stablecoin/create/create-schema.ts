@@ -20,6 +20,7 @@ export const CreateStablecoinSchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().min(0)),
   pincode: z.pincode(),
+  predictedAddress: z.address(),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

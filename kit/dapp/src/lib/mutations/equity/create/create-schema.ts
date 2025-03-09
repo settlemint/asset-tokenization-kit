@@ -19,6 +19,7 @@ export const CreateEquitySchema = z.object({
   pincode: z.pincode(),
   equityCategory: z.string().nonempty(),
   equityClass: z.string().nonempty(),
+  predictedAddress: z.address(),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;
