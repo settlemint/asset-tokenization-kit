@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/use-debounce";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
@@ -38,7 +38,7 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     onSelect?: (asset: Asset) => void;
   };
 
-type Asset = MyAsset["asset"] & {
+type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
 
@@ -132,7 +132,7 @@ function FormUsersList({
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
-  onSelect: (asset: MyAsset) => void;
+  onSelect: (asset: UserAsset) => void;
 }) {
   const search = (useCommandState((state) => state.search) || "") as string;
   const debounced = useDebounce<string>(search, 250);
@@ -178,7 +178,7 @@ function FormUsersList({
 
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
-    (currentValue: string, asset: MyAsset) => {
+    (currentValue: string, asset: UserAsset) => {
       if (onSelect) {
         onSelect(asset);
       }
@@ -226,7 +226,7 @@ function FormUsersList({
           asset={asset}
           value={value}
           onSelect={(currentValue) =>
-            handleSelect(currentValue, asset as unknown as MyAsset)
+            handleSelect(currentValue, asset as unknown as UserAsset)
           }
         />
       )),
