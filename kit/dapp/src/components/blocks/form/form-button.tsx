@@ -28,6 +28,7 @@ interface FormButtonProps {
   /** Handler for navigating to the last step */
   onLastStep?: () => void;
   labels?: ButtonLabels;
+  hideButtons?: boolean;
 }
 
 /**
@@ -45,13 +46,16 @@ export function FormButton({
     submittingLabel: undefined,
     processingLabel: undefined,
   },
+  hideButtons = false,
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
   const t = useTranslations("components.form.button");
-
+  if (hideButtons) {
+    return null;
+  }
   const defaultLabels = {
     label: t("send-transaction"),
     submittingLabel: t("sending-transaction"),

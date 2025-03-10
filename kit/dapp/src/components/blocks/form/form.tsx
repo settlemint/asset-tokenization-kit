@@ -189,27 +189,26 @@ export function Form<
               )}
             </div>
             <div className="mt-auto pt-6">
-              {!hideButtons && (
-                <FormButton
-                  currentStep={currentStep}
-                  totalSteps={totalSteps}
-                  onPreviousStep={handlePrev}
-                  onNextStep={() => {
-                    handleNext().catch((error: Error) => {
-                      console.error("Error in handleNext:", error);
-                    });
-                  }}
-                  labels={buttonLabels}
-                  onLastStep={
-                    secureForm
-                      ? () => {
-                          void handleNext();
-                          setShowFormSecurityConfirmation(true);
-                        }
-                      : undefined
-                  }
-                />
-              )}
+              <FormButton
+                hideButtons={hideButtons}
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                onPreviousStep={handlePrev}
+                onNextStep={() => {
+                  handleNext().catch((error: Error) => {
+                    console.error("Error in handleNext:", error);
+                  });
+                }}
+                labels={buttonLabels}
+                onLastStep={
+                  secureForm
+                    ? () => {
+                        void handleNext();
+                        setShowFormSecurityConfirmation(true);
+                      }
+                    : undefined
+                }
+              />
             </div>
           </form>
         </UIForm>
