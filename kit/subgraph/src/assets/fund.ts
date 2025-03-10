@@ -43,6 +43,7 @@ import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchFund } from "./fetch/fund";
 import { newAssetStatsData } from "./stats/assets";
@@ -569,6 +570,10 @@ export function handlePaused(event: Paused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
+  const assetCount = fetchAssetCount(AssetType.fund);
+  assetCount.countActive = assetCount.countActive - 1;
+  assetCount.save();
+
   const holders = fund.holders.load();
   holders.forEach((assetBalance) => {
     if (hasBalance(fund.id, assetBalance.account)) {
@@ -610,6 +615,10 @@ export function handleUnpaused(event: Unpaused): void {
   fund.paused = false;
   fund.lastActivity = event.block.timestamp;
   fund.save();
+
+  const assetCount = fetchAssetCount(AssetType.fund);
+  assetCount.countActive = assetCount.countActive + 1;
+  assetCount.save();
 
   const holders = fund.holders.load();
   holders.forEach((assetBalance) => {

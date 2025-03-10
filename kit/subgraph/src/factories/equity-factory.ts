@@ -18,20 +18,21 @@ export function handleEquityCreated(event: EquityCreated): void {
 
   const assetCount = fetchAssetCount(AssetType.equity);
   assetCount.count = assetCount.count + 1;
+  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.equity,
-    asset.id,
+    asset.id
   );
 
   Equity.create(event.params.token);

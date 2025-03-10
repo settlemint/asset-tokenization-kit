@@ -45,6 +45,7 @@ import { underlyingAssetWithdrawnEvent } from "./events/underlyingassetwithdrawn
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchBond } from "./fetch/bond";
 import { newAssetStatsData } from "./stats/assets";
@@ -646,6 +647,10 @@ export function handlePaused(event: Paused): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
+  const assetCount = fetchAssetCount(AssetType.bond);
+  assetCount.countActive = assetCount.countActive - 1;
+  assetCount.save();
+
   const holders = bond.holders.load();
   holders.forEach((assetBalance) => {
     if (hasBalance(bond.id, assetBalance.account)) {
@@ -687,6 +692,10 @@ export function handleUnpaused(event: Unpaused): void {
   bond.paused = false;
   bond.lastActivity = event.block.timestamp;
   bond.save();
+
+  const assetCount = fetchAssetCount(AssetType.bond);
+  assetCount.countActive = assetCount.countActive + 1;
+  assetCount.save();
 
   const holders = bond.holders.load();
   holders.forEach((assetBalance) => {

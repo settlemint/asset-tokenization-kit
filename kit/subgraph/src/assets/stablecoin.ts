@@ -40,6 +40,7 @@ import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchStableCoin } from "./fetch/stablecoin";
 import { newAssetStatsData, updateCollateralData } from "./stats/assets";
@@ -624,6 +625,10 @@ export function handlePaused(event: Paused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
+  const assetCount = fetchAssetCount(AssetType.stablecoin);
+  assetCount.countActive = assetCount.countActive - 1;
+  assetCount.save();
+
   const holders = stableCoin.holders.load();
   holders.forEach((assetBalance) => {
     if (hasBalance(stableCoin.id, assetBalance.account)) {
@@ -665,6 +670,10 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.paused = false;
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
+
+  const assetCount = fetchAssetCount(AssetType.stablecoin);
+  assetCount.countActive = assetCount.countActive + 1;
+  assetCount.save();
 
   const holders = stableCoin.holders.load();
   holders.forEach((assetBalance) => {

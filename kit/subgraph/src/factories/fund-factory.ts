@@ -18,20 +18,21 @@ export function handleFundCreated(event: FundCreated): void {
 
   const assetCount = fetchAssetCount(AssetType.fund);
   assetCount.count = assetCount.count + 1;
+  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.fund,
-    asset.id,
+    asset.id
   );
 
   Fund.create(event.params.token);
