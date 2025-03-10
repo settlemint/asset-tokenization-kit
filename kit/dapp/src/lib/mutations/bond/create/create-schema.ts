@@ -1,3 +1,4 @@
+import { isAddressAvailable } from "@/lib/queries/bond-factory/address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 import { isFuture } from "date-fns";
 
@@ -32,6 +33,7 @@ export const CreateBondSchema = z.object({
     .string()
     .refine(isFuture, { message: "Maturity date must be in the future" }),
   underlyingAsset: z.address(),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;
