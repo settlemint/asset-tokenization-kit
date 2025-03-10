@@ -2427,6 +2427,10 @@
     }
   },
   "portfolio": {
+    "dashboard": {
+      "page-title": "Portfolio",
+      "portfolio-management": "Portfolio management"
+    },
     "activity": {
       "page-description": "Your activity on chain",
       "page-title": "Activity",
