@@ -2,20 +2,20 @@ import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface SelectAssetProps {
-  assets: MyAsset[];
-  onSelect: (asset: MyAsset) => void;
+  assets: UserAsset[];
+  onSelect: (asset: UserAsset) => void;
 }
 
 export function SelectAsset({ onSelect }: SelectAssetProps) {
   const { control } = useFormContext();
   const t = useTranslations("portfolio.transfer-form.select-asset");
-  const [selectedAsset] = useState<MyAsset | null>(null);
+  const [selectedAsset] = useState<UserAsset | null>(null);
 
   const handleConfirm = () => {
     if (selectedAsset) {

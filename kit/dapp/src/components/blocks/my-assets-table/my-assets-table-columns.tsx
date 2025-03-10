@@ -1,62 +1,46 @@
 "use client";
 
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
-import { formatAssetType } from "@/lib/utils/format-asset-type";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
-const columnHelper = createColumnHelper<MyAsset>();
+const columnHelper = createColumnHelper<UserAsset>();
 
 export function columns() {
+  // https://next-intl.dev/docs/environments/server-client-components#shared-components
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const t = useTranslations("portfolio.my-assets.table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetType = useTranslations("asset-type");
+
   return [
     columnHelper.accessor("asset.name", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Name</DataTableColumnHeader>
-      ),
-      cell: ({ renderValue }) => (
-        <DataTableColumnCell>{renderValue()}</DataTableColumnCell>
-      ),
+      header: t("name-header"),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("asset.symbol", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Symbol</DataTableColumnHeader>
-      ),
-      cell: ({ renderValue }) => (
-        <DataTableColumnCell>{renderValue()}</DataTableColumnCell>
-      ),
+      header: t("symbol-header"),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("asset.type", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Type</DataTableColumnHeader>
-      ),
-      cell: ({ getValue }) => (
-        <DataTableColumnCell>{formatAssetType(getValue())}</DataTableColumnCell>
-      ),
+      header: t("type-header"),
+      cell: ({ getValue }) => tAssetType(getValue()),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} variant="numeric">
-          Balance
-        </DataTableColumnHeader>
-      ),
-      cell: ({ getValue }) => (
-        <DataTableColumnCell variant="numeric">
-          {formatNumber(getValue())}
-        </DataTableColumnCell>
-      ),
+      header: t("balance-header"),
+      meta: {
+        variant: "numeric",
+      },
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("asset.paused", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>Status</DataTableColumnHeader>
-      ),
+      header: t("status-header"),
       cell: ({ getValue }) => {
         const value = getValue();
         return <ActivePill paused={value} />;
@@ -65,7 +49,7 @@ export function columns() {
     }),
     columnHelper.display({
       id: "actions",
-      header: () => "Action",
+      header: t("actions-header"),
       cell: ({ row }) => {
         return (
           <DataTableRowActions

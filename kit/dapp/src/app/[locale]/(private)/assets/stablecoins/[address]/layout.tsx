@@ -74,7 +74,7 @@ const tabs = async (
   ];
 };
 
-export default async function FundsDetailLayout({
+export default async function StablecoinDetailLayout({
   children,
   params,
 }: LayoutProps) {
