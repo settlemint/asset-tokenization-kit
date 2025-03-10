@@ -1,3 +1,4 @@
+import { isAddressAvailable } from "@/lib/queries/equity-factory/address-available";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -19,6 +20,7 @@ export const CreateEquitySchema = z.object({
   pincode: z.pincode(),
   equityCategory: z.string().nonempty(),
   equityClass: z.string().nonempty(),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;

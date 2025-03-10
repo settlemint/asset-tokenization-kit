@@ -3,7 +3,11 @@ import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
+import { getPredictedAddress } from "@/lib/queries/equity-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations, type MessageKeys } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -14,6 +18,11 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("admin.equities.create-form.summary");
+
+  const { isCalculatingAddress, error } = usePredictedAddress({
+    calculateAddress: getPredictedAddress,
+    fieldName: "predictedAddress",
+  });
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -73,11 +82,19 @@ export function Summary() {
         />
       </FormSummaryDetailCard>
 
-      <FormSummarySecurityConfirmation>
-        <FormOtp control={control} name="pincode" />
-      </FormSummarySecurityConfirmation>
+      {isCalculatingAddress ? (
+        <Skeleton className="h-32 w-full" />
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertDescription>{t("error-duplicate")}</AlertDescription>
+        </Alert>
+      ) : (
+        <FormSummarySecurityConfirmation>
+          <FormOtp control={control} name="pincode" />
+        </FormSummarySecurityConfirmation>
+      )}
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = ["pincode", "predictedAddress"] as const;

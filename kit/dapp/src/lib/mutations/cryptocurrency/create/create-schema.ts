@@ -1,3 +1,4 @@
+import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/address-available";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -9,6 +10,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * @property {string} [isin] - Optional International Securities Identification Number
  * @property {string} pincode - The pincode for signing the transaction
  * @property {string} [initialSupply] - Initial supply of tokens (defaults to '0')
+ * @property {Address} predictedAddress - Predicted address of the cryptocurrency
  */
 export const CreateCryptoCurrencySchema = z.object({
   assetName: z.string().nonempty(),
@@ -19,6 +21,7 @@ export const CreateCryptoCurrencySchema = z.object({
     .number()
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateCryptoCurrencyInput = ZodInfer<

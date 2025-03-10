@@ -152,7 +152,7 @@ export function Form<
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
-              {isLastStep && hasError && (
+              {isLastStep && hasError && !form.formState.isValidating && (
                 <Alert
                   variant="destructive"
                   className="text-destructive border-destructive mb-4"
@@ -162,7 +162,7 @@ export function Form<
                     {Object.entries(form.formState.errors)
                       .map(
                         ([key, error]) =>
-                          `${key}: ${(error?.message as string) ?? tError("unknown-error")}`
+                          `${key ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
                       )
                       .filter(Boolean)
                       .join("\n")}
