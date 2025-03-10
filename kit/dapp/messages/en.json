@@ -2455,11 +2455,14 @@
       }
     },
     "transfer-form": {
+      "asset-types": "{type} {name} ({symbol})",
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
-        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
-        "title": "Enter Amount"
+        "description": "Specify the amount you want to transfer",
+        "title": "Enter Amount",
+        "decimals-label": "Decimals",
+        "decimals-description": "Number of decimal places for the token"
       },
       "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
@@ -2471,7 +2474,8 @@
         "asset-description": "Select an asset from your portfolio",
         "asset-label": "Asset",
         "description": "Choose the asset you want to transfer",
-        "title": "Select Asset"
+        "title": "Select Asset",
+        "trigger-label": "Transfer Assets"
       },
       "summary": {
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",

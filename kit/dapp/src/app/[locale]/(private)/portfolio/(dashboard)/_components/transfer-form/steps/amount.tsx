@@ -29,6 +29,16 @@ export function Amount({ balance }: { balance: string }) {
           max={Number(balance)}
           description={`${t("balance-description")} ${balance}`}
         />
+        <FormInput
+          control={control}
+          name="decimals"
+          label={t("decimals-label")}
+          type="number"
+          min={0}
+          defaultValue={18}
+          max={18}
+          description={`${t("decimals-description")}`}
+        />
       </div>
     </FormStep>
   );

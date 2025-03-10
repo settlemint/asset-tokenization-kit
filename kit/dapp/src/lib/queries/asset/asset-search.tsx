@@ -22,6 +22,10 @@ const AssetSearch = theGraphGraphql(
       },
       first: 10
     ) {
+      holders {
+        id
+        value
+      }
       ...AssetFragment
     }
   }
@@ -63,7 +67,6 @@ export const getAssetSearch = cache(
     const validatedAssets = assets.map((asset) =>
       safeParseWithLogging(AssetFragmentSchema, asset, "asset search")
     );
-
     return validatedAssets;
   }
 );
