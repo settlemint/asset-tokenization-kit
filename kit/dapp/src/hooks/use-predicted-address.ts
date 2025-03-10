@@ -11,7 +11,7 @@ interface UsePredictedAddressProps<T extends FieldValues> {
   fieldName: Path<T>;
 }
 
-export function usePredictedAddress<T extends FieldValues>({
+export function useVerifyPredictedAddress<T extends FieldValues>({
   calculateAddress,
   fieldName,
 }: UsePredictedAddressProps<T>) {
