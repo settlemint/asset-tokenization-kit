@@ -28,7 +28,11 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
-import type { BaseFormInputProps, WithPlaceholderProps } from "./types";
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithPlaceholderProps,
+} from "./types";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -58,14 +62,13 @@ export function FormAssets<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && "text-destructive",
                   props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
                 <span>{label}</span>
-                {required && <span className="ml-1 text-red-500">*</span>}
+                {required && <span className="ml-1 text-destructive">*</span>}
               </FormLabel>
             )}
             <Popover open={open} onOpenChange={setOpen}>
@@ -74,6 +77,11 @@ export function FormAssets<T extends FieldValues>({
                   variant="outline"
                   aria-expanded={open}
                   className="w-full justify-between"
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    props.disabled
+                  )}
                 >
                   {field.value ? (
                     <EvmAddress address={field.value as Address} />
@@ -105,7 +113,6 @@ export function FormAssets<T extends FieldValues>({
             <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
-              className="text-destructive"
             />
           </FormItem>
         );
