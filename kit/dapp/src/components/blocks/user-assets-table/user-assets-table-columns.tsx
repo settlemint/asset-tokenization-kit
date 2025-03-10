@@ -60,7 +60,7 @@ export function columns() {
         );
       },
     }),
-    columnHelper.accessor("account.lastActivity", {
+    columnHelper.accessor("asset.lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();

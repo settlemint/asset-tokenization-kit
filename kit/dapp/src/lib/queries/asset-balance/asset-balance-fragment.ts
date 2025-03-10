@@ -28,6 +28,7 @@ export const AssetBalanceFragment = theGraphGraphql(
       symbol
       decimals
       type
+      lastActivity
       creator { id }
       admins { ...PermissionFragment }
       supplyManagers { ...PermissionFragment }
@@ -68,11 +69,12 @@ export const AssetBalanceFragmentSchema = z.object({
     symbol: z.symbol(),
     decimals: z.number(),
     type: z.assetType(),
-    paused: z.boolean().optional().default(false),
+    lastActivity: z.timestamp(),
     creator: z.object({ id: z.address() }),
     admins: z.array(PermissionFragmentSchema),
     supplyManagers: z.array(PermissionFragmentSchema),
     userManagers: z.array(PermissionFragmentSchema),
+    paused: z.boolean().optional().default(false),
   }),
 });
 
