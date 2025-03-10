@@ -12,9 +12,13 @@ export default async function MyAssetsTable({
   wallet,
   title,
 }: MyAssetsTableProps) {
-  const myAssetsBalance = await geUserAssetsBalance(wallet);
+  const userAssetsBalance = await geUserAssetsBalance(wallet);
 
   return (
-    <DataTable columns={columns} data={myAssetsBalance.balances} name={title} />
+    <DataTable
+      columns={columns}
+      data={userAssetsBalance.balances}
+      name={title}
+    />
   );
 }
