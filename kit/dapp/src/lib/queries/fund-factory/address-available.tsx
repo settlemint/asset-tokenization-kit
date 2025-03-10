@@ -1,7 +1,6 @@
 "use server";
 
-import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -12,31 +11,32 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the fund factory
  */
-const IsAddressDeployed = portalGraphql(`
-  query IsAddressDeployed($address: String!, $token: String!) {
-    FundFactory(address: $address) {
-      isAddressDeployed(token: $token)
+const FundExists = theGraphGraphql(`
+  query FundExists($token: ID!) {
+    fund(id: $token) {
+      id
     }
   }
 `);
 
-const IsAddressDeployedSchema = z.object({
-  FundFactory: z.object({
-    isAddressDeployed: z.boolean(),
-  }),
+const FundExistsSchema = z.object({
+  fund: z
+    .object({
+      id: z.string(),
+    })
+    .nullish(),
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await portalClient.request(IsAddressDeployed, {
-    address: FUND_FACTORY_ADDRESS,
+  const data = await theGraphClient.request(FundExists, {
     token: address,
   });
 
-  const isAddressDeployed = safeParseWithLogging(
-    IsAddressDeployedSchema,
+  const fundExists = safeParseWithLogging(
+    FundExistsSchema,
     data,
     "fund factory"
   );
 
-  return !isAddressDeployed.FundFactory.isAddressDeployed;
+  return !fundExists.fund;
 });

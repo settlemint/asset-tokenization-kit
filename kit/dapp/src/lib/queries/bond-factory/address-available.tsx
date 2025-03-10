@@ -1,41 +1,42 @@
 "use server";
 
-import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
 
 /**
- * GraphQL mutation for creating a new cryptocurrency
+ * GraphQL query for checking if an address is deployed
  *
  * @remarks
- * Creates a new cryptocurrency contract through the cryptocurrency factory
+ * Checks if a token address is already deployed through the bond factory
  */
-const IsAddressDeployed = portalGraphql(`
-  query IsAddressDeployed($address: String!, $token: String!) {
-    BondFactory(address: $address) {
-      isAddressDeployed(token: $token)
+const BondExists = theGraphGraphql(`
+  query BondExists($token: ID!) {
+    bond(id: $token) {
+      id
     }
   }
 `);
 
-const IsAddressDeployedSchema = z.object({
-  BondFactory: z.object({
-    isAddressDeployed: z.boolean(),
-  }),
+const BondExistsSchema = z.object({
+  bond: z
+    .object({
+      id: z.string(),
+    })
+    .nullish(),
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await portalClient.request(IsAddressDeployed, {
-    address: BOND_FACTORY_ADDRESS,
+  const data = await theGraphClient.request(BondExists, {
     token: address,
   });
 
-  const isAddressDeployed = safeParseWithLogging(
-    IsAddressDeployedSchema,
+  const bondExists = safeParseWithLogging(
+    BondExistsSchema,
     data,
     "bond factory"
   );
-  return !isAddressDeployed.BondFactory.isAddressDeployed;
+
+  return !bondExists.bond;
 });

@@ -1,8 +1,8 @@
 "use server";
 
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { cache } from "react";
 import type { Address } from "viem";
 
 /**
@@ -11,31 +11,32 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the cryptocurrency factory
  */
-const IsAddressDeployed = portalGraphql(`
-  query IsAddressDeployed($address: String!, $token: String!) {
-    CryptoCurrencyFactory(address: $address) {
-      isAddressDeployed(token: $token)
+const CryptoCurrencyExists = theGraphGraphql(`
+  query CryptoCurrencyExists($token: ID!) {
+    cryptoCurrency(id: $token) {
+      id
     }
   }
 `);
 
-const IsAddressDeployedSchema = z.object({
-  CryptoCurrencyFactory: z.object({
-    isAddressDeployed: z.boolean(),
-  }),
+const CryptoCurrencyExistsSchema = z.object({
+  cryptoCurrency: z
+    .object({
+      id: z.string(),
+    })
+    .nullish(),
 });
 
-export const isAddressAvailable = async (address: Address) => {
-  const data = await portalClient.request(IsAddressDeployed, {
-    address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
+export const isAddressAvailable = cache(async (address: Address) => {
+  const data = await theGraphClient.request(CryptoCurrencyExists, {
     token: address,
   });
 
-  const isAddressDeployed = safeParseWithLogging(
-    IsAddressDeployedSchema,
+  const cryptoCurrencyExists = safeParseWithLogging(
+    CryptoCurrencyExistsSchema,
     data,
     "cryptocurrency factory"
   );
 
-  return !isAddressDeployed.CryptoCurrencyFactory.isAddressDeployed;
-};
+  return !cryptoCurrencyExists.cryptoCurrency;
+});

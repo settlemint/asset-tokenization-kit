@@ -1,7 +1,6 @@
 "use server";
 
-import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -12,31 +11,32 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the equity factory
  */
-const IsAddressDeployed = portalGraphql(`
-  query IsAddressDeployed($address: String!, $token: String!) {
-    EquityFactory(address: $address) {
-      isAddressDeployed(token: $token)
+const EquityExists = theGraphGraphql(`
+  query EquityExists($token: ID!) {
+    equity(id: $token) {
+      id
     }
   }
 `);
 
-const IsAddressDeployedSchema = z.object({
-  EquityFactory: z.object({
-    isAddressDeployed: z.boolean(),
-  }),
+const EquityExistsSchema = z.object({
+  equity: z
+    .object({
+      id: z.string(),
+    })
+    .nullish(),
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await portalClient.request(IsAddressDeployed, {
-    address: EQUITY_FACTORY_ADDRESS,
+  const data = await theGraphClient.request(EquityExists, {
     token: address,
   });
 
-  const isAddressDeployed = safeParseWithLogging(
-    IsAddressDeployedSchema,
+  const equityExists = safeParseWithLogging(
+    EquityExistsSchema,
     data,
     "equity factory"
   );
 
-  return !isAddressDeployed.EquityFactory.isAddressDeployed;
+  return !equityExists.equity;
 });

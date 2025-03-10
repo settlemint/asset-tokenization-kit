@@ -1,7 +1,6 @@
 "use server";
 
-import { STABLE_COIN_FACTORY_ADDRESS } from "@/lib/contracts";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -12,31 +11,32 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the stablecoin factory
  */
-const IsAddressDeployed = portalGraphql(`
-  query IsAddressDeployed($address: String!, $token: String!) {
-    StableCoinFactory(address: $address) {
-      isAddressDeployed(token: $token)
+const StableCoinExists = theGraphGraphql(`
+  query StableCoinExists($token: ID!) {
+    stableCoin(id: $token) {
+      id
     }
   }
 `);
 
-const IsAddressDeployedSchema = z.object({
-  StableCoinFactory: z.object({
-    isAddressDeployed: z.boolean(),
-  }),
+const StableCoinExistsSchema = z.object({
+  stableCoin: z
+    .object({
+      id: z.string(),
+    })
+    .nullish(),
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await portalClient.request(IsAddressDeployed, {
-    address: STABLE_COIN_FACTORY_ADDRESS,
+  const data = await theGraphClient.request(StableCoinExists, {
     token: address,
   });
 
-  const isAddressDeployed = safeParseWithLogging(
-    IsAddressDeployedSchema,
+  const stableCoinExists = safeParseWithLogging(
+    StableCoinExistsSchema,
     data,
     "stablecoin factory"
   );
 
-  return !isAddressDeployed.StableCoinFactory.isAddressDeployed;
+  return !stableCoinExists.stableCoin;
 });
