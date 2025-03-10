@@ -142,7 +142,6 @@ export function Form<
       <div className="container p-6 flex flex-col h-full">
         <UIForm {...form}>
           <form
-            id="main-form"
             onSubmit={handleSubmitWithAction}
             noValidate
             className="flex flex-col flex-1"
