@@ -9,6 +9,9 @@ export function fetchAccount(address: Address): Account {
     account = new Account(address);
     account.lastActivity = BigInt.zero();
     account.balancesCount = 0;
+    account.totalBalanceExact = BigInt.zero();
+    account.totalBalance = toDecimals(account.totalBalanceExact, 18);
+    account.activeBalancesCount = 0;
     account.activityEventsCount = 0;
     if (ethereum.hasCode(address).inner) {
       account.isContract = true;

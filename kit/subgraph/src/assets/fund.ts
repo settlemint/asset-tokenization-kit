@@ -6,6 +6,7 @@ import {
   crypto,
   log,
 } from "@graphprotocol/graph-ts";
+import { Account } from "../../generated/schema";
 import {
   Approval,
   ManagementFeeCollected,
@@ -87,8 +88,11 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     if (!hasBalance(fund.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       fund.totalHolders = fund.totalHolders + 1;
+      to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -213,8 +217,11 @@ export function handleTransfer(event: Transfer): void {
     );
 
     if (!hasBalance(fund.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       fund.totalHolders = fund.totalHolders + 1;
+      to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -557,6 +564,25 @@ export function handlePaused(event: Paused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
+  const holders = fund.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(fund.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount - 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
+
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
     sender,
@@ -579,6 +605,25 @@ export function handleUnpaused(event: Unpaused): void {
   fund.paused = false;
   fund.lastActivity = event.block.timestamp;
   fund.save();
+
+  const holders = fund.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(fund.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount + 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
 
   unpausedEvent(
     eventId(event),

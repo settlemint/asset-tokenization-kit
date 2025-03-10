@@ -6,6 +6,7 @@ import {
   crypto,
   log,
 } from "@graphprotocol/graph-ts";
+import { Account } from "../../generated/schema";
 import {
   Approval,
   CollateralUpdated,
@@ -90,8 +91,11 @@ export function handleTransfer(event: Transfer): void {
     collateralCalculatedFields(stableCoin);
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
+      to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -244,8 +248,11 @@ export function handleTransfer(event: Transfer): void {
     );
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
+      to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -612,6 +619,25 @@ export function handlePaused(event: Paused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
+  const holders = stableCoin.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(stableCoin.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount - 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
+
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
     sender,
@@ -634,6 +660,25 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.paused = false;
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
+
+  const holders = stableCoin.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(stableCoin.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount + 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
 
   unpausedEvent(
     eventId(event),

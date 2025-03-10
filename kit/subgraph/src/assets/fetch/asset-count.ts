@@ -5,6 +5,7 @@ export const fetchAssetCount = (assetType: string): AssetCount => {
   if (!assetCount) {
     assetCount = new AssetCount(assetType);
     assetCount.count = 0;
+    assetCount.countActive = 0;
     assetCount.assetType = assetType;
     assetCount.save();
   }

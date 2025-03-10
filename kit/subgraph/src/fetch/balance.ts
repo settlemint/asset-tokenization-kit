@@ -5,7 +5,7 @@ import { toDecimals } from "../utils/decimals";
 export function fetchAssetBalance(
   asset: Bytes,
   account: Bytes,
-  decimals: number,
+  decimals: number
 ): AssetBalance {
   const id = assetBalanceId(asset, account);
   let balance = AssetBalance.load(id);
@@ -21,6 +21,7 @@ export function fetchAssetBalance(
     balance.blocked = false;
     balance.frozenExact = BigInt.zero();
     balance.frozen = toDecimals(balance.frozenExact, decimals);
+    balance.lastActivity = BigInt.zero();
     balance.save();
   }
 

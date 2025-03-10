@@ -6,6 +6,7 @@ import {
   crypto,
   log,
 } from "@graphprotocol/graph-ts";
+import { Account } from "../../generated/schema";
 import {
   Approval,
   BondMatured,
@@ -86,6 +87,9 @@ export function handleTransfer(event: Transfer): void {
     if (!hasBalance(bond.id, to.id)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -216,6 +220,9 @@ export function handleTransfer(event: Transfer): void {
     if (!hasBalance(bond.id, to.id)) {
       bond.totalHolders = bond.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
+      to.activeBalancesCount = to.activeBalancesCount + 1;
+      to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
       to.save();
     }
 
@@ -634,6 +641,25 @@ export function handlePaused(event: Paused): void {
   bond.lastActivity = event.block.timestamp;
   bond.save();
 
+  const holders = bond.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(bond.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount - 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
+
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
     sender,
@@ -656,6 +682,25 @@ export function handleUnpaused(event: Unpaused): void {
   bond.paused = false;
   bond.lastActivity = event.block.timestamp;
   bond.save();
+
+  const holders = bond.holders.load();
+  holders.forEach((assetBalance) => {
+    if (hasBalance(bond.id, assetBalance.account)) {
+      const holderAccount = Account.load(assetBalance.account);
+      if (holderAccount) {
+        holderAccount.activeBalancesCount =
+          holderAccount.activeBalancesCount + 1;
+        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
+          assetBalance.valueExact
+        );
+        holderAccount.totalBalance = toDecimals(
+          holderAccount.totalBalanceExact,
+          18
+        );
+        holderAccount.save();
+      }
+    }
+  });
 
   unpausedEvent(
     eventId(event),
