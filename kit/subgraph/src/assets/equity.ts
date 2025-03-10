@@ -577,7 +577,8 @@ export function handlePaused(event: Paused): void {
   assetCount.save();
 
   const holders = equity.holders.load();
-  holders.forEach((assetBalance) => {
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
     if (hasBalance(equity.id, assetBalance.account)) {
       const holderAccount = Account.load(assetBalance.account);
       if (holderAccount) {
@@ -593,7 +594,7 @@ export function handlePaused(event: Paused): void {
         holderAccount.save();
       }
     }
-  });
+  }
 
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
@@ -623,7 +624,8 @@ export function handleUnpaused(event: Unpaused): void {
   assetCount.save();
 
   const holders = equity.holders.load();
-  holders.forEach((assetBalance) => {
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
     if (hasBalance(equity.id, assetBalance.account)) {
       const holderAccount = Account.load(assetBalance.account);
       if (holderAccount) {
@@ -639,7 +641,7 @@ export function handleUnpaused(event: Unpaused): void {
         holderAccount.save();
       }
     }
-  });
+  }
 
   unpausedEvent(
     eventId(event),
