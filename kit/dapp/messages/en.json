@@ -2269,6 +2269,9 @@
     },
     "charts": {
       "assets": {
+        "asset-distribution": "Asset Distribution",
+        "asset-distribution-description": "Amount of holders vs the amounts they hold",
+        "asset-distribution-no-data": "No asset data available",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -2429,7 +2432,8 @@
   "portfolio": {
     "dashboard": {
       "page-title": "Portfolio",
-      "portfolio-management": "Portfolio management"
+      "portfolio-management": "Portfolio management",
+      "my-assets": "My Assets"
     },
     "activity": {
       "page-description": "Your activity on chain",

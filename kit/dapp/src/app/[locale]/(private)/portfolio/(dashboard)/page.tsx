@@ -1,3 +1,4 @@
+import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
@@ -48,6 +49,15 @@ export default async function PortfolioDashboard({
             chartContainerClassName: "h-[14rem] w-full",
           }}
         />
+      </div>
+
+      <PageHeader
+        title={t("dashboard.my-assets")}
+        section={t("dashboard.portfolio-management")}
+        className="mt-8"
+      />
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
+        <AssetDistribution address={user.wallet as Address} />
       </div>
     </>
   );
