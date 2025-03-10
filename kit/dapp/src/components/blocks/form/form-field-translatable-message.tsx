@@ -35,7 +35,7 @@ export function TranslatableFormFieldMessage({
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive-foreground text-sm", className)}
+      className={cn("text-destructive text-sm", className)}
       {...props}
     >
       {translatedMessage ?? children}

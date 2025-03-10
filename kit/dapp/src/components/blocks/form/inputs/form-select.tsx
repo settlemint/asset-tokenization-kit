@@ -82,14 +82,13 @@ export function FormSelect<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && "text-destructive",
                   props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
                 <span>{label}</span>
-                {required && <span className="ml-1 text-red-500">*</span>}
+                {required && <span className="ml-1 text-destructive">*</span>}
               </FormLabel>
             )}
             <Select
@@ -133,7 +132,6 @@ export function FormSelect<T extends FieldValues>({
             <TranslatableFormFieldMessage
               id={`${field.name}-error`}
               aria-live="polite"
-              className="text-destructive"
             />
           </FormItem>
         );

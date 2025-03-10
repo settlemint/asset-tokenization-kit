@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/use-debounce";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getAssetSearch } from "@/lib/queries/asset/asset-search";
 import { cn } from "@/lib/utils";
 import { CommandEmpty, useCommandState } from "cmdk";
@@ -28,13 +29,22 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
-import type { BaseFormInputProps, WithPlaceholderProps } from "./types";
+import {
+  getAriaAttributes,
+  type BaseFormInputProps,
+  type WithPlaceholderProps,
+} from "./types";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
     defaultValue?: string;
+    onSelect?: (asset: Asset) => void;
   };
+
+type Asset = UserAsset["asset"] & {
+  holders: { value: number; account: { id: string } }[];
+};
 
 export function FormAssets<T extends FieldValues>({
   label,
@@ -42,6 +52,7 @@ export function FormAssets<T extends FieldValues>({
   required,
   placeholder,
   defaultValue,
+  onSelect,
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
@@ -58,14 +69,13 @@ export function FormAssets<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && "text-destructive",
                   props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
                 <span>{label}</span>
-                {required && <span className="ml-1 text-red-500">*</span>}
+                {required && <span className="ml-1 text-destructive">*</span>}
               </FormLabel>
             )}
             <Popover open={open} onOpenChange={setOpen}>
@@ -74,6 +84,11 @@ export function FormAssets<T extends FieldValues>({
                   variant="outline"
                   aria-expanded={open}
                   className="w-full justify-between"
+                  {...getAriaAttributes(
+                    field.name,
+                    !!fieldState.error,
+                    props.disabled
+                  )}
                 >
                   {field.value ? (
                     <EvmAddress address={field.value as Address} />
@@ -93,6 +108,7 @@ export function FormAssets<T extends FieldValues>({
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
+                    onSelect={(asset) => onSelect?.(asset as unknown as Asset)}
                   />
                 </Command>
               </PopoverContent>
@@ -105,7 +121,6 @@ export function FormAssets<T extends FieldValues>({
             <TranslatableFormFieldMessage
               id={`${field.name}-error`}
               aria-live="polite"
-              className="text-destructive"
             />
           </FormItem>
         );
@@ -119,10 +134,12 @@ function FormUsersList({
   onValueChange,
   setOpen,
   value,
+  onSelect,
 }: {
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
+  onSelect: (asset: UserAsset) => void;
 }) {
   const search = (useCommandState((state) => state.search) || "") as string;
   const debounced = useDebounce<string>(search, 250);
@@ -168,11 +185,14 @@ function FormUsersList({
 
   // Memoize the handler to prevent recreating it on every render
   const handleSelect = useCallback(
-    (currentValue: string) => {
+    (currentValue: string, asset: UserAsset) => {
+      if (onSelect) {
+        onSelect(asset);
+      }
       onValueChange(currentValue);
       setOpen(false);
     },
-    [onValueChange, setOpen]
+    [onValueChange, setOpen, onSelect]
   );
 
   // Memoized asset item component to prevent re-renders
@@ -212,7 +232,9 @@ function FormUsersList({
           key={asset.id}
           asset={asset}
           value={value}
-          onSelect={handleSelect}
+          onSelect={(currentValue) =>
+            handleSelect(currentValue, asset as unknown as UserAsset)
+          }
         />
       )),
     [assets, value, handleSelect, AssetItem]

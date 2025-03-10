@@ -91,7 +91,8 @@
           "name-label": "Name",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "underlying-asset-label": "Underlying asset"
+          "underlying-asset-label": "Underlying asset",
+          "error-duplicate": "A Bond with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create new bond",
         "trigger-label": "Issue a new bond"
@@ -414,7 +415,8 @@
           "private-label": "Private",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "yes": "Yes"
+          "yes": "Yes",
+          "error-duplicate": "A Cryptocurrency with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create Cryptocurrency",
         "trigger-label": "Issue a new cryptocurrency"
@@ -803,7 +805,8 @@
           "isin-label": "ISIN",
           "name-label": "Name",
           "symbol-label": "Symbol",
-          "title": "Review and confirm"
+          "title": "Review and confirm",
+          "error-duplicate": "An Equity with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create new equity",
         "trigger-label": "Mint"
@@ -1263,7 +1266,8 @@
           "management-fee-label": "Management Fee",
           "name-label": "Name",
           "symbol-label": "Symbol",
-          "title": "Review and confirm"
+          "title": "Review and confirm",
+          "error-duplicate": "A Fund with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create Fund",
         "trigger-label": "Issue a new fund"
@@ -1674,7 +1678,8 @@
           "name-label": "Name",
           "seconds": "seconds",
           "symbol-label": "Symbol",
-          "title": "Review and confirm the details of your new stablecoin before creation."
+          "title": "Review and confirm the details of your new stablecoin before creation.",
+          "error-duplicate": "A Stablecoin with the same details already exists. Please try again with at least one different parameter."
         },
         "title": "Create Stablecoin",
         "trigger-label": "Issue a new stablecoin"
@@ -2474,11 +2479,14 @@
       }
     },
     "transfer-form": {
+      "asset-types": "{type} {name} ({symbol})",
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
-        "description": "Specify the amount you want to transfer. It cannot be bigger then your current balance.",
-        "title": "Enter Amount"
+        "description": "Specify the amount you want to transfer",
+        "title": "Enter Amount",
+        "decimals-label": "Decimals",
+        "decimals-description": "Number of decimal places for the token"
       },
       "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
@@ -2490,7 +2498,8 @@
         "asset-description": "Select an asset from your portfolio",
         "asset-label": "Asset",
         "description": "Choose the asset you want to transfer",
-        "title": "Select Asset"
+        "title": "Select Asset",
+        "trigger-label": "Transfer Assets"
       },
       "summary": {
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",

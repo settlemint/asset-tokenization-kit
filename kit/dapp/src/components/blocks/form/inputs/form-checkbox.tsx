@@ -68,7 +68,6 @@ export function FormCheckbox<T extends FieldValues>({
                 <FormLabel
                   className={cn(
                     "font-medium text-sm leading-none",
-                    fieldState.error && "text-destructive",
                     props.disabled && "cursor-not-allowed opacity-70"
                   )}
                   htmlFor={field.name}
@@ -76,7 +75,7 @@ export function FormCheckbox<T extends FieldValues>({
                 >
                   <span>{label}</span>
                   {props.required && (
-                    <span className="ml-1 text-red-500">*</span>
+                    <span className="ml-1 text-destructive">*</span>
                   )}
                 </FormLabel>
               )}
@@ -91,7 +90,6 @@ export function FormCheckbox<T extends FieldValues>({
               <TranslatableFormFieldMessage
                 id={`${field.name}-error`}
                 aria-live="polite"
-                className="text-destructive"
               />
             </div>
           </FormItem>

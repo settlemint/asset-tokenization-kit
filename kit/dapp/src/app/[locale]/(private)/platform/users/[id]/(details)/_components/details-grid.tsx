@@ -27,8 +27,8 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         <Badge
           variant={user.banned ? "destructive" : "default"}
           className={cn(
-            "bg-destructive/20 text-destructive",
-            !user.banned && "bg-success/20 text-success"
+            "bg-destructive/80 text-destructive-foreground",
+            !user.banned && "bg-success/80 text-success-foreground"
           )}
         >
           {user.banned ? (

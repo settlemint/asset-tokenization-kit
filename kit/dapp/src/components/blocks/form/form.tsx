@@ -30,6 +30,7 @@ interface FormProps<
   resolver: Resolver<ZodInfer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
+  hideButtons?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -54,6 +55,7 @@ export function Form<
   onOpenChange,
   toastMessages,
   secureForm = false,
+  hideButtons,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
@@ -192,22 +194,24 @@ export function Form<
               )}
             </div>
             <div className="mt-auto pt-6">
-              <FormButton
-                currentStep={currentStep}
-                totalSteps={totalSteps}
-                onPreviousStep={handlePrev}
-                onNextStep={() => {
-                  handleNext().catch((error: Error) => {
-                    console.error("Error in handleNext:", error);
-                  });
-                }}
-                labels={buttonLabels}
-                {...(secureForm
-                  ? {
-                      onLastStep: handleNext,
-                    }
-                  : {})}
-              />
+              {!hideButtons && (
+                <FormButton
+                  currentStep={currentStep}
+                  totalSteps={totalSteps}
+                  onPreviousStep={handlePrev}
+                  onNextStep={() => {
+                    handleNext().catch((error: Error) => {
+                      console.error("Error in handleNext:", error);
+                    });
+                  }}
+                  labels={buttonLabels}
+                  {...(secureForm
+                    ? {
+                        onLastStep: handleNext,
+                      }
+                    : {})}
+                />
+              )}
             </div>
           </form>
         </UIForm>
