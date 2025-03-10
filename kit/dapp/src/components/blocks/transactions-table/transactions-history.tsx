@@ -9,7 +9,10 @@ import {
 
 export interface TransactionsHistoryProps {
   from?: string;
-  data: any;
+  data: {
+    timestamp: string;
+    transaction: number;
+  }[];
   chartOptions: Pick<
     TimeSeriesOptions,
     "intervalType" | "intervalLength" | "granularity"
