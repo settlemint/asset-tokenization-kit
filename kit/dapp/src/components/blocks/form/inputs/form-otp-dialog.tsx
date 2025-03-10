@@ -1,6 +1,6 @@
 "use client";
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-translatable-message";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
