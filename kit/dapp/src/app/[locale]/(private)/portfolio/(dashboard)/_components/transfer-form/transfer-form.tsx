@@ -7,12 +7,12 @@ import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { transferAsset } from "@/lib/mutations/asset/transfer/transfer-action";
 import { getTransferFormSchema } from "@/lib/mutations/asset/transfer/transfer-schema";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { SelectAsset } from "./select-asset";
-type Asset = MyAsset["asset"] & {
+type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
 

@@ -1,6 +1,6 @@
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { Button } from "@/components/ui/button";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -9,7 +9,7 @@ interface SelectAssetProps {
   onSelect: (asset: Asset) => void;
 }
 
-type Asset = MyAsset["asset"] & {
+type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
 

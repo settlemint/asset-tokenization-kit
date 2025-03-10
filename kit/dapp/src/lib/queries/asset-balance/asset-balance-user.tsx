@@ -9,9 +9,9 @@ import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 
-const MyAssetsBalance = theGraphGraphql(
+const UserAssetsBalance = theGraphGraphql(
   `
-  query MyAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
+  query UserAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
       balances(first: $first, skip: $skip) {
         ...AssetBalanceFragment
@@ -23,37 +23,38 @@ const MyAssetsBalance = theGraphGraphql(
 );
 
 const PAUSABLE_ASSET_TYPES = new Set([
-  "StableCoin",
-  "Bond",
-  "Fund",
-  "Equity",
-  "CryptoCurrency",
+  "stablecoin",
+  "bond",
+  "fund",
+  "equity",
 ] as const);
 
 type PausableAssetType =
   typeof PAUSABLE_ASSET_TYPES extends Set<infer T> ? T : never;
 
-export type MyAsset = Awaited<
-  ReturnType<typeof getMyAssetsBalance>
+export type UserAsset = Awaited<
+  ReturnType<typeof geUserAssetsBalance>
 >["balances"][number];
 
-export const getMyAssetsBalance = cache(
+export const geUserAssetsBalance = cache(
   async (wallet: Address, active = true) => {
-    const myAssetsBalance = await fetchAllTheGraphPages(async (first, skip) => {
-      const pageResult = await theGraphClient.request(MyAssetsBalance, {
-        accountId: getAddress(wallet),
-        first,
-        skip,
-      });
-      return pageResult.account?.balances ?? [];
-    });
+    const userAssetsBalance = await fetchAllTheGraphPages(
+      async (first, skip) => {
+        const pageResult = await theGraphClient.request(UserAssetsBalance, {
+          accountId: getAddress(wallet),
+          first,
+          skip,
+        });
+        return pageResult.account?.balances ?? [];
+      }
+    );
 
     // Parse and validate the data using Zod schemas
-    let validatedMyAssetsBalance = myAssetsBalance.map((asset) =>
+    let validatedUserAssetsBalance = userAssetsBalance.map((asset) =>
       safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
     );
 
-    if (!validatedMyAssetsBalance.length) {
+    if (!validatedUserAssetsBalance.length) {
       return {
         balances: [],
         distribution: [],
@@ -62,17 +63,19 @@ export const getMyAssetsBalance = cache(
     }
 
     if (active) {
-      validatedMyAssetsBalance = validatedMyAssetsBalance.filter((balance) => {
-        const asset = balance.asset;
-        if (PAUSABLE_ASSET_TYPES.has(asset.type as PausableAssetType)) {
+      validatedUserAssetsBalance = validatedUserAssetsBalance.filter(
+        (balance) => {
+          const asset = balance.asset;
+          if (PAUSABLE_ASSET_TYPES.has(asset.type as PausableAssetType)) {
+            return !asset.paused;
+          }
           return true;
         }
-        return !asset.paused;
-      });
+      );
     }
 
     // Group and sum balances by asset type
-    const assetTypeBalances = validatedMyAssetsBalance.reduce<
+    const assetTypeBalances = validatedUserAssetsBalance.reduce<
       Record<PausableAssetType, BigNumber>
     >(
       (acc, balance) => {
@@ -106,7 +109,7 @@ export const getMyAssetsBalance = cache(
     );
 
     return {
-      balances: validatedMyAssetsBalance,
+      balances: validatedUserAssetsBalance,
       distribution,
       total: total.toString(),
     };

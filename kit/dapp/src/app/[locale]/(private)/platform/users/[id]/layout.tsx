@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUserDetail } from "@/lib/queries/user/user-detail";
+import { getUserDetail, type UserDetail } from "@/lib/queries/user/user-detail";
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -35,24 +35,26 @@ export async function generateMetadata({
   };
 }
 
-const getTabs = async (id: string): Promise<TabItemProps[]> => {
+const getTabs = async (user: UserDetail): Promise<TabItemProps[]> => {
   const t = await getTranslations("admin.users.detail.tabs");
   return [
     {
       name: t("details"),
-      href: `/platform/users/${id}`,
+      href: `/platform/users/${user.id}`,
     },
     {
       name: t("holdings"),
-      href: `/platform/users/${id}/holdings`,
+      href: `/platform/users/${user.id}/holdings`,
+      badge: user?.assetCount,
     },
     {
       name: t("last_transactions"),
-      href: `/platform/users/${id}/last-transactions`,
+      href: `/platform/users/${user.id}/last-transactions`,
+      badge: user?.transactionCount,
     },
     {
       name: t("permissions"),
-      href: `/platform/users/${id}/token-permissions`,
+      href: `/platform/users/${user.id}/token-permissions`,
     },
   ];
 };
@@ -64,7 +66,7 @@ export default async function UserDetailLayout({
   const { id } = await params;
   const user = await getUserDetail({ id });
   const t = await getTranslations("admin.users.detail");
-  const tabs = await getTabs(id);
+  const tabs = await getTabs(user);
 
   return (
     <div>
