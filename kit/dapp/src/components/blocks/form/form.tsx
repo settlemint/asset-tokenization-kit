@@ -95,6 +95,8 @@ export function Form<
       },
     });
 
+  const isLastStep = currentStep === totalSteps - 1;
+
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
     setShowFormSecurityConfirmation(false);
@@ -127,12 +129,15 @@ export function Form<
     if (results.every(Boolean)) {
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        if (isLastStep && secureForm) {
+          setShowFormSecurityConfirmation(true);
+        } else {
+          setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        }
       }, 10);
     }
   };
 
-  const isLastStep = currentStep === totalSteps - 1;
   const hasError = Object.keys(form.formState.errors).length > 0;
 
   return (
@@ -177,8 +182,8 @@ export function Form<
                   name={"pincode" as Path<ZodInfer<S>>}
                   label="Pincode"
                   description="Please enter your pincode"
-                  showSecurityConfirmation={showFormSecurityConfirmation}
-                  setShowSecurityConfirmation={setShowFormSecurityConfirmation}
+                  open={showFormSecurityConfirmation}
+                  onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control}
                   onSubmit={() => {
                     handleSubmitWithAction().catch((error: Error) => {
@@ -201,9 +206,7 @@ export function Form<
                 labels={buttonLabels}
                 {...(secureForm
                   ? {
-                      onLastStep: () => {
-                        setShowFormSecurityConfirmation(true);
-                      },
+                      onLastStep: handleNext,
                     }
                   : {})}
               />

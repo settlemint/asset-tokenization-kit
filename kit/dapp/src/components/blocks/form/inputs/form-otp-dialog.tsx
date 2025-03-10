@@ -35,28 +35,25 @@ type FormOtpDialogProps<T extends FieldValues> = Omit<
   keyof BaseFormInputProps<T> | "maxLength" | "pattern"
 > &
   BaseFormInputProps<T> & {
-    showSecurityConfirmation: boolean;
-    setShowSecurityConfirmation: (show: boolean) => void;
+    open: boolean;
+    onOpenChange: (show: boolean) => void;
     onSubmit: () => void;
   };
 
 export function FormOtpDialog<T extends FieldValues>({
   className,
-  showSecurityConfirmation,
-  setShowSecurityConfirmation,
+  open,
+  onOpenChange,
   onSubmit,
   ...props
 }: FormOtpDialogProps<T>) {
   const handleSubmit = useCallback(() => {
     onSubmit();
-    setShowSecurityConfirmation(false);
-  }, [onSubmit, setShowSecurityConfirmation]);
+    onOpenChange(false);
+  }, [onSubmit, onOpenChange]);
 
   return (
-    <Dialog
-      open={showSecurityConfirmation}
-      onOpenChange={setShowSecurityConfirmation}
-    >
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Some title</DialogTitle>
@@ -92,10 +89,7 @@ export function FormOtpDialog<T extends FieldValues>({
                 <TranslatableFormFieldMessage className="text-destructive" />
               </div>
               <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowSecurityConfirmation(false)}
-                >
+                <Button variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
                 <Button onClick={handleSubmit} disabled={!isValid}>

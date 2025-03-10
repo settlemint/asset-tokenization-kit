@@ -47,7 +47,7 @@ export function FormButton({
   },
 }: FormButtonProps) {
   const {
-    formState: { isSubmitting, errors, isValidating },
+    formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
   const t = useTranslations("components.form.button");
@@ -79,8 +79,7 @@ export function FormButton({
   };
 
   const disabled =
-    isSubmitting ||
-    (isLastStep && (Object.keys(errors).length > 0 || isValidating));
+    isSubmitting || (isLastStep && Object.keys(errors).length > 0);
   return (
     <div className="flex justify-between space-x-4 pt-4">
       {currentStep > 0 && (
