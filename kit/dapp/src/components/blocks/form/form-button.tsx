@@ -25,6 +25,8 @@ interface FormButtonProps {
   onPreviousStep: () => void;
   /** Handler for navigating to the next step */
   onNextStep: () => void;
+  /** Handler for navigating to the last step */
+  onLastStep?: () => void;
   labels?: ButtonLabels;
 }
 
@@ -37,6 +39,7 @@ export function FormButton({
   onPreviousStep,
   totalSteps,
   onNextStep,
+  onLastStep,
   labels = {
     label: undefined,
     submittingLabel: undefined,
@@ -92,9 +95,9 @@ export function FormButton({
       )}
 
       <Button
-        type={isLastStep ? "submit" : "button"}
+        type={isLastStep ? (onLastStep ? "button" : "submit") : "button"}
         variant="default"
-        onClick={isLastStep ? undefined : onNextStep}
+        onClick={isLastStep ? onLastStep : onNextStep}
         aria-label={isLastStep ? finalLabels.label : t("next")}
         className={cn(
           currentStep === 0 ? "ml-auto" : "",

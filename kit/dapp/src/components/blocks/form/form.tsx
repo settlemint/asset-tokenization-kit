@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import type { Schema } from "zod";
 import { type ButtonLabels, FormButton } from "./form-button";
 import { FormProgress } from "./form-progress";
+import { FormOtpDialog } from "./inputs/form-otp-dialog";
 import type { FormStepElement } from "./types";
 
 interface FormProps<
@@ -33,6 +34,7 @@ interface FormProps<
     loading?: string;
     success?: string;
   };
+  secureForm?: boolean;
 }
 
 export function Form<
@@ -51,11 +53,14 @@ export function Form<
   buttonLabels,
   onOpenChange,
   toastMessages,
+  secureForm = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
   const tError = useTranslations("error");
   const totalSteps = Array.isArray(children) ? children.length : 1;
+  const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
+    useState(false);
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
@@ -92,6 +97,7 @@ export function Form<
 
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setShowFormSecurityConfirmation(false);
   };
 
   const handleNext = async () => {
@@ -99,7 +105,6 @@ export function Form<
       ? children[currentStep].type
       : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
-
     if (!fieldsToValidate?.length) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       return;
@@ -119,7 +124,6 @@ export function Form<
         form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true })
       )
     );
-
     if (results.every(Boolean)) {
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
@@ -142,6 +146,7 @@ export function Form<
       <div className="container p-6 flex flex-col h-full">
         <UIForm {...form}>
           <form
+            id="main-form"
             onSubmit={handleSubmitWithAction}
             noValidate
             className="flex flex-col flex-1"
@@ -168,6 +173,21 @@ export function Form<
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
+              {showFormSecurityConfirmation && (
+                <FormOtpDialog
+                  name={"pincode" as Path<ZodInfer<S>>}
+                  label="Pincode"
+                  description="Please enter your pincode"
+                  showSecurityConfirmation={showFormSecurityConfirmation}
+                  setShowSecurityConfirmation={setShowFormSecurityConfirmation}
+                  control={form.control}
+                  onSubmit={() => {
+                    handleSubmitWithAction().catch((error: Error) => {
+                      console.error("Error submitting form:", error);
+                    });
+                  }}
+                />
+              )}
             </div>
             <div className="mt-auto pt-6">
               <FormButton
@@ -180,6 +200,13 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
+                {...(secureForm
+                  ? {
+                      onLastStep: () => {
+                        setShowFormSecurityConfirmation(true);
+                      },
+                    }
+                  : {})}
               />
             </div>
           </form>

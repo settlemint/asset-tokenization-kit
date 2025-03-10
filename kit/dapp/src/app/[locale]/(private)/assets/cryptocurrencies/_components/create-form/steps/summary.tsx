@@ -1,10 +1,6 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/predict-address";
@@ -19,7 +15,7 @@ export function Summary() {
   });
   const t = useTranslations("admin.cryptocurrencies.create-form.summary");
 
-  const { isCalculatingAddress, error } = usePredictedAddress({
+  usePredictedAddress({
     calculateAddress: getPredictedAddress,
     fieldName: "predictedAddress",
   });
@@ -55,20 +51,8 @@ export function Summary() {
           value={values.initialSupply || "-"}
         />
       </FormSummaryDetailCard>
-
-      {isCalculatingAddress ? (
-        <Skeleton className="h-32 w-full" />
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertDescription>{t("error-duplicate")}</AlertDescription>
-        </Alert>
-      ) : (
-        <FormSummarySecurityConfirmation>
-          <FormOtp control={control} name="pincode" />
-        </FormSummarySecurityConfirmation>
-      )}
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode", "predictedAddress"] as const;
+Summary.validatedFields = [] as const;

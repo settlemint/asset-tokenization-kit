@@ -44,6 +44,7 @@ export function CreateCryptoCurrencyForm({
           label: t("button-label"),
         }}
         defaultValues={{}}
+        secureForm
       >
         <Basics />
         <Configuration />
