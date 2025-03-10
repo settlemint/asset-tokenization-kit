@@ -21,7 +21,7 @@ export const CreateEquitySchema = z.object({
   equityCategory: z.string().nonempty(),
   equityClass: z.string().nonempty(),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "equity-duplicate",
+    message: "equity.duplicate",
   }),
 });
 

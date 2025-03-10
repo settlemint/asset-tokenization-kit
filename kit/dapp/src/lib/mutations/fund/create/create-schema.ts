@@ -31,7 +31,7 @@ export const CreateFundSchema = z.object({
         .max(100 * 100) // 100 bps = 1%,
     ),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "fund-duplicate",
+    message: "fund.duplicate",
   }),
 });
 

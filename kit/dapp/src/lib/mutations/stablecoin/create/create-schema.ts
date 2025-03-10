@@ -22,7 +22,7 @@ export const CreateStablecoinSchema = z.object({
     .pipe(z.coerce.number().min(0)),
   pincode: z.pincode(),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "stablecoin-duplicate",
+    message: "stablecoin.duplicate",
   }),
 });
 

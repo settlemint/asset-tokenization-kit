@@ -22,7 +22,7 @@ export const CreateCryptoCurrencySchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "cryptocurrency-duplicate",
+    message: "cryptocurrency.duplicate",
   }),
 });
 

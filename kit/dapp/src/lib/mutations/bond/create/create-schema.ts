@@ -34,7 +34,7 @@ export const CreateBondSchema = z.object({
     .refine(isFuture, { message: "Maturity date must be in the future" }),
   underlyingAsset: z.address(),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "bond-duplicate",
+    message: "bond.duplicate",
   }),
 });
 
