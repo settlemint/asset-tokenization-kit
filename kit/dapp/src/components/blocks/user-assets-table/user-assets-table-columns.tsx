@@ -2,7 +2,7 @@
 
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
-import { formatAssetType } from "@/lib/utils/format-asset-type";
+import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,10 @@ export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("admin.users.holdings.table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tHolderType = useTranslations("holder-type");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetType = useTranslations("asset-type");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -25,7 +29,7 @@ export function columns() {
     }),
     columnHelper.accessor("asset.type", {
       header: t("type-header"),
-      cell: ({ getValue }) => formatAssetType(getValue()),
+      cell: ({ getValue }) => tAssetType(getValue()),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
@@ -34,34 +38,13 @@ export function columns() {
         variant: "numeric",
       },
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), {
-          currency: row.original.asset.symbol,
-        }),
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
     columnHelper.display({
-      header: t("role-header"),
+      header: t("holder-type-header"),
       enableColumnFilter: false,
-      cell: ({ row }) => {
-        if (row.original.asset.creator.id === row.original.account.id) {
-          return <div>Creator</div>;
-        }
-        if (
-          row.original.asset.admins.some(
-            (admin) => admin.id === row.original.account.id
-          )
-        ) {
-          return <div>Admin</div>;
-        }
-        if (
-          row.original.asset.supplyManagers.some(
-            (manager) => manager.id === row.original.account.id
-          )
-        ) {
-          return <div>Supply Manager</div>;
-        }
-        return <div>Regular Holder</div>;
-      },
+      cell: ({ row }) => formatHolderType(row.original, tHolderType),
     }),
     columnHelper.display({
       id: "actions",

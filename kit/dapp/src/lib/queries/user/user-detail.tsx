@@ -162,6 +162,11 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
 });
 
 /**
+ * Type definition for user detail data
+ */
+export type UserDetail = Awaited<ReturnType<typeof getUserDetail>>;
+
+/**
  * Fetches a user by ID, returning null if not found
  *
  * @param params - Object containing the user ID

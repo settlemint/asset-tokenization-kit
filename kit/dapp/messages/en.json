@@ -2011,8 +2011,8 @@
         "table": {
           "actions-header": "Action",
           "balance-header": "Balance",
+          "holder-type-header": "Type",
           "name-header": "Name",
-          "role-header": "Type",
           "status-header": "Status",
           "symbol-header": "Symbol",
           "type-header": "Asset type"
@@ -2038,6 +2038,13 @@
     }
   },
   "asset-management": "Asset management",
+  "asset-type": {
+    "bond": "Bond",
+    "stablecoin": "Stablecoin",
+    "equity": "Equity",
+    "cryptocurrency": "Cryptocurrency",
+    "fund": "Fund"
+  },
   "auth": {
     "account": "Account",
     "add-account": "Add Account",
@@ -2381,6 +2388,12 @@
     "try-again": "Try again",
     "unknown-error": "Unknown error",
     "validation-errors": "Validation errors"
+  },
+  "holder-type": {
+    "admin": "Admin",
+    "creator-owner": "Creator / Owner",
+    "regular": "Regular Holder",
+    "supply-manager": "Supply Manager"
   },
   "layout": {
     "header": {

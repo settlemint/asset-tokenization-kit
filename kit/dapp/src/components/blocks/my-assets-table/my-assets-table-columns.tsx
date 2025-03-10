@@ -3,7 +3,6 @@
 import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
-import { formatAssetType } from "@/lib/utils/format-asset-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
@@ -14,6 +13,8 @@ export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("portfolio.my-assets.table");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetType = useTranslations("asset-type");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -26,7 +27,7 @@ export function columns() {
     }),
     columnHelper.accessor("asset.type", {
       header: t("type-header"),
-      cell: ({ getValue }) => formatAssetType(getValue()),
+      cell: ({ getValue }) => tAssetType(getValue()),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
@@ -35,9 +36,7 @@ export function columns() {
         variant: "numeric",
       },
       cell: ({ getValue, row }) =>
-        formatNumber(getValue(), {
-          currency: row.original.asset.symbol,
-        }),
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("asset.paused", {
