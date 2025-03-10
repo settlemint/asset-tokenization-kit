@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
+import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CheckCircle, XCircle } from "lucide-react";
@@ -23,6 +24,8 @@ export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("admin.cryptocurrencies.holders");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tHolderType = useTranslations("holder-type");
 
   return [
     columnHelper.accessor("account.id", {
@@ -44,6 +47,11 @@ export function columns() {
       meta: {
         variant: "numeric",
       },
+    }),
+    columnHelper.display({
+      header: t("holder-type-header"),
+      enableColumnFilter: false,
+      cell: ({ row }) => formatHolderType(row.original, tHolderType),
     }),
     columnHelper.accessor("frozen", {
       header: t("frozen-header"),

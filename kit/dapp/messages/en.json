@@ -192,6 +192,7 @@
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
+        "holder-type-header": "Type",
         "last-activity-header": "Last activity",
         "status-header": "Status",
         "wallet-header": "Wallet"
@@ -470,6 +471,7 @@
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
+        "holder-type-header": "Type",
         "last-activity-header": "Last activity",
         "status-header": "Status",
         "wallet-header": "Wallet"
@@ -902,6 +904,7 @@
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
+        "holder-type-header": "Type",
         "last-activity-header": "Last activity",
         "status-header": "Status",
         "wallet-header": "Wallet"
@@ -1361,6 +1364,7 @@
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
+        "holder-type-header": "Type",
         "last-activity-header": "Last activity",
         "status-header": "Status",
         "wallet-header": "Wallet"
@@ -1775,6 +1779,7 @@
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
+        "holder-type-header": "Type",
         "last-activity-header": "Last activity",
         "status-header": "Status",
         "wallet-header": "Wallet"
