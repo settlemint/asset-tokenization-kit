@@ -6,7 +6,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { TransferStableCoinSchema } from "./transfer-schema";
 
-const TransferStableCoin = portalGraphql(`
+export const TransferStableCoin = portalGraphql(`
   mutation TransferStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
     Transfer: StableCoinTransfer(
       address: $address
