@@ -1,11 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePredictedAddress } from "@/hooks/use-predicted-address";
+import { useVerifyPredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
@@ -19,7 +15,7 @@ export function Summary() {
   });
   const t = useTranslations("admin.stablecoins.create-form.summary");
 
-  const { isCalculatingAddress, error } = usePredictedAddress({
+  useVerifyPredictedAddress({
     calculateAddress: getPredictedAddress,
     fieldName: "predictedAddress",
   });
@@ -59,18 +55,6 @@ export function Summary() {
           value={`${values.collateralLivenessSeconds} ${t("seconds")}`}
         />
       </FormSummaryDetailCard>
-
-      {isCalculatingAddress ? (
-        <Skeleton className="h-32 w-full" />
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertDescription>{t("error-duplicate")}</AlertDescription>
-        </Alert>
-      ) : (
-        <FormSummarySecurityConfirmation>
-          <FormOtp control={control} name="pincode" />
-        </FormSummarySecurityConfirmation>
-      )}
     </FormStep>
   );
 }

@@ -1,11 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePredictedAddress } from "@/hooks/use-predicted-address";
+import { useVerifyPredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/bond-factory/predict-address";
 import { formatDate } from "@/lib/utils/date";
@@ -20,7 +16,7 @@ export function Summary() {
   });
   const t = useTranslations("admin.bonds.create-form.summary");
 
-  const { isCalculatingAddress, error } = usePredictedAddress({
+  useVerifyPredictedAddress({
     calculateAddress: getPredictedAddress,
     fieldName: "predictedAddress",
   });
@@ -72,18 +68,6 @@ export function Summary() {
           value={values.underlyingAsset || "-"}
         />
       </FormSummaryDetailCard>
-
-      {isCalculatingAddress ? (
-        <Skeleton className="h-32 w-full" />
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertDescription>{t("error-duplicate")}</AlertDescription>
-        </Alert>
-      ) : (
-        <FormSummarySecurityConfirmation>
-          <FormOtp control={control} name="pincode" />
-        </FormSummarySecurityConfirmation>
-      )}
     </FormStep>
   );
 }

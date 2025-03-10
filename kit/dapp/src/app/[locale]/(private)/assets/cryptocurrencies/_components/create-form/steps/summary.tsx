@@ -1,7 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { usePredictedAddress } from "@/hooks/use-predicted-address";
+import { useVerifyPredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
@@ -15,7 +15,7 @@ export function Summary() {
   });
   const t = useTranslations("admin.cryptocurrencies.create-form.summary");
 
-  usePredictedAddress({
+  useVerifyPredictedAddress({
     calculateAddress: getPredictedAddress,
     fieldName: "predictedAddress",
   });

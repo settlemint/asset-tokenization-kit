@@ -44,6 +44,7 @@ export function CreateBondForm({
           label: t("button-label"),
         }}
         defaultValues={{}}
+        secureForm={true}
       >
         <Basics />
         <Configuration />

@@ -43,6 +43,7 @@ export function CreateEquityForm({
           label: t("button-label"),
         }}
         defaultValues={{}}
+        secureForm={true}
       >
         <Basics />
         <Configuration />
