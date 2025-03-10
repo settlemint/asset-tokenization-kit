@@ -13,7 +13,7 @@ import React from "react";
  * @param props.children - Fallback content to display if translation is not available
  * @returns Translated form error message or children as fallback
  */
-export function TranslatableFormMessage({
+export function TranslatableFormFieldMessage({
   children,
   className,
   ...props

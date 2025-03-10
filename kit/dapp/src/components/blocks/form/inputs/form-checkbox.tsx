@@ -1,6 +1,6 @@
 "use client";
 
-import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-translatable-message";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -88,7 +88,7 @@ export function FormCheckbox<T extends FieldValues>({
                   {description}
                 </FormDescription>
               )}
-              <TranslatableFormMessage
+              <TranslatableFormFieldMessage
                 id={`${field.name}-error`}
                 aria-live="polite"
                 className="text-destructive"

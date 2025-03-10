@@ -1,6 +1,6 @@
 "use client";
 
-import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -89,7 +89,7 @@ export function FormOtpDialog<T extends FieldValues>({
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <TranslatableFormMessage className="text-destructive" />
+                <TranslatableFormFieldMessage className="text-destructive" />
               </div>
               <DialogFooter className="gap-2">
                 <Button
