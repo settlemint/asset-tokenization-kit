@@ -1,19 +1,19 @@
 "use client";
 
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import type { MyAsset } from "@/lib/queries/asset-balance/asset-balance-my";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TransferForm } from "./form";
 import { SelectAsset } from "./select-asset";
 
 interface TransferFormProps {
-  assets: MyAsset[];
+  assets: UserAsset[];
 }
 
 export function MyAssetsTransferForm({ assets }: TransferFormProps) {
   const t = useTranslations("portfolio.transfer-form");
-  const [selectedAsset, setSelectedAsset] = useState<MyAsset | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<UserAsset | null>(null);
   const [open, setOpen] = useState(false);
 
   return (
