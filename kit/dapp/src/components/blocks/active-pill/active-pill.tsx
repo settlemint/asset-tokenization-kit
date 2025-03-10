@@ -11,8 +11,8 @@ export function ActivePill({ paused }: { paused: boolean }): ReactElement {
     <Badge
       variant={paused ? "destructive" : "default"}
       className={cn(
-        "bg-destructive/20 text-destructive",
-        !paused && "bg-success/20 text-success"
+        "bg-destructive/80 text-destructive-foreground",
+        !paused && "bg-success/80 text-success-foreground"
       )}
     >
       {paused ? (
