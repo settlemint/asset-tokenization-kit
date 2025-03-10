@@ -1,6 +1,5 @@
 "use client";
 
-import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatAssetType } from "@/lib/utils/format-asset-type";
@@ -13,7 +12,7 @@ const columnHelper = createColumnHelper<UserAsset>();
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("portfolio.my-assets.table");
+  const t = useTranslations("admin.users.holdings.table");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -40,13 +39,29 @@ export function columns() {
         }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.paused", {
-      header: t("status-header"),
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return <ActivePill paused={value} />;
-      },
+    columnHelper.display({
+      header: t("role-header"),
       enableColumnFilter: false,
+      cell: ({ row }) => {
+        if (row.original.asset.creator.id === row.original.account.id) {
+          return <div>Creator</div>;
+        }
+        if (
+          row.original.asset.admins.some(
+            (admin) => admin.id === row.original.account.id
+          )
+        ) {
+          return <div>Admin</div>;
+        }
+        if (
+          row.original.asset.supplyManagers.some(
+            (manager) => manager.id === row.original.account.id
+          )
+        ) {
+          return <div>Supply Manager</div>;
+        }
+        return <div>Regular Holder</div>;
+      },
     }),
     columnHelper.display({
       id: "actions",

@@ -1,3 +1,7 @@
+import {
+  PermissionFragment,
+  PermissionFragmentSchema,
+} from "@/lib/queries/asset/asset-fragment";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
@@ -8,7 +12,8 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * Contains information about an account's balance for a specific asset,
  * including blocked and frozen status
  */
-export const AssetBalanceFragment = theGraphGraphql(`
+export const AssetBalanceFragment = theGraphGraphql(
+  `
   fragment AssetBalanceFragment on AssetBalance {
     blocked
     frozen
@@ -23,6 +28,10 @@ export const AssetBalanceFragment = theGraphGraphql(`
       symbol
       decimals
       type
+      creator { id }
+      admins { ...PermissionFragment }
+      supplyManagers { ...PermissionFragment }
+      userManagers { ...PermissionFragment }
       ... on StableCoin {
         paused
       }
@@ -37,7 +46,9 @@ export const AssetBalanceFragment = theGraphGraphql(`
       }
     }
   }
-`);
+`,
+  [PermissionFragment]
+);
 
 /**
  * Zod schema for validating asset balance data
@@ -58,6 +69,10 @@ export const AssetBalanceFragmentSchema = z.object({
     decimals: z.number(),
     type: z.assetType(),
     paused: z.boolean().optional().default(false),
+    creator: z.object({ id: z.address() }),
+    admins: z.array(PermissionFragmentSchema),
+    supplyManagers: z.array(PermissionFragmentSchema),
+    userManagers: z.array(PermissionFragmentSchema),
   }),
 });
 

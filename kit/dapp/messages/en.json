@@ -2006,6 +2006,18 @@
           "wallet": "Wallet"
         }
       },
+      "holdings": {
+        "title": "Holdings",
+        "table": {
+          "actions-header": "Action",
+          "balance-header": "Balance",
+          "name-header": "Name",
+          "role-header": "Type",
+          "status-header": "Status",
+          "symbol-header": "Symbol",
+          "type-header": "Asset type"
+        }
+      },
       "kyc_status": {
         "notVerified": "Not Verified",
         "verified": "Verified"
@@ -2405,7 +2417,15 @@
     "my-assets": {
       "description": "View and manage your digital assets",
       "portfolio-management": "Portfolio management",
-      "title": "My Assets"
+      "title": "My Assets",
+      "table": {
+        "actions-header": "Action",
+        "balance-header": "Balance",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Type"
+      }
     },
     "settings": {
       "profile": {
