@@ -6,7 +6,17 @@ const serverEnvironmentSchema = z
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
     NEXTAUTH_URL: z.string().url().optional(),
     SETTLEMINT_HASURA_ADMIN_SECRET: z.string().min(1),
-    SETTLEMINT_HD_PRIVATE_KEY: z.string().min(1),
+    RESEND_API_KEY: z.string().optional(),
+    GOOGLE_CLIENT_ID: z.string().optional(),
+    GOOGLE_CLIENT_SECRET: z.string().optional(),
+    GITHUB_CLIENT_ID: z.string().optional(),
+    GITHUB_CLIENT_SECRET: z.string().optional(),
+
+    // Wallet related
+    SETTLEMINT_HD_PRIVATE_KEY: z.string().regex(/^[a-z0-9-]+$/, {
+      message:
+        "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces",
+    }),
   })
   .transform((env) => ({
     ...env,

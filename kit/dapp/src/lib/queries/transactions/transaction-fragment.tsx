@@ -1,5 +1,5 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphqlStarterkits } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 export const ReceiptFragment = portalGraphql(`
@@ -93,7 +93,7 @@ export const TransactionFragmentSchema = z.object({
  */
 export type Transaction = ZodInfer<typeof TransactionFragmentSchema>;
 
-export const IndexingFragment = theGraphGraphqlStarterkits(`
+export const IndexingFragment = theGraphGraphql(`
   fragment IndexingFragment on _Block_ {
     number
   }

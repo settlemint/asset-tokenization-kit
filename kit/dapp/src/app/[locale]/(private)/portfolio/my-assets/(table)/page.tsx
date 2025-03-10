@@ -14,11 +14,11 @@ export default async function MyAssetsPage({ params }: MyAssetsPageProps) {
     locale,
     namespace: "portfolio.my-assets",
   });
-  const user = await getUser(locale);
+  const user = await getUser();
 
   return (
     <>
-      <PageHeader title={t("title")} />
+      <PageHeader title={t("title")} section={t("portfolio-management")} />
       <MyAssetsTable wallet={user.wallet as Address} title={t("title")} />
     </>
   );

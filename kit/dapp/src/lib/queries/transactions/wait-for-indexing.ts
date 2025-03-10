@@ -1,9 +1,9 @@
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { z } from "zod";
 import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
-import type { FragmentOf } from "@settlemint/sdk-portal";
-import { IndexingFragment } from "./transaction-fragment";
+  IndexingFragment,
+  type IndexingFragmentSchema,
+} from "./transaction-fragment";
 
 /**
  * Constants for transaction monitoring
@@ -15,7 +15,7 @@ const POLLING_DEFAULTS = {
   INTERVAL_MS: 500,
 } as const;
 
-const GetIndexingStatus = theGraphGraphqlStarterkits(
+const GetIndexingStatus = theGraphGraphql(
   `
   query GetIndexingStatus {
     _meta {
@@ -50,7 +50,7 @@ export async function waitForIndexing(
   const pollingIntervalMs =
     options.pollingIntervalMs ?? POLLING_DEFAULTS.INTERVAL_MS;
 
-  let indexedBlock: FragmentOf<typeof IndexingFragment> | null = null;
+  let indexedBlock: z.infer<typeof IndexingFragmentSchema> | null = null;
   const startTime = Date.now();
 
   while (!indexedBlock || indexedBlock.number < blockNumber) {
@@ -60,11 +60,13 @@ export async function waitForIndexing(
       );
     }
 
-    const status = await theGraphClientStarterkits.request(GetIndexingStatus);
+    const status = await theGraphClient.request(GetIndexingStatus);
     indexedBlock = status._meta?.block ?? null;
 
     if ((indexedBlock?.number ?? 0) < blockNumber) {
-      await new Promise((resolve) => setTimeout(resolve, pollingIntervalMs));
+      await new Promise<void>((resolve) =>
+        setTimeout(resolve, pollingIntervalMs)
+      );
     }
   }
   return indexedBlock.number;

@@ -3,16 +3,13 @@ import {
   AssetBalanceFragment,
   AssetBalanceFragmentSchema,
 } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 
-const MyAssetsBalance = theGraphGraphqlStarterkits(
+const MyAssetsBalance = theGraphGraphql(
   `
   query MyAssetsBalance($accountId: ID!, $first: Int, $skip: Int) {
     account(id: $accountId) {
@@ -43,14 +40,11 @@ export type MyAsset = Awaited<
 export const getMyAssetsBalance = cache(
   async (wallet: Address, active = true) => {
     const myAssetsBalance = await fetchAllTheGraphPages(async (first, skip) => {
-      const pageResult = await theGraphClientStarterkits.request(
-        MyAssetsBalance,
-        {
-          accountId: getAddress(wallet),
-          first,
-          skip,
-        }
-      );
+      const pageResult = await theGraphClient.request(MyAssetsBalance, {
+        accountId: getAddress(wallet),
+        first,
+        skip,
+      });
       return pageResult.account?.balances ?? [];
     });
 
