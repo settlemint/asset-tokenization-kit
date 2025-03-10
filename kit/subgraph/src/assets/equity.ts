@@ -93,6 +93,7 @@ export function handleTransfer(event: Transfer): void {
     const balance = fetchAssetBalance(equity.id, to.id, equity.decimals);
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, equity.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -155,6 +156,7 @@ export function handleTransfer(event: Transfer): void {
     const balance = fetchAssetBalance(equity.id, from.id, equity.decimals);
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, equity.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     if (balance.valueExact.equals(BigInt.zero())) {
@@ -226,6 +228,7 @@ export function handleTransfer(event: Transfer): void {
     const fromBalance = fetchAssetBalance(equity.id, from.id, equity.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, equity.decimals);
+    fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
@@ -244,6 +247,7 @@ export function handleTransfer(event: Transfer): void {
     const toBalance = fetchAssetBalance(equity.id, to.id, equity.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, equity.decimals);
+    toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
     const toPortfolioStats = newPortfolioStatsData(
@@ -468,6 +472,7 @@ export function handleApproval(event: Approval): void {
   const ownerBalance = fetchAssetBalance(equity.id, owner.id, equity.decimals);
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(event.params.value, equity.decimals);
+  ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
   const approval = approvalEvent(
@@ -660,6 +665,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(event.params.amount, equity.decimals);
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   const assetStats = newAssetStatsData(
@@ -720,6 +726,7 @@ export function handleUserBlocked(event: UserBlocked): void {
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
   balance.blocked = true;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userBlockedEvent(
@@ -761,6 +768,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   const balance = fetchAssetBalance(equity.id, user.id, equity.decimals);
   balance.blocked = false;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userUnblockedEvent(

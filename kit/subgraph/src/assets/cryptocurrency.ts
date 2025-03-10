@@ -92,6 +92,7 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -171,6 +172,7 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -249,6 +251,7 @@ export function handleTransfer(event: Transfer): void {
       fromBalance.valueExact,
       cryptoCurrency.decimals
     );
+    fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
@@ -271,6 +274,7 @@ export function handleTransfer(event: Transfer): void {
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, cryptoCurrency.decimals);
+    toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
     const toPortfolioStats = newPortfolioStatsData(
@@ -512,6 +516,7 @@ export function handleApproval(event: Approval): void {
     event.params.value,
     cryptoCurrency.decimals
   );
+  ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
   const approval = approvalEvent(
