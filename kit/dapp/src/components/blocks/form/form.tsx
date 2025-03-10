@@ -101,7 +101,6 @@ export function Form<
 
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
-    setShowFormSecurityConfirmation(false);
   };
 
   const handleNext = async () => {
@@ -131,11 +130,7 @@ export function Form<
     if (results.every(Boolean)) {
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
-        if (isLastStep && secureForm) {
-          setShowFormSecurityConfirmation(true);
-        } else {
-          setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
-        }
+        setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       }, 10);
     }
   };
@@ -205,11 +200,14 @@ export function Form<
                     });
                   }}
                   labels={buttonLabels}
-                  {...(secureForm
-                    ? {
-                        onLastStep: handleNext,
-                      }
-                    : {})}
+                  onLastStep={
+                    secureForm
+                      ? () => {
+                          void handleNext();
+                          setShowFormSecurityConfirmation(true);
+                        }
+                      : undefined
+                  }
                 />
               )}
             </div>
