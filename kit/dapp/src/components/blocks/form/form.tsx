@@ -154,10 +154,18 @@ export function Form<
                   <AlertTitle>{tError("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
-                      .map(
-                        ([key, error]) =>
-                          `${key && error?.type !== "custom" ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
-                      )
+                      .map(([key, error]) => {
+                        const errorMessage =
+                          (error?.message as string) ?? "unknown-error";
+                        const translatedErrorMessage = tError.has(
+                          errorMessage as never
+                        )
+                          ? tError(errorMessage as never)
+                          : errorMessage;
+                        const errorKey =
+                          key && error?.type !== "custom" ? `${key}: ` : "";
+                        return `${errorKey}${translatedErrorMessage}`;
+                      })
                       .filter(Boolean)
                       .join("\n")}
                   </AlertDescription>

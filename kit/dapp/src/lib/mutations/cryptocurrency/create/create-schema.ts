@@ -22,8 +22,7 @@ export const CreateCryptoCurrencySchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message:
-      "A Cryptocurrency with these details already exists. Please change at least one of the details.",
+    message: "cryptocurrency-duplicate",
   }),
 });
 

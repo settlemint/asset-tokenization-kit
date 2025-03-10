@@ -21,7 +21,9 @@ export const CreateStablecoinSchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().min(0)),
   pincode: z.pincode(),
-  predictedAddress: z.address().refine(isAddressAvailable),
+  predictedAddress: z.address().refine(isAddressAvailable, {
+    message: "stablecoin-duplicate",
+  }),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;
