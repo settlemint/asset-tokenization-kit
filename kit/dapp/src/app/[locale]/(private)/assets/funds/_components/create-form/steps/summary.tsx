@@ -89,4 +89,4 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = ["pincode", "predictedAddress"] as const;
+Summary.validatedFields = ["predictedAddress"] as const;
