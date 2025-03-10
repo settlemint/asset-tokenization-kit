@@ -133,13 +133,7 @@ export function Form<
   };
 
   const isLastStep = currentStep === totalSteps - 1;
-  const CurrentStep = Array.isArray(children)
-    ? children[currentStep].type
-    : children.type;
-  const hasError =
-    Object.keys(form.formState.errors).filter(
-      (fieldName) => !CurrentStep.validatedFields.includes(fieldName as never)
-    ).length > 0;
+  const hasError = Object.keys(form.formState.errors).length > 0;
 
   return (
     <div className="space-y-6 h-full">
@@ -155,17 +149,14 @@ export function Form<
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
-              {isLastStep && hasError && !form.formState.isValidating && (
-                <Alert
-                  variant="destructive"
-                  className="text-destructive border-destructive mb-4"
-                >
+              {isLastStep && hasError && (
+                <Alert variant="destructive" className="mb-4">
                   <AlertTitle>{tError("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(
                         ([key, error]) =>
-                          `${key ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
+                          `${key && error?.type !== "custom" ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
                       )
                       .filter(Boolean)
                       .join("\n")}

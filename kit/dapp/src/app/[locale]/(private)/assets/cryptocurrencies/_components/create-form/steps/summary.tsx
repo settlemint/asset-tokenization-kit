@@ -55,4 +55,4 @@ export function Summary() {
   );
 }
 
-Summary.validatedFields = [] as const;
+Summary.validatedFields = ["predictedAddress"] as const;
