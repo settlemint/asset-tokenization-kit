@@ -1,7 +1,8 @@
 "use client";
 
-import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
+import { icons } from "@/app/[locale]/(private)/assets/stablecoins/[address]/holders/_components/columns";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
+import { formatDate } from "@/lib/utils/date";
 import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -46,19 +47,28 @@ export function columns() {
       enableColumnFilter: false,
       cell: ({ row }) => formatHolderType(row.original, tHolderType),
     }),
-    columnHelper.display({
-      id: "actions",
-      header: t("actions-header"),
-      cell: ({ row }) => {
+    columnHelper.accessor("blocked", {
+      header: t("status-header"),
+      cell: ({ getValue }) => {
+        const blocked: boolean = getValue();
+        const Icon = icons[blocked ? "blocked" : "unblocked"];
         return (
-          <DataTableRowActions
-            detailUrl={`/portfolio/my-assets/${row.original.asset.type}/${row.original.asset.id}`}
-          />
+          <>
+            {Icon && <Icon className="size-4 text-muted-foreground" />}
+            <span>{blocked ? t("blocked-status") : t("active-status")}</span>
+          </>
         );
       },
-      meta: {
-        enableCsvExport: false,
+    }),
+    columnHelper.accessor("account.lastActivity", {
+      header: t("last-activity-header"),
+      cell: ({ getValue }) => {
+        const lastActivity = getValue();
+        return lastActivity
+          ? formatDate(lastActivity, { type: "distance" })
+          : "-";
       },
+      enableColumnFilter: false,
     }),
   ];
 }

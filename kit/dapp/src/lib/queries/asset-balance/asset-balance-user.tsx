@@ -23,10 +23,10 @@ const UserAssetsBalance = theGraphGraphql(
 );
 
 const PAUSABLE_ASSET_TYPES = new Set([
-  "StableCoin",
-  "Bond",
-  "Fund",
-  "Equity",
+  "stablecoin",
+  "bond",
+  "fund",
+  "equity",
 ] as const);
 
 type PausableAssetType =

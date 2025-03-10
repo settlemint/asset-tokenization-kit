@@ -5,10 +5,12 @@ import { columns } from "./user-assets-table-columns";
 
 interface UserAssetsTableProps {
   wallet: Address;
+  title: string;
 }
 
 export default async function UserAssetsTable({
   wallet,
+  title,
 }: UserAssetsTableProps) {
   const userAssetsBalance = await geUserAssetsBalance(wallet);
 
@@ -16,7 +18,7 @@ export default async function UserAssetsTable({
     <DataTable
       columns={columns}
       data={userAssetsBalance.balances}
-      name="user-assets-table"
+      name={title}
     />
   );
 }

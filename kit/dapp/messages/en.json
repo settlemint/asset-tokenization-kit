@@ -2015,8 +2015,11 @@
         "title": "Holdings",
         "table": {
           "actions-header": "Action",
+          "active-status": "Active",
           "balance-header": "Balance",
+          "blocked-status": "Blocked",
           "holder-type-header": "Type",
+          "last-activity-header": "Last activity",
           "name-header": "Name",
           "status-header": "Status",
           "symbol-header": "Symbol",
