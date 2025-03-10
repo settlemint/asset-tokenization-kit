@@ -1,14 +1,20 @@
 "use client";
 
-import { icons } from "@/app/[locale]/(private)/assets/stablecoins/[address]/holders/_components/columns";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatDate } from "@/lib/utils/date";
 import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
+import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ComponentType } from "react";
 
 const columnHelper = createColumnHelper<UserAsset>();
+
+export const icons: Record<string, ComponentType<{ className?: string }>> = {
+  blocked: XCircle,
+  unblocked: CheckCircle,
+};
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
