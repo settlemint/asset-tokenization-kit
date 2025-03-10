@@ -10,12 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
@@ -23,6 +18,7 @@ import {
 } from "@/components/ui/input-otp";
 import { cn } from "@/lib/utils";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useTranslations } from "next-intl";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCallback } from "react";
 import type { FieldValues } from "react-hook-form";
@@ -45,26 +41,27 @@ export function FormOtpDialog<T extends FieldValues>({
   open,
   onOpenChange,
   onSubmit,
+
   ...props
 }: FormOtpDialogProps<T>) {
   const handleSubmit = useCallback(() => {
     onSubmit();
     onOpenChange(false);
   }, [onSubmit, onOpenChange]);
+  const tPincode = useTranslations("components.form.pincode-dialog");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Some title</DialogTitle>
-          <DialogDescription>Some description</DialogDescription>
+          <DialogTitle>{tPincode("title")}</DialogTitle>
+          <DialogDescription>{tPincode("description")}</DialogDescription>
         </DialogHeader>
         <FormField
           {...props}
           render={({ field, formState: { isValid } }) => (
             <FormItem className="flex flex-col space-y-1">
               <div className="space-y-2">
-                <FormLabel>{props.label}</FormLabel>
                 <FormControl>
                   <InputOTP
                     minLength={6}

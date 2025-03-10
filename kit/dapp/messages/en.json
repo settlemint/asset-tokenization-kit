@@ -2347,6 +2347,10 @@
         "loading": "Loading...",
         "no-user-found": "No user found.",
         "search-placeholder": "Search for a user..."
+      },
+      "pincode-dialog": {
+        "title": "Enter your pincode to confirm",
+        "description": "To sign the transaction, please enter your pincode for verification and authorization."
       }
     },
     "logo": {

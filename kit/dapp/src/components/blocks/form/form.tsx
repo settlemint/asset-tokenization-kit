@@ -180,8 +180,6 @@ export function Form<
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
                   name={"pincode" as Path<ZodInfer<S>>}
-                  label="Pincode"
-                  description="Please enter your pincode"
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control}
