@@ -28,6 +28,15 @@
       },
       "asset-management": "Vermögensverwaltung"
     },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins"
+      }
+    },
     "bonds": {
       "burn-form": {
         "amount": {
@@ -195,12 +204,13 @@
       },
       "manage": {
         "actions": {
-          "burn": "Verbrennen",
-          "grant-role": "Rolle zuweisen",
-          "mint": "Prägen",
+          "mint": "Ausgeben",
+          "burn": "Einlösen",
           "pause": "Pausieren",
           "unpause": "Fortsetzen",
-          "top-up": "Basiswert aufstocken"
+          "grant-role": "Rolle zuweisen",
+          "top-up": "Aufstocken",
+          "withdraw": "Abheben"
         },
         "manage": "Verwalten"
       },
@@ -366,6 +376,41 @@
           "summary": {
             "title": "Aufstockung überprüfen und bestätigen",
             "description": "Überprüfen Sie die Details Ihrer Aufstockung, bevor Sie fortfahren.",
+            "amount-label": "Betrag",
+            "asset-label": "Basiswert",
+            "pincode": {
+              "label": "PIN-Code",
+              "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen"
+            }
+          }
+        }
+      },
+      "withdraw-form": {
+        "trigger-label": "Abheben",
+        "title": "Basiswert abheben",
+        "description": "Basiswert von Ihrem Bond abheben",
+        "button-label": "Abheben",
+        "steps": {
+          "recipient": {
+            "title": "Empfänger auswählen",
+            "description": "Wählen Sie aus, wer den Basiswert erhalten soll.",
+            "label": "Empfänger",
+            "placeholder": "Nach Benutzer suchen oder Adresse eingeben",
+            "search-instead": "Stattdessen nach Benutzer suchen...",
+            "manual-instead": "Adresse manuell eingeben..."
+          },
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den abzuhebenden Betrag an.",
+            "amount": {
+              "label": "Betrag",
+              "description": "Geben Sie den Abhebungsbetrag ein"
+            }
+          },
+          "summary": {
+            "title": "Abhebung überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihrer Abhebung, bevor Sie fortfahren.",
+            "recipient-label": "Empfänger",
             "amount-label": "Betrag",
             "asset-label": "Basiswert",
             "pincode": {
@@ -929,12 +974,13 @@
       },
       "manage": {
         "actions": {
-          "burn": "Verbrennen",
-          "grant-role": "Rolle gewähren",
-          "mint": "Prägen",
+          "mint": "Ausgeben",
+          "burn": "Einlösen",
           "pause": "Pausieren",
           "unpause": "Fortsetzen",
-          "top-up": "Basiswert aufstocken"
+          "grant-role": "Rolle zuweisen",
+          "top-up": "Aufstocken",
+          "withdraw": "Abheben"
         },
         "manage": "Verwalten"
       },
@@ -2052,16 +2098,6 @@
       "title": "Benutzer",
       "platform-management": "Plattformverwaltung"
     },
-    "charts": {
-      "asset-statistics-title": "Vermögensstatistiken",
-      "asset-type-formatter": {
-        "bonds": "Anleihen",
-        "cryptocurrencies": "Kryptowährungen",
-        "equities": "Aktien",
-        "funds": "Fonds",
-        "stablecoins": "Stablecoins"
-      }
-    },
     "platform": {
       "settings": {
         "platform-management": "Plattformverwaltung"
@@ -2495,3 +2531,4 @@
   },
   "asset-management": "Vermögensverwaltung"
 }
+

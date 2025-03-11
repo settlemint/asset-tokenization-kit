@@ -1,8 +1,9 @@
 "use client";
 
-import { ActivePill } from "@/components/blocks/active-pill/active-pill";
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
+import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
@@ -15,6 +16,8 @@ export function columns() {
   const t = useTranslations("portfolio.my-assets.table");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tAssetType = useTranslations("asset-type");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetStatus = useTranslations("asset-status");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -25,10 +28,9 @@ export function columns() {
       header: t("symbol-header"),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.type", {
+    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+      id: t("type-header"),
       header: t("type-header"),
-      cell: ({ getValue }) => tAssetType(getValue()),
-      enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -39,13 +41,12 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.paused", {
+    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+      id: t("status-header"),
       header: t("status-header"),
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return <ActivePill paused={value} />;
+      cell: ({ row }) => {
+        return <AssetStatusPill assetBalance={row.original} />;
       },
-      enableColumnFilter: false,
     }),
     columnHelper.display({
       id: "actions",

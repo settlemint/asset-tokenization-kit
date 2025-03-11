@@ -17,6 +17,7 @@ import { GrantRoleForm } from "./grant-role-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
+import { WithdrawForm } from "./withdraw-form/form";
 
 interface ManageDropdownProps {
   address: Address;
@@ -46,6 +47,10 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
       {
         id: "top-up",
         label: t("actions.top-up"),
+      },
+      {
+        id: "withdraw",
+        label: t("actions.withdraw"),
       },
     ] as const,
     [t, bond.paused]
@@ -110,6 +115,12 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
         address={address}
         underlyingAssetAddress={bond.underlyingAsset}
         open={openMenuItem === "top-up"}
+        onOpenChange={onFormOpenChange}
+      />
+      <WithdrawForm
+        address={address}
+        underlyingAssetAddress={bond.underlyingAsset}
+        open={openMenuItem === "withdraw"}
         onOpenChange={onFormOpenChange}
       />
     </>
