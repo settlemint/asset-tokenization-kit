@@ -34,10 +34,10 @@ export function columns() {
       header: t("symbol-header"),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.type", {
+    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+      id: t("type-header"),
       header: t("type-header"),
-      cell: ({ getValue }) => tAssetType(getValue()),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -48,25 +48,30 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.display({
+    columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
+      id: t("holder-type-header"),
       header: t("holder-type-header"),
-      enableColumnFilter: false,
-      cell: ({ row }) => formatHolderType(row.original, tHolderType),
+      enableColumnFilter: true,
     }),
-    columnHelper.accessor("blocked", {
-      header: t("status-header"),
-      cell: ({ getValue }) => {
-        const blocked: boolean = getValue();
-        const Icon = icons[blocked ? "blocked" : "unblocked"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{blocked ? t("blocked-status") : t("active-status")}</span>
-          </>
-        );
-      },
-    }),
-    columnHelper.accessor("asset.lastActivity", {
+    columnHelper.accessor(
+      (row) => (row.blocked ? t("blocked-status") : t("active-status")),
+      {
+        id: t("status-header"),
+        header: t("status-header"),
+        cell: ({ row }) => {
+          const { blocked } = row.original;
+          const Icon = icons[blocked ? "blocked" : "unblocked"];
+          return (
+            <>
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span>{blocked ? t("blocked-status") : t("active-status")}</span>
+            </>
+          );
+        },
+        enableColumnFilter: true,
+      }
+    ),
+    columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();

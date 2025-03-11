@@ -15,6 +15,8 @@ export function columns() {
   const t = useTranslations("portfolio.my-assets.table");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tAssetType = useTranslations("asset-type");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tStatus = useTranslations("components.active-pill");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -25,10 +27,10 @@ export function columns() {
       header: t("symbol-header"),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.type", {
+    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+      id: t("type-header"),
       header: t("type-header"),
-      cell: ({ getValue }) => tAssetType(getValue()),
-      enableColumnFilter: false,
+      enableColumnFilter: true,
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -39,14 +41,17 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("asset.paused", {
-      header: t("status-header"),
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return <ActivePill paused={value} />;
-      },
-      enableColumnFilter: false,
-    }),
+    columnHelper.accessor(
+      (row) => (row.asset.paused ? tStatus("paused") : tStatus("active")),
+      {
+        id: t("status-header"),
+        header: t("status-header"),
+        cell: ({ row }) => {
+          return <ActivePill paused={row.original.asset.paused} />;
+        },
+        enableColumnFilter: true,
+      }
+    ),
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),
