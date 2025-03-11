@@ -198,12 +198,13 @@
       },
       "manage": {
         "actions": {
-          "burn": "Burn",
-          "grant-role": "Grant role",
           "mint": "Mint",
+          "burn": "Burn",
           "pause": "Pause",
           "unpause": "Unpause",
-          "top-up": "Top up underlying asset"
+          "grant-role": "Grant role",
+          "top-up": "Top up underlying asset",
+          "withdraw": "Withdraw underlying asset"
         },
         "manage": "Manage"
       },
@@ -372,16 +373,41 @@
             }
           }
         }
-      }
-    },
-    "charts": {
-      "asset-statistics-title": "Asset statistics",
-      "asset-type-formatter": {
-        "bonds": "Bonds",
-        "cryptocurrencies": "Cryptocurrencies",
-        "equities": "Equities",
-        "funds": "Funds",
-        "stablecoins": "Stablecoins"
+      },
+      "withdraw-form": {
+        "trigger-label": "Withdraw",
+        "title": "Withdraw underlying asset",
+        "description": "Withdraw underlying asset from your bond",
+        "button-label": "Withdraw",
+        "steps": {
+          "recipient": {
+            "title": "Select recipient",
+            "description": "Choose who will receive the underlying asset.",
+            "label": "Recipient",
+            "placeholder": "Search for a user or enter address",
+            "search-instead": "Search for a user instead...",
+            "manual-instead": "Enter address manually..."
+          },
+          "amount": {
+            "title": "Enter amount",
+            "description": "Specify the amount to withdraw.",
+            "amount": {
+              "label": "Amount",
+              "description": "Enter the amount to withdraw"
+            }
+          },
+          "summary": {
+            "title": "Review and confirm withdrawal",
+            "description": "Verify the details of your withdrawal before proceeding.",
+            "recipient-label": "Recipient",
+            "amount-label": "Amount",
+            "asset-label": "Underlying asset",
+            "pincode": {
+              "label": "PIN Code",
+              "description": "Enter your PIN code to confirm the transaction"
+            }
+          }
+        }
       }
     },
     "cryptocurrencies": {
@@ -941,11 +967,11 @@
       },
       "manage": {
         "actions": {
-          "burn": "Burn",
-          "grant-role": "Grant Role",
           "mint": "Mint",
+          "burn": "Burn",
           "pause": "Pause",
-          "unpause": "Unpause"
+          "unpause": "Unpause",
+          "grant-role": "Grant role"
         },
         "manage": "Manage"
       },
@@ -1402,11 +1428,11 @@
       },
       "manage": {
         "actions": {
-          "burn": "Burn",
-          "grant-role": "Grant Role",
           "mint": "Mint",
+          "burn": "Burn",
           "pause": "Pause",
-          "unpause": "Unpause"
+          "unpause": "Unpause",
+          "grant-role": "Grant role"
         },
         "manage": "Manage"
       },
@@ -2071,6 +2097,15 @@
         "banned": "Banned"
       },
       "title": "Users"
+    },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins"
+      }
     }
   },
   "asset-management": "Asset management",
