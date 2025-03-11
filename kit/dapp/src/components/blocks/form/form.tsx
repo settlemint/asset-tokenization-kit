@@ -187,7 +187,10 @@ export function Form<
             )}
             <div className="flex-1">
               {isLastStep && hasError && (
-                <Alert variant="destructive" className="mb-4">
+                <Alert
+                  variant="destructive"
+                  className="text-destructive border-destructive mb-4"
+                >
                   <AlertTitle>{tError("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
