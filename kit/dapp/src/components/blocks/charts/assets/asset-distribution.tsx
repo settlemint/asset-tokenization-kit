@@ -1,56 +1,55 @@
-import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
-import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
-import type { ChartConfig } from "@/components/ui/chart";
+import { getAssetColor } from "@/components/blocks/asset-type-icon/asset-color";
+import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { VerticalBarChartComponent } from "../bar-charts/vertical-bar-chart";
 
 interface AssetDistributionProps {
   address: Address;
 }
 
 export async function AssetDistribution({ address }: AssetDistributionProps) {
-  const t = await getTranslations("components.charts.assets");
+  const tAssets = await getTranslations("components.charts.assets");
+  const tAssetTypes = await getTranslations("portfolio.asset-types");
   const data = await getUserAssetsBalance(address, true);
-
-  // If there's no data, return a skeleton state
-  if (!data || data.balances.length === 0) {
-    return (
-      <ChartSkeleton title={t("asset-distribution")} variant="noData">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
-          <p>{t("asset-distribution-no-data")}</p>
-        </div>
-      </ChartSkeleton>
-    );
-  }
-
-  const chartConfig = {
-    count: {
-      label: "Number of Wallets",
-      color: "var(--chart-1)",
-    },
-  } satisfies ChartConfig;
-
   const chartData = data.distribution.map((item, index) => {
     return {
-      assetType: t(`asset-type-pluralizer.${item.asset.type}`),
+      assetType: item.asset.type,
       percentage: item.percentage,
-      fill: `var(--chart-${index + 1})`,
     };
   });
 
+  type AssetType = Awaited<
+    ReturnType<typeof getUserAssetsBalance>
+  >["distribution"][number]["asset"]["type"];
+
+  const config: Record<AssetType, { label: string; color: string }> = {
+    bond: {
+      label: tAssetTypes("bond"),
+      color: getAssetColor("bond", "color"),
+    },
+    equity: {
+      label: tAssetTypes("equity"),
+      color: getAssetColor("equity", "color"),
+    },
+    fund: {
+      label: tAssetTypes("fund"),
+      color: getAssetColor("fund", "color"),
+    },
+    stablecoin: {
+      label: tAssetTypes("stablecoin"),
+      color: getAssetColor("stablecoin", "color"),
+    },
+  };
+
   return (
-    <VerticalBarChartComponent
+    <PieChartComponent
+      description={tAssets("asset-distribution-description")}
+      title={tAssets("asset-distribution")}
       data={chartData}
-      config={chartConfig}
-      title="Asset Distribution"
-      description="Portfolio allocation by asset type"
-      yAxis={{
-        key: "assetType",
-      }}
-      valueKey="percentage"
+      dataKey="percentage"
+      nameKey="assetType"
+      config={config}
     />
   );
 }
