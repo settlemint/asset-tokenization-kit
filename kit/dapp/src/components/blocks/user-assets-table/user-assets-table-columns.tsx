@@ -1,20 +1,15 @@
 "use client";
 
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatDate } from "@/lib/utils/date";
+import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ComponentType } from "react";
 
 const columnHelper = createColumnHelper<UserAsset>();
-
-export const icons: Record<string, ComponentType<{ className?: string }>> = {
-  blocked: XCircle,
-  unblocked: CheckCircle,
-};
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
@@ -24,6 +19,8 @@ export function columns() {
   const tHolderType = useTranslations("holder-type");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tAssetType = useTranslations("asset-type");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetStatus = useTranslations("asset-status");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -51,23 +48,13 @@ export function columns() {
       id: t("holder-type-header"),
       header: t("holder-type-header"),
     }),
-    columnHelper.accessor(
-      (row) => (row.blocked ? t("blocked-status") : t("active-status")),
-      {
-        id: t("status-header"),
-        header: t("status-header"),
-        cell: ({ row }) => {
-          const { blocked } = row.original;
-          const Icon = icons[blocked ? "blocked" : "unblocked"];
-          return (
-            <>
-              {Icon && <Icon className="size-4 text-muted-foreground" />}
-              <span>{blocked ? t("blocked-status") : t("active-status")}</span>
-            </>
-          );
-        },
-      }
-    ),
+    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+      id: t("status-header"),
+      header: t("status-header"),
+      cell: ({ row }) => {
+        return <AssetStatusPill assetBalance={row.original} />;
+      },
+    }),
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {

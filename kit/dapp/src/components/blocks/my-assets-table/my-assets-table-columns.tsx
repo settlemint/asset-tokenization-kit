@@ -1,8 +1,9 @@
 "use client";
 
-import { ActivePill } from "@/components/blocks/active-pill/active-pill";
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
+import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
@@ -16,7 +17,7 @@ export function columns() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tAssetType = useTranslations("asset-type");
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tStatus = useTranslations("components.active-pill");
+  const tAssetStatus = useTranslations("asset-status");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -40,16 +41,13 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor(
-      (row) => (row.asset.paused ? tStatus("paused") : tStatus("active")),
-      {
-        id: t("status-header"),
-        header: t("status-header"),
-        cell: ({ row }) => {
-          return <ActivePill paused={row.original.asset.paused} />;
-        },
-      }
-    ),
+    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+      id: t("status-header"),
+      header: t("status-header"),
+      cell: ({ row }) => {
+        return <AssetStatusPill assetBalance={row.original} />;
+      },
+    }),
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),

@@ -145,7 +145,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -169,7 +168,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -307,13 +305,11 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "name-header": "Name",
         "page-description": "Create, view, and manage bond assets on the blockchain",
         "page-title": "Bonds Management",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -467,9 +463,7 @@
         "title": "Grant Role"
       },
       "holders": {
-        "active-status": "Active",
         "balance-header": "Balance",
-        "blocked-status": "Blocked",
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
@@ -859,7 +853,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -883,7 +876,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1021,7 +1013,6 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "category-blend-equity": "Blend Equity",
@@ -1076,7 +1067,6 @@
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your equity assets.",
         "page-title": "Equities",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -1320,7 +1310,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -1344,7 +1333,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1482,7 +1470,6 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "assets-under-management-header": "AUM",
@@ -1539,7 +1526,6 @@
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your fund assets.",
         "page-title": "Funds",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -1736,7 +1722,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -1760,7 +1745,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1908,14 +1892,12 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "committed-collateral-header": "Collateral consumed",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your stablecoin assets.",
         "page-title": "Stable Coins",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -2020,9 +2002,7 @@
         "title": "Holdings",
         "table": {
           "actions-header": "Action",
-          "active-status": "Active",
           "balance-header": "Balance",
-          "blocked-status": "Blocked",
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
           "name-header": "Name",
@@ -2057,6 +2037,11 @@
     "equity": "Equity",
     "cryptocurrency": "Cryptocurrency",
     "fund": "Fund"
+  },
+  "asset-status": {
+    "active": "Active",
+    "paused": "Paused",
+    "blocked": "Blocked"
   },
   "auth": {
     "account": "Account",
@@ -2258,6 +2243,9 @@
       "events": "Events",
       "sender": "Sender",
       "timestamp": "Timestamp"
+    },
+    "asset-status-pill": {
+      "blocked": "Blocked"
     },
     "asset-type-icon": {
       "bond-initials": "BN",
