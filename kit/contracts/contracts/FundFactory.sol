@@ -139,9 +139,9 @@ contract FundFactory is ReentrancyGuard, ERC2771Context {
 
     /// @notice Checks if an address was deployed by this factory
     /// @dev Returns true if the address was created by this factory, false otherwise
-    /// @param predicted The address to check
+    /// @param token The address to check
     /// @return True if the address was created by this factory, false otherwise
-    function isAddressDeployed(address predicted) public view returns (bool) {
-        return isFactoryFund[predicted];
+    function isAddressDeployed(address token) public view returns (bool) {
+        return isFactoryFund[token];
     }
 }

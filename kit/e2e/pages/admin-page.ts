@@ -7,7 +7,7 @@ export class AdminPage extends BasePage {
   private static readonly COMMA_REGEX = /,/g;
 
   async goto() {
-    await this.page.goto("/admin");
+    await this.page.goto("/assets");
   }
 
   private async startAssetCreation(
@@ -682,7 +682,7 @@ export class AdminPage extends BasePage {
 
     const viewAllLink = this.page
       .locator(
-        `a[data-sidebar="menu-sub-button"][href*="/admin/${options.sidebarAssetTypes.toLowerCase()}"]`
+        `a[data-sidebar="menu-sub-button"][href*="/assets/${options.sidebarAssetTypes.toLowerCase()}"]`
       )
       .filter({ hasText: "View all" });
 

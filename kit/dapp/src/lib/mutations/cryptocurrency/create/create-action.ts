@@ -28,28 +28,6 @@ const CryptoCurrencyFactoryCreate = portalGraphql(`
 `);
 
 /**
- * GraphQL query for predicting the address of a new cryptocurrency
- *
- * @remarks
- * Uses deterministic deployment to predict the contract address before creation
- */
-const CreateCryptoCurrencyPredictAddress = portalGraphql(`
-  query CreateCryptoCurrencyPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $initialSupply: String!) {
-    CryptoCurrencyFactory(address: $address) {
-      predictAddress(
-        sender: $sender
-        decimals: $decimals
-        name: $name
-        symbol: $symbol
-        initialSupply: $initialSupply
-      ) {
-        predicted
-      }
-    }
-  }
-`);
-
-/**
  * GraphQL mutation for creating off-chain metadata for a cryptocurrency
  *
  * @remarks
@@ -74,24 +52,6 @@ export const createCryptoCurrency = action
       const initialSupplyExact = String(
         parseUnits(String(initialSupply), decimals)
       );
-      const predictedAddress = await portalClient.request(
-        CreateCryptoCurrencyPredictAddress,
-        {
-          address: CRYPTO_CURRENCY_FACTORY_ADDRESS,
-          sender: user.wallet,
-          decimals,
-          name: assetName,
-          symbol,
-          initialSupply: initialSupplyExact,
-        }
-      );
-
-      const newAddress =
-        predictedAddress.CryptoCurrencyFactory?.predictAddress?.predicted;
-
-      if (!newAddress) {
-        throw new Error("Failed to predict the address");
-      }
 
       const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,

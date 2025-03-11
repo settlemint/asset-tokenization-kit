@@ -1,6 +1,6 @@
 FROM node:22.14.0 AS build
 
-COPY --from=oven/bun:1.2.4-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+COPY --from=oven/bun:1.2.5-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
 ENV BUN_INSTALL_BIN=/bin
 
@@ -30,7 +30,7 @@ RUN mkdir -p /root/.svm && \
   bun run compile:forge
 
 FROM busybox:1.37.0
-LABEL org.opencontainers.image.source="https://github.com/settlemint/starterkit-asset-tokenization"
+LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
 
 COPY --from=build /usecase /usecase
 COPY --from=build /root/.svm /usecase-svm

@@ -1,3 +1,4 @@
+import { isAddressAvailable } from "@/lib/queries/fund-factory/address-available";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -27,8 +28,9 @@ export const CreateFundSchema = z.object({
       z.coerce
         .number()
         .min(0)
-        .max(100 * 100) // 100 bps = 1%
+        .max(100 * 100) // 100 bps = 1%,
     ),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

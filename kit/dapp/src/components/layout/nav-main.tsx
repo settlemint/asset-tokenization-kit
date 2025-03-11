@@ -186,14 +186,7 @@ export function NavMain({ items }: { items: NavElement[] }) {
     const matches = allPaths
       .map((path) => (path.endsWith("/") ? path.slice(0, -1) : path))
       .filter((path) => {
-        // Exact match for root path
-        if (path === "/admin" && normalizedPathname === "/admin") {
-          return true;
-        }
-        // For other paths, check if it's an exact match or if it's a direct parent
-        if (path === "/admin") {
-          return false;
-        } // Skip empty paths
+        // Skip empty paths
         if (path === normalizedPathname) {
           return true;
         } // Exact match

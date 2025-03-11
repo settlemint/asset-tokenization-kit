@@ -84,14 +84,15 @@ export function FormInput<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  fieldState.error && "text-destructive",
                   props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
                 <span>{label}</span>
-                {props.required && <span className="ml-1 text-red-500">*</span>}
+                {props.required && (
+                  <span className="ml-1 text-destructive">*</span>
+                )}
               </FormLabel>
             )}
             <FormControl>
@@ -142,7 +143,6 @@ export function FormInput<T extends FieldValues>({
             <TranslatableFormMessage
               id={`${field.name}-error`}
               aria-live="polite"
-              className="text-destructive"
             />
           </FormItem>
         );

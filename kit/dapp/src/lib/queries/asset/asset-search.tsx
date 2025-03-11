@@ -1,7 +1,4 @@
-import {
-  theGraphClientStarterkits,
-  theGraphGraphqlStarterkits,
-} from "@/lib/settlemint/the-graph";
+import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
@@ -12,7 +9,7 @@ import { AssetFragment, AssetFragmentSchema } from "./asset-fragment";
 /**
  * GraphQL query to search for assets by name, symbol, or address
  */
-const AssetSearch = theGraphGraphqlStarterkits(
+const AssetSearch = theGraphGraphql(
   `
   query SearchAssets($searchAddress: Bytes, $search: String!) {
     assets(
@@ -25,6 +22,10 @@ const AssetSearch = theGraphGraphqlStarterkits(
       },
       first: 10
     ) {
+      holders {
+        id
+        value
+      }
       ...AssetFragment
     }
   }
@@ -60,16 +61,12 @@ export const getAssetSearch = cache(
       search.searchAddress = sanitizedSearchTerm;
     }
 
-    const { assets } = await theGraphClientStarterkits.request(
-      AssetSearch,
-      search
-    );
+    const { assets } = await theGraphClient.request(AssetSearch, search);
 
     // Validate data using Zod schema
     const validatedAssets = assets.map((asset) =>
       safeParseWithLogging(AssetFragmentSchema, asset, "asset search")
     );
-
     return validatedAssets;
   }
 );

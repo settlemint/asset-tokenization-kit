@@ -1,3 +1,4 @@
+import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/address-available";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -20,6 +21,7 @@ export const CreateStablecoinSchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().min(0)),
   pincode: z.pincode(),
+  predictedAddress: z.address().refine(isAddressAvailable),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

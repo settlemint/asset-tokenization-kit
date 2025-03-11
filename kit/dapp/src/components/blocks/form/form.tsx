@@ -29,6 +29,7 @@ interface FormProps<
   resolver: Resolver<ZodInfer<S>, FormContext>;
   buttonLabels?: ButtonLabels;
   onOpenChange?: (open: boolean) => void;
+  hideButtons?: boolean;
   toastMessages?: {
     loading?: string;
     success?: string;
@@ -51,6 +52,7 @@ export function Form<
   buttonLabels,
   onOpenChange,
   toastMessages,
+  hideButtons,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
@@ -150,7 +152,7 @@ export function Form<
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
-              {isLastStep && hasError && (
+              {isLastStep && hasError && !form.formState.isValidating && (
                 <Alert
                   variant="destructive"
                   className="text-destructive border-destructive mb-4"
@@ -170,17 +172,19 @@ export function Form<
               {Array.isArray(children) ? children[currentStep] : children}
             </div>
             <div className="mt-auto pt-6">
-              <FormButton
-                currentStep={currentStep}
-                totalSteps={totalSteps}
-                onPreviousStep={handlePrev}
-                onNextStep={() => {
-                  handleNext().catch((error: Error) => {
-                    console.error("Error in handleNext:", error);
-                  });
-                }}
-                labels={buttonLabels}
-              />
+              {!hideButtons && (
+                <FormButton
+                  currentStep={currentStep}
+                  totalSteps={totalSteps}
+                  onPreviousStep={handlePrev}
+                  onNextStep={() => {
+                    handleNext().catch((error: Error) => {
+                      console.error("Error in handleNext:", error);
+                    });
+                  }}
+                  labels={buttonLabels}
+                />
+              )}
             </div>
           </form>
         </UIForm>
