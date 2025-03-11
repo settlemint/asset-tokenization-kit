@@ -1,17 +1,17 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-  AssetBalanceFragment,
-  AssetBalanceFragmentSchema,
+    AssetBalanceFragment,
+    AssetBalanceFragmentSchema,
 } from "./asset-balance-fragment";
 
 /**
  * GraphQL query to fetch a specific asset balance
  */
-const AssetBalanceDetail = theGraphGraphql(
+const AssetBalanceDetail = theGraphGraphqlKit(
   `
   query Balance($address: String!, $account: String!) {
     assetBalances(where: {asset: $address, account: $account}) {
@@ -47,7 +47,7 @@ export const getAssetBalanceDetail = cache(
     const normalizedAddress = getAddress(address);
     const normalizedAccount = getAddress(account);
 
-    const result = await theGraphClient.request(AssetBalanceDetail, {
+    const result = await theGraphClientKit.request(AssetBalanceDetail, {
       address: normalizedAddress,
       account: normalizedAccount,
     });

@@ -1,9 +1,9 @@
 import {
-  AccountFragment,
-  AccountFragmentSchema,
+    AccountFragment,
+    AccountFragmentSchema,
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
@@ -50,7 +50,7 @@ const UserDetailByWallet = hasuraGraphql(
  * @remarks
  * Retrieves account with its last activity timestamp
  */
-const UserActivity = theGraphGraphql(
+const UserActivity = theGraphGraphqlKit(
   `
   query UserActivity($id: ID!) {
     account(id: $id) {
@@ -123,7 +123,7 @@ export const getUserDetail = cache(async ({ id, address }: UserDetailProps) => {
     try {
       const activityResult = await unstable_cache(
         () =>
-          theGraphClient.request(UserActivity, {
+          theGraphClientKit.request(UserActivity, {
             id: userData.wallet.toLowerCase(),
           }),
         ["user", "user-activity", userData.wallet.toLowerCase()],
