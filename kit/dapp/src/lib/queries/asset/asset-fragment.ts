@@ -1,5 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -8,7 +8,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @remarks
  * Contains basic account information for permission checks
  */
-export const PermissionFragment = theGraphGraphql(`
+export const PermissionFragment = theGraphGraphqlKit(`
   fragment PermissionFragment on Account {
     id
     lastActivity
@@ -35,7 +35,7 @@ export type Permission = ZodInfer<typeof PermissionFragmentSchema>;
  * @remarks
  * Contains core asset properties and permission relationships
  */
-export const AssetFragment = theGraphGraphql(
+export const AssetFragment = theGraphGraphqlKit(
   `
   fragment AssetFragment on Asset {
     id

@@ -1,8 +1,8 @@
 import {
-  PermissionFragment,
-  PermissionFragmentSchema,
+    PermissionFragment,
+    PermissionFragmentSchema,
 } from "@/lib/queries/asset/asset-fragment";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
@@ -12,7 +12,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  * Contains information about an account's balance for a specific asset,
  * including blocked and frozen status
  */
-export const AssetBalanceFragment = theGraphGraphql(
+export const AssetBalanceFragment = theGraphGraphqlKit(
   `
   fragment AssetBalanceFragment on AssetBalance {
     blocked
