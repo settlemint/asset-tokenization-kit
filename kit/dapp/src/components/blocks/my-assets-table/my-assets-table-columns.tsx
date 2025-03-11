@@ -30,7 +30,6 @@ export function columns() {
     columnHelper.accessor((row) => tAssetType(row.asset.type), {
       id: t("type-header"),
       header: t("type-header"),
-      enableColumnFilter: true,
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -49,7 +48,6 @@ export function columns() {
         cell: ({ row }) => {
           return <ActivePill paused={row.original.asset.paused} />;
         },
-        enableColumnFilter: true,
       }
     ),
     columnHelper.display({

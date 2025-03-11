@@ -37,7 +37,6 @@ export function columns() {
     columnHelper.accessor((row) => tAssetType(row.asset.type), {
       id: t("type-header"),
       header: t("type-header"),
-      enableColumnFilter: true,
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -51,7 +50,6 @@ export function columns() {
     columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
       id: t("holder-type-header"),
       header: t("holder-type-header"),
-      enableColumnFilter: true,
     }),
     columnHelper.accessor(
       (row) => (row.blocked ? t("blocked-status") : t("active-status")),
@@ -68,7 +66,6 @@ export function columns() {
             </>
           );
         },
-        enableColumnFilter: true,
       }
     ),
     columnHelper.accessor("lastActivity", {

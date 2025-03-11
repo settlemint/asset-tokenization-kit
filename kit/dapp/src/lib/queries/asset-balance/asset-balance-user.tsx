@@ -37,7 +37,7 @@ export type UserAsset = Awaited<
 >["balances"][number];
 
 export const geUserAssetsBalance = cache(
-  async (wallet: Address, active = true) => {
+  async (wallet: Address, includePaused = true) => {
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
         const pageResult = await theGraphClient.request(UserAssetsBalance, {
@@ -62,7 +62,7 @@ export const geUserAssetsBalance = cache(
       };
     }
 
-    if (active) {
+    if (!includePaused) {
       validatedUserAssetsBalance = validatedUserAssetsBalance.filter(
         (balance) => {
           const asset = balance.asset;
