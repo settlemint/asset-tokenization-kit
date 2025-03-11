@@ -5,6 +5,7 @@ import {
   Bytes,
   crypto,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
@@ -39,6 +40,7 @@ import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchStableCoin } from "./fetch/stablecoin";
 import { newAssetStatsData, updateCollateralData } from "./stats/assets";
@@ -90,10 +92,13 @@ export function handleTransfer(event: Transfer): void {
     collateralCalculatedFields(stableCoin);
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
 
     const balance = fetchAssetBalance(
       stableCoin.id,
@@ -102,6 +107,7 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, stableCoin.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -183,7 +189,19 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, stableCoin.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
+
+    if (balance.valueExact.equals(BigInt.zero())) {
+      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      store.remove("AssetBalance", balance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
+    }
 
     const portfolioStats = newPortfolioStatsData(
       from.id,
@@ -213,10 +231,6 @@ export function handleTransfer(event: Transfer): void {
       AssetType.stablecoin,
       stableCoin.id
     );
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      stableCoin.totalHolders = stableCoin.totalHolders - 1;
-    }
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -244,10 +258,17 @@ export function handleTransfer(event: Transfer): void {
     );
 
     if (!hasBalance(stableCoin.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const fromBalance = fetchAssetBalance(
       stableCoin.id,
@@ -256,10 +277,14 @@ export function handleTransfer(event: Transfer): void {
     );
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, stableCoin.decimals);
+    fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
       stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      store.remove("AssetBalance", fromBalance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
     }
 
     const fromPortfolioStats = newPortfolioStatsData(
@@ -278,6 +303,7 @@ export function handleTransfer(event: Transfer): void {
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, stableCoin.decimals);
+    toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
     const toPortfolioStats = newPortfolioStatsData(
@@ -515,6 +541,7 @@ export function handleApproval(event: Approval): void {
   );
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(event.params.value, stableCoin.decimals);
+  ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
   const approval = approvalEvent(
@@ -612,6 +639,38 @@ export function handlePaused(event: Paused): void {
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
 
+  const assetCount = fetchAssetCount(AssetType.stablecoin);
+  assetCount.countPaused = assetCount.countPaused + 1;
+  assetCount.save();
+
+  const holders = stableCoin.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (hasBalance(stableCoin.id, assetBalance.account)) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
+
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
     sender,
@@ -634,6 +693,38 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.paused = false;
   stableCoin.lastActivity = event.block.timestamp;
   stableCoin.save();
+
+  const assetCount = fetchAssetCount(AssetType.stablecoin);
+  assetCount.countPaused = assetCount.countPaused - 1;
+  assetCount.save();
+
+  const holders = stableCoin.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (hasBalance(stableCoin.id, assetBalance.account)) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
 
   unpausedEvent(
     eventId(event),
@@ -672,6 +763,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   );
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(event.params.amount, stableCoin.decimals);
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   const assetStats = newAssetStatsData(stableCoin.id, AssetType.stablecoin);
@@ -730,6 +822,7 @@ export function handleUserBlocked(event: UserBlocked): void {
     stableCoin.decimals
   );
   balance.blocked = true;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userBlockedEvent(
@@ -778,6 +871,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     stableCoin.decimals
   );
   balance.blocked = false;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userUnblockedEvent(

@@ -1,22 +1,22 @@
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-  AssetFragment,
-  AssetFragmentSchema,
-  OffchainAssetFragment,
-  OffchainAssetFragmentSchema,
-  type Permission,
-  PermissionFragmentSchema,
+    AssetFragment,
+    AssetFragmentSchema,
+    OffchainAssetFragment,
+    OffchainAssetFragmentSchema,
+    type Permission,
+    PermissionFragmentSchema,
 } from "./asset-fragment";
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
-const AssetDetail = theGraphGraphql(
+const AssetDetail = theGraphGraphqlKit(
   `
   query AssetDetail($id: ID!) {
     asset(id: $id) {
@@ -69,7 +69,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
 
   const [onchainData, offchainData] = await Promise.all([
     unstable_cache(
-      () => theGraphClient.request(AssetDetail, { id: address }),
+      () => theGraphClientKit.request(AssetDetail, { id: address }),
       ["asset", "asset-detail", address],
       {
         revalidate: 60 * 60 * 24, // 24 hours

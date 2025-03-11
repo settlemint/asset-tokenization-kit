@@ -5,6 +5,7 @@ import {
   Bytes,
   crypto,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
@@ -77,10 +78,13 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     if (!hasBalance(cryptoCurrency.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
 
     const balance = fetchAssetBalance(
       cryptoCurrency.id,
@@ -89,6 +93,7 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -168,7 +173,19 @@ export function handleTransfer(event: Transfer): void {
     );
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, cryptoCurrency.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
+
+    if (balance.valueExact.equals(BigInt.zero())) {
+      cryptoCurrency.totalHolders = cryptoCurrency.totalHolders - 1;
+      store.remove("AssetBalance", balance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
+    }
 
     const portfolioStats = newPortfolioStatsData(
       from.id,
@@ -197,10 +214,6 @@ export function handleTransfer(event: Transfer): void {
       AssetType.cryptocurrency,
       cryptoCurrency.id
     );
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      cryptoCurrency.totalHolders = cryptoCurrency.totalHolders - 1;
-    }
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -228,10 +241,17 @@ export function handleTransfer(event: Transfer): void {
     );
 
     if (!hasBalance(cryptoCurrency.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const fromBalance = fetchAssetBalance(
       cryptoCurrency.id,
@@ -243,10 +263,14 @@ export function handleTransfer(event: Transfer): void {
       fromBalance.valueExact,
       cryptoCurrency.decimals
     );
+    fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders - 1;
+      store.remove("AssetBalance", fromBalance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
     }
 
     const fromPortfolioStats = newPortfolioStatsData(
@@ -265,6 +289,7 @@ export function handleTransfer(event: Transfer): void {
     );
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, cryptoCurrency.decimals);
+    toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
     const toPortfolioStats = newPortfolioStatsData(
@@ -506,6 +531,7 @@ export function handleApproval(event: Approval): void {
     event.params.value,
     cryptoCurrency.decimals
   );
+  ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
   const approval = approvalEvent(

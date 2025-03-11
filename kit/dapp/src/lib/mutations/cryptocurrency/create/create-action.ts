@@ -52,7 +52,6 @@ export const createCryptoCurrency = action
         decimals,
         pincode,
         initialSupply,
-        predictedAddress,
       },
       ctx: { user },
     }) => {

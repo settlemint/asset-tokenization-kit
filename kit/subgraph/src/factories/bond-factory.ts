@@ -24,14 +24,14 @@ export function handleBondCreated(event: BondCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.bond,
-    asset.id,
+    asset.id
   );
 
   Bond.create(event.params.token);
