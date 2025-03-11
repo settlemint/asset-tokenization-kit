@@ -2335,6 +2335,9 @@
     },
     "charts": {
       "assets": {
+        "asset-distribution": "Asset Distribution",
+        "asset-distribution-description": "Portfolio allocation by asset type",
+        "asset-distribution-no-data": "No asset data available",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -2374,7 +2377,14 @@
         },
         "wallet-distribution": "Wallet Distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available"
+        "wallet-distribution-no-data": "No wallet data available",
+        "asset-type-pluralizer": {
+          "bond": "Bonds",
+          "cryptocurrency": "Cryptocurrencies",
+          "equity": "Equities",
+          "fund": "Funds",
+          "stablecoin": "Stablecoins"
+        }
       }
     },
     "data-table": {
@@ -2545,6 +2555,11 @@
     }
   },
   "portfolio": {
+    "dashboard": {
+      "page-title": "Portfolio",
+      "portfolio-management": "Portfolio management",
+      "my-assets": "My Assets"
+    },
     "activity": {
       "page-description": "Your activity on chain",
       "page-title": "Activity",

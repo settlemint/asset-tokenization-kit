@@ -10,9 +10,11 @@ export async function AssetsSupply() {
     assetType: item.assetType,
     totalSupply: Number(item.totalSupply),
   }));
+
   type AssetType = Awaited<
     ReturnType<typeof getAssetActivity>
   >[number]["assetType"];
+
   const config: Record<AssetType, { label: string; color: string }> = {
     bond: {
       label: t("asset-types.bonds"),

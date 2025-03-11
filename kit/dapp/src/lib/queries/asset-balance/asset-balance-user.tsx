@@ -1,9 +1,12 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
@@ -33,10 +36,10 @@ type PausableAssetType =
   typeof PAUSABLE_ASSET_TYPES extends Set<infer T> ? T : never;
 
 export type UserAsset = Awaited<
-  ReturnType<typeof geUserAssetsBalance>
+  ReturnType<typeof getUserAssetsBalance>
 >["balances"][number];
 
-export const geUserAssetsBalance = cache(
+export const getUserAssetsBalance = cache(
   async (wallet: Address, includePaused = true) => {
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
