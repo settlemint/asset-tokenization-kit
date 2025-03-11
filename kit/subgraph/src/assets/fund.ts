@@ -253,6 +253,7 @@ export function handleTransfer(event: Transfer): void {
       fund.totalHolders = fund.totalHolders - 1;
       store.remove("AssetBalance", fromBalance.id.toHexString());
       from.balancesCount = from.balancesCount - 1;
+      from.save();
     }
 
     const fromPortfolioStats = newPortfolioStatsData(
