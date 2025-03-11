@@ -178,6 +178,11 @@ type Account @entity {
   isContract: Boolean!
   asAsset: Asset
   balancesCount: Int!
+  totalBalanceExact: BigInt!
+  totalBalance: BigDecimal!
+  pausedBalancesCount: Int!
+  pausedBalanceExact: BigInt!
+  pausedBalance: BigDecimal!
   balances: [AssetBalance!]! @derivedFrom(field: "account")
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!
@@ -197,6 +202,7 @@ type AssetBalance @entity {
   blocked: Boolean!
   frozen: BigDecimal!
   frozenExact: BigInt!
+  lastActivity: BigInt!
 }
 
 # --------------------------------------------------
@@ -721,6 +727,7 @@ type AssetCount @entity {
   id: String!
   assetType: String! @unique
   count: Int!
+  countPaused: Int!
 }
 
 # --------------------------------------------------

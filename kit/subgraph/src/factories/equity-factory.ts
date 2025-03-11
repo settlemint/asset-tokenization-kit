@@ -24,14 +24,14 @@ export function handleEquityCreated(event: EquityCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.equity,
-    asset.id,
+    asset.id
   );
 
   Equity.create(event.params.token);
