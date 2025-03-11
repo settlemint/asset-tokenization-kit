@@ -24,14 +24,14 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.stablecoin,
-    asset.id,
+    asset.id
   );
 
   StableCoin.create(event.params.token);
