@@ -52,7 +52,7 @@ export function TopUpForm({
         }}
       >
         <Amount />
-        <Summary address={address} />
+        <Summary />
       </Form>
     </FormSheet>
   );
