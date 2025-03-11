@@ -186,7 +186,8 @@
           "unpause": "Unpause",
           "grant-role": "Grant role",
           "top-up": "Top up underlying asset",
-          "withdraw": "Withdraw underlying asset"
+          "withdraw": "Withdraw underlying asset",
+          "mature": "Mature"
         },
         "manage": "Manage"
       },
@@ -389,6 +390,19 @@
               "description": "Enter your PIN code to confirm the transaction"
             }
           }
+        }
+      },
+      "mature-form": {
+        "trigger-label": "Mature",
+        "title": "Mature Bond",
+        "description": "Mature your bond and receive the underlying asset",
+        "button-label": "Mature Bond",
+        "summary": {
+          "title": "Review and confirm maturity",
+          "description": "Verify the details of your bond maturity before proceeding.",
+          "mature-title": "Mature",
+          "mature-description": "Bond maturity details",
+          "asset-label": "Bond"
         }
       }
     },

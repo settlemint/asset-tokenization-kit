@@ -14,6 +14,7 @@ import { useMemo, useState } from "react";
 import type { Address } from "viem";
 import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
+import { MatureForm } from "./mature-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
@@ -26,6 +27,12 @@ interface ManageDropdownProps {
 
 export function ManageDropdown({ address, bond }: ManageDropdownProps) {
   const t = useTranslations("admin.bonds.manage");
+
+  const cannotMature: boolean =
+    bond.isMatured ||
+    !bond.hasSufficientUnderlying ||
+    (bond.maturityDate ? new Date(Number(bond.maturityDate) * 1000) < new Date() : false);
+
   const menuItems = useMemo(
     () => [
       {
@@ -52,9 +59,14 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
         id: "withdraw",
         label: t("actions.withdraw"),
       },
+      {
+        id: "mature",
+        label: t("actions.mature"),
+        disabled: cannotMature,
+      },
     ] as const,
-    [t, bond.paused]
-  );
+    [t, bond.paused, cannotMature]
+  ) as { id: string; label: string; disabled?: boolean }[];
 
   const [openMenuItem, setOpenMenuItem] = useState<
     (typeof menuItems)[number]["id"] | null
@@ -83,6 +95,7 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
             <DropdownMenuItem
               key={item.id}
               onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
             >
               {item.label}
             </DropdownMenuItem>
@@ -121,6 +134,11 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
         address={address}
         underlyingAssetAddress={bond.underlyingAsset}
         open={openMenuItem === "withdraw"}
+        onOpenChange={onFormOpenChange}
+      />
+      <MatureForm
+        address={address}
+        open={openMenuItem === "mature"}
         onOpenChange={onFormOpenChange}
       />
     </>

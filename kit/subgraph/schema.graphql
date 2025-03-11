@@ -63,6 +63,9 @@ type Bond implements Asset @entity {
   redeemedAmount: BigInt!
   underlyingBalance: BigInt!
   yieldSchedule: FixedYield
+  totalUnderlyingNeeded: BigDecimal!
+  totalUnderlyingNeededExact: BigInt!
+  hasSufficientUnderlying: Boolean!
 }
 
 type Equity implements Asset @entity {

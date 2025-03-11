@@ -7,6 +7,7 @@ import {
   log,
   store,
 } from "@graphprotocol/graph-ts";
+import { Bond } from "../../generated/schema";
 import {
   Approval,
   BondMatured,
@@ -21,7 +22,7 @@ import {
   UnderlyingAssetWithdrawn,
   Unpaused,
   UserBlocked,
-  UserUnblocked,
+  UserUnblocked
 } from "../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
@@ -306,6 +307,7 @@ export function handleTransfer(event: Transfer): void {
   }
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   assetStats.supply = bond.totalSupply;
@@ -384,6 +386,7 @@ export function handleRoleGranted(event: RoleGranted): void {
   }
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   accountActivityEvent(
@@ -462,6 +465,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
   }
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   accountActivityEvent(
@@ -494,6 +498,7 @@ export function handleApproval(event: Approval): void {
   ownerBalance.save();
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const approval = approvalEvent(
@@ -542,6 +547,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   const sender = fetchAccount(event.transaction.from);
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const roleAdminChanged = roleAdminChangedEvent(
@@ -584,6 +590,7 @@ export function handleBondMatured(event: BondMatured): void {
 
   bond.isMatured = true;
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   bondMaturedEvent(
@@ -619,6 +626,7 @@ export function handleBondRedeemed(event: BondRedeemed): void {
     event.params.underlyingAmount
   );
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   bondRedeemedEvent(
@@ -659,6 +667,7 @@ export function handlePaused(event: Paused): void {
 
   bond.paused = true;
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);
@@ -714,6 +723,7 @@ export function handleUnpaused(event: Unpaused): void {
 
   bond.paused = false;
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);
@@ -791,6 +801,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   balance.save();
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   tokensFrozenEvent(
@@ -825,6 +836,7 @@ export function handleUserBlocked(event: UserBlocked): void {
   const user = fetchAccount(event.params.user);
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
@@ -867,6 +879,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
   const user = fetchAccount(event.params.user);
 
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   const balance = fetchAssetBalance(bond.id, user.id, bond.decimals);
@@ -920,6 +933,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
 
   bond.underlyingBalance = bond.underlyingBalance.plus(event.params.amount);
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   underlyingAssetTopUpEvent(
@@ -966,6 +980,7 @@ export function handleUnderlyingAssetWithdrawn(
 
   bond.underlyingBalance = bond.underlyingBalance.minus(event.params.amount);
   bond.lastActivity = event.block.timestamp;
+  updateDerivedFields(bond);
   bond.save();
 
   underlyingAssetWithdrawnEvent(
@@ -991,4 +1006,20 @@ export function handleUnderlyingAssetWithdrawn(
     AssetType.bond,
     bond.id
   );
+}
+
+function calculateTotalUnderlyingNeeded(bond: Bond): void {
+  // Calculate exact value first
+  bond.totalUnderlyingNeededExact = bond.totalSupplyExact.times(bond.faceValue).div(
+    BigInt.fromI32(10).pow(bond.decimals as u8)
+  );
+
+  // Convert to decimal for display
+  bond.totalUnderlyingNeeded = toDecimals(bond.totalUnderlyingNeededExact, bond.decimals);
+}
+
+export function updateDerivedFields(bond: Bond): void {
+  calculateTotalUnderlyingNeeded(bond);
+  // Compare using exact values
+  bond.hasSufficientUnderlying = bond.underlyingBalance.ge(bond.totalUnderlyingNeededExact);
 }
