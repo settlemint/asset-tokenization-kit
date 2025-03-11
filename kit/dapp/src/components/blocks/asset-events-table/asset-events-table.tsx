@@ -9,6 +9,7 @@ interface AssetEventsTableProps {
   sender?: Address;
   disableToolbarAndPagination?: boolean;
   limit?: number;
+  initialColumnFilters?: { id: "sender"; value: string[] }[];
 }
 
 export async function AssetEventsTable({
@@ -16,6 +17,7 @@ export async function AssetEventsTable({
   sender,
   disableToolbarAndPagination = false,
   limit,
+  initialColumnFilters,
 }: AssetEventsTableProps) {
   const events = await getAssetEventsList({ asset, sender, limit });
   const t = await getTranslations("components.asset-events-table");
@@ -28,6 +30,7 @@ export async function AssetEventsTable({
       name={t("events")}
       toolbar={{ enableToolbar: !disableToolbarAndPagination }}
       pagination={{ enablePagination: !disableToolbarAndPagination }}
+      initialColumnFilters={initialColumnFilters}
     />
   );
 }
