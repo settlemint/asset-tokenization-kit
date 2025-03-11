@@ -210,6 +210,10 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot der Anleihe zu erhöhen.",
         "summary": {
@@ -940,6 +944,10 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot des Eigenkapitals zu erhöhen.",
         "summary": {
@@ -1399,6 +1407,10 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot des Fonds zu erhöhen.",
         "summary": {
@@ -1813,12 +1825,12 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das zirkulierende Angebot des Stablecoins zu erhöhen.",
-        "recipients": {
-          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse oder geben Sie manuell eine Wallet-Adresse ein.",
-          "title": "Empfänger auswählen"
-        },
         "summary": {
           "amount-label": "Betrag",
           "asset-label": "Vermögenswert",
