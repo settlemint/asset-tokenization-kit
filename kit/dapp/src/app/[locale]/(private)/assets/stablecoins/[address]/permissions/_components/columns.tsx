@@ -1,6 +1,5 @@
 "use client";
 
-import { RevokeAllPermissionsAction } from "@/app/[locale]/(private)/admin/stablecoins/[address]/permissions/_components/actions/revoke-all-form/action";
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
@@ -12,6 +11,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 import { EditPermissionsAction } from "./actions/edit-form/action";
+import { RevokeAllPermissionsAction } from "./actions/revoke-all-form/action";
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
