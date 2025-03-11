@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
-import { geUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
+import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import type { Address } from "viem";
 import { columns } from "./my-assets-table-columns";
 
@@ -12,7 +12,7 @@ export default async function MyAssetsTable({
   wallet,
   title,
 }: MyAssetsTableProps) {
-  const userAssetsBalance = await geUserAssetsBalance(wallet);
+  const userAssetsBalance = await getUserAssetsBalance(wallet);
 
   return (
     <DataTable

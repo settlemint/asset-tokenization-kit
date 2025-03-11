@@ -56,7 +56,7 @@ export default async function PortfolioDashboard({
         section={t("dashboard.portfolio-management")}
         className="mt-8"
       />
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
         <AssetDistribution address={user.wallet as Address} />
       </div>
     </>
