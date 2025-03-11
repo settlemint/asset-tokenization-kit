@@ -2558,7 +2558,8 @@
     "dashboard": {
       "page-title": "Portfolio",
       "portfolio-management": "Portfolio management",
-      "my-assets": "My Assets"
+      "my-assets": "My Assets",
+      "latest-events": "Latest events"
     },
     "activity": {
       "page-description": "Your activity on chain",
