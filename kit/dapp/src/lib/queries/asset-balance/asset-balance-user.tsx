@@ -1,9 +1,12 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "@/lib/queries/asset-balance/asset-balance-fragment";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
@@ -37,7 +40,7 @@ export type UserAsset = Awaited<
 >["balances"][number];
 
 export const getUserAssetsBalance = cache(
-  async (wallet: Address, active = true) => {
+  async (wallet: Address, includePaused = true) => {
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
         const pageResult = await theGraphClientKit.request(UserAssetsBalance, {
