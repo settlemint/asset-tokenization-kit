@@ -60,9 +60,9 @@ export function Form<
   buttonLabels,
   onOpenChange,
   toastMessages,
-  secureForm = false,
   hideButtons,
   onAnyFieldChange,
+  secureForm = false,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
@@ -126,10 +126,10 @@ export function Form<
       : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
     if (!fieldsToValidate?.length) {
-      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
       }
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       return;
     }
 
@@ -164,7 +164,15 @@ export function Form<
   };
 
   const hasError = Object.keys(form.formState.errors).length > 0;
+  const formatError = (key: string, errorMessage?: string, type?: string) => {
+    const error = errorMessage ?? "unknown-error";
+    const translatedErrorMessage = tError.has(error as never)
+      ? tError(error as never)
+      : error;
+    const errorKey = key && type !== "custom" ? `${key}: ` : "";
 
+    return `${errorKey}${translatedErrorMessage}`;
+  };
   return (
     <div className="space-y-6 h-full">
       <div className="container p-6 flex flex-col h-full">
@@ -184,16 +192,11 @@ export function Form<
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {
-                        const errorMessage =
-                          (error?.message as string) ?? "unknown-error";
-                        const translatedErrorMessage = tError.has(
-                          errorMessage as never
-                        )
-                          ? tError(errorMessage as never)
-                          : errorMessage;
-                        const errorKey =
-                          key && error?.type !== "custom" ? `${key}: ` : "";
-                        return `${errorKey}${translatedErrorMessage}`;
+                        return formatError(
+                          key,
+                          error?.message as string,
+                          error?.type as string
+                        );
                       })
                       .filter(Boolean)
                       .join("\n")}
