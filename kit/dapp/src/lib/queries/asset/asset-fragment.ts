@@ -42,6 +42,7 @@ export const AssetFragment = theGraphGraphqlKit(
     name
     symbol
     type
+    decimals
     admins {
       ...PermissionFragment
     }
@@ -72,6 +73,7 @@ export const AssetFragmentSchema = z.object({
   name: z.string(),
   symbol: z.symbol(),
   type: z.assetType(),
+  decimals: z.number(),
   admins: z.array(PermissionFragmentSchema),
   supplyManagers: z.array(PermissionFragmentSchema),
   userManagers: z.array(PermissionFragmentSchema),

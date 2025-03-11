@@ -201,10 +201,11 @@
       "manage": {
         "actions": {
           "burn": "Burn",
-          "grant-role": "Grant Role",
+          "grant-role": "Grant role",
           "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause"
+          "unpause": "Unpause",
+          "top-up": "Top up underlying asset"
         },
         "manage": "Manage"
       },
@@ -345,6 +346,32 @@
         "events": "Events",
         "holders": "Holders",
         "permissions": "Permissions"
+      },
+      "top-up-form": {
+        "trigger-label": "Top up",
+        "title": "Top up underlying asset",
+        "description": "Add more underlying asset to your bond",
+        "button-label": "Top up",
+        "steps": {
+          "amount": {
+            "title": "Enter amount",
+            "description": "Specify the amount to top up the underlying asset.",
+            "amount": {
+              "label": "Amount",
+              "description": "Enter the amount to top up"
+            }
+          },
+          "summary": {
+            "title": "Review and confirm top-up",
+            "description": "Verify the details of your top-up before proceeding.",
+            "amount-label": "Amount",
+            "asset-label": "Underlying asset",
+            "pincode": {
+              "label": "PIN Code",
+              "description": "Enter your PIN code to confirm the transaction"
+            }
+          }
+        }
       }
     },
     "charts": {

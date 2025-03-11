@@ -26,6 +26,7 @@ export const BondFragment = theGraphGraphqlKit(`
     holders(first: 5, orderBy: valueExact, orderDirection: desc) {
       valueExact
     }
+    underlyingAsset
   }
 `);
 
@@ -52,6 +53,7 @@ export const BondFragmentSchema = z.object({
       valueExact: z.bigInt(),
     })
   ),
+  underlyingAsset: z.address(),
 });
 
 /**

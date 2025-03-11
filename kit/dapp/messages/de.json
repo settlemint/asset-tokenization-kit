@@ -196,10 +196,11 @@
       "manage": {
         "actions": {
           "burn": "Verbrennen",
-          "grant-role": "Rolle gewähren",
+          "grant-role": "Rolle zuweisen",
           "mint": "Prägen",
-          "pause": "Pause",
-          "unpause": "Wieder aufnehmen"
+          "pause": "Pausieren",
+          "unpause": "Fortsetzen",
+          "top-up": "Basiswert aufstocken"
         },
         "manage": "Verwalten"
       },
@@ -343,6 +344,32 @@
           "title": "Anleihen ausgeben"
         },
         "title": "Verwandte Aktionen"
+      },
+      "top-up-form": {
+        "trigger-label": "Aufstocken",
+        "title": "Basiswert aufstocken",
+        "description": "Fügen Sie Ihrem Bond mehr Basiswert hinzu",
+        "button-label": "Aufstocken",
+        "steps": {
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den Betrag an, um den der Basiswert aufgestockt werden soll.",
+            "amount": {
+              "label": "Betrag",
+              "description": "Geben Sie den Aufstockungsbetrag ein"
+            }
+          },
+          "summary": {
+            "title": "Aufstockung überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihrer Aufstockung, bevor Sie fortfahren.",
+            "amount-label": "Betrag",
+            "asset-label": "Basiswert",
+            "pincode": {
+              "label": "PIN-Code",
+              "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen"
+            }
+          }
+        }
       }
     },
     "cryptocurrencies": {
@@ -902,7 +929,8 @@
           "grant-role": "Rolle gewähren",
           "mint": "Prägen",
           "pause": "Pausieren",
-          "unpause": "Wieder aktivieren"
+          "unpause": "Fortsetzen",
+          "top-up": "Basiswert aufstocken"
         },
         "manage": "Verwalten"
       },
@@ -1437,14 +1465,14 @@
           "button-label": "Zugriff widerrufen",
           "description": "Den Zugriff und die Berechtigungen dieses Benutzers vollständig widerrufen.",
           "summary": {
-            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion wird alle Berechtigungen für den Benutzer widerrufen.",
+            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion widerruft alle Berechtigungen für den Benutzer.",
             "operation-description": "Details des Widerrufs aller Berechtigungen",
             "revoke-title": "Alle widerrufen",
             "roles-to-revoke-label": "Zu widerrufende Rollen",
             "title": "Überprüfen und bestätigen",
             "user-label": "Benutzer"
           },
-          "title": "Zugriff für alle Benutzer entfernen",
+          "title": "Alle Benutzerzugriffe entfernen",
           "trigger-label": "Alle widerrufen"
         },
         "roles-header": "Rollen",
