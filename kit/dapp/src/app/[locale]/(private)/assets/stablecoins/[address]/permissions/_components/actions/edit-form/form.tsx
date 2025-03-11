@@ -49,9 +49,10 @@ export function EditPermissionsForm({
         defaultValues={{
           address,
           userAddress: account,
+          roles: currentRoles,
         }}
       >
-        <Roles currentRoles={currentRoles} />
+        <Roles />
         <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>
     </FormSheet>

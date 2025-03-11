@@ -13,7 +13,7 @@ import type { Address } from "viem";
 
 export function Summary({
   userAddress,
-  currentRoles: roles,
+  currentRoles,
 }: {
   userAddress: Address;
   currentRoles: Role[];
@@ -39,7 +39,7 @@ export function Summary({
           label={t("current-roles-label")}
           value={
             <div className="flex flex-wrap gap-1">
-              {roles.map((role: Role) => (
+              {currentRoles.map((role: Role) => (
                 <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
                   {getRoleDisplayName(role)}
                 </span>
@@ -51,16 +51,11 @@ export function Summary({
           label={t("new-roles-label")}
           value={
             <div className="flex flex-wrap gap-1">
-              {Object.entries(values.roles ?? {})
-                .filter(([_, isEnabled]) => isEnabled)
-                .map(([role]) => (
-                  <span
-                    key={role}
-                    className="rounded bg-muted px-2 py-1 text-xs"
-                  >
-                    {getRoleDisplayName(role as Role)}
-                  </span>
-                ))}
+              {values.roles?.map((role: Role) => (
+                <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
+                  {getRoleDisplayName(role)}
+                </span>
+              ))}
             </div>
           }
         />
