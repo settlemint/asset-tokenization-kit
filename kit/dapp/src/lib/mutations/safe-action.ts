@@ -62,7 +62,7 @@ const REVERT_REGEX =
   /^The\s+contract\s+function\s+\".*?\"\s+reverted\.\s+Error:\s+(.*?)\(/i;
 
 function getRevertReason(error: Error): string | undefined {
-  const match = error.message.replace("\n", " ").match(REVERT_REGEX);
+  const match = error.message.replace(/\n/g, " ").match(REVERT_REGEX);
   if (match) {
     return match[1];
   }
