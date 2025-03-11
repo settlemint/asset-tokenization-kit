@@ -5,6 +5,7 @@ import {
   Bytes,
   crypto,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
@@ -42,6 +43,7 @@ import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
 import { userBlockedEvent } from "./events/userblocked";
 import { userUnblockedEvent } from "./events/userunblocked";
+import { fetchAssetCount } from "./fetch/asset-count";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchFund } from "./fetch/fund";
 import { newAssetStatsData } from "./stats/assets";
@@ -87,14 +89,18 @@ export function handleTransfer(event: Transfer): void {
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
     if (!hasBalance(fund.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       fund.totalHolders = fund.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
 
     const balance = fetchAssetBalance(fund.id, to.id, fund.decimals);
     balance.valueExact = balance.valueExact.plus(mint.valueExact);
     balance.value = toDecimals(balance.valueExact, fund.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
 
     const portfolioStats = newPortfolioStatsData(
@@ -157,7 +163,19 @@ export function handleTransfer(event: Transfer): void {
     const balance = fetchAssetBalance(fund.id, from.id, fund.decimals);
     balance.valueExact = balance.valueExact.minus(burn.valueExact);
     balance.value = toDecimals(balance.valueExact, fund.decimals);
+    balance.lastActivity = event.block.timestamp;
     balance.save();
+
+    if (balance.valueExact.equals(BigInt.zero())) {
+      fund.totalHolders = fund.totalHolders - 1;
+      store.remove("AssetBalance", balance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
+    }
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const portfolioStats = newPortfolioStatsData(
       from.id,
@@ -213,18 +231,29 @@ export function handleTransfer(event: Transfer): void {
     );
 
     if (!hasBalance(fund.id, to.id)) {
-      to.balancesCount = to.balancesCount + 1;
       fund.totalHolders = fund.totalHolders + 1;
-      to.save();
+      to.balancesCount = to.balancesCount + 1;
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const fromBalance = fetchAssetBalance(fund.id, from.id, fund.decimals);
     fromBalance.valueExact = fromBalance.valueExact.minus(transfer.valueExact);
     fromBalance.value = toDecimals(fromBalance.valueExact, fund.decimals);
+    fromBalance.lastActivity = event.block.timestamp;
     fromBalance.save();
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
       fund.totalHolders = fund.totalHolders - 1;
+      store.remove("AssetBalance", fromBalance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
     }
 
     const fromPortfolioStats = newPortfolioStatsData(
@@ -239,6 +268,7 @@ export function handleTransfer(event: Transfer): void {
     const toBalance = fetchAssetBalance(fund.id, to.id, fund.decimals);
     toBalance.valueExact = toBalance.valueExact.plus(transfer.valueExact);
     toBalance.value = toDecimals(toBalance.valueExact, fund.decimals);
+    toBalance.lastActivity = event.block.timestamp;
     toBalance.save();
 
     const toPortfolioStats = newPortfolioStatsData(
@@ -462,6 +492,7 @@ export function handleApproval(event: Approval): void {
   const ownerBalance = fetchAssetBalance(fund.id, owner.id, fund.decimals);
   ownerBalance.approvedExact = event.params.value;
   ownerBalance.approved = toDecimals(event.params.value, fund.decimals);
+  ownerBalance.lastActivity = event.block.timestamp;
   ownerBalance.save();
 
   const approval = approvalEvent(
@@ -557,6 +588,38 @@ export function handlePaused(event: Paused): void {
   fund.lastActivity = event.block.timestamp;
   fund.save();
 
+  const assetCount = fetchAssetCount(AssetType.fund);
+  assetCount.countPaused = assetCount.countPaused + 1;
+  assetCount.save();
+
+  const holders = fund.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (hasBalance(fund.id, assetBalance.account)) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
+
   pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
   accountActivityEvent(
     sender,
@@ -579,6 +642,38 @@ export function handleUnpaused(event: Unpaused): void {
   fund.paused = false;
   fund.lastActivity = event.block.timestamp;
   fund.save();
+
+  const assetCount = fetchAssetCount(AssetType.fund);
+  assetCount.countPaused = assetCount.countPaused - 1;
+  assetCount.save();
+
+  const holders = fund.holders.load();
+  for (let i = 0; i < holders.length; i++) {
+    const assetBalance = holders[i];
+    if (hasBalance(fund.id, assetBalance.account)) {
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
+        assetBalance.valueExact
+      );
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
+        ]
+      );
+      holderAccount.save();
+    }
+  }
 
   unpausedEvent(
     eventId(event),
@@ -610,6 +705,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
   const balance = fetchAssetBalance(fund.id, user.id, fund.decimals);
   balance.frozenExact = event.params.amount;
   balance.frozen = toDecimals(event.params.amount, fund.decimals);
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   const assetStats = newAssetStatsData(
@@ -670,6 +766,7 @@ export function handleUserBlocked(event: UserBlocked): void {
 
   const balance = fetchAssetBalance(fund.id, user.id, fund.decimals);
   balance.blocked = true;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userBlockedEvent(
@@ -711,6 +808,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
 
   const balance = fetchAssetBalance(fund.id, user.id, fund.decimals);
   balance.blocked = false;
+  balance.lastActivity = event.block.timestamp;
   balance.save();
 
   userUnblockedEvent(
