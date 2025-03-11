@@ -5,6 +5,7 @@ import {
   Bytes,
   crypto,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
@@ -195,6 +196,13 @@ export function handleTransfer(event: Transfer): void {
     from.totalBalance = toDecimals(from.totalBalanceExact, 18);
     from.save();
 
+    if (balance.valueExact.equals(BigInt.zero())) {
+      stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      store.remove("AssetBalance", balance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
+    }
+
     const portfolioStats = newPortfolioStatsData(
       from.id,
       stableCoin.id,
@@ -223,10 +231,6 @@ export function handleTransfer(event: Transfer): void {
       AssetType.stablecoin,
       stableCoin.id
     );
-
-    if (balance.valueExact.equals(BigInt.zero())) {
-      stableCoin.totalHolders = stableCoin.totalHolders - 1;
-    }
   } else {
     // This will only execute for regular transfers (both addresses non-zero)
     const from = fetchAccount(event.params.from);
@@ -278,6 +282,8 @@ export function handleTransfer(event: Transfer): void {
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
       stableCoin.totalHolders = stableCoin.totalHolders - 1;
+      store.remove("AssetBalance", fromBalance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
     }
 
     const fromPortfolioStats = newPortfolioStatsData(

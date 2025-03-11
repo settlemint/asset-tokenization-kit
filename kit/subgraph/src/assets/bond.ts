@@ -5,6 +5,7 @@ import {
   Bytes,
   crypto,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
@@ -168,6 +169,9 @@ export function handleTransfer(event: Transfer): void {
 
     if (balance.valueExact.equals(BigInt.zero())) {
       bond.totalHolders = bond.totalHolders - 1;
+      store.remove("AssetBalance", balance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
+      from.save();
     }
 
     const portfolioStats = newPortfolioStatsData(
@@ -244,6 +248,8 @@ export function handleTransfer(event: Transfer): void {
 
     if (fromBalance.valueExact.equals(BigInt.zero())) {
       bond.totalHolders = bond.totalHolders - 1;
+      store.remove("AssetBalance", fromBalance.id.toHexString());
+      from.balancesCount = from.balancesCount - 1;
     }
 
     const fromPortfolioStats = newPortfolioStatsData(
