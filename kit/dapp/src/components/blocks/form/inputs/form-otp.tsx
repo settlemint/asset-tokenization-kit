@@ -1,6 +1,6 @@
 "use client";
 
-import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
   FormField,
@@ -56,7 +56,7 @@ export function FormOtp<T extends FieldValues>({
               </InputOTPGroup>
             </InputOTP>
           </FormControl>
-          <TranslatableFormMessage className="text-destructive" />
+          <TranslatableFormFieldMessage className="text-destructive" />
         </FormItem>
       )}
     />
