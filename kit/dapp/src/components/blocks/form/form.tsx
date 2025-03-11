@@ -6,8 +6,13 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
-import { useState } from "react";
-import type { DefaultValues, Path, Resolver } from "react-hook-form";
+import { useEffect, useState } from "react";
+import type {
+  DefaultValues,
+  Path,
+  Resolver,
+  UseFormReturn,
+} from "react-hook-form";
 import { toast } from "sonner";
 import type { Schema } from "zod";
 import { type ButtonLabels, FormButton } from "./form-button";
@@ -36,6 +41,7 @@ interface FormProps<
     success?: string;
   };
   secureForm?: boolean;
+  onAnyFieldChange?: (form: UseFormReturn<ZodInfer<S>>) => void;
 }
 
 export function Form<
@@ -56,6 +62,7 @@ export function Form<
   toastMessages,
   secureForm = false,
   hideButtons,
+  onAnyFieldChange,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
@@ -97,6 +104,16 @@ export function Form<
       },
     });
 
+  useEffect(() => {
+    if (!onAnyFieldChange) return;
+
+    const subscription = form.watch(() => {
+      onAnyFieldChange(form);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, onAnyFieldChange]);
+
   const isLastStep = currentStep === totalSteps - 1;
 
   const handlePrev = () => {
@@ -110,8 +127,14 @@ export function Form<
     const fieldsToValidate = CurrentStep.validatedFields;
     if (!fieldsToValidate?.length) {
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+      if (isLastStep && secureForm) {
+        setShowFormSecurityConfirmation(true);
+      }
       return;
     }
+
+    const beforeValidate = CurrentStep.beforeValidate ?? [];
+    await Promise.all(beforeValidate.map((validate) => validate(form)));
 
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<ZodInfer<S>>);
@@ -127,7 +150,12 @@ export function Form<
         form.trigger(field as Path<ZodInfer<S>>, { shouldFocus: true })
       )
     );
+
     if (results.every(Boolean)) {
+      if (isLastStep && secureForm) {
+        setShowFormSecurityConfirmation(true);
+      }
+
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
@@ -199,14 +227,7 @@ export function Form<
                   });
                 }}
                 labels={buttonLabels}
-                onLastStep={
-                  secureForm
-                    ? () => {
-                        void handleNext();
-                        setShowFormSecurityConfirmation(true);
-                      }
-                    : undefined
-                }
+                onLastStep={secureForm ? handleNext : undefined}
               />
             </div>
           </form>

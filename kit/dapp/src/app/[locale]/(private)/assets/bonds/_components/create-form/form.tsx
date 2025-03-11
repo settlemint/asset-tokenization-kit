@@ -45,6 +45,9 @@ export function CreateBondForm({
         }}
         defaultValues={{}}
         secureForm={true}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />

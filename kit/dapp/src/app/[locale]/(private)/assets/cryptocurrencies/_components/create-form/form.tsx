@@ -45,6 +45,9 @@ export function CreateCryptoCurrencyForm({
         }}
         defaultValues={{}}
         secureForm={true}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />

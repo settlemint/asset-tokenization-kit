@@ -1,12 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { useVerifyPredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 
 export function Summary() {
   const { control } = useFormContext<CreateStablecoinInput>();
@@ -14,11 +13,6 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("admin.stablecoins.create-form.summary");
-
-  useVerifyPredictedAddress({
-    calculateAddress: getPredictedAddress,
-    fieldName: "predictedAddress",
-  });
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -60,3 +54,11 @@ export function Summary() {
 }
 
 Summary.validatedFields = ["predictedAddress"] as const;
+Summary.beforeValidate = [
+  async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {
+    const values = getValues();
+    const predictedAddress = await getPredictedAddress(values);
+
+    setValue("predictedAddress", predictedAddress);
+  },
+];

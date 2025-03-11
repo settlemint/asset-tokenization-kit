@@ -44,6 +44,9 @@ export function CreateEquityForm({
         }}
         defaultValues={{}}
         secureForm={true}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />
