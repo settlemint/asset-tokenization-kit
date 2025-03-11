@@ -33,7 +33,9 @@ export const CreateBondSchema = z.object({
     .string()
     .refine(isFuture, { message: "Maturity date must be in the future" }),
   underlyingAsset: z.address(),
-  predictedAddress: z.address().refine(isAddressAvailable),
+  predictedAddress: z.address().refine(isAddressAvailable, {
+    message: "bond.duplicate",
+  }),
 });
 
 export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;

@@ -1,16 +1,11 @@
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePredictedAddress } from "@/hooks/use-predicted-address";
 import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/stablecoin-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 
 export function Summary() {
   const { control } = useFormContext<CreateStablecoinInput>();
@@ -18,11 +13,6 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("admin.stablecoins.create-form.summary");
-
-  const { isCalculatingAddress, error } = usePredictedAddress({
-    calculateAddress: getPredictedAddress,
-    fieldName: "predictedAddress",
-  });
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -59,20 +49,16 @@ export function Summary() {
           value={`${values.collateralLivenessSeconds} ${t("seconds")}`}
         />
       </FormSummaryDetailCard>
-
-      {isCalculatingAddress ? (
-        <Skeleton className="h-32 w-full" />
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertDescription>{t("error-duplicate")}</AlertDescription>
-        </Alert>
-      ) : (
-        <FormSummarySecurityConfirmation>
-          <FormOtp control={control} name="pincode" />
-        </FormSummarySecurityConfirmation>
-      )}
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode", "predictedAddress"] as const;
+Summary.validatedFields = ["predictedAddress"] as const;
+Summary.beforeValidate = [
+  async ({ setValue, getValues }: UseFormReturn<CreateStablecoinInput>) => {
+    const values = getValues();
+    const predictedAddress = await getPredictedAddress(values);
+
+    setValue("predictedAddress", predictedAddress);
+  },
+];

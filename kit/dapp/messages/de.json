@@ -28,6 +28,15 @@
       },
       "asset-management": "Vermögensverwaltung"
     },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins"
+      }
+    },
     "bonds": {
       "burn-form": {
         "amount": {
@@ -195,11 +204,13 @@
       },
       "manage": {
         "actions": {
-          "burn": "Verbrennen",
-          "grant-role": "Rolle gewähren",
-          "mint": "Prägen",
-          "pause": "Pause",
-          "unpause": "Wieder aufnehmen"
+          "mint": "Ausgeben",
+          "burn": "Einlösen",
+          "pause": "Pausieren",
+          "unpause": "Fortsetzen",
+          "grant-role": "Rolle zuweisen",
+          "top-up": "Aufstocken",
+          "withdraw": "Abheben"
         },
         "manage": "Verwalten"
       },
@@ -208,6 +219,10 @@
           "amount-label": "Betrag",
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
+        },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
         },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot der Anleihe zu erhöhen.",
@@ -343,6 +358,67 @@
           "title": "Anleihen ausgeben"
         },
         "title": "Verwandte Aktionen"
+      },
+      "top-up-form": {
+        "trigger-label": "Aufstocken",
+        "title": "Basiswert aufstocken",
+        "description": "Fügen Sie Ihrem Bond mehr Basiswert hinzu",
+        "button-label": "Aufstocken",
+        "steps": {
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den Betrag an, um den der Basiswert aufgestockt werden soll.",
+            "amount": {
+              "label": "Betrag",
+              "description": "Geben Sie den Aufstockungsbetrag ein"
+            }
+          },
+          "summary": {
+            "title": "Aufstockung überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihrer Aufstockung, bevor Sie fortfahren.",
+            "amount-label": "Betrag",
+            "asset-label": "Basiswert",
+            "pincode": {
+              "label": "PIN-Code",
+              "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen"
+            }
+          }
+        }
+      },
+      "withdraw-form": {
+        "trigger-label": "Abheben",
+        "title": "Basiswert abheben",
+        "description": "Basiswert von Ihrem Bond abheben",
+        "button-label": "Abheben",
+        "steps": {
+          "recipient": {
+            "title": "Empfänger auswählen",
+            "description": "Wählen Sie aus, wer den Basiswert erhalten soll.",
+            "label": "Empfänger",
+            "placeholder": "Nach Benutzer suchen oder Adresse eingeben",
+            "search-instead": "Stattdessen nach Benutzer suchen...",
+            "manual-instead": "Adresse manuell eingeben..."
+          },
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den abzuhebenden Betrag an.",
+            "amount": {
+              "label": "Betrag",
+              "description": "Geben Sie den Abhebungsbetrag ein"
+            }
+          },
+          "summary": {
+            "title": "Abhebung überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihrer Abhebung, bevor Sie fortfahren.",
+            "recipient-label": "Empfänger",
+            "amount-label": "Betrag",
+            "asset-label": "Basiswert",
+            "pincode": {
+              "label": "PIN-Code",
+              "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen"
+            }
+          }
+        }
       }
     },
     "cryptocurrencies": {
@@ -898,11 +974,13 @@
       },
       "manage": {
         "actions": {
-          "burn": "Verbrennen",
-          "grant-role": "Rolle gewähren",
-          "mint": "Prägen",
+          "mint": "Ausgeben",
+          "burn": "Einlösen",
           "pause": "Pausieren",
-          "unpause": "Wieder aktivieren"
+          "unpause": "Fortsetzen",
+          "grant-role": "Rolle zuweisen",
+          "top-up": "Aufstocken",
+          "withdraw": "Abheben"
         },
         "manage": "Verwalten"
       },
@@ -911,6 +989,10 @@
           "amount-label": "Betrag",
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
+        },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
         },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot des Eigenkapitals zu erhöhen.",
@@ -1371,6 +1453,10 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das umlaufende Angebot des Fonds zu erhöhen.",
         "summary": {
@@ -1437,14 +1523,14 @@
           "button-label": "Zugriff widerrufen",
           "description": "Den Zugriff und die Berechtigungen dieses Benutzers vollständig widerrufen.",
           "summary": {
-            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion wird alle Berechtigungen für den Benutzer widerrufen.",
+            "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion widerruft alle Berechtigungen für den Benutzer.",
             "operation-description": "Details des Widerrufs aller Berechtigungen",
             "revoke-title": "Alle widerrufen",
             "roles-to-revoke-label": "Zu widerrufende Rollen",
             "title": "Überprüfen und bestätigen",
             "user-label": "Benutzer"
           },
-          "title": "Zugriff für alle Benutzer entfernen",
+          "title": "Alle Benutzerzugriffe entfernen",
           "trigger-label": "Alle widerrufen"
         },
         "roles-header": "Rollen",
@@ -1785,12 +1871,12 @@
           "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
           "title": "Betrag eingeben"
         },
+        "recipients": {
+          "title": "Empfänger auswählen",
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll"
+        },
         "button-label": "Vermögenswerte prägen",
         "description": "Neue Token ausgeben, um das zirkulierende Angebot des Stablecoins zu erhöhen.",
-        "recipients": {
-          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse oder geben Sie manuell eine Wallet-Adresse ein.",
-          "title": "Empfänger auswählen"
-        },
         "summary": {
           "amount-label": "Betrag",
           "asset-label": "Vermögenswert",
@@ -2011,16 +2097,6 @@
       },
       "title": "Benutzer",
       "platform-management": "Plattformverwaltung"
-    },
-    "charts": {
-      "asset-statistics-title": "Vermögensstatistiken",
-      "asset-type-formatter": {
-        "bonds": "Anleihen",
-        "cryptocurrencies": "Kryptowährungen",
-        "equities": "Aktien",
-        "funds": "Fonds",
-        "stablecoins": "Stablecoins"
-      }
     },
     "platform": {
       "settings": {
@@ -2455,3 +2531,4 @@
   },
   "asset-management": "Vermögensverwaltung"
 }
+

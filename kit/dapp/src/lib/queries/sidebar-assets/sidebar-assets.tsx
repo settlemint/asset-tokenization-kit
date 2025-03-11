@@ -1,25 +1,25 @@
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z, type ZodInfer } from "@/lib/utils/zod";
 import { cache } from "react";
 import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
 import {
-  CryptoCurrencyFragment,
-  CryptoCurrencyFragmentSchema,
+    CryptoCurrencyFragment,
+    CryptoCurrencyFragmentSchema,
 } from "../cryptocurrency/cryptocurrency-fragment";
 import {
-  EquityFragment,
-  EquityFragmentSchema,
+    EquityFragment,
+    EquityFragmentSchema,
 } from "../equity/equity-fragment";
 import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
 import {
-  StableCoinFragment,
-  StableCoinFragmentSchema,
+    StableCoinFragment,
+    StableCoinFragmentSchema,
 } from "../stablecoin/stablecoin-fragment";
 
 /**
  * GraphQL query to fetch sidebar asset data
  */
-const SidebarAssets = theGraphGraphql(
+const SidebarAssets = theGraphGraphqlKit(
   `
   query SidebarAssets {
     stableCoins(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
@@ -81,7 +81,7 @@ export interface SidebarAssetsOptions {
  */
 export const getSidebarAssets = cache(
   async (options?: SidebarAssetsOptions) => {
-    const result = await theGraphClient.request(SidebarAssets);
+    const result = await theGraphClientKit.request(SidebarAssets);
     const { limit = 10 } = options || {};
 
     // Validate stableCoins with Zod schema

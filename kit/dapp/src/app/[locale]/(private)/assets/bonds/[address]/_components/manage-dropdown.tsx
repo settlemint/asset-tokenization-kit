@@ -16,6 +16,8 @@ import { BurnForm } from "./burn-form/form";
 import { GrantRoleForm } from "./grant-role-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
+import { TopUpForm } from "./top-up-form/form";
+import { WithdrawForm } from "./withdraw-form/form";
 
 interface ManageDropdownProps {
   address: Address;
@@ -24,29 +26,36 @@ interface ManageDropdownProps {
 
 export function ManageDropdown({ address, bond }: ManageDropdownProps) {
   const t = useTranslations("admin.bonds.manage");
-
   const menuItems = useMemo(
-    () =>
-      [
-        {
-          id: "mint",
-          label: t("actions.mint"),
-        },
-        {
-          id: "burn",
-          label: t("actions.burn"),
-        },
-        {
-          id: "pause",
-          label: bond.paused ? t("actions.unpause") : t("actions.pause"),
-        },
-        {
-          id: "grant-role",
-          label: t("actions.grant-role"),
-        },
-      ] as const,
+    () => [
+      {
+        id: "mint",
+        label: t("actions.mint"),
+      },
+      {
+        id: "burn",
+        label: t("actions.burn"),
+      },
+      {
+        id: "pause",
+        label: bond.paused ? t("actions.unpause") : t("actions.pause"),
+      },
+      {
+        id: "grant-role",
+        label: t("actions.grant-role"),
+      },
+      {
+        id: "top-up",
+        label: t("actions.top-up"),
+      },
+      {
+        id: "withdraw",
+        label: t("actions.withdraw"),
+      },
+    ] as const,
     [t, bond.paused]
   );
+
   const [openMenuItem, setOpenMenuItem] = useState<
     (typeof menuItems)[number]["id"] | null
   >(null);
@@ -100,6 +109,18 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
       <GrantRoleForm
         address={address}
         open={openMenuItem === "grant-role"}
+        onOpenChange={onFormOpenChange}
+      />
+      <TopUpForm
+        address={address}
+        underlyingAssetAddress={bond.underlyingAsset}
+        open={openMenuItem === "top-up"}
+        onOpenChange={onFormOpenChange}
+      />
+      <WithdrawForm
+        address={address}
+        underlyingAssetAddress={bond.underlyingAsset}
+        open={openMenuItem === "withdraw"}
         onOpenChange={onFormOpenChange}
       />
     </>

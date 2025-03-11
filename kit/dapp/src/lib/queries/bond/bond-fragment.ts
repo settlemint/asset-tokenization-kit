@@ -1,5 +1,5 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { z, type ZodInfer } from "@/lib/utils/zod";
 
 /**
@@ -8,7 +8,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  * @remarks
  * Contains core stablecoin properties including ID, name, symbol, supply, and holders
  */
-export const BondFragment = theGraphGraphql(`
+export const BondFragment = theGraphGraphqlKit(`
   fragment BondFragment on Bond {
     id
     name
@@ -26,6 +26,7 @@ export const BondFragment = theGraphGraphql(`
     holders(first: 5, orderBy: valueExact, orderDirection: desc) {
       valueExact
     }
+    underlyingAsset
   }
 `);
 
@@ -52,6 +53,7 @@ export const BondFragmentSchema = z.object({
       valueExact: z.bigInt(),
     })
   ),
+  underlyingAsset: z.address(),
 });
 
 /**

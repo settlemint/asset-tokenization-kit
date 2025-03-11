@@ -21,7 +21,9 @@ export const CreateCryptoCurrencySchema = z.object({
     .number()
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
-  predictedAddress: z.address().refine(isAddressAvailable),
+  predictedAddress: z.address().refine(isAddressAvailable, {
+    message: "cryptocurrency.duplicate",
+  }),
 });
 
 export type CreateCryptoCurrencyInput = ZodInfer<
