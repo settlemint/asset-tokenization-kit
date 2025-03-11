@@ -23,7 +23,7 @@ export function TransactionDetailSheet({
   functionName,
   receipt,
 }: Transaction) {
-  const t = useTranslations("admin.activity.transaction-details");
+  const t = useTranslations("components.transaction-details");
 
   return (
     <Sheet>

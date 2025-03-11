@@ -12,5 +12,22 @@
       "setting-up": "Setting up...",
       "submit": "Setup Pincode"
     }
+  },
+  "admin": {
+    "bonds": {
+      "manage": {
+        "manage": "Manage",
+        "actions": {
+          "mint": "Mint",
+          "burn": "Burn",
+          "pause": "Pause",
+          "unpause": "Unpause",
+          "grant-role": "Grant Role",
+          "top-up": "Top Up",
+          "withdraw": "Withdraw",
+          "mature": "Mature"
+        }
+      }
+    }
   }
 }

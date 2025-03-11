@@ -46,6 +46,10 @@ export function CreateFundForm({
         defaultValues={{
           managementFeeBps: 100, // Default 1% management fee
         }}
+        secureForm={true}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />

@@ -4,7 +4,7 @@ import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { columns, icons } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -36,12 +36,5 @@ export default async function BondHoldersPage({ params }: PageProps) {
   const { address } = await params;
   const balances = await getAssetBalanceList({ address });
 
-  return (
-    <DataTable
-      columns={columns}
-      data={balances}
-      icons={icons}
-      name={"Holders"}
-    />
-  );
+  return <DataTable columns={columns} data={balances} name={"Holders"} />;
 }

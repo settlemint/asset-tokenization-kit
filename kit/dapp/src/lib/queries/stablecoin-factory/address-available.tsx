@@ -1,6 +1,6 @@
 "use server";
 
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -11,7 +11,7 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the stablecoin factory
  */
-const StableCoinExists = theGraphGraphql(`
+const StableCoinExists = theGraphGraphqlKit(`
   query StableCoinExists($token: ID!) {
     stableCoin(id: $token) {
       id
@@ -28,7 +28,7 @@ const StableCoinExistsSchema = z.object({
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await theGraphClient.request(StableCoinExists, {
+  const data = await theGraphClientKit.request(StableCoinExists, {
     token: address,
   });
 

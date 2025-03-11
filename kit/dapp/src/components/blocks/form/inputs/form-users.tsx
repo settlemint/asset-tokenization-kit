@@ -1,4 +1,4 @@
-import { TranslatableFormMessage } from "@/components/blocks/form/form-translatable-message";
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -110,7 +110,7 @@ export function FormUsers<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <TranslatableFormMessage
+            <TranslatableFormFieldMessage
               id={`${field.name}-error`}
               aria-live="polite"
             />

@@ -1,8 +1,6 @@
 "use client";
 
 import { EventDetailSheet } from "@/components/blocks/asset-events-table/detail-sheet";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
@@ -28,71 +26,38 @@ export function columns() {
 
   return [
     columnHelper.accessor("timestamp", {
-      header: ({ column }) => {
-        return (
-          <DataTableColumnHeader column={column}>
-            {t("timestamp")}
-          </DataTableColumnHeader>
-        );
-      },
+      header: t("timestamp"),
       cell: ({ getValue }) => (
-        <DataTableColumnCell>
-          <span className="first-letter:uppercase">{getValue()}</span>
-        </DataTableColumnCell>
+        <span className="first-letter:uppercase">{getValue()}</span>
       ),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("asset", {
-      header: ({ column }) => {
-        return (
-          <DataTableColumnHeader column={column}>
-            {t("asset")}
-          </DataTableColumnHeader>
-        );
-      },
+      header: t("asset"),
       cell: ({ getValue }) => {
         const asset = getValue();
 
         return (
-          <DataTableColumnCell>
-            <EvmAddress address={asset as Address}>
-              <EvmAddressBalances address={asset as Address} />
-            </EvmAddress>
-          </DataTableColumnCell>
+          <EvmAddress address={asset as Address}>
+            <EvmAddressBalances address={asset as Address} />
+          </EvmAddress>
         );
       },
       enableColumnFilter: true,
     }),
     columnHelper.accessor("event", {
-      header: ({ column }) => {
-        return (
-          <DataTableColumnHeader column={column}>
-            {t("event")}
-          </DataTableColumnHeader>
-        );
-      },
-      cell: ({ getValue }) => (
-        <DataTableColumnCell>{getValue()}</DataTableColumnCell>
-      ),
+      header: t("event"),
       enableColumnFilter: true,
     }),
     columnHelper.accessor("sender", {
-      header: ({ column }) => {
-        return (
-          <DataTableColumnHeader column={column}>
-            {t("sender")}
-          </DataTableColumnHeader>
-        );
-      },
+      header: t("sender"),
       cell: ({ getValue }) => {
         const senderId = getValue();
 
         return (
-          <DataTableColumnCell>
-            <EvmAddress address={senderId as Address}>
-              <EvmAddressBalances address={senderId as Address} />
-            </EvmAddress>
-          </DataTableColumnCell>
+          <EvmAddress address={senderId as Address}>
+            <EvmAddressBalances address={senderId as Address} />
+          </EvmAddress>
         );
       },
       enableColumnFilter: true,
@@ -101,16 +66,14 @@ export function columns() {
       id: "actions",
       header: () => "",
       cell: ({ row }) => (
-        <DataTableColumnCell>
-          <EventDetailSheet
-            event={row.original.event}
-            sender={row.original.sender}
-            asset={row.original.asset}
-            timestamp={row.original.timestamp}
-            details={row.original.details}
-            transactionHash={row.original.transactionHash}
-          />
-        </DataTableColumnCell>
+        <EventDetailSheet
+          event={row.original.event}
+          sender={row.original.sender}
+          asset={row.original.asset}
+          timestamp={row.original.timestamp}
+          details={row.original.details}
+          transactionHash={row.original.transactionHash}
+        />
       ),
       meta: {
         enableCsvExport: false,

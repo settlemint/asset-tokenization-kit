@@ -52,6 +52,7 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   toolbar?: DataTableToolbarOptions;
   pagination?: DataTablePaginationOptions;
   initialSorting?: SortingState;
+  initialColumnFilters?: ColumnFiltersState;
 }
 
 declare module "@tanstack/table-core" {
@@ -88,11 +89,14 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   toolbar,
   pagination,
   initialSorting,
+  initialColumnFilters,
 }: DataTableProps<TData, CParams>) {
   const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    initialColumnFilters ?? []
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
 

@@ -48,9 +48,8 @@ const getTabs = async (user: UserDetail): Promise<TabItemProps[]> => {
       badge: user?.assetCount,
     },
     {
-      name: t("last_transactions"),
-      href: `/platform/users/${user.id}/last-transactions`,
-      badge: user?.transactionCount,
+      name: t("latest-events"),
+      href: `/platform/users/${user.id}/latest-events`,
     },
     {
       name: t("permissions"),
