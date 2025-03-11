@@ -15,7 +15,6 @@ const clientEnvironment = getClientEnvironment();
  * The authentication client instance with configured plugins
  */
 export const authClient = createAuthClient({
-  baseURL: clientEnvironment.APP_URL,
   plugins: [
     inferAdditionalFields<typeof auth>(),
     adminClient(),
