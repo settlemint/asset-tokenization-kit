@@ -206,7 +206,8 @@
           "unpause": "Unpause",
           "grant-role": "Grant role",
           "top-up": "Top up underlying asset",
-          "withdraw": "Withdraw underlying asset"
+          "withdraw": "Withdraw underlying asset",
+          "mature": "Mature"
         },
         "manage": "Manage"
       },

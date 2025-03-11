@@ -201,7 +201,8 @@
           "unpause": "Fortsetzen",
           "grant-role": "Rolle zuweisen",
           "top-up": "Aufstocken",
-          "withdraw": "Abheben"
+          "withdraw": "Abheben",
+          "mature": "Fällig stellen"
         },
         "manage": "Verwalten"
       },
