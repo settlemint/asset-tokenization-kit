@@ -412,9 +412,6 @@
             }
           }
         }
-      },
-      "charts": {
-        "asset-statistics-title": "Asset statistics"
       }
     },
     "cryptocurrencies": {
@@ -2451,6 +2448,10 @@
         "loading": "Loading...",
         "no-user-found": "No user found.",
         "search-placeholder": "Search for a user..."
+      },
+      "pincode-dialog": {
+        "title": "Enter your pincode to confirm",
+        "description": "To sign the transaction, please enter your pincode for verification and authorization."
       }
     },
     "logo": {
@@ -2472,7 +2473,22 @@
     "title": "Something went wrong!",
     "try-again": "Try again",
     "unknown-error": "Unknown error",
-    "validation-errors": "Validation errors"
+    "validation-errors": "Validation errors",
+    "cryptocurrency": {
+      "duplicate": "A Cryptocurrency with these details already exists. Please change at least one of the details."
+    },
+    "stablecoin": {
+      "duplicate": "A Stablecoin with these details already exists. Please change at least one of the details."
+    },
+    "bond": {
+      "duplicate": "A Bond with these details already exists. Please change at least one of the details."
+    },
+    "equity": {
+      "duplicate": "An Equity with these details already exists. Please change at least one of the details."
+    },
+    "fund": {
+      "duplicate": "A Fund with these details already exists. Please change at least one of the details."
+    }
   },
   "holder-type": {
     "admin": "Admin",
