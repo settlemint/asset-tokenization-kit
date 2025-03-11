@@ -7,6 +7,8 @@ export function sanitizeSearchTerm(search: string): string {
   // Remove any non-alphanumeric characters except spaces and common symbols
   const cleaned = search
     .trim()
+    // Escape backslashes
+    .replace(/\\/g, "\\\\")
     // Allow letters, numbers, spaces, and common symbols
     .replace(/[^a-zA-Z0-9\s@._-]/g, "")
     // Replace multiple spaces with single space
