@@ -178,9 +178,11 @@ type Account @entity {
   isContract: Boolean!
   asAsset: Asset
   balancesCount: Int!
-  activeBalancesCount: Int!
+  pausedBalancesCount: Int!
   totalBalanceExact: BigInt!
   totalBalance: BigDecimal!
+  pausedBalanceExact: BigInt!
+  pausedBalance: BigDecimal!
   balances: [AssetBalance!]! @derivedFrom(field: "account")
   nativeBalance: BigDecimal!
   nativeBalanceExact: BigInt!

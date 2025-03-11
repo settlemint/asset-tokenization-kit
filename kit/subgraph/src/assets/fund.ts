@@ -90,7 +90,6 @@ export function handleTransfer(event: Transfer): void {
     if (!hasBalance(fund.id, to.id)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
-      to.activeBalancesCount = to.activeBalancesCount + 1;
     }
 
     to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
@@ -230,7 +229,6 @@ export function handleTransfer(event: Transfer): void {
     if (!hasBalance(fund.id, to.id)) {
       fund.totalHolders = fund.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
-      to.activeBalancesCount = to.activeBalancesCount + 1;
     }
 
     to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
@@ -595,20 +593,20 @@ export function handlePaused(event: Paused): void {
         sender.id == assetBalance.account
           ? sender
           : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.activeBalancesCount = holderAccount.activeBalancesCount - 1;
-      holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
         assetBalance.valueExact
       );
-      holderAccount.totalBalance = toDecimals(
-        holderAccount.totalBalanceExact,
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
         18
       );
       log.info(
-        "Updated holder account: id={}, activeBalancesCount={}, totalBalance={}",
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
         [
           holderAccount.id.toHexString(),
-          holderAccount.activeBalancesCount.toString(),
-          holderAccount.totalBalance.toString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
         ]
       );
       holderAccount.save();
@@ -650,20 +648,20 @@ export function handleUnpaused(event: Unpaused): void {
         sender.id == assetBalance.account
           ? sender
           : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.activeBalancesCount = holderAccount.activeBalancesCount + 1;
-      holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
         assetBalance.valueExact
       );
-      holderAccount.totalBalance = toDecimals(
-        holderAccount.totalBalanceExact,
+      holderAccount.pausedBalance = toDecimals(
+        holderAccount.pausedBalanceExact,
         18
       );
       log.info(
-        "Updated holder account: id={}, activeBalancesCount={}, totalBalance={}",
+        "Updated holder account: id={}, pausedBalancesCount={}, pausedBalance={}",
         [
           holderAccount.id.toHexString(),
-          holderAccount.activeBalancesCount.toString(),
-          holderAccount.totalBalance.toString(),
+          holderAccount.pausedBalancesCount.toString(),
+          holderAccount.pausedBalance.toString(),
         ]
       );
       holderAccount.save();
