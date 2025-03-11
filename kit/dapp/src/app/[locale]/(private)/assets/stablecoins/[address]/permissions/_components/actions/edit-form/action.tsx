@@ -12,7 +12,6 @@ export function EditPermissionsAction({
 }: EditPermissionsFormProps) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("admin.stablecoins.permissions.edit-form");
-
   return (
     <>
       <DropdownMenuItem
