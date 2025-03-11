@@ -28,15 +28,6 @@
       },
       "asset-management": "Vermögensverwaltung"
     },
-    "charts": {
-      "asset-type-formatter": {
-        "bonds": "Anleihen",
-        "cryptocurrencies": "Kryptowährungen",
-        "equities": "Aktien",
-        "funds": "Fonds",
-        "stablecoins": "Stablecoins"
-      }
-    },
     "bonds": {
       "burn-form": {
         "amount": {
@@ -418,6 +409,19 @@
               "description": "Geben Sie Ihren PIN-Code ein, um die Transaktion zu bestätigen"
             }
           }
+        }
+      },
+      "mature-form": {
+        "trigger-label": "Fällig stellen",
+        "title": "Bond fällig stellen",
+        "description": "Stellen Sie Ihren Bond fällig und erhalten Sie den Basiswert",
+        "button-label": "Bond fällig stellen",
+        "summary": {
+          "title": "Fälligkeit überprüfen und bestätigen",
+          "description": "Überprüfen Sie die Details der Bond-Fälligkeit, bevor Sie fortfahren.",
+          "mature-title": "Fällig stellen",
+          "mature-description": "Details zur Bond-Fälligkeit",
+          "asset-label": "Bond"
         }
       }
     },
