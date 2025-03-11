@@ -11,13 +11,8 @@ import { formatNumber } from "@/lib/utils/number";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
-import type { Address } from "viem";
 
-interface SummaryProps {
-  address: Address;
-}
-
-export function Summary({ address }: SummaryProps) {
+export function Summary() {
   const { control } = useFormContext<TopUpInput>();
   const t = useTranslations("admin.bonds.top-up-form.steps.summary");
   const values = useWatch({
