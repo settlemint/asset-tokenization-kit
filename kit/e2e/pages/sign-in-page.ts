@@ -26,6 +26,7 @@ export class SignInPage extends BasePage {
     email: string;
     password: string;
     name: string;
+    pincodeName?: string;
     pincode?: string;
   }) {
     const existingRole = await getUserRole(options.email);
@@ -35,6 +36,7 @@ export class SignInPage extends BasePage {
       await pages.signUpPage.goto();
       const signUpOptions = {
         ...options,
+        pincodeName: options.pincodeName ?? "Test Pincode",
         pincode: options.pincode ?? "123456",
       };
       await pages.signUpPage.signUp(signUpOptions);
@@ -49,6 +51,7 @@ export class SignInPage extends BasePage {
     email: string;
     password: string;
     name: string;
+    pincodeName?: string;
     pincode?: string;
   }) {
     const existingRole = await getUserRole(options.email);
@@ -58,6 +61,7 @@ export class SignInPage extends BasePage {
       await pages.signUpPage.goto();
       const signUpOptions = {
         ...options,
+        pincodeName: options.pincodeName ?? "Test Pincode",
         pincode: options.pincode ?? "123456",
       };
       await pages.signUpPage.signUp(signUpOptions);
