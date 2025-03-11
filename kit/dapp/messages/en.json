@@ -4,27 +4,9 @@
       "asset-management": "Asset management",
       "page-description": "Track activity across all assets.",
       "page-title": "Asset activity",
-      "transaction-details": {
-        "blob-gas-price-label": "Blob gas price",
-        "blob-gas-used-label": "Blob gas used",
-        "block-hash-label": "Block hash",
-        "block-number-label": "Block number",
-        "contract-label": "Contract",
-        "created-at-label": "Created at",
-        "description": "View the details of a transaction",
-        "effective-gas-price-label": "Effective gas price",
-        "from-label": "From",
-        "function-label": "Function",
-        "gas-used-label": "Gas used",
-        "receipt-title": "Receipt",
-        "revert-reason-label": "Revert reason",
-        "status-label": "Status",
-        "title": "Transactions",
-        "transaction-hash-label": "Transaction hash",
-        "transaction-index-label": "Transaction index",
-        "transaction-title": "Transaction",
-        "trigger-label": "Details",
-        "type-label": "Type"
+      "tabs": {
+        "recent-transactions": "Recent transactions",
+        "all-events": "All events"
       },
       "view-all": "View all transactions in the explorer"
     },
@@ -2049,7 +2031,7 @@
         "tabs": {
           "details": "Details",
           "holdings": "Holdings",
-          "last_transactions": "Last transactions",
+          "latest-events": "Latest events",
           "permissions": "Permissions"
         },
         "values": {
@@ -2079,6 +2061,10 @@
           "symbol-header": "Symbol",
           "type-header": "Asset type"
         }
+      },
+      "latest-events": {
+        "title": "Latest events",
+        "view-all": "View more events"
       },
       "kyc_status": {
         "notVerified": "Not Verified",
@@ -2460,8 +2446,41 @@
       "placeholder": "Search for assets or users...",
       "users-section": "Users"
     },
+    "transaction-details": {
+      "blob-gas-price-label": "Blob gas price",
+      "blob-gas-used-label": "Blob gas used",
+      "block-hash-label": "Block hash",
+      "block-number-label": "Block number",
+      "contract-label": "Contract",
+      "created-at-label": "Created at",
+      "description": "View the details of a transaction",
+      "effective-gas-price-label": "Effective gas price",
+      "from-label": "From",
+      "function-label": "Function",
+      "gas-used-label": "Gas used",
+      "receipt-title": "Receipt",
+      "revert-reason-label": "Revert reason",
+      "status-label": "Status",
+      "title": "Transactions",
+      "transaction-hash-label": "Transaction hash",
+      "transaction-index-label": "Transaction index",
+      "transaction-title": "Transaction",
+      "trigger-label": "Details",
+      "type-label": "Type"
+    },
     "transaction-hash": {
       "view-on-explorer": "View on the explorer"
+    },
+    "transactions-table": {
+      "columns": {
+        "actions": "Actions",
+        "created-at": "Timestamp",
+        "contract": "Contract",
+        "function": "Function",
+        "from": "From",
+        "status": "Status",
+        "transaction-hash": "Transaction Hash"
+      }
     }
   },
   "error": {
