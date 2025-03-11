@@ -56,19 +56,23 @@ export function columns() {
         variant: "numeric",
       },
     }),
-    columnHelper.accessor("blocked", {
-      header: t("status-header"),
-      cell: ({ getValue }) => {
-        const blocked: boolean = getValue();
-        const Icon = icons[blocked ? "blocked" : "unblocked"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{blocked ? t("blocked-status") : t("active-status")}</span>
-          </>
-        );
-      },
-    }),
+    columnHelper.accessor(
+      (row) => (row.blocked ? t("blocked-status") : t("active-status")),
+      {
+        id: t("status-header"),
+        header: t("status-header"),
+        cell: ({ row }) => {
+          const { blocked } = row.original;
+          const Icon = icons[blocked ? "blocked" : "unblocked"];
+          return (
+            <>
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span>{blocked ? t("blocked-status") : t("active-status")}</span>
+            </>
+          );
+        },
+      }
+    ),
     columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {
