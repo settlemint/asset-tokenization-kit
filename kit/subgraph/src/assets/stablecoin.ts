@@ -6,7 +6,6 @@ import {
   crypto,
   log,
 } from "@graphprotocol/graph-ts";
-import { Account } from "../../generated/schema";
 import {
   Approval,
   CollateralUpdated,
@@ -95,10 +94,11 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
       to.activeBalancesCount = to.activeBalancesCount + 1;
-      to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
-      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-      to.save();
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
 
     const balance = fetchAssetBalance(
       stableCoin.id,
@@ -192,6 +192,10 @@ export function handleTransfer(event: Transfer): void {
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
+    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
+
     const portfolioStats = newPortfolioStatsData(
       from.id,
       stableCoin.id,
@@ -254,10 +258,15 @@ export function handleTransfer(event: Transfer): void {
       stableCoin.totalHolders = stableCoin.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
       to.activeBalancesCount = to.activeBalancesCount + 1;
-      to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
-      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-      to.save();
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const fromBalance = fetchAssetBalance(
       stableCoin.id,
@@ -633,19 +642,27 @@ export function handlePaused(event: Paused): void {
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
     if (hasBalance(stableCoin.id, assetBalance.account)) {
-      const holderAccount = Account.load(assetBalance.account);
-      if (holderAccount) {
-        holderAccount.activeBalancesCount =
-          holderAccount.activeBalancesCount - 1;
-        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
-          assetBalance.valueExact
-        );
-        holderAccount.totalBalance = toDecimals(
-          holderAccount.totalBalanceExact,
-          18
-        );
-        holderAccount.save();
-      }
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.activeBalancesCount = holderAccount.activeBalancesCount - 1;
+      holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.minus(
+        assetBalance.valueExact
+      );
+      holderAccount.totalBalance = toDecimals(
+        holderAccount.totalBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, activeBalancesCount={}, totalBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.activeBalancesCount.toString(),
+          holderAccount.totalBalance.toString(),
+        ]
+      );
+      holderAccount.save();
     }
   }
 
@@ -680,19 +697,27 @@ export function handleUnpaused(event: Unpaused): void {
   for (let i = 0; i < holders.length; i++) {
     const assetBalance = holders[i];
     if (hasBalance(stableCoin.id, assetBalance.account)) {
-      const holderAccount = Account.load(assetBalance.account);
-      if (holderAccount) {
-        holderAccount.activeBalancesCount =
-          holderAccount.activeBalancesCount + 1;
-        holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
-          assetBalance.valueExact
-        );
-        holderAccount.totalBalance = toDecimals(
-          holderAccount.totalBalanceExact,
-          18
-        );
-        holderAccount.save();
-      }
+      const holderAccount =
+        sender.id == assetBalance.account
+          ? sender
+          : fetchAccount(Address.fromBytes(assetBalance.account));
+      holderAccount.activeBalancesCount = holderAccount.activeBalancesCount + 1;
+      holderAccount.totalBalanceExact = holderAccount.totalBalanceExact.plus(
+        assetBalance.valueExact
+      );
+      holderAccount.totalBalance = toDecimals(
+        holderAccount.totalBalanceExact,
+        18
+      );
+      log.info(
+        "Updated holder account: id={}, activeBalancesCount={}, totalBalance={}",
+        [
+          holderAccount.id.toHexString(),
+          holderAccount.activeBalancesCount.toString(),
+          holderAccount.totalBalance.toString(),
+        ]
+      );
+      holderAccount.save();
     }
   }
 

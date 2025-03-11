@@ -80,10 +80,11 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
       to.activeBalancesCount = to.activeBalancesCount + 1;
-      to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
-      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-      to.save();
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(mint.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
 
     const balance = fetchAssetBalance(
       cryptoCurrency.id,
@@ -175,6 +176,10 @@ export function handleTransfer(event: Transfer): void {
     balance.lastActivity = event.block.timestamp;
     balance.save();
 
+    from.totalBalanceExact = from.totalBalanceExact.minus(burn.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
+
     const portfolioStats = newPortfolioStatsData(
       from.id,
       cryptoCurrency.id,
@@ -236,10 +241,15 @@ export function handleTransfer(event: Transfer): void {
       cryptoCurrency.totalHolders = cryptoCurrency.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
       to.activeBalancesCount = to.activeBalancesCount + 1;
-      to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
-      to.totalBalance = toDecimals(to.totalBalanceExact, 18);
-      to.save();
     }
+
+    to.totalBalanceExact = to.totalBalanceExact.plus(transfer.valueExact);
+    to.totalBalance = toDecimals(to.totalBalanceExact, 18);
+    to.save();
+
+    from.totalBalanceExact = from.totalBalanceExact.minus(transfer.valueExact);
+    from.totalBalance = toDecimals(from.totalBalanceExact, 18);
+    from.save();
 
     const fromBalance = fetchAssetBalance(
       cryptoCurrency.id,
