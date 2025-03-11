@@ -633,7 +633,7 @@ export function handlePaused(event: Paused): void {
   stableCoin.save();
 
   const assetCount = fetchAssetCount(AssetType.stablecoin);
-  assetCount.countActive = assetCount.countActive - 1;
+  assetCount.countPaused = assetCount.countPaused + 1;
   assetCount.save();
 
   const holders = stableCoin.holders.load();
@@ -688,7 +688,7 @@ export function handleUnpaused(event: Unpaused): void {
   stableCoin.save();
 
   const assetCount = fetchAssetCount(AssetType.stablecoin);
-  assetCount.countActive = assetCount.countActive + 1;
+  assetCount.countPaused = assetCount.countPaused - 1;
   assetCount.save();
 
   const holders = stableCoin.holders.load();

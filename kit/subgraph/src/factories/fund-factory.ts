@@ -18,7 +18,6 @@ export function handleFundCreated(event: FundCreated): void {
 
   const assetCount = fetchAssetCount(AssetType.fund);
   assetCount.count = assetCount.count + 1;
-  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(

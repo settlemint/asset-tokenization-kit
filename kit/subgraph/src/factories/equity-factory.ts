@@ -18,7 +18,6 @@ export function handleEquityCreated(event: EquityCreated): void {
 
   const assetCount = fetchAssetCount(AssetType.equity);
   assetCount.count = assetCount.count + 1;
-  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(

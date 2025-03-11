@@ -18,7 +18,6 @@ export function handleBondCreated(event: BondCreated): void {
 
   const assetCount = fetchAssetCount(AssetType.bond);
   assetCount.count = assetCount.count + 1;
-  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(

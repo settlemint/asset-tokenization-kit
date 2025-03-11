@@ -20,7 +20,6 @@ export function handleCryptoCurrencyCreated(
 
   const assetCount = fetchAssetCount(AssetType.cryptocurrency);
   assetCount.count = assetCount.count + 1;
-  assetCount.countActive = assetCount.countActive + 1;
   assetCount.save();
 
   assetCreatedEvent(

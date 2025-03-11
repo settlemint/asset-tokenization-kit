@@ -582,7 +582,7 @@ export function handlePaused(event: Paused): void {
   fund.save();
 
   const assetCount = fetchAssetCount(AssetType.fund);
-  assetCount.countActive = assetCount.countActive - 1;
+  assetCount.countPaused = assetCount.countPaused + 1;
   assetCount.save();
 
   const holders = fund.holders.load();
@@ -637,7 +637,7 @@ export function handleUnpaused(event: Unpaused): void {
   fund.save();
 
   const assetCount = fetchAssetCount(AssetType.fund);
-  assetCount.countActive = assetCount.countActive + 1;
+  assetCount.countPaused = assetCount.countPaused - 1;
   assetCount.save();
 
   const holders = fund.holders.load();
