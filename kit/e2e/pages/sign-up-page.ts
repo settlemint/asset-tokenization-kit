@@ -25,6 +25,7 @@ export class SignUpPage extends BasePage {
     });
     await this.page.getByLabel("Pincode Name").fill(options.pincodeName);
     await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
+    await this.page.getByRole("button", { name: "Setup Pincode" }).click();
     await expect(
       this.page.locator("div.grid span.truncate.font-semibold", {
         hasText: options.name,
