@@ -2,7 +2,7 @@ import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distr
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
-import { geUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
+import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getTransactionsHistory } from "@/lib/queries/transactions/transactions-history";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
@@ -21,7 +21,7 @@ export default async function PortfolioDashboard({
   });
 
   const user = await getUser();
-  const myAssetsBalance = await geUserAssetsBalance(user.wallet as Address);
+  const myAssetsBalance = await getUserAssetsBalance(user.wallet as Address);
 
   const data = await getTransactionsHistory({
     processedAfter: new Date(),

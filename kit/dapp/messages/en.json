@@ -2270,7 +2270,7 @@
     "charts": {
       "assets": {
         "asset-distribution": "Asset Distribution",
-        "asset-distribution-description": "Amount of holders vs the amounts they hold",
+        "asset-distribution-description": "Portfolio allocation by asset type",
         "asset-distribution-no-data": "No asset data available",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
@@ -2311,7 +2311,14 @@
         },
         "wallet-distribution": "Wallet Distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available"
+        "wallet-distribution-no-data": "No wallet data available",
+        "asset-type-pluralizer": {
+          "bond": "Bonds",
+          "cryptocurrency": "Cryptocurrencies",
+          "equity": "Equities",
+          "fund": "Funds",
+          "stablecoin": "Stablecoins"
+        }
       }
     },
     "data-table": {

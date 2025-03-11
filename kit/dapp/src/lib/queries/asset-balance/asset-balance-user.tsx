@@ -33,10 +33,10 @@ type PausableAssetType =
   typeof PAUSABLE_ASSET_TYPES extends Set<infer T> ? T : never;
 
 export type UserAsset = Awaited<
-  ReturnType<typeof geUserAssetsBalance>
+  ReturnType<typeof getUserAssetsBalance>
 >["balances"][number];
 
-export const geUserAssetsBalance = cache(
+export const getUserAssetsBalance = cache(
   async (wallet: Address, active = true) => {
     const userAssetsBalance = await fetchAllTheGraphPages(
       async (first, skip) => {
