@@ -1,7 +1,9 @@
+import { randomInt } from 'crypto';
+
 const date = new Date()
   .toISOString()
   .replace(/(\d{4}-\d{1,2}-\d{1,2}).*/u, "$1");
-const randomValue = (Math.floor(Math.random() * 10_000) + 10_000)
+const randomValue = (randomInt(10_000) + 10_000)
   .toString()
   .slice(1);
 const pincodeName = "Test Pincode";
