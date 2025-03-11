@@ -17,6 +17,7 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
   fragment AssetBalanceFragment on AssetBalance {
     blocked
     frozen
+    lastActivity
     value
     account {
       id
@@ -28,7 +29,6 @@ export const AssetBalanceFragment = theGraphGraphqlKit(
       symbol
       decimals
       type
-      lastActivity
       creator { id }
       admins { ...PermissionFragment }
       supplyManagers { ...PermissionFragment }
@@ -59,6 +59,7 @@ export const AssetBalanceFragmentSchema = z.object({
   blocked: z.boolean(),
   frozen: z.bigDecimal(),
   value: z.bigDecimal(),
+  lastActivity: z.timestamp(),
   account: z.object({
     id: z.address(),
     lastActivity: z.timestamp(),
@@ -69,7 +70,6 @@ export const AssetBalanceFragmentSchema = z.object({
     symbol: z.symbol(),
     decimals: z.number(),
     type: z.assetType(),
-    lastActivity: z.timestamp(),
     creator: z.object({ id: z.address() }),
     admins: z.array(PermissionFragmentSchema),
     supplyManagers: z.array(PermissionFragmentSchema),

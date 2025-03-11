@@ -6,21 +6,12 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ComponentType } from "react";
 
 const columnHelper =
   createColumnHelper<
     Awaited<ReturnType<typeof getCryptoCurrencyList>>[number]
   >();
-
-export const icons: Record<string, ComponentType<{ className?: string }>> = {
-  active: PlayCircle,
-  paused: PauseCircle,
-  private: Lock,
-  public: Unlock,
-};
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
