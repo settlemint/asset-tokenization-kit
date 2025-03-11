@@ -10,7 +10,7 @@ import { eventId } from "../utils/events";
 import { fetchFactory } from "./fetch/factory";
 
 export function handleCryptoCurrencyCreated(
-  event: CryptoCurrencyCreated,
+  event: CryptoCurrencyCreated
 ): void {
   fetchFactory(event.address, FactoryType.cryptocurrency);
   const creator = fetchAccount(event.params.creator);
@@ -26,14 +26,14 @@ export function handleCryptoCurrencyCreated(
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.cryptocurrency,
-    asset.id,
+    asset.id
   );
 
   CryptoCurrency.create(event.params.token);
