@@ -45,7 +45,8 @@ export function columns() {
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -54,11 +55,11 @@ export function columns() {
     columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
       id: t("holder-type-header"),
       header: t("holder-type-header"),
-      enableColumnFilter: false,
     }),
     columnHelper.accessor("frozen", {
       header: t("frozen-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",

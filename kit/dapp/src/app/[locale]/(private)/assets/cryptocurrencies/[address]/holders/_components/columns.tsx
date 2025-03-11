@@ -42,7 +42,8 @@ export function columns() {
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
@@ -54,7 +55,8 @@ export function columns() {
     }),
     columnHelper.accessor("frozen", {
       header: t("frozen-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
