@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import {
   flexRender,
   getCoreRowModel,
@@ -53,6 +54,7 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   pagination?: DataTablePaginationOptions;
   initialSorting?: SortingState;
   initialColumnFilters?: ColumnFiltersState;
+  className?: string;
 }
 
 declare module "@tanstack/table-core" {
@@ -90,6 +92,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   pagination,
   initialSorting,
   initialColumnFilters,
+  className,
 }: DataTableProps<TData, CParams>) {
   const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
@@ -178,7 +181,10 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       <DataTableToolbar table={table} {...toolbar} />
       <div
         data-slot="data-table"
-        className="w-full rounded-xl bg-card text-sidebar-foreground shadow-sm overflow-x-auto"
+        className={cn(
+          "w-full rounded-xl bg-card text-sidebar-foreground shadow-sm overflow-x-auto",
+          className
+        )}
       >
         <Table>
           <TableHeader>
