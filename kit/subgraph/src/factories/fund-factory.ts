@@ -24,14 +24,14 @@ export function handleFundCreated(event: FundCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id,
+    creator.id
   );
   accountActivityEvent(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
     AssetType.fund,
-    asset.id,
+    asset.id
   );
 
   Fund.create(event.params.token);
