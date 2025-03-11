@@ -591,8 +591,8 @@ export function handlePaused(event: Paused): void {
         sender.id == assetBalance.account
           ? sender
           : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
         assetBalance.valueExact
       );
       holderAccount.pausedBalance = toDecimals(
@@ -646,8 +646,8 @@ export function handleUnpaused(event: Unpaused): void {
         sender.id == assetBalance.account
           ? sender
           : fetchAccount(Address.fromBytes(assetBalance.account));
-      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount + 1;
-      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.plus(
+      holderAccount.pausedBalancesCount = holderAccount.pausedBalancesCount - 1;
+      holderAccount.pausedBalanceExact = holderAccount.pausedBalanceExact.minus(
         assetBalance.valueExact
       );
       holderAccount.pausedBalance = toDecimals(
