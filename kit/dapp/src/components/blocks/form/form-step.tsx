@@ -8,7 +8,7 @@ interface FormStepProps extends PropsWithChildren {
 
 export function FormStep({ title, description, children }: FormStepProps) {
   return (
-    <Card className="space-y-6">
+    <Card>
       <CardHeader>
         <h2 className="font-semibold text-base">{title}</h2>
         <p className="text-muted-foreground text-xs">{description}</p>
