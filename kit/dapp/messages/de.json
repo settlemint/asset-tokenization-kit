@@ -28,6 +28,15 @@
       },
       "asset-management": "Vermögensverwaltung"
     },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins"
+      }
+    },
     "bonds": {
       "burn-form": {
         "amount": {
@@ -2089,16 +2098,6 @@
       "title": "Benutzer",
       "platform-management": "Plattformverwaltung"
     },
-    "charts": {
-      "asset-statistics-title": "Vermögensstatistiken",
-      "asset-type-formatter": {
-        "bonds": "Anleihen",
-        "cryptocurrencies": "Kryptowährungen",
-        "equities": "Aktien",
-        "funds": "Fonds",
-        "stablecoins": "Stablecoins"
-      }
-    },
     "platform": {
       "settings": {
         "platform-management": "Plattformverwaltung"
@@ -2532,3 +2531,4 @@
   },
   "asset-management": "Vermögensverwaltung"
 }
+

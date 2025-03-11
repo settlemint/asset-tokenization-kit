@@ -2117,6 +2117,15 @@
         "banned": "Banned"
       },
       "title": "Users"
+    },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins"
+      }
     }
   },
   "asset-management": "Asset management",
