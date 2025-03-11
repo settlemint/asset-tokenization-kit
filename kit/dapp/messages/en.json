@@ -4,27 +4,9 @@
       "asset-management": "Asset management",
       "page-description": "Track activity across all assets.",
       "page-title": "Asset activity",
-      "transaction-details": {
-        "blob-gas-price-label": "Blob gas price",
-        "blob-gas-used-label": "Blob gas used",
-        "block-hash-label": "Block hash",
-        "block-number-label": "Block number",
-        "contract-label": "Contract",
-        "created-at-label": "Created at",
-        "description": "View the details of a transaction",
-        "effective-gas-price-label": "Effective gas price",
-        "from-label": "From",
-        "function-label": "Function",
-        "gas-used-label": "Gas used",
-        "receipt-title": "Receipt",
-        "revert-reason-label": "Revert reason",
-        "status-label": "Status",
-        "title": "Transactions",
-        "transaction-hash-label": "Transaction hash",
-        "transaction-index-label": "Transaction index",
-        "transaction-title": "Transaction",
-        "trigger-label": "Details",
-        "type-label": "Type"
+      "tabs": {
+        "recent-transactions": "Recent transactions",
+        "all-events": "All events"
       },
       "view-all": "View all transactions in the explorer"
     },
@@ -145,7 +127,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -169,7 +150,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -314,13 +294,11 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "name-header": "Name",
         "page-description": "Create, view, and manage bond assets on the blockchain",
         "page-title": "Bonds Management",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -538,9 +516,7 @@
         "title": "Grant Role"
       },
       "holders": {
-        "active-status": "Active",
         "balance-header": "Balance",
-        "blocked-status": "Blocked",
         "frozen-header": "Frozen",
         "holders-page-description": "View wallets holding {name}, including balances and statuses.",
         "holders-page-title": "{name} Holders",
@@ -934,7 +910,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -958,7 +933,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1100,7 +1074,6 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "category-blend-equity": "Blend Equity",
@@ -1155,7 +1128,6 @@
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your equity assets.",
         "page-title": "Equities",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -1399,7 +1371,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -1423,7 +1394,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1565,7 +1535,6 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "assets-under-management-header": "AUM",
@@ -1622,7 +1591,6 @@
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your fund assets.",
         "page-title": "Funds",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -1819,7 +1787,6 @@
       },
       "holders": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "balance-header": "Balance",
         "block-form": {
           "block-button-label": "Block User",
@@ -1843,7 +1810,6 @@
           "unblock-title": "Restore User Transactions",
           "unblock-trigger-label": "Unblock"
         },
-        "blocked-status": "Blocked",
         "freeze-form": {
           "amount": {
             "amount-label": "Amount",
@@ -1991,14 +1957,12 @@
       },
       "table": {
         "actions-header": "Actions",
-        "active-status": "Active",
         "address-header": "Address",
         "asset-management": "Asset management",
         "committed-collateral-header": "Collateral consumed",
         "name-header": "Name",
         "page-description": "Overview and administrative actions for your stablecoin assets.",
         "page-title": "Stable Coins",
-        "paused-status": "Paused",
         "private-header": "Private",
         "private-status": "Private",
         "public-status": "Public",
@@ -2081,7 +2045,7 @@
         "tabs": {
           "details": "Details",
           "holdings": "Holdings",
-          "last_transactions": "Last transactions",
+          "latest-events": "Latest events",
           "permissions": "Permissions"
         },
         "values": {
@@ -2103,9 +2067,7 @@
         "title": "Holdings",
         "table": {
           "actions-header": "Action",
-          "active-status": "Active",
           "balance-header": "Balance",
-          "blocked-status": "Blocked",
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
           "name-header": "Name",
@@ -2113,6 +2075,10 @@
           "symbol-header": "Symbol",
           "type-header": "Asset type"
         }
+      },
+      "latest-events": {
+        "title": "Latest events",
+        "view-all": "View more events"
       },
       "kyc_status": {
         "notVerified": "Not Verified",
@@ -2149,6 +2115,11 @@
     "equity": "Equity",
     "cryptocurrency": "Cryptocurrency",
     "fund": "Fund"
+  },
+  "asset-status": {
+    "active": "Active",
+    "paused": "Paused",
+    "blocked": "Blocked"
   },
   "auth": {
     "account": "Account",
@@ -2351,6 +2322,9 @@
       "sender": "Sender",
       "timestamp": "Timestamp"
     },
+    "asset-status-pill": {
+      "blocked": "Blocked"
+    },
     "asset-type-icon": {
       "bond-initials": "BN",
       "cryptocurrency-initials": "CC",
@@ -2486,8 +2460,41 @@
       "placeholder": "Search for assets or users...",
       "users-section": "Users"
     },
+    "transaction-details": {
+      "blob-gas-price-label": "Blob gas price",
+      "blob-gas-used-label": "Blob gas used",
+      "block-hash-label": "Block hash",
+      "block-number-label": "Block number",
+      "contract-label": "Contract",
+      "created-at-label": "Created at",
+      "description": "View the details of a transaction",
+      "effective-gas-price-label": "Effective gas price",
+      "from-label": "From",
+      "function-label": "Function",
+      "gas-used-label": "Gas used",
+      "receipt-title": "Receipt",
+      "revert-reason-label": "Revert reason",
+      "status-label": "Status",
+      "title": "Transactions",
+      "transaction-hash-label": "Transaction hash",
+      "transaction-index-label": "Transaction index",
+      "transaction-title": "Transaction",
+      "trigger-label": "Details",
+      "type-label": "Type"
+    },
     "transaction-hash": {
       "view-on-explorer": "View on the explorer"
+    },
+    "transactions-table": {
+      "columns": {
+        "actions": "Actions",
+        "created-at": "Timestamp",
+        "contract": "Contract",
+        "function": "Function",
+        "from": "From",
+        "status": "Status",
+        "transaction-hash": "Transaction Hash"
+      }
     }
   },
   "error": {

@@ -1,24 +1,19 @@
 "use client";
 
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
+import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ComponentType } from "react";
 import { getAddress } from "viem";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
-
-export const icons: Record<string, ComponentType<{ className?: string }>> = {
-  blocked: XCircle,
-  unblocked: CheckCircle,
-};
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
@@ -26,6 +21,8 @@ export function columns() {
   const t = useTranslations("admin.cryptocurrencies.holders");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tHolderType = useTranslations("holder-type");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetStatus = useTranslations("asset-status");
 
   return [
     columnHelper.accessor("account.id", {
@@ -42,39 +39,34 @@ export function columns() {
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
       },
     }),
-    columnHelper.display({
+    columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
+      id: t("holder-type-header"),
       header: t("holder-type-header"),
-      enableColumnFilter: false,
-      cell: ({ row }) => formatHolderType(row.original, tHolderType),
     }),
     columnHelper.accessor("frozen", {
       header: t("frozen-header"),
-      cell: ({ getValue }) => formatNumber(getValue()),
+      cell: ({ getValue, row }) =>
+        formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
         variant: "numeric",
       },
     }),
-    columnHelper.accessor("blocked", {
+    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+      id: t("status-header"),
       header: t("status-header"),
-      cell: ({ getValue }) => {
-        const blocked: boolean = getValue();
-        const Icon = icons[blocked ? "blocked" : "unblocked"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{blocked ? t("blocked-status") : t("active-status")}</span>
-          </>
-        );
+      cell: ({ row }) => {
+        return <AssetStatusPill assetBalance={row.original} />;
       },
     }),
-    columnHelper.accessor("account.lastActivity", {
+    columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();

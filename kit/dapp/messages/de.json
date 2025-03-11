@@ -28,6 +28,15 @@
       },
       "asset-management": "Vermögensverwaltung"
     },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Anleihen",
+        "cryptocurrencies": "Kryptowährungen",
+        "equities": "Aktien",
+        "funds": "Fonds",
+        "stablecoins": "Stablecoins"
+      }
+    },
     "bonds": {
       "burn-form": {
         "amount": {
