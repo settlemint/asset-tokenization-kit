@@ -75,6 +75,8 @@ export const metadata = {
     languages: {
       "en-US": `${siteConfig.url}/en`,
       "de-DE": `${siteConfig.url}/de`,
+      "ja-JP": `${siteConfig.url}/ja`,
+      "ar-AE": `${siteConfig.url}/ar`,
     },
   },
   other: {
