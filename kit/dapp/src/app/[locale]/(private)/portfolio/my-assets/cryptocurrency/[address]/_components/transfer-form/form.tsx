@@ -15,7 +15,6 @@ import { Summary } from "./steps/summary";
 interface TransferFormProps {
   address: Address;
   balance: number;
-  decimals: number;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,7 +23,6 @@ interface TransferFormProps {
 export function TransferForm({
   address,
   balance,
-  decimals,
   asButton = false,
   open,
   onOpenChange,
@@ -52,7 +50,6 @@ export function TransferForm({
         defaultValues={{
           address,
           assetType: "cryptocurrency",
-          decimals,
         }}
       >
         <Amount balance={balance} />
