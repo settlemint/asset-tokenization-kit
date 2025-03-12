@@ -20,7 +20,7 @@ export async function generateMetadata({
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.cryptocurrencies.permissions",
+    namespace: "admin.asset-permissions-tab",
   });
 
   return {
@@ -39,7 +39,7 @@ export default async function CryptoCurrencyTokenPermissionsPage({
   const { address } = await params;
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations("admin.cryptocurrencies.permissions");
+  const t = await getTranslations("admin.asset-permissions-tab");
 
   return (
     <>
