@@ -45,6 +45,7 @@ export function RevokeAllPermissionsForm({
           address,
           userAddress: account,
         }}
+        secureForm={true}
       >
         <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>

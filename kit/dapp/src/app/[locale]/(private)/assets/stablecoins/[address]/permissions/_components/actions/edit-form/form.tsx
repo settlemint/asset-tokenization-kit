@@ -50,6 +50,7 @@ export function EditPermissionsForm({
           address,
           userAddress: account,
         }}
+        secureForm={true}
       >
         <Roles />
         <Summary userAddress={account} currentRoles={currentRoles} />

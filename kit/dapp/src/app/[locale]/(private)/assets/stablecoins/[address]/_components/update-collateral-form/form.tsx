@@ -52,6 +52,7 @@ export function UpdateCollateralForm({
         defaultValues={{
           address,
         }}
+        secureForm={true}
       >
         <Amount />
         <Summary address={address} />

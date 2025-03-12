@@ -1,7 +1,5 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type {
   TransferFormAssetType,
   TransferFormType,
@@ -87,13 +85,9 @@ export function Summary({
           type="hidden"
           defaultValue={decimals}
         />
-
-        <FormSummarySecurityConfirmation>
-          <FormOtp control={control} name="pincode" />
-        </FormSummarySecurityConfirmation>
       </div>
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;

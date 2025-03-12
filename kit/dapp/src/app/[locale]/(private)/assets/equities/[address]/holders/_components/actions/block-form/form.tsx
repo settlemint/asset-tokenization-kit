@@ -50,6 +50,7 @@ export function BlockForm({
           address,
           account,
         }}
+        secureForm={true}
       >
         <Summary address={address} isCurrentlyBlocked={isBlocked} />
       </Form>

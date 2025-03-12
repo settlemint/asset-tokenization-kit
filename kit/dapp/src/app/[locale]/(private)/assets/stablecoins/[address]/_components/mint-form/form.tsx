@@ -57,6 +57,7 @@ export function MintForm({
         defaultValues={{
           address,
         }}
+        secureForm={true}
       >
         <Amount freeCollateral={freeCollateral} symbol={symbol} />
         <Recipients />

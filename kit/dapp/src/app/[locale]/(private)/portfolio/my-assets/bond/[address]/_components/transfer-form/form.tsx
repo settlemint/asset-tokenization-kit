@@ -29,14 +29,19 @@ export function TransferForm({
   onOpenChange,
 }: TransferFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
-  const isExternallyControlled = open !== undefined && onOpenChange !== undefined;
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
-      triggerLabel={isExternallyControlled ? undefined : t("transfer-form.trigger-label")}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
+      triggerLabel={
+        isExternallyControlled ? undefined : t("transfer-form.trigger-label")
+      }
       title={t("transfer-form.title")}
       description={t("transfer-form.description")}
       asButton={asButton}
@@ -44,7 +49,9 @@ export function TransferForm({
       <Form
         action={transfer}
         resolver={zodResolver(TransferBondSchema)}
-        onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("transfer-form.button-label"),
         }}
@@ -53,6 +60,7 @@ export function TransferForm({
           assetType: "bond",
           decimals,
         }}
+        secureForm={true}
       >
         <Amount balance={balance} />
         <Recipients />

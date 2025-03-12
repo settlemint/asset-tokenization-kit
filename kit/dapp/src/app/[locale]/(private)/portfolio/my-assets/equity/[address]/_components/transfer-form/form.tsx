@@ -59,6 +59,7 @@ export function TransferForm({
           assetType: "equity",
           decimals,
         }}
+        secureForm={true}
       >
         <Amount balance={balance} />
         <Recipients />

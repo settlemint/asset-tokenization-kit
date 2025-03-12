@@ -44,6 +44,7 @@ export function PauseForm({
           defaultValues={{
             address,
           }}
+          secureForm={true}
         >
           <Summary address={address} isCurrentlyPaused={isPaused} />
         </Form>
@@ -68,6 +69,7 @@ export function PauseForm({
         defaultValues={{
           address,
         }}
+        secureForm={true}
       >
         <Summary address={address} isCurrentlyPaused={isPaused} />
       </Form>

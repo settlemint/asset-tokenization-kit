@@ -54,6 +54,7 @@ export function BurnForm({
         defaultValues={{
           address,
         }}
+        secureForm={true}
       >
         <Amount maxBurnAmount={balance} />
         <Summary address={address} />
