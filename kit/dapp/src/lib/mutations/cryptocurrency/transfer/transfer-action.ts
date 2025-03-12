@@ -5,7 +5,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
-import { TransferCryptocurrencySchema } from "./transfer-schema";
+import { TransferCryptoCurrencySchema } from "./transfer-schema";
 
 /**
  * GraphQL mutation to transfer cryptocurrency tokens
@@ -27,7 +27,7 @@ const TransferCryptoCurrency = portalGraphql(`
 `);
 
 export const transfer = action
-  .schema(TransferCryptocurrencySchema)
+  .schema(TransferCryptoCurrencySchema)
   .outputSchema(z.hashes())
   .action(
     async ({

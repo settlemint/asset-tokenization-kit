@@ -644,37 +644,6 @@
         "holders": "Holders",
         "permissions": "Permissions",
         "underlying-assets": "Underlying assets"
-      },
-      "cryptocurrency": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer Cryptocurrency",
-          "description": "Transfer your cryptocurrency tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Amount",
-            "description": "Enter the amount of tokens you want to transfer",
-            "amount-label": "Amount",
-            "balance-description": "Available balance:"
-          },
-          "recipient": {
-            "title": "Recipient",
-            "description": "Enter the recipient's address",
-            "input-label": "Recipient Address",
-            "input-description": "Enter the Ethereum address of the recipient"
-          },
-          "summary": {
-            "title": "Summary",
-            "description": "Review your transfer details",
-            "details-title": "Transfer Details",
-            "details-description": "Review the details of your transfer",
-            "amount-label": "Amount",
-            "recipient-label": "Recipient",
-            "from-label": "From",
-            "pincode-label": "Security Code",
-            "pincode-description": "Enter your 6-digit security code to confirm the transfer"
-          }
-        }
       }
     },
     "dashboard": {

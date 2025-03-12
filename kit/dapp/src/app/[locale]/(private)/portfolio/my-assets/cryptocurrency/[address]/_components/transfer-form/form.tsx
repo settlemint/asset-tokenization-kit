@@ -3,7 +3,7 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import { transfer } from "@/lib/mutations/cryptocurrency/transfer/transfer-action";
-import { TransferCryptocurrencySchema } from "@/lib/mutations/cryptocurrency/transfer/transfer-schema";
+import { TransferCryptoCurrencySchema } from "@/lib/mutations/cryptocurrency/transfer/transfer-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -44,7 +44,7 @@ export function TransferForm({
     >
       <Form
         action={transfer}
-        resolver={zodResolver(TransferCryptocurrencySchema)}
+        resolver={zodResolver(TransferCryptoCurrencySchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
         buttonLabels={{
           label: t("transfer-form.button-label"),

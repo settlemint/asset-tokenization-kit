@@ -4,7 +4,7 @@ import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
-import type { TransferCryptocurrencyInput } from "@/lib/mutations/cryptocurrency/transfer/transfer-schema";
+import type { TransferCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/transfer/transfer-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -16,7 +16,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<TransferCryptocurrencyInput>();
+  const { control } = useFormContext<TransferCryptoCurrencyInput>();
   const t = useTranslations("portfolio.my-assets.cryptocurrency.transfer-form.summary");
   const values = useWatch({
     control: control,
