@@ -26,7 +26,8 @@ export function handleCryptoCurrencyCreated(
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id
+    creator.id,
+    AssetType.cryptocurrency
   );
   accountActivityEvent(
     creator,

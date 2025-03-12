@@ -8,10 +8,11 @@ export function approvalEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   owner: Bytes,
   spender: Bytes,
   value: BigInt,
-  decimals: i32,
+  decimals: i32
 ): ApprovalEvent {
   const event = new ApprovalEvent(id);
   event.eventName = EventName.Approval;
@@ -20,6 +21,7 @@ export function approvalEvent(
   event.sender = sender;
   event.owner = owner;
   event.spender = spender;
+  event.assetType = assetType;
   event.valueExact = value;
   event.value = toDecimals(value, decimals);
   event.save();

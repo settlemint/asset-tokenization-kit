@@ -1,7 +1,7 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { UnderlyingAssetTopUpEvent } from "../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
-import { EventName } from "../../utils/enums";
+import { AssetType, EventName } from "../../utils/enums";
 
 export function underlyingAssetTopUpEvent(
   id: Bytes,
@@ -10,13 +10,14 @@ export function underlyingAssetTopUpEvent(
   sender: Bytes,
   from: Bytes,
   amount: BigInt,
-  decimals: i32,
+  decimals: i32
 ): UnderlyingAssetTopUpEvent {
   const event = new UnderlyingAssetTopUpEvent(id);
   event.eventName = EventName.UnderlyingAssetTopUp;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
+  event.assetType = AssetType.bond;
   event.from = from;
   event.amount = toDecimals(amount, decimals);
   event.amountExact = amount;

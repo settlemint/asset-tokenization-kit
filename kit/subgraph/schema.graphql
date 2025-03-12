@@ -250,6 +250,7 @@ interface AssetEvent {
   timestamp: BigInt! # Timestamp of the event
   emitter: Asset! # The contract that emitted the event
   sender: Account! # The account that sent the transaction
+  assetType: String! # The type of asset that was affected
 }
 
 # --------------------------------------------------
@@ -279,6 +280,7 @@ type TransferEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   from: Account! # Sender address
   to: Account! # Recipient address
   value: BigDecimal! # Amount transferred
@@ -295,6 +297,7 @@ type MintEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   to: Account! # Recipient address
   value: BigDecimal! # Amount transferred
   valueExact: BigInt! # Amount transferred in exact precision
@@ -310,6 +313,7 @@ type BurnEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   from: Account!
   value: BigDecimal! # Amount transferred
   valueExact: BigInt! # Amount transferred in exact precision
@@ -325,6 +329,7 @@ type ApprovalEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   owner: Account! # Token owner
   spender: Account! # Approved spender
   value: BigDecimal! # Approved amount
@@ -341,6 +346,7 @@ type PausedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
 }
 
 """
@@ -353,6 +359,7 @@ type UnpausedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
 }
 
 """
@@ -365,6 +372,7 @@ type TokensFrozenEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   user: Account! # The user whose tokens were frozen
   amount: BigDecimal! # The amount frozen
   amountExact: BigInt! # The amount frozen in exact precision
@@ -380,6 +388,7 @@ type RoleGrantedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   role: Bytes! # Role identifier (e.g. SUPPLY_MANAGEMENT_ROLE)
   account: Account! # The account that received the role
 }
@@ -394,6 +403,7 @@ type RoleRevokedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   role: Bytes!
   account: Account! # The account that lost the role
 }
@@ -408,6 +418,7 @@ type RoleAdminChangedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   role: Bytes! # The role being modified
   previousAdminRole: Bytes! # The old admin role
   newAdminRole: Bytes! # The new admin role
@@ -423,6 +434,7 @@ type UserBlockedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   user: Account! # The blocked user's address
 }
 
@@ -436,6 +448,7 @@ type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   user: Account! # The unblocked user's address
 }
 
@@ -449,6 +462,7 @@ type AssetCreatedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
 }
 
 # --------------------------------------------------
@@ -465,6 +479,7 @@ type CollateralUpdatedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   oldAmount: BigDecimal! # Previous collateral amount
   oldAmountExact: BigInt! # Previous collateral amount in exact precision
   newAmount: BigDecimal! # New collateral amount
@@ -486,6 +501,7 @@ type ManagementFeeCollectedEvent implements AssetEvent
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   amount: BigDecimal! # Fee amount collected
   amountExact: BigInt! # Fee amount collected in exact precision
 }
@@ -501,6 +517,7 @@ type PerformanceFeeCollectedEvent implements AssetEvent
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   amount: BigDecimal! # Fee amount collected
   amountExact: BigInt! # Fee amount collected in exact precision
 }
@@ -515,6 +532,7 @@ type TokenWithdrawnEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   token: Asset!
   to: Account! # Recipient address
   amount: BigDecimal! # Amount withdrawn
@@ -543,6 +561,7 @@ type BondMaturedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
 }
 
 """
@@ -555,6 +574,7 @@ type BondRedeemedEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   holder: Account! # The address redeeming the bond
   bondAmount: BigDecimal! # The number of bonds redeemed
   bondAmountExact: BigInt! # The number of bonds redeemed in exact precision
@@ -576,6 +596,7 @@ type UnderlyingAssetTopUpEvent implements AssetEvent @entity(immutable: true) {
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   from: Account! # The address providing the top-up
   amount: BigDecimal! # The amount of underlying assets added
   amountExact: BigInt! # The amount of underlying assets added in exact precision
@@ -592,6 +613,7 @@ type UnderlyingAssetWithdrawnEvent implements AssetEvent
   timestamp: BigInt!
   emitter: Asset!
   sender: Account!
+  assetType: String!
   to: Account! # The recipient address for the withdrawn assets
   amount: BigDecimal! # The amount withdrawn
   amountExact: BigInt! # The amount withdrawn in exact precision
