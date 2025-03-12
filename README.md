@@ -4,7 +4,9 @@
   <p align="center">
     ✨ <a href="https://settlemint.com">https://settlemint.com</a> ✨
     <br/>
-    Integrate SettleMint into your application with ease.
+    Build your digital assets platform with the SettleMint Asset Tokenization Kit.
+    <br/>
+    Get the dApp UI and Smart Contracts out of the box — fully customizable source code is available.
   </p>
 </p>
 <br/>
@@ -23,6 +25,26 @@
   <a href="https://github.com/settlemint/asset-tokenization-kit/issues">Issues</a>
   <br />
 </div>
+
+## Introduction
+
+The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms. With built-in tools for smart contract deployment, asset tracking, and seamless blockchain interactions, the kit simplifies the creation of secure and scalable tokenization solutions.
+
+### Key Features
+
+- **Ready-to-use ERC20 smart contract templates** - Pre-built templates make it easy to issue, manage, and transfer tokenized assets such as stablecoins, bonds, securities, and real-world assets (RWAs).
+
+- **Pre-built dApp web UI** - The kit's low-code approach and ready-to-use dApp web UI streamline the deployment process, reducing time-to-market and ensuring compliance with regulatory frameworks.
+
+- **Easy Management** - Includes detailed dashboards and advanced analytics, providing real-time insights into tokenized assets, transactions, and user activity. Track token issuance, transfers, holdings, and on-chain interactions through an intuitive interface.
+
+- **Fully Customizable Code** - Our opensource dApp templates enable further customizations of the application for your branding, look and feel. You can add more features and integrations and still deploy in minutes.
+
+## Overcoming the Blockchain Challenges
+
+Developing a digital asset platform involves multiple complex steps, from smart contract deployment to frontend integration and compliance considerations. While blockchain offers transparency and security, creating and managing tokenized assets requires deep expertise in smart contract development, wallet integrations, and transaction management.
+
+The SettleMint Asset Tokenization Kit eliminates these complexities by providing ready-to-use smart contract templates, a pre-built dApp web UI, and easy-to-configure integrations. This allows businesses, banks, and financial institutions to quickly launch digital assets, ensuring a faster go-to-market, compliance readiness, and seamless user experiences.
 
 ## Getting Started
 
@@ -93,8 +115,3 @@ bun dev
 ```
 
 Browse to http://localhost:3000 to access the application. Create an account by clicking "Sign up" - the first account created will have admin privileges.
-
-### Known Limitations & TODOs
-
-- No CLI command to update ABIs automatically
-- Admin account creation relies on first-signup mechanism, perhaps a dedicated CLI command?

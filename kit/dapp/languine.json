@@ -2,7 +2,7 @@
   "projectId": "prj_d3nfmf2kk7lv5j8mc06oibbw",
   "locale": {
     "source": "en",
-    "targets": ["de"]
+    "targets": ["de", "ja", "ar"]
   },
   "files": {
     "json": {

@@ -27,6 +27,9 @@ export const BondFragment = theGraphGraphqlKit(`
       valueExact
     }
     underlyingAsset
+    maturityDate
+    isMatured
+    hasSufficientUnderlying
   }
 `);
 
@@ -54,6 +57,9 @@ export const BondFragmentSchema = z.object({
     })
   ),
   underlyingAsset: z.address(),
+  maturityDate: z.bigInt().optional(),
+  isMatured: z.boolean(),
+  hasSufficientUnderlying: z.boolean(),
 });
 
 /**

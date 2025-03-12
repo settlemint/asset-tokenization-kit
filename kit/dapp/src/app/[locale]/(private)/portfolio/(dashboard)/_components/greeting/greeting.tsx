@@ -7,7 +7,7 @@ export function Greeting() {
   const name = session.data?.user.name;
 
   return (
-    <div>
+    <div className="">
       {getGreeting()},
       {name ? (
         <span className="ml-1 font-semibold">{name}</span>

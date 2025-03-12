@@ -7,12 +7,14 @@ export function pausedEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string
 ): PausedEvent {
   const event = new PausedEvent(id);
   event.eventName = EventName.Paused;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
+  event.assetType = assetType;
   event.save();
   return event;
 }

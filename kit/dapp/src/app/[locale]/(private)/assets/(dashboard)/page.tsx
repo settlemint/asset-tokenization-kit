@@ -1,6 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
 import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { AssetActivity } from "./_components/charts/asset-activity";
 import { AssetsSupply } from "./_components/charts/assets-supply";
@@ -30,8 +29,16 @@ export async function generateMetadata({
   };
 }
 
-export default function AdminDashboard() {
-  const t = useTranslations("admin.dashboard.page");
+export default async function AdminDashboard({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "admin.dashboard.page",
+  });
 
   return (
     <>

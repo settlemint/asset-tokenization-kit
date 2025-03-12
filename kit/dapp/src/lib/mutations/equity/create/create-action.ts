@@ -28,29 +28,6 @@ const EquityFactoryCreate = portalGraphql(`
 `);
 
 /**
- * GraphQL query for predicting the address of a new equity
- *
- * @remarks
- * Uses deterministic deployment to predict the contract address before creation
- */
-const CreateEquityPredictAddress = portalGraphql(`
-  query CreateEquityPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $equityCategory: String!, $equityClass: String!) {
-    EquityFactory(address: $address) {
-      predictAddress(
-        sender: $sender
-        decimals: $decimals
-        name: $name
-        symbol: $symbol
-        equityCategory: $equityCategory
-        equityClass: $equityClass
-      ) {
-        predicted
-      }
-    }
-  }
-`);
-
-/**
  * GraphQL mutation for creating off-chain metadata for a equity
  *
  * @remarks
@@ -77,31 +54,12 @@ export const createEquity = action
         isin,
         equityCategory,
         equityClass,
+        predictedAddress,
       },
       ctx: { user },
     }) => {
-      const predictedAddress = await portalClient.request(
-        CreateEquityPredictAddress,
-        {
-          address: EQUITY_FACTORY_ADDRESS,
-          sender: user.wallet,
-          decimals,
-          name: assetName,
-          symbol,
-          equityCategory,
-          equityClass,
-        }
-      );
-
-      const newAddress =
-        predictedAddress.EquityFactory?.predictAddress?.predicted;
-
-      if (!newAddress) {
-        throw new Error("Failed to predict the address");
-      }
-
       await hasuraClient.request(CreateOffchainEquity, {
-        id: newAddress,
+        id: predictedAddress,
         isin: isin,
       });
 
