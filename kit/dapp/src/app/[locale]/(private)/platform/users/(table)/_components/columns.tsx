@@ -156,23 +156,35 @@ export function columns() {
           actions={[
             {
               id: "ban-user",
-              label: "Ban User",
-              component: ({ close }) => (
-                <BanUserAction user={row.original} onComplete={close} />
+              label: row.original.banned ? "Unban User" : "Ban User",
+              component: ({ open, onOpenChange }) => (
+                <BanUserAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
               ),
             },
             {
               id: "change-role",
               label: "Change Role",
-              component: ({ close }) => (
-                <ChangeRoleAction user={row.original} onComplete={close} />
+              component: ({ open, onOpenChange }) => (
+                <ChangeRoleAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
               ),
             },
             {
               id: "update-kyc-status",
               label: "Update KYC Status",
-              component: ({ close }) => (
-                <UpdateKycStatusAction user={row.original} onComplete={close} />
+              component: ({ open, onOpenChange }) => (
+                <UpdateKycStatusAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
               ),
             },
           ]}

@@ -28,7 +28,6 @@ const dataTableRowActionsVariants = cva("flex items-center space-x-2", {
 export interface DataTableColumnCellRenderProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  close: () => void;
 }
 
 interface DataTableColumnCellProps
@@ -116,7 +115,6 @@ export function DataTableRowActions({
                 onOpenChange: (open) => {
                   setOpenItem(open ? actionItem.id : null);
                 },
-                close: () => setOpenItem(null),
               })
             : actionItem.component}
         </Fragment>
