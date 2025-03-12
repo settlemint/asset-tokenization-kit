@@ -8,15 +8,17 @@ export function mintEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   to: Bytes,
   value: BigInt,
-  decimals: number,
+  decimals: number
 ): MintEvent {
   const mintEvent = new MintEvent(id);
   mintEvent.eventName = EventName.Mint;
   mintEvent.timestamp = timestamp;
   mintEvent.emitter = emitter;
   mintEvent.sender = sender;
+  mintEvent.assetType = assetType;
   mintEvent.to = to;
   mintEvent.value = toDecimals(value, decimals);
   mintEvent.valueExact = value;

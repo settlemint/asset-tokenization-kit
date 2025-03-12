@@ -24,7 +24,8 @@ export function handleEquityCreated(event: EquityCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id
+    creator.id,
+    AssetType.equity
   );
   accountActivityEvent(
     creator,

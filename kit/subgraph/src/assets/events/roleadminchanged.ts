@@ -7,15 +7,17 @@ export function roleAdminChangedEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   role: Bytes,
   previousAdminRole: Bytes,
-  newAdminRole: Bytes,
+  newAdminRole: Bytes
 ): RoleAdminChangedEvent {
   const event = new RoleAdminChangedEvent(id);
   event.eventName = EventName.RoleAdminChanged;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
+  event.assetType = assetType;
   event.role = role;
   event.previousAdminRole = previousAdminRole;
   event.newAdminRole = newAdminRole;

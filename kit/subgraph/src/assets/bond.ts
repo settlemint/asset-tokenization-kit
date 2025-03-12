@@ -22,7 +22,7 @@ import {
   UnderlyingAssetWithdrawn,
   Unpaused,
   UserBlocked,
-  UserUnblocked
+  UserUnblocked,
 } from "../../generated/templates/Bond/Bond";
 import { fetchAccount } from "../fetch/account";
 import { fetchAssetBalance, hasBalance } from "../fetch/balance";
@@ -66,6 +66,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.bond,
       to.id,
       event.params.value,
       bond.decimals
@@ -135,6 +136,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.bond,
       from.id,
       event.params.value,
       bond.decimals
@@ -211,6 +213,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.bond,
       from.id,
       to.id,
       event.params.value,
@@ -327,6 +330,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     event.params.role,
     account.id
   );
@@ -415,6 +419,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     event.params.role,
     account.id
   );
@@ -506,6 +511,7 @@ export function handleApproval(event: Approval): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     owner.id,
     spender.id,
     event.params.value,
@@ -555,6 +561,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole
@@ -702,7 +709,13 @@ export function handlePaused(event: Paused): void {
     }
   }
 
-  pausedEvent(eventId(event), event.block.timestamp, event.address, sender.id);
+  pausedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.bond
+  );
   accountActivityEvent(
     sender,
     EventName.Paused,
@@ -762,7 +775,8 @@ export function handleUnpaused(event: Unpaused): void {
     eventId(event),
     event.block.timestamp,
     event.address,
-    sender.id
+    sender.id,
+    AssetType.bond
   );
   accountActivityEvent(
     sender,
@@ -809,6 +823,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     user.id,
     event.params.amount,
     bond.decimals
@@ -855,6 +870,7 @@ export function handleUserBlocked(event: UserBlocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     user.id
   );
   accountActivityEvent(
@@ -898,6 +914,7 @@ export function handleUserUnblocked(event: UserUnblocked): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.bond,
     user.id
   );
   accountActivityEvent(
@@ -1010,16 +1027,21 @@ export function handleUnderlyingAssetWithdrawn(
 
 function calculateTotalUnderlyingNeeded(bond: Bond): void {
   // Calculate exact value first
-  bond.totalUnderlyingNeededExact = bond.totalSupplyExact.times(bond.faceValue).div(
-    BigInt.fromI32(10).pow(bond.decimals as u8)
-  );
+  bond.totalUnderlyingNeededExact = bond.totalSupplyExact
+    .times(bond.faceValue)
+    .div(BigInt.fromI32(10).pow(bond.decimals as u8));
 
   // Convert to decimal for display
-  bond.totalUnderlyingNeeded = toDecimals(bond.totalUnderlyingNeededExact, bond.decimals);
+  bond.totalUnderlyingNeeded = toDecimals(
+    bond.totalUnderlyingNeededExact,
+    bond.decimals
+  );
 }
 
 export function updateDerivedFields(bond: Bond): void {
   calculateTotalUnderlyingNeeded(bond);
   // Compare using exact values
-  bond.hasSufficientUnderlying = bond.underlyingBalance.ge(bond.totalUnderlyingNeededExact);
+  bond.hasSufficientUnderlying = bond.underlyingBalance.ge(
+    bond.totalUnderlyingNeededExact
+  );
 }

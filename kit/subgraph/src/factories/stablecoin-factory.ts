@@ -24,7 +24,8 @@ export function handleStableCoinCreated(event: StableCoinCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id
+    creator.id,
+    AssetType.stablecoin
   );
   accountActivityEvent(
     creator,

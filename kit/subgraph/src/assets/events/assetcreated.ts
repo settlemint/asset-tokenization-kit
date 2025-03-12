@@ -7,12 +7,14 @@ export function assetCreatedEvent(
   timestamp: BigInt,
   asset: Bytes,
   sender: Bytes,
+  assetType: string
 ): AssetCreatedEvent {
   const assetCreatedEvent = new AssetCreatedEvent(id);
   assetCreatedEvent.eventName = EventName.AssetCreated;
   assetCreatedEvent.timestamp = timestamp;
   assetCreatedEvent.emitter = asset;
   assetCreatedEvent.sender = sender;
+  assetCreatedEvent.assetType = assetType;
   assetCreatedEvent.save();
   return assetCreatedEvent;
 }

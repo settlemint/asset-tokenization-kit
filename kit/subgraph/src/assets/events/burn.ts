@@ -8,15 +8,17 @@ export function burnEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   from: Bytes,
   value: BigInt,
-  decimals: number,
+  decimals: number
 ): BurnEvent {
   const burnEvent = new BurnEvent(id);
   burnEvent.eventName = EventName.Burn;
   burnEvent.timestamp = timestamp;
   burnEvent.emitter = emitter;
   burnEvent.sender = sender;
+  burnEvent.assetType = assetType;
   burnEvent.from = from;
   burnEvent.value = toDecimals(value, decimals);
   burnEvent.valueExact = value;
