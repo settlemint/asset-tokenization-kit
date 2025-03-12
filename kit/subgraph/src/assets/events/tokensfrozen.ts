@@ -8,15 +8,17 @@ export function tokensFrozenEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   user: Bytes,
   amount: BigInt,
-  decimals: i32,
+  decimals: i32
 ): TokensFrozenEvent {
   const event = new TokensFrozenEvent(id);
   event.eventName = EventName.TokensFrozen;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
+  event.assetType = assetType;
   event.user = user;
   event.amount = toDecimals(amount, decimals);
   event.amountExact = amount;

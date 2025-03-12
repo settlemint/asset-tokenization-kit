@@ -7,13 +7,15 @@ export function userUnblockedEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
-  user: Bytes,
+  assetType: string,
+  user: Bytes
 ): UserUnblockedEvent {
   const event = new UserUnblockedEvent(id);
   event.eventName = EventName.UserUnblocked;
   event.timestamp = timestamp;
   event.emitter = emitter;
   event.sender = sender;
+  event.assetType = assetType;
   event.user = user;
   event.save();
 

@@ -24,7 +24,8 @@ export function handleBondCreated(event: BondCreated): void {
     eventId(event),
     event.block.timestamp,
     asset.id,
-    creator.id
+    creator.id,
+    AssetType.bond
   );
   accountActivityEvent(
     creator,
