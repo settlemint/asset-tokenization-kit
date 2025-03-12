@@ -7,9 +7,6 @@ export const TransferStableCoinSchema = z.object({
   pincode: z.pincode(),
   assetType: z.literal("stablecoin"),
   decimals: z.decimals(),
-  user: z.object({
-    wallet: z.address(),
-  }),
 });
 
 export type TransferStableCoinSchema = ZodInfer<

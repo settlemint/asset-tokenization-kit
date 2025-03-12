@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { ManageDropdown } from "./manage-dropdown";
 
 interface PageHeaderProps {
   address: Address;
@@ -29,6 +30,7 @@ export async function StableCoinPageHeader({ address }: PageHeaderProps) {
       }
       section={t("asset-management")}
       pill={<ActivePill paused={stableCoin.paused} />}
+      button={<ManageDropdown address={address} stableCoin={stableCoin} />}
     />
   );
 }

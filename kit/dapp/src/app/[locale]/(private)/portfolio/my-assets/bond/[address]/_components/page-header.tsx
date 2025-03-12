@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { ManageDropdown } from "./manage-dropdown";
 
 interface PageHeaderProps {
   address: Address;
@@ -29,6 +30,7 @@ export async function BondPageHeader({ address }: PageHeaderProps) {
       }
       section={t("asset-management")}
       pill={<ActivePill paused={bond.paused} />}
+      button={<ManageDropdown address={address} bond={bond} />}
     />
   );
 }
