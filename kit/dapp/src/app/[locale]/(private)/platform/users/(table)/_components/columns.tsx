@@ -58,7 +58,7 @@ export function columns() {
           <span>{renderValue()}</span>
           {row.original.banned && (
             <Badge variant="destructive">
-              {t("banned_reason", { reason: row.original.ban_reason })}
+              {t("banned_reason", { reason: row.original.ban_reason ?? "" })}
             </Badge>
           )}
         </>
