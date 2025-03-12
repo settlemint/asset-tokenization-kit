@@ -2291,6 +2291,7 @@
       "asset": "Asset",
       "detail-sheet": {
         "asset": "Asset",
+        "asset-type": "Asset type",
         "date": "Date",
         "details-button": "Details",
         "details-for-event": "Details for {event} event",

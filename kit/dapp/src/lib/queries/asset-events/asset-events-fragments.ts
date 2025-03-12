@@ -15,6 +15,7 @@ export const AssetEventFragment = theGraphGraphqlKit(`
     }
     eventName
     timestamp
+    assetType
   }
 `);
 
@@ -29,6 +30,7 @@ export const AssetEventFragmentSchema = z.object({
   }),
   eventName: z.string(),
   timestamp: z.timestamp(),
+  assetType: z.enum(["bond", "cryptocurrency", "equity", "fund", "stablecoin"]),
 });
 
 /**
@@ -731,6 +733,7 @@ export interface NormalizedEventsListItem {
   event: string;
   timestamp: string;
   asset: string;
+  assetType: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
   sender: string;
   details: AssetEvent;
   transactionHash: string;
