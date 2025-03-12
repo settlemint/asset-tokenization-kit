@@ -2557,6 +2557,26 @@
     }
   },
   "portfolio": {
+    "my-contacts": {
+      "title": "My Contacts",
+      "description": "Contacts management",
+      "table": {
+        "actions-header": "Action",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Type"
+      }
+    },
+    "add-contact-form": {
+      "contact": {
+        "title": "Add Contact",
+        "description": "Quickly save recipient details to your contacts for future transfers.",
+        "wallet-address-label": "Wallet Address",
+        "first-name-label": "First Name",
+        "last-name-label": "Last Name"
+      }
+    },
     "dashboard": {
       "page-title": "Portfolio",
       "portfolio-management": "Portfolio management",

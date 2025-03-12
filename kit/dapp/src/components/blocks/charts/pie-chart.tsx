@@ -62,9 +62,9 @@ export function PieChartComponent({
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={config[entry[nameKey]].color}
+                  fill={config[entry[nameKey]]?.color}
                   fillOpacity={0.5}
-                  stroke={config[entry[nameKey]].color}
+                  stroke={config[entry[nameKey]]?.color}
                 />
               ))}
             </Pie>
