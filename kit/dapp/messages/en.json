@@ -239,11 +239,11 @@
       "permissions": {
         "actions-header": "Actions",
         "edit-form": {
-          "button-label": "Edit Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
+          "button-label": "Edit roles",
+          "description": "Update the roles and access levels assigned to this user.",
           "roles": {
             "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
+            "title": "Select user roles"
           },
           "summary": {
             "current-roles-label": "Current roles",
@@ -251,11 +251,11 @@
             "new-roles-label": "New roles",
             "operation-description": "Updating roles operation details",
             "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
+            "update-title": "Update roles",
             "user-label": "User"
           },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
+          "title": "Modify user roles",
+          "trigger-label": "Edit roles"
         },
         "last-activity-header": "Last Activity",
         "page-description": "Manage user roles and access rights for this bond.",
@@ -263,18 +263,18 @@
         "permissions-page-description": "Manage user roles and access rights for {name}.",
         "permissions-page-title": "{name} Permissions",
         "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
+          "button-label": "Revoke access",
+          "description": "Completely revoke this user's access and roles.",
           "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
+            "description": "Verify the details before proceeding. This action will revoke all roles for the user.",
+            "operation-description": "Revoking all roles operation details",
+            "revoke-title": "Revoke all",
             "roles-to-revoke-label": "Roles to revoke",
             "title": "Review and confirm",
             "user-label": "User"
           },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
+          "title": "Remove all user access",
+          "trigger-label": "Revoke all"
         },
         "roles-header": "Roles",
         "table-title": "Permissions",
