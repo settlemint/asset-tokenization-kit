@@ -1,8 +1,6 @@
 import { PageHeader } from "@/components/layout/page-header";
-import { getUser } from "@/lib/auth/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
 import { AssetActivity } from "./_components/charts/asset-activity";
 import { AssetsSupply } from "./_components/charts/assets-supply";
 import { TransactionsHistory } from "./_components/charts/transaction-history";
@@ -37,7 +35,6 @@ export default async function AdminDashboard({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const user = await getUser();
   const t = await getTranslations({
     locale,
     namespace: "admin.dashboard.page",
@@ -61,7 +58,7 @@ export default async function AdminDashboard({
       <p className="mt-8 mb-4 font-semibold text-2xl">
         {t("latest-events-heading")}
       </p>
-      <LatestEvents sender={user.wallet as Address} />
+      <LatestEvents />
     </>
   );
 }
