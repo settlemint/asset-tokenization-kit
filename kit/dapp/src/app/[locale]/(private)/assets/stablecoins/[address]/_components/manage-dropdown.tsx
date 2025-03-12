@@ -87,7 +87,8 @@ export function ManageDropdown({ address, stableCoin }: ManageDropdownProps) {
       </DropdownMenu>
       <MintForm
         address={address}
-        collateralAvailable={Number(stableCoin.collateral)}
+        freeCollateral={stableCoin.freeCollateral}
+        symbol={stableCoin.symbol}
         open={openMenuItem === "mint"}
         onOpenChange={onFormOpenChange}
       />
