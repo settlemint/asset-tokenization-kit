@@ -2576,6 +2576,12 @@
       "stablecoin": "Stablecoin",
       "unknown": "Unknown"
     },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "you-have": "You have"
+    },
     "my-assets": {
       "description": "View and manage your digital assets",
       "portfolio-management": "Portfolio management",

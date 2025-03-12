@@ -30,7 +30,7 @@ export const AssetEventFragmentSchema = z.object({
   }),
   eventName: z.string(),
   timestamp: z.timestamp(),
-  assetType: z.enum(["bond", "cryptocurrency", "equity", "fund", "stablecoin"]),
+  assetType: z.assetType(),
 });
 
 /**

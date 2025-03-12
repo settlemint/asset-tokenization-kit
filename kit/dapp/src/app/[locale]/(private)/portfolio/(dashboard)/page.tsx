@@ -24,8 +24,10 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const myAssetsBalance = await getUserAssetsBalance(user.wallet as Address);
 
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
   const data = await getTransactionsHistory({
-    processedAfter: new Date(),
+    processedAfter: oneMonthAgo,
     address: user.wallet as Address,
   });
 
