@@ -14,7 +14,8 @@ import { Summary } from "./steps/summary";
 
 interface MintFormProps {
   address: Address;
-  collateralAvailable: number;
+  freeCollateral: number;
+  symbol: string;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -22,7 +23,8 @@ interface MintFormProps {
 
 export function MintForm({
   address,
-  collateralAvailable,
+  freeCollateral,
+  symbol,
   asButton = false,
   open,
   onOpenChange,
@@ -56,7 +58,7 @@ export function MintForm({
           address,
         }}
       >
-        <Amount collateralAvailable={collateralAvailable} />
+        <Amount freeCollateral={freeCollateral} symbol={symbol} />
         <Recipients />
         <Summary address={address} />
       </Form>

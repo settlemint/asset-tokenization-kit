@@ -76,7 +76,8 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
         >
           <MintForm
             address={address}
-            collateralAvailable={stableCoin.collateral}
+            freeCollateral={stableCoin.freeCollateral}
+            symbol={stableCoin.symbol}
             asButton
           />
         </RelatedGridItem>
