@@ -1845,7 +1845,8 @@
           "mint": "Mint",
           "pause": "Pause",
           "unpause": "Unpause",
-          "update-collateral": "Update Collateral"
+          "update-collateral": "Update Collateral",
+          "transfer": "Transfer"
         },
         "manage": "Manage"
       },
