@@ -234,6 +234,7 @@ export function Form<
                 }}
                 labels={buttonLabels}
                 onLastStep={secureForm ? handleNext : undefined}
+                isSecurityDialogOpen={showFormSecurityConfirmation}
               />
             </div>
           </form>
