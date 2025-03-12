@@ -29,7 +29,7 @@ export function EditPermissionsForm({
   open,
   onOpenChange,
 }: EditPermissionsFormPropsWithOpen) {
-  const t = useTranslations("admin.stablecoins.permissions.edit-form");
+  const t = useTranslations("admin.asset-permissions-tab.edit-form");
 
   return (
     <FormSheet

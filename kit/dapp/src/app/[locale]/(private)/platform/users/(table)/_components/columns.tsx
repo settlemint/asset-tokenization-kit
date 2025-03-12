@@ -151,15 +151,32 @@ export function columns() {
       id: "actions",
       header: () => "",
       cell: ({ row }) => (
-        <DataTableRowActions detailUrl={`/platform/users/${row.original.id}`}>
-          {({ close }) => (
-            <>
-              <BanUserAction user={row.original} onComplete={close} />
-              <ChangeRoleAction user={row.original} onComplete={close} />
-              <UpdateKycStatusAction user={row.original} onComplete={close} />
-            </>
-          )}
-        </DataTableRowActions>
+        <DataTableRowActions
+          detailUrl={`/platform/users/${row.original.id}`}
+          actions={[
+            {
+              id: "ban-user",
+              label: "Ban User",
+              component: ({ close }) => (
+                <BanUserAction user={row.original} onComplete={close} />
+              ),
+            },
+            {
+              id: "change-role",
+              label: "Change Role",
+              component: ({ close }) => (
+                <ChangeRoleAction user={row.original} onComplete={close} />
+              ),
+            },
+            {
+              id: "update-kyc-status",
+              label: "Update KYC Status",
+              component: ({ close }) => (
+                <UpdateKycStatusAction user={row.original} onComplete={close} />
+              ),
+            },
+          ]}
+        />
       ),
       meta: {
         enableCsvExport: false,

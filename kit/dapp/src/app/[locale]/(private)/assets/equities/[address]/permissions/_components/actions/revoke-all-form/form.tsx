@@ -7,7 +7,6 @@ import { revokeRole } from "@/lib/mutations/equity/revoke-role/revoke-role-actio
 import { RevokeRoleSchema } from "@/lib/mutations/equity/revoke-role/revoke-role-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 
@@ -15,20 +14,23 @@ interface RevokeAllPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function RevokeAllPermissionsForm({
   address,
   account,
   currentRoles,
+  open,
+  onOpenChange,
 }: RevokeAllPermissionsFormProps) {
-  const [open, setOpen] = useState(false);
-  const t = useTranslations("admin.equities.permissions.revoke-all-form");
+  const t = useTranslations("admin.asset-permissions-tab.revoke-all-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -36,7 +38,6 @@ export function RevokeAllPermissionsForm({
       <Form
         action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
-        onOpenChange={setOpen}
         buttonLabels={{
           label: t("button-label"),
         }}

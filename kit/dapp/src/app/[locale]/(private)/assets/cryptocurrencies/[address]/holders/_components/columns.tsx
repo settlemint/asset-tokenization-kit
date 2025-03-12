@@ -18,7 +18,7 @@ const columnHelper =
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.cryptocurrencies.holders");
+  const t = useTranslations("admin.asset-holders-tab");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tHolderType = useTranslations("holder-type");
   // eslint-disable-next-line react-hooks/rules-of-hooks

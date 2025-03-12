@@ -18,7 +18,7 @@ const columnHelper = createColumnHelper<PermissionWithRoles>();
 export function columns({ address }: { address: Address }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.stablecoins.permissions");
+  const t = useTranslations("admin.asset-permissions-tab");
 
   return [
     columnHelper.accessor("id", {

@@ -17,6 +17,8 @@ interface FreezeFormProps {
   balance: string | number;
   frozen: string | number;
   symbol: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function FreezeForm({
@@ -27,7 +29,7 @@ export function FreezeForm({
   symbol,
 }: FreezeFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations("admin.funds.holders.freeze-form");
+  const t = useTranslations("admin.asset-holders-tab.freeze-form");
 
   // Convert to numbers for component use
   const balanceNum =

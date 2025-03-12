@@ -20,7 +20,7 @@ export function Summary({
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations(
-    "admin.stablecoins.permissions.revoke-all-form.summary"
+    "admin.asset-permissions-tab.revoke-all-form.summary"
   );
 
   return (

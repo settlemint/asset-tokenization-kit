@@ -29,7 +29,7 @@ export function RevokeAllPermissionsForm({
   open,
   onOpenChange,
 }: RevokeAllPermissionsFormPropsWithOpen) {
-  const t = useTranslations("admin.stablecoins.permissions.revoke-all-form");
+  const t = useTranslations("admin.asset-permissions-tab.revoke-all-form");
 
   return (
     <FormSheet

@@ -14,11 +14,13 @@ interface BlockFormProps {
   address: Address;
   account: Address;
   isBlocked: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations("admin.funds.holders.block-form");
+  const t = useTranslations("admin.asset-holders-tab.block-form");
 
   return (
     <FormSheet
