@@ -12,7 +12,7 @@ export async function AssetDistribution({ address }: AssetDistributionProps) {
   const tAssets = await getTranslations("components.charts.assets");
   const tAssetTypes = await getTranslations("portfolio.asset-types");
   const data = await getUserAssetsBalance(address, true);
-  const chartData = data.distribution.map((item, index) => {
+  const chartData = data.distribution.map((item) => {
     return {
       assetType: item.asset.type,
       percentage: item.percentage,

@@ -1,9 +1,9 @@
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
-import { StableCoinPageHeader } from "./_components/page-header";
+import { FundPageHeader } from "./_components/page-header";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -16,20 +16,19 @@ export async function generateMetadata({
   params,
 }: LayoutProps): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const fund = await getFundDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.stablecoins.details",
+    namespace: "admin.funds.details",
   });
 
   return {
-    title: stableCoin?.name,
-    description: t("stablecoin-details-description"),
+    title: fund?.name,
+    description: t("fund-details-description"),
   };
 }
 
-
-export default async function StablecoinDetailLayout({
+export default async function FundsDetailLayout({
   children,
   params,
 }: LayoutProps) {
@@ -37,7 +36,7 @@ export default async function StablecoinDetailLayout({
 
   return (
     <>
-      <StableCoinPageHeader address={address} />
+      <FundPageHeader address={address} />
       {children}
     </>
   );
