@@ -55,7 +55,6 @@ export function TransferForm({
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,
         }}
-        secureForm={true}
       >
         <Recipients />
         <Amount balance={balance} />

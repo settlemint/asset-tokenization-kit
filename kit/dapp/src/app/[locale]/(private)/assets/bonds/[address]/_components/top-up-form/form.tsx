@@ -55,7 +55,6 @@ export function TopUpForm({
           address,
           underlyingAssetAddress,
         }}
-        secureForm={true}
       >
         <Amount />
         <Summary />

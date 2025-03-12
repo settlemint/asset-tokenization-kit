@@ -60,7 +60,6 @@ export function TransferForm({
           assetType: "bond",
           decimals,
         }}
-        secureForm={true}
       >
         <Amount balance={balance} />
         <Recipients />

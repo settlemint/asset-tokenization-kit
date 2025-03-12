@@ -56,7 +56,6 @@ export function FreezeForm({
           userAddress,
           amount: 0,
         }}
-        secureForm={true}
       >
         <Amount balance={balanceNum} frozen={frozenNum} symbol={symbol} />
         <Summary address={address} />

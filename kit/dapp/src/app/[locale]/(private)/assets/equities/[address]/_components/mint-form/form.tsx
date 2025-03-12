@@ -53,7 +53,6 @@ export function MintForm({
         defaultValues={{
           address,
         }}
-        secureForm={true}
       >
         <Amount />
         <Recipients />

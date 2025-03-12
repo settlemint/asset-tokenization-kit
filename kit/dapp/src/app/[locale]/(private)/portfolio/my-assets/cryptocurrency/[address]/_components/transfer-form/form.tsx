@@ -58,7 +58,6 @@ export function TransferForm({
           address,
           assetType: "cryptocurrency",
         }}
-        secureForm={true}
       >
         <Amount balance={balance} />
         <Recipients />

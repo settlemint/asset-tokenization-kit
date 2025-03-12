@@ -62,7 +62,7 @@ export function Form<
   toastMessages,
   hideButtons,
   onAnyFieldChange,
-  secureForm = false,
+  secureForm = true,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");

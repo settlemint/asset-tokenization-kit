@@ -51,7 +51,6 @@ export function MatureForm({
         defaultValues={{
           address,
         }}
-        secureForm={true}
       >
         <Summary address={address} />
       </Form>

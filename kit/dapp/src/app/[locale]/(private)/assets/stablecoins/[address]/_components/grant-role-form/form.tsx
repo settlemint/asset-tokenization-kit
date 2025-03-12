@@ -46,7 +46,6 @@ export function GrantRoleForm({
             USER_MANAGEMENT_ROLE: false,
           },
         }}
-        secureForm={true}
       >
         <AdminAddress />
         <AdminRoles />

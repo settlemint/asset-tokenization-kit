@@ -56,7 +56,6 @@ export function WithdrawForm({
           address,
           underlyingAssetAddress,
         }}
-        secureForm={true}
       >
         <Recipient />
         <Amount />
