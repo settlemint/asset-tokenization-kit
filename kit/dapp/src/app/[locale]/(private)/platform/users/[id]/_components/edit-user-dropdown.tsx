@@ -45,13 +45,13 @@ export function EditUserDropdown({ user }: EditUserDropdownProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild className="self-end">
-          <Button variant="default">
+        <DropdownMenuTrigger asChild>
+          <Button className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-inset">
             {t("edit_user")}
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="relative right-10 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl p-0 shadow-dropdown">
+        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded p-0 shadow-dropdown">
           {menuItems.map((item) => (
             <DropdownMenuItem
               key={item.id}
