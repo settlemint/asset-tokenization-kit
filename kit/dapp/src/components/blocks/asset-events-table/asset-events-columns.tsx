@@ -70,6 +70,7 @@ export function columns() {
           event={row.original.event}
           sender={row.original.sender}
           asset={row.original.asset}
+          assetType={row.original.assetType}
           timestamp={row.original.timestamp}
           details={row.original.details}
           transactionHash={row.original.transactionHash}
