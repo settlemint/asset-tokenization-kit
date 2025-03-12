@@ -6,7 +6,6 @@ import { blockUser } from "@/lib/mutations/fund/block-user/block-user-action";
 import { BlockUserSchema } from "@/lib/mutations/fund/block-user/block-user-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 
@@ -18,14 +17,19 @@ interface BlockFormProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
-  const [open, setOpen] = useState(false);
+export function BlockForm({
+  address,
+  account,
+  isBlocked,
+  open,
+  onOpenChange,
+}: BlockFormProps) {
   const t = useTranslations("admin.asset-holders-tab.block-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       triggerLabel={
         isBlocked ? t("unblock-trigger-label") : t("block-trigger-label")
       }
@@ -37,7 +41,6 @@ export function BlockForm({ address, account, isBlocked }: BlockFormProps) {
       <Form
         action={blockUser}
         resolver={zodResolver(BlockUserSchema)}
-        onOpenChange={setOpen}
         buttonLabels={{
           label: isBlocked
             ? t("unblock-button-label")

@@ -6,7 +6,6 @@ import { freeze } from "@/lib/mutations/fund/freeze/freeze-action";
 import { FreezeSchema } from "@/lib/mutations/fund/freeze/freeze-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -27,8 +26,9 @@ export function FreezeForm({
   balance,
   frozen,
   symbol,
+  open,
+  onOpenChange,
 }: FreezeFormProps) {
-  const [open, setOpen] = useState(false);
   const t = useTranslations("admin.asset-holders-tab.freeze-form");
 
   // Convert to numbers for component use
@@ -40,7 +40,7 @@ export function FreezeForm({
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -48,7 +48,6 @@ export function FreezeForm({
       <Form
         action={freeze}
         resolver={zodResolver(FreezeSchema)}
-        onOpenChange={setOpen}
         buttonLabels={{
           label: t("button-label"),
         }}
