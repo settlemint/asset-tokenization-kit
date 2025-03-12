@@ -1,6 +1,6 @@
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
-export const TransferCryptoCurrencySchema = z.object({
+export const TransferCryptocurrencySchema = z.object({
   address: z.address(),
   to: z.address(),
   value: z.amount(),
@@ -9,6 +9,4 @@ export const TransferCryptoCurrencySchema = z.object({
   decimals: z.decimals(),
 });
 
-export type TransferCryptoCurrencySchema = ZodInfer<
-  typeof TransferCryptoCurrencySchema
->;
+export type TransferCryptocurrencyInput = ZodInfer<typeof TransferCryptocurrencySchema>;

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { ManageDropdown } from "./manage-dropdown";
 
 interface PageHeaderProps {
   address: Address;
@@ -28,6 +29,7 @@ export async function CryptoCurrencyPageHeader({ address }: PageHeaderProps) {
         </EvmAddress>
       }
       section={t("asset-management")}
+      button={<ManageDropdown address={address} cryptocurrency={cryptocurrency} />}
     />
   );
 }

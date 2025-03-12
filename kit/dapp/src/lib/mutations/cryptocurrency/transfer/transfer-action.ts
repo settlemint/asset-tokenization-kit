@@ -5,9 +5,15 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
-import { TransferCryptoCurrencySchema } from "./transfer-schema";
+import { TransferCryptocurrencySchema } from "./transfer-schema";
 
-export const TransferCryptoCurrency = portalGraphql(`
+/**
+ * GraphQL mutation to transfer cryptocurrency tokens
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const TransferCryptoCurrency = portalGraphql(`
   mutation TransferCryptoCurrency($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
     Transfer: CryptoCurrencyTransfer(
       address: $address
@@ -21,18 +27,18 @@ export const TransferCryptoCurrency = portalGraphql(`
 `);
 
 export const transfer = action
-  .schema(TransferCryptoCurrencySchema)
+  .schema(TransferCryptocurrencySchema)
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, to, value, pincode, decimals },
+      parsedInput: { address, pincode, value, to, decimals },
       ctx: { user },
     }) => {
       const response = await portalClient.request(TransferCryptoCurrency, {
-        address: address,
+        address,
         from: user.wallet,
-        to: to,
         value: parseUnits(value.toString(), decimals).toString(),
+        to,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
