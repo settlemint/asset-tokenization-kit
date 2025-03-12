@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
 interface LatestEventsProps {
-  sender: Address;
+  sender?: Address;
 }
 
 export function LatestEvents({ sender }: LatestEventsProps) {
