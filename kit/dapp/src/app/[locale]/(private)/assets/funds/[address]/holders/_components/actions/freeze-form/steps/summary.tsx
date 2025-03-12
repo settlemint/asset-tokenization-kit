@@ -17,7 +17,7 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations("admin.funds.holders.freeze-form.summary");
+  const t = useTranslations("admin.asset-holders-tab.freeze-form.summary");
   const values = useWatch({
     control: control,
   });

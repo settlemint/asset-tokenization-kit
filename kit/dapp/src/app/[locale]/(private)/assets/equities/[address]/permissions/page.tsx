@@ -20,7 +20,7 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.equities.permissions",
+    namespace: "admin.asset-permissions-tab",
   });
 
   return {
@@ -39,7 +39,7 @@ export default async function EquityTokenPermissionsPage({
   const { address } = await params;
   const equity = await getEquityDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations("admin.equities.permissions");
+  const t = await getTranslations("admin.asset-permissions-tab");
 
   return (
     <>

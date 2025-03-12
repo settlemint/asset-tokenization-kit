@@ -21,7 +21,7 @@ const columnHelper =
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.stablecoins.holders");
+  const t = useTranslations("admin.asset-holders-tab");
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tHolderType = useTranslations("holder-type");
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -84,20 +84,40 @@ export function columns() {
       header: t("actions-header"),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions>
-            <BlockForm
-              address={row.original.asset.id}
-              account={row.original.account.id}
-              isBlocked={row.original.blocked}
-            />
-            <FreezeForm
-              address={row.original.asset.id}
-              userAddress={row.original.account.id}
-              balance={row.original.value}
-              frozen={row.original.frozen}
-              symbol={row.original.asset.symbol}
-            />
-          </DataTableRowActions>
+          <DataTableRowActions
+            actions={[
+              {
+                id: "block-form",
+                label: row.original.blocked
+                  ? t("block-form.unblock-trigger-label")
+                  : t("block-form.block-trigger-label"),
+                component: ({ open, onOpenChange }) => (
+                  <BlockForm
+                    address={row.original.asset.id}
+                    account={row.original.account.id}
+                    isBlocked={row.original.blocked}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "freeze-form",
+                label: t("freeze-form.trigger-label"),
+                component: ({ open, onOpenChange }) => (
+                  <FreezeForm
+                    address={row.original.asset.id}
+                    userAddress={row.original.account.id}
+                    balance={row.original.value}
+                    frozen={row.original.frozen}
+                    symbol={row.original.asset.symbol}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+            ]}
+          />
         );
       },
       meta: {

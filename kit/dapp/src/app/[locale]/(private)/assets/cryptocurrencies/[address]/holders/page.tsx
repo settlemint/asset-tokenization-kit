@@ -19,7 +19,7 @@ export async function generateMetadata({
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.cryptocurrencies.holders",
+    namespace: "admin.asset-holders-tab",
   });
 
   return {
