@@ -2541,6 +2541,39 @@
         "portfolio-management": "Portfoliomanagement",
         "title": "Profil"
       }
+    },
+    "my-assets": {
+      "stablecoin": {
+        "transfer-form": {
+          "trigger-label": "Übertragen",
+          "title": "Stablecoin übertragen",
+          "description": "Übertragen Sie Ihre Stablecoin-Token an eine andere Adresse",
+          "button-label": "Übertragen",
+          "amount": {
+            "title": "Betrag eingeben",
+            "description": "Geben Sie den Betrag an, den Sie übertragen möchten",
+            "value-label": "Betrag",
+            "balance-available": "Verfügbarer Saldo: {balance}"
+          },
+          "recipients": {
+            "title": "Empfänger auswählen",
+            "description": "Wählen Sie aus, wer die Token erhalten soll",
+            "address-label": "Empfängeradresse",
+            "address-placeholder": "Nach Benutzer suchen",
+            "search-user-link": "Stattdessen nach Benutzer suchen...",
+            "manual-entry-link": "Adresse manuell eingeben..."
+          },
+          "summary": {
+            "title": "Übertragung überprüfen und bestätigen",
+            "description": "Überprüfen Sie die Details Ihrer Übertragung, bevor Sie fortfahren",
+            "transfer-title": "Übertragen",
+            "transfer-description": "Details der Übertragung",
+            "asset-label": "Asset",
+            "value-label": "Betrag",
+            "recipient-label": "Empfänger"
+          }
+        }
+      }
     }
   },
   "asset-management": "Vermögensverwaltung"

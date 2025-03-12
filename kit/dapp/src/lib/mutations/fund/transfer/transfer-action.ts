@@ -1,14 +1,21 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
+import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
-import { getTransferFormSchema } from "../../asset/transfer/transfer-schema";
 import { action } from "../../safe-action";
+import { TransferFundSchema } from "./transfer-schema";
 
-export const TransferFund = portalGraphql(`
-  mutation TransferFund($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
+/**
+ * GraphQL mutation to transfer fund tokens
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const FundTransfer = portalGraphql(`
+  mutation FundTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
     Transfer: FundTransfer(
       address: $address
       from: $from
@@ -21,18 +28,20 @@ export const TransferFund = portalGraphql(`
 `);
 
 export const transfer = action
-  .schema(getTransferFormSchema())
+  .schema(TransferFundSchema)
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, to, value, pincode, decimals },
+      parsedInput: { address, pincode, value, to },
       ctx: { user },
     }) => {
-      const response = await portalClient.request(TransferFund, {
-        address: address,
+      const { decimals } = await getFundDetail({ address });
+
+      const response = await portalClient.request(FundTransfer, {
+        address,
         from: user.wallet,
-        to: to,
         value: parseUnits(value.toString(), decimals).toString(),
+        to,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 

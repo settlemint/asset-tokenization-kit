@@ -1,13 +1,21 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
+import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
+import { action } from "../../safe-action";
 import { TransferStableCoinSchema } from "./transfer-schema";
 
-export const TransferStableCoin = portalGraphql(`
-  mutation TransferStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
+/**
+ * GraphQL mutation to transfer stablecoin tokens
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const StableCoinTransfer = portalGraphql(`
+  mutation StableCoinTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
     Transfer: StableCoinTransfer(
       address: $address
       from: $from
@@ -19,18 +27,24 @@ export const TransferStableCoin = portalGraphql(`
   }
 `);
 
-export async function transfer(
-  input: ZodInfer<typeof TransferStableCoinSchema>
-) {
-  TransferStableCoinSchema.parse(input);
+export const transfer = action
+  .schema(TransferStableCoinSchema)
+  .outputSchema(z.hashes())
+  .action(
+    async ({
+      parsedInput: { address, pincode, value, to },
+      ctx: { user },
+    }) => {
+      const { decimals } = await getStableCoinDetail({ address });
 
-  const response = await portalClient.request(TransferStableCoin, {
-    address: input.address,
-    from: input.user.wallet,
-    to: input.to,
-    value: parseUnits(input.value.toString(), input.decimals).toString(),
-    challengeResponse: await handleChallenge(input.user.wallet, input.pincode),
-  });
+      const response = await portalClient.request(StableCoinTransfer, {
+        address,
+        from: user.wallet,
+        value: parseUnits(value.toString(), decimals).toString(),
+        to,
+        challengeResponse: await handleChallenge(user.wallet, pincode),
+      });
 
-  return z.hashes().parse([response.Transfer?.transactionHash]);
-}
+      return z.hashes().parse([response.Transfer?.transactionHash]);
+    }
+  );
