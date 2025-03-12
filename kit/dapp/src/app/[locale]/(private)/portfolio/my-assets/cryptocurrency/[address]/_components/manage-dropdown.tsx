@@ -66,7 +66,6 @@ export function ManageDropdown({ address, cryptocurrency }: ManageDropdownProps)
       <TransferForm
         address={address}
         balance={Number(cryptocurrency.totalSupply)}
-        decimals={cryptocurrency.decimals}
         open={openMenuItem === "transfer"}
         onOpenChange={onFormOpenChange}
       />
