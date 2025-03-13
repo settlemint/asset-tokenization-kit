@@ -2430,7 +2430,9 @@
       },
       "summary": {
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
-        "title": "Review and confirm transfer"
+        "title": "Review and confirm transfer",
+        "address": "Address",
+        "amount": "Amount"
       },
       "transfer": "Transfer",
       "transferring": "Transferring..."

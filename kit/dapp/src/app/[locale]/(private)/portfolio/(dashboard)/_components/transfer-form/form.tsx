@@ -58,7 +58,12 @@ export function TransferForm({
       >
         <Recipients />
         <Amount balance={balance} />
-        <Summary address={address} assetType={assetType} decimals={decimals} />
+        <Summary
+          address={address}
+          assetType={assetType}
+          decimals={decimals}
+          symbol={symbol}
+        />
       </Form>
     </FormSheet>
   );
