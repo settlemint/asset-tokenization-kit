@@ -17,7 +17,7 @@ interface SummaryProps {
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
   const { control } = useFormContext<BlockUserInput>();
-  const t = useTranslations("admin.funds.holders.block-form.summary");
+  const t = useTranslations("admin.asset-holders-tab.block-form.summary");
 
   return (
     <FormStep title={t("title")} description={t("description")}>

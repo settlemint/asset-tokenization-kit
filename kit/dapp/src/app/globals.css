@@ -46,7 +46,7 @@ h3: text-xl
   --muted: var(--sm-muted);
   --muted-foreground: var(--sm-muted);
   --accent: var(--sm-accent);
-  --accent-foreground: var(--sm-background-gradient-start);
+  --accent-foreground: var(--sm-text);
   --accent-hover: var(--sm-accent-hover);
   --destructive: var(--sm-state-error-background);
   --destructive-foreground: var(--sm-state-error);

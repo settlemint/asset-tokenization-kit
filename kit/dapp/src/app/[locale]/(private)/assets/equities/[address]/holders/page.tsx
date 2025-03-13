@@ -19,7 +19,7 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.equities.holders",
+    namespace: "admin.asset-holders-tab",
   });
 
   return {

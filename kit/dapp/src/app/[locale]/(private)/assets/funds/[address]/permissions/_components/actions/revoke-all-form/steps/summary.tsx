@@ -19,7 +19,9 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations("admin.funds.permissions.revoke-all-form.summary");
+  const t = useTranslations(
+    "admin.asset-permissions-tab.revoke-all-form.summary"
+  );
 
   return (
     <FormStep title={t("title")} description={t("description")}>

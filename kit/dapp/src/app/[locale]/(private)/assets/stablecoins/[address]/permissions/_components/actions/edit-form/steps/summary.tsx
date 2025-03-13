@@ -19,7 +19,7 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations("admin.stablecoins.permissions.edit-form.summary");
+  const t = useTranslations("admin.asset-permissions-tab.edit-form.summary");
   const values = useWatch({
     control: control,
   });
