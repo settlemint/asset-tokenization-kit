@@ -1,7 +1,7 @@
 "use server";
 
 import type { Role } from "@/lib/config/roles";
-import { z } from "@/lib/utils/zod";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
 import { grantRole } from "../grant-role/grant-role-action";
 import { revokeRole } from "../revoke-role/revoke-role-action";
@@ -34,7 +34,7 @@ import { UpdateRolesSchema } from "./update-roles-schema";
  */
 export const updateRoles = action
   .schema(UpdateRolesSchema)
-  .outputSchema(z.array(z.array(z.hash())))
+  .outputSchema(z.hashes())
   .action(async ({ parsedInput }) => {
     const { address, roles, userAddress, pincode } = parsedInput;
 
@@ -50,46 +50,35 @@ export const updateRoles = action
       }
     });
 
-    // Process role grant and revoke operations
-    const results: string[][] = [];
+    const txns: string[] = [];
 
-    // Handle role granting if there are roles to enable
-    if (Object.keys(rolesToEnable).length > 0) {
-      try {
-        const grantResult = await grantRole({
-          address,
-          roles: rolesToEnable as Record<Role, boolean>,
-          userAddress,
-          pincode,
-        });
+    const hasRolesToGrant = Object.keys(rolesToEnable).length > 0;
+    if (hasRolesToGrant) {
+      const grantResult = await grantRole({
+        address,
+        roles: rolesToEnable as Record<Role, boolean>,
+        userAddress,
+        pincode,
+      });
 
-        if (grantResult?.data) {
-          results.push(grantResult.data);
-        }
-      } catch (error) {
-        console.error("Error granting roles:", error);
-        throw error;
+      if (grantResult?.data) {
+        txns.push(...grantResult.data);
       }
     }
 
-    // Handle role revocations if there are roles to disable
-    if (Object.keys(rolesToDisable).length > 0) {
-      try {
-        const revokeResult = await revokeRole({
-          address,
-          roles: rolesToDisable as Record<Role, boolean>,
-          userAddress,
-          pincode,
-        });
+    const hasRolesToRevoke = Object.keys(rolesToDisable).length > 0;
+    if (hasRolesToRevoke) {
+      const revokeResult = await revokeRole({
+        address,
+        roles: rolesToDisable as Record<Role, boolean>,
+        userAddress,
+        pincode,
+      });
 
-        if (revokeResult?.data) {
-          results.push(revokeResult.data);
-        }
-      } catch (error) {
-        console.error("Error revoking roles:", error);
-        throw error;
+      if (revokeResult?.data) {
+        txns.push(...revokeResult.data);
       }
     }
 
-    return z.array(z.array(z.hash())).parse(results);
+    return safeParseWithLogging(z.hashes(), txns);
   });

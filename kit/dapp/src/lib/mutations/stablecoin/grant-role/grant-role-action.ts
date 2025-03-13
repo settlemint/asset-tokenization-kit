@@ -3,7 +3,7 @@
 import { handleChallenge } from "@/lib/challenge";
 import { getRoleIdentifier, type Role } from "@/lib/config/roles";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { action } from "../../safe-action";
 import { GrantRoleSchema } from "./grant-role-schema";
 
@@ -59,6 +59,6 @@ export const grantRole = action
       // Filter out any undefined values and return transaction hashes
       const transactions = results.filter(Boolean) as string[];
 
-      return z.hashes().parse(transactions);
+      return safeParseWithLogging(z.hashes(), transactions);
     }
   );
