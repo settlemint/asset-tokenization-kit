@@ -40,4 +40,4 @@ export function Summary({ address }: SummaryProps) {
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;
