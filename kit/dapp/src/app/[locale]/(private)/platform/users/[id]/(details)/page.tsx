@@ -14,16 +14,19 @@ export default async function UserDetailPage({
   const { id } = await params;
   const t = await getTranslations("admin.users.detail.charts");
   const user = await getUserDetail({ id });
+
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
-  const dataOneMonth = await getTransactionsHistory({
-    processedAfter: oneMonthAgo,
-    address: user.wallet,
-  });
   const oneYearAgo = startOfDay(subYears(new Date(), 1));
-  const dataOneYear = await getTransactionsHistory({
-    processedAfter: oneYearAgo,
-    address: user.wallet,
-  });
+  const [dataOneMonth, dataOneYear] = await Promise.all([
+    getTransactionsHistory({
+      processedAfter: oneMonthAgo,
+      address: user.wallet,
+    }),
+    getTransactionsHistory({
+      processedAfter: oneYearAgo,
+      address: user.wallet,
+    }),
+  ]);
 
   return (
     <>
