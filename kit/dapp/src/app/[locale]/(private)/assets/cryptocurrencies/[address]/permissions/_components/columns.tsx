@@ -7,6 +7,7 @@ import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import { ROLES } from "@/lib/config/roles";
 import { cryptoCurrencyRevokeRoleAction } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { cryptoCurrencyUpdateAction } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
@@ -53,7 +54,12 @@ export function columns({ address }: { address: Address }) {
           {t("actions-header")}
         </DataTableColumnHeader>
       ),
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
+        const adminCount = table
+          .getRowModel()
+          .rows.filter((row) =>
+            row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
+          ).length;
         return (
           <DataTableRowActions
             actions={[
@@ -68,6 +74,7 @@ export function columns({ address }: { address: Address }) {
                     open={open}
                     onOpenChange={onOpenChange}
                     updateRolesAction={cryptoCurrencyUpdateAction}
+                    adminsCount={adminCount}
                   />
                 ),
               },

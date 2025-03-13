@@ -12,7 +12,11 @@ import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/upda
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Roles() {
+interface RolesProps {
+  adminsCount: number;
+}
+
+export function Roles({ adminsCount }: RolesProps) {
   const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations("admin.asset-permissions-tab.edit-form.roles");
   const roleItems = Object.keys(ROLES) as RoleKey[];
@@ -34,6 +38,9 @@ export function Roles() {
                         key={role}
                         control={control}
                         name="roles"
+                        disabled={
+                          adminsCount === 1 && role === "DEFAULT_ADMIN_ROLE"
+                        }
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                             <FormControl>
@@ -41,6 +48,10 @@ export function Roles() {
                                 name="roles"
                                 checked={
                                   field.value?.[info.contractRole] ?? false
+                                }
+                                disabled={
+                                  adminsCount === 1 &&
+                                  role === "DEFAULT_ADMIN_ROLE"
                                 }
                                 onCheckedChange={(checked) => {
                                   const currentValue = field.value || {};

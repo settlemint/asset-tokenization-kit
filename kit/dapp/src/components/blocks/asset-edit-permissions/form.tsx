@@ -15,6 +15,7 @@ export interface EditPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
+  adminsCount: number;
   updateRolesAction: UpdateRolesActionType;
 }
 
@@ -27,6 +28,7 @@ export function EditPermissionsForm({
   address,
   account,
   currentRoles,
+  adminsCount,
   open,
   onOpenChange,
   updateRolesAction,
@@ -60,7 +62,7 @@ export function EditPermissionsForm({
           ),
         }}
       >
-        <Roles />
+        <Roles adminsCount={adminsCount} />
         <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>
     </FormSheet>
