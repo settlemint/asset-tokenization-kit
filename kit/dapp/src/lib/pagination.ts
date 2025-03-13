@@ -68,10 +68,17 @@ export async function fetchAllPortalPages<T>(
   if (totalPages === 1) {
     return { count: firstPage.count, records: firstPage.records };
   }
-  const results: T[] = [];
-  for (let page = 1; page < totalPages; page++) {
-    const pageData = await fetch({ page, pageSize });
-    results.push(...pageData.records);
+  const results = firstPage.records;
+  const concurrentPages = 3;
+  for (let page = 1; page < totalPages; page += concurrentPages) {
+    const pagesToFetch = Math.min(concurrentPages, totalPages - page);
+    const pagePromises = Array.from({ length: pagesToFetch }, (_, i) => {
+      return fetch({ page: page + i, pageSize });
+    });
+    const pageResults = await Promise.all(pagePromises);
+    for (const pageData of pageResults) {
+      results.push(...pageData.records);
+    }
   }
   return { count: firstPage.count, records: results };
 }
