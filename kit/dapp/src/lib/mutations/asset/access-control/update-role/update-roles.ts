@@ -4,11 +4,11 @@ import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import {
   getGrantRoleAction,
   type GrantRoleMutation,
-} from "../grant-role/grant-role-action";
+} from "../grant-role/grant-role";
 import {
   getRevokeRoleAction,
   type RevokeRoleMutation,
-} from "../revoke-role/revoke-role-action";
+} from "../revoke-role/revoke-role";
 import { UpdateRolesSchema } from "./update-role-schema";
 
 /**

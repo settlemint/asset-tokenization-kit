@@ -8,14 +8,14 @@ import {
   EquityGrantRole,
   FundGrantRole,
   StableCoinGrantRole,
-} from "../grant-role/grant-role-action";
+} from "../grant-role/grant-role";
 import {
   BondRevokeRole,
   CryptoCurrencyRevokeRole,
   EquityRevokeRole,
   FundRevokeRole,
   StableCoinRevokeRole,
-} from "../revoke-role/revoke-role-action";
+} from "../revoke-role/revoke-role";
 import { getUpdateRolesAction } from "./update-roles";
 
 export const stableCoinUpdateAction = getUpdateRolesAction({
