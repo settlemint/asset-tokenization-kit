@@ -78,6 +78,7 @@ const ThemeImage = React.memo(function ThemeImage({
           width={1050}
           height={674}
           quality={75}
+          unoptimized
         />
         <Image
           src={dark}
@@ -88,6 +89,7 @@ const ThemeImage = React.memo(function ThemeImage({
           width={1050}
           height={674}
           quality={75}
+          unoptimized
         />
       </div>
     );
@@ -106,6 +108,7 @@ const ThemeImage = React.memo(function ThemeImage({
         height={674}
         quality={75}
         alt="Dashboard preview"
+        unoptimized
       />
       <Image
         src={dark}
@@ -118,6 +121,7 @@ const ThemeImage = React.memo(function ThemeImage({
         height={674}
         quality={75}
         alt="Dashboard preview"
+        unoptimized
       />
     </div>
   );
