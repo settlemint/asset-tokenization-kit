@@ -3,7 +3,7 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { Role } from "@/lib/config/roles";
-import { updateRoles } from "@/lib/mutations/stablecoin/update-roles/update-roles-action";
+import type { UpdateRolesActionType } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
 import { UpdateRolesSchema } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -15,6 +15,7 @@ export interface EditPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
+  updateRolesAction: UpdateRolesActionType;
 }
 
 interface EditPermissionsFormPropsWithOpen extends EditPermissionsFormProps {
@@ -28,6 +29,7 @@ export function EditPermissionsForm({
   currentRoles,
   open,
   onOpenChange,
+  updateRolesAction,
 }: EditPermissionsFormPropsWithOpen) {
   const t = useTranslations("admin.asset-permissions-tab.edit-form");
 
@@ -40,7 +42,7 @@ export function EditPermissionsForm({
       description={t("description")}
     >
       <Form
-        action={updateRoles}
+        action={updateRolesAction}
         resolver={zodResolver(UpdateRolesSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{

@@ -8,11 +8,12 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { ROLES, type RoleKey } from "@/lib/config/roles";
+import type { UpdateRolesInput } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Roles() {
-  const { control } = useFormContext();
+  const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations("admin.asset-permissions-tab.edit-form.roles");
   const roleItems = Object.keys(ROLES) as RoleKey[];
 
@@ -38,7 +39,9 @@ export function Roles() {
                             <FormControl>
                               <Checkbox
                                 name="roles"
-                                checked={field.value?.[info.contractRole]}
+                                checked={
+                                  field.value?.[info.contractRole] ?? false
+                                }
                                 onCheckedChange={(checked) => {
                                   const currentValue = field.value || {};
                                   const updatedValue = checked
