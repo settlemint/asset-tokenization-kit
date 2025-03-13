@@ -36,7 +36,7 @@ const ProcessedTransactionsHistory = portalGraphql(
 const ProcessedAndRecentTransactionsHistory = portalGraphql(
   `
   query ProcessedTransactionsHistory($processedAfter: String, $from: String) {
-    recent:getProcessedTransactions(processedAfter: $processedAfter, from: $from) {
+    recent: getProcessedTransactions(processedAfter: $processedAfter, from: $from) {
       count
     }
     total: getProcessedTransactions {
