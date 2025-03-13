@@ -1,4 +1,5 @@
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import { FormUsers } from "@/components/blocks/form/inputs/form-users";
 import type { GrantRoleInput } from "@/lib/mutations/fund/grant-role/grant-role-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -29,11 +30,12 @@ export function AdminAddress() {
             placeholder={t("manual-placeholder")}
           />
         ) : (
-          <FormInput
+          <FormUsers
             control={control}
             name="userAddress"
             label={t("address-label")}
             placeholder={t("search-placeholder")}
+            role="admin"
           />
         )}
         <div className="flex justify-end">

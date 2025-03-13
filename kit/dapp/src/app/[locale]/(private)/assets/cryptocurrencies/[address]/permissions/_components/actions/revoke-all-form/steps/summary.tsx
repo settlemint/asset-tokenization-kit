@@ -3,10 +3,8 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { type Role, getRoleDisplayName } from "@/lib/config/roles";
-import type { UpdateRolesInput } from "@/lib/mutations/cryptocurrency/update-roles/update-roles-schema";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 export function Summary({
@@ -16,7 +14,6 @@ export function Summary({
   userAddress: Address;
   currentRoles: Role[];
 }) {
-  const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations(
     "admin.asset-permissions-tab.revoke-all-form.summary"
   );

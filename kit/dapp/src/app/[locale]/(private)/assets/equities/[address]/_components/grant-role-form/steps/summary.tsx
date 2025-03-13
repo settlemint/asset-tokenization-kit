@@ -14,10 +14,10 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<GrantRoleInput>();
+  const formContext = useFormContext<GrantRoleInput>();
   const t = useTranslations("admin.equities.grant-role-form.summary");
   const values = useWatch({
-    control: control,
+    control: formContext.control,
   });
 
   return (
