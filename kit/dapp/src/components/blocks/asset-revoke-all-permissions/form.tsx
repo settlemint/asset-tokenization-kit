@@ -51,6 +51,13 @@ export function RevokeAllPermissionsForm({
         defaultValues={{
           address,
           userAddress: account,
+          roles: currentRoles.reduce(
+            (acc, role) => {
+              acc[role] = true;
+              return acc;
+            },
+            {} as Record<Role, boolean>
+          ),
         }}
       >
         <Summary userAddress={account} currentRoles={currentRoles} />
