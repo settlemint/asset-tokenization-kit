@@ -3,7 +3,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import { type Role, getRoleDisplayName } from "@/lib/config/roles";
-import type { GrantRoleInput } from "@/lib/mutations/stablecoin/grant-role/grant-role-schema";
+import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";

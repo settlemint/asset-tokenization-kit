@@ -102,14 +102,14 @@ export const EquityGrantRole = portalGraphql(`
   }
 `);
 
-export type GrantRoleInput = VariablesOf<
+type GrantRoleInput = VariablesOf<
   | typeof StableCoinGrantRole
   | typeof BondGrantRole
   | typeof CryptoCurrencyGrantRole
   | typeof FundGrantRole
   | typeof EquityGrantRole
 >;
-export type GrantRoleOutput = ResultOf<
+type GrantRoleOutput = ResultOf<
   | typeof StableCoinGrantRole
   | typeof BondGrantRole
   | typeof CryptoCurrencyGrantRole

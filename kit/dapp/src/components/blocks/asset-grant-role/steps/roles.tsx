@@ -1,6 +1,6 @@
 import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { ROLES, type RoleKey } from "@/lib/config/roles";
-import type { GrantRoleInput } from "@/lib/mutations/stablecoin/grant-role/grant-role-schema";
+import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 

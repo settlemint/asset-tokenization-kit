@@ -102,14 +102,14 @@ export const EquityRevokeRole = portalGraphql(`
   }
 `);
 
-export type RevokeRoleInput = VariablesOf<
+type RevokeRoleInput = VariablesOf<
   | typeof StableCoinRevokeRole
   | typeof BondRevokeRole
   | typeof CryptoCurrencyRevokeRole
   | typeof FundRevokeRole
   | typeof EquityRevokeRole
 >;
-export type RevokeRoleOutput = ResultOf<
+type RevokeRoleOutput = ResultOf<
   | typeof StableCoinRevokeRole
   | typeof BondRevokeRole
   | typeof CryptoCurrencyRevokeRole
