@@ -1,9 +1,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { BlockUserInput } from "@/lib/mutations/bond/block-user/block-user-schema";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -39,12 +37,8 @@ export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
           value={isCurrentlyBlocked ? t("state-active") : t("state-blocked")}
         />
       </FormSummaryDetailCard>
-
-      <FormSummarySecurityConfirmation>
-        <FormOtp control={control} name="pincode" />
-      </FormSummarySecurityConfirmation>
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;

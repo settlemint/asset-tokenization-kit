@@ -80,6 +80,7 @@ export function MyAssetsTransferForm() {
             resolver={zodResolver(getTransferFormSchema())}
             onOpenChange={setOpen}
             hideButtons
+            secureForm={false}
           >
             <SelectAsset onSelect={setSelectedAsset} />
           </Form>

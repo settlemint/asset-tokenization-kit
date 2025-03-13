@@ -2,10 +2,8 @@
 
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { TopUpInput } from "@/lib/mutations/bond/top-up/top-up-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { DollarSign } from "lucide-react";
@@ -35,12 +33,8 @@ export function Summary() {
           value={formatNumber(values.amount ?? 0)}
         />
       </FormSummaryDetailCard>
-
-      <FormSummarySecurityConfirmation>
-        <FormOtp control={control} name="pincode" />
-      </FormSummarySecurityConfirmation>
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;

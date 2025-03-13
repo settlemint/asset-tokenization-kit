@@ -27,14 +27,19 @@ export function RedeemForm({
   onOpenChange,
 }: RedeemFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
-  const isExternallyControlled = open !== undefined && onOpenChange !== undefined;
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
-      triggerLabel={isExternallyControlled ? undefined : t("redeem-form.trigger-label")}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
+      triggerLabel={
+        isExternallyControlled ? undefined : t("redeem-form.trigger-label")
+      }
       title={t("redeem-form.title")}
       description={t("redeem-form.description")}
       asButton={asButton}
@@ -42,14 +47,15 @@ export function RedeemForm({
       <Form
         action={redeem}
         resolver={zodResolver(RedeemBondSchema)}
-        onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("redeem-form.button-label"),
         }}
         defaultValues={{
           address,
         }}
-        secureForm={true}
       >
         <Amount balance={balance} />
         <Summary address={address} />

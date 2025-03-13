@@ -28,13 +28,16 @@ export function WithdrawForm({
   onOpenChange,
 }: WithdrawFormProps) {
   const t = useTranslations("admin.bonds.withdraw-form");
-  const isExternallyControlled = open !== undefined && onOpenChange !== undefined;
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
       triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -43,7 +46,9 @@ export function WithdrawForm({
       <Form
         action={withdrawUnderlyingAsset}
         resolver={zodResolver(WithdrawSchema)}
-        onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}
