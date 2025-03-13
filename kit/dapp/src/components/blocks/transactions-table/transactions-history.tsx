@@ -2,7 +2,6 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
-  createTimeSeries,
   formatChartDate,
   formatInterval,
   type TimeSeriesOptions,
@@ -23,7 +22,6 @@ export interface TransactionsHistoryProps {
   > & {
     chartContainerClassName?: string;
   };
-  isRawData?: boolean;
 }
 
 export function TransactionsHistory({
@@ -31,7 +29,6 @@ export function TransactionsHistory({
   data,
   title,
   description,
-  isRawData = true,
 }: TransactionsHistoryProps) {
   const t = useTranslations("components.transactions-history");
 
@@ -44,20 +41,13 @@ export function TransactionsHistory({
 
   return (
     <AreaChartComponent
-      data={
-        !isRawData
-          ? data.map((item) => ({
-              ...item,
-              timestamp: formatChartDate(
-                new Date(item.timestamp),
-                chartOptions.granularity
-              ),
-            }))
-          : createTimeSeries(data, ["transaction"], {
-              ...chartOptions,
-              aggregation: "count",
-            })
-      }
+      data={data.map((item) => ({
+        ...item,
+        timestamp: formatChartDate(
+          new Date(item.timestamp),
+          chartOptions.granularity
+        ),
+      }))}
       config={TRANSACTIONS_CHART_CONFIG}
       title={title ?? t("title")}
       description={

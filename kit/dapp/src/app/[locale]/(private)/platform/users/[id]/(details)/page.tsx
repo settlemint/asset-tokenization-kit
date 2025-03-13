@@ -1,11 +1,8 @@
 import { AssetDistribution } from "@/components/blocks/charts/assets/asset-distribution";
 import { TransactionsHistory } from "@/components/blocks/transactions-table/transactions-history";
-import {
-  getTimelineDataOneYear,
-  getTransactionsHistory,
-} from "@/lib/queries/transactions/transactions-history";
+import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { getUserDetail } from "@/lib/queries/user/user-detail";
-import { startOfDay, subMonths } from "date-fns";
+import { startOfDay, subMonths, subYears } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import { DetailsGrid } from "./_components/details-grid";
 
@@ -18,16 +15,17 @@ export default async function UserDetailPage({
   const t = await getTranslations("admin.users.detail.charts");
   const user = await getUserDetail({ id });
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
-  const dataOneMonth = (
-    await getTransactionsHistory({
-      processedAfter: oneMonthAgo,
-      address: user.wallet,
-    })
-  ).map((tx) => ({
-    timestamp: tx.createdAt.toISOString(),
-    transaction: 1,
-  }));
-  const dataOneYear = getTimelineDataOneYear();
+  const oneYearAgo = startOfDay(subYears(new Date(), 1));
+  const [dataOneMonth, dataOneYear] = await Promise.all([
+    getTransactionsTimeline({
+      granularity: "DAY",
+      timelineStartDate: oneMonthAgo,
+    }),
+    getTransactionsTimeline({
+      granularity: "MONTH",
+      timelineStartDate: oneYearAgo,
+    }),
+  ]);
 
   return (
     <>
@@ -49,7 +47,6 @@ export default async function UserDetailPage({
           title={t("transaction-history-last-year.title")}
           description={t("transaction-history-last-year.description")}
           data={dataOneYear}
-          isRawData={false}
           chartOptions={{
             intervalType: "year",
             intervalLength: 1,
