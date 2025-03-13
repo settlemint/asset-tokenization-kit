@@ -2236,7 +2236,11 @@
     "activity": {
       "page-description": "Your activity on chain",
       "page-title": "Activity",
-      "portfolio-management": "Portfolio management"
+      "portfolio-management": "Portfolio management",
+      "tabs": {
+        "recent-transactions": "Recent transactions",
+        "all-events": "All events"
+      }
     },
     "asset-types": {
       "bond": "Bond",

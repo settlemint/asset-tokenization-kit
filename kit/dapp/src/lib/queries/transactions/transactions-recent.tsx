@@ -1,3 +1,4 @@
+import { fetchAllPortalPages } from "@/lib/pagination";
 import {
   TransactionFragment,
   TransactionFragmentSchema,
@@ -15,8 +16,9 @@ import type { Address } from "viem";
  */
 const RecentTransactionsHistory = portalGraphql(
   `
-  query RecentTransactionsHistory($processedAfter: String, $from: String) {
-    getPendingAndRecentlyProcessedTransactions(processedAfter: $processedAfter, from: $from) {
+  query RecentTransactionsHistory($processedAfter: String, $from: String, $pageSize: Int, $page: Int) {
+    getPendingAndRecentlyProcessedTransactions(processedAfter: $processedAfter, from: $from, pageSize: $pageSize, page: $page) {
+      count
       records {
         ...TransactionFragment
       }
@@ -46,13 +48,23 @@ export interface RecentTransactionsProps {
 export const getRecentTransactions = cache(
   async (props: RecentTransactionsProps) => {
     const { address, processedAfter } = props;
-    const response = await portalClient.request(RecentTransactionsHistory, {
-      from: address,
-      processedAfter: processedAfter?.toISOString(),
-    });
+    const transactions = await fetchAllPortalPages(
+      async ({ page, pageSize }) => {
+        const response = await portalClient.request(RecentTransactionsHistory, {
+          from: address,
+          processedAfter: processedAfter?.toISOString(),
+          pageSize,
+          page,
+        });
+        return {
+          count:
+            response.getPendingAndRecentlyProcessedTransactions?.count ?? 0,
+          records:
+            response.getPendingAndRecentlyProcessedTransactions?.records ?? [],
+        };
+      }
+    );
 
-    return z
-      .array(TransactionFragmentSchema)
-      .parse(response.getPendingAndRecentlyProcessedTransactions?.records);
+    return z.array(TransactionFragmentSchema).parse(transactions?.records);
   }
 );
