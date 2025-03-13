@@ -2421,6 +2421,26 @@
             "value-label": "Amount",
             "recipient-label": "Recipient"
           }
+        },
+        "redeem-form": {
+          "trigger-label": "Redeem",
+          "title": "Redeem Bond",
+          "description": "Redeem your bond tokens for the underlying asset.",
+          "button-label": "Redeem Assets",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Input the amount you wish to redeem.",
+            "amount-label": "Amount",
+            "balance-description": "Available balance:"
+          },
+          "summary": {
+            "title": "Review and confirm redemption",
+            "description": "Verify the details of your redemption before proceeding",
+            "redeem-title": "Redeem",
+            "redeem-description": "Redemption operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount"
+          }
         }
       }
     },
