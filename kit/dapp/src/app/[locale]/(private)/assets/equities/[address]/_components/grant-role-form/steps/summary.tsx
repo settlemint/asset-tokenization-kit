@@ -1,9 +1,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import { type Role, getRoleDisplayName } from "@/lib/config/roles";
 import type { GrantRoleInput } from "@/lib/mutations/equity/grant-role/grant-role-schema";
 import { DollarSign } from "lucide-react";
@@ -55,12 +53,8 @@ export function Summary({ address }: SummaryProps) {
           }
         />
       </FormSummaryDetailCard>
-
-      <FormSummarySecurityConfirmation>
-        <FormOtp control={control} name="pincode" />
-      </FormSummarySecurityConfirmation>
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;

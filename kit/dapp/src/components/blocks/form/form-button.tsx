@@ -29,6 +29,7 @@ interface FormButtonProps {
   onLastStep?: () => void;
   labels?: ButtonLabels;
   hideButtons?: boolean;
+  isSecurityDialogOpen?: boolean;
 }
 
 /**
@@ -47,6 +48,7 @@ export function FormButton({
     processingLabel: undefined,
   },
   hideButtons = false,
+  isSecurityDialogOpen = false,
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
@@ -78,6 +80,9 @@ export function FormButton({
             : finalLabels.processingLabel}
         </>
       );
+    }
+    if (isSecurityDialogOpen) {
+      return <Loader2 size={16} className="animate-spin min-w-20" />;
     }
     return isLastStep ? finalLabels.label : t("next");
   };

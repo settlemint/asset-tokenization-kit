@@ -9,6 +9,4 @@ export const TransferFundSchema = z.object({
   decimals: z.decimals(),
 });
 
-export type TransferFundSchema = ZodInfer<typeof TransferFundSchema>;
-
 export type TransferFundInput = ZodInfer<typeof TransferFundSchema>;

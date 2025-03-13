@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { ManageDropdown } from "./manage-dropdown";
 
 interface PageHeaderProps {
   address: Address;
@@ -28,6 +29,7 @@ export async function EquityPageHeader({ address }: PageHeaderProps) {
       }
       section={t("asset-management")}
       pill={<ActivePill paused={equity.paused} />}
+      button={<ManageDropdown address={address} equity={equity} />}
     />
   );
 }

@@ -11,7 +11,7 @@ interface RolesProps {
 
 export function Roles({ currentRoles = [], onRolesChange }: RolesProps) {
   const { control, getValues } = useFormContext();
-  const t = useTranslations("admin.equities.permissions.edit-form.roles");
+  const t = useTranslations("admin.asset-permissions-tab.edit-form.roles");
 
   const handleChange = () => {
     // Get current form values after the checkbox change

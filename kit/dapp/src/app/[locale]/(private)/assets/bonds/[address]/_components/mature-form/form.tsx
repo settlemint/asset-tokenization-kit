@@ -24,13 +24,16 @@ export function MatureForm({
   onOpenChange,
 }: MatureFormProps) {
   const t = useTranslations("admin.bonds.mature-form");
-  const isExternallyControlled = open !== undefined && onOpenChange !== undefined;
+  const isExternallyControlled =
+    open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
 
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+      onOpenChange={
+        isExternallyControlled ? onOpenChange : setInternalOpenState
+      }
       triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -39,7 +42,9 @@ export function MatureForm({
       <Form
         action={mature}
         resolver={zodResolver(MatureFormSchema)}
-        onOpenChange={isExternallyControlled ? onOpenChange : setInternalOpenState}
+        onOpenChange={
+          isExternallyControlled ? onOpenChange : setInternalOpenState
+        }
         buttonLabels={{
           label: t("button-label"),
         }}

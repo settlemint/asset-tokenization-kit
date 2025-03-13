@@ -46,13 +46,7 @@ export const createCryptoCurrency = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: {
-        assetName,
-        symbol,
-        decimals,
-        pincode,
-        initialSupply,
-      },
+      parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
       ctx: { user },
     }) => {
       const initialSupplyExact = String(

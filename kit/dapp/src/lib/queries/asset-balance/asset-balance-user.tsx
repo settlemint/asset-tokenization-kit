@@ -2,6 +2,7 @@ import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   AssetBalanceFragment,
   AssetBalanceFragmentSchema,
+  type AssetBalance,
 } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
   theGraphClientKit,
@@ -10,7 +11,7 @@ import {
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
-import { type Address, getAddress } from "viem";
+import { getAddress, type Address } from "viem";
 
 const UserAssetsBalance = theGraphGraphqlKit(
   `
@@ -25,96 +26,66 @@ const UserAssetsBalance = theGraphGraphqlKit(
   [AssetBalanceFragment]
 );
 
-const PAUSABLE_ASSET_TYPES = new Set([
-  "stablecoin",
-  "bond",
-  "fund",
-  "equity",
-] as const);
-
-type PausableAssetType =
-  typeof PAUSABLE_ASSET_TYPES extends Set<infer T> ? T : never;
-
 export type UserAsset = Awaited<
   ReturnType<typeof getUserAssetsBalance>
 >["balances"][number];
 
-export const getUserAssetsBalance = cache(
-  async (wallet: Address, includePaused = true) => {
-    const userAssetsBalance = await fetchAllTheGraphPages(
-      async (first, skip) => {
-        const pageResult = await theGraphClientKit.request(UserAssetsBalance, {
-          accountId: getAddress(wallet),
-          first,
-          skip,
-        });
-        return pageResult.account?.balances ?? [];
-      }
-    );
+type AssetType = AssetBalance["asset"]["type"];
 
-    // Parse and validate the data using Zod schemas
-    let validatedUserAssetsBalance = userAssetsBalance.map((asset) =>
-      safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
-    );
+export const getUserAssetsBalance = cache(async (wallet: Address) => {
+  const userAssetsBalance = await fetchAllTheGraphPages(async (first, skip) => {
+    const pageResult = await theGraphClientKit.request(UserAssetsBalance, {
+      accountId: getAddress(wallet),
+      first,
+      skip,
+    });
+    return pageResult.account?.balances ?? [];
+  });
 
-    if (!validatedUserAssetsBalance.length) {
-      return {
-        balances: [],
-        distribution: [],
-        total: "0",
-      };
-    }
+  // Parse and validate the data using Zod schemas
+  const validatedUserAssetsBalance = userAssetsBalance.map((asset) =>
+    safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
+  );
 
-    if (!includePaused) {
-      validatedUserAssetsBalance = validatedUserAssetsBalance.filter(
-        (balance) => {
-          const asset = balance.asset;
-          if (PAUSABLE_ASSET_TYPES.has(asset.type as PausableAssetType)) {
-            return !asset.paused;
-          }
-          return true;
-        }
-      );
-    }
-
-    // Group and sum balances by asset type
-    const assetTypeBalances = validatedUserAssetsBalance.reduce<
-      Record<PausableAssetType, BigNumber>
-    >(
-      (acc, balance) => {
-        const assetType = balance.asset.type as PausableAssetType;
-        if (!acc[assetType]) {
-          acc[assetType] = BigNumber(0);
-        }
-        acc[assetType] = acc[assetType].plus(
-          BigNumber(balance.value.toString())
-        );
-        return acc;
-      },
-      {} as Record<PausableAssetType, BigNumber>
-    );
-
-    // Calculate total across all types
-    const total = Object.values(assetTypeBalances).reduce(
-      (acc, value) => acc.plus(value),
-      BigNumber(0)
-    );
-
-    // Calculate distribution percentages by type
-    const distribution = Object.entries(assetTypeBalances).map(
-      ([type, value]) => ({
-        asset: { type: type as PausableAssetType },
-        value: value.toString(),
-        percentage: total.gt(0)
-          ? Number.parseFloat(value.div(total).multipliedBy(100).toFixed(2))
-          : 0,
-      })
-    );
-
+  if (!validatedUserAssetsBalance.length) {
     return {
-      balances: validatedUserAssetsBalance,
-      distribution,
-      total: total.toString(),
+      balances: [],
+      distribution: [],
+      total: "0",
     };
   }
-);
+  // Group and sum balances by asset type
+  const assetTypeBalances = validatedUserAssetsBalance.reduce<
+    Partial<Record<AssetType, BigNumber>>
+  >((acc, balance) => {
+    const assetType = balance.asset.type;
+    if (!acc[assetType]) {
+      acc[assetType] = BigNumber(0);
+    }
+    acc[assetType] = acc[assetType].plus(BigNumber(balance.value.toString()));
+    return acc;
+  }, {});
+
+  // Calculate total across all types
+  const total = Object.values(assetTypeBalances).reduce(
+    (acc, value) => acc.plus(value),
+    BigNumber(0)
+  );
+
+  // Calculate distribution percentages by type
+  const distribution = Object.entries(assetTypeBalances).map(
+    ([type, value]) => ({
+      asset: { type: type as AssetType },
+      value: value.toString(),
+      percentage: total.gt(0)
+        ? Number.parseFloat(value.div(total).multipliedBy(100).toFixed(2))
+        : 0,
+    })
+  );
+
+  return {
+    balances: validatedUserAssetsBalance,
+    distribution,
+    total: total.toString(),
+  };
+});

@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Image, { type StaticImageData } from "next/image";
 import * as React from "react";
-import HeroDark from "./assets/hero-dark.png";
-import HeroLight from "./assets/hero-light.png";
+import HeroDark from "./assets/hero-dark.webp";
+import HeroLight from "./assets/hero-light.webp";
 
 interface HeroSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
@@ -75,7 +75,10 @@ const ThemeImage = React.memo(function ThemeImage({
           priority
           placeholder="blur"
           alt="Dashboard preview"
-          fill
+          width={1050}
+          height={674}
+          quality={75}
+          unoptimized
         />
         <Image
           src={dark}
@@ -83,7 +86,10 @@ const ThemeImage = React.memo(function ThemeImage({
           alt="Dashboard preview"
           priority
           placeholder="blur"
-          fill
+          width={1050}
+          height={674}
+          quality={75}
+          unoptimized
         />
       </div>
     );
@@ -102,6 +108,7 @@ const ThemeImage = React.memo(function ThemeImage({
         height={674}
         quality={75}
         alt="Dashboard preview"
+        unoptimized
       />
       <Image
         src={dark}
@@ -114,6 +121,7 @@ const ThemeImage = React.memo(function ThemeImage({
         height={674}
         quality={75}
         alt="Dashboard preview"
+        unoptimized
       />
     </div>
   );

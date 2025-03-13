@@ -1,9 +1,9 @@
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
-import type { TabItemProps } from "../../../../../components/blocks/tab-navigation/tab-item";
 
 const tabs = async (): Promise<TabItemProps[]> => {
   const t = await getTranslations("admin.activity.tabs");

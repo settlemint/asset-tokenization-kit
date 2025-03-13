@@ -1,18 +1,26 @@
-import { TransactionFragmentSchema } from "@/lib/queries/transactions/transaction-fragment";
+import { fetchAllPortalPages } from "@/lib/pagination";
+import {
+  TransactionFragment,
+  TransactionFragmentSchema,
+} from "@/lib/queries/transactions/transaction-fragment";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
 
-const ProcessedTransactionsHistory = portalGraphql(`
-  query ProcessedTransactionsHistory($processedAfter: String, $from: String) {
-    getProcessedTransactions(processedAfter: $processedAfter, from: $from) {
+const ProcessedTransactionsHistory = portalGraphql(
+  `
+  query ProcessedTransactionsHistory($page: Int!, $pageSize: Int!, $processedAfter: String, $from: String) {
+    getProcessedTransactions(processedAfter: $processedAfter, from: $from, page: $page, pageSize: $pageSize) {
+      count
       records {
-        createdAt
+        ...TransactionFragment
       }
     }
   }
-`);
+`,
+  [TransactionFragment]
+);
 
 /**
  * Props interface for processed transactions queries
@@ -34,13 +42,24 @@ export interface RecentTransactionsProps {
 export const getTransactionsHistory = cache(
   async (props: RecentTransactionsProps) => {
     const { address, processedAfter } = props;
-    const response = await portalClient.request(ProcessedTransactionsHistory, {
-      from: address,
-      processedAfter: processedAfter?.toISOString(),
-    });
+    const { records } = await fetchAllPortalPages(
+      async ({ page, pageSize }) => {
+        const response = await portalClient.request(
+          ProcessedTransactionsHistory,
+          {
+            from: address,
+            processedAfter: processedAfter?.toISOString(),
+            pageSize,
+            page,
+          }
+        );
+        return {
+          count: response.getProcessedTransactions?.count ?? 0,
+          records: response.getProcessedTransactions?.records ?? [],
+        };
+      }
+    );
 
-    return z
-      .array(TransactionFragmentSchema)
-      .parse(response.getProcessedTransactions?.records);
+    return z.array(TransactionFragmentSchema).parse(records);
   }
 );

@@ -1,14 +1,21 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
+import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
 import { action } from "../../safe-action";
 import { TransferEquitySchema } from "./transfer-schema";
 
-export const TransferEquity = portalGraphql(`
-  mutation TransferEquity($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
+/**
+ * GraphQL mutation to transfer equity tokens
+ *
+ * @remarks
+ * This mutation requires authentication via challenge response
+ */
+const EquityTransfer = portalGraphql(`
+  mutation EquityTransfer($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
     Transfer: EquityTransfer(
       address: $address
       from: $from
@@ -25,14 +32,16 @@ export const transfer = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, to, value, pincode, decimals },
+      parsedInput: { address, pincode, value, to },
       ctx: { user },
     }) => {
-      const response = await portalClient.request(TransferEquity, {
-        address: address,
+      const { decimals } = await getEquityDetail({ address });
+
+      const response = await portalClient.request(EquityTransfer, {
+        address,
         from: user.wallet,
-        to: to,
         value: parseUnits(value.toString(), decimals).toString(),
+        to,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
