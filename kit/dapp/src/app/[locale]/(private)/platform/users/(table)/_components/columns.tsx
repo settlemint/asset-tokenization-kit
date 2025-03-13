@@ -58,7 +58,7 @@ export function columns() {
           <span>{renderValue()}</span>
           {row.original.banned && (
             <Badge variant="destructive">
-              {t("banned_reason", { reason: row.original.ban_reason })}
+              {t("banned_reason", { reason: row.original.ban_reason ?? "" })}
             </Badge>
           )}
         </>
@@ -151,15 +151,44 @@ export function columns() {
       id: "actions",
       header: () => "",
       cell: ({ row }) => (
-        <DataTableRowActions detailUrl={`/platform/users/${row.original.id}`}>
-          {({ close }) => (
-            <>
-              <BanUserAction user={row.original} onComplete={close} />
-              <ChangeRoleAction user={row.original} onComplete={close} />
-              <UpdateKycStatusAction user={row.original} onComplete={close} />
-            </>
-          )}
-        </DataTableRowActions>
+        <DataTableRowActions
+          detailUrl={`/platform/users/${row.original.id}`}
+          actions={[
+            {
+              id: "ban-user",
+              label: row.original.banned ? "Unban User" : "Ban User",
+              component: ({ open, onOpenChange }) => (
+                <BanUserAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "change-role",
+              label: "Change Role",
+              component: ({ open, onOpenChange }) => (
+                <ChangeRoleAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "update-kyc-status",
+              label: "Update KYC Status",
+              component: ({ open, onOpenChange }) => (
+                <UpdateKycStatusAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+          ]}
+        />
       ),
       meta: {
         enableCsvExport: false,

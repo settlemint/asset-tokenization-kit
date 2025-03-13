@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,12 +23,13 @@ import { toast } from "sonner";
 
 export function BanUserAction({
   user,
-  onComplete,
+  open,
+  onOpenChange,
 }: {
   user: Awaited<ReturnType<typeof getUserList>>[number];
-  onComplete?: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [showBanDialog, setShowBanDialog] = useState(false);
   const [banReason, setBanReason] = useState("");
   const [banDuration, setBanDuration] = useState<string>("forever");
   const [isLoading, setIsLoading] = useState(false);
@@ -64,10 +64,9 @@ export function BanUserAction({
         banExpiresIn: getBanExpiresIn(),
       });
       toast.success("User banned successfully");
-      setShowBanDialog(false);
+      onOpenChange(false);
       setBanReason("");
       router.refresh();
-      onComplete?.();
     } catch (error) {
       toast.error(
         `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -85,8 +84,8 @@ export function BanUserAction({
         userId: user.id,
       });
       toast.success("User unbanned successfully");
+      onOpenChange(false);
       router.refresh();
-      onComplete?.();
     } catch (error) {
       toast.error(
         `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -96,93 +95,90 @@ export function BanUserAction({
     }
   };
 
-  const handleBanClick = (e: MouseEvent) => {
-    e.preventDefault();
-    if (user.banned) {
-      handleUnbanUser(e).catch((error) => {
-        toast.error(
-          `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
-        );
-      });
-    } else {
-      setShowBanDialog(true);
-    }
-  };
-
   return (
     <>
-      <DropdownMenuItem onClick={handleBanClick} disabled={isLoading}>
-        {user.banned ? (isLoading ? "Unbanning..." : "Unban") : "Ban"}
-      </DropdownMenuItem>
-
-      <Dialog
-        open={showBanDialog}
-        onOpenChange={(open) => !isLoading && setShowBanDialog(open)}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ban User</DialogTitle>
-            <DialogDescription>
-              Enter a reason for banning {user.name}. This will be recorded and
-              visible to administrators.
-            </DialogDescription>
+            <DialogTitle>
+              {user.banned ? "Unban" : "Ban"} {user.name}
+            </DialogTitle>
+            {user.banned ? (
+              <DialogDescription>
+                Are you sure you want to unban {user.name}? This will remove
+                their ban status and allow them to access the platform again.
+              </DialogDescription>
+            ) : (
+              <DialogDescription>
+                Enter a reason for banning {user.name}. This will be recorded
+                and visible to administrators.
+              </DialogDescription>
+            )}
           </DialogHeader>
 
-          <div className="space-y-4">
-            <Input
-              placeholder="Enter ban reason..."
-              required
-              value={banReason}
-              onChange={(e) => setBanReason(e.target.value)}
-              disabled={isLoading}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && banReason.trim()) {
-                  handleBanUser(e).catch((error) => {
-                    toast.error(
-                      `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
-                    );
-                  });
-                }
-              }}
-            />
+          {!user.banned && (
+            <div className="space-y-4">
+              <Input
+                placeholder="Enter ban reason..."
+                required
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                disabled={isLoading}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && banReason.trim()) {
+                    handleBanUser(e).catch((error) => {
+                      toast.error(
+                        `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
+                      );
+                    });
+                  }
+                }}
+              />
 
-            <Select
-              value={banDuration}
-              onValueChange={setBanDuration}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select ban duration" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="forever">Forever</SelectItem>
-                <SelectItem value="1hour">1 Hour</SelectItem>
-                <SelectItem value="1day">1 Day</SelectItem>
-                <SelectItem value="1week">1 Week</SelectItem>
-                <SelectItem value="1month">1 Month</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <Select
+                value={banDuration}
+                onValueChange={setBanDuration}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select ban duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="forever">Forever</SelectItem>
+                  <SelectItem value="1hour">1 Hour</SelectItem>
+                  <SelectItem value="1day">1 Day</SelectItem>
+                  <SelectItem value="1week">1 Week</SelectItem>
+                  <SelectItem value="1month">1 Month</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowBanDialog(false);
+              onClick={() => {
+                onOpenChange(false);
               }}
-              disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={(e) => {
-                handleBanUser(e).catch((error) => {
-                  toast.error(
-                    `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
-                  );
-                });
+                if (user.banned) {
+                  handleUnbanUser(e).catch((error) => {
+                    toast.error(
+                      `Failed to unban user: ${error instanceof Error ? error.message : "Unknown error"}`
+                    );
+                  });
+                } else {
+                  handleBanUser(e).catch((error) => {
+                    toast.error(
+                      `Failed to ban user: ${error instanceof Error ? error.message : "Unknown error"}`
+                    );
+                  });
+                }
               }}
               disabled={!banReason.trim() || isLoading}
             >

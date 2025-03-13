@@ -125,59 +125,6 @@
         },
         "title": "Grant Role"
       },
-      "holders": {
-        "actions-header": "Actions",
-        "balance-header": "Balance",
-        "block-form": {
-          "block-button-label": "Block User",
-          "block-description": "Prevent this user from performing any transactions or interactions.",
-          "block-title": "Block User Transactions",
-          "block-trigger-label": "Block",
-          "summary": {
-            "asset-label": "Asset",
-            "block-title": "Block",
-            "current-state-label": "Current state",
-            "description": "Verify the details of your block operation before proceeding.",
-            "operation-description": "Block operation details",
-            "state-active": "Active",
-            "state-blocked": "Blocked",
-            "target-state-label": "Target state",
-            "title": "Review and confirm block operation",
-            "unblock-title": "Unblock"
-          },
-          "unblock-button-label": "Unblock User",
-          "unblock-description": "Restore this user's ability to transact and interact.",
-          "unblock-title": "Restore User Transactions",
-          "unblock-trigger-label": "Unblock"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "Amount",
-            "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-            "description": "Input the amount you wish to freeze.",
-            "title": "Enter Amount"
-          },
-          "button-label": "Freeze Funds",
-          "description": "Temporarily restrict a user's access to their funds.",
-          "summary": {
-            "amount-label": "Amount",
-            "asset-label": "Asset",
-            "description": "Verify the details of your freeze operation before proceeding.",
-            "freeze-title": "Freeze",
-            "operation-description": "Freezing operation details",
-            "title": "Review and confirm freeze operation"
-          },
-          "title": "Restrict User Funds",
-          "trigger-label": "Freeze"
-        },
-        "frozen-header": "Frozen",
-        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "holders-page-title": "{name} Holders",
-        "holder-type-header": "Type",
-        "last-activity-header": "Last activity",
-        "status-header": "Status",
-        "wallet-header": "Wallet"
-      },
       "manage": {
         "actions": {
           "mint": "Mint",
@@ -236,50 +183,6 @@
           "description": "Resume transactions and interactions for this bond.",
           "title": "Resume Bond Transactions"
         }
-      },
-      "permissions": {
-        "actions-header": "Actions",
-        "edit-form": {
-          "button-label": "Save Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
-          "roles": {
-            "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
-          },
-          "summary": {
-            "current-roles-label": "Current roles",
-            "description": "Verify the details before proceeding. This action will change the roles for the user.",
-            "new-roles-label": "New roles",
-            "operation-description": "Updating roles operation details",
-            "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
-            "user-label": "User"
-          },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
-        },
-        "last-activity-header": "Last Activity",
-        "page-description": "Manage user roles and access rights for this bond.",
-        "page-title": "Bond Permissions",
-        "permissions-page-description": "Manage user roles and access rights for {name}.",
-        "permissions-page-title": "{name} Permissions",
-        "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
-          "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
-            "roles-to-revoke-label": "Roles to revoke",
-            "title": "Review and confirm",
-            "user-label": "User"
-          },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
-        },
-        "roles-header": "Roles",
-        "table-title": "Permissions",
-        "wallet-header": "Wallet"
       },
       "related-actions": {
         "decrease-supply": {
@@ -515,16 +418,6 @@
         },
         "title": "Grant Role"
       },
-      "holders": {
-        "balance-header": "Balance",
-        "frozen-header": "Frozen",
-        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "holders-page-title": "{name} Holders",
-        "holder-type-header": "Type",
-        "last-activity-header": "Last activity",
-        "status-header": "Status",
-        "wallet-header": "Wallet"
-      },
       "manage": {
         "actions": {
           "grant-role": "Grant Role",
@@ -554,50 +447,6 @@
         },
         "title": "Mint",
         "trigger-label": "Mint"
-      },
-      "permissions": {
-        "actions-header": "Actions",
-        "edit-form": {
-          "button-label": "Save Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
-          "roles": {
-            "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
-          },
-          "summary": {
-            "current-roles-label": "Current roles",
-            "description": "Verify the details before proceeding. This action will change the roles for the user.",
-            "new-roles-label": "New roles",
-            "operation-description": "Updating roles operation details",
-            "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
-            "user-label": "User"
-          },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
-        },
-        "last-activity-header": "Last Activity",
-        "page-description": "Permission management for {name} cryptocurrency",
-        "page-title": "Cryptocurrency Permissions",
-        "permissions-page-description": "Manage user roles and access rights for {name}.",
-        "permissions-page-title": "{name} Permissions",
-        "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
-          "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
-            "roles-to-revoke-label": "Roles to revoke",
-            "title": "Review and confirm",
-            "user-label": "User"
-          },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
-        },
-        "roles-header": "Roles",
-        "table-title": "Permissions",
-        "wallet-header": "Wallet"
       },
       "related-actions": {
         "increase-supply": {
@@ -908,59 +757,6 @@
         },
         "title": "Grant Role"
       },
-      "holders": {
-        "actions-header": "Actions",
-        "balance-header": "Balance",
-        "block-form": {
-          "block-button-label": "Block User",
-          "block-description": "Prevent this user from performing any transactions or interactions.",
-          "block-title": "Block User Transactions",
-          "block-trigger-label": "Block",
-          "summary": {
-            "asset-label": "Asset",
-            "block-title": "Block",
-            "current-state-label": "Current state",
-            "description": "Verify the details of your block operation before proceeding.",
-            "operation-description": "Block operation details",
-            "state-active": "Active",
-            "state-blocked": "Blocked",
-            "target-state-label": "Target state",
-            "title": "Review and confirm block operation",
-            "unblock-title": "Unblock"
-          },
-          "unblock-button-label": "Unblock User",
-          "unblock-description": "Restore this user's ability to transact and interact.",
-          "unblock-title": "Restore User Transactions",
-          "unblock-trigger-label": "Unblock"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "Amount",
-            "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-            "description": "Input the amount you wish to freeze.",
-            "title": "Enter Amount"
-          },
-          "button-label": "Freeze Funds",
-          "description": "Temporarily restrict a user's access to their funds.",
-          "summary": {
-            "amount-label": "Amount",
-            "asset-label": "Asset",
-            "description": "Verify the details of your freeze operation before proceeding.",
-            "freeze-title": "Freeze",
-            "operation-description": "Freezing operation details",
-            "title": "Review and confirm freeze operation"
-          },
-          "title": "Restrict User Funds",
-          "trigger-label": "Freeze"
-        },
-        "frozen-header": "Frozen",
-        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "holders-page-title": "{name} Holders",
-        "holder-type-header": "Type",
-        "last-activity-header": "Last activity",
-        "status-header": "Status",
-        "wallet-header": "Wallet"
-      },
       "manage": {
         "actions": {
           "mint": "Mint",
@@ -1016,50 +812,6 @@
           "description": "Resume transactions and interactions for this equity.",
           "title": "Resume Equity Transactions"
         }
-      },
-      "permissions": {
-        "actions-header": "Actions",
-        "edit-form": {
-          "button-label": "Save Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
-          "roles": {
-            "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
-          },
-          "summary": {
-            "current-roles-label": "Current roles",
-            "description": "Verify the details before proceeding. This action will change the roles for the user.",
-            "new-roles-label": "New roles",
-            "operation-description": "Updating roles operation details",
-            "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
-            "user-label": "User"
-          },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
-        },
-        "last-activity-header": "Last Activity",
-        "page-description": "Manage user roles and access rights for this equity.",
-        "page-title": "Equity Permissions",
-        "permissions-page-description": "Manage user roles and access rights for {name}.",
-        "permissions-page-title": "{name} Permissions",
-        "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
-          "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
-            "roles-to-revoke-label": "Roles to revoke",
-            "title": "Review and confirm",
-            "user-label": "User"
-          },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
-        },
-        "roles-header": "Roles",
-        "table-title": "Permissions",
-        "wallet-header": "Wallet"
       },
       "related-actions": {
         "decrease-supply": {
@@ -1369,59 +1121,6 @@
         },
         "title": "Grant Role"
       },
-      "holders": {
-        "actions-header": "Actions",
-        "balance-header": "Balance",
-        "block-form": {
-          "block-button-label": "Block User",
-          "block-description": "Prevent this user from performing any transactions or interactions.",
-          "block-title": "Block User Transactions",
-          "block-trigger-label": "Block",
-          "summary": {
-            "asset-label": "Asset",
-            "block-title": "Block",
-            "current-state-label": "Current state",
-            "description": "Verify the details of your block operation before proceeding.",
-            "operation-description": "Block operation details",
-            "state-active": "Active",
-            "state-blocked": "Blocked",
-            "target-state-label": "Target state",
-            "title": "Review and confirm block operation",
-            "unblock-title": "Unblock"
-          },
-          "unblock-button-label": "Unblock User",
-          "unblock-description": "Restore this user's ability to transact and interact.",
-          "unblock-title": "Restore User Transactions",
-          "unblock-trigger-label": "Unblock"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "Amount",
-            "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-            "description": "Input the amount you wish to freeze.",
-            "title": "Enter Amount"
-          },
-          "button-label": "Freeze Funds",
-          "description": "Temporarily restrict a user's access to their funds.",
-          "summary": {
-            "amount-label": "Amount",
-            "asset-label": "Asset",
-            "description": "Verify the details of your freeze operation before proceeding.",
-            "freeze-title": "Freeze",
-            "operation-description": "Freezing operation details",
-            "title": "Review and confirm freeze operation"
-          },
-          "title": "Restrict User Funds",
-          "trigger-label": "Freeze"
-        },
-        "frozen-header": "Frozen",
-        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "holders-page-title": "{name} Holders",
-        "holder-type-header": "Type",
-        "last-activity-header": "Last activity",
-        "status-header": "Status",
-        "wallet-header": "Wallet"
-      },
       "manage": {
         "actions": {
           "mint": "Mint",
@@ -1477,50 +1176,6 @@
           "description": "Resume transactions and interactions for this fund.",
           "title": "Resume Fund Transactions"
         }
-      },
-      "permissions": {
-        "actions-header": "Actions",
-        "edit-form": {
-          "button-label": "Save Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
-          "roles": {
-            "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
-          },
-          "summary": {
-            "current-roles-label": "Current roles",
-            "description": "Verify the details before proceeding. This action will change the roles for the user.",
-            "new-roles-label": "New roles",
-            "operation-description": "Updating roles operation details",
-            "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
-            "user-label": "User"
-          },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
-        },
-        "last-activity-header": "Last Activity",
-        "page-description": "Manage user roles and access rights for this bond.",
-        "page-title": "Bond Permissions",
-        "permissions-page-description": "Manage user roles and access rights for {name}.",
-        "permissions-page-title": "{name} Permissions",
-        "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
-          "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
-            "roles-to-revoke-label": "Roles to revoke",
-            "title": "Review and confirm",
-            "user-label": "User"
-          },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
-        },
-        "roles-header": "Roles",
-        "table-title": "Permissions",
-        "wallet-header": "Wallet"
       },
       "related-actions": {
         "decrease-supply": {
@@ -1785,59 +1440,6 @@
         },
         "title": "Grant Role"
       },
-      "holders": {
-        "actions-header": "Actions",
-        "balance-header": "Balance",
-        "block-form": {
-          "block-button-label": "Block User",
-          "block-description": "Prevent this user from performing any transactions or interactions.",
-          "block-title": "Block User Transactions",
-          "block-trigger-label": "Block",
-          "summary": {
-            "asset-label": "Asset",
-            "block-title": "Block",
-            "current-state-label": "Current state",
-            "description": "Verify the details of your block operation before proceeding.",
-            "operation-description": "Block operation details",
-            "state-active": "Active",
-            "state-blocked": "Blocked",
-            "target-state-label": "Target state",
-            "title": "Review and confirm block operation",
-            "unblock-title": "Unblock"
-          },
-          "unblock-button-label": "Unblock User",
-          "unblock-description": "Restore this user's ability to transact and interact.",
-          "unblock-title": "Restore User Transactions",
-          "unblock-trigger-label": "Unblock"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "Amount",
-            "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-            "description": "Input the amount you wish to freeze.",
-            "title": "Enter Amount"
-          },
-          "button-label": "Freeze Funds",
-          "description": "Temporarily restrict a user's access to their funds.",
-          "summary": {
-            "amount-label": "Amount",
-            "asset-label": "Asset",
-            "description": "Verify the details of your freeze operation before proceeding.",
-            "freeze-title": "Freeze",
-            "operation-description": "Freezing operation details",
-            "title": "Review and confirm freeze operation"
-          },
-          "title": "Restrict User Funds",
-          "trigger-label": "Freeze"
-        },
-        "frozen-header": "Frozen",
-        "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-        "holders-page-title": "{name} Holders",
-        "holder-type-header": "Type",
-        "last-activity-header": "Last activity",
-        "status-header": "Status",
-        "wallet-header": "Wallet"
-      },
       "manage": {
         "actions": {
           "burn": "Burn",
@@ -1896,50 +1498,6 @@
           "description": "Resume transactions and interactions for this stablecoin.",
           "title": "Resume Stablecoin Transactions"
         }
-      },
-      "permissions": {
-        "actions-header": "Actions",
-        "edit-form": {
-          "button-label": "Save Permissions",
-          "description": "Update the permissions and access levels assigned to this user.",
-          "roles": {
-            "description": "Choose the roles to assign to this user. At least one role must be selected.",
-            "title": "Select User Roles"
-          },
-          "summary": {
-            "current-roles-label": "Current roles",
-            "description": "Verify the details before proceeding. This action will change the roles for the user.",
-            "new-roles-label": "New roles",
-            "operation-description": "Updating roles operation details",
-            "title": "Review and confirm new roles",
-            "update-title": "Update Roles",
-            "user-label": "User"
-          },
-          "title": "Modify User Permissions",
-          "trigger-label": "Edit Roles"
-        },
-        "last-activity-header": "Last Activity",
-        "page-description": "Permission management for {name} stablecoin",
-        "page-title": "{name} Permissions",
-        "permissions-page-description": "Manage user roles and access rights for {name}.",
-        "permissions-page-title": "{name} Permissions",
-        "revoke-all-form": {
-          "button-label": "Revoke Access",
-          "description": "Completely revoke this user's access and permissions.",
-          "summary": {
-            "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-            "operation-description": "Revoking all permissions operation details",
-            "revoke-title": "Revoke All",
-            "roles-to-revoke-label": "Roles to revoke",
-            "title": "Review and confirm",
-            "user-label": "User"
-          },
-          "title": "Remove All User Access",
-          "trigger-label": "Revoke All"
-        },
-        "roles-header": "Roles",
-        "table-title": "Permissions",
-        "wallet-header": "Wallet"
       },
       "related-actions": {
         "decrease-supply": {
@@ -2107,6 +1665,103 @@
         "funds": "Funds",
         "stablecoins": "Stablecoins"
       }
+    },
+    "asset-holders-tab": {
+      "actions-header": "Actions",
+      "balance-header": "Balance",
+      "block-form": {
+        "block-button-label": "Block User",
+        "block-description": "Prevent this user from performing any transactions or interactions.",
+        "block-title": "Block User Transactions",
+        "block-trigger-label": "Block",
+        "summary": {
+          "asset-label": "Asset",
+          "block-title": "Block",
+          "current-state-label": "Current state",
+          "description": "Verify the details of your block operation before proceeding.",
+          "operation-description": "Block operation details",
+          "state-active": "Active",
+          "state-blocked": "Blocked",
+          "target-state-label": "Target state",
+          "title": "Review and confirm block operation",
+          "unblock-title": "Unblock"
+        },
+        "unblock-button-label": "Unblock User",
+        "unblock-description": "Restore this user's ability to transact and interact.",
+        "unblock-title": "Restore User Transactions",
+        "unblock-trigger-label": "Unblock"
+      },
+      "freeze-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
+          "description": "Input the amount you wish to freeze.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Freeze Funds",
+        "description": "Temporarily restrict a user's access to their funds.",
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "description": "Verify the details of your freeze operation before proceeding.",
+          "freeze-title": "Freeze",
+          "operation-description": "Freezing operation details",
+          "title": "Review and confirm freeze operation"
+        },
+        "title": "Restrict User Funds",
+        "trigger-label": "Freeze"
+      },
+      "frozen-header": "Frozen",
+      "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+      "holders-page-title": "{name} Holders",
+      "holder-type-header": "Type",
+      "last-activity-header": "Last activity",
+      "status-header": "Status",
+      "wallet-header": "Wallet"
+    },
+    "asset-permissions-tab": {
+      "actions-header": "Actions",
+      "edit-form": {
+        "button-label": "Edit Permissions",
+        "description": "Update the permissions and access levels assigned to this user.",
+        "roles": {
+          "description": "Choose the roles to assign to this user. At least one role must be selected.",
+          "title": "Select User Roles"
+        },
+        "summary": {
+          "current-roles-label": "Current roles",
+          "description": "Verify the details before proceeding. This action will change the roles for the user.",
+          "new-roles-label": "New roles",
+          "operation-description": "Updating roles operation details",
+          "title": "Review and confirm new roles",
+          "update-title": "Update Roles",
+          "user-label": "User"
+        },
+        "title": "Modify User Permissions",
+        "trigger-label": "Edit Roles"
+      },
+      "last-activity-header": "Last Activity",
+      "page-description": "Permission management for {name} stablecoin",
+      "page-title": "{name} Permissions",
+      "permissions-page-description": "Manage user roles and access rights for {name}.",
+      "permissions-page-title": "{name} Permissions",
+      "revoke-all-form": {
+        "button-label": "Revoke Access",
+        "description": "Completely revoke this user's access and permissions.",
+        "summary": {
+          "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+          "operation-description": "Revoking all permissions operation details",
+          "revoke-title": "Revoke All",
+          "roles-to-revoke-label": "Roles to revoke",
+          "title": "Review and confirm",
+          "user-label": "User"
+        },
+        "title": "Remove All User Access",
+        "trigger-label": "Revoke All"
+      },
+      "roles-header": "Roles",
+      "table-title": "Permissions",
+      "wallet-header": "Wallet"
     }
   },
   "asset-management": "Asset management",
@@ -2593,6 +2248,161 @@
         "status-header": "Status",
         "symbol-header": "Symbol",
         "type-header": "Type"
+      },
+      "stablecoin": {
+        "transfer-form": {
+          "trigger-label": "Transfer",
+          "title": "Transfer Stablecoin",
+          "description": "Transfer your stablecoin tokens to another address",
+          "button-label": "Transfer",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Specify the amount you want to transfer",
+            "value-label": "Amount",
+            "balance-available": "Available balance: {balance}"
+          },
+          "recipients": {
+            "title": "Select Recipient",
+            "description": "Choose who will receive the tokens",
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "search-user-link": "Search for a user instead...",
+            "manual-entry-link": "Enter address manually..."
+          },
+          "summary": {
+            "title": "Review and confirm transfer",
+            "description": "Verify the details of your transfer before proceeding",
+            "transfer-title": "Transfer",
+            "transfer-description": "Transfer operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount",
+            "recipient-label": "Recipient"
+          }
+        }
+      },
+      "fund": {
+        "transfer-form": {
+          "trigger-label": "Transfer",
+          "title": "Transfer Fund",
+          "description": "Transfer your fund tokens to another address",
+          "button-label": "Transfer",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Specify the amount you want to transfer",
+            "value-label": "Amount",
+            "balance-available": "Available balance: {balance}"
+          },
+          "recipients": {
+            "title": "Select Recipient",
+            "description": "Choose who will receive the tokens",
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "search-user-link": "Search for a user instead...",
+            "manual-entry-link": "Enter address manually..."
+          },
+          "summary": {
+            "title": "Review and confirm transfer",
+            "description": "Verify the details of your transfer before proceeding",
+            "transfer-title": "Transfer",
+            "transfer-description": "Transfer operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount",
+            "recipient-label": "Recipient"
+          }
+        }
+      },
+      "equity": {
+        "transfer-form": {
+          "trigger-label": "Transfer",
+          "title": "Transfer Equity",
+          "description": "Transfer your equity tokens to another address",
+          "button-label": "Transfer",
+          "amount": {
+            "title": "Enter Amount",
+            "description": "Specify the amount you want to transfer",
+            "value-label": "Amount",
+            "balance-available": "Available balance: {balance}"
+          },
+          "recipients": {
+            "title": "Select Recipient",
+            "description": "Choose who will receive the tokens",
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "search-user-link": "Search for a user instead...",
+            "manual-entry-link": "Enter address manually..."
+          },
+          "summary": {
+            "title": "Review and confirm transfer",
+            "description": "Verify the details of your transfer before proceeding",
+            "transfer-title": "Transfer",
+            "transfer-description": "Transfer operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount",
+            "recipient-label": "Recipient"
+          }
+        }
+      },
+      "cryptocurrency": {
+        "transfer-form": {
+          "trigger-label": "Transfer",
+          "title": "Transfer Cryptocurrency",
+          "description": "Transfer your cryptocurrency tokens to another address",
+          "button-label": "Transfer",
+          "amount": {
+            "title": "Amount",
+            "description": "Enter the amount of tokens you want to transfer",
+            "amount-label": "Amount",
+            "balance-description": "Available balance:"
+          },
+          "recipients": {
+            "title": "Select Recipient",
+            "description": "Choose who will receive the tokens",
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "search-user-link": "Search for a user instead...",
+            "manual-entry-link": "Enter address manually..."
+          },
+          "summary": {
+            "title": "Review and confirm transfer",
+            "description": "Verify the details of your transfer before proceeding",
+            "transfer-title": "Transfer",
+            "transfer-description": "Transfer operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount",
+            "recipient-label": "Recipient"
+          }
+        }
+      },
+      "bond": {
+        "transfer-form": {
+          "trigger-label": "Transfer",
+          "title": "Transfer bond",
+          "description": "Transfer your bond tokens to another address",
+          "button-label": "Transfer",
+          "amount": {
+            "title": "Amount",
+            "description": "Enter the amount of tokens you want to transfer",
+            "amount-label": "Amount",
+            "balance-description": "Available balance:"
+          },
+          "recipients": {
+            "title": "Select Recipient",
+            "description": "Choose who will receive the tokens",
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "search-user-link": "Search for a user instead...",
+            "manual-entry-link": "Enter address manually..."
+          },
+          "summary": {
+            "title": "Review and confirm transfer",
+            "description": "Verify the details of your transfer before proceeding",
+            "transfer-title": "Transfer",
+            "transfer-description": "Transfer operation details",
+            "asset-label": "Asset",
+            "value-label": "Amount",
+            "recipient-label": "Recipient"
+          }
+        }
       }
     },
     "settings": {

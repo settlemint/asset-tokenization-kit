@@ -19,7 +19,7 @@ export async function generateMetadata({
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.stablecoins.holders",
+    namespace: "admin.asset-holders-tab",
   });
 
   return {

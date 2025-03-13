@@ -1,3 +1,5 @@
+"use client";
+
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { MintInput } from "@/lib/mutations/stablecoin/mint/mint-schema";
@@ -6,10 +8,11 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
-  collateralAvailable: number;
+  freeCollateral: number;
+  symbol: string;
 }
 
-export function Amount({ collateralAvailable }: AmountProps) {
+export function Amount({ freeCollateral, symbol }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("admin.stablecoins.mint-form.amount");
 
@@ -22,9 +25,9 @@ export function Amount({ collateralAvailable }: AmountProps) {
           label={t("amount-label")}
           type="number"
           min={1}
-          max={collateralAvailable}
+          max={freeCollateral}
           description={t("collateral-available", {
-            collateral: formatNumber(collateralAvailable),
+            collateral: formatNumber(freeCollateral, { token: symbol }),
           })}
           required
         />
