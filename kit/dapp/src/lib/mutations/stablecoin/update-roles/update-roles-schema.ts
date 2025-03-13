@@ -10,15 +10,7 @@ import { z, type ZodInfer } from "@/lib/utils/zod";
  */
 export const UpdateRolesSchema = z.object({
   address: z.address(),
-  roles: z
-    .array(
-      z.enum([
-        "DEFAULT_ADMIN_ROLE",
-        "SUPPLY_MANAGEMENT_ROLE",
-        "USER_MANAGEMENT_ROLE",
-      ])
-    )
-    .min(1, "At least one role must be selected"),
+  roles: z.roles(),
   userAddress: z.address(),
   pincode: z.pincode(),
 });

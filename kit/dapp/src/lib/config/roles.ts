@@ -45,5 +45,17 @@ export const getRoleIdentifier = (roleKey: RoleKey): Hex => {
 
 // Helper function to get display name for UI
 export const getRoleDisplayName = (roleKey: RoleKey): string => {
+  if (!ROLES[roleKey]) {
+    console.error("Unknown role key", roleKey);
+    return "";
+  }
   return ROLES[roleKey].displayName;
+};
+
+export const getActiveRoles = (
+  roles?: Partial<Record<Role, boolean>>
+): Role[] => {
+  if (!roles) return [];
+
+  return Object.keys(roles).filter((role) => roles[role as RoleKey]) as Role[];
 };

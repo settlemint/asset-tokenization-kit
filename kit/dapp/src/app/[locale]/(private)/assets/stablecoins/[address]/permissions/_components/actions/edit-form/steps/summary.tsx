@@ -1,8 +1,9 @@
+import { AssetRolePill } from "@/components/blocks/asset-role-pill/asset-role-pill";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { type Role, getRoleDisplayName } from "@/lib/config/roles";
+import type { Role } from "@/lib/config/roles";
 import type { UpdateRolesInput } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -35,27 +36,11 @@ export function Summary({
         />
         <FormSummaryDetailItem
           label={t("current-roles-label")}
-          value={
-            <div className="flex flex-wrap gap-1">
-              {currentRoles.map((role: Role) => (
-                <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                  {getRoleDisplayName(role)}
-                </span>
-              ))}
-            </div>
-          }
+          value={<AssetRolePill roles={currentRoles} />}
         />
         <FormSummaryDetailItem
           label={t("new-roles-label")}
-          value={
-            <div className="flex flex-wrap gap-1">
-              {values.roles?.map((role: Role) => (
-                <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                  {getRoleDisplayName(role)}
-                </span>
-              ))}
-            </div>
-          }
+          value={<AssetRolePill roles={values.roles} />}
         />
       </FormSummaryDetailCard>
     </FormStep>
