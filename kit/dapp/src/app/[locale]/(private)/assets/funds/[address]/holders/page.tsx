@@ -4,7 +4,7 @@ import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { columns, icons } from "./_components/columns";
+import { columns } from "./_components/columns";
 
 interface PageProps {
   params: Promise<{ locale: string; address: Address }>;
@@ -19,7 +19,7 @@ export async function generateMetadata({
   const fund = await getFundDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.funds.holders",
+    namespace: "admin.asset-holders-tab",
   });
 
   return {
@@ -36,12 +36,5 @@ export default async function FundHoldersPage({ params }: PageProps) {
   const { address } = await params;
   const balances = await getAssetBalanceList({ address });
 
-  return (
-    <DataTable
-      columns={columns}
-      data={balances}
-      icons={icons}
-      name={"Holders"}
-    />
-  );
+  return <DataTable columns={columns} data={balances} name={"Holders"} />;
 }

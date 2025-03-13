@@ -20,7 +20,7 @@ export async function generateMetadata({
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.stablecoins.permissions",
+    namespace: "admin.asset-permissions-tab",
   });
 
   return {
@@ -39,7 +39,7 @@ export default async function StablecoinTokenPermissionsPage({
   const { address } = await params;
   const stableCoin = await getStableCoinDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations("admin.stablecoins.permissions");
+  const t = await getTranslations("admin.asset-permissions-tab");
 
   return (
     <>

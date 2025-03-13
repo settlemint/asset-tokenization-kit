@@ -1,9 +1,7 @@
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
-import { FormOtp } from "@/components/blocks/form/inputs/form-otp";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { FormSummarySecurityConfirmation } from "@/components/blocks/form/summary/security-confirmation";
 import type { BlockUserInput } from "@/lib/mutations/equity/block-user/block-user-schema";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -17,7 +15,7 @@ interface SummaryProps {
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
   const { control } = useFormContext<BlockUserInput>();
-  const t = useTranslations("admin.equities.holders.block-form.summary");
+  const t = useTranslations("admin.asset-holders-tab.block-form.summary");
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -39,12 +37,8 @@ export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
           value={isCurrentlyBlocked ? t("state-active") : t("state-blocked")}
         />
       </FormSummaryDetailCard>
-
-      <FormSummarySecurityConfirmation>
-        <FormOtp control={control} name="pincode" />
-      </FormSummarySecurityConfirmation>
     </FormStep>
   );
 }
 
-Summary.validatedFields = ["pincode"] as const;
+Summary.validatedFields = [] as const;

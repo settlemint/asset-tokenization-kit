@@ -1,19 +1,23 @@
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
 import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 
-const tabs = [
-  {
-    name: "Recent transactions",
-    href: "/admin/activity",
-  },
-  {
-    name: "All events",
-    href: "/admin/activity/events",
-  },
-];
+const tabs = async (): Promise<TabItemProps[]> => {
+  const t = await getTranslations("admin.activity.tabs");
+  return [
+    {
+      name: t("recent-transactions"),
+      href: "/assets/activity",
+    },
+    {
+      name: t("all-events"),
+      href: "/assets/activity/events",
+    },
+  ];
+};
 
 export async function generateMetadata({
   params,
@@ -34,7 +38,7 @@ export async function generateMetadata({
 
 export default async function ActivityLayout({ children }: PropsWithChildren) {
   const t = await getTranslations("admin.activity");
-
+  const tabItems = await tabs();
   return (
     <div>
       <PageHeader
@@ -43,7 +47,7 @@ export default async function ActivityLayout({ children }: PropsWithChildren) {
         section={t("asset-management")}
       />
       <div className="relative mt-4 space-y-2">
-        <TabNavigation items={tabs} />
+        <TabNavigation items={tabItems} />
       </div>
       {children}
     </div>

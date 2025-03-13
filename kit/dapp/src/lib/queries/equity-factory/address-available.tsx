@@ -1,6 +1,6 @@
 "use server";
 
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
@@ -11,7 +11,7 @@ import type { Address } from "viem";
  * @remarks
  * Checks if a token address is already deployed through the equity factory
  */
-const EquityExists = theGraphGraphql(`
+const EquityExists = theGraphGraphqlKit(`
   query EquityExists($token: ID!) {
     equity(id: $token) {
       id
@@ -28,7 +28,7 @@ const EquityExistsSchema = z.object({
 });
 
 export const isAddressAvailable = cache(async (address: Address) => {
-  const data = await theGraphClient.request(EquityExists, {
+  const data = await theGraphClientKit.request(EquityExists, {
     token: address,
   });
 

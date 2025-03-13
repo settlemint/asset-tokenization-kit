@@ -6,12 +6,18 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import type { HookSafeActionFn } from "next-safe-action/hooks";
-import { useState } from "react";
-import type { DefaultValues, Path, Resolver } from "react-hook-form";
+import { useEffect, useState } from "react";
+import type {
+  DefaultValues,
+  Path,
+  Resolver,
+  UseFormReturn,
+} from "react-hook-form";
 import { toast } from "sonner";
 import type { Schema } from "zod";
 import { type ButtonLabels, FormButton } from "./form-button";
 import { FormProgress } from "./form-progress";
+import { FormOtpDialog } from "./inputs/form-otp-dialog";
 import type { FormStepElement } from "./types";
 
 interface FormProps<
@@ -34,6 +40,8 @@ interface FormProps<
     loading?: string;
     success?: string;
   };
+  secureForm?: boolean;
+  onAnyFieldChange?: (form: UseFormReturn<ZodInfer<S>>) => void;
 }
 
 export function Form<
@@ -53,11 +61,15 @@ export function Form<
   onOpenChange,
   toastMessages,
   hideButtons,
+  onAnyFieldChange,
+  secureForm = true,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
   const tError = useTranslations("error");
   const totalSteps = Array.isArray(children) ? children.length : 1;
+  const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
+    useState(false);
 
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
@@ -92,6 +104,18 @@ export function Form<
       },
     });
 
+  useEffect(() => {
+    if (!onAnyFieldChange) return;
+
+    const subscription = form.watch(() => {
+      onAnyFieldChange(form);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, onAnyFieldChange]);
+
+  const isLastStep = currentStep === totalSteps - 1;
+
   const handlePrev = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
@@ -101,11 +125,16 @@ export function Form<
       ? children[currentStep].type
       : children.type;
     const fieldsToValidate = CurrentStep.validatedFields;
-
     if (!fieldsToValidate?.length) {
+      if (isLastStep && secureForm) {
+        setShowFormSecurityConfirmation(true);
+      }
       setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
       return;
     }
+
+    const beforeValidate = CurrentStep.beforeValidate ?? [];
+    await Promise.all(beforeValidate.map((validate) => validate(form)));
 
     for (const field of fieldsToValidate) {
       const value = form.getValues(field as Path<ZodInfer<S>>);
@@ -123,6 +152,10 @@ export function Form<
     );
 
     if (results.every(Boolean)) {
+      if (isLastStep && secureForm) {
+        setShowFormSecurityConfirmation(true);
+      }
+
       // Prevent the form from being auto submitted when going to the final step
       setTimeout(() => {
         setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
@@ -130,15 +163,16 @@ export function Form<
     }
   };
 
-  const isLastStep = currentStep === totalSteps - 1;
-  const CurrentStep = Array.isArray(children)
-    ? children[currentStep].type
-    : children.type;
-  const hasError =
-    Object.keys(form.formState.errors).filter(
-      (fieldName) => !CurrentStep.validatedFields.includes(fieldName as never)
-    ).length > 0;
+  const hasError = Object.keys(form.formState.errors).length > 0;
+  const formatError = (key: string, errorMessage?: string, type?: string) => {
+    const error = errorMessage ?? "unknown-error";
+    const translatedErrorMessage = tError.has(error as never)
+      ? tError(error as never)
+      : error;
+    const errorKey = key && type !== "custom" ? `${key}: ` : "";
 
+    return `${errorKey}${translatedErrorMessage}`;
+  };
   return (
     <div className="space-y-6 h-full">
       <div className="container p-6 flex flex-col h-full">
@@ -152,7 +186,7 @@ export function Form<
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
             )}
             <div className="flex-1">
-              {isLastStep && hasError && !form.formState.isValidating && (
+              {isLastStep && hasError && (
                 <Alert
                   variant="destructive"
                   className="text-destructive border-destructive mb-4"
@@ -160,31 +194,48 @@ export function Form<
                   <AlertTitle>{tError("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
-                      .map(
-                        ([key, error]) =>
-                          `${key ? `${key}: ` : ""}${(error?.message as string) ?? tError("unknown-error")}`
-                      )
+                      .map(([key, error]) => {
+                        return formatError(
+                          key,
+                          error?.message as string,
+                          error?.type as string
+                        );
+                      })
                       .filter(Boolean)
                       .join("\n")}
                   </AlertDescription>
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
-            </div>
-            <div className="mt-auto pt-6">
-              {!hideButtons && (
-                <FormButton
-                  currentStep={currentStep}
-                  totalSteps={totalSteps}
-                  onPreviousStep={handlePrev}
-                  onNextStep={() => {
-                    handleNext().catch((error: Error) => {
-                      console.error("Error in handleNext:", error);
+              {showFormSecurityConfirmation && (
+                <FormOtpDialog
+                  name={"pincode" as Path<ZodInfer<S>>}
+                  open={showFormSecurityConfirmation}
+                  onOpenChange={setShowFormSecurityConfirmation}
+                  control={form.control}
+                  onSubmit={() => {
+                    handleSubmitWithAction().catch((error: Error) => {
+                      console.error("Error submitting form:", error);
                     });
                   }}
-                  labels={buttonLabels}
                 />
               )}
+            </div>
+            <div className="mt-auto pt-6">
+              <FormButton
+                hideButtons={hideButtons}
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                onPreviousStep={handlePrev}
+                onNextStep={() => {
+                  handleNext().catch((error: Error) => {
+                    console.error("Error in handleNext:", error);
+                  });
+                }}
+                labels={buttonLabels}
+                onLastStep={secureForm ? handleNext : undefined}
+                isSecurityDialogOpen={showFormSecurityConfirmation}
+              />
             </div>
           </form>
         </UIForm>

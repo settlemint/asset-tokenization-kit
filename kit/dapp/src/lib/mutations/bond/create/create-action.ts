@@ -30,31 +30,6 @@ const BondFactoryCreate = portalGraphql(`
 `);
 
 /**
- * GraphQL query for predicting the address of a new bond
- *
- * @remarks
- * Uses deterministic deployment to predict the contract address before creation
- */
-const CreateBondPredictAddress = portalGraphql(`
-  query CreateBondPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!) {
-    BondFactory(address: $address) {
-      predictAddress(
-        sender: $sender
-        decimals: $decimals
-        name: $name
-        symbol: $symbol
-        cap: $cap
-        faceValue: $faceValue
-        maturityDate: $maturityDate
-        underlyingAsset: $underlyingAsset
-      ) {
-        predicted
-      }
-    }
-  }
-`);
-
-/**
  * GraphQL mutation for creating off-chain metadata for a bond
  *
  * @remarks
@@ -83,6 +58,7 @@ export const createBond = action
         faceValue,
         maturityDate,
         underlyingAsset,
+        predictedAddress,
       },
       ctx: { user },
     }) => {
@@ -91,30 +67,8 @@ export const createBond = action
         type: "unixSeconds",
       });
 
-      const predictedAddress = await portalClient.request(
-        CreateBondPredictAddress,
-        {
-          address: BOND_FACTORY_ADDRESS,
-          sender: user.wallet,
-          decimals,
-          cap: capExact,
-          faceValue: String(faceValue),
-          maturityDate: maturityDateTimestamp,
-          underlyingAsset,
-          name: assetName,
-          symbol,
-        }
-      );
-
-      const newAddress =
-        predictedAddress.BondFactory?.predictAddress?.predicted;
-
-      if (!newAddress) {
-        throw new Error("Failed to predict the address");
-      }
-
       await hasuraClient.request(CreateOffchainBond, {
-        id: newAddress,
+        id: predictedAddress,
         isin: isin,
       });
 

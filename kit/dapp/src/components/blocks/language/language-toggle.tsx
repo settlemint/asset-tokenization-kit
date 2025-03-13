@@ -18,7 +18,8 @@ import { useCallback, useEffect, useState } from "react";
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   de: "Deutsch",
-  // Add more languages here as needed
+  ja: "日本語",
+  ar: "العربية",
 };
 
 /**

@@ -49,3 +49,36 @@ export function fetchAllHasuraPages<T>(
 ): Promise<T[]> {
   return fetchAllPages(fetch, pageSize);
 }
+
+/**
+ * Fetches all pages of data from the Portal API.
+ * @param fetch - The function to fetch the data.
+ * @param pageSize - The number of items to fetch per page (default 10,000).
+ * @returns All the data from the API.
+ */
+export async function fetchAllPortalPages<T>(
+  fetch: (props: {
+    page: number;
+    pageSize: number;
+  }) => Promise<{ count: number; records: T[] }>,
+  pageSize = 10_000
+): Promise<{ count: number; records: T[] }> {
+  const firstPage = await fetch({ page: 0, pageSize });
+  const totalPages = Math.ceil(firstPage.count / pageSize);
+  if (totalPages === 1) {
+    return { count: firstPage.count, records: firstPage.records };
+  }
+  const results = firstPage.records;
+  const concurrentPages = 3;
+  for (let page = 1; page < totalPages; page += concurrentPages) {
+    const pagesToFetch = Math.min(concurrentPages, totalPages - page);
+    const pagePromises = Array.from({ length: pagesToFetch }, (_, i) => {
+      return fetch({ page: page + i, pageSize });
+    });
+    const pageResults = await Promise.all(pagePromises);
+    for (const pageData of pageResults) {
+      results.push(...pageData.records);
+    }
+  }
+  return { count: firstPage.count, records: results };
+}

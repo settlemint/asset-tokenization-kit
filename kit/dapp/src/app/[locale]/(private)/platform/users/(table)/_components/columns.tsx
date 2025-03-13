@@ -1,14 +1,13 @@
 "use client";
 
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
-import { DataTableColumnCell } from "@/components/blocks/data-table/data-table-column-cell";
-import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { getUserList } from "@/lib/queries/user/user-list";
+import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
@@ -46,13 +45,9 @@ export function columns() {
 
   return [
     columnHelper.accessor("name", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.name")}
-        </DataTableColumnHeader>
-      ),
+      header: t("columns.name"),
       cell: ({ renderValue, row }) => (
-        <DataTableColumnCell>
+        <>
           <Suspense fallback={<Skeleton className="size-8 rounded-lg" />}>
             <AddressAvatar
               email={row.original.email}
@@ -63,118 +58,92 @@ export function columns() {
           <span>{renderValue()}</span>
           {row.original.banned && (
             <Badge variant="destructive">
-              {t("banned_reason", { reason: row.original.ban_reason })}
+              {t("banned_reason", { reason: row.original.ban_reason ?? "" })}
             </Badge>
           )}
-        </DataTableColumnCell>
+        </>
       ),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("wallet", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.wallet")}
-        </DataTableColumnHeader>
-      ),
-      cell: ({ getValue }) => (
-        <DataTableColumnCell>
-          {getValue() && (
-            <div className="flex items-center">
-              <EvmAddress
-                address={getValue()}
-                prettyNames={false}
-                copyToClipboard={true}
-              >
-                <EvmAddressBalances address={getValue()} />
-              </EvmAddress>
-            </div>
-          )}
-        </DataTableColumnCell>
-      ),
+      header: t("columns.wallet"),
+      cell: ({ getValue }) =>
+        getValue() && (
+          <div className="flex items-center">
+            <EvmAddress
+              address={getValue()}
+              prettyNames={false}
+              copyToClipboard={true}
+            >
+              <EvmAddressBalances address={getValue()} />
+            </EvmAddress>
+          </div>
+        ),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("email", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.email")}
-        </DataTableColumnHeader>
-      ),
-      cell: ({ renderValue }) => (
-        <DataTableColumnCell>{renderValue()}</DataTableColumnCell>
-      ),
+      header: t("columns.email"),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("role", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.role")}
-        </DataTableColumnHeader>
-      ),
+      header: t("columns.role"),
       cell: ({ renderValue }) => {
         const role = renderValue();
         const Icon = role ? icons[role] : null;
         return (
-          <DataTableColumnCell>
+          <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{t(`roles.${role as "admin" | "issuer" | "user"}`)}</span>
-          </DataTableColumnCell>
+          </>
         );
       },
       enableColumnFilter: true,
     }),
-    columnHelper.accessor("banned", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.status")}
-        </DataTableColumnHeader>
-      ),
-      cell: ({ getValue }) => {
-        const banned = getValue();
-        const status = banned ? "banned" : "active";
-        const Icon = icons[status];
-        return (
-          <DataTableColumnCell>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{t(`status.${status}`)}</span>
-          </DataTableColumnCell>
-        );
-      },
-      enableColumnFilter: false,
-    }),
+    columnHelper.accessor(
+      (row) => (row.banned ? t("status.banned") : t("status.active")),
+      {
+        header: t("columns.status"),
+        cell: ({ row }) => {
+          const { banned } = row.original;
+          const status = banned ? "banned" : "active";
+          const Icon = icons[status];
+          return (
+            <Badge
+              variant={banned ? "destructive" : "default"}
+              className={cn(
+                "bg-destructive/80 text-destructive-foreground",
+                !banned && "bg-success/80 text-success-foreground"
+              )}
+            >
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span>{t(`status.${status}`)}</span>
+            </Badge>
+          );
+        },
+      }
+    ),
     columnHelper.accessor("kyc_verified", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.kyc_status")}
-        </DataTableColumnHeader>
-      ),
+      header: t("columns.kyc_status"),
       cell: ({ getValue }) => {
         const verified = getValue();
         const status = verified ? "verified" : "notVerified";
         const Icon = icons[status];
         return (
-          <DataTableColumnCell>
+          <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
             <span>{t(`kyc_status.${status}`)}</span>
-          </DataTableColumnCell>
+          </>
         );
       },
       enableColumnFilter: false,
     }),
     columnHelper.accessor("lastActivity", {
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column}>
-          {t("columns.last_activity")}
-        </DataTableColumnHeader>
-      ),
+      header: t("columns.last_activity"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();
-        return (
-          <DataTableColumnCell>
-            {lastActivity
-              ? formatDate(lastActivity, { type: "distance" })
-              : "-"}
-          </DataTableColumnCell>
-        );
+        return lastActivity
+          ? formatDate(lastActivity, { type: "distance" })
+          : "-";
       },
       enableColumnFilter: false,
     }),
@@ -182,15 +151,44 @@ export function columns() {
       id: "actions",
       header: () => "",
       cell: ({ row }) => (
-        <DataTableRowActions detailUrl={`/platform/users/${row.original.id}`}>
-          {({ close }) => (
-            <>
-              <BanUserAction user={row.original} onComplete={close} />
-              <ChangeRoleAction user={row.original} onComplete={close} />
-              <UpdateKycStatusAction user={row.original} onComplete={close} />
-            </>
-          )}
-        </DataTableRowActions>
+        <DataTableRowActions
+          detailUrl={`/platform/users/${row.original.id}`}
+          actions={[
+            {
+              id: "ban-user",
+              label: row.original.banned ? "Unban User" : "Ban User",
+              component: ({ open, onOpenChange }) => (
+                <BanUserAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "change-role",
+              label: "Change Role",
+              component: ({ open, onOpenChange }) => (
+                <ChangeRoleAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+            {
+              id: "update-kyc-status",
+              label: "Update KYC Status",
+              component: ({ open, onOpenChange }) => (
+                <UpdateKycStatusAction
+                  user={row.original}
+                  open={open}
+                  onOpenChange={onOpenChange}
+                />
+              ),
+            },
+          ]}
+        />
       ),
       meta: {
         enableCsvExport: false,

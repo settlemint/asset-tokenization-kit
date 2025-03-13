@@ -46,6 +46,9 @@ export function CreateStablecoinForm({
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,
         }}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />

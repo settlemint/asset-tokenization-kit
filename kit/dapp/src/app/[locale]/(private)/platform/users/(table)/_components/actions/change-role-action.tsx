@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -25,12 +24,13 @@ import { toast } from "sonner";
 
 export function ChangeRoleAction({
   user,
-  onComplete,
+  open,
+  onOpenChange,
 }: {
   user: Awaited<ReturnType<typeof getUserList>>[number];
-  onComplete?: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "user");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -48,9 +48,8 @@ export function ChangeRoleAction({
         role: selectedRole as "user" | "issuer" | "admin",
       });
       toast.success("User role updated successfully");
-      setShowRoleDialog(false);
+      onOpenChange(false);
       router.refresh();
-      onComplete?.();
     } catch (error) {
       toast.error(
         `Failed to update role: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -62,20 +61,7 @@ export function ChangeRoleAction({
 
   return (
     <>
-      <DropdownMenuItem
-        onClick={(e) => {
-          e.preventDefault();
-          setShowRoleDialog(true);
-        }}
-        disabled={isLoading}
-      >
-        Change Role
-      </DropdownMenuItem>
-
-      <Dialog
-        open={showRoleDialog}
-        onOpenChange={(open) => !isLoading && setShowRoleDialog(open)}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Change User Role</DialogTitle>
@@ -103,11 +89,9 @@ export function ChangeRoleAction({
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowRoleDialog(false);
+              onClick={() => {
+                onOpenChange(false);
               }}
-              disabled={isLoading}
             >
               Cancel
             </Button>

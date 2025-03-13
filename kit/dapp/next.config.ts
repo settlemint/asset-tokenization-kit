@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
     reactCompiler: true,
+    authInterrupts: true,
   },
   output: "standalone",
 };

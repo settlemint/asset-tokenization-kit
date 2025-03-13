@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import type { getUserList } from "@/lib/queries/user/user-list";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
@@ -27,12 +26,13 @@ const UpdateKycStatusMutation = hasuraGraphql(`
 
 export function UpdateKycStatusAction({
   user,
-  onComplete,
+  open,
+  onOpenChange,
 }: {
   user: Awaited<ReturnType<typeof getUserList>>[number];
-  onComplete?: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [showDialog, setShowDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -47,9 +47,8 @@ export function UpdateKycStatusAction({
       });
 
       toast.success("KYC status updated successfully");
-      setShowDialog(false);
+      onOpenChange(false);
       router.refresh();
-      onComplete?.();
     } catch (error) {
       toast.error(
         `Failed to update KYC status: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -61,20 +60,7 @@ export function UpdateKycStatusAction({
 
   return (
     <>
-      <DropdownMenuItem
-        onClick={(e) => {
-          e.preventDefault();
-          setShowDialog(true);
-        }}
-        disabled={isLoading}
-      >
-        {user.kyc_verified ? "Remove KYC Verification" : "Verify KYC"}
-      </DropdownMenuItem>
-
-      <Dialog
-        open={showDialog}
-        onOpenChange={(open) => !isLoading && setShowDialog(open)}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -90,11 +76,9 @@ export function UpdateKycStatusAction({
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowDialog(false);
+              onClick={() => {
+                onOpenChange(false);
               }}
-              disabled={isLoading}
             >
               Cancel
             </Button>

@@ -18,7 +18,7 @@ const columnHelper = createColumnHelper<PermissionWithRoles>();
 export function columns({ address }: { address: Address }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.equities.permissions");
+  const t = useTranslations("admin.asset-permissions-tab");
 
   return [
     columnHelper.accessor("id", {
@@ -61,18 +61,36 @@ export function columns({ address }: { address: Address }) {
       ),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions>
-            <EditPermissionsForm
-              address={address}
-              account={row.original.id}
-              currentRoles={row.original.roles}
-            />
-            <RevokeAllPermissionsForm
-              address={address}
-              account={row.original.id}
-              currentRoles={row.original.roles}
-            />
-          </DataTableRowActions>
+          <DataTableRowActions
+            actions={[
+              {
+                id: "edit-permissions",
+                label: t("edit-form.trigger-label"),
+                component: ({ open, onOpenChange }) => (
+                  <EditPermissionsForm
+                    address={address}
+                    account={row.original.id}
+                    currentRoles={row.original.roles}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: "revoke-all-permissions",
+                label: t("revoke-all-form.trigger-label"),
+                component: ({ open, onOpenChange }) => (
+                  <RevokeAllPermissionsForm
+                    address={address}
+                    account={row.original.id}
+                    currentRoles={row.original.roles}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+            ]}
+          />
         );
       },
       meta: {

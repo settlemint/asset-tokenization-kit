@@ -11,9 +11,14 @@ import { ROLES, type Role, type RoleKey } from "@/lib/config/roles";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Roles() {
-  const { control } = useFormContext();
-  const t = useTranslations("admin.stablecoins.permissions.edit-form.roles");
+interface RolesProps {
+  currentRoles?: Role[];
+  onRolesChange?: (newRoles: Role[]) => void;
+}
+
+export function Roles({ currentRoles = [], onRolesChange }: RolesProps) {
+  const { control, getValues } = useFormContext();
+  const t = useTranslations("admin.asset-permissions-tab.edit-form.roles");
 
   return (
     <FormStep title={t("title")} description={t("description")}>

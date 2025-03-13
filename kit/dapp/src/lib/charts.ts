@@ -2,6 +2,7 @@ import {
   type Interval,
   eachDayOfInterval,
   eachHourOfInterval,
+  eachMonthOfInterval,
   format,
   isSameDay,
   isSameHour,
@@ -11,11 +12,12 @@ import {
   subDays,
   subMonths,
   subWeeks,
+  subYears,
 } from "date-fns";
 import { getDateFromTimestamp } from "./utils/date";
 
 export type TimeGranularity = "hour" | "day" | "month";
-export type IntervalType = "month" | "week" | "day";
+export type IntervalType = "year" | "month" | "week" | "day";
 export type AggregationType = "first" | "sum" | "count";
 export type AccumulationType = "total" | "max";
 
@@ -67,10 +69,7 @@ export function createTimeSeries<T extends DataPoint>(
     intervalType,
     intervalLength
   );
-  const ticks =
-    granularity === "hour"
-      ? eachHourOfInterval(interval)
-      : eachDayOfInterval(interval);
+  const ticks = getTicks(granularity, interval);
 
   // Initialize last valid values for each key
   const lastValidValues = new Map<keyof T, number>();
@@ -110,6 +109,19 @@ export function createTimeSeries<T extends DataPoint>(
   });
 }
 
+function getTicks(granularity: TimeGranularity, interval: Interval) {
+  switch (granularity) {
+    case "hour":
+      return eachHourOfInterval(interval);
+    case "day":
+      return eachDayOfInterval(interval);
+    case "month":
+      return eachMonthOfInterval(interval);
+    default: {
+      throw new Error("Invalid granularity");
+    }
+  }
+}
 export function getInterval(
   granularity: TimeGranularity,
   intervalType: IntervalType,
@@ -132,6 +144,9 @@ export function getInterval(
     case "day":
       start = subDays(roundedNow, intervalLength);
       break;
+    case "year":
+      start = subYears(roundedNow, intervalLength);
+      break;
     default:
       throw new Error(`Invalid interval type`);
   }
@@ -153,7 +168,6 @@ function isInTick(
     case "day":
       return isSameDay(timestampDate, tick);
     default: {
-      const _exhaustiveCheck: never = granularity;
       throw new Error("Invalid granularity");
     }
   }

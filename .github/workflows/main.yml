@@ -18,6 +18,9 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v6
 
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v5
+
       - name: Setup caches
         uses: namespacelabs/nscloud-cache-action@v1
         with:

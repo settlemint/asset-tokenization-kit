@@ -8,16 +8,18 @@ export function transferEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   from: Bytes,
   to: Bytes,
   value: BigInt,
-  decimals: number,
+  decimals: number
 ): TransferEvent {
   const transferEvent = new TransferEvent(id);
   transferEvent.eventName = EventName.Transfer;
   transferEvent.timestamp = timestamp;
   transferEvent.emitter = emitter;
   transferEvent.sender = sender;
+  transferEvent.assetType = assetType;
   transferEvent.from = from;
   transferEvent.to = to;
   transferEvent.value = toDecimals(value, decimals);

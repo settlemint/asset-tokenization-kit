@@ -19,7 +19,7 @@ export interface RevokeAllPermissionsFormProps {
 interface RevokeAllPermissionsFormPropsWithOpen
   extends RevokeAllPermissionsFormProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function RevokeAllPermissionsForm({
@@ -27,14 +27,14 @@ export function RevokeAllPermissionsForm({
   account,
   currentRoles,
   open,
-  setOpen,
+  onOpenChange,
 }: RevokeAllPermissionsFormPropsWithOpen) {
-  const t = useTranslations("admin.stablecoins.permissions.revoke-all-form");
+  const t = useTranslations("admin.asset-permissions-tab.revoke-all-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -42,7 +42,7 @@ export function RevokeAllPermissionsForm({
       <Form
         action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
-        onOpenChange={setOpen}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}

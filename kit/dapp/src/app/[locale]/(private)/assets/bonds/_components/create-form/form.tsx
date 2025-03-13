@@ -44,6 +44,9 @@ export function CreateBondForm({
           label: t("button-label"),
         }}
         defaultValues={{}}
+        onAnyFieldChange={({ clearErrors }) => {
+          clearErrors(["predictedAddress"]);
+        }}
       >
         <Basics />
         <Configuration />

@@ -7,14 +7,16 @@ export function roleRevokedEvent(
   timestamp: BigInt,
   emitter: Bytes,
   sender: Bytes,
+  assetType: string,
   role: Bytes,
-  account: Bytes,
+  account: Bytes
 ): RoleRevokedEvent {
   const roleRevokedEvent = new RoleRevokedEvent(id);
   roleRevokedEvent.eventName = EventName.RoleRevoked;
   roleRevokedEvent.timestamp = timestamp;
   roleRevokedEvent.emitter = emitter;
   roleRevokedEvent.sender = sender;
+  roleRevokedEvent.assetType = assetType;
   roleRevokedEvent.role = role;
   roleRevokedEvent.account = account;
   roleRevokedEvent.save();

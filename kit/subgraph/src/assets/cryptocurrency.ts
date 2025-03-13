@@ -49,6 +49,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.cryptocurrency,
       to.id,
       event.params.value,
       cryptoCurrency.decimals
@@ -130,6 +131,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.cryptocurrency,
       from.id,
       event.params.value,
       cryptoCurrency.decimals
@@ -223,6 +225,7 @@ export function handleTransfer(event: Transfer): void {
       event.block.timestamp,
       event.address,
       sender.id,
+      AssetType.cryptocurrency,
       from.id,
       to.id,
       event.params.value,
@@ -349,6 +352,7 @@ export function handleRoleGranted(event: RoleGranted): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.cryptocurrency,
     event.params.role,
     account.id
   );
@@ -443,6 +447,7 @@ export function handleRoleRevoked(event: RoleRevoked): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.cryptocurrency,
     event.params.role,
     account.id
   );
@@ -539,6 +544,7 @@ export function handleApproval(event: Approval): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.cryptocurrency,
     owner.id,
     spender.id,
     event.params.value,
@@ -590,6 +596,7 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
     event.block.timestamp,
     event.address,
     sender.id,
+    AssetType.cryptocurrency,
     event.params.role,
     event.params.previousAdminRole,
     event.params.newAdminRole

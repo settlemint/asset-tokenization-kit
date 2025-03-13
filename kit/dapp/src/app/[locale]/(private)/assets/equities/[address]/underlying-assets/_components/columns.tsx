@@ -1,29 +1,26 @@
 "use client";
 
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
+import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ComponentType } from "react";
 import { getAddress } from "viem";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export const icons: Record<string, ComponentType<{ className?: string }>> = {
-  blocked: XCircle,
-  unblocked: CheckCircle,
-};
-
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.stablecoins.holders");
+  const t = useTranslations("admin.asset-holders-tab");
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const tAssetStatus = useTranslations("asset-status");
 
   return [
     columnHelper.accessor("asset.id", {
@@ -56,20 +53,14 @@ export function columns() {
         variant: "numeric",
       },
     }),
-    columnHelper.accessor("blocked", {
+    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+      id: t("status-header"),
       header: t("status-header"),
-      cell: ({ getValue }) => {
-        const blocked: boolean = getValue();
-        const Icon = icons[blocked ? "blocked" : "unblocked"];
-        return (
-          <>
-            {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{blocked ? t("blocked-status") : t("active-status")}</span>
-          </>
-        );
+      cell: ({ row }) => {
+        return <AssetStatusPill assetBalance={row.original} />;
       },
     }),
-    columnHelper.accessor("account.lastActivity", {
+    columnHelper.accessor("lastActivity", {
       header: t("last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();

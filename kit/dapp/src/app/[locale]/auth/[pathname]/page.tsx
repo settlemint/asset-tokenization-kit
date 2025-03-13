@@ -1,10 +1,5 @@
 import { AuthCard } from "@daveyplate/better-auth-ui";
-import { authViewPaths } from "@daveyplate/better-auth-ui/server";
 import { getTranslations } from "next-intl/server";
-
-export function generateStaticParams() {
-  return Object.values(authViewPaths).map((pathname) => ({ pathname }));
-}
 
 export default async function AuthPage({
   params,

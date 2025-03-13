@@ -30,7 +30,9 @@ export const CreateFundSchema = z.object({
         .min(0)
         .max(100 * 100) // 100 bps = 1%,
     ),
-  predictedAddress: z.address().refine(isAddressAvailable),
+  predictedAddress: z.address().refine(isAddressAvailable, {
+    message: "fund.duplicate",
+  }),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

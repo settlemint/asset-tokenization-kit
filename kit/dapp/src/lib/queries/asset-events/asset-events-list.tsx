@@ -1,6 +1,9 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import { AssetEventFragment } from "@/lib/queries/asset-events/asset-events-fragments";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import type { Address } from "viem";
@@ -55,7 +58,7 @@ import {
 /**
  * GraphQL query to fetch asset events
  */
-const AssetEventsList = theGraphGraphql(
+const AssetEventsList = theGraphGraphqlKit(
   `
 query AssetEventsList($first: Int, $skip: Int, $where: AssetEvent_filter) {
   assetEvents(
@@ -147,7 +150,7 @@ export const getAssetEventsList = cache(
     }
 
     const events = await fetchAllTheGraphPages(async (first, skip) => {
-      const result = await theGraphClient.request(AssetEventsList, {
+      const result = await theGraphClientKit.request(AssetEventsList, {
         first,
         skip,
         where,
@@ -307,6 +310,7 @@ export const getAssetEventsList = cache(
         event: validatedEvent.__typename,
         timestamp: formatDate(validatedEvent.timestamp),
         asset: validatedEvent.emitter.id,
+        assetType: validatedEvent.assetType,
         sender: validatedEvent.sender?.id || "System",
         details: validatedEvent,
         transactionHash: validatedEvent.id.split("-")[0],

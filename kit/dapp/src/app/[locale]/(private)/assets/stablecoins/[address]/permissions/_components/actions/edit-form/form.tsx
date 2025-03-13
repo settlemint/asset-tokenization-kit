@@ -19,7 +19,7 @@ export interface EditPermissionsFormProps {
 
 interface EditPermissionsFormPropsWithOpen extends EditPermissionsFormProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function EditPermissionsForm({
@@ -27,14 +27,14 @@ export function EditPermissionsForm({
   account,
   currentRoles,
   open,
-  setOpen,
+  onOpenChange,
 }: EditPermissionsFormPropsWithOpen) {
-  const t = useTranslations("admin.stablecoins.permissions.edit-form");
+  const t = useTranslations("admin.asset-permissions-tab.edit-form");
 
   return (
     <FormSheet
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
       triggerLabel={t("trigger-label")}
       title={t("title")}
       description={t("description")}
@@ -42,7 +42,7 @@ export function EditPermissionsForm({
       <Form
         action={updateRoles}
         resolver={zodResolver(UpdateRolesSchema)}
-        onOpenChange={setOpen}
+        onOpenChange={onOpenChange}
         buttonLabels={{
           label: t("button-label"),
         }}

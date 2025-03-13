@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
+import { Recipients } from "./steps/recipients";
 import { Summary } from "./steps/summary";
 
 interface MintFormProps {
@@ -54,6 +55,7 @@ export function MintForm({
         }}
       >
         <Amount />
+        <Recipients />
         <Summary address={address} />
       </Form>
     </FormSheet>

@@ -25,7 +25,11 @@ interface FormButtonProps {
   onPreviousStep: () => void;
   /** Handler for navigating to the next step */
   onNextStep: () => void;
+  /** Handler for navigating to the last step */
+  onLastStep?: () => void;
   labels?: ButtonLabels;
+  hideButtons?: boolean;
+  isSecurityDialogOpen?: boolean;
 }
 
 /**
@@ -37,18 +41,23 @@ export function FormButton({
   onPreviousStep,
   totalSteps,
   onNextStep,
+  onLastStep,
   labels = {
     label: undefined,
     submittingLabel: undefined,
     processingLabel: undefined,
   },
+  hideButtons = false,
+  isSecurityDialogOpen = false,
 }: FormButtonProps) {
   const {
     formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
   const t = useTranslations("components.form.button");
-
+  if (hideButtons) {
+    return null;
+  }
   const defaultLabels = {
     label: t("send-transaction"),
     submittingLabel: t("sending-transaction"),
@@ -72,6 +81,9 @@ export function FormButton({
         </>
       );
     }
+    if (isSecurityDialogOpen) {
+      return <Loader2 size={16} className="animate-spin min-w-20" />;
+    }
     return isLastStep ? finalLabels.label : t("next");
   };
 
@@ -92,9 +104,9 @@ export function FormButton({
       )}
 
       <Button
-        type={isLastStep ? "submit" : "button"}
+        type={isLastStep ? (onLastStep ? "button" : "submit") : "button"}
         variant="default"
-        onClick={isLastStep ? undefined : onNextStep}
+        onClick={isLastStep ? onLastStep : onNextStep}
         aria-label={isLastStep ? finalLabels.label : t("next")}
         className={cn(
           currentStep === 0 ? "ml-auto" : "",

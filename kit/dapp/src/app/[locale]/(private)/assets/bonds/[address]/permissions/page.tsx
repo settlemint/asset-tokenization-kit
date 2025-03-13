@@ -20,7 +20,7 @@ export async function generateMetadata({
   const bond = await getBondDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.bonds.permissions",
+    namespace: "admin.asset-permissions-tab",
   });
 
   return {
@@ -37,7 +37,7 @@ export default async function BondTokenPermissionsPage({ params }: PageProps) {
   const { address } = await params;
   const bond = await getBondDetail({ address });
   const assetDetail = await getAssetDetail({ address });
-  const t = await getTranslations("admin.bonds.permissions");
+  const t = await getTranslations("admin.asset-permissions-tab");
 
   return (
     <>
