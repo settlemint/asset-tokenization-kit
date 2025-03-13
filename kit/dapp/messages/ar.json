@@ -24,12 +24,12 @@
           "amount-label": "المبلغ",
           "asset-label": "الأصل",
           "burn-description": "تفاصيل عملية الحرق",
-          "burn-title": "حرق",
-          "description": "تحقق من تفاصيل عملية الحرق قبل المتابعة.",
-          "title": "راجع وأكد عملية الحرق"
+          "burn-title": "احرق",
+          "description": "تحقق من تفاصيل الحرق الخاصة بك قبل المتابعة.",
+          "title": "راجع وأكد الحرق"
         },
-        "title": "حرق",
-        "trigger-label": "حرق"
+        "title": "احرق",
+        "trigger-label": "احرق"
       },
       "charts": {
         "asset-statistics-title": "إحصائيات الأصول"
@@ -101,23 +101,23 @@
       "grant-role-form": {
         "address": {
           "address-label": "عنوان محفظة الإدارة",
-          "description": "ابحث عن مستخدم باسمهم أو بريدهم الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
+          "description": "ابحث عن مستخدم بواسطة اسمه أو بريده الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
           "manual-placeholder": "0x0000000000000000000000000000000000000000",
           "manual-toggle": "أدخل العنوان يدويًا...",
           "search-placeholder": "ابحث عن مستخدم",
           "search-toggle": "ابحث عن مستخدم بدلاً من ذلك...",
-          "title": "اختر مسؤول جديد"
+          "title": "اختر مديرًا جديدًا"
         },
         "button-label": "تعيين الأدوار",
         "description": "تعيين الأذونات الإدارية لمستخدم جديد.",
         "roles": {
-          "description": "اختر الأدوار التي ترغب في منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
-          "title": "اختر أدوار المسؤول"
+          "description": "اختر الأدوار التي ترغب في منحها للمدير الجديد. يجب تحديد دور واحد على الأقل.",
+          "title": "اختر أدوار المدير"
         },
         "summary": {
-          "admin-address-label": "عنوان المسؤول",
+          "admin-address-label": "عنوان المدير",
           "asset-label": "الأصل",
-          "description": "تحقق من تفاصيل منح الدور قبل المتابعة.",
+          "description": "تحقق من تفاصيل منح الدور الخاص بك قبل المتابعة.",
           "grant-description": "تفاصيل عملية منح الدور",
           "grant-title": "منح الدور",
           "roles-label": "الأدوار",
@@ -125,69 +125,16 @@
         },
         "title": "منح الدور"
       },
-      "holders": {
-        "actions-header": "الإجراءات",
-        "balance-header": "الرصيد",
-        "block-form": {
-          "block-button-label": "حظر المستخدم",
-          "block-description": "منع هذا المستخدم من إجراء أي معاملات أو تفاعلات.",
-          "block-title": "حظر معاملات المستخدم",
-          "block-trigger-label": "حظر",
-          "summary": {
-            "asset-label": "الأصل",
-            "block-title": "حظر",
-            "current-state-label": "الحالة الحالية",
-            "description": "تحقق من تفاصيل عملية الحظر الخاصة بك قبل المتابعة.",
-            "operation-description": "تفاصيل عملية الحظر",
-            "state-active": "نشط",
-            "state-blocked": "محظور",
-            "target-state-label": "الحالة المستهدفة",
-            "title": "راجع ووافق على عملية الحظر",
-            "unblock-title": "إلغاء الحظر"
-          },
-          "unblock-button-label": "إلغاء حظر المستخدم",
-          "unblock-description": "استعادة قدرة هذا المستخدم على إجراء المعاملات والتفاعل.",
-          "unblock-title": "استعادة معاملات المستخدم",
-          "unblock-trigger-label": "إلغاء الحظر"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "المبلغ",
-            "balance-description": "الرصيد المتاح: {balance} مجمد حاليًا: {frozen}",
-            "description": "أدخل المبلغ الذي ترغب في تجميده.",
-            "title": "أدخل المبلغ"
-          },
-          "button-label": "تجميد الأموال",
-          "description": "تقييد وصول المستخدم إلى أمواله مؤقتًا.",
-          "summary": {
-            "amount-label": "المبلغ",
-            "asset-label": "الأصل",
-            "description": "تحقق من تفاصيل عملية التجميد الخاصة بك قبل المتابعة.",
-            "freeze-title": "تجميد",
-            "operation-description": "تفاصيل عملية التجميد",
-            "title": "راجع ووافق على عملية التجميد"
-          },
-          "title": "تقييد أموال المستخدم",
-          "trigger-label": "تجميد"
-        },
-        "frozen-header": "مجمد",
-        "holders-page-description": "عرض المحافظ التي تحتفظ بـ {name}، بما في ذلك الأرصدة والحالات.",
-        "holders-page-title": "{name} حاملي",
-        "holder-type-header": "النوع",
-        "last-activity-header": "آخر نشاط",
-        "status-header": "الحالة",
-        "wallet-header": "المحفظة"
-      },
       "manage": {
         "actions": {
           "mint": "سك",
-          "burn": "حرق",
-          "pause": "إيقاف مؤقت",
-          "unpause": "استئناف",
+          "burn": "احرق",
+          "pause": "أوقف",
+          "unpause": "استأنف",
           "grant-role": "منح الدور",
           "top-up": "زيادة الأصل الأساسي",
           "withdraw": "سحب الأصل الأساسي",
-          "mature": "نضوج"
+          "mature": "استحق"
         },
         "manage": "إدارة"
       },
@@ -199,10 +146,10 @@
         },
         "recipients": {
           "title": "اختر المستلمين",
-          "description": "اختر من سيستلم الرموز المميزة المسكوكة"
+          "description": "اختر من سيستلم الرموز المسكوكة"
         },
         "button-label": "سك الأصول",
-        "description": "إصدار رموز جديدة لزيادة المعروض المتداول من السند.",
+        "description": "إصدار رموز جديدة لزيادة المعروض المتداول للسند.",
         "summary": {
           "amount-label": "المبلغ",
           "asset-label": "الأصل",
@@ -237,57 +184,13 @@
           "title": "استئناف معاملات السند"
         }
       },
-      "permissions": {
-        "actions-header": "الإجراءات",
-        "edit-form": {
-          "button-label": "حفظ الأذونات",
-          "description": "تحديث الأذونات ومستويات الوصول المخصصة لهذا المستخدم.",
-          "roles": {
-            "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
-            "title": "اختر أدوار المستخدم"
-          },
-          "summary": {
-            "current-roles-label": "الأدوار الحالية",
-            "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
-            "new-roles-label": "الأدوار الجديدة",
-            "operation-description": "تفاصيل عملية تحديث الأدوار",
-            "title": "راجع ووافق على الأدوار الجديدة",
-            "update-title": "تحديث الأدوار",
-            "user-label": "المستخدم"
-          },
-          "title": "تعديل أذونات المستخدم",
-          "trigger-label": "تحرير الأدوار"
-        },
-        "last-activity-header": "آخر نشاط",
-        "page-description": "إدارة أدوار المستخدم وحقوق الوصول لهذا السند.",
-        "page-title": "أذونات السند",
-        "permissions-page-description": "إدارة أدوار المستخدم وحقوق الوصول لـ {name}.",
-        "permissions-page-title": "{name} الأذونات",
-        "revoke-all-form": {
-          "button-label": "إلغاء الوصول",
-          "description": "إلغاء وصول هذا المستخدم وأذوناته بالكامل.",
-          "summary": {
-            "description": "تحقق من التفاصيل قبل المتابعة. ستلغي هذه العملية جميع الأذونات للمستخدم.",
-            "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
-            "revoke-title": "إلغاء جميع",
-            "roles-to-revoke-label": "الأدوار التي سيتم إلغاؤها",
-            "title": "راجع ووافق",
-            "user-label": "المستخدم"
-          },
-          "title": "إزالة جميع وصول المستخدم",
-          "trigger-label": "إلغاء الكل"
-        },
-        "roles-header": "الأدوار",
-        "table-title": "الأذونات",
-        "wallet-header": "المحفظة"
-      },
       "related-actions": {
         "decrease-supply": {
           "description": "يمكن لمدير السندات تقليل المعروض الكلي من خلال استرداد السند عند الاستحقاق أو برامج الشراء المبكر.",
           "title": "استرداد السندات"
         },
         "increase-supply": {
-          "description": "يمكن لمدير السندات إصدار سندات جديدة من خلال الإصدار الأولي أو إصدار إضافي بقيمة اسمية محددة وتاريخ استحقاق.",
+          "description": "يمكن لمدير السندات إصدار سندات جديدة من خلال الإصدار الأولي أو إصدار إضافي بقيمة اسمية محددة وموعد استحقاق.",
           "title": "إصدار السندات"
         },
         "title": "الإجراءات ذات الصلة"
@@ -304,24 +207,24 @@
         "public-status": "عام",
         "related-actions": {
           "issue-new": {
-            "description": "إنشاء وإطلاق سند جديد مع تاريخ استحقاق محدد، ومعدلات كوبون، وقيمة اسمية. تسهيل إصدار السندات مع مدفوعات فائدة آلية وجداول استرداد.",
+            "description": "إنشاء وإطلاق سند جديد مع موعد استحقاق محدد، معدلات كوبون، وقيمة اسمية. تسهيل إصدار السندات مع مدفوعات فائدة آلية وجداول استرداد.",
             "title": "إصدار سند جديد"
           },
           "mechanics": {
             "button": "تعلم المزيد",
-            "description": "تعلم كيفية إدارة معلمات السند، وتوزيعات الفائدة، وتواريخ الاستحقاق، وعمليات الاسترداد للأوراق المالية ذات الدخل الثابت.",
+            "description": "تعلم كيفية إدارة معلمات السند، توزيعات الفائدة، تواريخ الاستحقاق، وعمليات الاسترداد للأوراق المالية ذات الدخل الثابت.",
             "title": "ميكانيكا السندات"
           },
           "title": "الإجراءات ذات الصلة",
           "usecases": {
             "button": "استكشاف",
-            "description": "استكشاف التطبيقات في أسواق الدخل الثابت، من الديون الشركات إلى المنتجات المهيكلة. زيادة الكفاءة في مدفوعات الفائدة، وإدارة الاستحقاق، والامتثال التنظيمي.",
+            "description": "استكشاف التطبيقات في أسواق الدخل الثابت، من الديون الشركات إلى المنتجات المهيكلة. زيادة الكفاءة في مدفوعات الفائدة، إدارة الاستحقاق، والامتثال التنظيمي.",
             "title": "حالات استخدام السندات"
           }
         },
         "status-header": "الحالة",
         "symbol-header": "الرمز",
-        "topinfo-description": "تمثل السندات الرقمية الأوراق المالية التقليدية ذات الدخل الثابت بشكل آمن على البلوكشين، مدعومة بضمانات من العالم الحقيقي. تجمع بين شفافية البلوكشين وعوائد متوقعة، واسترداد عند الاستحقاق، وتوزيع آلي للعائدات. يضمن هذا الأصل السند إصدارًا آمنًا، وإدارة دقيقة للاستحقاق، وقدرات امتثال شاملة، وعمليات استرداد صديقة للمستثمر مصممة خصيصًا للمؤسسات المالية.",
+        "topinfo-description": "تمثل السندات الرقمية الأوراق المالية التقليدية ذات الدخل الثابت بشكل آمن على البلوكشين، مدعومة بضمانات حقيقية. تجمع بين شفافية البلوكشين وعوائد متوقعة، واسترداد عند الاستحقاق، وتوزيع آلي للعائدات. يضمن هذا الأصل السند إصدارًا آمنًا، وإدارة دقيقة للاستحقاق، وقدرات امتثال شاملة، وعمليات استرداد صديقة للمستثمرين مصممة خصيصًا للمؤسسات المالية.",
         "topinfo-title": "أصل أمان ذو دخل ثابت رقمي",
         "total-supply-header": "إجمالي المعروض"
       },
@@ -334,7 +237,7 @@
       "top-up-form": {
         "trigger-label": "إعادة تعبئة",
         "title": "إعادة تعبئة الأصل الأساسي",
-        "description": "أضف المزيد من الأصل الأساسي إلى سندك",
+        "description": "إضافة المزيد من الأصل الأساسي إلى سندك",
         "button-label": "إعادة تعبئة",
         "steps": {
           "amount": {
@@ -393,16 +296,16 @@
         }
       },
       "mature-form": {
-        "trigger-label": "استحق",
+        "trigger-label": "استحقاق",
         "title": "استحقاق السند",
-        "description": "نضج سندك واستلم الأصل الأساسي",
-        "button-label": "نضج السند",
+        "description": "قم بإنضاج السند الخاص بك واستلم الأصل الأساسي",
+        "button-label": "إنضاج السند",
         "summary": {
-          "title": "راجع وأكد النضج",
-          "description": "تحقق من تفاصيل نضج سندك قبل المتابعة.",
-          "mature-title": "نضج",
-          "mature-description": "تفاصيل نضج السند",
-          "asset-label": "سند"
+          "title": "راجع وأكد تاريخ الاستحقاق",
+          "description": "تحقق من تفاصيل تاريخ استحقاق السند الخاص بك قبل المتابعة.",
+          "mature-title": "إنضاج",
+          "mature-description": "تفاصيل تاريخ استحقاق السند",
+          "asset-label": "السند"
         }
       }
     },
@@ -420,12 +323,12 @@
           "amount-label": "المبلغ",
           "asset-label": "الأصل",
           "burn-description": "تفاصيل عملية الحرق",
-          "burn-title": "حرق",
-          "description": "تحقق من تفاصيل حرقك قبل المتابعة.",
-          "title": "راجع وأكد الحرق"
+          "burn-title": "احرق",
+          "description": "تحقق من تفاصيل عملية الحرق الخاصة بك قبل المتابعة.",
+          "title": "راجع وأكد عملية الحرق"
         },
-        "title": "حرق",
-        "trigger-label": "حرق"
+        "title": "احرق",
+        "trigger-label": "احرق"
       },
       "charts": {
         "asset-statistics-title": "إحصائيات الأصول"
@@ -475,7 +378,7 @@
         "creator": "المنشئ",
         "cryptocurrency-details-description": "تفاصيل العملة المشفرة",
         "decimals": "الأرقام العشرية",
-        "details-page-description": "استكشف البيانات الشاملة والقياسات لـ {name}.",
+        "details-page-description": "استكشف بيانات شاملة ومقاييس لـ {name}.",
         "details-page-title": "{name} تفاصيل",
         "name": "الاسم",
         "ownership-concentration": "تركيز الملكية",
@@ -490,8 +393,8 @@
       },
       "grant-role-form": {
         "address": {
-          "address-label": "عنوان محفظة الإدارة",
-          "description": "ابحث عن مستخدم باسمهم أو بريدهم الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
+          "address-label": "عنوان محفظة المسؤول",
+          "description": "ابحث عن مستخدم بواسطة اسمه أو بريده الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
           "manual-placeholder": "0x0000000000000000000000000000000000000000",
           "manual-toggle": "أدخل العنوان يدويًا...",
           "search-placeholder": "ابحث عن مستخدم",
@@ -501,29 +404,19 @@
         "button-label": "تعيين الأدوار",
         "description": "تعيين الأذونات الإدارية لمستخدم جديد.",
         "roles": {
-          "description": "اختر الأدوار التي ترغب في منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
+          "description": "اختر الأدوار التي سيتم منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
           "title": "اختر أدوار المسؤول"
         },
         "summary": {
           "admin-address-label": "عنوان المسؤول",
           "asset-label": "الأصل",
-          "description": "تحقق من تفاصيل منح دورك قبل المتابعة.",
+          "description": "تحقق من تفاصيل منح الدور الخاص بك قبل المتابعة.",
           "grant-description": "تفاصيل عملية منح الدور",
           "grant-title": "منح الدور",
           "roles-label": "الأدوار",
           "title": "راجع وأكد منح الدور"
         },
         "title": "منح الدور"
-      },
-      "holders": {
-        "balance-header": "الرصيد",
-        "frozen-header": "مجمد",
-        "holders-page-description": "عرض المحافظ التي تحمل {name}، بما في ذلك الأرصدة والحالات.",
-        "holders-page-title": "حاملو {name}",
-        "holder-type-header": "النوع",
-        "last-activity-header": "آخر نشاط",
-        "status-header": "الحالة",
-        "wallet-header": "محفظة"
       },
       "manage": {
         "actions": {
@@ -547,57 +440,13 @@
         "summary": {
           "amount-label": "المبلغ",
           "asset-label": "الأصل",
-          "description": "تحقق من تفاصيل سكّك قبل المتابعة.",
+          "description": "تحقق من تفاصيل عملية السك الخاصة بك قبل المتابعة.",
           "mint-description": "تفاصيل عملية السك",
           "mint-title": "سك",
           "title": "راجع وأكد السك"
         },
         "title": "سك",
         "trigger-label": "سك"
-      },
-      "permissions": {
-        "actions-header": "الإجراءات",
-        "edit-form": {
-          "button-label": "حفظ الأذونات",
-          "description": "تحديث الأذونات ومستويات الوصول المعينة لهذا المستخدم.",
-          "roles": {
-            "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
-            "title": "اختر أدوار المستخدم"
-          },
-          "summary": {
-            "current-roles-label": "الأدوار الحالية",
-            "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
-            "new-roles-label": "الأدوار الجديدة",
-            "operation-description": "تفاصيل عملية تحديث الأدوار",
-            "title": "راجع ووافق على الأدوار الجديدة",
-            "update-title": "تحديث الأدوار",
-            "user-label": "المستخدم"
-          },
-          "title": "تعديل أذونات المستخدم",
-          "trigger-label": "تحرير الأدوار"
-        },
-        "last-activity-header": "آخر نشاط",
-        "page-description": "إدارة الأذونات لعملة {name} المشفرة",
-        "page-title": "أذونات العملة المشفرة",
-        "permissions-page-description": "إدارة أدوار المستخدمين وحقوق الوصول لـ {name}.",
-        "permissions-page-title": "أذونات {name}",
-        "revoke-all-form": {
-          "button-label": "إلغاء الوصول",
-          "description": "إلغاء وصول هذا المستخدم وأذوناته بالكامل.",
-          "summary": {
-            "description": "تحقق من التفاصيل قبل المتابعة. ستؤدي هذه العملية إلى إلغاء جميع الأذونات للمستخدم.",
-            "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
-            "revoke-title": "إلغاء الكل",
-            "roles-to-revoke-label": "الأدوار التي سيتم إلغاؤها",
-            "title": "مراجعة وتأكيد",
-            "user-label": "المستخدم"
-          },
-          "title": "إزالة جميع وصول المستخدم",
-          "trigger-label": "إلغاء الكل"
-        },
-        "roles-header": "الأدوار",
-        "table-title": "الأذونات",
-        "wallet-header": "المحفظة"
       },
       "related-actions": {
         "increase-supply": {
@@ -634,7 +483,7 @@
           }
         },
         "symbol-header": "الرمز",
-        "topinfo-description": "أصول العملات المشفرة هي أدوات رقمية قابلة للتخصيص تقدم سكًا محكمًا، وأمانًا قويًا، وامتثالًا كاملًا للوائح، مما يجعلها مثالية للاستخدام المؤسسي. إنها تبسط العمليات المالية من خلال المعاملات القابلة للبرمجة، وزيادة الشفافية، والمعاملات المدمجة لتحسين قابلية الاستخدام. تشمل الميزات الرئيسية إدارة الوصول المعتمدة على الأدوار، والإصدار الآمن، وسهولة التكامل في عمليات الدفع المؤسسية.",
+        "topinfo-description": "أصول العملات المشفرة هي أدوات رقمية قابلة للتخصيص تقدم سكًا محكمًا، وأمانًا قويًا، وامتثالًا كاملًا للوائح، مما يجعلها مثالية للاستخدام المؤسسي. إنها تبسط العمليات المالية من خلال المعاملات القابلة للبرمجة، وزيادة الشفافية، والمعاملات المدمجة لتحسين قابلية الاستخدام. تشمل الميزات الرئيسية إدارة الوصول المعتمدة على الأدوار، والإصدار الآمن، والتكامل السهل في عمليات الدفع المؤسسية.",
         "topinfo-title": "أصل رقمي قابل للتخصيص وآمن",
         "total-supply-header": "إجمالي العرض"
       },
@@ -721,7 +570,7 @@
           "asset-label": "الأصل",
           "burn-description": "تفاصيل عملية الحرق",
           "burn-title": "حرق",
-          "description": "تحقق من تفاصيل حرقك قبل المتابعة.",
+          "description": "تحقق من تفاصيل الحرق قبل المتابعة.",
           "title": "راجع وأكد الحرق"
         },
         "title": "حرق",
@@ -746,7 +595,7 @@
         "configuration": {
           "category-blend-equity": "دمج الأسهم",
           "category-communication-services": "خدمات الاتصال",
-          "category-consumer-discretionary": "السلع الاستهلاكية غير الأساسية",
+          "category-consumer-discretionary": "السلع الاستهلاكية الكمالية",
           "category-consumer-staples": "السلع الاستهلاكية الأساسية",
           "category-convertible-preferred-stock": "أسهم مفضلة قابلة للتحويل",
           "category-cumulative-preferred-stock": "أسهم مفضلة تراكمية",
@@ -755,7 +604,7 @@
           "category-dual-class-shares": "أسهم الفئة المزدوجة",
           "category-emerging-market-equity": "أسهم السوق الناشئة",
           "category-energy": "الطاقة",
-          "category-esop-shares": "أسهم خطة ملكية الموظفين (ESOP)",
+          "category-esop-shares": "أسهم خطة ملكية الأسهم للموظفين (ESOP)",
           "category-financials": "المالية",
           "category-frontier-market-equity": "أسهم السوق الحدودية",
           "category-global-equity": "الأسهم العالمية",
@@ -765,7 +614,7 @@
           "category-income-equity": "أسهم الدخل",
           "category-industrials": "الصناعات",
           "category-international-equity": "الأسهم الدولية",
-          "category-large-cap-equity": "الأسهم ذات القيمة الكبيرة",
+          "category-large-cap-equity": "أسهم الشركات الكبيرة",
           "category-leveraged-buyouts": "الاستحواذات بالرفع المالي (LBOs)",
           "category-materials": "المواد",
           "category-mezzanine-financing": "التمويل الهامشي",
@@ -787,21 +636,21 @@
           "class-geographic-equity": "الأسهم الجغرافية",
           "class-investment-stage-private-equity": "مرحلة الاستثمار (الأسهم الخاصة)",
           "class-investment-style-equity": "أسلوب الاستثمار في الأسهم",
-          "class-market-capitalization-equity": "أسهم القيمة السوقية",
+          "class-market-capitalization-equity": "أسهم رأس المال السوقي",
           "class-preferred-equity": "الأسهم المفضلة",
           "class-sector-industry-equity": "أسهم القطاع/الصناعة",
           "class-special-classes-equity": "فئات خاصة من الأسهم",
           "description": "تكوين تفاصيل تصنيف الأسهم",
           "equity-category-label": "فئة الأسهم",
           "equity-class-label": "فئة الأسهم",
-          "title": "التكوين"
+          "title": "الإعدادات"
         },
         "description": "إصدار أسهم جديدة على البلوكشين",
         "summary": {
-          "asset-basics-description": "معلومات وإعدادات الأصول الأساسية.",
+          "asset-basics-description": "معلومات وأساسيات الأصول.",
           "asset-basics-title": "أساسيات الأصول",
-          "category-blend-equity": "أسهم الخلط",
-          "category-communication-services": "خدمات الاتصالات",
+          "category-blend-equity": "أسهم مختلطة",
+          "category-communication-services": "خدمات الاتصال",
           "category-consumer-discretionary": "السلع الاستهلاكية غير الأساسية",
           "category-consumer-staples": "السلع الاستهلاكية الأساسية",
           "category-convertible-preferred-stock": "الأسهم المفضلة القابلة للتحويل",
@@ -811,7 +660,7 @@
           "category-dual-class-shares": "أسهم الفئة المزدوجة",
           "category-emerging-market-equity": "أسهم السوق الناشئة",
           "category-energy": "الطاقة",
-          "category-esop-shares": "أسهم خطة ملكية الموظفين (ESOP)",
+          "category-esop-shares": "أسهم خطة ملكية الأسهم للموظفين (ESOP)",
           "category-financials": "المالية",
           "category-frontier-market-equity": "أسهم السوق الحدودية",
           "category-global-equity": "الأسهم العالمية",
@@ -821,7 +670,7 @@
           "category-income-equity": "أسهم الدخل",
           "category-industrials": "الصناعات",
           "category-international-equity": "الأسهم الدولية",
-          "category-large-cap-equity": "الأسهم ذات القيمة الكبيرة",
+          "category-large-cap-equity": "أسهم الشركات الكبيرة",
           "category-leveraged-buyouts": "الاستحواذات بالرفع المالي (LBOs)",
           "category-materials": "المواد",
           "category-mezzanine-financing": "التمويل الهامشي",
@@ -843,19 +692,19 @@
           "class-geographic-equity": "الأسهم الجغرافية",
           "class-investment-stage-private-equity": "مرحلة الاستثمار (الأسهم الخاصة)",
           "class-investment-style-equity": "أسلوب الاستثمار في الأسهم",
-          "class-market-capitalization-equity": "أسهم القيمة السوقية",
+          "class-market-capitalization-equity": "أسهم رأس المال السوقي",
           "class-preferred-equity": "الأسهم المفضلة",
           "class-sector-industry-equity": "أسهم القطاع/الصناعة",
           "class-special-classes-equity": "فئات خاصة من الأسهم",
           "configuration-description": "تفاصيل تصنيف الأسهم.",
-          "configuration-title": "التكوين",
+          "configuration-title": "الإعدادات",
           "decimals-label": "الأرقام العشرية",
-          "description": "راجع ووافق على تفاصيل أسهمك الجديدة قبل الإنشاء.",
+          "description": "راجع وأكد تفاصيل أسهمك الجديدة قبل الإنشاء.",
           "equity-category-label": "فئة الأسهم",
           "equity-class-label": "فئة الأسهم",
           "isin-label": "ISIN",
-          "name-label": "الاسم",
-          "symbol-label": "الرمز",
+          "name-label": "اسم",
+          "symbol-label": "رمز",
           "title": "راجع ووافق",
           "error-duplicate": "يوجد سهم بنفس التفاصيل بالفعل. يرجى المحاولة مرة أخرى مع معلمة واحدة مختلفة على الأقل."
         },
@@ -866,16 +715,16 @@
         "contract-address": "عنوان العقد",
         "creator": "المنشئ",
         "decimals": "الأرقام العشرية",
-        "details-page-description": "استكشف البيانات الشاملة والمقاييس لـ {name}.",
+        "details-page-description": "استكشف البيانات الشاملة والقياسات لـ {name}.",
         "details-page-title": "{name} التفاصيل",
         "equity-details-description": "تفاصيل السهم",
         "isin": "ISIN",
-        "name": "الاسم",
+        "name": "اسم",
         "ownership-concentration": "تركيز الملكية",
         "ownership-concentration-info": "النسبة المئوية المملوكة من قبل أكبر 5 حائزين",
-        "symbol": "الرمز",
-        "total-supply": "الإجمالي المتاح",
-        "total-supply-info": "الإجمالي المتاح من الرمز"
+        "symbol": "رمز",
+        "total-supply": "الإجمالي المعروض",
+        "total-supply-info": "الإجمالي المعروض من الرمز"
       },
       "events": {
         "events-page-description": "تتبع جميع الأحداث المتعلقة بسهم {name}.",
@@ -908,64 +757,11 @@
         },
         "title": "منح الدور"
       },
-      "holders": {
-        "actions-header": "الإجراءات",
-        "balance-header": "الرصيد",
-        "block-form": {
-          "block-button-label": "حظر المستخدم",
-          "block-description": "منع هذا المستخدم من إجراء أي معاملات أو تفاعلات.",
-          "block-title": "حظر معاملات المستخدم",
-          "block-trigger-label": "حظر",
-          "summary": {
-            "asset-label": "الأصل",
-            "block-title": "حظر",
-            "current-state-label": "الحالة الحالية",
-            "description": "تحقق من تفاصيل عملية الحظر الخاصة بك قبل المتابعة.",
-            "operation-description": "تفاصيل عملية الحظر",
-            "state-active": "نشط",
-            "state-blocked": "محظور",
-            "target-state-label": "الحالة المستهدفة",
-            "title": "راجع ووافق على عملية الحظر",
-            "unblock-title": "إلغاء الحظر"
-          },
-          "unblock-button-label": "إلغاء حظر المستخدم",
-          "unblock-description": "استعادة قدرة هذا المستخدم على إجراء المعاملات والتفاعل.",
-          "unblock-title": "استعادة معاملات المستخدم",
-          "unblock-trigger-label": "إلغاء الحظر"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "المبلغ",
-            "balance-description": "الرصيد المتاح: {balance} مجمد حاليًا: {frozen}",
-            "description": "أدخل المبلغ الذي ترغب في تجميده.",
-            "title": "أدخل المبلغ"
-          },
-          "button-label": "تجميد الأموال",
-          "description": "تقييد وصول المستخدم إلى أمواله مؤقتًا.",
-          "summary": {
-            "amount-label": "المبلغ",
-            "asset-label": "الأصل",
-            "description": "تحقق من تفاصيل عملية التجميد الخاصة بك قبل المتابعة.",
-            "freeze-title": "تجميد",
-            "operation-description": "تفاصيل عملية التجميد",
-            "title": "راجع ووافق على عملية التجميد"
-          },
-          "title": "تقييد أموال المستخدم",
-          "trigger-label": "تجميد"
-        },
-        "frozen-header": "مجمد",
-        "holders-page-description": "عرض المحافظ التي تحتفظ بـ {name}، بما في ذلك الأرصدة والحالات.",
-        "holders-page-title": "{name} الحاملي",
-        "holder-type-header": "النوع",
-        "last-activity-header": "آخر نشاط",
-        "status-header": "الحالة",
-        "wallet-header": "المحفظة"
-      },
       "manage": {
         "actions": {
           "mint": "سك",
           "burn": "حرق",
-          "pause": "إيقاف مؤقت",
+          "pause": "توقف",
           "unpause": "استئناف",
           "grant-role": "منح الدور"
         },
@@ -996,20 +792,20 @@
       },
       "pause-form": {
         "pause": {
-          "button-label": "إيقاف المعاملات",
-          "description": "إيقاف جميع المعاملات والتفاعلات لهذا السهم مؤقتًا.",
-          "title": "إيقاف معاملات الأسهم"
+          "button-label": "توقف عن المعاملات",
+          "description": "أوقف مؤقتًا جميع المعاملات والتفاعلات لهذا السهم.",
+          "title": "توقف عن معاملات الأسهم"
         },
         "summary": {
           "asset-label": "الأصل",
           "current-state-label": "الحالة الحالية",
-          "description": "تحقق من تفاصيل عملية الإيقاف قبل المتابعة.",
-          "pause-description": "تفاصيل عملية الإيقاف",
-          "pause-title": "إيقاف مؤقت",
+          "description": "تحقق من تفاصيل عملية التوقف قبل المتابعة.",
+          "pause-description": "تفاصيل عملية التوقف",
+          "pause-title": "توقف",
           "state-active": "نشط",
           "state-paused": "موقوف",
           "target-state-label": "الحالة المستهدفة",
-          "title": "راجع ووافق على عملية الإيقاف"
+          "title": "راجع ووافق على عملية التوقف"
         },
         "unpause": {
           "button-label": "استئناف المعاملات",
@@ -1017,57 +813,13 @@
           "title": "استئناف معاملات الأسهم"
         }
       },
-      "permissions": {
-        "actions-header": "الإجراءات",
-        "edit-form": {
-          "button-label": "حفظ الأذونات",
-          "description": "تحديث الأذونات ومستويات الوصول المخصصة لهذا المستخدم.",
-          "roles": {
-            "description": "اختر الأدوار المخصصة لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
-            "title": "اختر أدوار المستخدم"
-          },
-          "summary": {
-            "current-roles-label": "الأدوار الحالية",
-            "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
-            "new-roles-label": "الأدوار الجديدة",
-            "operation-description": "تفاصيل عملية تحديث الأدوار",
-            "title": "راجع وأكد الأدوار الجديدة",
-            "update-title": "تحديث الأدوار",
-            "user-label": "المستخدم"
-          },
-          "title": "تعديل أذونات المستخدم",
-          "trigger-label": "تحرير الأدوار"
-        },
-        "last-activity-header": "آخر نشاط",
-        "page-description": "إدارة أدوار المستخدم وحقوق الوصول لهذا السهم.",
-        "page-title": "أذونات الأسهم",
-        "permissions-page-description": "إدارة أدوار المستخدم وحقوق الوصول لـ {name}.",
-        "permissions-page-title": "{name} الأذونات",
-        "revoke-all-form": {
-          "button-label": "إلغاء الوصول",
-          "description": "إلغاء وصول هذا المستخدم وأذوناته بالكامل.",
-          "summary": {
-            "description": "تحقق من التفاصيل قبل المتابعة. ستلغي هذه العملية جميع الأذونات للمستخدم.",
-            "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
-            "revoke-title": "إلغاء الكل",
-            "roles-to-revoke-label": "الأدوار للإلغاء",
-            "title": "راجع وأكد",
-            "user-label": "المستخدم"
-          },
-          "title": "إزالة جميع وصول المستخدم",
-          "trigger-label": "إلغاء الكل"
-        },
-        "roles-header": "الأدوار",
-        "table-title": "الأذونات",
-        "wallet-header": "المحفظة"
-      },
       "related-actions": {
         "decrease-supply": {
           "description": "يمكن لمدير الأسهم تقليل إجمالي المعروض من الأسهم من خلال برنامج إعادة شراء أو تخفيض رأس المال.",
           "title": "تقليل المعروض من الأسهم"
         },
         "increase-supply": {
-          "description": "يمكن لمدير الأسهم إصدار أسهم جديدة من خلال آليات مختلفة مثل إصدار الحقوق، أو الطروحات الخاصة، أو تقسيم الأسهم.",
+          "description": "يمكن لمدير الأسهم إصدار أسهم جديدة من خلال آليات متنوعة مثل إصدار الحقوق، أو العروض الخاصة، أو تقسيم الأسهم.",
           "title": "إصدار أسهم جديدة"
         },
         "title": "الإجراءات ذات الصلة"
@@ -1089,31 +841,31 @@
         "category-energy": "الطاقة",
         "category-esop-shares": "أسهم خطة ملكية أسهم الموظفين (ESOP)",
         "category-financials": "المالية",
-        "category-frontier-market-equity": "أسهم الأسواق الحدودية",
+        "category-frontier-market-equity": "أسهم أسواق الحدود",
         "category-global-equity": "الأسهم العالمية",
-        "category-growth-capital": "رأس المال النموي",
+        "category-growth-capital": "رأس المال النامي",
         "category-growth-equity": "نمو الأسهم",
         "category-header": "فئة الأسهم",
         "category-healthcare": "الرعاية الصحية",
-        "category-income-equity": "أسهم الدخل",
+        "category-income-equity": "دخل الأسهم",
         "category-industrials": "الصناعات",
         "category-international-equity": "الأسهم الدولية",
-        "category-large-cap-equity": "أسهم الشركات الكبيرة",
-        "category-leveraged-buyouts": "الاستحواذات بالرفع المالي (LBOs)",
+        "category-large-cap-equity": "الأسهم ذات القيمة السوقية الكبيرة",
+        "category-leveraged-buyouts": "الاستحواذات المدعومة بالديون (LBOs)",
         "category-materials": "المواد",
-        "category-mezzanine-financing": "التمويل المتوسط",
-        "category-micro-cap-equity": "أسهم الشركات الصغيرة",
-        "category-mid-cap-equity": "أسهم الشركات المتوسطة",
-        "category-non-cumulative-preferred-stock": "الأسهم المفضلة غير التراكمية",
+        "category-mezzanine-financing": "التمويل الهامشي",
+        "category-micro-cap-equity": "الأسهم ذات القيمة السوقية الصغيرة",
+        "category-mid-cap-equity": "الأسهم ذات القيمة السوقية المتوسطة",
+        "category-non-cumulative-preferred-stock": "الأسهم الممتازة غير التراكمية",
         "category-non-voting-common-stock": "الأسهم العادية غير القابلة للتصويت",
         "category-real-estate": "العقارات",
-        "category-redeemable-preferred-stock": "الأسهم المفضلة القابلة للاسترداد",
+        "category-redeemable-preferred-stock": "الأسهم الممتازة القابلة للاسترداد",
         "category-restricted-stock": "الأسهم المقيدة",
-        "category-small-cap-equity": "أسهم الشركات الصغيرة",
+        "category-small-cap-equity": "الأسهم ذات القيمة السوقية الصغيرة",
         "category-technology": "التكنولوجيا",
-        "category-tracking-stocks": "أسهم المتابعة",
+        "category-tracking-stocks": "الأسهم المتعقبة",
         "category-utilities": "المرافق",
-        "category-value-equity": "أسهم القيمة",
+        "category-value-equity": "الأسهم ذات القيمة",
         "category-venture-capital": "رأس المال المغامر",
         "category-voting-common-stock": "الأسهم العادية القابلة للتصويت",
         "class-common-equity": "الأسهم العادية",
@@ -1121,38 +873,38 @@
         "class-header": "فئة الأسهم",
         "class-investment-stage-private-equity": "مرحلة الاستثمار (الأسهم الخاصة)",
         "class-investment-style-equity": "أسلوب الاستثمار في الأسهم",
-        "class-market-capitalization-equity": "أسهم رأس المال السوقي",
-        "class-preferred-equity": "الأسهم المفضلة",
+        "class-market-capitalization-equity": "الأسهم ذات القيمة السوقية",
+        "class-preferred-equity": "الأسهم الممتازة",
         "class-sector-industry-equity": "الأسهم حسب القطاع/الصناعة",
         "class-special-classes-equity": "فئات خاصة من الأسهم",
         "name-header": "الاسم",
-        "page-description": "نظرة عامة وإجراءات إدارية لأصولك من الأسهم.",
+        "page-description": "نظرة عامة وإجراءات إدارية لأصول الأسهم الخاصة بك.",
         "page-title": "الأسهم",
         "private-header": "خاص",
         "private-status": "خاص",
         "public-status": "عام",
         "related-actions": {
           "issue-new": {
-            "description": "إنشاء وإطلاق رمز أسهم جديد مع فئات أسهم وحقوق ملكية محددة. تبسيط إصدار الأسهم لدعم توزيع المساهمين وحوكمة الشركات.",
+            "description": "إنشاء وإطلاق رمز أسهم جديد مع فئات أسهم محددة وحقوق ملكية. تبسيط إصدار الأسهم لدعم توزيع المساهمين وحوكمة الشركات.",
             "title": "إصدار رموز أسهم جديدة"
           },
           "mechanics": {
-            "button": "تعرف على المزيد",
-            "description": "تعلم كيفية إدارة حقوق المساهمين، وآليات التصويت، وتوزيع الأرباح، وهياكل ملكية الأسهم.",
+            "button": "تعلم المزيد",
+            "description": "تعلم كيفية إدارة حقوق المساهمين وآليات التصويت وتوزيع الأرباح وهياكل ملكية الأسهم.",
             "title": "آليات الأسهم"
           },
-          "title": "إجراءات ذات صلة",
+          "title": "الإجراءات ذات الصلة",
           "usecases": {
             "button": "استكشاف",
-            "description": "استكشاف التطبيقات في إدارة الأسهم الشركات، من إصدار الأسهم إلى حوكمة أصحاب المصلحة. زيادة الكفاءة في إدارة الأسهم، وحقوق التصويت، وتوزيع الأرباح.",
+            "description": "استكشاف التطبيقات في إدارة الأسهم الخاصة بالشركات، من إصدار الأسهم إلى حوكمة أصحاب المصلحة. زيادة الكفاءة في إدارة الأسهم وحقوق التصويت وتوزيع الأرباح.",
             "title": "حالات استخدام الأسهم"
           }
         },
         "status-header": "الحالة",
         "symbol-header": "الرمز",
-        "topinfo-description": "تقوم أصول الأسهم بتحويل الأوراق المالية التقليدية إلى رقمية، مما يجمع بين قدرات البلوكشين المتقدمة وأدوات الحوكمة والامتثال القوية. مصممة للمستثمرين المؤسسيين، تقدم إصدار أسهم آمن، وحقوق تصويت للمساهمين، وضوابط وصول مفصلة، وآليات الامتثال التنظيمي. تبسط هذه الأصول إدارة الأسهم، وتعزز الشفافية، وتضمن مشاركة آمنة للمستثمرين.",
+        "topinfo-description": "تقوم أصول الأسهم بتحويل الأوراق المالية التقليدية للأسهم، مما يجمع بين قدرات البلوكشين المتقدمة وأدوات الحوكمة والامتثال القوية. مصممة للمستثمرين المؤسسيين، تقدم إصدار أسهم آمن، وحقوق تصويت للمساهمين، وضوابط وصول مفصلة، وآليات امتثال تنظيمية. تبسط هذه الأصول إدارة الأسهم، وتعزز الشفافية، وتضمن مشاركة آمنة للمستثمرين.",
         "topinfo-title": "إدارة الأسهم الرقمية على مستوى المؤسسات",
-        "total-supply-header": "الإجمالي المتاح"
+        "total-supply-header": "الإمداد الكلي"
       },
       "tabs": {
         "details": "التفاصيل",
@@ -1177,7 +929,7 @@
           "asset-label": "الأصل",
           "burn-description": "تفاصيل عملية الحرق",
           "burn-title": "حرق",
-          "description": "تحقق من تفاصيل الحرق قبل المتابعة.",
+          "description": "تحقق من تفاصيل الحرق الخاصة بك قبل المتابعة.",
           "title": "راجع وأكد الحرق"
         },
         "title": "حرق",
@@ -1189,7 +941,7 @@
       "create-form": {
         "basics": {
           "decimals-label": "الأرقام العشرية",
-          "description": "حدد التفاصيل الأساسية مثل الاسم، الرمز، والرؤية.",
+          "description": "حدد التفاصيل الأساسية مثل الاسم والرمز والرؤية.",
           "isin-label": "ISIN",
           "isin-placeholder": "US1234567890",
           "name-label": "الاسم",
@@ -1202,24 +954,24 @@
         "configuration": {
           "basis-points": "نقاط الأساس",
           "category-activist": "ناشط",
-          "category-commodity-trading": "تجارة السلع",
-          "category-convertible-arbitrage": "التحكيم القابل للتحويل",
+          "category-commodity-trading": "تداول السلع",
+          "category-convertible-arbitrage": "تحكيم القابل للتحويل",
           "category-credit": "الائتمان",
           "category-currency-fx": "العملة / الفوركس",
           "category-distressed-debt": "الديون المتعثرة",
           "category-emerging-markets": "الأسواق الناشئة",
           "category-equity-hedge": "تحوط الأسهم",
-          "category-event-driven": "مدفوعات الأحداث",
-          "category-fixed-income-arbitrage": "التحكيم في الدخل الثابت",
+          "category-event-driven": "مدفوع بالأحداث",
+          "category-fixed-income-arbitrage": "تحكيم الدخل الثابت",
           "category-fund-of-funds": "صندوق من الصناديق",
-          "category-global-macro": "الماكرو العالمي",
+          "category-global-macro": "ماكرو عالمي",
           "category-high-frequency-trading": "التداول عالي التردد (HFT)",
           "category-managed-futures-cta": "العقود الآجلة المدارة / CTA",
           "category-market-neutral": "محايد السوق",
-          "category-merger-arbitrage": "التحكيم في الاندماج",
+          "category-merger-arbitrage": "تحكيم الاندماج",
           "category-multi-strategy": "استراتيجية متعددة",
           "category-private-equity": "الأسهم الخاصة (PE)",
-          "category-quantitative-systematic": "كمية / منهجية",
+          "category-quantitative-systematic": "كمي / منهجي",
           "category-relative-value": "القيمة النسبية",
           "category-statistical-arbitrage": "التحكيم الإحصائي",
           "category-structured-credit": "الائتمان الهيكلي",
@@ -1228,23 +980,23 @@
           "class-core-blend": "أساسي / مزيج",
           "class-diversified": "متنوع",
           "class-early-stage": "مرحلة مبكرة",
-          "class-factor-based": "معتمد على العوامل",
+          "class-factor-based": "مبني على العوامل",
           "class-growth-focused": "مركز على النمو",
           "class-income-focused": "مركز على الدخل",
           "class-large-cap": "كبير الحجم",
-          "class-long-equity": "الأسهم الطويلة (طويل فقط)",
-          "class-long-short-equity": "الأسهم الطويلة / القصيرة",
+          "class-long-equity": "أسهم طويلة (طويل فقط)",
+          "class-long-short-equity": "أسهم طويلة / قصيرة",
           "class-market-neutral": "محايد للسوق",
           "class-mid-cap": "متوسط الحجم",
           "class-momentum-oriented": "موجه نحو الزخم",
-          "class-opportunistic": "فرصة",
+          "class-opportunistic": "فرص",
           "class-pre-series-b": "قبل السلسلة ب",
-          "class-quantitative-algorithmic": "كمية / خوارزمية",
+          "class-quantitative-algorithmic": "كمي / خوارزمي",
           "class-regional": "إقليمي",
           "class-sector-specific": "خاص بالقطاع",
-          "class-seed-pre-seed": "البذور / ما قبل البذور",
-          "class-series-b-late-stage": "السلسلة ب / المرحلة المتأخرة",
-          "class-short-equity": "الأسهم القصيرة",
+          "class-seed-pre-seed": "بذور / قبل البذور",
+          "class-series-b-late-stage": "السلسلة ب / مرحلة متأخرة",
+          "class-short-equity": "أسهم قصيرة",
           "class-small-cap": "صغير الحجم",
           "class-tactical-asset-allocation": "تخصيص الأصول التكتيكي",
           "class-value-focused": "مركز على القيمة",
@@ -1259,7 +1011,7 @@
         "summary": {
           "asset-basics-description": "معلومات وإعدادات الأصول الأساسية.",
           "asset-basics-title": "أساسيات الأصول",
-          "basis-points": "نقاط الأساس",
+          "basis-points": "نقاط أساس",
           "category-activist": "نشط",
           "category-commodity-trading": "تجارة السلع",
           "category-convertible-arbitrage": "التحكيم القابل للتحويل",
@@ -1273,12 +1025,12 @@
           "category-fund-of-funds": "صندوق من صناديق",
           "category-global-macro": "ماكرو عالمي",
           "category-high-frequency-trading": "تجارة عالية التردد (HFT)",
-          "category-managed-futures-cta": "العقود الآجلة المدارة / CTA",
+          "category-managed-futures-cta": "عقود مستقبلية مدارة / CTA",
           "category-market-neutral": "محايد للسوق",
           "category-merger-arbitrage": "التحكيم في الاندماج",
           "category-multi-strategy": "استراتيجية متعددة",
           "category-private-equity": "الأسهم الخاصة (PE)",
-          "category-quantitative-systematic": "كمية / منهجية",
+          "category-quantitative-systematic": "كمي / منهجي",
           "category-relative-value": "القيمة النسبية",
           "category-statistical-arbitrage": "التحكيم الإحصائي",
           "category-structured-credit": "الائتمان الهيكلي",
@@ -1287,29 +1039,29 @@
           "class-core-blend": "أساسي / مزيج",
           "class-diversified": "متنوع",
           "class-early-stage": "مرحلة مبكرة",
-          "class-factor-based": "معتمد على العوامل",
+          "class-factor-based": "مبني على العوامل",
           "class-growth-focused": "مركز على النمو",
           "class-income-focused": "مركز على الدخل",
           "class-large-cap": "كبير الحجم",
-          "class-long-equity": "الأسهم الطويلة (طويل فقط)",
-          "class-long-short-equity": "الأسهم الطويلة / القصيرة",
+          "class-long-equity": "أسهم طويلة (طويل فقط)",
+          "class-long-short-equity": "أسهم طويلة / قصيرة",
           "class-market-neutral": "محايد للسوق",
           "class-mid-cap": "متوسط الحجم",
           "class-momentum-oriented": "موجه نحو الزخم",
-          "class-opportunistic": "فرصة",
+          "class-opportunistic": "فرص",
           "class-pre-series-b": "قبل السلسلة ب",
-          "class-quantitative-algorithmic": "كمية / خوارزمية",
+          "class-quantitative-algorithmic": "كمي / خوارزمي",
           "class-regional": "إقليمي",
           "class-sector-specific": "خاص بالقطاع",
-          "class-seed-pre-seed": "البذور / ما قبل البذور",
-          "class-series-b-late-stage": "السلسلة ب / المرحلة المتأخرة",
-          "class-short-equity": "الأسهم القصيرة",
+          "class-seed-pre-seed": "بذور / قبل البذور",
+          "class-series-b-late-stage": "السلسلة ب / مرحلة متأخرة",
+          "class-short-equity": "أسهم قصيرة",
           "class-small-cap": "صغير الحجم",
           "class-tactical-asset-allocation": "تخصيص الأصول التكتيكي",
           "class-value-focused": "مركز على القيمة",
           "configuration-description": "إعدادات فئة الصندوق، والفئة، والرسوم.",
           "configuration-title": "تكوين الصندوق",
-          "decimals-label": "الأرقام العشرية",
+          "decimals-label": "عشري",
           "description": "راجع وأكد تفاصيل صندوقك الجديد قبل الإنشاء.",
           "fund-category-label": "فئة الصندوق",
           "fund-class-label": "فئة الصندوق",
@@ -1318,7 +1070,7 @@
           "name-label": "الاسم",
           "symbol-label": "الرمز",
           "title": "راجع وأكد",
-          "error-duplicate": "يوجد صندوق بنفس التفاصيل بالفعل. يرجى المحاولة مرة أخرى مع معلمة واحدة مختلفة على الأقل."
+          "error-duplicate": "يوجد صندوق بنفس التفاصيل بالفعل. يرجى المحاولة مرة أخرى مع معلمة واحدة على الأقل مختلفة."
         },
         "title": "إنشاء صندوق",
         "trigger-label": "إصدار صندوق جديد"
@@ -1329,7 +1081,7 @@
         "decimals": "الأرقام العشرية",
         "details-page-description": "استكشف البيانات الشاملة والمقاييس لـ {name}.",
         "details-page-title": "تفاصيل {name}",
-        "fund-details-description": "تفاصيل الأسهم",
+        "fund-details-description": "تفاصيل الملكية",
         "isin": "ISIN",
         "name": "الاسم",
         "ownership-concentration": "تركيز الملكية",
@@ -1350,83 +1102,30 @@
           "manual-toggle": "أدخل العنوان يدويًا...",
           "search-placeholder": "ابحث عن مستخدم",
           "search-toggle": "ابحث عن مستخدم بدلاً من ذلك...",
-          "title": "اختر مسؤولًا جديدًا"
+          "title": "اختر مشرفًا جديدًا"
         },
         "button-label": "تعيين الأدوار",
         "description": "تعيين الأذونات الإدارية لمستخدم جديد.",
         "roles": {
-          "description": "اختر الأدوار التي سيتم منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
-          "title": "اختر أدوار المسؤول"
+          "description": "اختر الأدوار التي سيتم منحها للمشرف الجديد. يجب اختيار دور واحد على الأقل.",
+          "title": "اختر أدوار المشرف"
         },
         "summary": {
-          "admin-address-label": "عنوان المسؤول",
+          "admin-address-label": "عنوان المشرف",
           "asset-label": "الأصل",
           "description": "تحقق من تفاصيل منح دورك قبل المتابعة.",
           "grant-description": "تفاصيل عملية منح الدور",
           "grant-title": "منح الدور",
           "roles-label": "الأدوار",
-          "title": "راجع وأكد منح الدور"
+          "title": "راجع ووافق على منح الدور"
         },
         "title": "منح الدور"
-      },
-      "holders": {
-        "actions-header": "الإجراءات",
-        "balance-header": "الرصيد",
-        "block-form": {
-          "block-button-label": "حظر المستخدم",
-          "block-description": "منع هذا المستخدم من إجراء أي معاملات أو تفاعلات.",
-          "block-title": "حظر معاملات المستخدم",
-          "block-trigger-label": "حظر",
-          "summary": {
-            "asset-label": "الأصل",
-            "block-title": "حظر",
-            "current-state-label": "الحالة الحالية",
-            "description": "تحقق من تفاصيل عملية الحظر الخاصة بك قبل المتابعة.",
-            "operation-description": "تفاصيل عملية الحظر",
-            "state-active": "نشط",
-            "state-blocked": "محظور",
-            "target-state-label": "الحالة المستهدفة",
-            "title": "راجع ووافق على عملية الحظر",
-            "unblock-title": "إلغاء الحظر"
-          },
-          "unblock-button-label": "إلغاء حظر المستخدم",
-          "unblock-description": "استعادة قدرة هذا المستخدم على إجراء المعاملات والتفاعل.",
-          "unblock-title": "استعادة معاملات المستخدم",
-          "unblock-trigger-label": "إلغاء الحظر"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "المبلغ",
-            "balance-description": "الرصيد المتاح: {balance} مجمد حاليًا: {frozen}",
-            "description": "أدخل المبلغ الذي ترغب في تجميده.",
-            "title": "أدخل المبلغ"
-          },
-          "button-label": "تجميد الأموال",
-          "description": "تقييد وصول المستخدم إلى أمواله مؤقتًا.",
-          "summary": {
-            "amount-label": "المبلغ",
-            "asset-label": "الأصل",
-            "description": "تحقق من تفاصيل عملية التجميد الخاصة بك قبل المتابعة.",
-            "freeze-title": "تجميد",
-            "operation-description": "تفاصيل عملية التجميد",
-            "title": "راجع ووافق على عملية التجميد"
-          },
-          "title": "تقييد أموال المستخدم",
-          "trigger-label": "تجميد"
-        },
-        "frozen-header": "مجمد",
-        "holders-page-description": "عرض المحافظ التي تحتفظ بـ {name}، بما في ذلك الأرصدة والحالات.",
-        "holders-page-title": "{name} حاملي",
-        "holder-type-header": "النوع",
-        "last-activity-header": "آخر نشاط",
-        "status-header": "الحالة",
-        "wallet-header": "المحفظة"
       },
       "manage": {
         "actions": {
           "mint": "سك",
           "burn": "حرق",
-          "pause": "توقف",
+          "pause": "إيقاف مؤقت",
           "unpause": "استئناف",
           "grant-role": "منح الدور"
         },
@@ -1450,77 +1149,33 @@
           "description": "تحقق من تفاصيل سكّك قبل المتابعة.",
           "mint-description": "تفاصيل عملية السك",
           "mint-title": "سك",
-          "title": "راجع وأكد السك"
+          "title": "راجع ووافق على السك"
         },
         "title": "سك",
         "trigger-label": "سك"
       },
       "pause-form": {
         "pause": {
-          "button-label": "توقف عن المعاملات",
-          "description": "أوقف جميع المعاملات والتفاعلات لهذا الصندوق مؤقتًا.",
-          "title": "توقف عن معاملات الصندوق"
+          "button-label": "إيقاف المعاملات",
+          "description": "إيقاف جميع المعاملات والتفاعلات لهذا الصندوق مؤقتًا.",
+          "title": "إيقاف معاملات الصندوق"
         },
         "summary": {
           "asset-label": "الأصل",
           "current-state-label": "الحالة الحالية",
-          "description": "تحقق من تفاصيل عملية التوقف قبل المتابعة.",
-          "pause-description": "تفاصيل عملية التوقف",
-          "pause-title": "توقف",
+          "description": "تحقق من تفاصيل عملية الإيقاف قبل المتابعة.",
+          "pause-description": "تفاصيل عملية الإيقاف",
+          "pause-title": "إيقاف",
           "state-active": "نشط",
           "state-paused": "موقوف",
           "target-state-label": "الحالة المستهدفة",
-          "title": "راجع وأكد عملية التوقف"
+          "title": "راجع ووافق على عملية الإيقاف"
         },
         "unpause": {
           "button-label": "استئناف المعاملات",
           "description": "استئناف المعاملات والتفاعلات لهذا الصندوق.",
           "title": "استئناف معاملات الصندوق"
         }
-      },
-      "permissions": {
-        "actions-header": "الإجراءات",
-        "edit-form": {
-          "button-label": "حفظ الأذونات",
-          "description": "قم بتحديث الأذونات ومستويات الوصول المعينة لهذا المستخدم.",
-          "roles": {
-            "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
-            "title": "حدد أدوار المستخدم"
-          },
-          "summary": {
-            "current-roles-label": "الأدوار الحالية",
-            "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
-            "new-roles-label": "الأدوار الجديدة",
-            "operation-description": "تفاصيل عملية تحديث الأدوار",
-            "title": "راجع ووافق على الأدوار الجديدة",
-            "update-title": "تحديث الأدوار",
-            "user-label": "المستخدم"
-          },
-          "title": "تعديل أذونات المستخدم",
-          "trigger-label": "تحرير الأدوار"
-        },
-        "last-activity-header": "آخر نشاط",
-        "page-description": "إدارة أدوار المستخدم وحقوق الوصول لهذه السند.",
-        "page-title": "أذونات السند",
-        "permissions-page-description": "إدارة أدوار المستخدم وحقوق الوصول لـ {name}.",
-        "permissions-page-title": "{name} الأذونات",
-        "revoke-all-form": {
-          "button-label": "إلغاء الوصول",
-          "description": "إلغاء وصول هذا المستخدم وأذوناته بالكامل.",
-          "summary": {
-            "description": "تحقق من التفاصيل قبل المتابعة. ستلغي هذه العملية جميع الأذونات للمستخدم.",
-            "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
-            "revoke-title": "إلغاء الكل",
-            "roles-to-revoke-label": "الأدوار التي سيتم إلغاؤها",
-            "title": "راجع ووافق",
-            "user-label": "المستخدم"
-          },
-          "title": "إزالة جميع وصول المستخدم",
-          "trigger-label": "إلغاء الكل"
-        },
-        "roles-header": "الأدوار",
-        "table-title": "الأذونات",
-        "wallet-header": "المحفظة"
       },
       "related-actions": {
         "decrease-supply": {
@@ -1539,7 +1194,7 @@
         "asset-management": "إدارة الأصول",
         "assets-under-management-header": "AUM",
         "category-activist": "ناشط",
-        "category-commodity-trading": "تجارة السلع",
+        "category-commodity-trading": "تداول السلع",
         "category-convertible-arbitrage": "تحكيم قابل للتحويل",
         "category-credit": "ائتمان",
         "category-currency-fx": "عملة / FX",
@@ -1551,7 +1206,7 @@
         "category-fund-of-funds": "صندوق من صناديق",
         "category-global-macro": "ماكرو عالمي",
         "category-header": "فئة الصندوق",
-        "category-high-frequency-trading": "تجارة عالية التردد (HFT)",
+        "category-high-frequency-trading": "تداول عالي التردد (HFT)",
         "category-managed-futures-cta": "عقود مستقبلية مدارة / CTA",
         "category-market-neutral": "محايد للسوق",
         "category-merger-arbitrage": "تحكيم الاندماج",
@@ -1561,29 +1216,29 @@
         "category-relative-value": "القيمة النسبية",
         "category-statistical-arbitrage": "المراجحة الإحصائية",
         "category-structured-credit": "الائتمان المنظم",
-        "category-venture-capital": "رأس المال المخاطر (VC)",
+        "category-venture-capital": "رأس المال المغامر (VC)",
         "class-absolute-return": "العائد المطلق",
-        "class-core-blend": "أساسي / مزيج",
+        "class-core-blend": "أساسي / مدمج",
         "class-diversified": "متنوع",
         "class-early-stage": "مرحلة مبكرة",
-        "class-factor-based": "مبني على العوامل",
+        "class-factor-based": "معتمد على العوامل",
         "class-growth-focused": "مركز على النمو",
         "class-header": "فئة الصندوق",
         "class-income-focused": "مركز على الدخل",
         "class-large-cap": "كبير الحجم",
-        "class-long-equity": "الأسهم الطويلة (طويل فقط)",
-        "class-long-short-equity": "الأسهم الطويلة / القصيرة",
+        "class-long-equity": "أسهم طويلة (طويلة فقط)",
+        "class-long-short-equity": "أسهم طويلة / قصيرة",
         "class-market-neutral": "محايد للسوق",
         "class-mid-cap": "متوسط الحجم",
         "class-momentum-oriented": "موجه نحو الزخم",
-        "class-opportunistic": "فرص",
-        "class-pre-series-b": "قبل السلسلة ب",
+        "class-opportunistic": "فرص استثمارية",
+        "class-pre-series-b": "قبل السلسلة B",
         "class-quantitative-algorithmic": "كمية / خوارزمية",
         "class-regional": "إقليمي",
         "class-sector-specific": "محدد القطاع",
         "class-seed-pre-seed": "البذور / قبل البذور",
-        "class-series-b-late-stage": "السلسلة ب / المرحلة المتأخرة",
-        "class-short-equity": "الأسهم القصيرة",
+        "class-series-b-late-stage": "السلسلة B / المرحلة المتأخرة",
+        "class-short-equity": "أسهم قصيرة",
         "class-small-cap": "صغير الحجم",
         "class-tactical-asset-allocation": "تخصيص الأصول التكتيكي",
         "class-value-focused": "مركز على القيمة",
@@ -1596,25 +1251,25 @@
         "public-status": "عام",
         "related-actions": {
           "issue-new": {
-            "description": "إنشاء وإطلاق صندوق جديد مع معلمات محددة ودعم الأصول. تبسيط نشر الصندوق لدعم فرص الاستثمار الجديدة وقطاعات السوق.",
+            "description": "إنشاء وإطلاق صندوق جديد مع معايير محددة ودعم للأصول. تبسيط نشر الصندوق لدعم فرص الاستثمار الجديدة وقطاعات السوق.",
             "title": "إصدار صندوق جديد"
           },
           "mechanics": {
             "button": "تعرف على المزيد",
-            "description": "تعلم كيفية ضبط المعلمات الرئيسية للصندوق، وطرق تخصيص الأصول، وهياكل رسوم الإدارة.",
-            "title": "آليات الصندوق"
+            "description": "تعلم كيفية تعديل المعايير الرئيسية للصندوق، وطرق تخصيص الأصول، وهياكل رسوم الإدارة.",
+            "title": "ميكانيكا الصندوق"
           },
           "title": "الإجراءات ذات الصلة",
           "usecases": {
             "button": "استكشاف",
-            "description": "استكشاف التطبيقات العملية والتكاملات للصناديق الرقمية. زيادة الفائدة عبر إدارة الاستثمار، وتوكن الأصول، وأنظمة التمويل المؤسسي.",
+            "description": "استكشاف التطبيقات العملية والتكاملات للصناديق الرقمية. زيادة الفائدة عبر إدارة الاستثمار، وتوكنيزة الأصول، وأنظمة التمويل المؤسسي.",
             "title": "حالات الاستخدام"
           }
         },
         "status-header": "الحالة",
         "symbol-header": "الرمز",
-        "topinfo-description": "أصول الصندوق الرقمية تقوم برقمنة حصص صندوق الاستثمار، مما يوفر جمع رسوم الإدارة بشكل آلي، وحوكمة المستثمرين، والامتثال التنظيمي الشامل. مثالية للمؤسسات المالية، فهي تبسط العمليات الإدارية، وتضمن إدارة رسوم شفافة، وتمكن من تصويت المستثمرين بشكل آمن. يوفر العقد أمانًا قويًا، وخصائص صندوق قابلة للتخصيص، وكفاءة تشغيلية محسنة.",
-        "topinfo-title": "أصل رقمي لإدارة الصندوق المؤسسي",
+        "topinfo-description": "أصول الصندوق تقوم برقمنة حصص صندوق الاستثمار، مما يوفر جمع رسوم الإدارة بشكل آلي، وحوكمة المستثمرين، والامتثال التنظيمي الشامل. مثالي للمؤسسات المالية، حيث يبسط العمليات الإدارية، ويضمن إدارة رسوم شفافة، ويمكّن التصويت الآمن للمستثمرين. يوفر العقد أمانًا قويًا، وخصائص صندوق قابلة للتخصيص، وكفاءة تشغيلية محسّنة.",
+        "topinfo-title": "أصل رقمي لإدارة الصناديق المؤسسية",
         "total-supply-header": "الإمداد الكلي"
       },
       "tabs": {
@@ -1677,7 +1332,7 @@
           "asset-label": "الأصل",
           "burn-description": "تفاصيل عملية الحرق",
           "burn-title": "حرق",
-          "description": "تحقق من تفاصيل الحرق الخاصة بك قبل المتابعة.",
+          "description": "تحقق من تفاصيل الحرق قبل المتابعة.",
           "title": "راجع وأكد الحرق"
         },
         "title": "حرق",
@@ -1694,7 +1349,7 @@
         "committed-collateral-ratio": "نسبة الضمان الملتزم",
         "committed-collateral-ratio-info": "نسبة الضمان الملتزم إلى الإمداد الكلي للرمز",
         "proven-collateral": "ضمان مثبت",
-        "proven-collateral-info": "المبلغ من الضمان الذي تم إثبات أنه محتفظ به بواسطة الرمز",
+        "proven-collateral-info": "المبلغ من الضمان الذي تم إثبات أنه محتفظ به من قبل الرمز",
         "required-collateral-threshold": "عتبة الضمان المطلوبة",
         "required-collateral-threshold-info": "المبلغ من الضمان الذي يجب إثباته"
       },
@@ -1718,18 +1373,18 @@
         },
         "description": "حدد وأطلق أصل عملة مستقرة جديدة.",
         "summary": {
-          "asset-basics-description": "معلومات وإعدادات الأصول الأساسية.",
-          "asset-basics-title": "أساسيات الأصول",
+          "asset-basics-description": "معلومات وإعدادات الأصل الأساسية.",
+          "asset-basics-title": "أساسيات الأصل",
           "collateral-proof-validity-label": "صلاحية إثبات الضمان",
-          "configuration-description": "إمداد الأصول وإعدادات إضافية.",
+          "configuration-description": "إمداد الأصل وإعدادات إضافية.",
           "configuration-title": "الإعدادات",
           "decimals-label": "الأرقام العشرية",
-          "description": "راجع ووافق على تفاصيل عملتك المستقرة الجديدة قبل الإنشاء.",
+          "description": "راجع وأكد تفاصيل عملتك المستقرة الجديدة قبل الإنشاء.",
           "isin-label": "ISIN",
           "name-label": "الاسم",
           "seconds": "ثواني",
           "symbol-label": "الرمز",
-          "title": "راجع ووافق على تفاصيل عملتك المستقرة الجديدة قبل الإنشاء.",
+          "title": "راجع وأكد تفاصيل عملتك المستقرة الجديدة قبل الإنشاء.",
           "error-duplicate": "توجد عملة مستقرة بنفس التفاصيل بالفعل. يرجى المحاولة مرة أخرى مع معلمة واحدة مختلفة على الأقل."
         },
         "title": "إنشاء عملة مستقرة",
@@ -1744,13 +1399,13 @@
         "isin": "ISIN",
         "name": "الاسم",
         "ownership-concentration": "تركيز الملكية",
-        "ownership-concentration-info": "النسبة المئوية المملوكة من قبل أكبر 5 حاملي",
+        "ownership-concentration-info": "النسبة المئوية المملوكة من قبل أعلى 5 حاملي",
         "stablecoin-details-description": "تفاصيل العملة المستقرة",
         "symbol": "الرمز",
         "total-burned": "الإمداد المحروق",
-        "total-burned-info": "كمية الرموز التي تمت إزالتها بشكل دائم من التداول",
+        "total-burned-info": "مقدار الرموز التي تمت إزالتها بشكل دائم من التداول",
         "total-holders": "# من الحاملي",
-        "total-holders-info": "عدد العناوين التي تحتفظ حاليًا بالأصول",
+        "total-holders-info": "مقدار العناوين التي تحتفظ حاليًا بالأصول",
         "total-supply": "الإمداد الكلي",
         "total-supply-info": "الإمداد الكلي للرمز"
       },
@@ -1761,18 +1416,18 @@
       "grant-role-form": {
         "address": {
           "address-label": "عنوان محفظة الإدارة",
-          "description": "ابحث عن مستخدم بواسطة اسمه أو بريده الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
+          "description": "ابحث عن مستخدم باسمهم أو بريدهم الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
           "manual-placeholder": "0x0000000000000000000000000000000000000000",
           "manual-toggle": "أدخل العنوان يدويًا...",
           "search-placeholder": "ابحث عن مستخدم",
           "search-toggle": "ابحث عن مستخدم بدلاً من ذلك...",
-          "title": "اختر مسؤولًا جديدًا"
+          "title": "حدد مسؤول جديد"
         },
         "button-label": "تعيين الأدوار",
-        "description": "تعيين أذونات إدارية لمستخدم جديد.",
+        "description": "تعيين الأذونات الإدارية لمستخدم جديد.",
         "roles": {
           "description": "اختر الأدوار التي سيتم منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
-          "title": "اختر أدوار المسؤول"
+          "title": "حدد أدوار المسؤول"
         },
         "summary": {
           "admin-address-label": "عنوان المسؤول",
@@ -1781,62 +1436,9 @@
           "grant-description": "تفاصيل عملية منح الدور",
           "grant-title": "منح الدور",
           "roles-label": "الأدوار",
-          "title": "راجع ووافق على منح الدور"
+          "title": "راجع وأكد منح الدور"
         },
         "title": "منح الدور"
-      },
-      "holders": {
-        "actions-header": "الإجراءات",
-        "balance-header": "الرصيد",
-        "block-form": {
-          "block-button-label": "حظر المستخدم",
-          "block-description": "منع هذا المستخدم من إجراء أي معاملات أو تفاعلات.",
-          "block-title": "حظر معاملات المستخدم",
-          "block-trigger-label": "حظر",
-          "summary": {
-            "asset-label": "الأصل",
-            "block-title": "حظر",
-            "current-state-label": "الحالة الحالية",
-            "description": "تحقق من تفاصيل عملية الحظر الخاصة بك قبل المتابعة.",
-            "operation-description": "تفاصيل عملية الحظر",
-            "state-active": "نشط",
-            "state-blocked": "محظور",
-            "target-state-label": "الحالة المستهدفة",
-            "title": "راجع ووافق على عملية الحظر",
-            "unblock-title": "إلغاء الحظر"
-          },
-          "unblock-button-label": "إلغاء حظر المستخدم",
-          "unblock-description": "استعادة قدرة هذا المستخدم على إجراء المعاملات والتفاعل.",
-          "unblock-title": "استعادة معاملات المستخدم",
-          "unblock-trigger-label": "إلغاء الحظر"
-        },
-        "freeze-form": {
-          "amount": {
-            "amount-label": "المبلغ",
-            "balance-description": "الرصيد المتاح: {balance} مجمد حاليًا: {frozen}",
-            "description": "أدخل المبلغ الذي ترغب في تجميده.",
-            "title": "أدخل المبلغ"
-          },
-          "button-label": "تجميد الأموال",
-          "description": "تقييد وصول المستخدم إلى أمواله مؤقتًا.",
-          "summary": {
-            "amount-label": "المبلغ",
-            "asset-label": "الأصل",
-            "description": "تحقق من تفاصيل عملية التجميد الخاصة بك قبل المتابعة.",
-            "freeze-title": "تجميد",
-            "operation-description": "تفاصيل عملية التجميد",
-            "title": "راجع ووافق على عملية التجميد"
-          },
-          "title": "تقييد أموال المستخدم",
-          "trigger-label": "تجميد"
-        },
-        "frozen-header": "مجمد",
-        "holders-page-description": "عرض المحافظ التي تحتفظ بـ {name}، بما في ذلك الأرصدة والحالات.",
-        "holders-page-title": "{name} الحاملي",
-        "holder-type-header": "النوع",
-        "last-activity-header": "آخر نشاط",
-        "status-header": "الحالة",
-        "wallet-header": "المحفظة"
       },
       "manage": {
         "actions": {
@@ -1858,18 +1460,18 @@
           "title": "أدخل المبلغ"
         },
         "recipients": {
-          "title": "اختر المستلمين",
+          "title": "حدد المستلمين",
           "description": "اختر من سيستلم الرموز المسكوكة"
         },
         "button-label": "سك الأصول",
-        "description": "إصدار رموز جديدة لزيادة الإمداد المتداول للعملة المستقرة.",
+        "description": "إصدار رموز جديدة لزيادة إمداد العملة المستقرة المتداولة.",
         "summary": {
           "amount-label": "المبلغ",
           "asset-label": "الأصل",
           "description": "تحقق من تفاصيل سكّك قبل المتابعة.",
           "mint-description": "تفاصيل عملية السك",
           "mint-title": "سك",
-          "title": "راجع ووافق على السك"
+          "title": "راجع وأكد السك"
         },
         "title": "سك",
         "trigger-label": "سك"
@@ -1888,7 +1490,7 @@
           "pause-title": "إيقاف مؤقت",
           "state-active": "نشط",
           "state-paused": "موقوف مؤقتًا",
-          "target-state-label": "حالة الهدف",
+          "target-state-label": "الحالة المستهدفة",
           "title": "راجع ووافق على عملية الإيقاف المؤقت"
         },
         "unpause": {
@@ -1896,50 +1498,6 @@
           "description": "استئناف المعاملات والتفاعلات لهذه العملة المستقرة.",
           "title": "استئناف معاملات العملة المستقرة"
         }
-      },
-      "permissions": {
-        "actions-header": "الإجراءات",
-        "edit-form": {
-          "button-label": "حفظ الأذونات",
-          "description": "تحديث الأذونات ومستويات الوصول المخصصة لهذا المستخدم.",
-          "roles": {
-            "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب تحديد دور واحد على الأقل.",
-            "title": "حدد أدوار المستخدم"
-          },
-          "summary": {
-            "current-roles-label": "الأدوار الحالية",
-            "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
-            "new-roles-label": "الأدوار الجديدة",
-            "operation-description": "تفاصيل عملية تحديث الأدوار",
-            "title": "راجع وأكد الأدوار الجديدة",
-            "update-title": "تحديث الأدوار",
-            "user-label": "المستخدم"
-          },
-          "title": "تعديل أذونات المستخدم",
-          "trigger-label": "تحرير الأدوار"
-        },
-        "last-activity-header": "آخر نشاط",
-        "page-description": "إدارة الأذونات لعملة {name} المستقرة",
-        "page-title": "{name} الأذونات",
-        "permissions-page-description": "إدارة أدوار المستخدم وحقوق الوصول لـ {name}.",
-        "permissions-page-title": "{name} الأذونات",
-        "revoke-all-form": {
-          "button-label": "إلغاء الوصول",
-          "description": "إلغاء وصول هذا المستخدم وأذوناته بالكامل.",
-          "summary": {
-            "description": "تحقق من التفاصيل قبل المتابعة. ستلغي هذه العملية جميع الأذونات للمستخدم.",
-            "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
-            "revoke-title": "إلغاء الكل",
-            "roles-to-revoke-label": "الأدوار للإلغاء",
-            "title": "راجع وأكد",
-            "user-label": "المستخدم"
-          },
-          "title": "إزالة وصول جميع المستخدمين",
-          "trigger-label": "إلغاء الكل"
-        },
-        "roles-header": "الأدوار",
-        "table-title": "الأذونات",
-        "wallet-header": "المحفظة"
       },
       "related-actions": {
         "decrease-supply": {
@@ -1974,19 +1532,19 @@
           },
           "mechanics": {
             "button": "تعلم المزيد",
-            "description": "تعلم كيفية ضبط معلمات العملة المستقرة الرئيسية، وطرق الضمان، وآليات الاستقرار.",
+            "description": "تعلم كيفية ضبط المعلمات الرئيسية للعملة المستقرة، وطرق الضمان، وآليات الاستقرار.",
             "title": "آليات العملة المستقرة"
           },
           "title": "الإجراءات ذات الصلة",
           "usecases": {
             "button": "استكشاف",
-            "description": "استكشاف التطبيقات العملية والتكاملات للعملات المستقرة. تعظيم الفائدة عبر المدفوعات، والتوفير، والإقراض، ونظم التمويل اللامركزي.",
+            "description": "استكشاف التطبيقات العملية والتكاملات للعملات المستقرة. زيادة الفائدة عبر المدفوعات، والتوفير، والإقراض، ونظم التمويل اللامركزية.",
             "title": "حالات الاستخدام"
           }
         },
         "status-header": "الحالة",
         "symbol-header": "الرمز",
-        "topinfo-description": "العملات المستقرة هي عملات رقمية مصممة للحفاظ على قيمة مستقرة من خلال دعمها بأصول أو احتياطيات من العالم الحقيقي. تقدم مزايا الأصول الرقمية - مثل السرعة، والشفافية، والبرمجة - مع تجنب تقلب الأسعار المرتبط عادةً بالعملات المشفرة. يضمن عقد StableCoin هذا أن كل رمز يتم إصداره مدعوم بالكامل، مما يوفر للمؤسسات إدارة أموال رقمية آمنة وقابلة للتدقيق وموثوقة. تشمل الميزات الرئيسية إصدار مدعوم بالضمان، وضوابط شاملة قائمة على الأدوار، وآليات إيقاف قوية، وقدرات الامتثال التنظيمي.",
+        "topinfo-description": "العملات المستقرة هي عملات رقمية مصممة للحفاظ على قيمة مستقرة من خلال دعمها بأصول أو احتياطيات من العالم الحقيقي. إنها تقدم مزايا الأصول الرقمية - مثل السرعة، والشفافية، والبرمجة - مع تجنب تقلب الأسعار المرتبط عادةً بالعملات المشفرة. يضمن هذا العقد للعملة المستقرة أن كل رمز يتم إصداره مدعوم بالكامل، مما يوفر للمؤسسات إدارة أموال رقمية آمنة وقابلة للتدقيق وموثوقة. تشمل الميزات الرئيسية إصدار مدعوم بالضمان، والتحكم الشامل القائم على الأدوار، وآليات الإيقاف القوية، وقدرات الامتثال التنظيمي.",
         "topinfo-title": "عملة رقمية آمنة ومدعومة بالضمان",
         "total-supply-header": "إجمالي العرض"
       },
@@ -2029,7 +1587,17 @@
         "wallet": "المحفظة"
       },
       "detail": {
-        "edit_user": "تحرير المستخدم",
+        "edit_user": "تعديل المستخدم",
+        "charts": {
+          "transaction-history-last-month": {
+            "title": "حجم المعاملات / يوم",
+            "description": "عرض المعاملات خلال الشهر الماضي"
+          },
+          "transaction-history-last-year": {
+            "title": "حجم المعاملات / شهر",
+            "description": "عرض المعاملات خلال السنة الماضية"
+          }
+        },
         "fields": {
           "asset_supply": "عرض الأصول",
           "created_at": "تم الإنشاء في",
@@ -2037,7 +1605,7 @@
           "last_activity": "آخر نشاط",
           "last_login": "آخر تسجيل دخول",
           "name": "الاسم",
-          "status": "أبداً",
+          "status": "أبدًا",
           "transactions": "غير موثق",
           "verified_at": "الحالة",
           "wallet": "المعاملات"
@@ -2045,7 +1613,7 @@
         "platform-management": "تم التحقق في",
         "tabs": {
           "details": "المحفظة",
-          "holdings": "الممتلكات",
+          "holdings": "الاحتفاظ",
           "latest-events": "آخر الأحداث",
           "permissions": "الأذونات"
         },
@@ -2062,28 +1630,18 @@
           "transactions": "المعاملات",
           "verified_at": "موثق في",
           "wallet": "المحفظة"
-        },
-        "charts": {
-          "transaction-history-last-month": {
-            "title": "حجم المعاملات / يوم",
-            "description": "عرض المعاملات خلال الشهر الماضي"
-          },
-          "transaction-history-last-year": {
-            "title": "حجم المعاملات / شهر",
-            "description": "عرض المعاملات خلال السنة الماضية"
-          }
         }
       },
       "holdings": {
         "title": "المقتنيات",
         "table": {
-          "actions-header": "إجراء",
-          "balance-header": "رصيد",
-          "holder-type-header": "نوع",
+          "actions-header": "الإجراء",
+          "balance-header": "الرصيد",
+          "holder-type-header": "النوع",
           "last-activity-header": "آخر نشاط",
-          "name-header": "اسم",
-          "status-header": "حالة",
-          "symbol-header": "رمز",
+          "name-header": "الاسم",
+          "status-header": "الحالة",
+          "symbol-header": "الرمز",
           "type-header": "نوع الأصل"
         }
       },
@@ -2099,9 +1657,9 @@
       "page-title": "المستخدمون",
       "platform-management": "إدارة المنصة",
       "roles": {
-        "admin": "مدير",
+        "admin": "المسؤول",
         "issuer": "المصدر",
-        "user": "مستخدم"
+        "user": "المستخدم"
       },
       "status": {
         "active": "نشط",
@@ -2127,7 +1685,7 @@
         "block-title": "حظر معاملات المستخدم",
         "block-trigger-label": "حظر",
         "summary": {
-          "asset-label": "أصل",
+          "asset-label": "الأصل",
           "block-title": "حظر",
           "current-state-label": "الحالة الحالية",
           "description": "تحقق من تفاصيل عملية الحظر الخاصة بك قبل المتابعة.",
@@ -2135,7 +1693,7 @@
           "state-active": "نشط",
           "state-blocked": "محظور",
           "target-state-label": "الحالة المستهدفة",
-          "title": "راجع وأكد عملية الحظر",
+          "title": "راجع ووافق على عملية الحظر",
           "unblock-title": "إلغاء الحظر"
         },
         "unblock-button-label": "إلغاء حظر المستخدم",
@@ -2154,22 +1712,22 @@
         "description": "تقييد وصول المستخدم إلى أمواله مؤقتًا.",
         "summary": {
           "amount-label": "المبلغ",
-          "asset-label": "أصل",
+          "asset-label": "الأصل",
           "description": "تحقق من تفاصيل عملية التجميد الخاصة بك قبل المتابعة.",
           "freeze-title": "تجميد",
           "operation-description": "تفاصيل عملية التجميد",
-          "title": "راجع وأكد عملية التجميد"
+          "title": "راجع ووافق على عملية التجميد"
         },
         "title": "تقييد أموال المستخدم",
         "trigger-label": "تجميد"
       },
       "frozen-header": "مجمد",
-      "holders-page-description": "عرض المحافظ التي تحتوي على {name}، بما في ذلك الأرصدة والحالات.",
+      "holders-page-description": "عرض المحافظ التي تحتفظ بـ {name}، بما في ذلك الأرصدة والحالات.",
       "holders-page-title": "{name} حاملو",
-      "holder-type-header": "نوع",
+      "holder-type-header": "النوع",
       "last-activity-header": "آخر نشاط",
-      "status-header": "حالة",
-      "wallet-header": "محفظة"
+      "status-header": "الحالة",
+      "wallet-header": "المحفظة"
     },
     "asset-permissions-tab": {
       "actions-header": "الإجراءات",
@@ -2177,17 +1735,17 @@
         "button-label": "تحرير الأذونات",
         "description": "تحديث الأذونات ومستويات الوصول المعينة لهذا المستخدم.",
         "roles": {
-          "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب تحديد دور واحد على الأقل.",
-          "title": "حدد أدوار المستخدم"
+          "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
+          "title": "اختر أدوار المستخدم"
         },
         "summary": {
           "current-roles-label": "الأدوار الحالية",
           "description": "تحقق من التفاصيل قبل المتابعة. ستغير هذه العملية الأدوار للمستخدم.",
           "new-roles-label": "الأدوار الجديدة",
           "operation-description": "تفاصيل عملية تحديث الأدوار",
-          "title": "راجع وأكد الأدوار الجديدة",
+          "title": "راجع ووافق على الأدوار الجديدة",
           "update-title": "تحديث الأدوار",
-          "user-label": "مستخدم"
+          "user-label": "المستخدم"
         },
         "title": "تعديل أذونات المستخدم",
         "trigger-label": "تحرير الأدوار"
@@ -2205,15 +1763,15 @@
           "operation-description": "تفاصيل عملية إلغاء جميع الأذونات",
           "revoke-title": "إلغاء جميع",
           "roles-to-revoke-label": "الأدوار التي سيتم إلغاؤها",
-          "title": "راجع وأكد",
-          "user-label": "مستخدم"
+          "title": "راجع ووافق",
+          "user-label": "المستخدم"
         },
         "title": "إزالة جميع وصول المستخدم",
         "trigger-label": "إلغاء جميع"
       },
       "roles-header": "الأدوار",
       "table-title": "الأذونات",
-      "wallet-header": "محفظة"
+      "wallet-header": "المحفظة"
     }
   },
   "asset-management": "إدارة الأصول",
@@ -2244,15 +1802,15 @@
     "current-password-placeholder": "أدخل كلمة المرور الحالية الخاصة بك",
     "current-session": "الجلسة الحالية",
     "delete-account": "حذف الحساب",
-    "delete-account-description": "قم بإزالة حسابك وجميع محتوياته بشكل دائم. هذا سيؤدي إلى إزالة وصولك إلى مفتاحك الخاص وستفقد الوصول إلى أصولك! هذه العملية غير قابلة للتراجع، لذا يرجى المتابعة بحذر.",
+    "delete-account-description": "قم بإزالة حسابك وجميع محتوياته بشكل دائم. هذا سيؤدي إلى إزالة وصولك إلى مفتاحك الخاص وستفقد الوصول إلى أصولك! هذا الإجراء غير قابل للتراجع، لذا يرجى المتابعة بحذر.",
     "delete-account-email": "يرجى التحقق من بريدك الإلكتروني للتحقق من حذف حسابك.",
-    "delete-account-instructions": "يرجى تأكيد حذف حسابك. هذه العملية غير قابلة للتراجع، لذا يرجى المتابعة بحذر.",
+    "delete-account-instructions": "يرجى تأكيد حذف حسابك. هذا الإجراء غير قابل للتراجع، لذا يرجى المتابعة بحذر.",
     "delete-account-not-fresh": "يجب أن تكون قد قمت بتسجيل الدخول مؤخرًا لحذف حسابك.",
     "delete-account-success": "تم حذف حسابك.",
     "disabled-credentials-description": "اختر مزودًا لتسجيل الدخول إلى حسابك",
     "dont-have-account": "لا تملك حسابًا؟",
     "email": "البريد الإلكتروني",
-    "email-description": "أدخل عنوان البريد الإلكتروني الذي تريد استخدامه لتسجيل الدخول.",
+    "email-description": "أدخل عنوان البريد الإلكتروني الذي ترغب في استخدامه لتسجيل الدخول.",
     "email-instructions": "يرجى استخدام عنوان بريد إلكتروني صالح.",
     "email-placeholder": "m@example.com",
     "email-verification": "يرجى التحقق من بريدك الإلكتروني للحصول على رابط التحقق.",
@@ -2266,7 +1824,7 @@
     "link": "رابط",
     "magic-link": "رابط سحري",
     "magic-link-action": "إرسال رابط سحري",
-    "magic-link-description": "أدخل بريدك الإلكتروني لاستلام رابط سحري",
+    "magic-link-description": "أدخل بريدك الإلكتروني لتلقي رابط سحري",
     "magic-link-email": "تحقق من بريدك الإلكتروني للحصول على الرابط السحري",
     "name": "الاسم",
     "name-description": "يرجى إدخال اسمك الكامل، أو اسم عرض.",
@@ -2280,10 +1838,10 @@
     "password-instructions": "يرجى استخدام 8 أحرف على الأقل.",
     "password-placeholder": "أدخل كلمة المرور الخاصة بك",
     "pincode-form": {
-      "name-label": "اسم الرقم السري",
-      "pincode-label": "الرقم السري",
+      "name-label": "اسم رمز PIN",
+      "pincode-label": "رمز PIN",
       "setting-up": "جارٍ الإعداد...",
-      "submit": "إعداد الرقم السري"
+      "submit": "إعداد رمز PIN"
     },
     "provider-link-success": "تم ربط المزود بنجاح.",
     "provider-unlink-success": "تم فصل المزود بنجاح.",
@@ -2310,8 +1868,8 @@
     "sign-in-username-description": "أدخل اسم المستخدم أدناه لتسجيل الدخول إلى حسابك",
     "sign-in-with": "تسجيل الدخول باستخدام",
     "sign-out": "تسجيل الخروج",
-    "sign-up": "التسجيل",
-    "sign-up-action": "إنشاء حساب",
+    "sign-up": "إنشاء حساب",
+    "sign-up-action": "أنشئ حسابًا",
     "sign-up-description": "أدخل معلوماتك لإنشاء حساب",
     "sign-up-email": "تحقق من بريدك الإلكتروني للحصول على رابط التحقق.",
     "signin": {
@@ -2343,11 +1901,11 @@
       "have-account": "هل لديك حساب بالفعل؟",
       "name": {
         "label": "الاسم",
-        "placeholder": "وارن بافيت جونيور"
+        "placeholder": "وارن بافيت جونيور."
       },
       "page": {
         "alert": {
-          "description": "سيكون أول مستخدم يسجل هو المعين للدور الإداري. يمكنك إضافة مدراء آخرين لاحقًا.",
+          "description": "سيكون أول مستخدم يسجل هو المعين كمدير. يمكنك إضافة مدراء آخرين لاحقًا.",
           "title": "هل أنشأت هذا التطبيق اللامركزي للتو؟"
         }
       },
@@ -2365,9 +1923,9 @@
         "label": "تأكيد رمز PIN للمحفظة"
       }
     },
-    "unlink": "فك الارتباط",
+    "unlink": "فصل",
     "username": "اسم المستخدم",
-    "username-description": "أدخل اسم المستخدم الذي تريد استخدامه لتسجيل الدخول.",
+    "username-description": "أدخل اسم المستخدم الذي ترغب في استخدامه لتسجيل الدخول.",
     "username-instructions": "يرجى استخدام 32 حرفًا كحد أقصى.",
     "username-placeholder": "جون دو",
     "username-sign-in-placeholder": "اسم المستخدم أو البريد الإلكتروني",
@@ -2381,7 +1939,7 @@
     "wrong-role": {
       "description": "ليس لديك الدور المطلوب للوصول إلى هذه الصفحة. يرجى تسجيل الدخول باستخدام حساب لديه الأذونات المناسبة.",
       "go-to-portfolio": "اذهب إلى المحفظة",
-      "title": "أنت غير مخول للوصول إلى هذه الصفحة"
+      "title": "ليس لديك إذن للوصول إلى هذه الصفحة"
     }
   },
   "components": {
@@ -2410,7 +1968,7 @@
         "account": "الحساب",
         "amount": "المبلغ",
         "bond-amount": "مبلغ السند",
-        "burned": "تم حرقه",
+        "burned": "المحروق",
         "details-header": "التفاصيل",
         "from": "من",
         "holder": "المالك",
@@ -2515,8 +2073,8 @@
       "search": "بحث...",
       "selected": "محدد",
       "selected-rows-info": "{selected} من {total} صف(وف) محدد.",
-      "sort-ascending": "فرز تصاعدي",
-      "sort-descending": "فرز تنازلي",
+      "sort-ascending": "ترتيب تصاعدي",
+      "sort-descending": "ترتيب تنازلي",
       "toggle-columns": "تبديل الأعمدة",
       "view": "عرض"
     },
@@ -2538,7 +2096,7 @@
         "sending-transaction": "جارٍ إرسال المعاملة..."
       },
       "input": {
-        "letters-only": "يرجى إدخال الأحرف فقط",
+        "letters-only": "يرجى إدخال الحروف فقط",
         "password-min-length": "يجب أن تكون كلمة المرور مكونة من 6 أحرف على الأقل",
         "pin-code-length": "يجب أن يكون رمز PIN مكونًا من 6 أرقام بالضبط",
         "pin-code-match": "رموز PIN لا تتطابق",
@@ -2587,9 +2145,9 @@
       "contract-label": "العقد",
       "created-at-label": "تم الإنشاء في",
       "description": "عرض تفاصيل المعاملة",
-      "effective-gas-price-label": "سعر الغاز الفعال",
+      "effective-gas-price-label": "سعر الغاز الفعلي",
       "from-label": "من",
-      "function-label": "وظيفة",
+      "function-label": "الدالة",
       "gas-used-label": "الغاز المستخدم",
       "receipt-title": "الإيصال",
       "revert-reason-label": "سبب التراجع",
@@ -2604,21 +2162,21 @@
     "transaction-hash": {
       "view-on-explorer": "عرض على المستكشف"
     },
+    "transactions-history": {
+      "title": "المعاملات",
+      "description": "عرض المعاملات خلال آخر {interval}",
+      "chart-label": "المعاملة"
+    },
     "transactions-table": {
       "columns": {
         "actions": "الإجراءات",
         "created-at": "الطابع الزمني",
         "contract": "العقد",
-        "function": "وظيفة",
+        "function": "الدالة",
         "from": "من",
         "status": "الحالة",
         "transaction-hash": "هاش المعاملة"
       }
-    },
-    "transactions-history": {
-      "title": "المعاملات",
-      "description": "عرض المعاملات خلال {interval} الماضية",
-      "chart-label": "المعاملة"
     }
   },
   "error": {
@@ -2641,18 +2199,18 @@
       "duplicate": "توجد أسهم بهذه التفاصيل بالفعل. يرجى تغيير واحدة على الأقل من التفاصيل."
     },
     "fund": {
-      "duplicate": "يوجد صندوق بهذه التفاصيل بالفعل. يرجى تغيير واحدة على الأقل من التفاصيل."
+      "duplicate": "توجد صناديق بهذه التفاصيل بالفعل. يرجى تغيير واحدة على الأقل من التفاصيل."
     }
   },
   "holder-type": {
     "admin": "مدير",
     "creator-owner": "المنشئ / المالك",
     "regular": "حامل عادي",
-    "supply-manager": "مدير العرض"
+    "supply-manager": "مدير الإمدادات"
   },
   "layout": {
     "header": {
-      "app-description": "ترميز الأصول",
+      "app-description": "تشفير الأصول",
       "app-name": "SettleMint",
       "home": "الرئيسية",
       "issuer-portal": "بوابة المُصدر"
@@ -2692,6 +2250,12 @@
       "stablecoin": "عملة مستقرة",
       "unknown": "غير معروف"
     },
+    "greeting": {
+      "morning": "صباح الخير",
+      "afternoon": "مساء الخير",
+      "evening": "مساء الخير",
+      "you-have": "لديك"
+    },
     "my-assets": {
       "description": "عرض وإدارة أصولك الرقمية",
       "portfolio-management": "إدارة المحفظة",
@@ -2712,7 +2276,7 @@
           "button-label": "نقل",
           "amount": {
             "title": "أدخل المبلغ",
-            "description": "حدد المبلغ الذي تريد نقله",
+            "description": "حدد المبلغ الذي ترغب في نقله",
             "value-label": "المبلغ",
             "balance-available": "الرصيد المتاح: {balance}"
           },
@@ -2726,7 +2290,7 @@
           },
           "summary": {
             "title": "راجع وأكد النقل",
-            "description": "تحقق من تفاصيل النقل الخاصة بك قبل المتابعة",
+            "description": "تحقق من تفاصيل النقل قبل المتابعة",
             "transfer-title": "نقل",
             "transfer-description": "تفاصيل عملية النقل",
             "asset-label": "الأصل",
@@ -2743,7 +2307,7 @@
           "button-label": "نقل",
           "amount": {
             "title": "أدخل المبلغ",
-            "description": "حدد المبلغ الذي تريد نقله",
+            "description": "حدد المبلغ الذي ترغب في نقله",
             "value-label": "المبلغ",
             "balance-available": "الرصيد المتاح: {balance}"
           },
@@ -2757,7 +2321,7 @@
           },
           "summary": {
             "title": "راجع وأكد النقل",
-            "description": "تحقق من تفاصيل النقل الخاصة بك قبل المتابعة",
+            "description": "تحقق من تفاصيل النقل قبل المتابعة",
             "transfer-title": "نقل",
             "transfer-description": "تفاصيل عملية النقل",
             "asset-label": "الأصل",
@@ -2774,7 +2338,7 @@
           "button-label": "نقل",
           "amount": {
             "title": "أدخل المبلغ",
-            "description": "حدد المبلغ الذي تريد نقله",
+            "description": "حدد المبلغ الذي ترغب في نقله",
             "value-label": "المبلغ",
             "balance-available": "الرصيد المتاح: {balance}"
           },
@@ -2805,7 +2369,7 @@
           "button-label": "تحويل",
           "amount": {
             "title": "المبلغ",
-            "description": "أدخل المبلغ من الرموز التي تريد تحويلها",
+            "description": "أدخل المبلغ من الرموز التي ترغب في تحويلها",
             "amount-label": "المبلغ",
             "balance-description": "الرصيد المتاح:"
           },
@@ -2836,7 +2400,7 @@
           "button-label": "تحويل",
           "amount": {
             "title": "المبلغ",
-            "description": "أدخل المبلغ من الرموز التي تريد تحويلها",
+            "description": "أدخل المبلغ من الرموز التي ترغب في تحويلها",
             "amount-label": "المبلغ",
             "balance-description": "الرصيد المتاح:"
           },
@@ -2891,10 +2455,10 @@
       "amount": {
         "amount-label": "المبلغ",
         "balance-description": "الرصيد:",
-        "description": "حدد المبلغ الذي تريد تحويله",
+        "description": "حدد المبلغ الذي ترغب في تحويله",
         "title": "أدخل المبلغ",
-        "decimals-label": "الأرقام العشرية",
-        "decimals-description": "عدد الأماكن العشرية للرمز"
+        "decimals-label": "الأجزاء العشرية",
+        "decimals-description": "عدد الأجزاء العشرية للرمز"
       },
       "description": "قم بتحويل مبلغ من {type} {name} ({symbol}) بسهولة عن طريق اختيار مستلم وتحديد المبلغ.",
       "recipients": {
@@ -2905,7 +2469,7 @@
       "select-asset": {
         "asset-description": "اختر أصلًا من محفظتك",
         "asset-label": "الأصل",
-        "description": "اختر الأصل الذي تريد تحويله",
+        "description": "اختر الأصل الذي ترغب في تحويله",
         "title": "اختر الأصل",
         "trigger-label": "تحويل الأصول"
       },
@@ -2917,12 +2481,6 @@
       },
       "transfer": "تحويل",
       "transferring": "يتم التحويل..."
-    },
-    "greeting": {
-      "morning": "صباح الخير",
-      "afternoon": "مساء الخير",
-      "evening": "مساء الخير",
-      "you-have": "لديك"
     }
   },
   "theme": {
@@ -2934,6 +2492,6 @@
   },
   "transactions": {
     "sending": "إرسال المعاملة",
-    "success": "تمت معالجة المعاملة بنجاح"
+    "success": "تم معالجة المعاملة بنجاح"
   }
 }
