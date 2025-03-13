@@ -2,11 +2,11 @@
 
 import { EditPermissionsForm } from "@/components/blocks/asset-edit-permissions/form";
 import { RevokeAllPermissionsForm } from "@/components/blocks/asset-revoke-all-permissions/form";
+import { AssetRolePill } from "@/components/blocks/asset-role-pill/asset-role-pill";
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { getRoleDisplayName, type Role } from "@/lib/config/roles";
 import { stablecoinRevokeRoleAction } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { stableCoinUpdateAction } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
@@ -37,15 +37,7 @@ export function columns({ address }: { address: Address }) {
     }),
     columnHelper.accessor("roles", {
       header: t("roles-header"),
-      cell: ({ getValue }) => (
-        <div className="flex flex-wrap gap-1">
-          {getValue().map((role: Role) => (
-            <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-              {getRoleDisplayName(role)}
-            </span>
-          ))}
-        </div>
-      ),
+      cell: ({ getValue }) => <AssetRolePill roles={getValue()} />,
       enableColumnFilter: true,
     }),
     columnHelper.accessor("lastActivity", {
