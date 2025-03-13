@@ -7,7 +7,7 @@ import type { Role } from "@/lib/config/roles";
 import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 export function Summary({
@@ -17,11 +17,9 @@ export function Summary({
   userAddress: Address;
   currentRoles: Role[];
 }) {
-  const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations("admin.asset-permissions-tab.edit-form.summary");
-  const values = useWatch({
-    control: control,
-  });
+  const { getValues } = useFormContext<UpdateRolesInput>();
+  const values = getValues();
 
   return (
     <FormStep title={t("title")} description={t("description")}>
