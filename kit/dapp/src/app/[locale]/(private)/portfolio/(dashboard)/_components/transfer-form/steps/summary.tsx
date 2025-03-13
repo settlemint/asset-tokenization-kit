@@ -16,12 +16,10 @@ export function Summary({
   address,
   assetType,
   decimals,
-  symbol,
 }: {
   address: Address;
   assetType: TransferFormAssetType;
   decimals: number;
-  symbol: string;
 }) {
   const { control } = useFormContext<TransferFormType>();
   const t = useTranslations("portfolio.transfer-form.summary");
@@ -39,10 +37,7 @@ export function Summary({
         <FormSummaryDetailItem label={t("address")} value={address} />
         <FormSummaryDetailItem
           label={t("amount")}
-          value={formatNumber(values.value, {
-            token: symbol,
-            decimals: decimals,
-          })}
+          value={formatNumber(values.value)}
         />
       </FormSummaryDetailCard>
 
