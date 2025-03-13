@@ -35,7 +35,7 @@ export function TransactionsHistory({
   const TRANSACTIONS_CHART_CONFIG = {
     transaction: {
       label: t("chart-label"),
-      color: "#3B9E99",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 

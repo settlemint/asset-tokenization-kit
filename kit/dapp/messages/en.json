@@ -518,7 +518,6 @@
         },
         "transaction-history": {
           "description": "Transaction history",
-          "label": "Transactions",
           "title": "Transaction history"
         },
         "users-history": {
