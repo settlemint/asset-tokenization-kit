@@ -3,8 +3,8 @@
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
 import type { Role } from "@/lib/config/roles";
+import { UpdateRolesSchema } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import type { UpdateRolesActionType } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
-import { UpdateRolesSchema } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";

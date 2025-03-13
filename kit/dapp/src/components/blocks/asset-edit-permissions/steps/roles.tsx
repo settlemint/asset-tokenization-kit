@@ -8,7 +8,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { ROLES, type RoleKey } from "@/lib/config/roles";
-import type { UpdateRolesInput } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
+import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 

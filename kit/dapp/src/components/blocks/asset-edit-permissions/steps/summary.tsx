@@ -4,7 +4,7 @@ import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { Role } from "@/lib/config/roles";
-import type { UpdateRolesInput } from "@/lib/mutations/stablecoin/update-roles/update-roles-schema";
+import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
