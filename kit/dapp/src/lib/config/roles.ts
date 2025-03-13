@@ -52,9 +52,9 @@ export const getRoleDisplayName = (roleKey: RoleKey): string => {
   return ROLES[roleKey].displayName;
 };
 
-export const getActiveRoles = (
-  roles?: Partial<Record<Role, boolean>>
-): Role[] => {
+export type RolesInput = Partial<Record<Role, boolean | null>>;
+
+export const getActiveRoles = (roles?: RolesInput): Role[] => {
   if (!roles) return [];
 
   return Object.keys(roles).filter((role) => roles[role as RoleKey]) as Role[];

@@ -2,11 +2,12 @@ import {
   getActiveRoles,
   getRoleDisplayName,
   type Role,
+  type RolesInput,
 } from "@/lib/config/roles";
 import type { ReactElement } from "react";
 
 type AssetRolePillProps = {
-  roles?: Partial<Record<Role, boolean>> | Role[];
+  roles?: RolesInput | Role[];
 };
 
 export function AssetRolePill({ roles }: AssetRolePillProps): ReactElement {
