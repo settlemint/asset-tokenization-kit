@@ -11,7 +11,7 @@ interface AssetDistributionProps {
 export async function AssetDistribution({ address }: AssetDistributionProps) {
   const tAssets = await getTranslations("components.charts.assets");
   const tAssetTypes = await getTranslations("portfolio.asset-types");
-  const data = await getUserAssetsBalance(address, true);
+  const data = await getUserAssetsBalance(address);
   const chartData = data.distribution.map((item) => {
     return {
       assetType: item.asset.type,
@@ -39,6 +39,10 @@ export async function AssetDistribution({ address }: AssetDistributionProps) {
     stablecoin: {
       label: tAssetTypes("stablecoin"),
       color: getAssetColor("stablecoin", "color"),
+    },
+    cryptocurrency: {
+      label: tAssetTypes("cryptocurrency"),
+      color: getAssetColor("cryptocurrency", "color"),
     },
   };
 

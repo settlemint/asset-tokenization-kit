@@ -1,19 +1,22 @@
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging, z, type ZodInfer } from "@/lib/utils/zod";
 import { cache } from "react";
 import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
 import {
-    CryptoCurrencyFragment,
-    CryptoCurrencyFragmentSchema,
+  CryptoCurrencyFragment,
+  CryptoCurrencyFragmentSchema,
 } from "../cryptocurrency/cryptocurrency-fragment";
 import {
-    EquityFragment,
-    EquityFragmentSchema,
+  EquityFragment,
+  EquityFragmentSchema,
 } from "../equity/equity-fragment";
 import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
 import {
-    StableCoinFragment,
-    StableCoinFragmentSchema,
+  StableCoinFragment,
+  StableCoinFragmentSchema,
 } from "../stablecoin/stablecoin-fragment";
 
 /**
@@ -56,7 +59,7 @@ const SidebarAssets = theGraphGraphqlKit(
  * Zod schema for asset count entries
  */
 const AssetCountSchema = z.object({
-  assetType: z.string(),
+  assetType: z.assetType(),
   count: z.number(),
 });
 

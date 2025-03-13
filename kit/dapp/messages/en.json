@@ -1588,6 +1588,16 @@
       },
       "detail": {
         "edit_user": "Edit user",
+        "charts": {
+          "transaction-history-last-month": {
+            "title": "Transactions volume / day",
+            "description": "Showing transactions over the last month"
+          },
+          "transaction-history-last-year": {
+            "title": "Transactions volume / month",
+            "description": "Showing transactions over the last year"
+          }
+        },
         "fields": {
           "asset_supply": "Asset supply",
           "created_at": "Created at",
@@ -2152,6 +2162,11 @@
     "transaction-hash": {
       "view-on-explorer": "View on the explorer"
     },
+    "transactions-history": {
+      "title": "Transactions",
+      "description": "Showing transactions over the last {interval}",
+      "chart-label": "Transaction"
+    },
     "transactions-table": {
       "columns": {
         "actions": "Actions",
@@ -2221,7 +2236,11 @@
     "activity": {
       "page-description": "Your activity on chain",
       "page-title": "Activity",
-      "portfolio-management": "Portfolio management"
+      "portfolio-management": "Portfolio management",
+      "tabs": {
+        "recent-transactions": "Recent transactions",
+        "all-events": "All events"
+      }
     },
     "asset-types": {
       "bond": "Bond",
@@ -2230,6 +2249,12 @@
       "fund": "Fund",
       "stablecoin": "Stablecoin",
       "unknown": "Unknown"
+    },
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "you-have": "You have"
     },
     "my-assets": {
       "description": "View and manage your digital assets",

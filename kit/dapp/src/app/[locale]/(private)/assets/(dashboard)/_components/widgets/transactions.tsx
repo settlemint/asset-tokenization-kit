@@ -1,4 +1,4 @@
-import { getProcessedTransactions } from "@/lib/queries/transactions/transactions-processed";
+import { getProcessedAndRecentTransactionsCount } from "@/lib/queries/transactions/transactions-processed";
 import { startOfDay, subDays } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import { Widget } from "./widget";
@@ -6,7 +6,7 @@ import { Widget } from "./widget";
 export async function TransactionsWidget() {
   const t = await getTranslations("admin.dashboard.widgets");
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
-  const { total, recentCount } = await getProcessedTransactions({
+  const { total, recentCount } = await getProcessedAndRecentTransactionsCount({
     processedAfter: sevenDaysAgo,
   });
 

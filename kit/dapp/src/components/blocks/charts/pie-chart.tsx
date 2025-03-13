@@ -59,14 +59,17 @@ export function PieChartComponent({
               strokeWidth={1}
               innerRadius={25}
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={config[entry[nameKey]]?.color}
-                  fillOpacity={0.5}
-                  stroke={config[entry[nameKey]]?.color}
-                />
-              ))}
+              {data.map((entry, index) => {
+                const color = config[entry[nameKey]]?.color;
+                return (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={color}
+                    fillOpacity={0.5}
+                    stroke={color}
+                  />
+                );
+              })}
             </Pie>
             <ChartLegend
               content={<ChartLegendContent />}
