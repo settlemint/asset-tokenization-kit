@@ -49,6 +49,7 @@ export function RedeemForm({
         defaultValues={{
           address,
         }}
+        secureForm={true}
       >
         <Amount balance={balance} />
         <Summary address={address} />
