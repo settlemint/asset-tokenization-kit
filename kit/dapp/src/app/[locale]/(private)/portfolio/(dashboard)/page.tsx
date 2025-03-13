@@ -11,6 +11,7 @@ import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
+
 export default async function PortfolioDashboard({
   params,
 }: {

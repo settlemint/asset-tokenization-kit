@@ -2,19 +2,13 @@ import { TransactionsHistory as TransactionsHistoryCommon } from "@/components/b
 import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { startOfDay, subDays } from "date-fns";
 import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
 
-interface TransactionsHistoryProps {
-  from?: Address;
-}
-
-export async function TransactionsHistory({ from }: TransactionsHistoryProps) {
+export async function TransactionsHistory() {
   const t = await getTranslations("admin.dashboard.charts");
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
   const dataOneWeek = await getTransactionsTimeline({
     timelineStartDate: sevenDaysAgo,
     granularity: "DAY",
-    from,
   });
 
   return (
