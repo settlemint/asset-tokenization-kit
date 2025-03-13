@@ -76,6 +76,7 @@ export function columns({ address }: { address: Address }) {
                     onOpenChange={onOpenChange}
                     updateRolesAction={bondUpdateAction}
                     adminsCount={adminCount}
+                    assetName={row.original.assetName}
                   />
                 ),
               },

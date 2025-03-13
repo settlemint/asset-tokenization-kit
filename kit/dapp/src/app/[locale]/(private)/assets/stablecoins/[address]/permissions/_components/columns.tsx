@@ -75,6 +75,7 @@ export function columns({ address }: { address: Address }) {
                     onOpenChange={onOpenChange}
                     updateRolesAction={stableCoinUpdateAction}
                     adminsCount={adminCount}
+                    assetName={row.original.assetName}
                   />
                 ),
               },

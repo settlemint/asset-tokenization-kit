@@ -8,6 +8,7 @@ import type { UpdateRolesActionType } from "@/lib/mutations/asset/access-control
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
+import { EvmAddress } from "../evm-address/evm-address";
 import { Roles } from "./steps/roles";
 import { Summary } from "./steps/summary";
 
@@ -16,6 +17,7 @@ export interface EditPermissionsFormProps {
   account: Address;
   currentRoles: Role[];
   adminsCount: number;
+  assetName: string;
   updateRolesAction: UpdateRolesActionType;
 }
 
@@ -29,6 +31,7 @@ export function EditPermissionsForm({
   account,
   currentRoles,
   adminsCount,
+  assetName,
   open,
   onOpenChange,
   updateRolesAction,
@@ -40,8 +43,8 @@ export function EditPermissionsForm({
       open={open}
       onOpenChange={onOpenChange}
       triggerLabel={t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      title={<EvmAddress address={account} />}
+      description={t("description", { name: assetName })}
     >
       <Form
         action={updateRolesAction}

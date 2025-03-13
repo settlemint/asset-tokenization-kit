@@ -58,6 +58,8 @@ export interface AssetDetailProps {
 export interface PermissionWithRoles extends Permission {
   /** List of roles assigned to this permission */
   roles: Role[];
+  /** Name of the asset */
+  assetName: string;
 }
 
 /**
@@ -145,6 +147,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
         usersWithRoles.set(userId, {
           ...validatedPermission,
           roles: [role],
+          assetName: validatedAsset.name,
         });
       }
     });
