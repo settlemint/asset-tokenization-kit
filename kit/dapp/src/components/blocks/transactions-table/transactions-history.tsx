@@ -6,9 +6,12 @@ import {
   formatInterval,
   type TimeSeriesOptions,
 } from "@/lib/charts";
-import { formatDate } from "../../../lib/utils/date";
+import { formatDate } from "@/lib/utils/date";
+import { useTranslations } from "next-intl";
 
 export interface TransactionsHistoryProps {
+  title?: string;
+  description?: string;
   from?: string;
   data: {
     timestamp: string;
@@ -22,17 +25,21 @@ export interface TransactionsHistoryProps {
   };
 }
 
-export const TRANSACTIONS_CHART_CONFIG = {
-  transaction: {
-    label: "Transactions",
-    color: "#3B9E99",
-  },
-} satisfies ChartConfig;
-
 export function TransactionsHistory({
   chartOptions,
   data,
+  title,
+  description,
 }: TransactionsHistoryProps) {
+  const t = useTranslations("components.transactions-history");
+
+  const TRANSACTIONS_CHART_CONFIG = {
+    transaction: {
+      label: t("chart-label"),
+      color: "#3B9E99",
+    },
+  } satisfies ChartConfig;
+
   return (
     <AreaChartComponent
       data={createTimeSeries(data, ["transaction"], {
@@ -40,8 +47,16 @@ export function TransactionsHistory({
         aggregation: "count",
       })}
       config={TRANSACTIONS_CHART_CONFIG}
-      title="Transactions"
-      description={`Showing transactions over the last ${formatInterval(chartOptions.intervalLength, chartOptions.intervalType)}`}
+      title={title ?? t("title")}
+      description={
+        description ??
+        t("description", {
+          interval: formatInterval(
+            chartOptions.intervalLength,
+            chartOptions.intervalType
+          ),
+        })
+      }
       xAxis={{
         key: "timestamp",
         tickFormatter: getTickFormatter(chartOptions),

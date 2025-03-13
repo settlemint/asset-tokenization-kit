@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
 import { getTransactionsHistory } from "@/lib/queries/transactions/transactions-history";
+import { startOfDay, subMonths } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
@@ -24,8 +25,7 @@ export default async function PortfolioDashboard({
   const user = await getUser();
   const myAssetsBalance = await getUserAssetsBalance(user.wallet as Address);
 
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
   const data = await getTransactionsHistory({
     processedAfter: oneMonthAgo,
     address: user.wallet as Address,
