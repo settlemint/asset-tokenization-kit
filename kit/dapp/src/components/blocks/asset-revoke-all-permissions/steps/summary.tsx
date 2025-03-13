@@ -2,10 +2,11 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import { type Role, getRoleDisplayName } from "@/lib/config/roles";
+import type { Role } from "@/lib/config/roles";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
+import { AssetRolePill } from "../../asset-role-pill/asset-role-pill";
 
 export function Summary({
   userAddress,
@@ -31,15 +32,7 @@ export function Summary({
         />
         <FormSummaryDetailItem
           label={t("roles-to-revoke-label")}
-          value={
-            <div className="flex flex-wrap gap-1">
-              {roles.map((role: Role) => (
-                <span key={role} className="rounded bg-muted px-2 py-1 text-xs">
-                  {getRoleDisplayName(role)}
-                </span>
-              ))}
-            </div>
-          }
+          value={<AssetRolePill roles={roles} />}
         />
       </FormSummaryDetailCard>
     </FormStep>

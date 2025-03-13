@@ -1,18 +1,19 @@
 "use client";
 
 import { EditPermissionsForm } from "@/components/blocks/asset-edit-permissions/form";
+import { RevokeAllPermissionsForm } from "@/components/blocks/asset-revoke-all-permissions/form";
 import { DataTableColumnHeader } from "@/components/blocks/data-table/data-table-column-header";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { getRoleDisplayName, type Role } from "@/lib/config/roles";
+import { bondRevokeRoleAction } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
 import { bondUpdateAction } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
-import { RevokeAllPermissionsForm } from "./actions/revoke-all-form/form";
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
@@ -88,6 +89,7 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
+                    revokeRoleAction={bondRevokeRoleAction}
                   />
                 ),
               },
