@@ -37,7 +37,7 @@ export function Roles() {
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                             <FormControl>
                               <Checkbox
-                                name={`roles`}
+                                name="roles"
                                 checked={field.value?.[info.contractRole]}
                                 onCheckedChange={(checked) => {
                                   const currentValue = field.value || {};
@@ -50,7 +50,7 @@ export function Roles() {
                                         ...currentValue,
                                         [info.contractRole]: false,
                                       };
-                                  console.log("updatedValue", updatedValue);
+
                                   field.onChange(updatedValue);
                                 }}
                               />
