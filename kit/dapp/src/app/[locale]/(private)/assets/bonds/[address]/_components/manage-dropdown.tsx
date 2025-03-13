@@ -1,5 +1,6 @@
 "use client";
 
+import { GrantRoleForm } from "@/components/blocks/asset-grant-role/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,13 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { bondGrantRoleAction } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import type { Address } from "viem";
 import { BurnForm } from "./burn-form/form";
-import { GrantRoleForm } from "./grant-role-form/form";
 import { MatureForm } from "./mature-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
@@ -31,40 +32,43 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
   const cannotMature: boolean =
     bond.isMatured ||
     !bond.hasSufficientUnderlying ||
-    (bond.maturityDate ? new Date(Number(bond.maturityDate) * 1000) < new Date() : false);
+    (bond.maturityDate
+      ? new Date(Number(bond.maturityDate) * 1000) < new Date()
+      : false);
 
   const menuItems = useMemo(
-    () => [
-      {
-        id: "mint",
-        label: t("actions.mint"),
-      },
-      {
-        id: "burn",
-        label: t("actions.burn"),
-      },
-      {
-        id: "pause",
-        label: bond.paused ? t("actions.unpause") : t("actions.pause"),
-      },
-      {
-        id: "grant-role",
-        label: t("actions.grant-role"),
-      },
-      {
-        id: "top-up",
-        label: t("actions.top-up"),
-      },
-      {
-        id: "withdraw",
-        label: t("actions.withdraw"),
-      },
-      {
-        id: "mature",
-        label: t("actions.mature"),
-        disabled: cannotMature,
-      },
-    ] as const,
+    () =>
+      [
+        {
+          id: "mint",
+          label: t("actions.mint"),
+        },
+        {
+          id: "burn",
+          label: t("actions.burn"),
+        },
+        {
+          id: "pause",
+          label: bond.paused ? t("actions.unpause") : t("actions.pause"),
+        },
+        {
+          id: "grant-role",
+          label: t("actions.grant-role"),
+        },
+        {
+          id: "top-up",
+          label: t("actions.top-up"),
+        },
+        {
+          id: "withdraw",
+          label: t("actions.withdraw"),
+        },
+        {
+          id: "mature",
+          label: t("actions.mature"),
+          disabled: cannotMature,
+        },
+      ] as const,
     [t, bond.paused, cannotMature]
   ) as { id: string; label: string; disabled?: boolean }[];
 
@@ -123,6 +127,7 @@ export function ManageDropdown({ address, bond }: ManageDropdownProps) {
         address={address}
         open={openMenuItem === "grant-role"}
         onOpenChange={onFormOpenChange}
+        grantRoleAction={bondGrantRoleAction}
       />
       <TopUpForm
         address={address}

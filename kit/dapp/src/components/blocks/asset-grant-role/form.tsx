@@ -2,8 +2,8 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { grantRole } from "@/lib/mutations/equity/grant-role/grant-role-action";
-import { GrantRoleSchema } from "@/lib/mutations/equity/grant-role/grant-role-schema";
+import type { GrantRoleActionType } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
+import { GrantRoleSchema } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
@@ -15,14 +15,16 @@ interface GrantRoleFormProps {
   address: Address;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  grantRoleAction: GrantRoleActionType;
 }
 
 export function GrantRoleForm({
   address,
   open,
   onOpenChange,
+  grantRoleAction,
 }: GrantRoleFormProps) {
-  const t = useTranslations("admin.equities.grant-role-form");
+  const t = useTranslations("admin.stablecoins.grant-role-form");
 
   return (
     <FormSheet
@@ -32,7 +34,7 @@ export function GrantRoleForm({
       description={t("description")}
     >
       <Form
-        action={grantRole}
+        action={grantRoleAction}
         resolver={zodResolver(GrantRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{

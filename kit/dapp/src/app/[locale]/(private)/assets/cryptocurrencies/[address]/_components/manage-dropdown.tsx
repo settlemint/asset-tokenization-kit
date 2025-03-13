@@ -1,5 +1,6 @@
 "use client";
 
+import { GrantRoleForm } from "@/components/blocks/asset-grant-role/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cryptoCurrencyGrantRoleAction } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import type { Address } from "viem";
-import { GrantRoleForm } from "./grant-role-form/form";
 import { MintForm } from "./mint-form/form";
 
 interface ManageDropdownProps {
@@ -76,6 +77,7 @@ export function ManageDropdown({ address }: ManageDropdownProps) {
         address={address}
         open={openMenuItem === "grant-role"}
         onOpenChange={onFormOpenChange}
+        grantRoleAction={cryptoCurrencyGrantRoleAction}
       />
     </>
   );
