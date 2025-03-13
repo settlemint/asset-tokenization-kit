@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "next dev --turbopack",
+    "prod:local": "next build && cp -r .next/static .next/standalone/kit/dapp/.next/static && cp -r public .next/standalone/public && bun .next/standalone/kit/dapp/server.js",
     "build": "next build",
     "start": "next start",
     "test": "bun test",
