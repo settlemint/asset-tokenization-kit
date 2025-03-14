@@ -1,3 +1,4 @@
+import { FormStep } from "@/components/blocks/form/form-step";
 import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
 import { ROLES, type RoleKey } from "@/lib/config/roles";
 import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
@@ -9,28 +10,21 @@ export function AdminRoles() {
   const t = useTranslations("admin.stablecoins.grant-role-form.roles");
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-semibold text-foreground text-lg">{t("title")}</h2>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
+    <FormStep title={t("title")} description={t("description")}>
+      <div className="space-y-3">
+        {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
+          ([key, role]) => (
+            <FormCheckbox
+              key={key}
+              name={`roles.${role.contractRole}`}
+              control={control}
+              label={role.displayName}
+              description={role.description}
+            />
+          )
+        )}
       </div>
-
-      <div className="space-y-4">
-        <div className="space-y-3">
-          {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
-            ([key, role]) => (
-              <FormCheckbox
-                key={key}
-                name={`roles.${role.contractRole}`}
-                control={control}
-                label={role.displayName}
-                description={role.description}
-              />
-            )
-          )}
-        </div>
-      </div>
-    </div>
+    </FormStep>
   );
 }
 

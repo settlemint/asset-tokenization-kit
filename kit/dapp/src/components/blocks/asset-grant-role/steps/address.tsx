@@ -1,3 +1,4 @@
+import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
 import { useTranslations } from "next-intl";
@@ -10,16 +11,7 @@ export function AdminAddress() {
   const t = useTranslations("admin.stablecoins.grant-role-form.address");
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-8">
-        <div className="mb-2">
-          <h2 className="font-semibold text-foreground text-lg">
-            {t("title")}
-          </h2>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
-      </div>
-
+    <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-1">
         {isManualEntry ? (
           <FormInput
@@ -46,7 +38,7 @@ export function AdminAddress() {
           </button>
         </div>
       </div>
-    </div>
+    </FormStep>
   );
 }
 
