@@ -1,13 +1,13 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { Button } from "@/components/ui/button";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
+import { SetYieldScheduleForm } from "./set-yield-schedule-form/form";
 
 interface DetailsProps {
   address: Address;
@@ -24,9 +24,7 @@ export async function Details({ address }: DetailsProps) {
         <p className="text-muted-foreground text-center max-w-md">
           {t("no-yield.description")}
         </p>
-        <Button variant="default">
-          {t("no-yield.configure-button")}
-        </Button>
+        <SetYieldScheduleForm address={address} asButton />
       </div>
     );
   }

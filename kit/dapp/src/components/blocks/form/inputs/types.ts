@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
 
 /**
@@ -34,11 +35,11 @@ export type WithHelperTextProps = {
 };
 
 /**
- * Props for form inputs that support postfix text
+ * Props for form inputs that support postfix text or elements
  */
 export type WithPostfixProps = {
-  /** Text displayed after the input */
-  postfix?: string;
+  /** Content displayed after the input */
+  postfix?: ReactNode;
 };
 
 export type WithTextOnlyProps = {

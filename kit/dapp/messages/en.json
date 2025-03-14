@@ -121,6 +121,44 @@
           "title": "No Yield Configured Yet",
           "description": "This bond does not have a yield schedule set up. Configure a yield to define interest payments for bondholders.",
           "configure-button": "Configure Yield"
+        },
+        "set-schedule": {
+          "trigger-label": "Configure Yield Schedule",
+          "title": "Configure Yield Schedule",
+          "description": "Set up a yield schedule for this bond",
+          "button-label": "Configure Schedule",
+          "start-time": {
+            "label": "Start Time",
+            "description": "When yield distribution should begin"
+          },
+          "end-time": {
+            "label": "End Time",
+            "description": "When yield distribution should end"
+          },
+          "rate": {
+            "label": "Yield Rate",
+            "description": "Annual interest rate paid to bondholders, expressed as a percentage"
+          },
+          "interval": {
+            "label": "Distribution Interval",
+            "description": "How often yield is distributed",
+            "options": {
+              "daily": "Daily",
+              "weekly": "Weekly",
+              "monthly": "Monthly",
+              "quarterly": "Quarterly",
+              "semi-annually": "Semi-annually",
+              "annually": "Annually"
+            }
+          },
+          "summary": {
+            "title": "Summary",
+            "contract-address": "Contract Address",
+            "start-time": "Start Time",
+            "end-time": "End Time",
+            "rate": "Yield Rate",
+            "interval": "Distribution Interval"
+          }
         }
       },
       "grant-role-form": {
