@@ -32,6 +32,7 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.totalBurned = BigDecimal.zero();
     cryptoCurrency.totalBurnedExact = BigInt.zero();
     cryptoCurrency.totalHolders = 0;
+    cryptoCurrency.deployedOn = BigInt.zero();
 
     cryptoCurrency.save();
 

@@ -14,6 +14,7 @@ export function handleEquityCreated(event: EquityCreated): void {
   const creator = fetchAccount(event.params.creator);
   const asset = fetchEquity(event.params.token);
   asset.creator = creator.id;
+  asset.deployedOn = event.block.timestamp;
   asset.save();
 
   const assetCount = fetchAssetCount(AssetType.equity);

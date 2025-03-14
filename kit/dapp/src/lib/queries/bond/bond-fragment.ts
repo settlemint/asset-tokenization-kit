@@ -30,6 +30,13 @@ export const BondFragment = theGraphGraphqlKit(`
     maturityDate
     isMatured
     hasSufficientUnderlying
+    redeemedAmount
+    faceValue
+    underlyingBalance
+    totalUnderlyingNeeded
+    totalUnderlyingNeededExact
+    cap
+    deployedOn
   }
 `);
 
@@ -60,6 +67,13 @@ export const BondFragmentSchema = z.object({
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
+  redeemedAmount: z.bigInt(),
+  faceValue: z.bigInt(),
+  underlyingBalance: z.bigInt(),
+  totalUnderlyingNeeded: z.bigDecimal(),
+  totalUnderlyingNeededExact: z.bigInt(),
+  cap: z.bigInt(),
+  deployedOn: z.bigInt(),
 });
 
 /**

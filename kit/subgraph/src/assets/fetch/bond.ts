@@ -58,6 +58,7 @@ export function fetchBond(address: Address): Bond {
     bond.totalUnderlyingNeededExact = BigInt.zero();
     bond.totalUnderlyingNeeded = BigDecimal.zero();
     bond.hasSufficientUnderlying = false;
+    bond.deployedOn = BigInt.zero();
     updateDerivedFields(bond);
     bond.save();
 
