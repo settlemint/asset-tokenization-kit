@@ -39,7 +39,7 @@ const tabs = async (
 ): Promise<TabItemProps[]> => {
   const t = await getTranslations({
     locale,
-    namespace: "admin.funds.tabs",
+    namespace: "admin.bonds.tabs",
   });
 
   const [bond, balances, events] = await Promise.all([
@@ -57,6 +57,10 @@ const tabs = async (
       name: t("holders"),
       href: `/assets/bonds/${address}/holders`,
       badge: bond.totalHolders,
+    },
+    {
+      name: t("yield"),
+      href: `/assets/bonds/${address}/yield`,
     },
     {
       name: t("events"),

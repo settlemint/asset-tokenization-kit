@@ -98,6 +98,26 @@
         "events-page-description": "Track all events related to {name} bond.",
         "events-page-title": "{name} Events"
       },
+      "yield": {
+        "yield-page-title": "{name} Yield",
+        "yield-page-description": "View and manage yield information for {name} bond.",
+        "type": "Type",
+        "type-fixed": "Fixed",
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "deployed-on": "Deployed on",
+        "rate": "Rate",
+        "start-date": "Start date",
+        "end-date": "End date",
+        "interval": "Interval",
+        "periods": "Periods",
+        "yield-per-period": "Yield / period",
+        "total-yield-distributed": "Total yield distributed",
+        "total-unclaimed-yield": "Total unclaimed yield",
+        "underlying-asset-balance": "Underlying asset balance",
+        "yield-coverage": "Yield coverage",
+        "yearly": "yearly"
+      },
       "grant-role-form": {
         "address": {
           "address-label": "Admin Wallet Address",
@@ -232,7 +252,8 @@
         "details": "Details",
         "events": "Events",
         "holders": "Holders",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "yield": "Yield"
       },
       "top-up-form": {
         "trigger-label": "Top up",
