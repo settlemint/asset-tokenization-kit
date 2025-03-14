@@ -43,6 +43,7 @@ export function fetchFund(address: Address): Fund {
       : managementFeeBps.value;
     fund.paused = paused.reverted ? false : paused.value;
     fund.lastFeeCollection = BigInt.zero();
+    fund.deployedOn = BigInt.zero();
     fund.save();
 
     account.asAsset = fund.id;

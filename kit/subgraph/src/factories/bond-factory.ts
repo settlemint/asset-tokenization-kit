@@ -14,6 +14,7 @@ export function handleBondCreated(event: BondCreated): void {
   const creator = fetchAccount(event.params.creator);
   const asset = fetchBond(event.params.token);
   asset.creator = creator.id;
+  asset.deployedOn = event.block.timestamp;
   asset.save();
 
   const assetCount = fetchAssetCount(AssetType.bond);

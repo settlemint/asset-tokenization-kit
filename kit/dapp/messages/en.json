@@ -105,6 +105,7 @@
         "active": "Active",
         "maturity-date": "Maturity date",
         "maturity-date-info": "Date when the bond matures",
+        "not-available": "N/A",
         "yield-type": "Yield type",
         "yield-type-info": "Type of yield for the bond",
         "face-value": "Face value",

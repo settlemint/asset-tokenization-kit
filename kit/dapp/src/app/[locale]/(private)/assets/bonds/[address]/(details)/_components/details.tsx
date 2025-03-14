@@ -37,21 +37,22 @@ export async function Details({ address }: DetailsProps) {
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t("deployed-on")}>12/3/2025</DetailGridItem>
+        <DetailGridItem label={t("deployed-on")}>
+          {format(new Date(Number(bond.deployedOn) * 1000), "PPP")}
+        </DetailGridItem>
         {/* <DetailGridItem label={t("decimals")}>{bond.decimals}</DetailGridItem> */}
         <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
-          {bond.totalSupply}
+          {bond.cap}
         </DetailGridItem>
         <DetailGridItem label={t("total-issued")} info={t("total-issued-info")}>
-          {bond.totalHolders}
+          {bond.totalSupply}
         </DetailGridItem>
         <DetailGridItem label={t("redeemed")} info={t("redeemed-info")}>
-          {bond.redeemedAmount}
-        </DetailGridItem>
+          {bond.isMatured ? bond.redeemedAmount : t("not-available")}        </DetailGridItem>
         <DetailGridItem label={t("maturity-status")} info={t("maturity-status-info")}>
-        {bond.isMatured
+          {bond.isMatured
             ? t("matured")
-            : bond.totalHolders < bond.totalSupply
+            : bond.totalSupply < bond.cap
               ? t("issuing")
               : t("active")
           }

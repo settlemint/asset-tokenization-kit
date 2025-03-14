@@ -35,6 +35,8 @@ export const BondFragment = theGraphGraphqlKit(`
     underlyingBalance
     totalUnderlyingNeeded
     totalUnderlyingNeededExact
+    cap
+    deployedOn
   }
 `);
 
@@ -70,6 +72,8 @@ export const BondFragmentSchema = z.object({
   underlyingBalance: z.bigInt(),
   totalUnderlyingNeeded: z.bigDecimal(),
   totalUnderlyingNeededExact: z.bigInt(),
+  cap: z.bigInt(),
+  deployedOn: z.bigInt(),
 });
 
 /**
