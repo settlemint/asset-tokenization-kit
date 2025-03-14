@@ -74,6 +74,7 @@ export function FormSwitch<T extends FieldValues>({
                 <Switch
                   {...field}
                   {...props}
+                  disabled={disabled}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   className={cn("w-9", className)}

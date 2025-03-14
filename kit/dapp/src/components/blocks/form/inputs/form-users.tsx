@@ -75,6 +75,7 @@ export function FormUsers<T extends FieldValues>({
                 <Button
                   variant="outline"
                   aria-expanded={open}
+                  disabled={disabled}
                   className="w-full justify-between"
                   {...getAriaAttributes(
                     field.name,

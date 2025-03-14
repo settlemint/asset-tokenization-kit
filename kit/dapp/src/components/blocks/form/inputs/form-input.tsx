@@ -126,6 +126,7 @@ export function FormInput<T extends FieldValues>({
                     !!fieldState.error,
                     disabled
                   )}
+                  disabled={disabled}
                 />
                 {postfix && (
                   <span className="inline-flex items-center rounded-e-lg border border-input bg-background px-3 text-muted-foreground text-sm">
