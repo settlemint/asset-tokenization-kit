@@ -12,7 +12,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const t = useTranslations("admin.bonds.pause-form.summary");
+ const t = useTranslations("admin.bonds.pause-form.summary");
 
   return (
     <FormStep title={t("title")} description={t("description")}>

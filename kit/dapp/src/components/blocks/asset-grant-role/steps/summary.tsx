@@ -17,7 +17,7 @@ export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<GrantRoleInput>();
   const t = useTranslations("admin.stablecoins.grant-role-form.summary");
   const values = useWatch({
-    control: control,
+    control,
   });
 
   return (

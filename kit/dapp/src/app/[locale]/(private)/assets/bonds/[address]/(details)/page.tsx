@@ -8,6 +8,7 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../_components/burn-form/form";
@@ -15,14 +16,12 @@ import { MintForm } from "../_components/mint-form/form";
 import { Details } from "./_components/details";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const bond = await getBondDetail({ address });
   const t = await getTranslations({

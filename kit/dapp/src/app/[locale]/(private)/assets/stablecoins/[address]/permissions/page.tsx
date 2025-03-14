@@ -3,19 +3,18 @@ import { PageHeader } from "@/components/layout/page-header";
 import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { columns } from "./_components/columns";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations({

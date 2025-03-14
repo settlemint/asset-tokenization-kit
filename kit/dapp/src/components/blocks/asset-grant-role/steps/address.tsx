@@ -4,6 +4,7 @@ import type { GrantRoleInput } from "@/lib/mutations/asset/access-control/grant-
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { FormUsers } from "../../form/inputs/form-users";
 
 export function AdminAddress() {
   const { control } = useFormContext<GrantRoleInput>();
@@ -21,7 +22,7 @@ export function AdminAddress() {
             placeholder={t("manual-placeholder")}
           />
         ) : (
-          <FormInput
+          <FormUsers
             control={control}
             name="userAddress"
             label={t("address-label")}

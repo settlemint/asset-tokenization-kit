@@ -2,19 +2,18 @@ import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { columns } from "./_components/columns";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const fund = await getFundDetail({ address });
   const t = await getTranslations({

@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";
+import type { Locale } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -67,7 +68,7 @@ export function LanguageToggle({
    * @param locale - The new locale to set.
    */
   const handleSetLanguage = useCallback(
-    (locale: string) => {
+    (locale: Locale) => {
       if (locale === currentLocale) return;
 
       setIsPending(true);

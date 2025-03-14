@@ -38,6 +38,8 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
     defaultValue?: string;
+    /** Filter users by role */
+    role?: "admin" | "issuer" | "user";
   };
 
 export function FormUsers<T extends FieldValues>({
@@ -46,6 +48,7 @@ export function FormUsers<T extends FieldValues>({
   required,
   placeholder,
   defaultValue,
+  role,
   disabled,
   ...props
 }: FormSearchSelectProps<T>) {
@@ -101,6 +104,7 @@ export function FormUsers<T extends FieldValues>({
                     onValueChange={field.onChange}
                     setOpen={setOpen}
                     value={field.value}
+                    role={role}
                   />
                 </Command>
               </PopoverContent>
@@ -125,10 +129,12 @@ function FormUsersList({
   onValueChange,
   setOpen,
   value,
+  role,
 }: {
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
+  role?: "admin" | "issuer" | "user";
 }) {
   const search = (useCommandState((state) => state.search) || "") as string;
   const debounced = useDebounce<string>(search, 250);
@@ -151,7 +157,11 @@ function FormUsersList({
       try {
         const results = await getUserSearch({ searchTerm: debounced });
         if (isMounted) {
-          setUsers(results);
+          // Filter users by role if specified
+          const filteredUsers = role
+            ? results.filter((user) => user.role === role)
+            : results;
+          setUsers(filteredUsers);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -170,7 +180,7 @@ function FormUsersList({
     return () => {
       isMounted = false;
     };
-  }, [debounced]);
+  }, [debounced, role]);
 
   return (
     <CommandList>
