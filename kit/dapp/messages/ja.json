@@ -92,7 +92,30 @@
         "ownership-concentration-info": "上位5名の保有者による所有割合",
         "symbol": "シンボル",
         "total-supply": "総供給量",
-        "total-supply-info": "トークンの総供給量"
+        "total-supply-info": "トークンの総供給量",
+        "deployed-on": "デプロイ日",
+        "total-issued": "発行総数",
+        "total-issued-info": "発行されたトークンの総額",
+        "redeemed": "償還済み",
+        "redeemed-info": "償還されたトークンの総額",
+        "maturity-status": "満期状況",
+        "maturity-status-info": "債券の現在の状況",
+        "matured": "満期",
+        "issuing": "発行中",
+        "active": "アクティブ",
+        "maturity-date": "満期日",
+        "maturity-date-info": "債券が満期を迎える日",
+        "not-available": "該当なし",
+        "yield-type": "利回りタイプ",
+        "yield-type-info": "債券の利回りの種類",
+        "face-value": "額面価値",
+        "face-value-info": "単一の債券単位の名目価値",
+        "underlying-asset": "基礎資産",
+        "underlying-asset-info": "この債券を裏付ける資産",
+        "underlying-asset-balance": "基礎資産残高",
+        "underlying-asset-balance-info": "基礎資産の現在の残高",
+        "redemption-readiness": "償還準備状況",
+        "redemption-readiness-info": "償還可能な基礎資産の割合"
       },
       "events": {
         "events-page-description": "すべての{name}ボンドに関連するイベントを追跡します。",
@@ -1733,7 +1756,7 @@
       "actions-header": "アクション",
       "edit-form": {
         "button-label": "権限を編集",
-        "description": "このユーザーに割り当てられた権限とアクセスレベルを更新します。",
+        "description": "{name} に割り当てられた権限とアクセスレベルを更新します。",
         "roles": {
           "description": "このユーザーに割り当てる役割を選択してください。少なくとも1つの役割を選択する必要があります。",
           "title": "ユーザー役割を選択"

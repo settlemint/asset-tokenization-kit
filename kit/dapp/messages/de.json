@@ -92,7 +92,30 @@
         "ownership-concentration-info": "Prozentsatz, der den 5 größten Inhabern gehört",
         "symbol": "Symbol",
         "total-supply": "Gesamtangebot",
-        "total-supply-info": "Das Gesamtangebot des Tokens"
+        "total-supply-info": "Das Gesamtangebot des Tokens",
+        "deployed-on": "Eingesetzt am",
+        "total-issued": "Insgesamt ausgegeben",
+        "total-issued-info": "Gesamtmenge der ausgegebenen Token",
+        "redeemed": "Eingelöst",
+        "redeemed-info": "Gesamtmenge der eingelösten Token",
+        "maturity-status": "Fälligkeitsstatus",
+        "maturity-status-info": "Aktueller Status der Anleihe",
+        "matured": "Fällig",
+        "issuing": "Ausgabe",
+        "active": "Aktiv",
+        "maturity-date": "Fälligkeitsdatum",
+        "maturity-date-info": "Datum, an dem die Anleihe fällig wird",
+        "not-available": "Nicht zutreffend",
+        "yield-type": "Ertragsart",
+        "yield-type-info": "Art des Ertrags für die Anleihe",
+        "face-value": "Nennwert",
+        "face-value-info": "Nennwert einer einzelnen Anleihe",
+        "underlying-asset": "Unterliegendes Vermögen",
+        "underlying-asset-info": "Vermögen, das diese Anleihe absichert",
+        "underlying-asset-balance": "Saldo des unterliegenden Vermögens",
+        "underlying-asset-balance-info": "Aktueller Saldo des unterliegenden Vermögens",
+        "redemption-readiness": "Einlösungsbereitschaft",
+        "redemption-readiness-info": "Prozentsatz der unterliegenden Vermögenswerte, die zur Einlösung verfügbar sind"
       },
       "events": {
         "events-page-description": "Alle Ereignisse im Zusammenhang mit dem {name} Bond verfolgen.",
@@ -1733,7 +1756,7 @@
       "actions-header": "Aktionen",
       "edit-form": {
         "button-label": "Berechtigungen bearbeiten",
-        "description": "Aktualisieren Sie die Berechtigungen und Zugriffslevel, die diesem Benutzer zugewiesen sind.",
+        "description": "Aktualisieren Sie die Berechtigungen und Zugriffslevel, die für {name} zugewiesen sind.",
         "roles": {
           "description": "Wählen Sie die Rollen aus, die diesem Benutzer zugewiesen werden sollen. Mindestens eine Rolle muss ausgewählt werden.",
           "title": "Benutzerrollen auswählen"

@@ -61,6 +61,7 @@ export default async function PortfolioDashboard({
         <MyAssetsTable
           wallet={user.wallet as Address}
           title={t("dashboard.my-assets")}
+          variant="small"
         />
       </div>
       <PageHeader title={t("dashboard.latest-events")} className="mt-8" />

@@ -92,7 +92,30 @@
         "ownership-concentration-info": "النسبة المئوية المملوكة من قبل أعلى 5 حائزين",
         "symbol": "الرمز",
         "total-supply": "الإمداد الكلي",
-        "total-supply-info": "الإمداد الكلي للرمز"
+        "total-supply-info": "الإمداد الكلي للرمز",
+        "deployed-on": "تم نشره في",
+        "total-issued": "إجمالي المبلغ المصدَر",
+        "total-issued-info": "إجمالي عدد الرموز المصدَرة",
+        "redeemed": "تم استرداده",
+        "redeemed-info": "إجمالي عدد الرموز المستردة",
+        "maturity-status": "حالة الاستحقاق",
+        "maturity-status-info": "الحالة الحالية للسند",
+        "matured": "استحق",
+        "issuing": "الإصدار",
+        "active": "نشط",
+        "maturity-date": "تاريخ الاستحقاق",
+        "maturity-date-info": "التاريخ الذي يستحق فيه السند",
+        "not-available": "غير متوفر",
+        "yield-type": "نوع العائد",
+        "yield-type-info": "نوع العائد للسند",
+        "face-value": "القيمة الاسمية",
+        "face-value-info": "القيمة الاسمية لوحدة سند واحدة",
+        "underlying-asset": "الأصل الأساسي",
+        "underlying-asset-info": "الأصل الذي يدعم هذا السند",
+        "underlying-asset-balance": "رصيد الأصل الأساسي",
+        "underlying-asset-balance-info": "الرصيد الحالي للأصل الأساسي",
+        "redemption-readiness": "جاهزية الاسترداد",
+        "redemption-readiness-info": "نسبة الأصول الأساسية المتاحة للاسترداد"
       },
       "events": {
         "events-page-description": "تتبع جميع الأحداث المتعلقة بسند {name}.",
@@ -1733,7 +1756,7 @@
       "actions-header": "الإجراءات",
       "edit-form": {
         "button-label": "تحرير الأذونات",
-        "description": "تحديث الأذونات ومستويات الوصول المعينة لهذا المستخدم.",
+        "description": "تحديث الأذونات ومستويات الوصول المعينة لـ {name}.",
         "roles": {
           "description": "اختر الأدوار التي سيتم تعيينها لهذا المستخدم. يجب اختيار دور واحد على الأقل.",
           "title": "اختر أدوار المستخدم"

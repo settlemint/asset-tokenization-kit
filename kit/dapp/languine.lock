@@ -72,6 +72,29 @@ files:
     admin.bonds.details.symbol: 02c86eb2792f3262c21d030a87e19793
     admin.bonds.details.total-supply: 1ecae95c3c8f236721cce5b740b2deaa
     admin.bonds.details.total-supply-info: 2138711f691fc996de09dbdbbe64b888
+    admin.bonds.details.deployed-on: 742d05d2641524cabb50be6874f319d5
+    admin.bonds.details.total-issued: dbfd9bc1ef3e77ff056f20a7f3fccbc3
+    admin.bonds.details.total-issued-info: 126ddf83ea47cd6315f2f47ae21de21e
+    admin.bonds.details.redeemed: d182bd3ccc300a64be9b3b816786c0b7
+    admin.bonds.details.redeemed-info: 99c3a7e04e164bc2c16f003fdf1cf8fe
+    admin.bonds.details.maturity-status: 2240178b19ef31e1cb0c11e623a45e7f
+    admin.bonds.details.maturity-status-info: 905e485d1e8aa3181d54cb5d946c5342
+    admin.bonds.details.matured: cddd8b8c35283f03dc0ed6702029247d
+    admin.bonds.details.issuing: 763c702c0db6a92ea502e19b52cc1df8
+    admin.bonds.details.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    admin.bonds.details.maturity-date: 0e205b0497cc6814692de018ab2ab3f9
+    admin.bonds.details.maturity-date-info: 11e83c2c52717f3db8f49367d93b0120
+    admin.bonds.details.not-available: 382b0f5185773fa0f67a8ed8056c7759
+    admin.bonds.details.yield-type: c4c250e0ca984c7f8b5df9afdf45ae94
+    admin.bonds.details.yield-type-info: 76427fb1a653fb4ca35081abdd1019fd
+    admin.bonds.details.face-value: 9648169bfdd6e7a7dc351cd67d6cad72
+    admin.bonds.details.face-value-info: 8359efae5642725a87ec694fb7c63676
+    admin.bonds.details.underlying-asset: 7b350ed595b03937afb12262eb0f0960
+    admin.bonds.details.underlying-asset-info: ea90358a0fb676061259bad38903d593
+    admin.bonds.details.underlying-asset-balance: 8a5ec37bf1822e6b2d57fb61bfe3a57a
+    admin.bonds.details.underlying-asset-balance-info: e9a98c10235d2e1c0ad9c7141c440160
+    admin.bonds.details.redemption-readiness: f61acb4e9e7190304621c8453609cf8c
+    admin.bonds.details.redemption-readiness-info: a3dd581cbebbd0ba366bf4277f821846
     admin.bonds.events.events-page-description: 74bfa3b3059aae49e2d5f6133da5843b
     admin.bonds.events.events-page-title: 1e2a7b7b6ebe4d77c942463f560e60b3
     admin.bonds.grant-role-form.address.address-label: 2f2c367f2d983a644073e56b65450d07
@@ -350,7 +373,6 @@ files:
     admin.dashboard.charts.assets-supply.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.charts.assets-supply.title: cebd7e01de0cd31b3c8f27428ab5ac76
     admin.dashboard.charts.transaction-history.description: ed431c9f4d10a2ead0eb3643f5e33f33
-    admin.dashboard.charts.transaction-history.label: 31112aca11d0e9e6eb7db96f317dda49
     admin.dashboard.charts.transaction-history.title: ed431c9f4d10a2ead0eb3643f5e33f33
     admin.dashboard.charts.users-history.description: 44fb29646871b901dd1d53849d62a43e
     admin.dashboard.charts.users-history.label: f9aae5fda8d810a29f12d1e61b4ab25f
@@ -1270,7 +1292,7 @@ files:
     admin.asset-holders-tab.wallet-header: 156e132b014314b1eae89410e54bcc8c
     admin.asset-permissions-tab.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
     admin.asset-permissions-tab.edit-form.button-label: bac1979c6af398082d23c5b4f5b5e8e0
-    admin.asset-permissions-tab.edit-form.description: 0b1e37ef2b280eef3df04d090dd41805
+    admin.asset-permissions-tab.edit-form.description: 1891bd1dd6cfef6d6ed5675c8debb853
     admin.asset-permissions-tab.edit-form.roles.description: 77166df11097d6a3bb3d80756a743ff0
     admin.asset-permissions-tab.edit-form.roles.title: 92ca08873572adb2d29541d634fc2be7
     admin.asset-permissions-tab.edit-form.summary.current-roles-label: 3a28112c268b9b40580067b9bccd0d58
@@ -1280,7 +1302,6 @@ files:
     admin.asset-permissions-tab.edit-form.summary.title: 6891cfdaf48d3419ce894620c9c0b748
     admin.asset-permissions-tab.edit-form.summary.update-title: 436a859163dceb6dfc35cd643a2111f1
     admin.asset-permissions-tab.edit-form.summary.user-label: 8f9bfe9d1345237cb3b2b205864da075
-    admin.asset-permissions-tab.edit-form.title: f0f41ea52c10655bd2ba851058298f97
     admin.asset-permissions-tab.edit-form.trigger-label: 36cf870af0eef60e782fec9d6bfb95a8
     admin.asset-permissions-tab.last-activity-header: 6307dd2f57d3f7f949eca03a2a54f6e0
     admin.asset-permissions-tab.page-description: 74bc44638128d27188155f889ec5d62d
