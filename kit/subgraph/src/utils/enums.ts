@@ -5,6 +5,7 @@ export class AssetType {
   static stablecoin: string = "stablecoin";
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
+  static tokenizeddeposit: string = "tokenizeddeposit";
 }
 
 export class FactoryType {
@@ -14,6 +15,7 @@ export class FactoryType {
   static cryptocurrency: string = "cryptocurrency";
   static fund: string = "fund";
   static fixedyield: string = "fixedyield";
+  static tokenizeddeposit: string = "tokenizeddeposit";
 }
 
 export class EventName {
@@ -31,6 +33,8 @@ export class EventName {
   static TokensUnfrozen: string = "Assets Unfrozen";
   static UserBlocked: string = "User Blocked";
   static UserUnblocked: string = "User Unblocked";
+  static UserAllowed: string = "User Allowed";
+  static UserDisallowed: string = "User Disallowed";
   // Bond specific events
   static BondMatured: string = "Bond Matured";
   static BondRedeemed: string = "Bond Redeemed";
