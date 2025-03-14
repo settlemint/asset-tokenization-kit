@@ -85,7 +85,7 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@better-auth/cli": "1.2.3",
+    "@better-auth/cli": "1.2.4",
     "@eslint/eslintrc": "3.3.0",
     "@eslint/js": "9.22.0",
     "@tailwindcss/postcss": "4.0.13",
