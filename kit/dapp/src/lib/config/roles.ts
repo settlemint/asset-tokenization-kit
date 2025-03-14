@@ -1,4 +1,5 @@
 import { type Hex, keccak256, stringToBytes } from "viem";
+import { z, type ZodInfer } from "../utils/zod";
 
 /**
  * Role configuration for the access control system.
@@ -48,7 +49,8 @@ export const getRoleDisplayName = (roleKey: RoleKey): string => {
   return ROLES[roleKey].displayName;
 };
 
-export type RolesInput = Partial<Record<Role, boolean | null>>;
+const _RolesSchema = z.roles();
+export type RolesInput = ZodInfer<typeof _RolesSchema>;
 
 export const getActiveRoles = (roles?: RolesInput): Role[] => {
   if (!roles) return [];
