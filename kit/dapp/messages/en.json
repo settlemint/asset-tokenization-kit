@@ -116,7 +116,12 @@
         "total-unclaimed-yield": "Total unclaimed yield",
         "underlying-asset-balance": "Underlying asset balance",
         "yield-coverage": "Yield coverage",
-        "yearly": "yearly"
+        "yearly": "yearly",
+        "no-yield": {
+          "title": "No Yield Configured Yet",
+          "description": "This bond does not have a yield schedule set up. Configure a yield to define interest payments for bondholders.",
+          "configure-button": "Configure Yield"
+        }
       },
       "grant-role-form": {
         "address": {
@@ -253,7 +258,9 @@
         "events": "Events",
         "holders": "Holders",
         "permissions": "Permissions",
-        "yield": "Yield"
+        "yield": "Yield",
+        "underlying-assets": "Underlying Assets",
+        "transactions": "Transactions"
       },
       "top-up-form": {
         "trigger-label": "Top up",

@@ -30,6 +30,28 @@ export const BondFragment = theGraphGraphqlKit(`
     maturityDate
     isMatured
     hasSufficientUnderlying
+    yieldSchedule {
+      id
+      startDate
+      endDate
+      rate
+      interval
+      totalClaimed
+      totalClaimedExact
+      unclaimedYield
+      unclaimedYieldExact
+      underlyingBalance
+      underlyingBalanceExact
+      periods(first: 1) {
+        id
+        periodId
+        startDate
+        endDate
+        rate
+        totalClaimed
+        totalClaimedExact
+      }
+    }
   }
 `);
 
@@ -60,6 +82,33 @@ export const BondFragmentSchema = z.object({
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
+  yieldSchedule: z.object({
+    id: z.string(),
+    token: z.object({
+      id: z.string(),
+    }),
+    underlyingAsset: z.object({
+      id: z.string(),
+    }),
+    startDate: z.bigInt(),
+    endDate: z.bigInt(),
+    rate: z.bigInt(),
+    interval: z.bigInt(),
+    totalClaimed: z.bigDecimal(),
+    unclaimedYield: z.bigDecimal(),
+    underlyingBalance: z.bigDecimal(),
+    periods: z.array(
+      z.object({
+        id: z.string(),
+        periodId: z.bigInt(),
+        startDate: z.bigInt(),
+        endDate: z.bigInt(),
+        rate: z.bigInt(),
+        totalClaimed: z.bigDecimal(),
+        totalClaimedExact: z.bigInt(),
+      })
+    ),
+  }).nullable(),
 });
 
 /**
