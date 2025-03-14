@@ -4,13 +4,14 @@ import { TransactionsHistory } from "@/components/blocks/transactions-table/tran
 import { PageHeader } from "@/components/layout/page-header";
 import { getUser } from "@/lib/auth/utils";
 import { getUserAssetsBalance } from "@/lib/queries/asset-balance/asset-balance-user";
-import { getTransactionsHistory } from "@/lib/queries/transactions/transactions-history";
+import { getTransactionsTimeline } from "@/lib/queries/transactions/transactions-timeline";
 import { startOfDay, subMonths } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { LatestEvents } from "../../assets/(dashboard)/_components/table/latest-events";
 import { Greeting } from "./_components/greeting/greeting";
 import { MyAssetsHeader } from "./_components/header/my-assets-header";
+
 export default async function PortfolioDashboard({
   params,
 }: {
@@ -23,13 +24,16 @@ export default async function PortfolioDashboard({
   });
 
   const user = await getUser();
-  const myAssetsBalance = await getUserAssetsBalance(user.wallet as Address);
-
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
-  const data = await getTransactionsHistory({
-    processedAfter: oneMonthAgo,
-    address: user.wallet as Address,
-  });
+
+  const [myAssetsBalance, data] = await Promise.all([
+    getUserAssetsBalance(user.wallet as Address),
+    getTransactionsTimeline({
+      timelineStartDate: oneMonthAgo,
+      granularity: "DAY",
+      from: user.wallet as Address,
+    }),
+  ]);
 
   return (
     <>
@@ -41,10 +45,7 @@ export default async function PortfolioDashboard({
         <Greeting />
         <MyAssetsHeader data={myAssetsBalance} />
         <TransactionsHistory
-          data={data.map((tx) => ({
-            timestamp: tx.createdAt.toISOString(),
-            transaction: 1,
-          }))}
+          data={data}
           chartOptions={{
             intervalType: "month",
             intervalLength: 1,

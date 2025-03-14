@@ -127,9 +127,9 @@ const extendedZod = {
   roles: () =>
     z
       .object({
-        DEFAULT_ADMIN_ROLE: z.boolean(),
-        SUPPLY_MANAGEMENT_ROLE: z.boolean(),
-        USER_MANAGEMENT_ROLE: z.boolean(),
+        DEFAULT_ADMIN_ROLE: z.boolean().nullish(),
+        SUPPLY_MANAGEMENT_ROLE: z.boolean().nullish(),
+        USER_MANAGEMENT_ROLE: z.boolean().nullish(),
       })
       .refine((data) => Object.values(data).some(Boolean), {
         message: "At least one role must be selected",

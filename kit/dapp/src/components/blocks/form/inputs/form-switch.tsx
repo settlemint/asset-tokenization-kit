@@ -47,6 +47,7 @@ export function FormSwitch<T extends FieldValues>({
   helperText,
   rules,
   className,
+  disabled,
   ...props
 }: FormSwitchProps<T>) {
   return (
@@ -58,9 +59,7 @@ export function FormSwitch<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(
-                  props.disabled && "cursor-not-allowed opacity-70"
-                )}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -75,13 +74,14 @@ export function FormSwitch<T extends FieldValues>({
                 <Switch
                   {...field}
                   {...props}
+                  disabled={disabled}
                   checked={field.value}
                   onCheckedChange={field.onChange}
                   className={cn("w-9", className)}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
-                    props.disabled
+                    disabled
                   )}
                 />
                 {helperText && (

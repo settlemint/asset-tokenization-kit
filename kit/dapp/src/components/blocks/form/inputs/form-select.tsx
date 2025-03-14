@@ -66,6 +66,7 @@ export function FormSelect<T extends FieldValues>({
   options,
   className,
   defaultValue,
+  disabled,
   ...props
 }: FormSelectProps<T>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -81,9 +82,7 @@ export function FormSelect<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(
-                  props.disabled && "cursor-not-allowed opacity-70"
-                )}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -95,20 +94,20 @@ export function FormSelect<T extends FieldValues>({
               onValueChange={field.onChange}
               defaultValue={defaultValue}
               value={field.value ?? defaultValue}
-              disabled={props.disabled}
+              disabled={disabled}
               name={field.name}
             >
               <FormControl>
                 <SelectTrigger
                   ref={triggerRef}
                   className={cn(
-                    props.disabled && "cursor-not-allowed opacity-50",
+                    disabled && "cursor-not-allowed opacity-50",
                     className
                   )}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
-                    props.disabled
+                    disabled
                   )}
                 >
                   <SelectValue
