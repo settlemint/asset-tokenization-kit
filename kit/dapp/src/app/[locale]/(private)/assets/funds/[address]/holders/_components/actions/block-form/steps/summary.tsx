@@ -2,10 +2,8 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { BlockUserInput } from "@/lib/mutations/fund/block-user/block-user-schema";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -14,7 +12,6 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
-  const { control } = useFormContext<BlockUserInput>();
   const t = useTranslations("admin.asset-holders-tab.block-form.summary");
 
   return (

@@ -2,11 +2,8 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { PauseInput } from "@/lib/mutations/fund/pause/pause-schema";
-import type { UnPauseInput } from "@/lib/mutations/fund/unpause/unpause-schema";
 import { DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -15,7 +12,6 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const { control } = useFormContext<PauseInput | UnPauseInput>();
   const t = useTranslations("admin.funds.pause-form.summary");
 
   return (
