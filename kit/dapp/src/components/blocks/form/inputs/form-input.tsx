@@ -55,6 +55,7 @@ export function FormInput<T extends FieldValues>({
   postfix,
   className,
   textOnly,
+  disabled,
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
@@ -83,9 +84,7 @@ export function FormInput<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(
-                  props.disabled && "cursor-not-allowed opacity-70"
-                )}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -125,7 +124,7 @@ export function FormInput<T extends FieldValues>({
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
-                    props.disabled
+                    disabled
                   )}
                 />
                 {postfix && (

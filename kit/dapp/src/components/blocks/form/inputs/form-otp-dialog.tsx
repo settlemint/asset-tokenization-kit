@@ -41,7 +41,7 @@ export function FormOtpDialog<T extends FieldValues>({
   open,
   onOpenChange,
   onSubmit,
-
+  disabled,
   ...props
 }: FormOtpDialogProps<T>) {
   const handleSubmit = useCallback(() => {
@@ -72,6 +72,7 @@ export function FormOtpDialog<T extends FieldValues>({
                     className={cn("justify-center gap-1.5", className)}
                     autoComplete="off"
                     required
+                    disabled={disabled}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} className="size-8" />
