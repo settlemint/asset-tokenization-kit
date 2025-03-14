@@ -29,5 +29,21 @@
         }
       }
     }
+  },
+  "contacts": {
+    "columns": {
+      "name": "Name",
+      "wallet": "Wallet Address",
+      "created_at": "Created"
+    }
+  },
+  "portfolio": {
+    "my-contacts": {
+      "table": {
+        "name-header": "Name",
+        "wallet-header": "Wallet Address",
+        "created-at-header": "Created"
+      }
+    }
   }
 }

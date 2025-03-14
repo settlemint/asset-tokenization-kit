@@ -2235,7 +2235,9 @@
         "name-header": "Name",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "type-header": "Type"
+        "type-header": "Type",
+        "wallet-header": "Wallet",
+        "created-at-header": "Created At"
       }
     },
     "add-contact-form": {

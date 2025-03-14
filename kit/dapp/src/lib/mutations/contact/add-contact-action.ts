@@ -14,7 +14,6 @@ const AddContact = hasuraGraphql(`
         id: $id,
         wallet: $address,
         name: $name,
-        created_at: "now()",
         user_id: $userId,
       }
     ) {
@@ -31,7 +30,7 @@ export const addContact = action
       parsedInput: { address, firstName, lastName },
       ctx: { user },
     }) => {
-      const data = await hasuraClient.request(getQuery(), {
+      const data = await hasuraClient.request(AddContact, {
         id: nanoid(),
         address: address,
         name: `${firstName} ${lastName}`,
@@ -46,7 +45,3 @@ export const addContact = action
       return contact;
     }
   );
-
-function getQuery() {
-  return AddContact;
-}
