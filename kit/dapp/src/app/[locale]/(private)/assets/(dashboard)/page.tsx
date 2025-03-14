@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { AssetActivity } from "./_components/charts/asset-activity";
 import { AssetsSupply } from "./_components/charts/assets-supply";
-import { TransactionsHistory } from "./_components/charts/transaction-history";
+import { TransactionsHistory } from "./_components/charts/transactions-history";
 import { UsersHistory } from "./_components/charts/users-history";
 import { LatestEvents } from "./_components/table/latest-events";
 import { AssetsWidget } from "./_components/widgets/assets";

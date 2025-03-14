@@ -40,6 +40,7 @@ export function FormCheckbox<T extends FieldValues>({
   rules,
   description,
   className,
+  disabled,
   ...props
 }: FormCheckboxProps<T>) {
   return (
@@ -52,15 +53,11 @@ export function FormCheckbox<T extends FieldValues>({
             <FormControl>
               <Checkbox
                 {...field}
-                {...props}
+                disabled={disabled}
                 checked={field.value}
                 onCheckedChange={field.onChange}
                 className={cn(className)}
-                {...getAriaAttributes(
-                  field.name,
-                  !!fieldState.error,
-                  props.disabled
-                )}
+                {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -68,7 +65,7 @@ export function FormCheckbox<T extends FieldValues>({
                 <FormLabel
                   className={cn(
                     "font-medium text-sm leading-none",
-                    props.disabled && "cursor-not-allowed opacity-70"
+                    disabled && "cursor-not-allowed opacity-70"
                   )}
                   htmlFor={field.name}
                   id={`${field.name}-label`}

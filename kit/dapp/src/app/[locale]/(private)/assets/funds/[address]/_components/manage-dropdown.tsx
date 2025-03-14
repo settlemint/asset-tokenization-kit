@@ -1,5 +1,6 @@
 "use client";
 
+import { GrantRoleForm } from "@/components/blocks/asset-grant-role/form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,13 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { fundGrantRoleAction } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
 import type { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import type { Address } from "viem";
 import { BurnForm } from "./burn-form/form";
-import { GrantRoleForm } from "./grant-role-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
 
@@ -101,6 +102,7 @@ export function ManageDropdown({ address, fund }: ManageDropdownProps) {
         address={address}
         open={openMenuItem === "grant-role"}
         onOpenChange={onFormOpenChange}
+        grantRoleAction={fundGrantRoleAction}
       />
     </>
   );

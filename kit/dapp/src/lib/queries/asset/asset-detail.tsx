@@ -1,17 +1,20 @@
 import type { Role } from "@/lib/config/roles";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-    AssetFragment,
-    AssetFragmentSchema,
-    OffchainAssetFragment,
-    OffchainAssetFragmentSchema,
-    type Permission,
-    PermissionFragmentSchema,
+  AssetFragment,
+  AssetFragmentSchema,
+  OffchainAssetFragment,
+  OffchainAssetFragmentSchema,
+  type Permission,
+  PermissionFragmentSchema,
 } from "./asset-fragment";
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
@@ -55,6 +58,8 @@ export interface AssetDetailProps {
 export interface PermissionWithRoles extends Permission {
   /** List of roles assigned to this permission */
   roles: Role[];
+  /** Name of the asset */
+  assetName: string;
 }
 
 /**
@@ -142,6 +147,7 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
         usersWithRoles.set(userId, {
           ...validatedPermission,
           roles: [role],
+          assetName: validatedAsset.name,
         });
       }
     });
@@ -156,18 +162,3 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
     roles: Array.from(usersWithRoles.values()),
   };
 });
-
-/**
- * Fetches a user by ID, returning null if not found
- *
- * @param params - Object containing the user ID
- */
-export const getOptionalAssetDetail = cache(
-  async ({ address }: AssetDetailProps) => {
-    try {
-      return await getAssetDetail({ address });
-    } catch {
-      return null;
-    }
-  }
-);

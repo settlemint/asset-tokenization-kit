@@ -133,7 +133,7 @@ jobs:
         uses: namespacelabs/nscloud-checkout-action@v6
 
       - name: Secret Scanning (Trivy)
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: "fs"
           scan-ref: "."
