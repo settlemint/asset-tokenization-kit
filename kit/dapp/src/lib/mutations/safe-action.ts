@@ -7,11 +7,10 @@ import {
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 import type { Address } from "viem";
-import type { Schema, ZodObject } from "zod";
+import type { Schema } from "zod";
 
 type ValidationError = Error & {
   validationErrors: ValidationErrors<Schema>;
-  schema?: ZodObject<any>;
 };
 
 function isValidationError(error: Error): error is ValidationError {
@@ -24,9 +23,6 @@ function consoleErrorValidationErrors(error: Error) {
       "Validation Errors ->",
       JSON.stringify(error.validationErrors, null, 2)
     );
-    if (error.schema) {
-      console.error("Schema ->", JSON.stringify(error.schema.shape, null, 2));
-    }
   }
 }
 
