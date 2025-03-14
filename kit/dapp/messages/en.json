@@ -1732,7 +1732,7 @@
       "actions-header": "Actions",
       "edit-form": {
         "button-label": "Edit Permissions",
-        "description": "Update the permissions and access levels assigned to this user.",
+        "description": "Update the permissions and access levels assigned for {name}.",
         "roles": {
           "description": "Choose the roles to assign to this user. At least one role must be selected.",
           "title": "Select User Roles"
@@ -1746,7 +1746,6 @@
           "update-title": "Update Roles",
           "user-label": "User"
         },
-        "title": "Modify User Permissions",
         "trigger-label": "Edit Roles"
       },
       "last-activity-header": "Last Activity",

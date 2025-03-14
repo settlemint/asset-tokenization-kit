@@ -1,26 +1,74 @@
 import { auth } from "@/lib/auth/auth";
 import type { User } from "better-auth";
-import { createSafeActionClient } from "next-safe-action";
+import {
+  createSafeActionClient,
+  type ValidationErrors,
+} from "next-safe-action";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
 import type { Address } from "viem";
+import type { Schema } from "zod";
+
+type ValidationError = Error & {
+  validationErrors: ValidationErrors<Schema>;
+};
+
+function isValidationError(error: Error): error is ValidationError {
+  return "validationErrors" in error;
+}
+
+function consoleErrorValidationErrors(error: Error) {
+  if (isValidationError(error)) {
+    console.error(
+      "Validation Errors ->",
+      JSON.stringify(error.validationErrors, null, 2)
+    );
+  }
+}
 
 export const action = createSafeActionClient({
   throwValidationErrors: true,
-  defaultValidationErrorsShape: "flattened",
+  defaultValidationErrorsShape: "formatted",
   handleServerError: (error: Error, { clientInput, metadata }) => {
-    console.error("Input ->", redactSensitiveFields(clientInput));
-    console.error("Metadata ->", redactSensitiveFields(metadata));
-    console.error("Error ->", error);
+    console.error("\n" + "=".repeat(80));
+    console.error("🚨 Server Action Error");
+    console.error("=".repeat(80));
+
+    console.error("\n📥 Input Data:");
+    console.error(redactSensitiveFields(clientInput));
+
+    console.error("\n🔍 Metadata:");
+    console.error(redactSensitiveFields(metadata));
+
+    console.error("\n❌ Error Details:");
+    console.error(error);
+
+    console.error("\n🔍 Validation Info:");
+    consoleErrorValidationErrors(error);
+
+    console.error("\n" + "=".repeat(80) + "\n");
 
     return getErrorMessage(error);
   },
 })
   .use(async ({ next, clientInput, metadata }) => {
     const result = await next({ ctx: undefined });
-    console.log("Input ->", redactSensitiveFields(clientInput));
-    console.log("Metadata ->", redactSensitiveFields(metadata));
-    console.log("Result ->", redactSensitiveFields(result.data));
+
+    console.log("\n" + "=".repeat(80));
+    console.log("🔍 Server Action");
+    console.log("=".repeat(80));
+
+    console.log("\n📥 Input Data:");
+    console.log(redactSensitiveFields(clientInput));
+
+    console.log("\n🔍 Metadata:");
+    console.log(redactSensitiveFields(metadata));
+
+    console.log("\n📤 Output:");
+    console.log(redactSensitiveFields(result.data));
+
+    console.log("\n" + "=".repeat(80) + "\n");
+
     return result;
   })
   .use(async ({ next }) => {

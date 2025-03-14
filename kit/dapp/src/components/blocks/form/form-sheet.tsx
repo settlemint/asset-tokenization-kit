@@ -12,7 +12,7 @@ import type { PropsWithChildren } from "react";
 interface FormSheetProps extends PropsWithChildren {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
+  title: string | React.ReactNode;
   description: string;
   triggerLabel?: string;
   asButton?: boolean;

@@ -46,6 +46,7 @@ export function FormUsers<T extends FieldValues>({
   required,
   placeholder,
   defaultValue,
+  disabled,
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
@@ -61,9 +62,7 @@ export function FormUsers<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(
-                  props.disabled && "cursor-not-allowed opacity-70"
-                )}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -76,11 +75,12 @@ export function FormUsers<T extends FieldValues>({
                 <Button
                   variant="outline"
                   aria-expanded={open}
+                  disabled={disabled}
                   className="w-full justify-between"
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
-                    props.disabled
+                    disabled
                   )}
                 >
                   {field.value ? (
