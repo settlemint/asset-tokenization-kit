@@ -2,10 +2,8 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
-import type { MatureFormInput } from "@/lib/mutations/bond/mature/mature-schema";
 import { Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -13,7 +11,6 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<MatureFormInput>();
   const t = useTranslations("admin.bonds.mature-form.summary");
 
   return (

@@ -15,7 +15,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyPaused }: SummaryProps) {
-  const { control } = useFormContext<PauseInput | UnPauseInput>();
+  useFormContext<PauseInput | UnPauseInput>();
   const t = useTranslations("admin.funds.pause-form.summary");
 
   return (
