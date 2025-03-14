@@ -40,6 +40,7 @@ interface DataTableColumnCellProps
     component:
       | ReactNode
       | ((renderProps: DataTableColumnCellRenderProps) => ReactNode);
+    disabled?: boolean;
   }[];
 }
 
@@ -99,7 +100,10 @@ export function DataTableRowActions({
         >
           {actions?.map((action) => (
             <Fragment key={action.id}>
-              <DropdownMenuItem onSelect={() => handleMenuItemClick(action.id)}>
+              <DropdownMenuItem
+                onSelect={() => handleMenuItemClick(action.id)}
+                disabled={action.disabled}
+              >
                 {action.label}
               </DropdownMenuItem>
             </Fragment>

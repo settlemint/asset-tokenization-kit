@@ -92,6 +92,7 @@ export function columns({ address }: { address: Address }) {
                     revokeRoleAction={cryptoCurrencyRevokeRoleAction}
                   />
                 ),
+                disabled: adminCount === 1,
               },
             ]}
           />

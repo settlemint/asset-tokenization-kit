@@ -92,6 +92,7 @@ export function columns({ address }: { address: Address }) {
                     revokeRoleAction={fundRevokeRoleAction}
                   />
                 ),
+                disabled: adminCount === 1,
               },
             ]}
           />
