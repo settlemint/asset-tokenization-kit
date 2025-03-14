@@ -9,7 +9,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { ROLES } from "@/lib/config/roles";
 import { bondRevokeRoleAction } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-action";
-import { bondUpdateAction } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
+import { bondUpdatePermissionsAction } from "@/lib/mutations/asset/access-control/update-role/update-roles-action";
 import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
 import { formatDate } from "@/lib/utils/date";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -74,7 +74,7 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
-                    updateRolesAction={bondUpdateAction}
+                    updateRolesAction={bondUpdatePermissionsAction}
                     adminsCount={adminCount}
                     assetName={row.original.assetName}
                   />

@@ -18,34 +18,34 @@ import {
 } from "../revoke-role/revoke-role";
 import { getUpdateRolesAction } from "./update-roles";
 
-export const stableCoinUpdateAction = getUpdateRolesAction({
+export const stableCoinUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: StableCoinGrantRole,
   revokeRoleMutation: StableCoinRevokeRole,
 });
 
-export const bondUpdateAction = getUpdateRolesAction({
+export const bondUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: BondGrantRole,
   revokeRoleMutation: BondRevokeRole,
 });
 
-export const cryptoCurrencyUpdateAction = getUpdateRolesAction({
+export const cryptoCurrencyUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: CryptoCurrencyGrantRole,
   revokeRoleMutation: CryptoCurrencyRevokeRole,
 });
 
-export const fundUpdateAction = getUpdateRolesAction({
+export const fundUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: FundGrantRole,
   revokeRoleMutation: FundRevokeRole,
 });
 
-export const equityUpdateAction = getUpdateRolesAction({
+export const equityUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: EquityGrantRole,
   revokeRoleMutation: EquityRevokeRole,
 });
 
 export type UpdateRolesActionType =
-  | typeof stableCoinUpdateAction
-  | typeof bondUpdateAction
-  | typeof cryptoCurrencyUpdateAction
-  | typeof fundUpdateAction
-  | typeof equityUpdateAction;
+  | typeof stableCoinUpdatePermissionsAction
+  | typeof bondUpdatePermissionsAction
+  | typeof cryptoCurrencyUpdatePermissionsAction
+  | typeof fundUpdatePermissionsAction
+  | typeof equityUpdatePermissionsAction;
