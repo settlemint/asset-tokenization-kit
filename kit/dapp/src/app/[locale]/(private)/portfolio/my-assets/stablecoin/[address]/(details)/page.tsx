@@ -7,20 +7,19 @@ import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
 import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { Collateral } from "./_components/collateral";
 import { Details } from "./_components/details";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations({

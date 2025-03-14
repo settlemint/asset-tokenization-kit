@@ -1,18 +1,17 @@
 import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
 import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({

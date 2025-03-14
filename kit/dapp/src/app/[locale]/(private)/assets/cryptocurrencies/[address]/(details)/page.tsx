@@ -8,20 +8,19 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { MintForm } from "../_components/mint-form/form";
 import { Details } from "./_components/details";
 
 interface PageProps {
-  params: Promise<{ locale: string; address: Address }>;
+  params: Promise<{ locale: Locale; address: Address }>;
 }
 
 export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ locale: string; address: Address }>;
-}): Promise<Metadata> {
+}: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations({

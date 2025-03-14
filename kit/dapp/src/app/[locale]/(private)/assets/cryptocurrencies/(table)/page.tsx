@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 import { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { CreateCryptoCurrencyForm } from "../_components/create-form/form";
 import { columns } from "./_components/columns";
@@ -14,7 +15,7 @@ import { columns } from "./_components/columns";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({

@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/layout/page-header";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { AssetActivity } from "./_components/charts/asset-activity";
 import { AssetsSupply } from "./_components/charts/assets-supply";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({
@@ -32,7 +33,7 @@ export async function generateMetadata({
 export default async function AdminDashboard({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
   const t = await getTranslations({

@@ -1,12 +1,13 @@
 import TransactionsTable from "@/components/blocks/transactions-table/transactions-table";
 import { Link } from "@/i18n/routing";
 import { getBlockExplorerAllTxUrl } from "@/lib/block-explorer";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 export default async function TransactionsPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: Locale }>;
 }) {
   const { locale } = await params;
   const explorerUrl = getBlockExplorerAllTxUrl();
