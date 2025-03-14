@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { Check } from "lucide-react";
+import type { Locale } from "next-intl";
 import { useParams } from "next/navigation";
 import { useRef, useTransition } from "react";
 
@@ -33,7 +34,7 @@ export function LanguageMenuItem() {
     routing.defaultLocale) as (typeof routing.locales)[number];
   const [isPending, startTransition] = useTransition();
 
-  const handleLanguageChange = (locale: string) => {
+  const handleLanguageChange = (locale: Locale) => {
     // Use React's useTransition to avoid blocking the UI during navigation
     startTransition(() => {
       // Navigate to the same page but with the new locale

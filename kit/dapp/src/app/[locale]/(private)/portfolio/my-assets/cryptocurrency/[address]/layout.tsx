@@ -1,5 +1,6 @@
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import type { Metadata } from "next";
+import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 import type { Address } from "viem";
@@ -7,7 +8,7 @@ import { CryptoCurrencyPageHeader } from "./_components/page-header";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
-    locale: string;
+    locale: Locale;
     address: Address;
   }>;
 }
