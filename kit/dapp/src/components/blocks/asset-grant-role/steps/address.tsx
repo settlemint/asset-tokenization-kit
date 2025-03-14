@@ -27,7 +27,6 @@ export function AdminAddress() {
             name="userAddress"
             label={t("address-label")}
             placeholder={t("search-placeholder")}
-            role="admin"
           />
         )}
         <div className="flex justify-end">
