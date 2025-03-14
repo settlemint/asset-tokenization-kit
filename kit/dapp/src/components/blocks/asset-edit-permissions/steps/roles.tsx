@@ -1,7 +1,6 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  FormControl,
   FormDescription,
   FormField,
   FormItem,
@@ -26,53 +25,43 @@ export function Roles({ adminsCount }: RolesProps) {
       <FormField
         control={control}
         name="roles"
-        render={() => (
+        render={({ field }) => (
           <FormItem>
             <div className="space-y-3">
               {roleItems.map((role) => {
                 const info = ROLES[role];
                 return (
-                  <FormField
+                  <FormItem
+                    className="flex flex-row items-start space-x-3 space-y-0 rounded-md"
                     key={role}
-                    control={control}
-                    name="roles"
-                    disabled={
-                      adminsCount === 1 &&
-                      role === ROLES.DEFAULT_ADMIN_ROLE.contractRole
-                    }
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                        <FormControl>
-                          <Checkbox
-                            name="roles"
-                            checked={field.value?.[info.contractRole] ?? false}
-                            disabled={
-                              adminsCount === 1 &&
-                              role === ROLES.DEFAULT_ADMIN_ROLE.contractRole
+                  >
+                    <Checkbox
+                      name="roles"
+                      checked={field.value?.[info.contractRole] ?? false}
+                      disabled={
+                        adminsCount === 1 &&
+                        role === ROLES.DEFAULT_ADMIN_ROLE.contractRole
+                      }
+                      onCheckedChange={(checked) => {
+                        const currentValue = field.value || {};
+                        const updatedValue = checked
+                          ? {
+                              ...currentValue,
+                              [info.contractRole]: true,
                             }
-                            onCheckedChange={(checked) => {
-                              const currentValue = field.value || {};
-                              const updatedValue = checked
-                                ? {
-                                    ...currentValue,
-                                    [info.contractRole]: true,
-                                  }
-                                : {
-                                    ...currentValue,
-                                    [info.contractRole]: false,
-                                  };
+                          : {
+                              ...currentValue,
+                              [info.contractRole]: false,
+                            };
 
-                              field.onChange(updatedValue);
-                            }}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>{info.displayName}</FormLabel>
-                          <FormDescription>{info.description}</FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                        field.onChange(updatedValue);
+                      }}
+                    />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>{info.displayName}</FormLabel>
+                      <FormDescription>{info.description}</FormDescription>
+                    </div>
+                  </FormItem>
                 );
               })}
             </div>
