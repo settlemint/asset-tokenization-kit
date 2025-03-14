@@ -2,11 +2,10 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
-  createTimeSeries,
+  formatChartDate,
   formatInterval,
   type TimeSeriesOptions,
 } from "@/lib/charts";
-import { formatDate } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
 
 export interface TransactionsHistoryProps {
@@ -36,16 +35,19 @@ export function TransactionsHistory({
   const TRANSACTIONS_CHART_CONFIG = {
     transaction: {
       label: t("chart-label"),
-      color: "#3B9E99",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 
   return (
     <AreaChartComponent
-      data={createTimeSeries(data, ["transaction"], {
-        ...chartOptions,
-        aggregation: "count",
-      })}
+      data={data.map((item) => ({
+        ...item,
+        timestamp: formatChartDate(
+          new Date(item.timestamp),
+          chartOptions.granularity
+        ),
+      }))}
       config={TRANSACTIONS_CHART_CONFIG}
       title={title ?? t("title")}
       description={
@@ -73,12 +75,11 @@ function getTickFormatter(
   switch (chartOptions.granularity) {
     case "day":
       return (tick: string) => {
-        return formatDate(new Date(tick), { formatStr: "MMM d" });
+        return formatChartDate(new Date(tick), "day");
       };
     case "month":
-      return (tick: string) => formatDate(new Date(tick), { formatStr: "MMM" });
+      return (tick: string) => formatChartDate(new Date(tick), "month");
     case "hour":
-      return (tick: string) =>
-        formatDate(new Date(tick), { formatStr: "MMM d, HH:mm" });
+      return (tick: string) => formatChartDate(new Date(tick), "hour");
   }
 }

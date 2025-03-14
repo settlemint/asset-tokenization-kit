@@ -91,7 +91,7 @@ export function createTimeSeries<T extends DataPoint>(
     );
 
     const result = {
-      timestamp: formatDate(tick, granularity),
+      timestamp: formatChartDate(tick, granularity),
     } as TimeSeriesResult<Pick<T, keyof T>>;
 
     for (const key of valueKeys) {
@@ -122,6 +122,7 @@ function getTicks(granularity: TimeGranularity, interval: Interval) {
     }
   }
 }
+
 export function getInterval(
   granularity: TimeGranularity,
   intervalType: IntervalType,
@@ -173,8 +174,20 @@ function isInTick(
   }
 }
 
-function formatDate(date: Date, granularity: TimeGranularity): string {
-  return format(date, granularity === "hour" ? "HH:mm, MMM d" : "EEE, MMM d"); // Eg. Tue, Feb 12
+export function formatChartDate(
+  date: Date,
+  granularity: TimeGranularity
+): string {
+  if (granularity === "hour") {
+    return format(date, "HH:mm, MMM d");
+  }
+  if (granularity === "day") {
+    return format(date, "EEE, MMM d");
+  }
+  if (granularity === "month") {
+    return format(date, "MMM y");
+  }
+  throw new Error("Invalid granularity");
 }
 
 export function formatInterval(
