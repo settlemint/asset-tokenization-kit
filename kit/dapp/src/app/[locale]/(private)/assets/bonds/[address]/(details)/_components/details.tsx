@@ -2,6 +2,7 @@ import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import { format } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import type { Address } from "viem";
@@ -56,7 +57,7 @@ export async function Details({ address }: DetailsProps) {
           }
         </DetailGridItem>
         <DetailGridItem label={t("maturity-date")} info={t("maturity-date-info")}>
-          {bond.maturityDate}
+          {bond.maturityDate ? format(new Date(Number(bond.maturityDate) * 1000), "PPP") : "-"}
         </DetailGridItem>
         <DetailGridItem label={t("yield-type")} info={t("yield-type-info")}>
           Fixed
@@ -65,13 +66,21 @@ export async function Details({ address }: DetailsProps) {
           {bond.faceValue}
         </DetailGridItem>
         <DetailGridItem label={t("underlying-asset")} info={t("underlying-asset-info")}>
-          {bond.underlyingAsset}
+        <EvmAddress
+            address={bond.underlyingAsset}
+            prettyNames={true}
+            hoverCard={true}
+            copyToClipboard={true}
+          />
         </DetailGridItem>
         <DetailGridItem label={t("underlying-asset-balance")} info={t("underlying-asset-balance-info")}>
           {bond.underlyingBalance}
         </DetailGridItem>
         <DetailGridItem label={t("redemption-readiness")} info={t("redemption-readiness-info")}>
-          {(bond.underlyingBalance * 100n) / bond.totalUnderlyingNeeded}%
+          {/* Calculate percentage: (part/total) * 100
+              Since we're using bigInt which doesn't support decimal division,
+              we multiply the numerator by 100 before dividing to preserve precision */}
+          {(bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact}%
         </DetailGridItem>
         {/* <DetailGridItem
           label={t("ownership-concentration")}
