@@ -253,6 +253,7 @@
           "pause": "Pause",
           "top-up": "Top up underlying asset",
           "unpause": "Unpause",
+          "update-collateral": "Update collateral",
           "withdraw": "Withdraw underlying asset"
         },
         "manage": "Manage"

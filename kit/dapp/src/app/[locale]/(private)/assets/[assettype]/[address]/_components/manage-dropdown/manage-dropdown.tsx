@@ -21,6 +21,7 @@ import { MatureForm } from "./mature-form/form";
 import { MintForm } from "./mint-form/form";
 import { PauseForm } from "./pause-form/form";
 import { TopUpForm } from "./top-up-form/form";
+import { UpdateCollateralForm } from "./update-collateral-form/form";
 import { WithdrawForm } from "./withdraw-form/form";
 
 interface ManageDropdownProps {
@@ -161,6 +162,19 @@ export function ManageDropdown({
 					key="mature"
 					address={address}
 					open={openMenuItem === "mature"}
+					onOpenChange={onFormOpenChange}
+				/>
+			),
+		},
+		{
+			id: "update-collateral",
+			label: t("actions.update-collateral"),
+			disabled: assettype !== "stablecoins",
+			form: (
+				<UpdateCollateralForm
+					key="update-collateral"
+					address={address}
+					open={openMenuItem === "update-collateral"}
 					onOpenChange={onFormOpenChange}
 				/>
 			),
