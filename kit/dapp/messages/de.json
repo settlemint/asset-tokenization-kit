@@ -1,14 +1,14 @@
 {
   "admin": {
     "activity": {
-      "asset-management": "Vermögensverwaltung",
-      "page-description": "Aktivitäten über alle Vermögenswerte verfolgen.",
-      "page-title": "Vermögensaktivität",
+      "asset-management": "Asset Management",
+      "page-description": "Alle Aktivitäten in Ihrer Organisation anzeigen",
+      "page-title": "Aktivität",
       "tabs": {
         "recent-transactions": "Aktuelle Transaktionen",
         "all-events": "Alle Ereignisse"
       },
-      "view-all": "Alle Transaktionen im Explorer anzeigen"
+      "view-all": "Alle anzeigen"
     },
     "bonds": {
       "burn-form": {
@@ -2471,6 +2471,38 @@
       "profile": {
         "portfolio-management": "Portfolioverwaltung",
         "title": "Profil"
+      },
+      "api-keys": {
+        "api-key-copied": "API-Schlüssel in die Zwischenablage kopiert",
+        "api-key-created-description": "Ihr API-Schlüssel wurde erstellt. Stellen Sie sicher, dass Sie ihn jetzt kopieren, da Sie ihn später nicht mehr sehen können.",
+        "api-key-save-warning": "Stellen Sie sicher, dass Sie Ihren API-Schlüssel jetzt kopieren. Sie werden ihn später nicht mehr sehen können!",
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "create": "Erstellen",
+        "create-api-key": "API-Schlüssel erstellen",
+        "create-api-key-description": "Erstellen Sie einen neuen API-Schlüssel, um programmgesteuert auf die API zuzugreifen.",
+        "create-error": "Fehler beim Erstellen des API-Schlüssels",
+        "created-at": "Erstellt am",
+        "creating-api-key": "API-Schlüssel wird erstellt...",
+        "expires-at": "Läuft ab am",
+        "expiry-label": "Ablauf",
+        "expiry-options": {
+          "1 day": "1 Tag",
+          "1 month": "1 Monat",
+          "1 week": "1 Woche",
+          "1 year": "1 Jahr",
+          "No expiry": "Kein Ablauf"
+        },
+        "fetch-error": "Fehler beim Abrufen der API-Schlüssel",
+        "last-used": "Zuletzt verwendet",
+        "name-label": "Name",
+        "never": "Nie",
+        "portfolio-management": "Portfolioverwaltung",
+        "select-expiry-placeholder": "Ablaufzeit auswählen",
+        "swagger-description": "Alle API-Anfragen müssen Ihren API-Schlüssel im Header x-api-key zur Authentifizierung enthalten. Dieser Header gewährleistet einen sicheren und autorisierten Zugriff auf unsere API-Endpunkte, sodass Ihre Anwendungen sicher mit unseren Diensten interagieren können.",
+        "swagger-link-text": "API-Dokumentation öffnen",
+        "swagger-title": "Erstellen, anzeigen und verwalten Sie API-Schlüssel, um Ihre Anwendungen sicher mit unserer Plattform zu integrieren. API-Schlüssel ermöglichen Ihnen den programmgesteuerten Zugriff auf alle verfügbaren Funktionen, die klar durch unsere OpenAPI-Spezifikation dokumentiert sind.",
+        "title": "API-Schlüssel"
       }
     },
     "transfer-form": {

@@ -2,13 +2,13 @@
   "admin": {
     "activity": {
       "asset-management": "إدارة الأصول",
-      "page-description": "تتبع النشاط عبر جميع الأصول.",
-      "page-title": "نشاط الأصول",
+      "page-description": "عرض جميع الأنشطة في مؤسستك",
+      "page-title": "النشاط",
       "tabs": {
         "recent-transactions": "المعاملات الأخيرة",
         "all-events": "جميع الأحداث"
       },
-      "view-all": "عرض جميع المعاملات في المستكشف"
+      "view-all": "عرض الكل"
     },
     "bonds": {
       "burn-form": {
@@ -2471,6 +2471,38 @@
       "profile": {
         "portfolio-management": "إدارة المحفظة",
         "title": "الملف الشخصي"
+      },
+      "api-keys": {
+        "api-key-copied": "تم نسخ مفتاح API إلى الحافظة",
+        "api-key-created-description": "تم إنشاء مفتاح API الخاص بك. تأكد من نسخه الآن لأنه لن يمكنك رؤيته مرة أخرى.",
+        "api-key-save-warning": "تأكد من نسخ مفتاح API الخاص بك الآن. لن يمكنك رؤيته مرة أخرى!",
+        "cancel": "إلغاء",
+        "close": "إغلاق",
+        "create": "إنشاء",
+        "create-api-key": "إنشاء مفتاح API",
+        "create-api-key-description": "إنشاء مفتاح API جديد للوصول إلى API برمجيًا.",
+        "create-error": "فشل في إنشاء مفتاح API",
+        "created-at": "تم الإنشاء في",
+        "creating-api-key": "جارٍ إنشاء مفتاح API...",
+        "expires-at": "تنتهي في",
+        "expiry-label": "تاريخ انتهاء الصلاحية",
+        "expiry-options": {
+          "1 day": "يوم واحد",
+          "1 month": "شهر واحد",
+          "1 week": "أسبوع واحد",
+          "1 year": "سنة واحدة",
+          "No expiry": "بدون انتهاء"
+        },
+        "fetch-error": "فشل في جلب مفاتيح API",
+        "last-used": "آخر استخدام",
+        "name-label": "الاسم",
+        "never": "أبدًا",
+        "portfolio-management": "إدارة المحفظة",
+        "select-expiry-placeholder": "اختر وقت انتهاء الصلاحية",
+        "swagger-description": "يجب أن تتضمن جميع طلبات API مفتاح API الخاص بك ضمن رأس x-api-key للمصادقة. يضمن هذا الرأس الوصول الآمن والمصرح به إلى نقاط نهاية API الخاصة بنا، مما يسمح لتطبيقاتك بالتفاعل بأمان مع خدماتنا.",
+        "swagger-link-text": "فتح وثائق API",
+        "swagger-title": "إنشاء وعرض وإدارة مفاتيح API لدمج تطبيقاتك بأمان مع منصتنا. تتيح لك مفاتيح API الوصول برمجيًا إلى جميع الميزات المتاحة، موثقة بوضوح من خلال مواصفات OpenAPI الخاصة بنا.",
+        "title": "مفاتيح API"
       }
     },
     "transfer-form": {
