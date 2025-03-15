@@ -532,7 +532,8 @@
           "cryptocurrencies": "暗号通貨",
           "equities": "株式",
           "funds": "ファンド",
-          "stablecoins": "ステーブルコイン"
+          "stablecoins": "ステーブルコイン",
+          "tokenizeddeposit": "トークン化された預金"
         },
         "assets-supply": {
           "description": "資産供給",
@@ -1319,14 +1320,16 @@
         "funds": "ファンド",
         "group-title": "資産管理",
         "stablecoins": "ステーブルコイン",
-        "view-all": "すべて表示"
+        "view-all": "すべて表示",
+        "tokenized-deposits": "トークン化された預金"
       },
       "asset-types": {
         "bond": "債券",
         "cryptocurrency": "暗号通貨",
         "equity": "株式",
         "fund": "ファンド",
-        "stablecoin": "ステーブルコイン"
+        "stablecoin": "ステーブルコイン",
+        "tokenized-deposit": "トークン化された預金"
       },
       "platform-management": {
         "group-title": "プラットフォーム管理",
@@ -1795,6 +1798,242 @@
       "roles-header": "役割",
       "table-title": "権限",
       "wallet-header": "ウォレット"
+    },
+    "tokenized-deposits": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "金額",
+          "available-balance": "利用可能残高: {balance}",
+          "description": "燃焼したい金額を入力してください。",
+          "title": "金額を入力"
+        },
+        "button-label": "資産を燃焼",
+        "description": "供給を減らすためにトークンを循環から永久に削除します。",
+        "summary": {
+          "amount-label": "金額",
+          "asset-label": "資産",
+          "burn-description": "燃焼操作の詳細",
+          "burn-title": "燃焼",
+          "description": "進む前に燃焼の詳細を確認してください。",
+          "title": "燃焼を確認して確定"
+        },
+        "title": "燃焼",
+        "trigger-label": "燃焼"
+      },
+      "charts": {
+        "asset-statistics-title": "資産統計"
+      },
+      "create-form": {
+        "basics": {
+          "decimals-label": "小数点以下の桁数",
+          "description": "名前、シンボル、可視性などの重要な詳細を定義します。",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "name-label": "名前",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "シンボル",
+          "symbol-placeholder": "SAFU",
+          "title": "基本情報"
+        },
+        "button-label": "新しいトークン化された預金を発行",
+        "configuration": {
+          "description": "高度な設定を指定します。",
+          "title": "設定"
+        },
+        "description": "新しいトークン化された預金資産を定義して開始します。",
+        "summary": {
+          "asset-basics-description": "基本的な資産情報と設定。",
+          "asset-basics-title": "資産の基本",
+          "configuration-description": "資産供給と追加設定。",
+          "configuration-title": "設定",
+          "decimals-label": "小数点以下の桁数",
+          "description": "作成前に新しいトークン化された預金の詳細を確認して確定します。",
+          "error-duplicate": "同じ詳細のトークン化された預金が既に存在します。少なくとも1つの異なるパラメータで再試行してください。",
+          "isin-label": "ISIN",
+          "name-label": "名前",
+          "seconds": "秒",
+          "symbol-label": "シンボル",
+          "title": "作成前に新しいトークン化された預金の詳細を確認して確定します。"
+        },
+        "title": "トークン化された預金を作成",
+        "trigger-label": "新しいトークン化された預金を発行"
+      },
+      "details": {
+        "charts": {
+          "asset-statistics-title": "資産統計"
+        },
+        "contract-address": "契約アドレス",
+        "creator": "作成者",
+        "decimals": "小数点以下の桁数",
+        "details-page-description": "{name}の包括的なデータと指標を探ります。",
+        "details-page-title": "{name}の詳細",
+        "isin": "ISIN",
+        "name": "名前",
+        "ownership-concentration": "所有権集中",
+        "ownership-concentration-info": "上位5名の保有者による所有割合",
+        "related-actions": {
+          "decrease-supply": {
+            "description": "供給管理者は、十分な担保がある場合、既存のトークン化された預金を燃焼できます。",
+            "title": "トークン化された預金供給を減少"
+          },
+          "increase-supply": {
+            "description": "供給管理者は、十分な担保がある場合、新しいトークン化された預金を発行できます。",
+            "title": "トークン化された預金供給を増加"
+          },
+          "title": "関連アクション"
+        },
+        "symbol": "シンボル",
+        "tokenized-deposit-details-description": "トークン化された預金の詳細",
+        "total-burned": "燃焼された供給",
+        "total-burned-info": "循環から永久に削除されたトークンの量",
+        "total-holders": "#の保有者",
+        "total-holders-info": "現在資産を保有しているアドレスの数",
+        "total-supply": "総供給",
+        "total-supply-info": "トークンの総供給量"
+      },
+      "events": {
+        "events-page-description": "{name}に関する歴史的な活動と取引を追跡します。",
+        "events-page-title": "{name}のイベント"
+      },
+      "grant-role-form": {
+        "address": {
+          "address-label": "管理者ウォレットアドレス",
+          "description": "名前またはメールでユーザーを検索するか、ウォレットアドレスを手動で入力します。",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "manual-toggle": "アドレスを手動で入力...",
+          "search-placeholder": "ユーザーを検索",
+          "search-toggle": "代わりにユーザーを検索...",
+          "title": "新しい管理者を選択"
+        },
+        "button-label": "役割を割り当て",
+        "description": "新しいユーザーに管理権限を割り当てます。",
+        "roles": {
+          "description": "新しい管理者に付与する役割を選択します。少なくとも1つの役割を選択する必要があります。",
+          "title": "管理者役割を選択"
+        },
+        "summary": {
+          "admin-address-label": "管理者アドレス",
+          "asset-label": "資産",
+          "description": "進む前に役割付与の詳細を確認してください。",
+          "grant-description": "役割付与操作の詳細",
+          "grant-title": "役割を付与",
+          "roles-label": "役割",
+          "title": "役割付与を確認して確定"
+        },
+        "title": "役割を付与"
+      },
+      "manage": {
+        "actions": {
+          "burn": "燃焼",
+          "grant-role": "役割を付与",
+          "mint": "発行",
+          "pause": "一時停止",
+          "transfer": "転送",
+          "unpause": "一時停止解除",
+          "update-collateral": "担保を更新"
+        },
+        "manage": "管理"
+      },
+      "mint-form": {
+        "amount": {
+          "amount-label": "金額",
+          "description": "発行したい金額を入力してください。",
+          "title": "金額を入力"
+        },
+        "button-label": "ミント資産",
+        "description": "新しいトークンを発行してステーブルコインの流通供給量を増やします。",
+        "recipients": {
+          "description": "ミントされたトークンを受け取る人を選択します",
+          "title": "受取人を選択"
+        },
+        "summary": {
+          "amount-label": "金額",
+          "asset-label": "資産",
+          "description": "進む前にミントの詳細を確認してください。",
+          "mint-description": "ミント操作の詳細",
+          "mint-title": "ミント",
+          "title": "ミントを確認して承認する"
+        },
+        "title": "ミント",
+        "trigger-label": "ミント"
+      },
+      "pause-form": {
+        "pause": {
+          "button-label": "取引を一時停止",
+          "description": "このステーブルコインのすべての取引と相互作用を一時的に停止します。",
+          "title": "ステーブルコイン取引を一時停止"
+        },
+        "summary": {
+          "asset-label": "資産",
+          "current-state-label": "現在の状態",
+          "description": "進む前に一時停止操作の詳細を確認してください。",
+          "pause-description": "一時停止操作の詳細",
+          "pause-title": "一時停止",
+          "state-active": "アクティブ",
+          "state-paused": "一時停止中",
+          "target-state-label": "ターゲット状態",
+          "title": "一時停止操作を確認して承認する"
+        },
+        "unpause": {
+          "button-label": "取引を再開",
+          "description": "このステーブルコインの取引と相互作用を再開します。",
+          "title": "ステーブルコイン取引を再開"
+        }
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "供給マネージャーは、十分な担保がある場合に既存のステーブルコインを焼却できます。",
+          "title": "供給を減少させる"
+        },
+        "increase-supply": {
+          "description": "供給マネージャーは、十分な担保がある場合に新しいステーブルコインをミントできます。",
+          "title": "供給を増加させる"
+        },
+        "title": "関連アクション"
+      },
+      "table": {
+        "actions-header": "アクション",
+        "active": "アクティブ",
+        "address-header": "アドレス",
+        "asset-management": "資産管理",
+        "blocked": "ブロック済み",
+        "name-header": "名前",
+        "page-description": "トークン化された預金資産の概要と管理アクション。",
+        "page-title": "トークン化された預金",
+        "paused": "一時停止中",
+        "private-header": "プライベート",
+        "private-status": "プライベート",
+        "public-status": "パブリック",
+        "related-actions": {
+          "issue-new": {
+            "description": "定義されたパラメータで新しいトークン化された預金を作成して開始します。新しいプロジェクトや市場セグメントをサポートするためにトークンの展開を効率化します。",
+            "title": "新しいトークン化された預金を発行"
+          },
+          "mechanics": {
+            "button": "詳細を学ぶ",
+            "description": "主要なトークン化された預金パラメータを調整する方法を学びます。",
+            "title": "トークン化された預金のメカニクス"
+          },
+          "title": "関連アクション",
+          "usecases": {
+            "button": "探る",
+            "description": "トークン化された預金の実用的なアプリケーションと統合を探ります。",
+            "title": "ユースケース"
+          }
+        },
+        "status-header": "ステータス",
+        "symbol-header": "シンボル",
+        "topinfo-description": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に対して強化されたセキュリティ、リアルタイムの透明性、厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、および統合されたメタトランザクションが含まれ、機関の預金管理を簡素化します。",
+        "topinfo-title": "安全でコンプライアンスに準拠したデジタル預金管理",
+        "total-supply-header": "総供給量"
+      },
+      "tabs": {
+        "details": "詳細",
+        "events": "イベント",
+        "holders": "保有者",
+        "permissions": "権限",
+        "underlying-assets": "基礎資産"
+      }
     }
   },
   "asset-management": "資産管理",
@@ -1803,7 +2042,8 @@
     "stablecoin": "ステーブルコイン",
     "equity": "株式",
     "cryptocurrency": "暗号通貨",
-    "fund": "ファンド"
+    "fund": "ファンド",
+    "tokenizeddeposit": "トークン化された預金"
   },
   "asset-status": {
     "active": "アクティブ",
@@ -2021,7 +2261,8 @@
       "equity-initials": "EQ",
       "fund-initials": "FN",
       "not-available-initials": "NA",
-      "stablecoin-initials": "SC"
+      "stablecoin-initials": "SC",
+      "tokenized-deposit-initials": "TD"
     },
     "charts": {
       "assets": {
@@ -2271,7 +2512,8 @@
       "equity": "株式",
       "fund": "ファンド",
       "stablecoin": "ステーブルコイン",
-      "unknown": "不明"
+      "unknown": "不明",
+      "tokenizeddeposit": "トークン化された預金"
     },
     "greeting": {
       "morning": "おはようございます",
