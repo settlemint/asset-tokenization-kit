@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  EarthIcon,
-  type EarthIconHandle,
-} from "@/components/ui/animated-icons/earth";
+  LanguagesIcon,
+  type LanguagesIconHandle,
+} from "@/components/ui/animated-icons/languages";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
@@ -27,7 +27,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
 export function LanguageMenuItem() {
   const router = useRouter();
   const pathname = usePathname();
-  const globeIconRef = useRef<EarthIconHandle>(null);
+  const languagesIconRef = useRef<LanguagesIconHandle>(null);
   // Get locale from params which will be updated correctly after navigation
   const params = useParams();
   const currentLocale = ((params.locale as string) ||
@@ -46,11 +46,11 @@ export function LanguageMenuItem() {
   };
 
   const handleMouseEnter = () => {
-    globeIconRef.current?.startAnimation();
+    languagesIconRef.current?.startAnimation();
   };
 
   const handleMouseLeave = () => {
-    globeIconRef.current?.stopAnimation();
+    languagesIconRef.current?.stopAnimation();
   };
 
   return (
@@ -61,8 +61,8 @@ export function LanguageMenuItem() {
         disabled={isPending}
         className="p-2"
       >
-        <EarthIcon
-          ref={globeIconRef}
+        <LanguagesIcon
+          ref={languagesIconRef}
           className="mr-4 size-4 text-muted-foreground"
         />
         <span>{isPending ? "Changing..." : "Language"}</span>

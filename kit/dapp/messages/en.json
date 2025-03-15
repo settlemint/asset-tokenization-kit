@@ -5,10 +5,106 @@
       "page-description": "Track activity across all assets.",
       "page-title": "Asset activity",
       "tabs": {
-        "recent-transactions": "Recent transactions",
-        "all-events": "All events"
+        "all-events": "All events",
+        "recent-transactions": "Recent transactions"
       },
       "view-all": "View all transactions in the explorer"
+    },
+    "asset-holders-tab": {
+      "actions-header": "Actions",
+      "balance-header": "Balance",
+      "block-form": {
+        "block-button-label": "Block User",
+        "block-description": "Prevent this user from performing any transactions or interactions.",
+        "block-title": "Block User Transactions",
+        "block-trigger-label": "Block",
+        "summary": {
+          "asset-label": "Asset",
+          "block-title": "Block",
+          "current-state-label": "Current state",
+          "description": "Verify the details of your block operation before proceeding.",
+          "operation-description": "Block operation details",
+          "state-active": "Active",
+          "state-blocked": "Blocked",
+          "target-state-label": "Target state",
+          "title": "Review and confirm block operation",
+          "unblock-title": "Unblock"
+        },
+        "unblock-button-label": "Unblock User",
+        "unblock-description": "Restore this user's ability to transact and interact.",
+        "unblock-title": "Restore User Transactions",
+        "unblock-trigger-label": "Unblock"
+      },
+      "freeze-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
+          "description": "Input the amount you wish to freeze.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Freeze Funds",
+        "description": "Temporarily restrict a user's access to their funds.",
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "description": "Verify the details of your freeze operation before proceeding.",
+          "freeze-title": "Freeze",
+          "operation-description": "Freezing operation details",
+          "title": "Review and confirm freeze operation"
+        },
+        "title": "Restrict User Funds",
+        "trigger-label": "Freeze"
+      },
+      "frozen-header": "Frozen",
+      "holder-type-header": "Type",
+      "holders-page-description": "View wallets holding {name}, including balances and statuses.",
+      "holders-page-title": "{name} Holders",
+      "last-activity-header": "Last activity",
+      "status-header": "Status",
+      "wallet-header": "Wallet"
+    },
+    "asset-permissions-tab": {
+      "actions-header": "Actions",
+      "edit-form": {
+        "button-label": "Edit Permissions",
+        "description": "Update the permissions and access levels assigned for {name}.",
+        "roles": {
+          "description": "Choose the roles to assign to this user. At least one role must be selected.",
+          "title": "Select User Roles"
+        },
+        "summary": {
+          "current-roles-label": "Current roles",
+          "description": "Verify the details before proceeding. This action will change the roles for the user.",
+          "new-roles-label": "New roles",
+          "operation-description": "Updating roles operation details",
+          "title": "Review and confirm new roles",
+          "update-title": "Update Roles",
+          "user-label": "User"
+        },
+        "trigger-label": "Edit Roles"
+      },
+      "last-activity-header": "Last Activity",
+      "page-description": "Permission management for {name} stablecoin",
+      "page-title": "{name} Permissions",
+      "permissions-page-description": "Manage user roles and access rights for {name}.",
+      "permissions-page-title": "{name} Permissions",
+      "revoke-all-form": {
+        "button-label": "Revoke Access",
+        "description": "Completely revoke this user's access and permissions.",
+        "summary": {
+          "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+          "operation-description": "Revoking all permissions operation details",
+          "revoke-title": "Revoke All",
+          "roles-to-revoke-label": "Roles to revoke",
+          "title": "Review and confirm",
+          "user-label": "User"
+        },
+        "title": "Remove All User Access",
+        "trigger-label": "Revoke All"
+      },
+      "roles-header": "Roles",
+      "table-title": "Permissions",
+      "wallet-header": "Wallet"
     },
     "bonds": {
       "burn-form": {
@@ -67,55 +163,55 @@
           "configuration-title": "Bond configuration",
           "decimals-label": "Decimals",
           "description": "Review the bond details before creating",
+          "error-duplicate": "A Bond with the same details already exists. Please try again with at least one different parameter.",
           "face-value-label": "Face value",
           "isin-label": "ISIN",
           "maturity-date-label": "Maturity date",
           "name-label": "Name",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "underlying-asset-label": "Underlying asset",
-          "error-duplicate": "A Bond with the same details already exists. Please try again with at least one different parameter."
+          "underlying-asset-label": "Underlying asset"
         },
         "title": "Create new bond",
         "trigger-label": "Issue a new bond"
       },
       "details": {
+        "active": "Active",
         "bond-details-description": "Details for the bond",
         "contract-address": "Contract address",
         "creator": "Creator",
         "decimals": "Decimals",
+        "deployed-on": "Deployed on",
         "details-page-description": "Explore comprehensive data and metrics for {name}.",
         "details-page-title": "{name} Details",
-        "isin": "ISIN",
-        "name": "Name",
-        "ownership-concentration": "Ownership concentration",
-        "ownership-concentration-info": "Percentage owned by the top 5 holders",
-        "symbol": "Symbol",
-        "total-supply": "Total supply",
-        "total-supply-info": "The total supply of the token",
-        "deployed-on": "Deployed on",
-        "total-issued": "Total issued",
-        "total-issued-info": "Total amount of tokens issued",
-        "redeemed": "Redeemed",
-        "redeemed-info": "Total amount of tokens redeemed",
-        "maturity-status": "Maturity status",
-        "maturity-status-info": "Current status of the bond",
-        "matured": "Matured",
-        "issuing": "Issuing",
-        "active": "Active",
-        "maturity-date": "Maturity date",
-        "maturity-date-info": "Date when the bond matures",
-        "not-available": "N/A",
-        "yield-type": "Yield type",
-        "yield-type-info": "Type of yield for the bond",
         "face-value": "Face value",
         "face-value-info": "Nominal value of a single bond unit",
+        "isin": "ISIN",
+        "issuing": "Issuing",
+        "matured": "Matured",
+        "maturity-date": "Maturity date",
+        "maturity-date-info": "Date when the bond matures",
+        "maturity-status": "Maturity status",
+        "maturity-status-info": "Current status of the bond",
+        "name": "Name",
+        "not-available": "N/A",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "redeemed": "Redeemed",
+        "redeemed-info": "Total amount of tokens redeemed",
+        "redemption-readiness": "Redemption readiness",
+        "redemption-readiness-info": "Percentage of underlying assets available for redemption",
+        "symbol": "Symbol",
+        "total-issued": "Total issued",
+        "total-issued-info": "Total amount of tokens issued",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token",
         "underlying-asset": "Underlying asset",
-        "underlying-asset-info": "Asset that backs this bond",
         "underlying-asset-balance": "Underlying asset balance",
         "underlying-asset-balance-info": "Current balance of the underlying asset",
-        "redemption-readiness": "Redemption readiness",
-        "redemption-readiness-info": "Percentage of underlying assets available for redemption"
+        "underlying-asset-info": "Asset that backs this bond",
+        "yield-type": "Yield type",
+        "yield-type-info": "Type of yield for the bond"
       },
       "events": {
         "events-page-description": "Track all events related to {name} bond.",
@@ -150,16 +246,29 @@
       },
       "manage": {
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
-          "pause": "Pause",
-          "unpause": "Unpause",
           "grant-role": "Grant role",
+          "mature": "Mature",
+          "mint": "Mint",
+          "pause": "Pause",
           "top-up": "Top up underlying asset",
-          "withdraw": "Withdraw underlying asset",
-          "mature": "Mature"
+          "unpause": "Unpause",
+          "withdraw": "Withdraw underlying asset"
         },
         "manage": "Manage"
+      },
+      "mature-form": {
+        "button-label": "Mature Bond",
+        "description": "Mature your bond and receive the underlying asset",
+        "summary": {
+          "asset-label": "Bond",
+          "description": "Verify the details of your bond maturity before proceeding.",
+          "mature-description": "Bond maturity details",
+          "mature-title": "Mature",
+          "title": "Review and confirm maturity"
+        },
+        "title": "Mature Bond",
+        "trigger-label": "Mature"
       },
       "mint-form": {
         "amount": {
@@ -167,12 +276,12 @@
           "description": "Input the amount you wish to mint.",
           "title": "Enter Amount"
         },
-        "recipients": {
-          "title": "Select Recipients",
-          "description": "Choose who will receive the minted tokens"
-        },
         "button-label": "Mint Assets",
         "description": "Issue new tokens to increase the bond's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
         "summary": {
           "amount-label": "Amount",
           "asset-label": "Asset",
@@ -258,78 +367,74 @@
         "permissions": "Permissions"
       },
       "top-up-form": {
-        "trigger-label": "Top up",
-        "title": "Top up underlying asset",
-        "description": "Add more underlying asset to your bond",
         "button-label": "Top up",
+        "description": "Add more underlying asset to your bond",
         "steps": {
           "amount": {
-            "title": "Enter amount",
-            "description": "Specify the amount to top up the underlying asset.",
             "amount": {
-              "label": "Amount",
-              "description": "Enter the amount to top up"
-            }
+              "description": "Enter the amount to top up",
+              "label": "Amount"
+            },
+            "description": "Specify the amount to top up the underlying asset.",
+            "title": "Enter amount"
           },
           "summary": {
-            "title": "Review and confirm top-up",
-            "description": "Verify the details of your top-up before proceeding.",
             "amount-label": "Amount",
             "asset-label": "Underlying asset",
+            "description": "Verify the details of your top-up before proceeding.",
             "pincode": {
-              "label": "PIN Code",
-              "description": "Enter your PIN code to confirm the transaction"
-            }
+              "description": "Enter your PIN code to confirm the transaction",
+              "label": "PIN Code"
+            },
+            "title": "Review and confirm top-up"
           }
-        }
+        },
+        "title": "Top up underlying asset",
+        "trigger-label": "Top up"
       },
       "withdraw-form": {
-        "trigger-label": "Withdraw",
-        "title": "Withdraw underlying asset",
-        "description": "Withdraw underlying asset from your bond",
         "button-label": "Withdraw",
+        "description": "Withdraw underlying asset from your bond",
         "steps": {
+          "amount": {
+            "amount": {
+              "description": "Enter the amount to withdraw",
+              "label": "Amount"
+            },
+            "description": "Specify the amount to withdraw.",
+            "title": "Enter amount"
+          },
           "recipient": {
-            "title": "Select recipient",
             "description": "Choose who will receive the underlying asset.",
             "label": "Recipient",
+            "manual-instead": "Enter address manually...",
             "placeholder": "Search for a user or enter address",
             "search-instead": "Search for a user instead...",
-            "manual-instead": "Enter address manually..."
-          },
-          "amount": {
-            "title": "Enter amount",
-            "description": "Specify the amount to withdraw.",
-            "amount": {
-              "label": "Amount",
-              "description": "Enter the amount to withdraw"
-            }
+            "title": "Select recipient"
           },
           "summary": {
-            "title": "Review and confirm withdrawal",
-            "description": "Verify the details of your withdrawal before proceeding.",
-            "recipient-label": "Recipient",
             "amount-label": "Amount",
             "asset-label": "Underlying asset",
+            "description": "Verify the details of your withdrawal before proceeding.",
             "pincode": {
-              "label": "PIN Code",
-              "description": "Enter your PIN code to confirm the transaction"
-            }
+              "description": "Enter your PIN code to confirm the transaction",
+              "label": "PIN Code"
+            },
+            "recipient-label": "Recipient",
+            "title": "Review and confirm withdrawal"
           }
-        }
-      },
-      "mature-form": {
-        "trigger-label": "Mature",
-        "title": "Mature Bond",
-        "description": "Mature your bond and receive the underlying asset",
-        "button-label": "Mature Bond",
-        "summary": {
-          "title": "Review and confirm maturity",
-          "description": "Verify the details of your bond maturity before proceeding.",
-          "mature-title": "Mature",
-          "mature-description": "Bond maturity details",
-          "asset-label": "Bond"
-        }
+        },
+        "title": "Withdraw underlying asset",
+        "trigger-label": "Withdraw"
+      }
+    },
+    "charts": {
+      "asset-type-formatter": {
+        "bonds": "Bonds",
+        "cryptocurrencies": "Cryptocurrencies",
+        "equities": "Equities",
+        "funds": "Funds",
+        "stablecoins": "Stablecoins"
       }
     },
     "cryptocurrencies": {
@@ -383,6 +488,7 @@
           "configuration-title": "Configuration",
           "decimals-label": "Decimals",
           "description": "Review and confirm the details of your new cryptocurrency before creation.",
+          "error-duplicate": "A Cryptocurrency with the same details already exists. Please try again with at least one different parameter.",
           "initial-supply-label": "Initial Supply",
           "isin-label": "ISIN",
           "name-label": "Name",
@@ -390,8 +496,7 @@
           "private-label": "Private",
           "symbol-label": "Symbol",
           "title": "Review and confirm",
-          "yes": "Yes",
-          "error-duplicate": "A Cryptocurrency with the same details already exists. Please try again with at least one different parameter."
+          "yes": "Yes"
         },
         "title": "Create Cryptocurrency",
         "trigger-label": "Issue a new cryptocurrency"
@@ -454,12 +559,12 @@
           "description": "Input the amount you wish to mint.",
           "title": "Enter Amount"
         },
-        "recipients": {
-          "title": "Select Recipients",
-          "description": "Choose who will receive the minted tokens"
-        },
         "button-label": "Mint Assets",
         "description": "Issue new tokens to increase the cryptocurrency's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
         "summary": {
           "amount-label": "Amount",
           "asset-label": "Asset",
@@ -724,11 +829,11 @@
           "description": "Review and confirm the details of your new equity before creation.",
           "equity-category-label": "Equity Category",
           "equity-class-label": "Equity Class",
+          "error-duplicate": "An Equity with the same details already exists. Please try again with at least one different parameter.",
           "isin-label": "ISIN",
           "name-label": "Name",
           "symbol-label": "Symbol",
-          "title": "Review and confirm",
-          "error-duplicate": "An Equity with the same details already exists. Please try again with at least one different parameter."
+          "title": "Review and confirm"
         },
         "title": "Create new equity",
         "trigger-label": "Mint"
@@ -781,11 +886,11 @@
       },
       "manage": {
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant role"
+          "unpause": "Unpause"
         },
         "manage": "Manage"
       },
@@ -795,12 +900,12 @@
           "description": "Input the amount you wish to mint.",
           "title": "Enter Amount"
         },
-        "recipients": {
-          "title": "Select Recipients",
-          "description": "Choose who will receive the minted tokens"
-        },
         "button-label": "Mint Assets",
         "description": "Issue new tokens to increase the equity's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
         "summary": {
           "amount-label": "Amount",
           "asset-label": "Asset",
@@ -1085,14 +1190,14 @@
           "configuration-title": "Fund Configuration",
           "decimals-label": "Decimals",
           "description": "Review and confirm the details of your new fund before creation.",
+          "error-duplicate": "A Fund with the same details already exists. Please try again with at least one different parameter.",
           "fund-category-label": "Fund Category",
           "fund-class-label": "Fund Class",
           "isin-label": "ISIN",
           "management-fee-label": "Management Fee",
           "name-label": "Name",
           "symbol-label": "Symbol",
-          "title": "Review and confirm",
-          "error-duplicate": "A Fund with the same details already exists. Please try again with at least one different parameter."
+          "title": "Review and confirm"
         },
         "title": "Create Fund",
         "trigger-label": "Issue a new fund"
@@ -1145,11 +1250,11 @@
       },
       "manage": {
         "actions": {
-          "mint": "Mint",
           "burn": "Burn",
+          "grant-role": "Grant role",
+          "mint": "Mint",
           "pause": "Pause",
-          "unpause": "Unpause",
-          "grant-role": "Grant role"
+          "unpause": "Unpause"
         },
         "manage": "Manage"
       },
@@ -1159,12 +1264,12 @@
           "description": "Input the amount you wish to mint.",
           "title": "Enter Amount"
         },
-        "recipients": {
-          "title": "Select Recipients",
-          "description": "Choose who will receive the minted tokens"
-        },
         "button-label": "Mint Assets",
         "description": "Issue new tokens to increase the fund's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
         "summary": {
           "amount-label": "Amount",
           "asset-label": "Asset",
@@ -1402,12 +1507,12 @@
           "configuration-title": "Configuration",
           "decimals-label": "Decimals",
           "description": "Review and confirm the details of your new stablecoin before creation.",
+          "error-duplicate": "A Stablecoin with the same details already exists. Please try again with at least one different parameter.",
           "isin-label": "ISIN",
           "name-label": "Name",
           "seconds": "seconds",
           "symbol-label": "Symbol",
-          "title": "Review and confirm the details of your new stablecoin before creation.",
-          "error-duplicate": "A Stablecoin with the same details already exists. Please try again with at least one different parameter."
+          "title": "Review and confirm the details of your new stablecoin before creation."
         },
         "title": "Create Stablecoin",
         "trigger-label": "Issue a new stablecoin"
@@ -1468,9 +1573,9 @@
           "grant-role": "Grant Role",
           "mint": "Mint",
           "pause": "Pause",
+          "transfer": "Transfer",
           "unpause": "Unpause",
-          "update-collateral": "Update Collateral",
-          "transfer": "Transfer"
+          "update-collateral": "Update Collateral"
         },
         "manage": "Manage"
       },
@@ -1481,12 +1586,12 @@
           "description": "Input the amount you wish to mint.",
           "title": "Enter Amount"
         },
-        "recipients": {
-          "title": "Select Recipients",
-          "description": "Choose who will receive the minted tokens"
-        },
         "button-label": "Mint Assets",
         "description": "Issue new tokens to increase the stablecoin's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
         "summary": {
           "amount-label": "Amount",
           "asset-label": "Asset",
@@ -1609,17 +1714,17 @@
         "wallet": "Wallet"
       },
       "detail": {
-        "edit_user": "Edit user",
         "charts": {
           "transaction-history-last-month": {
-            "title": "Transactions volume / day",
-            "description": "Showing transactions over the last month"
+            "description": "Showing transactions over the last month",
+            "title": "Transactions volume / day"
           },
           "transaction-history-last-year": {
-            "title": "Transactions volume / month",
-            "description": "Showing transactions over the last year"
+            "description": "Showing transactions over the last year",
+            "title": "Transactions volume / month"
           }
         },
+        "edit_user": "Edit user",
         "fields": {
           "asset_supply": "Asset supply",
           "created_at": "Created at",
@@ -1655,7 +1760,6 @@
         }
       },
       "holdings": {
-        "title": "Holdings",
         "table": {
           "actions-header": "Action",
           "balance-header": "Balance",
@@ -1665,15 +1769,16 @@
           "status-header": "Status",
           "symbol-header": "Symbol",
           "type-header": "Asset type"
-        }
-      },
-      "latest-events": {
-        "title": "Latest events",
-        "view-all": "View more events"
+        },
+        "title": "Holdings"
       },
       "kyc_status": {
         "notVerified": "Not Verified",
         "verified": "Verified"
+      },
+      "latest-events": {
+        "title": "Latest events",
+        "view-all": "View more events"
       },
       "page-description": "Manage users and their roles",
       "page-title": "Users",
@@ -1688,125 +1793,20 @@
         "banned": "Banned"
       },
       "title": "Users"
-    },
-    "charts": {
-      "asset-type-formatter": {
-        "bonds": "Bonds",
-        "cryptocurrencies": "Cryptocurrencies",
-        "equities": "Equities",
-        "funds": "Funds",
-        "stablecoins": "Stablecoins"
-      }
-    },
-    "asset-holders-tab": {
-      "actions-header": "Actions",
-      "balance-header": "Balance",
-      "block-form": {
-        "block-button-label": "Block User",
-        "block-description": "Prevent this user from performing any transactions or interactions.",
-        "block-title": "Block User Transactions",
-        "block-trigger-label": "Block",
-        "summary": {
-          "asset-label": "Asset",
-          "block-title": "Block",
-          "current-state-label": "Current state",
-          "description": "Verify the details of your block operation before proceeding.",
-          "operation-description": "Block operation details",
-          "state-active": "Active",
-          "state-blocked": "Blocked",
-          "target-state-label": "Target state",
-          "title": "Review and confirm block operation",
-          "unblock-title": "Unblock"
-        },
-        "unblock-button-label": "Unblock User",
-        "unblock-description": "Restore this user's ability to transact and interact.",
-        "unblock-title": "Restore User Transactions",
-        "unblock-trigger-label": "Unblock"
-      },
-      "freeze-form": {
-        "amount": {
-          "amount-label": "Amount",
-          "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-          "description": "Input the amount you wish to freeze.",
-          "title": "Enter Amount"
-        },
-        "button-label": "Freeze Funds",
-        "description": "Temporarily restrict a user's access to their funds.",
-        "summary": {
-          "amount-label": "Amount",
-          "asset-label": "Asset",
-          "description": "Verify the details of your freeze operation before proceeding.",
-          "freeze-title": "Freeze",
-          "operation-description": "Freezing operation details",
-          "title": "Review and confirm freeze operation"
-        },
-        "title": "Restrict User Funds",
-        "trigger-label": "Freeze"
-      },
-      "frozen-header": "Frozen",
-      "holders-page-description": "View wallets holding {name}, including balances and statuses.",
-      "holders-page-title": "{name} Holders",
-      "holder-type-header": "Type",
-      "last-activity-header": "Last activity",
-      "status-header": "Status",
-      "wallet-header": "Wallet"
-    },
-    "asset-permissions-tab": {
-      "actions-header": "Actions",
-      "edit-form": {
-        "button-label": "Edit Permissions",
-        "description": "Update the permissions and access levels assigned for {name}.",
-        "roles": {
-          "description": "Choose the roles to assign to this user. At least one role must be selected.",
-          "title": "Select User Roles"
-        },
-        "summary": {
-          "current-roles-label": "Current roles",
-          "description": "Verify the details before proceeding. This action will change the roles for the user.",
-          "new-roles-label": "New roles",
-          "operation-description": "Updating roles operation details",
-          "title": "Review and confirm new roles",
-          "update-title": "Update Roles",
-          "user-label": "User"
-        },
-        "trigger-label": "Edit Roles"
-      },
-      "last-activity-header": "Last Activity",
-      "page-description": "Permission management for {name} stablecoin",
-      "page-title": "{name} Permissions",
-      "permissions-page-description": "Manage user roles and access rights for {name}.",
-      "permissions-page-title": "{name} Permissions",
-      "revoke-all-form": {
-        "button-label": "Revoke Access",
-        "description": "Completely revoke this user's access and permissions.",
-        "summary": {
-          "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
-          "operation-description": "Revoking all permissions operation details",
-          "revoke-title": "Revoke All",
-          "roles-to-revoke-label": "Roles to revoke",
-          "title": "Review and confirm",
-          "user-label": "User"
-        },
-        "title": "Remove All User Access",
-        "trigger-label": "Revoke All"
-      },
-      "roles-header": "Roles",
-      "table-title": "Permissions",
-      "wallet-header": "Wallet"
     }
   },
   "asset-management": "Asset management",
-  "asset-type": {
-    "bond": "Bond",
-    "stablecoin": "Stablecoin",
-    "equity": "Equity",
-    "cryptocurrency": "Cryptocurrency",
-    "fund": "Fund"
-  },
   "asset-status": {
     "active": "Active",
-    "paused": "Paused",
-    "blocked": "Blocked"
+    "blocked": "Blocked",
+    "paused": "Paused"
+  },
+  "asset-type": {
+    "bond": "Bond",
+    "cryptocurrency": "Cryptocurrency",
+    "equity": "Equity",
+    "fund": "Fund",
+    "stablecoin": "Stablecoin"
   },
   "auth": {
     "account": "Account",
@@ -2026,6 +2026,13 @@
         "asset-distribution": "Asset Distribution",
         "asset-distribution-description": "Portfolio allocation by asset type",
         "asset-distribution-no-data": "No asset data available",
+        "asset-type-pluralizer": {
+          "bond": "Bonds",
+          "cryptocurrency": "Cryptocurrencies",
+          "equity": "Equities",
+          "fund": "Funds",
+          "stablecoin": "Stablecoins"
+        },
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -2065,14 +2072,7 @@
         },
         "wallet-distribution": "Wallet Distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
-        "wallet-distribution-no-data": "No wallet data available",
-        "asset-type-pluralizer": {
-          "bond": "Bonds",
-          "cryptocurrency": "Cryptocurrencies",
-          "equity": "Equities",
-          "fund": "Funds",
-          "stablecoin": "Stablecoins"
-        }
+        "wallet-distribution-no-data": "No wallet data available"
       }
     },
     "data-table": {
@@ -2123,6 +2123,10 @@
         "pin-code-match": "PIN codes don't match",
         "valid-email": "Please enter a valid email address"
       },
+      "pincode-dialog": {
+        "description": "To sign the transaction, please enter your pincode for verification and authorization.",
+        "title": "Enter your pincode to confirm"
+      },
       "progress": {
         "completed-step": "Completed step",
         "current-step": "Current step",
@@ -2143,10 +2147,6 @@
         "loading": "Loading...",
         "no-user-found": "No user found.",
         "search-placeholder": "Search for a user..."
-      },
-      "pincode-dialog": {
-        "title": "Enter your pincode to confirm",
-        "description": "To sign the transaction, please enter your pincode for verification and authorization."
       }
     },
     "logo": {
@@ -2184,44 +2184,44 @@
       "view-on-explorer": "View on the explorer"
     },
     "transactions-history": {
-      "title": "Transactions",
+      "chart-label": "Transaction",
       "description": "Showing transactions over the last {interval}",
-      "chart-label": "Transaction"
+      "title": "Transactions"
     },
     "transactions-table": {
       "columns": {
         "actions": "Actions",
-        "created-at": "Timestamp",
         "contract": "Contract",
-        "function": "Function",
+        "created-at": "Timestamp",
         "from": "From",
+        "function": "Function",
         "status": "Status",
         "transaction-hash": "Transaction Hash"
       }
     }
   },
   "error": {
-    "error-id": "Error ID",
-    "go-home": "Go home",
-    "title": "Something went wrong!",
-    "try-again": "Try again",
-    "unknown-error": "Unknown error",
-    "validation-errors": "Validation errors",
-    "cryptocurrency": {
-      "duplicate": "A Cryptocurrency with these details already exists. Please change at least one of the details."
-    },
-    "stablecoin": {
-      "duplicate": "A Stablecoin with these details already exists. Please change at least one of the details."
-    },
     "bond": {
       "duplicate": "A Bond with these details already exists. Please change at least one of the details."
+    },
+    "cryptocurrency": {
+      "duplicate": "A Cryptocurrency with these details already exists. Please change at least one of the details."
     },
     "equity": {
       "duplicate": "An Equity with these details already exists. Please change at least one of the details."
     },
+    "error-id": "Error ID",
     "fund": {
       "duplicate": "A Fund with these details already exists. Please change at least one of the details."
-    }
+    },
+    "go-home": "Go home",
+    "stablecoin": {
+      "duplicate": "A Stablecoin with these details already exists. Please change at least one of the details."
+    },
+    "title": "Something went wrong!",
+    "try-again": "Try again",
+    "unknown-error": "Unknown error",
+    "validation-errors": "Validation errors"
   },
   "holder-type": {
     "admin": "Admin",
@@ -2248,19 +2248,13 @@
     }
   },
   "portfolio": {
-    "dashboard": {
-      "page-title": "Portfolio",
-      "portfolio-management": "Portfolio management",
-      "my-assets": "My Assets",
-      "latest-events": "Latest events"
-    },
     "activity": {
       "page-description": "Your activity on chain",
       "page-title": "Activity",
       "portfolio-management": "Portfolio management",
       "tabs": {
-        "recent-transactions": "Recent transactions",
-        "all-events": "All events"
+        "all-events": "All events",
+        "recent-transactions": "Recent transactions"
       }
     },
     "asset-types": {
@@ -2271,16 +2265,196 @@
       "stablecoin": "Stablecoin",
       "unknown": "Unknown"
     },
+    "dashboard": {
+      "latest-events": "Latest events",
+      "my-assets": "My Assets",
+      "page-title": "Portfolio",
+      "portfolio-management": "Portfolio management"
+    },
     "greeting": {
-      "morning": "Good morning",
       "afternoon": "Good afternoon",
       "evening": "Good evening",
+      "morning": "Good morning",
       "you-have": "You have"
     },
     "my-assets": {
+      "bond": {
+        "redeem-form": {
+          "amount": {
+            "amount-label": "Amount",
+            "balance-description": "Available balance:",
+            "description": "Input the amount you wish to redeem.",
+            "title": "Enter Amount"
+          },
+          "button-label": "Redeem Assets",
+          "description": "Redeem your bond tokens for the underlying asset.",
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your redemption before proceeding",
+            "redeem-description": "Redemption operation details",
+            "redeem-title": "Redeem",
+            "title": "Review and confirm redemption",
+            "value-label": "Amount"
+          },
+          "title": "Redeem Bond",
+          "trigger-label": "Redeem"
+        },
+        "transfer-form": {
+          "amount": {
+            "amount-label": "Amount",
+            "balance-description": "Available balance:",
+            "description": "Enter the amount of tokens you want to transfer",
+            "title": "Amount"
+          },
+          "button-label": "Transfer",
+          "description": "Transfer your bond tokens to another address",
+          "recipients": {
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "description": "Choose who will receive the tokens",
+            "manual-entry-link": "Enter address manually...",
+            "search-user-link": "Search for a user instead...",
+            "title": "Select Recipient"
+          },
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your transfer before proceeding",
+            "recipient-label": "Recipient",
+            "title": "Review and confirm transfer",
+            "transfer-description": "Transfer operation details",
+            "transfer-title": "Transfer",
+            "value-label": "Amount"
+          },
+          "title": "Transfer bond",
+          "trigger-label": "Transfer"
+        }
+      },
+      "cryptocurrency": {
+        "transfer-form": {
+          "amount": {
+            "amount-label": "Amount",
+            "balance-description": "Available balance:",
+            "description": "Enter the amount of tokens you want to transfer",
+            "title": "Amount"
+          },
+          "button-label": "Transfer",
+          "description": "Transfer your cryptocurrency tokens to another address",
+          "recipients": {
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "description": "Choose who will receive the tokens",
+            "manual-entry-link": "Enter address manually...",
+            "search-user-link": "Search for a user instead...",
+            "title": "Select Recipient"
+          },
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your transfer before proceeding",
+            "recipient-label": "Recipient",
+            "title": "Review and confirm transfer",
+            "transfer-description": "Transfer operation details",
+            "transfer-title": "Transfer",
+            "value-label": "Amount"
+          },
+          "title": "Transfer Cryptocurrency",
+          "trigger-label": "Transfer"
+        }
+      },
       "description": "View and manage your digital assets",
+      "equity": {
+        "transfer-form": {
+          "amount": {
+            "balance-available": "Available balance: {balance}",
+            "description": "Specify the amount you want to transfer",
+            "title": "Enter Amount",
+            "value-label": "Amount"
+          },
+          "button-label": "Transfer",
+          "description": "Transfer your equity tokens to another address",
+          "recipients": {
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "description": "Choose who will receive the tokens",
+            "manual-entry-link": "Enter address manually...",
+            "search-user-link": "Search for a user instead...",
+            "title": "Select Recipient"
+          },
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your transfer before proceeding",
+            "recipient-label": "Recipient",
+            "title": "Review and confirm transfer",
+            "transfer-description": "Transfer operation details",
+            "transfer-title": "Transfer",
+            "value-label": "Amount"
+          },
+          "title": "Transfer Equity",
+          "trigger-label": "Transfer"
+        }
+      },
+      "fund": {
+        "transfer-form": {
+          "amount": {
+            "balance-available": "Available balance: {balance}",
+            "description": "Specify the amount you want to transfer",
+            "title": "Enter Amount",
+            "value-label": "Amount"
+          },
+          "button-label": "Transfer",
+          "description": "Transfer your fund tokens to another address",
+          "recipients": {
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "description": "Choose who will receive the tokens",
+            "manual-entry-link": "Enter address manually...",
+            "search-user-link": "Search for a user instead...",
+            "title": "Select Recipient"
+          },
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your transfer before proceeding",
+            "recipient-label": "Recipient",
+            "title": "Review and confirm transfer",
+            "transfer-description": "Transfer operation details",
+            "transfer-title": "Transfer",
+            "value-label": "Amount"
+          },
+          "title": "Transfer Fund",
+          "trigger-label": "Transfer"
+        }
+      },
       "portfolio-management": "Portfolio management",
-      "title": "My Assets",
+      "stablecoin": {
+        "transfer-form": {
+          "amount": {
+            "balance-available": "Available balance: {balance}",
+            "description": "Specify the amount you want to transfer",
+            "title": "Enter Amount",
+            "value-label": "Amount"
+          },
+          "button-label": "Transfer",
+          "description": "Transfer your stablecoin tokens to another address",
+          "recipients": {
+            "address-label": "Recipient Address",
+            "address-placeholder": "Search for a user",
+            "description": "Choose who will receive the tokens",
+            "manual-entry-link": "Enter address manually...",
+            "search-user-link": "Search for a user instead...",
+            "title": "Select Recipient"
+          },
+          "summary": {
+            "asset-label": "Asset",
+            "description": "Verify the details of your transfer before proceeding",
+            "recipient-label": "Recipient",
+            "title": "Review and confirm transfer",
+            "transfer-description": "Transfer operation details",
+            "transfer-title": "Transfer",
+            "value-label": "Amount"
+          },
+          "title": "Transfer Stablecoin",
+          "trigger-label": "Transfer"
+        }
+      },
       "table": {
         "actions-header": "Action",
         "balance-header": "Balance",
@@ -2289,198 +2463,28 @@
         "symbol-header": "Symbol",
         "type-header": "Type"
       },
-      "stablecoin": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer Stablecoin",
-          "description": "Transfer your stablecoin tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Enter Amount",
-            "description": "Specify the amount you want to transfer",
-            "value-label": "Amount",
-            "balance-available": "Available balance: {balance}"
-          },
-          "recipients": {
-            "title": "Select Recipient",
-            "description": "Choose who will receive the tokens",
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "search-user-link": "Search for a user instead...",
-            "manual-entry-link": "Enter address manually..."
-          },
-          "summary": {
-            "title": "Review and confirm transfer",
-            "description": "Verify the details of your transfer before proceeding",
-            "transfer-title": "Transfer",
-            "transfer-description": "Transfer operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount",
-            "recipient-label": "Recipient"
-          }
-        }
-      },
-      "fund": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer Fund",
-          "description": "Transfer your fund tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Enter Amount",
-            "description": "Specify the amount you want to transfer",
-            "value-label": "Amount",
-            "balance-available": "Available balance: {balance}"
-          },
-          "recipients": {
-            "title": "Select Recipient",
-            "description": "Choose who will receive the tokens",
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "search-user-link": "Search for a user instead...",
-            "manual-entry-link": "Enter address manually..."
-          },
-          "summary": {
-            "title": "Review and confirm transfer",
-            "description": "Verify the details of your transfer before proceeding",
-            "transfer-title": "Transfer",
-            "transfer-description": "Transfer operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount",
-            "recipient-label": "Recipient"
-          }
-        }
-      },
-      "equity": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer Equity",
-          "description": "Transfer your equity tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Enter Amount",
-            "description": "Specify the amount you want to transfer",
-            "value-label": "Amount",
-            "balance-available": "Available balance: {balance}"
-          },
-          "recipients": {
-            "title": "Select Recipient",
-            "description": "Choose who will receive the tokens",
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "search-user-link": "Search for a user instead...",
-            "manual-entry-link": "Enter address manually..."
-          },
-          "summary": {
-            "title": "Review and confirm transfer",
-            "description": "Verify the details of your transfer before proceeding",
-            "transfer-title": "Transfer",
-            "transfer-description": "Transfer operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount",
-            "recipient-label": "Recipient"
-          }
-        }
-      },
-      "cryptocurrency": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer Cryptocurrency",
-          "description": "Transfer your cryptocurrency tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Amount",
-            "description": "Enter the amount of tokens you want to transfer",
-            "amount-label": "Amount",
-            "balance-description": "Available balance:"
-          },
-          "recipients": {
-            "title": "Select Recipient",
-            "description": "Choose who will receive the tokens",
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "search-user-link": "Search for a user instead...",
-            "manual-entry-link": "Enter address manually..."
-          },
-          "summary": {
-            "title": "Review and confirm transfer",
-            "description": "Verify the details of your transfer before proceeding",
-            "transfer-title": "Transfer",
-            "transfer-description": "Transfer operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount",
-            "recipient-label": "Recipient"
-          }
-        }
-      },
-      "bond": {
-        "transfer-form": {
-          "trigger-label": "Transfer",
-          "title": "Transfer bond",
-          "description": "Transfer your bond tokens to another address",
-          "button-label": "Transfer",
-          "amount": {
-            "title": "Amount",
-            "description": "Enter the amount of tokens you want to transfer",
-            "amount-label": "Amount",
-            "balance-description": "Available balance:"
-          },
-          "recipients": {
-            "title": "Select Recipient",
-            "description": "Choose who will receive the tokens",
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "search-user-link": "Search for a user instead...",
-            "manual-entry-link": "Enter address manually..."
-          },
-          "summary": {
-            "title": "Review and confirm transfer",
-            "description": "Verify the details of your transfer before proceeding",
-            "transfer-title": "Transfer",
-            "transfer-description": "Transfer operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount",
-            "recipient-label": "Recipient"
-          }
-        },
-        "redeem-form": {
-          "trigger-label": "Redeem",
-          "title": "Redeem Bond",
-          "description": "Redeem your bond tokens for the underlying asset.",
-          "button-label": "Redeem Assets",
-          "amount": {
-            "title": "Enter Amount",
-            "description": "Input the amount you wish to redeem.",
-            "amount-label": "Amount",
-            "balance-description": "Available balance:"
-          },
-          "summary": {
-            "title": "Review and confirm redemption",
-            "description": "Verify the details of your redemption before proceeding",
-            "redeem-title": "Redeem",
-            "redeem-description": "Redemption operation details",
-            "asset-label": "Asset",
-            "value-label": "Amount"
-          }
-        }
-      }
+      "title": "My Assets"
     },
     "settings": {
+      "api-keys": {
+        "portfolio-management": "Portfolio Management",
+        "title": "API Keys"
+      },
       "profile": {
         "portfolio-management": "Portfolio management",
         "title": "Profile"
       }
     },
     "transfer-form": {
-      "asset-types": "{type} {name} ({symbol})",
       "amount": {
         "amount-label": "Amount",
         "balance-description": "Balance:",
-        "description": "Specify the amount you want to transfer",
-        "title": "Enter Amount",
+        "decimals-description": "Number of decimal places for the token",
         "decimals-label": "Decimals",
-        "decimals-description": "Number of decimal places for the token"
+        "description": "Specify the amount you want to transfer",
+        "title": "Enter Amount"
       },
+      "asset-types": "{type} {name} ({symbol})",
       "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
         "description": "Enter a wallet address to send tokens directly.",
@@ -2495,10 +2499,10 @@
         "trigger-label": "Transfer Assets"
       },
       "summary": {
-        "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
-        "title": "Review and confirm transfer",
         "address": "Address",
-        "amount": "Amount"
+        "amount": "Amount",
+        "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
+        "title": "Review and confirm transfer"
       },
       "transfer": "Transfer",
       "transferring": "Transferring..."

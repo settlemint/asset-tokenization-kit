@@ -122,7 +122,7 @@ export function columns() {
         },
       }
     ),
-    columnHelper.accessor("kyc_verified", {
+    columnHelper.accessor("kyc_verified_at", {
       header: t("columns.kyc_status"),
       cell: ({ getValue }) => {
         const verified = getValue();
@@ -137,7 +137,7 @@ export function columns() {
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("lastActivity", {
+    columnHelper.accessor("last_activity_at", {
       header: t("columns.last_activity"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();
