@@ -31,6 +31,11 @@ export async function PortfolioManagement() {
               path: "/portfolio/my-activity",
             },
             {
+              label: "My Contacts",
+              icon: <UsersIcon className="h-4 w-4" />,
+              path: "/portfolio/my-contacts",
+            },
+            {
               label: "Settings",
               icon: <SettingsGearIcon className="size-4" />,
               path: "/portfolio/settings",
