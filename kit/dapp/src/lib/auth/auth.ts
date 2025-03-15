@@ -140,6 +140,7 @@ export const auth = betterAuth({
   plugins: [
     admin(),
     apiKey({
+      defaultKeyLength: 16,
       defaultPrefix: "sm_atk_",
       enableMetadata: true,
       rateLimit: {

@@ -1,14 +1,14 @@
 {
   "admin": {
     "activity": {
-      "asset-management": "Asset management",
-      "page-description": "Track activity across all assets.",
-      "page-title": "Asset activity",
+      "asset-management": "Asset Management",
+      "page-description": "View all activity in your organization",
+      "page-title": "Activity",
       "tabs": {
-        "all-events": "All events",
-        "recent-transactions": "Recent transactions"
+        "all-events": "All Events",
+        "recent-transactions": "Recent Transactions"
       },
-      "view-all": "View all transactions in the explorer"
+      "view-all": "View All"
     },
     "asset-holders-tab": {
       "actions-header": "Actions",
@@ -2467,11 +2467,36 @@
     },
     "settings": {
       "api-keys": {
+        "api-key-copied": "API key copied to clipboard",
+        "api-key-created-description": "Your API key has been created. Make sure to copy it now as you won't be able to see it again.",
+        "api-key-save-warning": "Make sure to copy your API key now. You won't be able to see it again!",
+        "cancel": "Cancel",
+        "close": "Close",
+        "create": "Create",
+        "create-api-key": "Create API Key",
+        "create-api-key-description": "Create a new API key to access the API programmatically.",
+        "create-error": "Failed to create API key",
+        "created-at": "Created at",
+        "creating-api-key": "Creating API key...",
+        "expires-at": "Expires at",
+        "expiry-label": "Expiry",
+        "expiry-options": {
+          "1 day": "1 day",
+          "1 month": "1 month",
+          "1 week": "1 week",
+          "1 year": "1 year",
+          "No expiry": "No expiry"
+        },
+        "fetch-error": "Failed to fetch API keys",
+        "last-used": "Last used",
+        "name-label": "Name",
+        "never": "Never",
         "portfolio-management": "Portfolio Management",
+        "select-expiry-placeholder": "Select expiry time",
         "title": "API Keys"
       },
       "profile": {
-        "portfolio-management": "Portfolio management",
+        "portfolio-management": "Portfolio Management",
         "title": "Profile"
       }
     },
