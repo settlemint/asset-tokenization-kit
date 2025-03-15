@@ -1,24 +1,26 @@
-import { EmailTemplate } from "@/components/blocks/email/email-template";
+import {
+  emailVerification,
+  sendDeleteAccountVerification,
+  sendMagicLink,
+} from "@/lib/auth/emails";
 import * as authSchema from "@/lib/db/schema-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin, magicLink, multiSession } from "better-auth/plugins";
+import { admin, apiKey, magicLink, multiSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
-import { Resend } from "resend";
 import { getServerEnvironment } from "../config/environment";
 import { metadata } from "../config/metadata";
-import { siteConfig } from "../config/site";
 import { db } from "../db";
 import { createUserWallet } from "./portal";
 
 const env = getServerEnvironment();
 
 const hasEmailConfigured = env.RESEND_API_KEY !== undefined;
-const resend = hasEmailConfigured ? new Resend(env.RESEND_API_KEY) : undefined;
+
 /**
  * Authentication configuration using better-auth
  */
@@ -51,66 +53,11 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: hasEmailConfigured,
   },
-  ...(hasEmailConfigured && {
-    emailVerification: {
-      sendVerificationEmail: async ({ user, url }) => {
-        if (!hasEmailConfigured || !resend) {
-          throw new Error("Email is not configured");
-        }
-        const name =
-          (user.name || user.email.split("@")[0]).charAt(0).toUpperCase() +
-          (user.name || user.email.split("@")[0]).slice(1);
-
-        await resend.emails.send({
-          from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
-          to: user.email,
-          subject: "Verify your email address",
-          react: EmailTemplate({
-            action: "Verify Email",
-            content: (
-              <>
-                <p>{`Hello ${name},`}</p>
-
-                <p>Click the button below to verify your email address.</p>
-              </>
-            ),
-            heading: "Verify Email",
-            url,
-          }),
-        });
-      },
-      autoSignInAfterVerification: true,
-      sendOnSignUp: true,
-    },
-  }),
+  emailVerification,
   user: {
     deleteUser: {
       enabled: true,
-      ...(hasEmailConfigured && {
-        sendDeleteAccountVerification: async ({ user, url }) => {
-          if (!hasEmailConfigured || !resend) {
-            throw new Error("Email is not configured");
-          }
-
-          await resend.emails.send({
-            from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
-            to: user.email,
-            subject: `Sign in to ${siteConfig.name}`,
-            react: EmailTemplate({
-              action: "Sign in to SettleMint",
-              content: (
-                <>
-                  <p>{`Hello,`}</p>
-
-                  <p>Click the button below to sign in to your account.</p>
-                </>
-              ),
-              heading: `Sign in to ${siteConfig.name}`,
-              url,
-            }),
-          });
-        },
-      }),
+      sendDeleteAccountVerification,
     },
     additionalFields: {
       wallet: {
@@ -192,33 +139,12 @@ export const auth = betterAuth({
   },
   plugins: [
     admin(),
+    apiKey(),
     passkey({
       rpName: metadata.title.default,
     }),
     magicLink({
-      sendMagicLink: async ({ email, url }) => {
-        if (!hasEmailConfigured || !resend) {
-          throw new Error("Email is not configured");
-        }
-
-        await resend.emails.send({
-          from: `${siteConfig.publisher} ${siteConfig.name} <${siteConfig.email}>`,
-          to: email,
-          subject: `Sign in to ${siteConfig.name}`,
-          react: EmailTemplate({
-            action: "Sign in to SettleMint",
-            content: (
-              <>
-                <p>{`Hello,`}</p>
-
-                <p>Click the button below to sign in to your account.</p>
-              </>
-            ),
-            heading: `Sign in to ${siteConfig.name}`,
-            url,
-          }),
-        });
-      },
+      sendMagicLink,
     }),
     multiSession(),
     nextCookies(),
