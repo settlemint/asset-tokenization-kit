@@ -42,6 +42,12 @@ export async function AssetManagement() {
       path: `/assets/stablecoins`,
       icon: <AssetTypeIcon type="stablecoin" />,
     },
+    {
+      assetType: "tokenizeddeposit",
+      label: t("tokenized-deposits"),
+      path: `/assets/tokenized-deposits`,
+      icon: <AssetTypeIcon type="tokenizeddeposit" />,
+    },
   ];
 
   const processedAssetItems = assetItems.reduce((acc, section) => {

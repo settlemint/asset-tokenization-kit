@@ -23,7 +23,13 @@ import { useState } from "react";
 
 export type NavItem = {
   id?: string;
-  assetType?: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
+  assetType?:
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenizeddeposit";
   label: ReactNode;
   path: string;
   icon?: ReactNode;

@@ -1423,6 +1423,7 @@
         "funds": "Funds",
         "group-title": "Asset management",
         "stablecoins": "Stablecoins",
+        "tokenized-deposits": "Tokenized Deposits",
         "view-all": "View all"
       },
       "asset-types": {
@@ -1700,6 +1701,228 @@
         },
         "title": "Update collateral",
         "trigger-label": "Update collateral"
+      }
+    },
+    "tokenized-deposits": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "available-balance": "Available balance: {balance}",
+          "description": "Input the amount you wish to burn.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Burn Assets",
+        "description": "Permanently remove tokens from circulation to reduce supply.",
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "burn-description": "Burning operation details",
+          "burn-title": "Burn",
+          "description": "Verify the details of your burn before proceeding.",
+          "title": "Review and confirm burn"
+        },
+        "title": "Burn",
+        "trigger-label": "Burn"
+      },
+      "charts": {
+        "asset-statistics-title": "Asset statistics"
+      },
+      "create-form": {
+        "basics": {
+          "decimals-label": "Decimals",
+          "description": "Define essential details such as name, symbol, and visibility.",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "name-label": "Name",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "SAFU",
+          "title": "Basic Information"
+        },
+        "button-label": "Issue a new tokenized deposit",
+        "configuration": {
+          "description": "Specify advanced settings.",
+          "title": "Configuration"
+        },
+        "description": "Define and launch a new tokenized deposit asset.",
+        "summary": {
+          "asset-basics-description": "Basic asset information and settings.",
+          "asset-basics-title": "Asset Basics",
+          "configuration-description": "Asset supply and additional settings.",
+          "configuration-title": "Configuration",
+          "decimals-label": "Decimals",
+          "description": "Review and confirm the details of your new tokenized deposit before creation.",
+          "error-duplicate": "A Tokenized Deposit with the same details already exists. Please try again with at least one different parameter.",
+          "isin-label": "ISIN",
+          "name-label": "Name",
+          "seconds": "seconds",
+          "symbol-label": "Symbol",
+          "title": "Review and confirm the details of your new tokenized deposit before creation."
+        },
+        "title": "Create Tokenized Deposit",
+        "trigger-label": "Issue a new tokenized deposit"
+      },
+      "details": {
+        "contract-address": "Contract address",
+        "creator": "Creator",
+        "decimals": "Decimals",
+        "details-page-description": "Explore comprehensive data and metrics for {name}.",
+        "details-page-title": "{name} Details",
+        "isin": "ISIN",
+        "name": "Name",
+        "ownership-concentration": "Ownership concentration",
+        "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "symbol": "Symbol",
+        "tokenized-deposit-details-description": "Details for the tokenized deposit",
+        "total-burned": "Burned supply",
+        "total-burned-info": "Amount of tokens permanently removed from circulation",
+        "total-holders": "# of holders",
+        "total-holders-info": "Amount of addresses currently holding the assets",
+        "total-supply": "Total supply",
+        "total-supply-info": "The total supply of the token"
+      },
+      "events": {
+        "events-page-description": "Track historical activities and transactions involving {name}.",
+        "events-page-title": "{name} Events"
+      },
+      "grant-role-form": {
+        "address": {
+          "address-label": "Admin Wallet Address",
+          "description": "Search for a user by their name or email, or manually enter a wallet address.",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "manual-toggle": "Enter address manually...",
+          "search-placeholder": "Search for a user",
+          "search-toggle": "Search for a user instead...",
+          "title": "Select New Admin"
+        },
+        "button-label": "Assign Roles",
+        "description": "Assign administrative permissions to a new user.",
+        "roles": {
+          "description": "Choose the roles to grant to the new admin. At least one role must be selected.",
+          "title": "Select Admin Roles"
+        },
+        "summary": {
+          "admin-address-label": "Admin Address",
+          "asset-label": "Asset",
+          "description": "Verify the details of your role grant before proceeding.",
+          "grant-description": "Granting role operation details",
+          "grant-title": "Grant Role",
+          "roles-label": "Roles",
+          "title": "Review and confirm role grant"
+        },
+        "title": "Grant Role"
+      },
+      "manage": {
+        "actions": {
+          "burn": "Burn",
+          "grant-role": "Grant Role",
+          "mint": "Mint",
+          "pause": "Pause",
+          "transfer": "Transfer",
+          "unpause": "Unpause",
+          "update-collateral": "Update Collateral"
+        },
+        "manage": "Manage"
+      },
+      "mint-form": {
+        "amount": {
+          "amount-label": "Amount",
+          "description": "Input the amount you wish to mint.",
+          "title": "Enter Amount"
+        },
+        "button-label": "Mint Assets",
+        "description": "Issue new tokens to increase the stablecoin's circulating supply.",
+        "recipients": {
+          "description": "Choose who will receive the minted tokens",
+          "title": "Select Recipients"
+        },
+        "summary": {
+          "amount-label": "Amount",
+          "asset-label": "Asset",
+          "description": "Verify the details of your mint before proceeding.",
+          "mint-description": "Minting operation details",
+          "mint-title": "Mint",
+          "title": "Review and confirm mint"
+        },
+        "title": "Mint",
+        "trigger-label": "Mint"
+      },
+      "pause-form": {
+        "pause": {
+          "button-label": "Pause Transactions",
+          "description": "Temporarily halt all transactions and interactions for this stablecoin.",
+          "title": "Pause Stablecoin Transactions"
+        },
+        "summary": {
+          "asset-label": "Asset",
+          "current-state-label": "Current state",
+          "description": "Verify the details of your pause operation before proceeding.",
+          "pause-description": "Pausing operation details",
+          "pause-title": "Pause",
+          "state-active": "Active",
+          "state-paused": "Paused",
+          "target-state-label": "Target state",
+          "title": "Review and confirm pause operation"
+        },
+        "unpause": {
+          "button-label": "Resume Transactions",
+          "description": "Resume transactions and interactions for this stablecoin.",
+          "title": "Resume Stablecoin Transactions"
+        }
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
+          "title": "Decrease the supply"
+        },
+        "increase-supply": {
+          "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
+          "title": "Increase the supply"
+        },
+        "title": "Related actions"
+      },
+      "table": {
+        "actions-header": "Actions",
+        "active": "Active",
+        "address-header": "Address",
+        "asset-management": "Asset management",
+        "blocked": "Blocked",
+        "name-header": "Name",
+        "page-description": "Overview and administrative actions for your tokenized deposit assets.",
+        "page-title": "Tokenized Deposits",
+        "paused": "Paused",
+        "private-header": "Private",
+        "private-status": "Private",
+        "public-status": "Public",
+        "related-actions": {
+          "issue-new": {
+            "description": "Create and launch a new tokenized deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
+            "title": "Issue a new tokenized deposit"
+          },
+          "mechanics": {
+            "button": "Learn more",
+            "description": "Learn how to adjust key tokenized deposit parameters.",
+            "title": "Tokenized deposit mechanics"
+          },
+          "title": "Related Actions",
+          "usecases": {
+            "button": "Explore",
+            "description": "Explore the practical applications and integrations of tokenized deposits.",
+            "title": "Usecases"
+          }
+        },
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "topinfo-description": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration.",
+        "topinfo-title": "Secure and compliant digital deposit management",
+        "total-supply-header": "Total Supply"
+      },
+      "tabs": {
+        "details": "Details",
+        "events": "Events",
+        "holders": "Holders",
+        "permissions": "Permissions",
+        "underlying-assets": "Underlying assets"
       }
     },
     "users": {
@@ -2019,7 +2242,8 @@
       "equity-initials": "EQ",
       "fund-initials": "FN",
       "not-available-initials": "NA",
-      "stablecoin-initials": "SC"
+      "stablecoin-initials": "SC",
+      "tokenized-deposit-initials": "TD"
     },
     "charts": {
       "assets": {
