@@ -15,12 +15,12 @@ export const UserFragment = hasuraGraphql(`
     wallet
     created_at
     updated_at
-    kyc_verified
+    kyc_verified_at
     role
     banned
     ban_reason
     ban_expires
-    last_login
+    last_login_at
     image
   }
 `);
@@ -36,14 +36,14 @@ export const UserFragmentSchema = z.object({
   wallet: z.address(),
   created_at: z.coerce.date(),
   updated_at: z.coerce.date().nullish(),
-  kyc_verified: z.string().nullish(),
+  kyc_verified_at: z.string().nullish(),
   role: z.string(),
   banned: z.boolean().nullish(),
   ban_reason: z.string().nullish(),
   ban_expires: z.coerce.date().nullish(),
-  last_login: z.string().nullish(),
+  last_login_at: z.string().nullish(),
   image: z.string().nullish(),
-  lastActivity: z.string().nullish(),
+  last_activity_at: z.string().nullish(),
 });
 
 /**

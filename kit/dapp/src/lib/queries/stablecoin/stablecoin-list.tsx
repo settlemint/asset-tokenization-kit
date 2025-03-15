@@ -1,14 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-    OffchainStableCoinFragment,
-    OffchainStableCoinFragmentSchema,
-    StableCoinFragment,
-    StableCoinFragmentSchema,
+  OffchainStableCoinFragment,
+  OffchainStableCoinFragmentSchema,
+  StableCoinFragment,
+  StableCoinFragmentSchema,
 } from "./stablecoin-fragment";
 
 /**
@@ -46,12 +49,6 @@ const OffchainStableCoinList = hasuraGraphql(
 
 /**
  * Fetches a list of stablecoins from both on-chain and off-chain sources
- *
- * @param options - Options for fetching stablecoin list
- *
- * @remarks
- * This function fetches data from both The Graph (on-chain) and Hasura (off-chain),
- * then merges the results to provide a complete view of each stablecoin.
  */
 export const getStableCoinList = cache(async () => {
   const [theGraphStableCoins, dbAssets] = await Promise.all([
@@ -97,10 +94,7 @@ export const getStableCoinList = cache(async () => {
 
     return {
       ...stableCoin,
-      ...{
-        private: false,
-        ...dbAsset,
-      },
+      ...dbAsset,
     };
   });
 });

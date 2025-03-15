@@ -1,6 +1,6 @@
 "use client";
 
-import { EarthIcon } from "@/components/ui/animated-icons/earth";
+import { LanguagesIcon } from "@/components/ui/animated-icons/languages";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -106,7 +106,7 @@ export function LanguageToggle({
           aria-label="Change language"
           disabled={isPending}
         >
-          <EarthIcon className="h-[1.2rem] w-[1.2rem]" />
+          <LanguagesIcon className="h-[1.2rem] w-[1.2rem]" />
           {size !== "icon" && (
             <span className="ml-2">
               {isPending

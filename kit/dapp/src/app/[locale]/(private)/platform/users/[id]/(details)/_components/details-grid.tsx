@@ -48,8 +48,8 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         {formatDate(user.created_at, { type: "distance" })}
       </DetailGridItem>
       <DetailGridItem label={t("verified_at")}>
-        {user.kyc_verified
-          ? formatDate(user.kyc_verified, { type: "distance" })
+        {user.kyc_verified_at
+          ? formatDate(user.kyc_verified_at, { type: "distance" })
           : tValues("not_verified")}
       </DetailGridItem>
       <DetailGridItem label={t("wallet")}>
@@ -67,13 +67,13 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
         {formatNumber(user.transactionCount, { decimals: 0 })}
       </DetailGridItem>
       <DetailGridItem label={t("last_activity")}>
-        {user.lastActivity
-          ? formatDate(user.lastActivity, { type: "distance" })
+        {user.last_activity_at
+          ? formatDate(user.last_activity_at, { type: "distance" })
           : tValues("never")}
       </DetailGridItem>
       <DetailGridItem label={t("last_login")}>
-        {user.last_login
-          ? formatDate(user.last_login, { type: "distance" })
+        {user.last_login_at
+          ? formatDate(user.last_login_at, { type: "distance" })
           : tValues("never")}
       </DetailGridItem>
     </DetailGrid>

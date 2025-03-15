@@ -2,13 +2,13 @@
   "admin": {
     "activity": {
       "asset-management": "資産管理",
-      "page-description": "すべての資産にわたる活動を追跡します。",
-      "page-title": "資産活動",
+      "page-description": "組織内のすべての活動を表示",
+      "page-title": "活動",
       "tabs": {
         "recent-transactions": "最近の取引",
         "all-events": "すべてのイベント"
       },
-      "view-all": "エクスプローラーで全取引を表示"
+      "view-all": "すべて表示"
     },
     "bonds": {
       "burn-form": {
@@ -2469,8 +2469,40 @@
     },
     "settings": {
       "profile": {
-        "portfolio-management": "金額",
+        "portfolio-management": "ポートフォリオ管理",
         "title": "転送"
+      },
+      "api-keys": {
+        "api-key-copied": "APIキーがクリップボードにコピーされました",
+        "api-key-created-description": "APIキーが作成されました。再度表示することはできないので、今すぐコピーしてください。",
+        "api-key-save-warning": "今すぐAPIキーをコピーしてください。再度表示することはできません！",
+        "cancel": "キャンセル",
+        "close": "閉じる",
+        "create": "作成",
+        "create-api-key": "APIキーを作成",
+        "create-api-key-description": "APIにプログラムでアクセスするための新しいAPIキーを作成します。",
+        "create-error": "APIキーの作成に失敗しました",
+        "created-at": "作成日時",
+        "creating-api-key": "APIキーを作成しています...",
+        "expires-at": "有効期限",
+        "expiry-label": "有効期限",
+        "expiry-options": {
+          "1 day": "1日",
+          "1 month": "1ヶ月",
+          "1 week": "1週間",
+          "1 year": "1年",
+          "No expiry": "有効期限なし"
+        },
+        "fetch-error": "APIキーの取得に失敗しました",
+        "last-used": "最終使用",
+        "name-label": "名前",
+        "never": "未使用",
+        "portfolio-management": "ポートフォリオ管理",
+        "select-expiry-placeholder": "有効期限を選択",
+        "swagger-description": "すべてのAPIリクエストには、認証のためにx-api-keyヘッダー内にAPIキーを含める必要があります。このヘッダーは、APIエンドポイントへの安全で認可されたアクセスを保証し、アプリケーションが私たちのサービスと安全に対話できるようにします。",
+        "swagger-link-text": "APIドキュメントを開く",
+        "swagger-title": "APIキーを作成、表示、管理して、アプリケーションを私たちのプラットフォームと安全に統合します。APIキーを使用すると、すべての利用可能な機能にプログラムでアクセスでき、私たちのOpenAPI仕様を通じて明確に文書化されています。",
+        "title": "APIキー"
       }
     },
     "transfer-form": {
