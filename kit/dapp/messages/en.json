@@ -2783,15 +2783,6 @@
 		"assets": {
 			"details": {
 				"asset-management": "Asset management",
-				"page-description": "Explore comprehensive data and metrics for {name}.",
-				"page-title": "{name} Details",
-				"tabs": {
-					"details": "Details",
-					"events": "Events",
-					"holders": "Holders",
-					"permissions": "Permissions",
-					"underlying-assets": "Underlying Assets"
-				},
 				"forms": {
 					"burn": {
 						"amount": {
@@ -2900,8 +2891,6 @@
 						}
 					},
 					"top-up": {
-						"button-label": "Top up",
-						"description": "Add more underlying asset to your bond",
 						"amount": {
 							"amount": {
 								"description": "Enter the amount to top up",
@@ -2910,6 +2899,8 @@
 							"description": "Specify the amount to top up the underlying asset.",
 							"title": "Enter amount"
 						},
+						"button-label": "Top up",
+						"description": "Add more underlying asset to your bond",
 						"summary": {
 							"amount-label": "Amount",
 							"asset-label": "Underlying asset",
@@ -2943,8 +2934,6 @@
 						"trigger-label": "Update collateral"
 					},
 					"withdraw": {
-						"button-label": "Withdraw",
-						"description": "Withdraw underlying asset from your bond",
 						"amount": {
 							"amount": {
 								"description": "Enter the amount to withdraw",
@@ -2953,6 +2942,8 @@
 							"description": "Specify the amount to withdraw.",
 							"title": "Enter amount"
 						},
+						"button-label": "Withdraw",
+						"description": "Withdraw underlying asset from your bond",
 						"recipient": {
 							"description": "Choose who will receive the underlying asset.",
 							"label": "Recipient",
@@ -2975,6 +2966,77 @@
 						"title": "Withdraw underlying asset",
 						"trigger-label": "Withdraw"
 					}
+				},
+				"holders": {
+					"actions-header": "Actions",
+					"active": "Active",
+					"admin": "Admin",
+					"blocked": "Blocked",
+					"creator-owner": "Creator / Owner",
+					"fields": {
+						"balance-header": "Balance",
+						"wallet-header": "Wallet"
+					},
+					"forms": {
+						"block": {
+							"block-button-label": "Block User",
+							"block-description": "Prevent this user from performing any transactions or interactions.",
+							"block-title": "Block User Transactions",
+							"block-trigger-label": "Block",
+							"summary": {
+								"asset-label": "Asset",
+								"block-title": "Block",
+								"current-state-label": "Current state",
+								"description": "Verify the details of your block operation before proceeding.",
+								"operation-description": "Block operation details",
+								"state-active": "Active",
+								"state-blocked": "Blocked",
+								"target-state-label": "Target state",
+								"title": "Review and confirm block operation",
+								"unblock-title": "Unblock"
+							},
+							"unblock-button-label": "Unblock User",
+							"unblock-description": "Restore this user's ability to transact and interact.",
+							"unblock-title": "Restore User Transactions",
+							"unblock-trigger-label": "Unblock"
+						},
+						"freeze": {
+							"amount": {
+								"amount-label": "Amount",
+								"balance-description": "Available balance: {balance} Currently frozen: {frozen}",
+								"description": "Input the amount you wish to freeze.",
+								"title": "Enter Amount"
+							},
+							"button-label": "Freeze Funds",
+							"description": "Temporarily restrict a user's access to their funds.",
+							"summary": {
+								"amount-label": "Amount",
+								"asset-label": "Asset",
+								"description": "Verify the details of your freeze operation before proceeding.",
+								"freeze-title": "Freeze",
+								"operation-description": "Freezing operation details",
+								"title": "Review and confirm freeze operation"
+							},
+							"title": "Restrict User Funds",
+							"trigger-label": "Freeze"
+						}
+					},
+					"frozen-header": "Frozen",
+					"holder-type-header": "Type",
+					"last-activity-header": "Last activity",
+					"paused": "Paused",
+					"regular": "Regular Holder",
+					"status-header": "Status",
+					"supply-manager": "Supply Manager"
+				},
+				"page-description": "Explore comprehensive data and metrics for {name}.",
+				"page-title": "{name} Details",
+				"tabs": {
+					"details": "Details",
+					"events": "Events",
+					"holders": "Holders",
+					"permissions": "Permissions",
+					"underlying-assets": "Underlying Assets"
 				}
 			},
 			"fields": {
