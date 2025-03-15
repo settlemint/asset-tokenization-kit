@@ -18,10 +18,9 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires", { withTimezone: true }),
-  normalizedEmail: text("normalized_email").unique(),
-  wallet: text("wallet").notNull().unique(),
-  kycVerifiedAt: timestamp("kyc_verified", { withTimezone: true }),
-  lastLoginAt: timestamp("last_login", { withTimezone: true }),
+  wallet: text("wallet").unique(),
+  kycVerifiedAt: timestamp("kyc_verified_at", { withTimezone: true }),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
 });
 
 export const session = pgTable("session", {
@@ -34,7 +33,7 @@ export const session = pgTable("session", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   impersonatedBy: text("impersonated_by"),
 });
 
@@ -44,7 +43,7 @@ export const account = pgTable("account", {
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -69,13 +68,39 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
 
+export const apikey = pgTable("apikey", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  start: text("start"),
+  prefix: text("prefix"),
+  key: text("key").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  refillInterval: integer("refill_interval"),
+  refillAmount: integer("refill_amount"),
+  lastRefillAt: timestamp("last_refill_at"),
+  enabled: boolean("enabled"),
+  rateLimitEnabled: boolean("rate_limit_enabled"),
+  rateLimitTimeWindow: integer("rate_limit_time_window"),
+  rateLimitMax: integer("rate_limit_max"),
+  requestCount: integer("request_count"),
+  remaining: integer("remaining"),
+  lastRequest: timestamp("last_request"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+  permissions: text("permissions"),
+  metadata: text("metadata"),
+});
+
 export const passkey = pgTable("passkey", {
   id: text("id").primaryKey(),
   name: text("name"),
   publicKey: text("public_key").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   credentialID: text("credential_i_d").notNull(),
   counter: integer("counter").notNull(),
   deviceType: text("device_type").notNull(),

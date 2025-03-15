@@ -1,5 +1,6 @@
 import {
   adminClient,
+  apiKeyClient,
   inferAdditionalFields,
   magicLinkClient,
   multiSessionClient,
@@ -15,6 +16,7 @@ export const authClient = createAuthClient({
   plugins: [
     inferAdditionalFields<typeof auth>(),
     adminClient(),
+    apiKeyClient(),
     passkeyClient(),
     magicLinkClient(),
     multiSessionClient(),
