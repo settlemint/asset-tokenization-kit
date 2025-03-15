@@ -2,7 +2,6 @@
 
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
-import { PasskeyModal } from "@/components/blocks/passkeys/passkey-modal";
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
@@ -166,7 +165,6 @@ export function UserDropdown() {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <PasskeyModal />
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
             onMouseEnter={() => logoutIconRef.current?.startAnimation()}
