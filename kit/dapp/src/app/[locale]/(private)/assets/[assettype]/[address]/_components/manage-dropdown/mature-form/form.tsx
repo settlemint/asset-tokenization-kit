@@ -11,49 +11,49 @@ import type { Address } from "viem";
 import { Summary } from "./steps/summary";
 
 interface MatureFormProps {
-  address: Address;
-  asButton?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+	address: Address;
+	asButton?: boolean;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 }
 
 export function MatureForm({
-  address,
-  asButton = false,
-  open,
-  onOpenChange,
+	address,
+	asButton = false,
+	open,
+	onOpenChange,
 }: MatureFormProps) {
-  const t = useTranslations("admin.bonds.mature-form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [internalOpenState, setInternalOpenState] = useState(false);
+	const t = useTranslations("private.assets.details.forms.mature");
+	const isExternallyControlled =
+		open !== undefined && onOpenChange !== undefined;
+	const [internalOpenState, setInternalOpenState] = useState(false);
 
-  return (
-    <FormSheet
-      open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={
-        isExternallyControlled ? onOpenChange : setInternalOpenState
-      }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
-      asButton={asButton}
-    >
-      <Form
-        action={mature}
-        resolver={zodResolver(MatureFormSchema)}
-        onOpenChange={
-          isExternallyControlled ? onOpenChange : setInternalOpenState
-        }
-        buttonLabels={{
-          label: t("button-label"),
-        }}
-        defaultValues={{
-          address,
-        }}
-      >
-        <Summary address={address} />
-      </Form>
-    </FormSheet>
-  );
+	return (
+		<FormSheet
+			open={isExternallyControlled ? open : internalOpenState}
+			onOpenChange={
+				isExternallyControlled ? onOpenChange : setInternalOpenState
+			}
+			triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+			title={t("title")}
+			description={t("description")}
+			asButton={asButton}
+		>
+			<Form
+				action={mature}
+				resolver={zodResolver(MatureFormSchema)}
+				onOpenChange={
+					isExternallyControlled ? onOpenChange : setInternalOpenState
+				}
+				buttonLabels={{
+					label: t("button-label"),
+				}}
+				defaultValues={{
+					address,
+				}}
+			>
+				<Summary address={address} />
+			</Form>
+		</FormSheet>
+	);
 }

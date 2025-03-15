@@ -21,7 +21,7 @@ export function Amount({ maxBurnAmount }: AmountProps) {
 		| StablecoinBurnInput
 		| TokenizedDepositBurnInput
 	>();
-	const t = useTranslations("admin.bonds.burn-form.amount");
+	const t = useTranslations("private.assets.details.forms.burn.amount");
 
 	return (
 		<FormStep title={t("title")} description={t("description")}>

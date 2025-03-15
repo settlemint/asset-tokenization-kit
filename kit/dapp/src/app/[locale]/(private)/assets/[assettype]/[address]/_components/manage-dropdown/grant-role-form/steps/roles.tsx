@@ -6,26 +6,26 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function AdminRoles() {
-  const { control } = useFormContext<GrantRoleInput>();
-  const t = useTranslations("admin.stablecoins.grant-role-form.roles");
+	const { control } = useFormContext<GrantRoleInput>();
+	const t = useTranslations("private.assets.details.forms.grant-role.roles");
 
-  return (
-    <FormStep title={t("title")} description={t("description")}>
-      <div className="space-y-3">
-        {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
-          ([key, role]) => (
-            <FormCheckbox
-              key={key}
-              name={`roles.${role.contractRole}`}
-              control={control}
-              label={role.displayName}
-              description={role.description}
-            />
-          )
-        )}
-      </div>
-    </FormStep>
-  );
+	return (
+		<FormStep title={t("title")} description={t("description")}>
+			<div className="space-y-3">
+				{(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
+					([key, role]) => (
+						<FormCheckbox
+							key={key}
+							name={`roles.${role.contractRole}`}
+							control={control}
+							label={role.displayName}
+							description={role.description}
+						/>
+					),
+				)}
+			</div>
+		</FormStep>
+	);
 }
 
 AdminRoles.validatedFields = ["roles"] as const;

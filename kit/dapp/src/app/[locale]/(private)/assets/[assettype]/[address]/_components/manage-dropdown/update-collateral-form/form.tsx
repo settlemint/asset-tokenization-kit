@@ -12,50 +12,50 @@ import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 
 interface UpdateCollateralFormProps {
-  address: Address;
-  asButton?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+	address: Address;
+	asButton?: boolean;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 }
 
 export function UpdateCollateralForm({
-  address,
-  asButton = false,
-  open,
-  onOpenChange,
+	address,
+	asButton = false,
+	open,
+	onOpenChange,
 }: UpdateCollateralFormProps) {
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [internalOpenState, setInternalOpenState] = useState(false);
-  const t = useTranslations("admin.stablecoins.update-collateral-form");
+	const isExternallyControlled =
+		open !== undefined && onOpenChange !== undefined;
+	const [internalOpenState, setInternalOpenState] = useState(false);
+	const t = useTranslations("private.assets.details.forms.update-collateral");
 
-  return (
-    <FormSheet
-      open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={
-        isExternallyControlled ? onOpenChange : setInternalOpenState
-      }
-      title={t("title")}
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      description={t("description")}
-      asButton={asButton}
-    >
-      <Form
-        action={updateCollateral}
-        resolver={zodResolver(UpdateCollateralSchema)}
-        onOpenChange={
-          isExternallyControlled ? onOpenChange : setInternalOpenState
-        }
-        buttonLabels={{
-          label: t("button-label"),
-        }}
-        defaultValues={{
-          address,
-        }}
-      >
-        <Amount />
-        <Summary address={address} />
-      </Form>
-    </FormSheet>
-  );
+	return (
+		<FormSheet
+			open={isExternallyControlled ? open : internalOpenState}
+			onOpenChange={
+				isExternallyControlled ? onOpenChange : setInternalOpenState
+			}
+			title={t("title")}
+			triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+			description={t("description")}
+			asButton={asButton}
+		>
+			<Form
+				action={updateCollateral}
+				resolver={zodResolver(UpdateCollateralSchema)}
+				onOpenChange={
+					isExternallyControlled ? onOpenChange : setInternalOpenState
+				}
+				buttonLabels={{
+					label: t("button-label"),
+				}}
+				defaultValues={{
+					address,
+				}}
+			>
+				<Amount />
+				<Summary address={address} />
+			</Form>
+		</FormSheet>
+	);
 }

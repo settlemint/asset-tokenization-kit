@@ -28,7 +28,7 @@ export function Summary({ address }: SummaryProps) {
 		| TokenizedDepositMintInput
 		| StablecoinMintInput
 	>();
-	const t = useTranslations("admin.bonds.mint-form.summary");
+	const t = useTranslations("private.assets.details.forms.mint.summary");
 	const values = useWatch({
 		control: control,
 	});

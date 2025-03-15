@@ -15,7 +15,7 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
 	const { control } = useFormContext<GrantRoleInput>();
-	const t = useTranslations("admin.stablecoins.grant-role-form.summary");
+	const t = useTranslations("private.assets.details.forms.grant-role.summary");
 	const values = useWatch({
 		control,
 	});

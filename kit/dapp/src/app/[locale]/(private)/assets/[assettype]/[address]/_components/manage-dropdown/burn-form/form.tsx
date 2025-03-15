@@ -37,7 +37,7 @@ export function BurnForm({
 	open,
 	onOpenChange,
 }: BurnFormProps) {
-	const t = useTranslations("admin.bonds.burn-form");
+	const t = useTranslations("private.assets.details.forms.burn");
 	const isExternallyControlled =
 		open !== undefined && onOpenChange !== undefined;
 	const [internalOpenState, setInternalOpenState] = useState(false);

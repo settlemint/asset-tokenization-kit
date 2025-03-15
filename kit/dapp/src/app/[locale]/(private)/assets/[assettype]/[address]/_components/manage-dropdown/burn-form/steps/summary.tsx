@@ -25,7 +25,7 @@ export function Summary({ address }: SummaryProps) {
 		| StablecoinBurnInput
 		| TokenizedDepositBurnInput
 	>();
-	const t = useTranslations("admin.bonds.burn-form.summary");
+	const t = useTranslations("private.assets.details.forms.burn.summary");
 	const values = useWatch({
 		control: control,
 	});

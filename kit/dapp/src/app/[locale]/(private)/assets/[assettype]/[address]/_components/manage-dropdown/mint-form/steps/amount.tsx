@@ -19,7 +19,7 @@ export function Amount() {
 		| CryptocurrencyMintInput
 		| StablecoinMintInput
 	>();
-	const t = useTranslations("admin.bonds.mint-form.amount");
+	const t = useTranslations("private.assets.details.forms.mint.amount");
 
 	return (
 		<FormStep title={t("title")} description={t("description")}>

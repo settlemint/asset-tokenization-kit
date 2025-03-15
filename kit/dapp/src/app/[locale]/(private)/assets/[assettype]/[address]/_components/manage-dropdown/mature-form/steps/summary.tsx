@@ -7,26 +7,26 @@ import { useTranslations } from "next-intl";
 import type { Address } from "viem";
 
 interface SummaryProps {
-  address: Address;
+	address: Address;
 }
 
 export function Summary({ address }: SummaryProps) {
-  const t = useTranslations("admin.bonds.mature-form.summary");
+	const t = useTranslations("private.assets.details.forms.mature.summary");
 
-  return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormSummaryDetailCard
-        icon={<Clock className="size-3 text-primary-foreground" />}
-        title={t("mature-title")}
-        description={t("mature-description")}
-      >
-        <FormSummaryDetailItem
-          label={t("asset-label")}
-          value={<EvmAddress address={address} />}
-        />
-      </FormSummaryDetailCard>
-    </FormStep>
-  );
+	return (
+		<FormStep title={t("title")} description={t("description")}>
+			<FormSummaryDetailCard
+				icon={<Clock className="size-3 text-primary-foreground" />}
+				title={t("mature-title")}
+				description={t("mature-description")}
+			>
+				<FormSummaryDetailItem
+					label={t("asset-label")}
+					value={<EvmAddress address={address} />}
+				/>
+			</FormSummaryDetailCard>
+		</FormStep>
+	);
 }
 
 Summary.validatedFields = [] as const;

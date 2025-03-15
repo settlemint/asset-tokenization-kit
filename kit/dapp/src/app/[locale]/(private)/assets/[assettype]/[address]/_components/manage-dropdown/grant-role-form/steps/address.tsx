@@ -9,7 +9,7 @@ import { useFormContext } from "react-hook-form";
 export function AdminAddress() {
 	const { control } = useFormContext<GrantRoleInput>();
 	const [isManualEntry, setIsManualEntry] = useState(false);
-	const t = useTranslations("admin.stablecoins.grant-role-form.address");
+	const t = useTranslations("private.assets.details.forms.grant-role.address");
 
 	return (
 		<FormStep title={t("title")} description={t("description")}>

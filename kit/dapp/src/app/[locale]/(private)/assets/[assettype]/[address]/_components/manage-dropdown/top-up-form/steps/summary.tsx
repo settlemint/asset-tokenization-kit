@@ -11,30 +11,32 @@ import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 export function Summary() {
-  const { control } = useFormContext<TopUpInput>();
-  const t = useTranslations("admin.bonds.top-up-form.steps.summary");
-  const values = useWatch({
-    control: control,
-  });
+	const { control } = useFormContext<TopUpInput>();
+	const t = useTranslations("private.assets.details.forms.top-up.summary");
+	const values = useWatch({
+		control: control,
+	});
 
-  return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormSummaryDetailCard
-        icon={<DollarSign className="size-3 text-primary-foreground" />}
-        title={t("title")}
-        description={t("description")}
-      >
-        <FormSummaryDetailItem
-          label={t("asset-label")}
-          value={<EvmAddress address={values.underlyingAssetAddress!} />}
-        />
-        <FormSummaryDetailItem
-          label={t("amount-label")}
-          value={formatNumber(values.amount ?? 0)}
-        />
-      </FormSummaryDetailCard>
-    </FormStep>
-  );
+	return (
+		<FormStep title={t("title")} description={t("description")}>
+			<FormSummaryDetailCard
+				icon={<DollarSign className="size-3 text-primary-foreground" />}
+				title={t("title")}
+				description={t("description")}
+			>
+				<FormSummaryDetailItem
+					label={t("asset-label")}
+					value={
+						<EvmAddress address={values.underlyingAssetAddress ?? "0x0"} />
+					}
+				/>
+				<FormSummaryDetailItem
+					label={t("amount-label")}
+					value={formatNumber(values.amount ?? 0)}
+				/>
+			</FormSummaryDetailCard>
+		</FormStep>
+	);
 }
 
 Summary.validatedFields = [] as const;

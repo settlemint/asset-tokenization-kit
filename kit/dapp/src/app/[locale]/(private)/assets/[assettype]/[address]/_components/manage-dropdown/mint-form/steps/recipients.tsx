@@ -23,7 +23,7 @@ export function Recipients() {
 	>();
 	const [isManualEntry, setIsManualEntry] = useState(false);
 
-	const t = useTranslations("admin.bonds.mint-form.recipients");
+	const t = useTranslations("private.assets.details.forms.mint.recipients");
 
 	return (
 		<FormStep title={t("title")} description={t("description")}>

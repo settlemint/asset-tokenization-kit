@@ -10,34 +10,36 @@ import { useFormContext, useWatch } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
-  address: Address;
+	address: Address;
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<UpdateCollateralInput>();
-  const t = useTranslations("admin.stablecoins.update-collateral-form.summary");
-  const values = useWatch({
-    control: control,
-  });
+	const { control } = useFormContext<UpdateCollateralInput>();
+	const t = useTranslations(
+		"private.assets.details.forms.update-collateral.summary",
+	);
+	const values = useWatch({
+		control: control,
+	});
 
-  return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormSummaryDetailCard
-        title={t("update-title")}
-        description={t("update-description")}
-        icon={<DollarSign className="size-3 text-primary-foreground" />}
-      >
-        <FormSummaryDetailItem
-          label={t("asset-label")}
-          value={<EvmAddress address={address} />}
-        />
-        <FormSummaryDetailItem
-          label={t("amount-label")}
-          value={formatNumber(values.amount ?? 0)}
-        />
-      </FormSummaryDetailCard>
-    </FormStep>
-  );
+	return (
+		<FormStep title={t("title")} description={t("description")}>
+			<FormSummaryDetailCard
+				title={t("update-title")}
+				description={t("update-description")}
+				icon={<DollarSign className="size-3 text-primary-foreground" />}
+			>
+				<FormSummaryDetailItem
+					label={t("asset-label")}
+					value={<EvmAddress address={address} />}
+				/>
+				<FormSummaryDetailItem
+					label={t("amount-label")}
+					value={formatNumber(values.amount ?? 0)}
+				/>
+			</FormSummaryDetailCard>
+		</FormStep>
+	);
 }
 
 Summary.validatedFields = [] as const;

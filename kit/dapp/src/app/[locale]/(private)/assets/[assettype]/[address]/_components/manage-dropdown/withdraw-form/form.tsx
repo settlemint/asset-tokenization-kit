@@ -27,7 +27,7 @@ export function WithdrawForm({
 	open,
 	onOpenChange,
 }: WithdrawFormProps) {
-	const t = useTranslations("admin.bonds.withdraw-form");
+	const t = useTranslations("private.assets.details.forms.withdraw");
 	const isExternallyControlled =
 		open !== undefined && onOpenChange !== undefined;
 	const [internalOpenState, setInternalOpenState] = useState(false);

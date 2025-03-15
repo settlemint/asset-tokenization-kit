@@ -7,22 +7,22 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function Amount() {
-  const { control } = useFormContext<TopUpInput>();
-  const t = useTranslations("admin.bonds.top-up-form.steps.amount");
+	const { control } = useFormContext<TopUpInput>();
+	const t = useTranslations("private.assets.details.forms.top-up.amount");
 
-  return (
-    <FormStep title={t("title")} description={t("description")}>
-      <FormInput
-        control={control}
-        name="amount"
-        type="number"
-        min={0}
-        step="any"
-        label={t("amount.label")}
-        description={t("amount.description")}
-      />
-    </FormStep>
-  );
+	return (
+		<FormStep title={t("title")} description={t("description")}>
+			<FormInput
+				control={control}
+				name="amount"
+				type="number"
+				min={0}
+				step="any"
+				label={t("amount.label")}
+				description={t("amount.description")}
+			/>
+		</FormStep>
+	);
 }
 
 Amount.validatedFields = ["amount"] as const;

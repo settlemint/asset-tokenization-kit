@@ -12,53 +12,53 @@ import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
 
 interface TopUpFormProps {
-  address: Address;
-  underlyingAssetAddress: Address;
-  asButton?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+	address: Address;
+	underlyingAssetAddress: Address;
+	asButton?: boolean;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 }
 
 export function TopUpForm({
-  address,
-  underlyingAssetAddress,
-  asButton = false,
-  open,
-  onOpenChange,
+	address,
+	underlyingAssetAddress,
+	asButton = false,
+	open,
+	onOpenChange,
 }: TopUpFormProps) {
-  const t = useTranslations("admin.bonds.top-up-form");
-  const isExternallyControlled =
-    open !== undefined && onOpenChange !== undefined;
-  const [internalOpenState, setInternalOpenState] = useState(false);
+	const t = useTranslations("private.assets.details.forms.top-up");
+	const isExternallyControlled =
+		open !== undefined && onOpenChange !== undefined;
+	const [internalOpenState, setInternalOpenState] = useState(false);
 
-  return (
-    <FormSheet
-      open={isExternallyControlled ? open : internalOpenState}
-      onOpenChange={
-        isExternallyControlled ? onOpenChange : setInternalOpenState
-      }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
-      asButton={asButton}
-    >
-      <Form
-        action={topUpUnderlyingAsset}
-        resolver={zodResolver(TopUpSchema)}
-        onOpenChange={
-          isExternallyControlled ? onOpenChange : setInternalOpenState
-        }
-        buttonLabels={{
-          label: t("button-label"),
-        }}
-        defaultValues={{
-          address,
-          underlyingAssetAddress,
-        }}
-      >
-        <Amount />
-        <Summary />
-      </Form>
-    </FormSheet>
-  );
+	return (
+		<FormSheet
+			open={isExternallyControlled ? open : internalOpenState}
+			onOpenChange={
+				isExternallyControlled ? onOpenChange : setInternalOpenState
+			}
+			triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+			title={t("title")}
+			description={t("description")}
+			asButton={asButton}
+		>
+			<Form
+				action={topUpUnderlyingAsset}
+				resolver={zodResolver(TopUpSchema)}
+				onOpenChange={
+					isExternallyControlled ? onOpenChange : setInternalOpenState
+				}
+				buttonLabels={{
+					label: t("button-label"),
+				}}
+				defaultValues={{
+					address,
+					underlyingAssetAddress,
+				}}
+			>
+				<Amount />
+				<Summary />
+			</Form>
+		</FormSheet>
+	);
 }

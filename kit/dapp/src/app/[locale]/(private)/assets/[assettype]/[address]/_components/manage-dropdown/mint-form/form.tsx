@@ -38,7 +38,7 @@ export function MintForm({
 	open,
 	onOpenChange,
 }: MintFormProps) {
-	const t = useTranslations("admin.bonds.mint-form");
+	const t = useTranslations("private.assets.details.forms.mint");
 	const isExternallyControlled =
 		open !== undefined && onOpenChange !== undefined;
 	const [internalOpenState, setInternalOpenState] = useState(false);

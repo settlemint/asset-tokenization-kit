@@ -43,7 +43,7 @@ export function PauseForm({
 	open,
 	onOpenChange,
 }: PauseFormProps) {
-	const t = useTranslations("admin.bonds.pause-form");
+	const t = useTranslations("private.assets.details.forms.pause");
 
 	if (isPaused) {
 		return (

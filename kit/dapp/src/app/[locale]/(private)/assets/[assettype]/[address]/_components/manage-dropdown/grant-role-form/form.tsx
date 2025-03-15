@@ -12,47 +12,47 @@ import { AdminRoles } from "./steps/roles";
 import { Summary } from "./steps/summary";
 
 interface GrantRoleFormProps {
-  address: Address;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  grantRoleAction: GrantRoleActionType;
+	address: Address;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	grantRoleAction: GrantRoleActionType;
 }
 
 export function GrantRoleForm({
-  address,
-  open,
-  onOpenChange,
-  grantRoleAction,
+	address,
+	open,
+	onOpenChange,
+	grantRoleAction,
 }: GrantRoleFormProps) {
-  const t = useTranslations("admin.stablecoins.grant-role-form");
+	const t = useTranslations("private.assets.details.forms.grant-role");
 
-  return (
-    <FormSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={t("title")}
-      description={t("description")}
-    >
-      <Form
-        action={grantRoleAction}
-        resolver={zodResolver(GrantRoleSchema)}
-        onOpenChange={onOpenChange}
-        buttonLabels={{
-          label: t("button-label"),
-        }}
-        defaultValues={{
-          address,
-          roles: {
-            DEFAULT_ADMIN_ROLE: false,
-            SUPPLY_MANAGEMENT_ROLE: false,
-            USER_MANAGEMENT_ROLE: false,
-          },
-        }}
-      >
-        <AdminAddress />
-        <AdminRoles />
-        <Summary address={address} />
-      </Form>
-    </FormSheet>
-  );
+	return (
+		<FormSheet
+			open={open}
+			onOpenChange={onOpenChange}
+			title={t("title")}
+			description={t("description")}
+		>
+			<Form
+				action={grantRoleAction}
+				resolver={zodResolver(GrantRoleSchema)}
+				onOpenChange={onOpenChange}
+				buttonLabels={{
+					label: t("button-label"),
+				}}
+				defaultValues={{
+					address,
+					roles: {
+						DEFAULT_ADMIN_ROLE: false,
+						SUPPLY_MANAGEMENT_ROLE: false,
+						USER_MANAGEMENT_ROLE: false,
+					},
+				}}
+			>
+				<AdminAddress />
+				<AdminRoles />
+				<Summary address={address} />
+			</Form>
+		</FormSheet>
+	);
 }
