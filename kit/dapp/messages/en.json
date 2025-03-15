@@ -2780,6 +2780,18 @@
   },
   "private": {
     "assets": {
+      "details": {
+        "asset-management": "Asset management",
+        "page-description": "Explore comprehensive data and metrics for {name}.",
+        "page-title": "{name} Details",
+        "tabs": {
+          "details": "Details",
+          "events": "Events",
+          "holders": "Holders",
+          "permissions": "Permissions",
+          "underlying-assets": "Underlying Assets"
+        }
+      },
       "fields": {
         "actions-header": "Actions",
         "active": "Active",
@@ -2913,72 +2925,7 @@
           "stablecoins": "Stablecoins",
           "tokenizeddeposits": "Tokenized Deposits"
         },
-        "topinfo-description": {
-          "bonds": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
-          "cryptocurrencies": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
-          "equities": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
-          "funds": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
-          "stablecoins": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
-          "tokenizeddeposits": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
-        },
-        "topinfo-title": {
-          "bonds": "A digital fixed-income security asset",
-          "cryptocurrencies": "A customizable and secure digital asset",
-          "equities": "Institutional-grade digital equity management",
-          "funds": "Digital asset for institutional fund management",
-          "stablecoins": "A secure and collateralized digital currency",
-          "tokenizeddeposits": "Secure and compliant digital deposit management"
-        },
         "related": {
-          "title": "Related actions",
-          "stablecoins": {
-            "issue-new": {
-              "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
-              "title": "Issue a new stablecoin"
-            },
-            "mechanics": {
-              "button": "Learn more",
-              "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
-              "title": "Stablecoin mechanics"
-            },
-            "usecases": {
-              "button": "Explore",
-              "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
-              "title": "Usecases"
-            }
-          },
-          "funds": {
-            "issue-new": {
-              "description": "Create and launch a new fund with defined parameters and asset backing. Streamline fund deployment to support new investment opportunities and market segments.",
-              "title": "Issue a new fund"
-            },
-            "mechanics": {
-              "button": "Learn more",
-              "description": "Learn how to adjust key fund parameters, asset allocation methods, and management fee structures.",
-              "title": "Fund mechanics"
-            },
-            "usecases": {
-              "button": "Explore",
-              "description": "Explore the practical applications and integrations of digital funds. Maximize utility across investment management, asset tokenization, and institutional finance ecosystems.",
-              "title": "Usecases"
-            }
-          },
-          "equities": {
-            "issue-new": {
-              "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
-              "title": "Issue new equity tokens"
-            },
-            "mechanics": {
-              "button": "Learn more",
-              "description": "Learn how to manage shareholder rights, voting mechanisms, dividend distributions, and equity ownership structures.",
-              "title": "Equity mechanics"
-            },
-            "usecases": {
-              "button": "Explore",
-              "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
-              "title": "Equity usecases"
-            }
-          },
           "bonds": {
             "issue-new": {
               "description": "Create and launch a new bond with defined maturity, coupon rates, and face value. Streamline bond issuance with automated interest payments and redemption schedules.",
@@ -3011,6 +2958,55 @@
               "title": "Cryptocurrency usecases"
             }
           },
+          "equities": {
+            "issue-new": {
+              "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
+              "title": "Issue new equity tokens"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to manage shareholder rights, voting mechanisms, dividend distributions, and equity ownership structures.",
+              "title": "Equity mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
+              "title": "Equity usecases"
+            }
+          },
+          "funds": {
+            "issue-new": {
+              "description": "Create and launch a new fund with defined parameters and asset backing. Streamline fund deployment to support new investment opportunities and market segments.",
+              "title": "Issue a new fund"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to adjust key fund parameters, asset allocation methods, and management fee structures.",
+              "title": "Fund mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore the practical applications and integrations of digital funds. Maximize utility across investment management, asset tokenization, and institutional finance ecosystems.",
+              "title": "Usecases"
+            }
+          },
+          "stablecoins": {
+            "issue-new": {
+              "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
+              "title": "Issue a new stablecoin"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
+              "title": "Stablecoin mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
+              "title": "Usecases"
+            }
+          },
+          "title": "Related actions",
           "tokenizeddeposits": {
             "issue-new": {
               "description": "Create and launch a new tokenized deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
@@ -3027,6 +3023,22 @@
               "title": "Usecases"
             }
           }
+        },
+        "topinfo-description": {
+          "bonds": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
+          "cryptocurrencies": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
+          "equities": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
+          "funds": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
+          "stablecoins": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
+          "tokenizeddeposits": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
+        },
+        "topinfo-title": {
+          "bonds": "A digital fixed-income security asset",
+          "cryptocurrencies": "A customizable and secure digital asset",
+          "equities": "Institutional-grade digital equity management",
+          "funds": "Digital asset for institutional fund management",
+          "stablecoins": "A secure and collateralized digital currency",
+          "tokenizeddeposits": "Secure and compliant digital deposit management"
         }
       }
     }

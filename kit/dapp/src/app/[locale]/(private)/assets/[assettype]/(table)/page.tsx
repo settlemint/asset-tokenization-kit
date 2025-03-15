@@ -1,5 +1,6 @@
 import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
+import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import type { AssetType } from "../types";
@@ -33,4 +34,19 @@ export default async function AssetTypeTablePage({ params }: PageProps) {
       <Related assettype={assettype} />
     </>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { assettype, locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "private.assets.table",
+  });
+
+  return {
+    title: t(`page-title.${assettype}`),
+    description: t(`topinfo-title.${assettype}`),
+  };
 }

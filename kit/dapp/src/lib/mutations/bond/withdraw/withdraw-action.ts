@@ -1,7 +1,7 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
+import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
@@ -14,8 +14,8 @@ import { WithdrawSchema } from "./withdraw-schema";
  * @remarks
  * This mutation requires authentication via challenge response
  */
-const WithdrawUnderlyingAsset = portalGraphql(`
-  mutation WithdrawUnderlyingAsset(
+const BondWithdrawUnderlyingAsset = portalGraphql(`
+  mutation BondWithdrawUnderlyingAsset(
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
@@ -33,29 +33,31 @@ const WithdrawUnderlyingAsset = portalGraphql(`
 `);
 
 export const withdrawUnderlyingAsset = action
-  .schema(WithdrawSchema)
-  .outputSchema(z.hashes())
-  .action(
-    async ({
-      parsedInput: { address, pincode, amount, to, underlyingAssetAddress },
-      ctx: { user },
-    }) => {
-      const asset = await getAssetDetail({ address: underlyingAssetAddress });
+	.schema(WithdrawSchema)
+	.outputSchema(z.hashes())
+	.action(
+		async ({
+			parsedInput: { address, pincode, amount, to, underlyingAssetAddress },
+			ctx: { user },
+		}) => {
+			const asset = await getAssetDetail({ address: underlyingAssetAddress });
 
-      const response = await portalClient.request(WithdrawUnderlyingAsset, {
-        address,
-        from: user.wallet,
-        input: {
-          to,
-          amount: parseUnits(amount.toString(), asset.decimals).toString(),
-        },
-        challengeResponse: await handleChallenge(user.wallet, pincode),
-      });
+			const response = await portalClient.request(BondWithdrawUnderlyingAsset, {
+				address,
+				from: user.wallet,
+				input: {
+					to,
+					amount: parseUnits(amount.toString(), asset.decimals).toString(),
+				},
+				challengeResponse: await handleChallenge(user.wallet, pincode),
+			});
 
-      if (!response.BondWithdrawUnderlyingAsset?.transactionHash) {
-        throw new Error("Failed to get transaction hash");
-      }
+			if (!response.BondWithdrawUnderlyingAsset?.transactionHash) {
+				throw new Error("Failed to get transaction hash");
+			}
 
-      return z.hashes().parse([response.BondWithdrawUnderlyingAsset.transactionHash]);
-    }
-  );
+			return z
+				.hashes()
+				.parse([response.BondWithdrawUnderlyingAsset.transactionHash]);
+		},
+	);
