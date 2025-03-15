@@ -1,5 +1,4 @@
 import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
-import { CollateralRatio } from "@/components/blocks/charts/assets/collateral-ratio";
 import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
 import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
 import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
@@ -14,7 +13,6 @@ import type { Address } from "viem";
 import { UpdateCollateralForm } from "../../../stablecoins/[address]/_components/update-collateral-form/form";
 import { BurnForm } from "../_components/burn-form/form";
 import { MintForm } from "../_components/mint-form/form";
-import { Collateral } from "./_components/collateral";
 import { Details } from "./_components/details";
 
 interface PageProps {
@@ -54,9 +52,7 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
   return (
     <>
       <Details address={address} />
-      <Collateral address={address} />
       <ChartGrid title={t("charts.asset-statistics-title")}>
-        <CollateralRatio address={address} />
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <WalletDistribution address={address} />
