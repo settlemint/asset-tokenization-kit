@@ -2493,9 +2493,9 @@
         "never": "Never",
         "portfolio-management": "Portfolio Management",
         "select-expiry-placeholder": "Select expiry time",
-        "swagger-description": "The API is documented using an Open API schema",
+        "swagger-description": "All API requests must include your API key within the x-api-key header for authentication. This header ensures secure and authorized access to our API endpoints, allowing your applications to safely interact with our services.",
         "swagger-link-text": "Open API documentation",
-        "swagger-title": "Via the API all actions available in the UI can be executed.",
+        "swagger-title": "Create, view, and manage API keys to securely integrate your applications with our platform. API keys allow you to programmatically access all available features, documented clearly through our OpenAPI specification.",
         "title": "API Keys"
       },
       "profile": {
