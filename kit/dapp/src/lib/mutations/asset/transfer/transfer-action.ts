@@ -75,6 +75,19 @@ const TransferCryptoCurrency = portalGraphql(`
   }
 `);
 
+const TransferTokenizedDeposit = portalGraphql(`
+  mutation TransferTokenizedDeposit($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
+    Transfer: TokenizedDepositTransfer(
+      address: $address
+      from: $from
+      input: { to: $to, value: $value }
+      challengeResponse: $challengeResponse
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 export const transferAsset = action
   .schema(getTransferFormSchema())
   .outputSchema(z.hashes())
@@ -112,6 +125,8 @@ function getQuery(assetType: TransferFormAssetType) {
       return TransferEquity;
     case "cryptocurrency":
       return TransferCryptoCurrency;
+    case "tokenizeddeposit":
+      return TransferTokenizedDeposit;
     default: {
       const _exhaustiveCheck: never = assetType;
       throw new Error(`Unsupported asset type: ${String(_exhaustiveCheck)}`);

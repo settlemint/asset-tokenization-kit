@@ -9,7 +9,7 @@ import { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenize
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { CreateStablecoinForm } from "../_components/create-form/form";
+import { CreateTokenizedDepositForm } from "../_components/create-form/form";
 import { columns } from "./_components/columns";
 export async function generateMetadata({
   params,
@@ -48,7 +48,7 @@ export default async function TokenizedDepositsPage() {
           title={t("related-actions.issue-new.title")}
           description={t("related-actions.issue-new.description")}
         >
-          <CreateStablecoinForm asButton />
+          <CreateTokenizedDepositForm asButton />
         </RelatedGridItem>
         <RelatedGridItem
           title={t("related-actions.mechanics.title")}

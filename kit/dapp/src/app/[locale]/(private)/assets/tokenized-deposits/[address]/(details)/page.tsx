@@ -10,7 +10,6 @@ import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokeni
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
-import { UpdateCollateralForm } from "../../../stablecoins/[address]/_components/update-collateral-form/form";
 import { BurnForm } from "../_components/burn-form/form";
 import { MintForm } from "../_components/mint-form/form";
 import { Details } from "./_components/details";
@@ -60,12 +59,6 @@ export default async function StableCoinDetailPage({ params }: PageProps) {
         <TotalVolume address={address} />
       </ChartGrid>
       <RelatedGrid title={t("related-actions.title")}>
-        <RelatedGridItem
-          title={t("related-actions.update-collateral.title")}
-          description={t("related-actions.update-collateral.description")}
-        >
-          <UpdateCollateralForm address={address} asButton />
-        </RelatedGridItem>
         <RelatedGridItem
           title={t("related-actions.increase-supply.title")}
           description={t("related-actions.increase-supply.description")}

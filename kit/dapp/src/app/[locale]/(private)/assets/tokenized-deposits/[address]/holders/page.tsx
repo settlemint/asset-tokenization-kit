@@ -1,6 +1,6 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
 import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
 import type { Metadata } from "next";
 import type { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -15,7 +15,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { address, locale } = await params;
-  const stableCoin = await getStableCoinDetail({ address });
+  const tokenizedDeposit = await getTokenizedDepositDetail({ address });
   const t = await getTranslations({
     locale,
     namespace: "admin.asset-holders-tab",
@@ -23,15 +23,17 @@ export async function generateMetadata({
 
   return {
     title: t("holders-page-title", {
-      name: stableCoin?.name,
+      name: tokenizedDeposit?.name,
     }),
     description: t("holders-page-description", {
-      name: stableCoin?.name,
+      name: tokenizedDeposit?.name,
     }),
   };
 }
 
-export default async function StablecoinHoldersPage({ params }: PageProps) {
+export default async function TokenizedDepositHoldersPage({
+  params,
+}: PageProps) {
   const { address } = await params;
   const balances = await getAssetBalanceList({ address });
 

@@ -1,7 +1,7 @@
 "use server";
 import { getUser } from "@/lib/auth/utils";
 import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateStablecoinInput } from "@/lib/mutations/stablecoin/create/create-schema";
+import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
@@ -43,7 +43,7 @@ const PredictedAddressSchema = z.object({
  * @returns The predicted address of the new stablecoin
  */
 export const getPredictedAddress = cache(
-  async (input: CreateStablecoinInput) => {
+  async (input: CreateTokenizedDepositInput) => {
     const { assetName, symbol, decimals } = input;
     const user = await getUser();
 

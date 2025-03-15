@@ -1,13 +1,5 @@
 import { type ZodInfer, z } from "@/lib/utils/zod";
 
-const assetKeys = [
-  "bond",
-  "cryptocurrency",
-  "equity",
-  "fund",
-  "stablecoin",
-] as const;
-
 export const getTransferFormSchema = (balance?: string) =>
   z.object({
     address: z.address(),
@@ -20,7 +12,7 @@ export const getTransferFormSchema = (balance?: string) =>
             message: `Amount cannot be greater than balance ${balance}`,
           })
       : z.amount(),
-    assetType: z.enum(assetKeys),
+    assetType: z.assetType(),
     pincode: z.pincode(),
     decimals: z.decimals(),
   });

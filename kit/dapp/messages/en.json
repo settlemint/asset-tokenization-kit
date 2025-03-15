@@ -637,7 +637,8 @@
           "cryptocurrencies": "Cryptocurrencies",
           "equities": "Equities",
           "funds": "Funds",
-          "stablecoins": "Stablecoins"
+          "stablecoins": "Stablecoins",
+          "tokenizeddeposit": "Tokenized Deposits"
         },
         "assets-supply": {
           "description": "Assets supply",
@@ -1431,7 +1432,8 @@
         "cryptocurrency": "Cryptocurrency",
         "equity": "Equity",
         "fund": "Fund",
-        "stablecoin": "Stablecoin"
+        "stablecoin": "Stablecoin",
+        "tokenized-deposit": "Tokenized Deposits"
       },
       "platform-management": {
         "group-title": "Platform management",
@@ -1763,6 +1765,9 @@
         "trigger-label": "Issue a new tokenized deposit"
       },
       "details": {
+        "charts": {
+          "asset-statistics-title": "Asset Statistics"
+        },
         "contract-address": "Contract address",
         "creator": "Creator",
         "decimals": "Decimals",
@@ -1772,6 +1777,17 @@
         "name": "Name",
         "ownership-concentration": "Ownership concentration",
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "related-actions": {
+          "decrease-supply": {
+            "description": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available.",
+            "title": "Reduce Tokenized Deposit Supply"
+          },
+          "increase-supply": {
+            "description": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available.",
+            "title": "Increase Tokenized Deposit Supply"
+          },
+          "title": "Related Actions"
+        },
         "symbol": "Symbol",
         "tokenized-deposit-details-description": "Details for the tokenized deposit",
         "total-burned": "Burned supply",
@@ -2029,7 +2045,8 @@
     "cryptocurrency": "Cryptocurrency",
     "equity": "Equity",
     "fund": "Fund",
-    "stablecoin": "Stablecoin"
+    "stablecoin": "Stablecoin",
+    "tokenizeddeposit": "Tokenized Deposit"
   },
   "auth": {
     "account": "Account",
@@ -2487,6 +2504,7 @@
       "equity": "Equity",
       "fund": "Fund",
       "stablecoin": "Stablecoin",
+      "tokenizeddeposit": "Tokenized Deposit",
       "unknown": "Unknown"
     },
     "dashboard": {

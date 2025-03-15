@@ -2,27 +2,26 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
+import { createTokenizedDeposit } from "@/lib/mutations/tokenized-deposit/create/create-action";
+import { CreateTokenizedDepositSchema } from "@/lib/mutations/tokenized-deposit/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
 import { Summary } from "./steps/summary";
 
-interface CreateStablecoinFormProps {
+interface CreateTokenizedDepositFormProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   asButton?: boolean;
 }
 
-export function CreateStablecoinForm({
+export function CreateTokenizedDepositForm({
   open,
   onOpenChange,
   asButton = false,
-}: CreateStablecoinFormProps) {
-  const t = useTranslations("admin.stablecoins.create-form");
+}: CreateTokenizedDepositFormProps) {
+  const t = useTranslations("admin.tokenized-deposits.create-form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -37,21 +36,17 @@ export function CreateStablecoinForm({
       triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
     >
       <Form
-        action={createStablecoin}
-        resolver={zodResolver(CreateStablecoinSchema)}
+        action={createTokenizedDeposit}
+        resolver={zodResolver(CreateTokenizedDepositSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
           label: t("button-label"),
-        }}
-        defaultValues={{
-          collateralLivenessSeconds: 3600 * 24 * 365,
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration />
         <Summary />
       </Form>
     </FormSheet>

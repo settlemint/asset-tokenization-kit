@@ -733,7 +733,13 @@ export interface NormalizedEventsListItem {
   event: string;
   timestamp: string;
   asset: string;
-  assetType: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
+  assetType:
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenizeddeposit";
   sender: string;
   details: AssetEvent;
   transactionHash: string;

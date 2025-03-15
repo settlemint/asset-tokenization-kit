@@ -24,12 +24,19 @@ import { CreateCryptoCurrencyForm } from "../../assets/cryptocurrencies/_compone
 import { CreateEquityForm } from "../../assets/equities/_components/create-form/form";
 import { CreateFundForm } from "../../assets/funds/_components/create-form/form";
 import { CreateStablecoinForm } from "../../assets/stablecoins/_components/create-form/form";
+import { CreateTokenizedDepositForm } from "../../assets/tokenized-deposits/_components/create-form/form";
 
 export function DesignerButton() {
   const t = useTranslations("admin.sidebar");
   const { isMobile } = useSidebar();
   const [tokenType, setTokenType] = useState<
-    "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin" | null
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenized-deposit"
+    | null
   >(null);
   const frameIconRef = useRef<FrameIconHandle>(null);
   const onFormOpenChange = (open: boolean) => {
@@ -73,6 +80,11 @@ export function DesignerButton() {
               <DropdownMenuItem onSelect={() => setTokenType("stablecoin")}>
                 {t("asset-types.stablecoin")}
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setTokenType("tokenized-deposit")}
+              >
+                {t("asset-types.tokenized-deposit")}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
@@ -96,6 +108,10 @@ export function DesignerButton() {
       />
       <CreateStablecoinForm
         open={tokenType === "stablecoin"}
+        onOpenChange={onFormOpenChange}
+      />
+      <CreateTokenizedDepositForm
+        open={tokenType === "tokenized-deposit"}
         onOpenChange={onFormOpenChange}
       />
     </SidebarGroup>

@@ -44,6 +44,10 @@ export async function AssetDistribution({ address }: AssetDistributionProps) {
       label: tAssetTypes("cryptocurrency"),
       color: getAssetColor("cryptocurrency", "color"),
     },
+    tokenizeddeposit: {
+      label: tAssetTypes("tokenizeddeposit"),
+      color: getAssetColor("tokenizeddeposit", "color"),
+    },
   };
 
   return (
