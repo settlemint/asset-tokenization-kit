@@ -4,22 +4,21 @@ import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
-import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
+import type { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
 import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
 const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getStableCoinList>>[number]>();
+  createColumnHelper<
+    Awaited<ReturnType<typeof getTokenizedDepositList>>[number]
+  >();
 
-export function columns() {
+export function tokenizedDepositColumns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.stablecoins.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetStatus = useTranslations("asset-status");
+  const t = useTranslations("private.assets.fields");
 
   return [
     columnHelper.accessor("id", {
@@ -49,14 +48,7 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("collateralRatio", {
-      header: t("committed-collateral-header"),
-      cell: ({ getValue }) => {
-        return <PercentageProgressBar percentage={getValue()} />;
-      },
-      enableColumnFilter: false,
-    }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => formatAssetStatus(row, t), {
       header: t("status-header"),
       cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;
@@ -68,7 +60,7 @@ export function columns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/stablecoins/${row.original.id}`}
+            detailUrl={`/assets/tokenizeddeposits/${row.original.id}`}
           />
         );
       },

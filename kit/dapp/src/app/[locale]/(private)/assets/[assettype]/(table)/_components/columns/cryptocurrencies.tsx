@@ -1,24 +1,22 @@
 "use client";
 
-import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { getTokenizedDepositList } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list";
-import { formatAssetStatus } from "@/lib/utils/format-asset-status";
+import type { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
 const columnHelper =
   createColumnHelper<
-    Awaited<ReturnType<typeof getTokenizedDepositList>>[number]
+    Awaited<ReturnType<typeof getCryptoCurrencyList>>[number]
   >();
 
-export function columns() {
+export function cryptocurrencyColumns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.tokenized-deposits.table");
+  const t = useTranslations("private.assets.fields");
 
   return [
     columnHelper.accessor("id", {
@@ -48,19 +46,13 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, t), {
-      header: t("status-header"),
-      cell: ({ row }) => {
-        return <ActivePill paused={row.original.paused} />;
-      },
-    }),
     columnHelper.display({
       id: "actions",
       header: t("actions-header"),
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/tokenized-deposits/${row.original.id}`}
+            detailUrl={`/assets/cryptocurrencies/${row.original.id}`}
           />
         );
       },
