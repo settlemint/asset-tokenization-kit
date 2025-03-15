@@ -2493,6 +2493,9 @@
         "never": "Never",
         "portfolio-management": "Portfolio Management",
         "select-expiry-placeholder": "Select expiry time",
+        "swagger-description": "The API is documented using an Open API schema",
+        "swagger-link-text": "Open API documentation",
+        "swagger-title": "Via the API all actions available in the UI can be executed.",
         "title": "API Keys"
       },
       "profile": {

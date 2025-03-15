@@ -1,6 +1,7 @@
 "use client";
 
 import { CreateApiKeyForm } from "@/components/blocks/api-key/create-api-key-form";
+import { TopInfo } from "@/components/blocks/top-info/top-info";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
@@ -58,6 +59,15 @@ export default function ApiKeysPage() {
         onOpenChange={setIsCreateModalOpen}
         onSuccess={fetchApiKeys}
       />
+
+      <TopInfo title={t("swagger-title")}>
+        <div className="flex flex-col gap-4">
+          <p>{t("swagger-description")}</p>
+          <a href="/api/swagger" target="_blank">
+            <Button>{t("swagger-link-text")}</Button>
+          </a>
+        </div>
+      </TopInfo>
 
       <ul className="mt-6 space-y-4">
         {apiKeys?.map((apiKey) => (
