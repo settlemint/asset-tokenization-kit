@@ -1,8 +1,20 @@
-import { Address, BigInt, log, store } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  ByteArray,
+  Bytes,
+  crypto,
+  log,
+  store,
+} from "@graphprotocol/graph-ts";
 import {
   Approval,
   Paused,
+  RoleAdminChanged,
+  RoleGranted,
+  RoleRevoked,
   TokensFrozen,
+  TokenWithdrawn,
   Transfer,
   Unpaused,
   UserAllowed,
@@ -18,6 +30,9 @@ import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
 import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
+import { roleAdminChangedEvent } from "./events/roleadminchanged";
+import { roleGrantedEvent } from "./events/rolegranted";
+import { roleRevokedEvent } from "./events/rolerevoked";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
@@ -638,6 +653,256 @@ export function handleUserDisallowed(event: UserDisallowed): void {
   accountActivityEvent(
     user,
     EventName.UserDisallowed,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+}
+
+export function handleTokenWithdrawn(event: TokenWithdrawn): void {
+  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const sender = fetchAccount(event.transaction.from);
+  const token = fetchAccount(event.params.token);
+  const to = fetchAccount(event.params.to);
+
+  log.info(
+    "TokenizedDeposit token withdrawn event: amount={}, token={}, to={}, sender={}, tokenizedDeposit={}",
+    [
+      event.params.amount.toString(),
+      token.id.toHexString(),
+      to.id.toHexString(),
+      sender.id.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  accountActivityEvent(
+    sender,
+    EventName.TokenWithdrawn,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+  accountActivityEvent(
+    to,
+    EventName.TokenWithdrawn,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+}
+
+export function handleRoleGranted(event: RoleGranted): void {
+  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const account = fetchAccount(event.params.account);
+  const sender = fetchAccount(event.transaction.from);
+
+  const roleGranted = roleGrantedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    event.params.role,
+    account.id
+  );
+
+  log.info(
+    "TokenizedDeposit role granted event: role={}, account={}, tokenizeddeposit={}",
+    [
+      roleGranted.role.toHexString(),
+      roleGranted.account.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  // Handle different roles
+  if (
+    event.params.role.toHexString() ==
+    "0x0000000000000000000000000000000000000000000000000000000000000000"
+  ) {
+    // DEFAULT_ADMIN_ROLE
+    let found = false;
+    for (let i = 0; i < tokenizedDeposit.admins.length; i++) {
+      if (tokenizedDeposit.admins[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      tokenizedDeposit.admins = tokenizedDeposit.admins.concat([account.id]);
+    }
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
+  ) {
+    // SUPPLY_MANAGEMENT_ROLE
+    let found = false;
+    for (let i = 0; i < tokenizedDeposit.supplyManagers.length; i++) {
+      if (tokenizedDeposit.supplyManagers[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      tokenizedDeposit.supplyManagers = tokenizedDeposit.supplyManagers.concat([
+        account.id,
+      ]);
+    }
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
+  ) {
+    // USER_MANAGEMENT_ROLE
+    let found = false;
+    for (let i = 0; i < tokenizedDeposit.userManagers.length; i++) {
+      if (tokenizedDeposit.userManagers[i].equals(account.id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      tokenizedDeposit.userManagers = tokenizedDeposit.userManagers.concat([
+        account.id,
+      ]);
+    }
+  }
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  accountActivityEvent(
+    sender,
+    EventName.RoleGranted,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+  accountActivityEvent(
+    account,
+    EventName.RoleGranted,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+}
+
+export function handleRoleRevoked(event: RoleRevoked): void {
+  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const account = fetchAccount(event.params.account);
+  const sender = fetchAccount(event.transaction.from);
+
+  const roleRevoked = roleRevokedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    event.params.role,
+    account.id
+  );
+
+  log.info(
+    "TokenizedDeposit role revoked event: role={}, account={}, tokenizeddeposit={}",
+    [
+      roleRevoked.role.toHexString(),
+      roleRevoked.account.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  // Handle different roles
+  if (
+    event.params.role.toHexString() ==
+    "0x0000000000000000000000000000000000000000000000000000000000000000"
+  ) {
+    // DEFAULT_ADMIN_ROLE
+    const newAdmins: Bytes[] = [];
+    for (let i = 0; i < tokenizedDeposit.admins.length; i++) {
+      if (!tokenizedDeposit.admins[i].equals(account.id)) {
+        newAdmins.push(tokenizedDeposit.admins[i]);
+      }
+    }
+    tokenizedDeposit.admins = newAdmins;
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("SUPPLY_MANAGEMENT_ROLE")).toHexString()
+  ) {
+    // SUPPLY_MANAGEMENT_ROLE
+    const newSupplyManagers: Bytes[] = [];
+    for (let i = 0; i < tokenizedDeposit.supplyManagers.length; i++) {
+      if (!tokenizedDeposit.supplyManagers[i].equals(account.id)) {
+        newSupplyManagers.push(tokenizedDeposit.supplyManagers[i]);
+      }
+    }
+    tokenizedDeposit.supplyManagers = newSupplyManagers;
+  } else if (
+    event.params.role.toHexString() ==
+    crypto.keccak256(ByteArray.fromUTF8("USER_MANAGEMENT_ROLE")).toHexString()
+  ) {
+    // USER_MANAGEMENT_ROLE
+    const newUserManagers: Bytes[] = [];
+    for (let i = 0; i < tokenizedDeposit.userManagers.length; i++) {
+      if (!tokenizedDeposit.userManagers[i].equals(account.id)) {
+        newUserManagers.push(tokenizedDeposit.userManagers[i]);
+      }
+    }
+    tokenizedDeposit.userManagers = newUserManagers;
+  }
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  accountActivityEvent(
+    sender,
+    EventName.RoleRevoked,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+  accountActivityEvent(
+    account,
+    EventName.RoleRevoked,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+}
+
+export function handleRoleAdminChanged(event: RoleAdminChanged): void {
+  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  const roleAdminChanged = roleAdminChangedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    AssetType.tokenizeddeposit,
+    event.params.role,
+    event.params.previousAdminRole,
+    event.params.newAdminRole
+  );
+
+  log.info(
+    "TokenizedDeposit role admin changed event: role={}, previousAdminRole={}, newAdminRole={}, tokenizeddeposit={}",
+    [
+      roleAdminChanged.role.toHexString(),
+      roleAdminChanged.previousAdminRole.toHexString(),
+      roleAdminChanged.newAdminRole.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.save();
+
+  accountActivityEvent(
+    sender,
+    EventName.RoleAdminChanged,
     event.block.timestamp,
     AssetType.tokenizeddeposit,
     tokenizedDeposit.id

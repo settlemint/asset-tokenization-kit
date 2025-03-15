@@ -1,5 +1,6 @@
 import { metadata } from "@/lib/config/metadata";
 import { StablecoinListApi } from "@/lib/queries/stablecoin/stablecoin-list-api";
+import { TokenizedDepositListApi } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list-api";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
@@ -41,7 +42,8 @@ const app = new Elysia({ prefix: "/api" })
       },
     })
   )
-  .group("/stablecoins", (app) => app.use(StablecoinListApi));
+  .group("/stablecoins", (app) => app.use(StablecoinListApi))
+  .group("/tokenized-deposits", (app) => app.use(TokenizedDepositListApi));
 
 export const GET = app.handle;
 export const POST = app.handle;

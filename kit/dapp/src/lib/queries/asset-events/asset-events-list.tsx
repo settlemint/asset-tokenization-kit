@@ -6,9 +6,8 @@ import {
 } from "@/lib/settlemint/the-graph";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging } from "@/lib/utils/zod";
-import type { Address } from "viem";
-
 import { cache } from "react";
+import type { Address } from "viem";
 import {
   ApprovalEventFragment,
   ApprovalEventFragmentSchema,

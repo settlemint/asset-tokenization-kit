@@ -532,7 +532,8 @@
           "cryptocurrencies": "العملات المشفرة",
           "equities": "الأسهم",
           "funds": "الصناديق",
-          "stablecoins": "العملات المستقرة"
+          "stablecoins": "العملات المستقرة",
+          "tokenizeddeposit": "ودائع رمزية"
         },
         "assets-supply": {
           "description": "عرض الأصول",
@@ -1319,14 +1320,16 @@
         "funds": "الصناديق",
         "group-title": "إدارة الأصول",
         "stablecoins": "العملات المستقرة",
-        "view-all": "عرض الكل"
+        "view-all": "عرض الكل",
+        "tokenized-deposits": "ودائع رمزية"
       },
       "asset-types": {
         "bond": "سند",
         "cryptocurrency": "عملة مشفرة",
         "equity": "سهم",
         "fund": "صندوق",
-        "stablecoin": "عملة مستقرة"
+        "stablecoin": "عملة مستقرة",
+        "tokenized-deposit": "ودائع رمزية"
       },
       "platform-management": {
         "group-title": "إدارة المنصة",
@@ -1795,6 +1798,242 @@
       "roles-header": "الأدوار",
       "table-title": "الأذونات",
       "wallet-header": "المحفظة"
+    },
+    "tokenized-deposits": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "المبلغ",
+          "available-balance": "الرصيد المتاح: {balance}",
+          "description": "أدخل المبلغ الذي ترغب في حرقه.",
+          "title": "أدخل المبلغ"
+        },
+        "button-label": "حرق الأصول",
+        "description": "إزالة الرموز من التداول بشكل دائم لتقليل العرض.",
+        "summary": {
+          "amount-label": "المبلغ",
+          "asset-label": "الأصل",
+          "burn-description": "تفاصيل عملية الحرق",
+          "burn-title": "احرق",
+          "description": "تحقق من تفاصيل حرقك قبل المتابعة.",
+          "title": "راجع وأكد الحرق"
+        },
+        "title": "احرق",
+        "trigger-label": "احرق"
+      },
+      "charts": {
+        "asset-statistics-title": "إحصائيات الأصل"
+      },
+      "create-form": {
+        "basics": {
+          "decimals-label": "الأرقام العشرية",
+          "description": "حدد التفاصيل الأساسية مثل الاسم، الرمز، والرؤية.",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "name-label": "الاسم",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "الرمز",
+          "symbol-placeholder": "SAFU",
+          "title": "معلومات أساسية"
+        },
+        "button-label": "إصدار وديعة رمزية جديدة",
+        "configuration": {
+          "description": "حدد الإعدادات المتقدمة.",
+          "title": "التكوين"
+        },
+        "description": "حدد وأطلق أصل وديعة رمزية جديدة.",
+        "summary": {
+          "asset-basics-description": "معلومات وإعدادات الأصل الأساسية.",
+          "asset-basics-title": "أساسيات الأصل",
+          "configuration-description": "إمدادات الأصل وإعدادات إضافية.",
+          "configuration-title": "التكوين",
+          "decimals-label": "الأرقام العشرية",
+          "description": "راجع وأكد تفاصيل وديعتك الرمزية الجديدة قبل الإنشاء.",
+          "error-duplicate": "توجد وديعة رمزية بنفس التفاصيل بالفعل. يرجى المحاولة مرة أخرى مع تغيير معلمة واحدة على الأقل.",
+          "isin-label": "ISIN",
+          "name-label": "الاسم",
+          "seconds": "ثواني",
+          "symbol-label": "الرمز",
+          "title": "راجع وأكد تفاصيل وديعتك الرمزية الجديدة قبل الإنشاء."
+        },
+        "title": "إنشاء وديعة رمزية",
+        "trigger-label": "إصدار وديعة رمزية جديدة"
+      },
+      "details": {
+        "charts": {
+          "asset-statistics-title": "إحصائيات الأصل"
+        },
+        "contract-address": "عنوان العقد",
+        "creator": "المنشئ",
+        "decimals": "الأرقام العشرية",
+        "details-page-description": "استكشف البيانات الشاملة والقياسات لـ {name}.",
+        "details-page-title": "{name} تفاصيل",
+        "isin": "ISIN",
+        "name": "الاسم",
+        "ownership-concentration": "تركيز الملكية",
+        "ownership-concentration-info": "النسبة المئوية المملوكة من قبل أكبر 5 حائزين",
+        "related-actions": {
+          "decrease-supply": {
+            "description": "يمكن لمدير العرض حرق الودائع الرمزية الحالية، بشرط توفر ضمان كافٍ.",
+            "title": "تقليل إمدادات الودائع الرمزية"
+          },
+          "increase-supply": {
+            "description": "يمكن لمدير العرض سك ودائع رمزية جديدة، بشرط توفر ضمان كافٍ.",
+            "title": "زيادة إمدادات الودائع الرمزية"
+          },
+          "title": "إجراءات ذات صلة"
+        },
+        "symbol": "الرمز",
+        "tokenized-deposit-details-description": "تفاصيل الوديعة الرمزية",
+        "total-burned": "الإمداد المحروق",
+        "total-burned-info": "عدد الرموز التي تمت إزالتها بشكل دائم من التداول",
+        "total-holders": "# من الحائزين",
+        "total-holders-info": "عدد العناوين التي تمتلك الأصول حاليًا",
+        "total-supply": "الإمداد الكلي",
+        "total-supply-info": "الإمداد الكلي للرمز"
+      },
+      "events": {
+        "events-page-description": "تتبع الأنشطة والمعاملات التاريخية المتعلقة بـ {name}.",
+        "events-page-title": "{name} الأحداث"
+      },
+      "grant-role-form": {
+        "address": {
+          "address-label": "عنوان محفظة الإدارة",
+          "description": "ابحث عن مستخدم بواسطة اسمه أو بريده الإلكتروني، أو أدخل عنوان محفظة يدويًا.",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "manual-toggle": "أدخل العنوان يدويًا...",
+          "search-placeholder": "ابحث عن مستخدم",
+          "search-toggle": "ابحث عن مستخدم بدلاً من ذلك...",
+          "title": "اختر مسؤولًا جديدًا"
+        },
+        "button-label": "تعيين الأدوار",
+        "description": "تعيين الأذونات الإدارية لمستخدم جديد.",
+        "roles": {
+          "description": "اختر الأدوار التي ترغب في منحها للمسؤول الجديد. يجب اختيار دور واحد على الأقل.",
+          "title": "اختر أدوار المسؤول"
+        },
+        "summary": {
+          "admin-address-label": "عنوان المسؤول",
+          "asset-label": "الأصل",
+          "description": "تحقق من تفاصيل منح دورك قبل المتابعة.",
+          "grant-description": "تفاصيل عملية منح الدور",
+          "grant-title": "منح الدور",
+          "roles-label": "الأدوار",
+          "title": "راجع وأكد منح الدور"
+        },
+        "title": "منح الدور"
+      },
+      "manage": {
+        "actions": {
+          "burn": "احرق",
+          "grant-role": "منح الدور",
+          "mint": "سك",
+          "pause": "توقف",
+          "transfer": "نقل",
+          "unpause": "استئناف",
+          "update-collateral": "تحديث الضمان"
+        },
+        "manage": "إدارة"
+      },
+      "mint-form": {
+        "amount": {
+          "amount-label": "المبلغ",
+          "description": "أدخل المبلغ الذي ترغب في سكّه.",
+          "title": "أدخل المبلغ"
+        },
+        "button-label": "أصول المينت",
+        "description": "إصدار رموز جديدة لزيادة المعروض المتداول من العملة المستقرة.",
+        "recipients": {
+          "description": "اختر من سيستلم الرموز المصدرة",
+          "title": "حدد المستلمين"
+        },
+        "summary": {
+          "amount-label": "المبلغ",
+          "asset-label": "الأصل",
+          "description": "تحقق من تفاصيل عملية المينت قبل المتابعة.",
+          "mint-description": "تفاصيل عملية المينت",
+          "mint-title": "مينت",
+          "title": "راجع وأكد عملية المينت"
+        },
+        "title": "مينت",
+        "trigger-label": "مينت"
+      },
+      "pause-form": {
+        "pause": {
+          "button-label": "إيقاف المعاملات",
+          "description": "إيقاف جميع المعاملات والتفاعلات مؤقتًا لهذه العملة المستقرة.",
+          "title": "إيقاف معاملات العملة المستقرة"
+        },
+        "summary": {
+          "asset-label": "الأصل",
+          "current-state-label": "الحالة الحالية",
+          "description": "تحقق من تفاصيل عملية الإيقاف قبل المتابعة.",
+          "pause-description": "تفاصيل عملية الإيقاف",
+          "pause-title": "إيقاف",
+          "state-active": "نشط",
+          "state-paused": "موقوف",
+          "target-state-label": "الحالة المستهدفة",
+          "title": "راجع وأكد عملية الإيقاف"
+        },
+        "unpause": {
+          "button-label": "استئناف المعاملات",
+          "description": "استئناف المعاملات والتفاعلات لهذه العملة المستقرة.",
+          "title": "استئناف معاملات العملة المستقرة"
+        }
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "يمكن لمدير المعروض حرق العملات المستقرة الموجودة، شريطة توفر ضمان كافٍ.",
+          "title": "تقليل المعروض"
+        },
+        "increase-supply": {
+          "description": "يمكن لمدير المعروض إصدار عملات مستقرة جديدة، شريطة توفر ضمان كافٍ.",
+          "title": "زيادة المعروض"
+        },
+        "title": "الإجراءات ذات الصلة"
+      },
+      "table": {
+        "actions-header": "الإجراءات",
+        "active": "نشط",
+        "address-header": "العنوان",
+        "asset-management": "إدارة الأصول",
+        "blocked": "محظور",
+        "name-header": "الاسم",
+        "page-description": "نظرة عامة وإجراءات إدارية لأصول الإيداع المرمزة الخاصة بك.",
+        "page-title": "الإيداعات المرمزة",
+        "paused": "موقوف",
+        "private-header": "خاص",
+        "private-status": "خاص",
+        "public-status": "عام",
+        "related-actions": {
+          "issue-new": {
+            "description": "إنشاء وإطلاق إيداع مرمز جديد مع معلمات محددة. تبسيط نشر الرموز لدعم المشاريع والأسواق الجديدة.",
+            "title": "إصدار إيداع مرمز جديد"
+          },
+          "mechanics": {
+            "button": "تعلم المزيد",
+            "description": "تعلم كيفية ضبط المعلمات الرئيسية للإيداع المرمز.",
+            "title": "آليات الإيداع المرمز"
+          },
+          "title": "الإجراءات ذات الصلة",
+          "usecases": {
+            "button": "استكشاف",
+            "description": "استكشاف التطبيقات العملية والتكاملات للإيداعات المرمزة.",
+            "title": "حالات الاستخدام"
+          }
+        },
+        "status-header": "الحالة",
+        "symbol-header": "الرمز",
+        "topinfo-description": "تمثل الإيداعات المرمزة رقميًا الإيداعات المصرفية التقليدية، مما يوفر للمؤسسات المالية أمانًا معززًا، وشفافية في الوقت الحقيقي، وقدرات امتثال صارمة. تشمل الميزات الرئيسية قوائم السماح القابلة للتخصيص، والإشراف الحفظي، وإدارة قائمة الأدوار القوية، والمعاملات الميتا المدمجة، مما يبسط إدارة الإيداعات المؤسسية.",
+        "topinfo-title": "إدارة الإيداعات الرقمية الآمنة والمتوافقة",
+        "total-supply-header": "إجمالي المعروض"
+      },
+      "tabs": {
+        "details": "التفاصيل",
+        "events": "الأحداث",
+        "holders": "المستثمرون",
+        "permissions": "الأذونات",
+        "underlying-assets": "الأصول الأساسية"
+      }
     }
   },
   "asset-management": "إدارة الأصول",
@@ -1803,7 +2042,8 @@
     "stablecoin": "عملة مستقرة",
     "equity": "أسهم",
     "cryptocurrency": "عملة مشفرة",
-    "fund": "صندوق"
+    "fund": "صندوق",
+    "tokenizeddeposit": "إيداع مرمز"
   },
   "asset-status": {
     "active": "نشط",
@@ -2021,7 +2261,8 @@
       "equity-initials": "EQ",
       "fund-initials": "FN",
       "not-available-initials": "NA",
-      "stablecoin-initials": "SC"
+      "stablecoin-initials": "SC",
+      "tokenized-deposit-initials": "TD"
     },
     "charts": {
       "assets": {
@@ -2271,7 +2512,8 @@
       "equity": "أسهم",
       "fund": "صندوق",
       "stablecoin": "عملة مستقرة",
-      "unknown": "غير معروف"
+      "unknown": "غير معروف",
+      "tokenizeddeposit": "إيداع مرمز"
     },
     "greeting": {
       "morning": "صباح الخير",

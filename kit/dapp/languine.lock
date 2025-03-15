@@ -446,6 +446,7 @@ files:
     admin.dashboard.charts.asset-types.equities: f38992a52cef8611666b2db431b493a6
     admin.dashboard.charts.asset-types.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.dashboard.charts.asset-types.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
+    admin.dashboard.charts.asset-types.tokenizeddeposit: 54e943a5918f140003ed964d64393d5d
     admin.dashboard.charts.assets-supply.description: cebd7e01de0cd31b3c8f27428ab5ac76
     admin.dashboard.charts.assets-supply.label: 9aedeaf1f77b8642abe528503b8c5de8
     admin.dashboard.charts.assets-supply.title: cebd7e01de0cd31b3c8f27428ab5ac76
@@ -1066,12 +1067,14 @@ files:
     admin.sidebar.asset-management.funds: d42b2bb7ac17fc34a099909c0a2f1de9
     admin.sidebar.asset-management.group-title: 177512b9add0b40c38dad61838bf7d79
     admin.sidebar.asset-management.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
+    admin.sidebar.asset-management.tokenized-deposits: 54e943a5918f140003ed964d64393d5d
     admin.sidebar.asset-management.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.sidebar.asset-types.bond: 7a3b691731db2969498907b960183633
     admin.sidebar.asset-types.cryptocurrency: 4c11904ee0b793fc10046d533cae723e
     admin.sidebar.asset-types.equity: d9df825203724a2f3412de3fc7a7a2be
     admin.sidebar.asset-types.fund: c1098dd48f0fb20eeea79235055d02ca
     admin.sidebar.asset-types.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
+    admin.sidebar.asset-types.tokenized-deposit: 54e943a5918f140003ed964d64393d5d
     admin.sidebar.platform-management.group-title: bf6ba0d41ffdc7a03e03f87c569e0c3a
     admin.sidebar.platform-management.settings: f4f70727dc34561dfde1a3c529b6205c
     admin.sidebar.platform-management.user-management: dd73732ca9c03f026b85fa08e24b4f98
@@ -1259,6 +1262,166 @@ files:
     admin.stablecoins.update-collateral-form.summary.update-title: f3b7824a339c8a003b6994bce1c8f90a
     admin.stablecoins.update-collateral-form.title: dd71e441c341791bff80175e1c21c73f
     admin.stablecoins.update-collateral-form.trigger-label: dd71e441c341791bff80175e1c21c73f
+    admin.tokenized-deposits.burn-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
+    admin.tokenized-deposits.burn-form.amount.available-balance: 1ffc1c904a2ff558869bfbbb0189f568
+    admin.tokenized-deposits.burn-form.amount.description: 7b2bdac16ef466f0c8ed0881e2a5a68b
+    admin.tokenized-deposits.burn-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
+    admin.tokenized-deposits.burn-form.button-label: b68e5744214cfc7b9952dc7051c57f64
+    admin.tokenized-deposits.burn-form.description: eaf555f302974fd462f7302492d52a23
+    admin.tokenized-deposits.burn-form.summary.amount-label: b2f40690858b404ed10e62bdf422c704
+    admin.tokenized-deposits.burn-form.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    admin.tokenized-deposits.burn-form.summary.burn-description: 00a210a592d9dfdda0c40b509bbac3ce
+    admin.tokenized-deposits.burn-form.summary.burn-title: 11635778f116ce6922f6068638a39028
+    admin.tokenized-deposits.burn-form.summary.description: 257f30507f300d31fd6f9830e9e7ca9d
+    admin.tokenized-deposits.burn-form.summary.title: efd63552d423e55585e0decff1af2e9f
+    admin.tokenized-deposits.burn-form.title: 11635778f116ce6922f6068638a39028
+    admin.tokenized-deposits.burn-form.trigger-label: 11635778f116ce6922f6068638a39028
+    admin.tokenized-deposits.charts.asset-statistics-title: e117a0fa6d1102a4b1c678be9ba8662a
+    admin.tokenized-deposits.create-form.basics.decimals-label: 2b417805040de3a3df31c8fd3626b57c
+    admin.tokenized-deposits.create-form.basics.description: 12c94d87d53adb8188f706ba741c0002
+    admin.tokenized-deposits.create-form.basics.isin-label: d03440b351474d0b1a3f851c3453e8de
+    admin.tokenized-deposits.create-form.basics.isin-placeholder: 5ce6498408e628e24d0adaa3f05d99c9
+    admin.tokenized-deposits.create-form.basics.name-label: 49ee3087348e8d44e1feda1917443987
+    admin.tokenized-deposits.create-form.basics.name-placeholder: 1d69fd574e2cc5d6c75e6250671fe4cf
+    admin.tokenized-deposits.create-form.basics.symbol-label: 02c86eb2792f3262c21d030a87e19793
+    admin.tokenized-deposits.create-form.basics.symbol-placeholder: 9ff0ceaed2d507591981be28fa7bfa59
+    admin.tokenized-deposits.create-form.basics.title: 87cabb0c5e5abac7a37df3f21bf09d17
+    admin.tokenized-deposits.create-form.button-label: 70077aa012bdb0164c0caca6c5c6780b
+    admin.tokenized-deposits.create-form.configuration.description: 0678233ba372fe13ec225da7744f6011
+    admin.tokenized-deposits.create-form.configuration.title: 254f642527b45bc260048e30704edb39
+    admin.tokenized-deposits.create-form.description: 0dce4f0d3aae99bccd15e092329665ad
+    admin.tokenized-deposits.create-form.summary.asset-basics-description: 8c1b1f7b456f832a2b00d3352b7542c5
+    admin.tokenized-deposits.create-form.summary.asset-basics-title: 7f5c9260cb98413030db829edc806293
+    admin.tokenized-deposits.create-form.summary.configuration-description: df7b72ef2345288f05ab0096f535c5b4
+    admin.tokenized-deposits.create-form.summary.configuration-title: 254f642527b45bc260048e30704edb39
+    admin.tokenized-deposits.create-form.summary.decimals-label: 2b417805040de3a3df31c8fd3626b57c
+    admin.tokenized-deposits.create-form.summary.description: 149c3f2cfd35d58b26b388f549749861
+    admin.tokenized-deposits.create-form.summary.error-duplicate: 258c27e30b6ff8fe885a8431524f769f
+    admin.tokenized-deposits.create-form.summary.isin-label: d03440b351474d0b1a3f851c3453e8de
+    admin.tokenized-deposits.create-form.summary.name-label: 49ee3087348e8d44e1feda1917443987
+    admin.tokenized-deposits.create-form.summary.seconds: 783e8e29e6a8c3e22baa58a19420eb4f
+    admin.tokenized-deposits.create-form.summary.symbol-label: 02c86eb2792f3262c21d030a87e19793
+    admin.tokenized-deposits.create-form.summary.title: 149c3f2cfd35d58b26b388f549749861
+    admin.tokenized-deposits.create-form.title: 353c2aa13a40b8a51dd383829bba7b06
+    admin.tokenized-deposits.create-form.trigger-label: 70077aa012bdb0164c0caca6c5c6780b
+    admin.tokenized-deposits.details.charts.asset-statistics-title: 129d507ca5fe532e74f484d8c1859138
+    admin.tokenized-deposits.details.contract-address: d7e1286efec604c15ddab7ef2b290021
+    admin.tokenized-deposits.details.creator: ef1d00d8a237a1bbe431e1091f5715fb
+    admin.tokenized-deposits.details.decimals: 2b417805040de3a3df31c8fd3626b57c
+    admin.tokenized-deposits.details.details-page-description: 251f2c1338c55dda4a44eb39a80119bd
+    admin.tokenized-deposits.details.details-page-title: 10627983af012986942742dd5c395d41
+    admin.tokenized-deposits.details.isin: d03440b351474d0b1a3f851c3453e8de
+    admin.tokenized-deposits.details.name: 49ee3087348e8d44e1feda1917443987
+    admin.tokenized-deposits.details.ownership-concentration: e90da81b8fd18fc54589986f308f5257
+    admin.tokenized-deposits.details.ownership-concentration-info: b90d646020637b7ba884ed881516b76c
+    admin.tokenized-deposits.details.related-actions.decrease-supply.description: c8293eaff87373cf79fd1bd1fd73cec5
+    admin.tokenized-deposits.details.related-actions.decrease-supply.title: 8c5a5ce08b046f87d8395705041c0127
+    admin.tokenized-deposits.details.related-actions.increase-supply.description: eaed2c1d68a5ff9f5f4833c06146dc1c
+    admin.tokenized-deposits.details.related-actions.increase-supply.title: f47dfffeee5a84ad6f8890a9c7658416
+    admin.tokenized-deposits.details.related-actions.title: a2005fe8651d38ccc7a7e285d2e51db8
+    admin.tokenized-deposits.details.symbol: 02c86eb2792f3262c21d030a87e19793
+    admin.tokenized-deposits.details.tokenized-deposit-details-description: 9ae47e22628f510126bf39c009ab90f7
+    admin.tokenized-deposits.details.total-burned: 53f3dba1a782979bb3223db81a9557df
+    admin.tokenized-deposits.details.total-burned-info: e9cc1186d2b4f917dde2d91c41823f5b
+    admin.tokenized-deposits.details.total-holders: 117dccbc2e4ce3b3ce71c530bd61060f
+    admin.tokenized-deposits.details.total-holders-info: b6da72dd95ff5fad30840b1e3166cf97
+    admin.tokenized-deposits.details.total-supply: 1ecae95c3c8f236721cce5b740b2deaa
+    admin.tokenized-deposits.details.total-supply-info: 2138711f691fc996de09dbdbbe64b888
+    admin.tokenized-deposits.events.events-page-description: 6b90fd0a4943ac68576fe950e47826d9
+    admin.tokenized-deposits.events.events-page-title: 1e2a7b7b6ebe4d77c942463f560e60b3
+    admin.tokenized-deposits.grant-role-form.address.address-label: 2f2c367f2d983a644073e56b65450d07
+    admin.tokenized-deposits.grant-role-form.address.description: 1f43ded6b233f15cc30303f2208f2c43
+    admin.tokenized-deposits.grant-role-form.address.manual-placeholder: 3d97f638880bade26500cbcd3d1c7bdf
+    admin.tokenized-deposits.grant-role-form.address.manual-toggle: 9155c6f94f857b0d309c17621bcc128f
+    admin.tokenized-deposits.grant-role-form.address.search-placeholder: 0b04832b113b2d7bcde8d214587f5879
+    admin.tokenized-deposits.grant-role-form.address.search-toggle: 79a26d6aa989e2bc91a4adfe055a87ea
+    admin.tokenized-deposits.grant-role-form.address.title: 1997616495719b4fc3787ba946a3f29e
+    admin.tokenized-deposits.grant-role-form.button-label: 8bf93064b20e5563e57b77d8c7248c2c
+    admin.tokenized-deposits.grant-role-form.description: e470b2493fd45aa303f48dd8babf8ca5
+    admin.tokenized-deposits.grant-role-form.roles.description: 957b070312674eb7701105aa8fb577c1
+    admin.tokenized-deposits.grant-role-form.roles.title: 8e5722429436e163eae9180dfd1f3454
+    admin.tokenized-deposits.grant-role-form.summary.admin-address-label: 01467d85d5db44b441098e721f4178ca
+    admin.tokenized-deposits.grant-role-form.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    admin.tokenized-deposits.grant-role-form.summary.description: 9e8f2a5b336124448c3b8a5fe43c6f80
+    admin.tokenized-deposits.grant-role-form.summary.grant-description: f1891b1b2f31dd5b3bbd0e304e5aa914
+    admin.tokenized-deposits.grant-role-form.summary.grant-title: a642a0c57033418f58cb99b1cbef03fa
+    admin.tokenized-deposits.grant-role-form.summary.roles-label: a5cd3ed116608dac017f14c046ea56bf
+    admin.tokenized-deposits.grant-role-form.summary.title: 613eda63424c1855fbea7d6f52be5538
+    admin.tokenized-deposits.grant-role-form.title: a642a0c57033418f58cb99b1cbef03fa
+    admin.tokenized-deposits.manage.actions.burn: 11635778f116ce6922f6068638a39028
+    admin.tokenized-deposits.manage.actions.grant-role: a642a0c57033418f58cb99b1cbef03fa
+    admin.tokenized-deposits.manage.actions.mint: ca8a196f97a48b2bb489f3e849a68418
+    admin.tokenized-deposits.manage.actions.pause: 105b296a83f9c105355403f3332af50f
+    admin.tokenized-deposits.manage.actions.transfer: 6950810f0d2bba97a6f710c7b965b84e
+    admin.tokenized-deposits.manage.actions.unpause: 648ff76ea7617136d7a5e0cbff92606f
+    admin.tokenized-deposits.manage.actions.update-collateral: f3b7824a339c8a003b6994bce1c8f90a
+    admin.tokenized-deposits.manage.manage: 34e34c43ec6b943c10a3cc1a1a16fb11
+    admin.tokenized-deposits.mint-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
+    admin.tokenized-deposits.mint-form.amount.description: de023495109b6579a169c08395cd7b79
+    admin.tokenized-deposits.mint-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
+    admin.tokenized-deposits.mint-form.button-label: a56a33e9d62236e12e5f461161692098
+    admin.tokenized-deposits.mint-form.description: 14e9b674d547071d62ad8332fc43b1b9
+    admin.tokenized-deposits.mint-form.recipients.description: 8a988479c1cfbc8efd6ac24eefeca58f
+    admin.tokenized-deposits.mint-form.recipients.title: 8f419c48506f3cf74a150f1f5257d6e7
+    admin.tokenized-deposits.mint-form.summary.amount-label: b2f40690858b404ed10e62bdf422c704
+    admin.tokenized-deposits.mint-form.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    admin.tokenized-deposits.mint-form.summary.description: 51b13c1547989e0a4c7d173cf623dbfa
+    admin.tokenized-deposits.mint-form.summary.mint-description: 7dc13461b1dea02487b94a2c813dd921
+    admin.tokenized-deposits.mint-form.summary.mint-title: ca8a196f97a48b2bb489f3e849a68418
+    admin.tokenized-deposits.mint-form.summary.title: 7aa68f5c56e88b9f265aed105098eca2
+    admin.tokenized-deposits.mint-form.title: ca8a196f97a48b2bb489f3e849a68418
+    admin.tokenized-deposits.mint-form.trigger-label: ca8a196f97a48b2bb489f3e849a68418
+    admin.tokenized-deposits.pause-form.pause.button-label: 7775d162c76dbb2ba95f7b69109e371b
+    admin.tokenized-deposits.pause-form.pause.description: 446c87e200c5f670453f9f6c1dd3deaa
+    admin.tokenized-deposits.pause-form.pause.title: a2ccfbfdc3765cc7b29a7b1e16dae33a
+    admin.tokenized-deposits.pause-form.summary.asset-label: 26e9054be7f40079575582b7ad3f7363
+    admin.tokenized-deposits.pause-form.summary.current-state-label: 48358648336d501e2336d5360a559533
+    admin.tokenized-deposits.pause-form.summary.description: b67014d6fcaab53aaff5da952ccf8d37
+    admin.tokenized-deposits.pause-form.summary.pause-description: 235595e65afe8600c98393abfad6940c
+    admin.tokenized-deposits.pause-form.summary.pause-title: 105b296a83f9c105355403f3332af50f
+    admin.tokenized-deposits.pause-form.summary.state-active: 4d3d769b812b6faa6b76e1a8abaece2d
+    admin.tokenized-deposits.pause-form.summary.state-paused: e99180abf47a8b3a856e0bcb2656990a
+    admin.tokenized-deposits.pause-form.summary.target-state-label: f700b6febc2ba7f13df9e88e0c0b3a5f
+    admin.tokenized-deposits.pause-form.summary.title: 73ce5baae076cd663117259d8581e7cc
+    admin.tokenized-deposits.pause-form.unpause.button-label: c0c4ee2db5445d612d70f9759ce018ae
+    admin.tokenized-deposits.pause-form.unpause.description: 913aedb4c12881d76148150bdedf9cab
+    admin.tokenized-deposits.pause-form.unpause.title: 1ec7428ae48b1a1d1116da993b3045b4
+    admin.tokenized-deposits.related-actions.decrease-supply.description: c685286f49a3980f41a7a1a28535bbfc
+    admin.tokenized-deposits.related-actions.decrease-supply.title: d9c20f809740c93ee82f9561c4a5d1a1
+    admin.tokenized-deposits.related-actions.increase-supply.description: 8832454636888d09ffd457cb86778046
+    admin.tokenized-deposits.related-actions.increase-supply.title: 765fa1cd6896f4cb878517371ba11c2a
+    admin.tokenized-deposits.related-actions.title: 0a5bafcb047751c696456bbf5f2ff673
+    admin.tokenized-deposits.table.actions-header: 06df33001c1d7187fdd81ea1f5b277aa
+    admin.tokenized-deposits.table.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    admin.tokenized-deposits.table.address-header: dd7bf230fde8d4836917806aff6a6b27
+    admin.tokenized-deposits.table.asset-management: 177512b9add0b40c38dad61838bf7d79
+    admin.tokenized-deposits.table.blocked: 4ecc0d90eec1cea3e9db96583a1bb9c2
+    admin.tokenized-deposits.table.name-header: 49ee3087348e8d44e1feda1917443987
+    admin.tokenized-deposits.table.page-description: 0a6d11a6f8c43839177176b70ef47aa7
+    admin.tokenized-deposits.table.page-title: 54e943a5918f140003ed964d64393d5d
+    admin.tokenized-deposits.table.paused: e99180abf47a8b3a856e0bcb2656990a
+    admin.tokenized-deposits.table.private-header: 47f9082fc380ca62d531096aa1d110f1
+    admin.tokenized-deposits.table.private-status: 47f9082fc380ca62d531096aa1d110f1
+    admin.tokenized-deposits.table.public-status: 3d067bedfe2f4677470dd6ccf64d05ed
+    admin.tokenized-deposits.table.related-actions.issue-new.description: accc1fe1b6253912b135869c063ff016
+    admin.tokenized-deposits.table.related-actions.issue-new.title: 70077aa012bdb0164c0caca6c5c6780b
+    admin.tokenized-deposits.table.related-actions.mechanics.button: d59048f21fd887ad520398ce677be586
+    admin.tokenized-deposits.table.related-actions.mechanics.description: 8516511ff683a2e93e47de511f0c3f71
+    admin.tokenized-deposits.table.related-actions.mechanics.title: 2fa1a9ed1c64926249adc2e93b682d0e
+    admin.tokenized-deposits.table.related-actions.title: a2005fe8651d38ccc7a7e285d2e51db8
+    admin.tokenized-deposits.table.related-actions.usecases.button: 1819001b72329e2ef5799fe504238035
+    admin.tokenized-deposits.table.related-actions.usecases.description: 1fb72671bf0bfa2cf9c1ad7fdae46181
+    admin.tokenized-deposits.table.related-actions.usecases.title: 5cb617d22da857ea5d75209d6b70acb4
+    admin.tokenized-deposits.table.status-header: ec53a8c4f07baed5d8825072c89799be
+    admin.tokenized-deposits.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
+    admin.tokenized-deposits.table.topinfo-description: 603f4d613a4d178dbdd137539235f658
+    admin.tokenized-deposits.table.topinfo-title: c511fe12d6830ee73154705f480e6a35
+    admin.tokenized-deposits.table.total-supply-header: 7ca9416c0e8045c2d9561012e42c4d15
+    admin.tokenized-deposits.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
+    admin.tokenized-deposits.tabs.events: 87f9f735a1d36793ceaecd4e47124b63
+    admin.tokenized-deposits.tabs.holders: b099a5b6f9f22eac61e7e3176ff002c7
+    admin.tokenized-deposits.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
+    admin.tokenized-deposits.tabs.underlying-assets: 513b5e27362967b94ab332c4f3790a4f
     admin.users.banned_reason: 2c0a5680f5a30d18540bfb65a23f7e63
     admin.users.columns.email: ce8ae9da5b7cd6c3df2929543a9af92d
     admin.users.columns.kyc_status: 04c850a81052df23680d00d2aa1d891e
@@ -1330,6 +1493,7 @@ files:
     asset-type.equity: d9df825203724a2f3412de3fc7a7a2be
     asset-type.fund: c1098dd48f0fb20eeea79235055d02ca
     asset-type.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
+    asset-type.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
     auth.account: 08bd40c7543007ad06e4fce31618f6ec
     auth.add-account: 1f78ae0500c549603a85262981982518
     auth.already-have-account: 21bdc5689c12595ae14298354d5550d5
@@ -1494,6 +1658,7 @@ files:
     components.asset-type-icon.fund-initials: d9d729a2fc731c33ea1360682d73aad5
     components.asset-type-icon.not-available-initials: d4cd0dabcf4caa22ad92fab40844c786
     components.asset-type-icon.stablecoin-initials: 6a65edb0cc17d66c677814115b1477f5
+    components.asset-type-icon.tokenized-deposit-initials: fc089489555aee7519548ff7f589f384
     components.charts.assets.asset-distribution: 1eec46c77577b5bc13860d676fef6804
     components.charts.assets.asset-distribution-description: f2f637627e48036150f1a99adbdf4397
     components.charts.assets.asset-distribution-no-data: a0502bbe7d57c0a11e1534095da08374
@@ -1649,6 +1814,7 @@ files:
     portfolio.asset-types.equity: d9df825203724a2f3412de3fc7a7a2be
     portfolio.asset-types.fund: c1098dd48f0fb20eeea79235055d02ca
     portfolio.asset-types.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
+    portfolio.asset-types.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
     portfolio.asset-types.unknown: 88183b946cc5f0e8c96b2e66e1c74a7e
     portfolio.dashboard.latest-events: 8b0807a79d36ca9fece2ab62e26bdd9f
     portfolio.dashboard.my-assets: 73fe13baa319e5c115fdc62077f0e1ec

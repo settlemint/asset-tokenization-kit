@@ -36,6 +36,10 @@ export async function AssetsSupply() {
       label: t("asset-types.stablecoins"),
       color: getAssetColor("stablecoin", "color"),
     },
+    tokenizeddeposit: {
+      label: t("asset-types.tokenizeddeposit"),
+      color: getAssetColor("tokenizeddeposit", "color"),
+    },
   };
   return (
     <PieChartComponent

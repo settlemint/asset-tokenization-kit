@@ -532,7 +532,8 @@
           "cryptocurrencies": "Kryptowährungen",
           "equities": "Aktien",
           "funds": "Fonds",
-          "stablecoins": "Stablecoins"
+          "stablecoins": "Stablecoins",
+          "tokenizeddeposit": "Tokenisierte Einlagen"
         },
         "assets-supply": {
           "description": "Vermögensangebot",
@@ -1319,14 +1320,16 @@
         "funds": "Fonds",
         "group-title": "Vermögensverwaltung",
         "stablecoins": "Stablecoins",
-        "view-all": "Alle anzeigen"
+        "view-all": "Alle anzeigen",
+        "tokenized-deposits": "Tokenisierte Einlagen"
       },
       "asset-types": {
         "bond": "Anleihe",
         "cryptocurrency": "Kryptowährung",
         "equity": "Aktie",
         "fund": "Fonds",
-        "stablecoin": "Stablecoin"
+        "stablecoin": "Stablecoin",
+        "tokenized-deposit": "Tokenisierte Einlagen"
       },
       "platform-management": {
         "group-title": "Plattformverwaltung",
@@ -1795,6 +1798,242 @@
       "roles-header": "Rollen",
       "table-title": "Berechtigungen",
       "wallet-header": "Wallet"
+    },
+    "tokenized-deposits": {
+      "burn-form": {
+        "amount": {
+          "amount-label": "Betrag",
+          "available-balance": "Verfügbarer Saldo: {balance}",
+          "description": "Geben Sie den Betrag ein, den Sie verbrennen möchten.",
+          "title": "Betrag eingeben"
+        },
+        "button-label": "Vermögenswerte verbrennen",
+        "description": "Tokens dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+        "summary": {
+          "amount-label": "Betrag",
+          "asset-label": "Vermögenswert",
+          "burn-description": "Details der Verbrennungsoperation",
+          "burn-title": "Verbrennen",
+          "description": "Überprüfen Sie die Details Ihrer Verbrennung, bevor Sie fortfahren.",
+          "title": "Überprüfen und Verbrennung bestätigen"
+        },
+        "title": "Verbrennen",
+        "trigger-label": "Verbrennen"
+      },
+      "charts": {
+        "asset-statistics-title": "Vermögensstatistiken"
+      },
+      "create-form": {
+        "basics": {
+          "decimals-label": "Dezimalstellen",
+          "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
+          "isin-label": "ISIN",
+          "isin-placeholder": "DEFI4EVER2024",
+          "name-label": "Name",
+          "name-placeholder": "TotallyNotTether",
+          "symbol-label": "Symbol",
+          "symbol-placeholder": "SAFU",
+          "title": "Grundinformationen"
+        },
+        "button-label": "Eine neue tokenisierte Einlage ausgeben",
+        "configuration": {
+          "description": "Erweiterte Einstellungen angeben.",
+          "title": "Konfiguration"
+        },
+        "description": "Definieren und starten Sie einen neuen tokenisierten Einlagevermögenswert.",
+        "summary": {
+          "asset-basics-description": "Grundlegende Vermögensinformationen und Einstellungen.",
+          "asset-basics-title": "Vermögensgrundlagen",
+          "configuration-description": "Vermögensangebot und zusätzliche Einstellungen.",
+          "configuration-title": "Konfiguration",
+          "decimals-label": "Dezimalstellen",
+          "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen tokenisierten Einlage vor der Erstellung.",
+          "error-duplicate": "Eine tokenisierte Einlage mit denselben Details existiert bereits. Bitte versuchen Sie es erneut mit mindestens einem anderen Parameter.",
+          "isin-label": "ISIN",
+          "name-label": "Name",
+          "seconds": "Sekunden",
+          "symbol-label": "Symbol",
+          "title": "Überprüfen und bestätigen Sie die Details Ihrer neuen tokenisierten Einlage vor der Erstellung."
+        },
+        "title": "Tokenisierte Einlage erstellen",
+        "trigger-label": "Eine neue tokenisierte Einlage ausgeben"
+      },
+      "details": {
+        "charts": {
+          "asset-statistics-title": "Vermögensstatistiken"
+        },
+        "contract-address": "Vertragsadresse",
+        "creator": "Ersteller",
+        "decimals": "Dezimalstellen",
+        "details-page-description": "Erforschen Sie umfassende Daten und Kennzahlen für {name}.",
+        "details-page-title": "{name} Details",
+        "isin": "ISIN",
+        "name": "Name",
+        "ownership-concentration": "Besitzkonzentration",
+        "ownership-concentration-info": "Prozentsatz, der den Top 5 Inhabern gehört",
+        "related-actions": {
+          "decrease-supply": {
+            "description": "Ein Angebotsmanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+            "title": "Tokenisierte Einlage reduzieren"
+          },
+          "increase-supply": {
+            "description": "Ein Angebotsmanager kann neue tokenisierte Einlagen prägen, sofern ausreichende Sicherheiten vorhanden sind.",
+            "title": "Tokenisierte Einlage erhöhen"
+          },
+          "title": "Verwandte Aktionen"
+        },
+        "symbol": "Symbol",
+        "tokenized-deposit-details-description": "Details zur tokenisierten Einlage",
+        "total-burned": "Verbranntes Angebot",
+        "total-burned-info": "Anzahl der Tokens, die dauerhaft aus dem Umlauf entfernt wurden",
+        "total-holders": "# der Inhaber",
+        "total-holders-info": "Anzahl der Adressen, die derzeit die Vermögenswerte halten",
+        "total-supply": "Gesamtangebot",
+        "total-supply-info": "Das Gesamtangebot des Tokens"
+      },
+      "events": {
+        "events-page-description": "Verfolgen Sie historische Aktivitäten und Transaktionen, die {name} betreffen.",
+        "events-page-title": "{name} Ereignisse"
+      },
+      "grant-role-form": {
+        "address": {
+          "address-label": "Admin-Wallet-Adresse",
+          "description": "Suchen Sie nach einem Benutzer anhand seines Namens oder seiner E-Mail-Adresse oder geben Sie manuell eine Wallet-Adresse ein.",
+          "manual-placeholder": "0x0000000000000000000000000000000000000000",
+          "manual-toggle": "Adresse manuell eingeben...",
+          "search-placeholder": "Nach einem Benutzer suchen",
+          "search-toggle": "Stattdessen nach einem Benutzer suchen...",
+          "title": "Neuen Admin auswählen"
+        },
+        "button-label": "Rollen zuweisen",
+        "description": "Weisen Sie einem neuen Benutzer administrative Berechtigungen zu.",
+        "roles": {
+          "description": "Wählen Sie die Rollen aus, die dem neuen Admin gewährt werden sollen. Mindestens eine Rolle muss ausgewählt werden.",
+          "title": "Admin-Rollen auswählen"
+        },
+        "summary": {
+          "admin-address-label": "Admin-Adresse",
+          "asset-label": "Vermögenswert",
+          "description": "Überprüfen Sie die Details Ihrer Rollenvergabe, bevor Sie fortfahren.",
+          "grant-description": "Details der Rollenvergabeoperation",
+          "grant-title": "Rolle gewähren",
+          "roles-label": "Rollen",
+          "title": "Überprüfen und Rollenvergabe bestätigen"
+        },
+        "title": "Rolle gewähren"
+      },
+      "manage": {
+        "actions": {
+          "burn": "Verbrennen",
+          "grant-role": "Rolle gewähren",
+          "mint": "Prägen",
+          "pause": "Pausieren",
+          "transfer": "Übertragen",
+          "unpause": "Wieder aktivieren",
+          "update-collateral": "Sicherheiten aktualisieren"
+        },
+        "manage": "Verwalten"
+      },
+      "mint-form": {
+        "amount": {
+          "amount-label": "Betrag",
+          "description": "Geben Sie den Betrag ein, den Sie prägen möchten.",
+          "title": "Betrag eingeben"
+        },
+        "button-label": "Mint-Assets",
+        "description": "Geben Sie neue Token aus, um das zirkulierende Angebot des Stablecoins zu erhöhen.",
+        "recipients": {
+          "description": "Wählen Sie aus, wer die geprägten Token erhalten soll.",
+          "title": "Empfänger auswählen"
+        },
+        "summary": {
+          "amount-label": "Betrag",
+          "asset-label": "Vermögenswert",
+          "description": "Überprüfen Sie die Einzelheiten Ihrer Prägung, bevor Sie fortfahren.",
+          "mint-description": "Details der Prägungsoperation",
+          "mint-title": "Prägen",
+          "title": "Überprüfen und bestätigen Sie die Prägung"
+        },
+        "title": "Prägen",
+        "trigger-label": "Prägen"
+      },
+      "pause-form": {
+        "pause": {
+          "button-label": "Transaktionen pausieren",
+          "description": "Halten Sie vorübergehend alle Transaktionen und Interaktionen für diesen Stablecoin an.",
+          "title": "Stablecoin-Transaktionen pausieren"
+        },
+        "summary": {
+          "asset-label": "Vermögenswert",
+          "current-state-label": "Aktueller Status",
+          "description": "Überprüfen Sie die Einzelheiten Ihrer Pause-Operation, bevor Sie fortfahren.",
+          "pause-description": "Details der Pausierungsoperation",
+          "pause-title": "Pause",
+          "state-active": "Aktiv",
+          "state-paused": "Pausiert",
+          "target-state-label": "Zielstatus",
+          "title": "Überprüfen und bestätigen Sie die Pausierungsoperation"
+        },
+        "unpause": {
+          "button-label": "Transaktionen fortsetzen",
+          "description": "Setzen Sie Transaktionen und Interaktionen für diesen Stablecoin fort.",
+          "title": "Stablecoin-Transaktionen fortsetzen"
+        }
+      },
+      "related-actions": {
+        "decrease-supply": {
+          "description": "Ein Supply-Manager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+          "title": "Verringern Sie das Angebot"
+        },
+        "increase-supply": {
+          "description": "Ein Supply-Manager kann neue Stablecoins prägen, sofern ausreichende Sicherheiten vorhanden sind.",
+          "title": "Erhöhen Sie das Angebot"
+        },
+        "title": "Verwandte Aktionen"
+      },
+      "table": {
+        "actions-header": "Aktionen",
+        "active": "Aktiv",
+        "address-header": "Adresse",
+        "asset-management": "Vermögensverwaltung",
+        "blocked": "Blockiert",
+        "name-header": "Name",
+        "page-description": "Überblick und administrative Aktionen für Ihre tokenisierten Einlagen.",
+        "page-title": "Tokenisierte Einlagen",
+        "paused": "Pausiert",
+        "private-header": "Privat",
+        "private-status": "Privat",
+        "public-status": "Öffentlich",
+        "related-actions": {
+          "issue-new": {
+            "description": "Erstellen und starten Sie eine neue tokenisierte Einzahlung mit definierten Parametern. Optimieren Sie die Tokenbereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
+            "title": "Geben Sie eine neue tokenisierte Einzahlung aus"
+          },
+          "mechanics": {
+            "button": "Erfahren Sie mehr",
+            "description": "Erfahren Sie, wie Sie wichtige Parameter tokenisierter Einlagen anpassen können.",
+            "title": "Mechanik der tokenisierten Einlagen"
+          },
+          "title": "Verwandte Aktionen",
+          "usecases": {
+            "button": "Erforschen",
+            "description": "Erforschen Sie die praktischen Anwendungen und Integrationen tokenisierter Einlagen.",
+            "title": "Anwendungsfälle"
+          }
+        },
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "topinfo-description": "Tokenisierte Einlagen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen.",
+        "topinfo-title": "Sichere und konforme digitale Einlagenverwaltung",
+        "total-supply-header": "Gesamtangebot"
+      },
+      "tabs": {
+        "details": "Einzelheiten",
+        "events": "Ereignisse",
+        "holders": "Inhaber",
+        "permissions": "Berechtigungen",
+        "underlying-assets": "Unterliegende Vermögenswerte"
+      }
     }
   },
   "asset-management": "Asset-Management",
@@ -1803,7 +2042,8 @@
     "stablecoin": "Stablecoin",
     "equity": "Eigenkapital",
     "cryptocurrency": "Kryptowährung",
-    "fund": "Fonds"
+    "fund": "Fonds",
+    "tokenizeddeposit": "Tokenisierte Einzahlung"
   },
   "asset-status": {
     "active": "Aktiv",
@@ -2021,7 +2261,8 @@
       "equity-initials": "EQ",
       "fund-initials": "FN",
       "not-available-initials": "NA",
-      "stablecoin-initials": "SC"
+      "stablecoin-initials": "SC",
+      "tokenized-deposit-initials": "TD"
     },
     "charts": {
       "assets": {
@@ -2271,7 +2512,8 @@
       "equity": "Equity",
       "fund": "Fonds",
       "stablecoin": "Stablecoin",
-      "unknown": "Unbekannt"
+      "unknown": "Unbekannt",
+      "tokenizeddeposit": "Tokenisierte Einzahlung"
     },
     "greeting": {
       "morning": "Guten Morgen",

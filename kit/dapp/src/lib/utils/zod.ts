@@ -257,7 +257,14 @@ const extendedZod = {
    * @returns A Zod schema that validates asset types
    */
   assetType: () =>
-    z.enum(["bond", "cryptocurrency", "equity", "fund", "stablecoin"]),
+    z.enum([
+      "bond",
+      "cryptocurrency",
+      "equity",
+      "fund",
+      "stablecoin",
+      "tokenizeddeposit",
+    ]),
 };
 
 /**
