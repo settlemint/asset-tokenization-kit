@@ -16,10 +16,10 @@ const app = new Elysia({ prefix: "/api" })
         },
         components: {
           securitySchemes: {
-            bearerAuth: {
-              type: "http",
-              scheme: "bearer",
-              bearerFormat: "JWT",
+            apiKeyAuth: {
+              type: "apiKey",
+              in: "header",
+              name: "x-api-key",
             },
           },
         },
