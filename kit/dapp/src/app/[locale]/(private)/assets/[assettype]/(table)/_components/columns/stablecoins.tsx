@@ -4,21 +4,20 @@ import { ActivePill } from "@/components/blocks/active-pill/active-pill";
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { getFundList } from "@/lib/queries/fund/fund-list";
+import { PercentageProgressBar } from "@/components/blocks/percentage-progress/percentage-progress";
+import type { getStableCoinList } from "@/lib/queries/stablecoin/stablecoin-list";
 import { formatAssetStatus } from "@/lib/utils/format-asset-status";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useTranslations, type MessageKeys } from "next-intl";
+import { useTranslations } from "next-intl";
 
 const columnHelper =
-  createColumnHelper<Awaited<ReturnType<typeof getFundList>>[number]>();
+  createColumnHelper<Awaited<ReturnType<typeof getStableCoinList>>[number]>();
 
-export function columns() {
+export function stablecoinColumns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.funds.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetStatus = useTranslations("asset-status");
+  const t = useTranslations("private.assets.fields");
 
   return [
     columnHelper.accessor("id", {
@@ -48,45 +47,14 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("assetsUnderManagement", {
-      header: t("assets-under-management-header"),
-      meta: {
-        variant: "numeric",
+    columnHelper.accessor("collateralRatio", {
+      header: t("committed-collateral-header"),
+      cell: ({ getValue }) => {
+        return <PercentageProgressBar percentage={getValue()} />;
       },
-      cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("fundCategory", {
-      header: t("category-header"),
-      cell: ({ getValue }) =>
-        t(
-          `category-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
-            "admin.funds.table",
-            "category-header"
-          >
-        ),
-      enableColumnFilter: true,
-    }),
-    columnHelper.accessor("fundClass", {
-      header: t("class-header"),
-      cell: ({ getValue }) =>
-        t(
-          `class-${getValue().toLowerCase().replace(/_/g, "-")}` as MessageKeys<
-            "admin.funds.table",
-            "class-header"
-          >
-        ),
-      enableColumnFilter: true,
-    }),
-    columnHelper.accessor("managementFeeBps", {
-      header: t("management-fee-header"),
-      meta: {
-        variant: "numeric",
-      },
-      cell: ({ getValue }) => `${getValue() / 100}% (${getValue()} bps)`,
-      enableColumnFilter: false,
-    }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => formatAssetStatus(row, t), {
       header: t("status-header"),
       cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;
@@ -97,7 +65,9 @@ export function columns() {
       header: t("actions-header"),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions detailUrl={`/assets/funds/${row.original.id}`} />
+          <DataTableRowActions
+            detailUrl={`/assets/stablecoins/${row.original.id}`}
+          />
         );
       },
       meta: {

@@ -52,8 +52,8 @@ export const FundFragmentSchema = z.object({
   totalBurnedExact: z.bigInt(),
   totalHolders: z.number(),
   paused: z.boolean(),
-  fundCategory: z.string(),
-  fundClass: z.string(),
+  fundCategory: z.fundCategory(),
+  fundClass: z.fundClass(),
   managementFeeBps: z.number(),
   creator: z.object({
     id: z.address(),

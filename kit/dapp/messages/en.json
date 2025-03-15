@@ -2778,6 +2778,259 @@
       "transferring": "Transferring..."
     }
   },
+  "private": {
+    "assets": {
+      "fields": {
+        "actions-header": "Actions",
+        "active": "Active",
+        "address-header": "Address",
+        "assets-under-management-header": "AuM",
+        "blocked": "Blocked",
+        "category-header": "Category",
+        "class-header": "Class",
+        "committed-collateral-header": "Comitted collateral",
+        "equity": {
+          "categories": {
+            "blend-equity": "Blend Equity",
+            "common-equity": "Common Equity",
+            "communication-services": "Communication Services",
+            "consumer-discretionary": "Consumer Discretionary",
+            "consumer-staples": "Consumer Staples",
+            "convertible-preferred-stock": "Convertable Preferred Stock",
+            "cumulative-preferred-stock": "Cumulative Preferred Stock",
+            "distressed-equity": "Distressed Equity",
+            "domestic-equity": "Domestic Equity",
+            "dual-class-shares": "Dual-Class Shares",
+            "emerging-market-equity": "Emerging Market Equity",
+            "energy": "Energy",
+            "esop-shares": "Employee Stock Ownership Plan (ESOP) Shares",
+            "financials": "Financials",
+            "frontier-market-equity": "Frontier Market Equity",
+            "global-equity": "Global Equity",
+            "growth-capital": "Growth Capital",
+            "growth-equity": "Growth Equity",
+            "healthcare": "Healthcare",
+            "income-equity": "Income Equity",
+            "industrials": "Industrials",
+            "international-equity": "International Equity",
+            "large-cap-equity": "Large-Cap Equity",
+            "leveraged-buyouts": "Leveraged Buyouts (LBOs)",
+            "materials": "Materials",
+            "mezzanine-financing": "Mezzanine Financing",
+            "micro-cap-equity": "Micro-Cap Equity",
+            "mid-cap-equity": "Mid-Cap Equity",
+            "non-cumulative-preferred-stock": "Non-Cumulative Preferred Stock",
+            "non-voting-common-stock": "Non-Voting Common Stock",
+            "real-estate": "Real Estate",
+            "redeemable-preferred-stock": "Redeemable Preferred Stock",
+            "restricted-stock": "Restricted Stock",
+            "small-cap-equity": "Small-Cap Equity",
+            "technology": "Technology",
+            "tracking-stocks": "Tracking Stocks",
+            "utilities": "Utilities",
+            "value-equity": "Value Equity",
+            "venture-capital": "Venture Capital",
+            "voting-common-stock": "Voting Common Stock"
+          },
+          "classes": {
+            "common-equity": "Common Equity",
+            "geographic-equity": "Geographic Equity",
+            "investment-stage-private-equity": "Investment Stage (Private Equity)",
+            "investment-style-equity": "Investment Style Equity",
+            "market-capitalization-equity": "Market Capitalization Equity",
+            "preferred-equity": "Preferred Equity",
+            "sector-industry-equity": "Sector/Industry Equity",
+            "special-classes-equity": "Special Classes of Equity"
+          }
+        },
+        "funds": {
+          "categories": {
+            "activist": "Activist",
+            "commodity-trading": "Commodity Trading",
+            "convertible-arbitrage": "Convertable Arbitrage",
+            "credit": "Credit",
+            "currency-fx": "Currency FX",
+            "distressed-debt": "Distressed Debt",
+            "emerging-markets": "Emerging Markets",
+            "equity-hedge": "Equity Hedge",
+            "event-driven": "Event-Driven",
+            "fixed-income-arbitrage": "Fixed Income Arbitrage",
+            "fund-of-funds": "Fund of Funds",
+            "global-macro": "Global Macro",
+            "high-frequency-trading": "High-Frequency Trading (HFT)",
+            "managed-futures-cta": "Managed Futures / CTA",
+            "market-neutral": "Market Neutral",
+            "merger-arbitrage": "Merger Arbitrage",
+            "multi-strategy": "Multi-Strategy",
+            "private-equity": "Private Equity (PE)",
+            "quantitative-systematic": "Quantitative/Systematic",
+            "relative-value": "Relative Value",
+            "statistical-arbitrage": "Statistical Arbitrage",
+            "structured-credit": "Structured Credit",
+            "venture-capital": "Venture Capital (VC)"
+          },
+          "classes": {
+            "absolute-return": "Absolute Return",
+            "core-blend": "Core / Blend",
+            "diversified": "Diversified",
+            "early-stage": "Early Stage",
+            "factor-based": "Factor-Based",
+            "growth-focused": "Growth-Focused",
+            "income-focused": "Income-Focused",
+            "large-cap": "Large-Cap",
+            "long-equity": "Long Equity (Long Only)",
+            "long-short-equity": "Long/Short Equity",
+            "market-neutral": "Market Neutral",
+            "mid-cap": "Mid-Cap",
+            "momentum-oriented": "Momentum-Oriented",
+            "opportunistic": "Opportunistic",
+            "pre-series-b": "Pre-Series B",
+            "quantitative-algorithmic": "Quantitative / Algorithmic",
+            "regional": "Regional",
+            "sector-specific": "Sector-Specific",
+            "seed-pre-seed": "Seed / Pre-Seed",
+            "series-b-late-stage": "Series B / Late Stage",
+            "short-equity": "Short Equity",
+            "small-cap": "Small-Cap",
+            "tactical-asset-allocation": "Tactical Asset Allocation",
+            "value-focused": "Value-Focused"
+          }
+        },
+        "management-fee-header": "Management fee",
+        "name-header": "Name",
+        "paused": "Paused",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "total-supply-header": "Total supply"
+      },
+      "table": {
+        "asset-management": "Asset Management",
+        "page-title": {
+          "bonds": "Bonds",
+          "cryptocurrencies": "Cryptocurrencies",
+          "equities": "Equities",
+          "funds": "Funds",
+          "stablecoins": "Stablecoins",
+          "tokenizeddeposits": "Tokenized Deposits"
+        },
+        "topinfo-description": {
+          "bonds": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
+          "cryptocurrencies": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
+          "equities": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
+          "funds": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
+          "stablecoins": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
+          "tokenizeddeposits": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
+        },
+        "topinfo-title": {
+          "bonds": "A digital fixed-income security asset",
+          "cryptocurrencies": "A customizable and secure digital asset",
+          "equities": "Institutional-grade digital equity management",
+          "funds": "Digital asset for institutional fund management",
+          "stablecoins": "A secure and collateralized digital currency",
+          "tokenizeddeposits": "Secure and compliant digital deposit management"
+        },
+        "related": {
+          "title": "Related actions",
+          "stablecoins": {
+            "issue-new": {
+              "description": "Create and launch a new stablecoin with defined parameters and collateral backing. Streamline token deployment to support new projects and market segments.",
+              "title": "Issue a new stablecoin"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to adjust key stablecoin parameters, collateralization methods, and stability mechanisms.",
+              "title": "Stablecoin mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore the practical applications and integrations of stablecoins. Maximize utility across payments, savings, lending, and decentralized finance ecosystems.",
+              "title": "Usecases"
+            }
+          },
+          "funds": {
+            "issue-new": {
+              "description": "Create and launch a new fund with defined parameters and asset backing. Streamline fund deployment to support new investment opportunities and market segments.",
+              "title": "Issue a new fund"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to adjust key fund parameters, asset allocation methods, and management fee structures.",
+              "title": "Fund mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore the practical applications and integrations of digital funds. Maximize utility across investment management, asset tokenization, and institutional finance ecosystems.",
+              "title": "Usecases"
+            }
+          },
+          "equities": {
+            "issue-new": {
+              "description": "Create and launch a new equity token with defined share classes and ownership rights. Streamline equity issuance to support shareholder distribution and corporate governance.",
+              "title": "Issue new equity tokens"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to manage shareholder rights, voting mechanisms, dividend distributions, and equity ownership structures.",
+              "title": "Equity mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore applications in corporate equity management, from share issuance to stakeholder governance. Maximize efficiency in equity administration, voting rights, and dividend distribution.",
+              "title": "Equity usecases"
+            }
+          },
+          "bonds": {
+            "issue-new": {
+              "description": "Create and launch a new bond with defined maturity, coupon rates, and face value. Streamline bond issuance with automated interest payments and redemption schedules.",
+              "title": "Issue new bond"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to manage bond parameters, interest distributions, maturity dates, and redemption processes for fixed-income securities.",
+              "title": "Bond mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore applications in fixed-income markets, from corporate debt to structured products. Maximize efficiency in interest payments, maturity management, and regulatory compliance.",
+              "title": "Bond usecases"
+            }
+          },
+          "cryptocurrencies": {
+            "issue-new": {
+              "description": "Create and launch a new cryptocurrency token with customizable parameters and security features. Streamline token deployment with configurable supply mechanisms and transfer controls.",
+              "title": "Issue new cryptocurrency"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to manage token economics, supply controls, transfer restrictions, and security features for your cryptocurrency.",
+              "title": "Token mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore applications in digital payments, rewards systems, and tokenized services. Maximize utility through programmable transactions and institutional-grade security features.",
+              "title": "Cryptocurrency usecases"
+            }
+          },
+          "tokenizeddeposits": {
+            "issue-new": {
+              "description": "Create and launch a new tokenized deposit with defined parameters. Streamline token deployment to support new projects and market segments.",
+              "title": "Issue a new tokenized deposit"
+            },
+            "mechanics": {
+              "button": "Learn more",
+              "description": "Learn how to adjust key tokenized deposit parameters.",
+              "title": "Tokenized deposit mechanics"
+            },
+            "usecases": {
+              "button": "Explore",
+              "description": "Explore the practical applications and integrations of tokenized deposits.",
+              "title": "Usecases"
+            }
+          }
+        }
+      }
+    }
+  },
   "theme": {
     "dark": "Dark",
     "light": "Light",

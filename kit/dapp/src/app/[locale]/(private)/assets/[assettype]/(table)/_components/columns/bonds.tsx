@@ -13,12 +13,10 @@ import { useTranslations } from "next-intl";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getBondList>>[number]>();
 
-export function columns() {
+export function bondColumns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.bonds.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetStatus = useTranslations("asset-status");
+  const t = useTranslations("private.assets.fields");
 
   return [
     columnHelper.accessor("id", {
@@ -48,7 +46,7 @@ export function columns() {
       cell: ({ getValue }) => formatNumber(getValue()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => formatAssetStatus(row, t), {
       header: t("status-header"),
       cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;
