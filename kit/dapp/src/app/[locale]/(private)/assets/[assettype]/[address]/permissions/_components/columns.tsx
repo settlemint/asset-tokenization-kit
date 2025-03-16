@@ -77,7 +77,7 @@ export function columns({ address, assettype,  }: { address: Address, assettype:
                     open={open}
                     onOpenChange={onOpenChange}
                     assettype={assettype}
-                    adminsCount={adminCount}
+                    disableEditAdminRole={adminCount === 1 && isAdmin}
                     assetName={row.original.assetName}
                   />
                 ),

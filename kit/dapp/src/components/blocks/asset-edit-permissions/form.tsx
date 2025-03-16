@@ -17,7 +17,7 @@ export interface EditPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
-  adminsCount: number;
+  disableEditAdminRole: boolean;
   assetName: string;
   assettype: AssetType;
 }
@@ -31,7 +31,7 @@ export function EditPermissionsForm({
   address,
   account,
   currentRoles,
-  adminsCount,
+  disableEditAdminRole,
   assetName,
   open,
   onOpenChange,
@@ -85,7 +85,7 @@ export function EditPermissionsForm({
           ),
         }}
       >
-        <Roles adminsCount={adminsCount} />
+        <Roles disableEditAdminRole={disableEditAdminRole} />
         <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>
     </FormSheet>
