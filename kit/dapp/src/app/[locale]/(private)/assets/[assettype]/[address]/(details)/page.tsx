@@ -2,6 +2,7 @@ import type { Locale } from "next-intl";
 import type { Address } from "viem";
 import type { AssetType } from "../../types";
 import { getDetailData } from "../_components/detail-data";
+import { Details } from "./_components/details";
 import { Related } from "./_components/related";
 
 interface PageProps {
@@ -18,6 +19,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
 
 	return (
 		<>
+			<Details assettype={assettype} address={address} />
 			<Related
 				assettype={assettype}
 				address={address}
