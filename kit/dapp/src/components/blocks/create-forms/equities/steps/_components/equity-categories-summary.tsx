@@ -1,12 +1,12 @@
-import { FormSelect } from '@/components/blocks/form/inputs/form-select';
 import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
+import type { equityCategories } from '@/lib/utils/zod';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
-export function EquityCategoriesSelect({
-  label,
+export function EquityCategoriesSummary({
+  value,
 }: {
-  label: string;
+  value: (typeof equityCategories)[number];
 }) {
   const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations('private.assets.fields');
@@ -155,12 +155,7 @@ export function EquityCategoriesSelect({
   ];
 
   return (
-    <FormSelect
-      control={control}
-      name="equityCategory"
-      label={label}
-      options={translatedEquityCategories}
-      required
-    />
+    translatedEquityCategories.find((category) => category.value === value)
+      ?.label ?? value
   );
 }

@@ -3,9 +3,12 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
 import { getPredictedAddress } from '@/lib/queries/equity-factory/predict-address';
+import type { equityCategories, equityClasses } from '@/lib/utils/zod';
 import { DollarSign, Settings } from 'lucide-react';
-import { type MessageKeys, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type UseFormReturn, useFormContext, useWatch } from 'react-hook-form';
+import { EquityCategoriesSummary } from './_components/equity-categories-summary';
+import { EquityClassesSummary } from './_components/equity-classes-summary';
 
 export function Summary() {
   const { control } = useFormContext<CreateEquityInput>();
@@ -47,27 +50,27 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t('equity-category-label')}
           value={
-            values.equityCategory
-              ? t(
-                  `category-${values.equityCategory.toLowerCase().replace(/_/g, '-')}` as MessageKeys<
-                    'admin.equities.create-form.summary',
-                    'equity-category-label'
-                  >
-                )
-              : '-'
+            values.equityCategory ? (
+              <EquityCategoriesSummary
+                value={
+                  values.equityCategory as (typeof equityCategories)[number]
+                }
+              />
+            ) : (
+              '-'
+            )
           }
         />
         <FormSummaryDetailItem
           label={t('equity-class-label')}
           value={
-            values.equityClass
-              ? t(
-                  `class-${values.equityClass.toLowerCase().replace(/_/g, '-')}` as MessageKeys<
-                    'admin.equities.create-form.summary',
-                    'equity-class-label'
-                  >
-                )
-              : '-'
+            values.equityClass ? (
+              <EquityClassesSummary
+                value={values.equityClass as (typeof equityClasses)[number]}
+              />
+            ) : (
+              '-'
+            )
           }
         />
       </FormSummaryDetailCard>

@@ -920,6 +920,49 @@
           },
           "title": "Create new equity",
           "trigger-label": "Mint"
+        },
+        "funds": {
+          "basics": {
+            "decimals-label": "Decimals",
+            "description": "Define essential details such as name, symbol, and visibility.",
+            "isin-label": "ISIN",
+            "isin-placeholder": "US1234567890",
+            "name-label": "Name",
+            "name-placeholder": "Global Growth Fund",
+            "symbol-label": "Symbol",
+            "symbol-placeholder": "GGF",
+            "title": "Basic Information"
+          },
+          "button-label": "Issue a new fund",
+          "configuration": {
+            "basis-points": "bps",
+            "description": "Specify fund category, class, and management fee.",
+            "fund-category-label": "Fund Category",
+            "fund-class-label": "Fund Class",
+            "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
+            "management-fee-label": "Management Fee",
+            "title": "Fund Configuration"
+          },
+          "description": "Define and launch a new fund asset.",
+          "summary": {
+            "asset-basics-description": "Basic asset information and settings.",
+            "asset-basics-title": "Asset Basics",
+            "basis-points": "bps",
+            "configuration-description": "Fund category, class, and fee settings.",
+            "configuration-title": "Fund Configuration",
+            "decimals-label": "Decimals",
+            "description": "Review and confirm the details of your new fund before creation.",
+            "error-duplicate": "A Fund with the same details already exists. Please try again with at least one different parameter.",
+            "fund-category-label": "Fund Category",
+            "fund-class-label": "Fund Class",
+            "isin-label": "ISIN",
+            "management-fee-label": "Management Fee",
+            "name-label": "Name",
+            "symbol-label": "Symbol",
+            "title": "Review and confirm"
+          },
+          "title": "Create Fund",
+          "trigger-label": "Issue a new fund"
         }
       },
       "detail": {
