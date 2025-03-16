@@ -5,7 +5,6 @@ export const TransferBondSchema = z.object({
   to: z.address(),
   value: z.amount(),
   pincode: z.pincode(),
-  assetType: z.literal('bond'),
   decimals: z.decimals(),
 });
 

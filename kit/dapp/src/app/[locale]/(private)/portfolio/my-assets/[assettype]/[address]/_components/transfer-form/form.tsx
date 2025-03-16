@@ -95,7 +95,6 @@ export function TransferForm({
         }}
         defaultValues={{
           address,
-          assetType: assettype,
           decimals,
         }}
       >

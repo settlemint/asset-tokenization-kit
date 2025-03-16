@@ -6,7 +6,6 @@ export const TransferCryptoCurrencySchema = z.object({
   to: z.address(),
   value: z.amount(),
   pincode: z.pincode(),
-  assetType: z.literal('cryptocurrency'),
 });
 
 export type TransferCryptoCurrencyInput = ZodInfer<

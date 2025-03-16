@@ -5,7 +5,6 @@ export const TransferTokenizedDepositSchema = z.object({
   to: z.address(),
   value: z.amount(),
   pincode: z.pincode(),
-  assetType: z.literal('tokenized-deposit'),
   decimals: z.decimals(),
 });
 

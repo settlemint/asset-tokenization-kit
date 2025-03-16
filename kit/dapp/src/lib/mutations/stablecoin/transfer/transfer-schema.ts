@@ -5,7 +5,6 @@ export const TransferStableCoinSchema = z.object({
   to: z.address(),
   value: z.amount(),
   pincode: z.pincode(),
-  assetType: z.literal('stablecoin'),
   decimals: z.decimals(),
 });
 
