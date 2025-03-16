@@ -1,5 +1,7 @@
 'use client';
 
+import type { getDetailData } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/detail-data';
+import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,30 +9,40 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { getFundDetail } from '@/lib/queries/fund/fund-detail';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { Address } from 'viem';
+import { RedeemForm } from './redeem-form/form';
 import { TransferForm } from './transfer-form/form';
 
 interface ManageDropdownProps {
   address: Address;
-  fund: Awaited<ReturnType<typeof getFundDetail>>;
+  assettype: AssetType;
+  detail: Awaited<ReturnType<typeof getDetailData>>;
 }
 
-export function ManageDropdown({ address, fund }: ManageDropdownProps) {
-  const t = useTranslations('portfolio.my-assets.stablecoin');
+export function ManageDropdown({
+  address,
+  assettype,
+  detail,
+}: ManageDropdownProps) {
+  const t = useTranslations('portfolio.my-assets.bond');
 
-  const menuItems = useMemo(
-    () => [
-      {
-        id: 'transfer',
-        label: t('transfer-form.trigger-label'),
-      },
-    ],
-    [t]
-  );
+  const menuItems = [
+    {
+      id: 'transfer',
+      label: t('transfer-form.trigger-label'),
+    },
+    ...(assettype === 'bonds'
+      ? [
+          {
+            id: 'redeem',
+            label: t('redeem-form.trigger-label'),
+          },
+        ]
+      : []),
+  ] as const;
 
   const [openMenuItem, setOpenMenuItem] = useState<
     (typeof menuItems)[number]['id'] | null
@@ -67,9 +79,16 @@ export function ManageDropdown({ address, fund }: ManageDropdownProps) {
       </DropdownMenu>
       <TransferForm
         address={address}
-        balance={Number(fund.totalSupply)}
-        decimals={fund.decimals}
+        assettype={assettype}
+        balance={Number(detail.totalSupply)}
+        decimals={detail.decimals}
         open={openMenuItem === 'transfer'}
+        onOpenChange={onFormOpenChange}
+      />
+      <RedeemForm
+        address={address}
+        balance={Number(detail.totalSupply)}
+        open={openMenuItem === 'redeem'}
         onOpenChange={onFormOpenChange}
       />
     </>
