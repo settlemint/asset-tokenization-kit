@@ -19,7 +19,7 @@ import type { AssetType } from '../../../types';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function columns({ address, assettype }: { address: Address, assettype: AssetType }) {
+export function columns({ address, assettype,  }: { address: Address, assettype: AssetType,  }) {
   const t = useTranslations('private.assets.fields');
 
   return [
@@ -54,11 +54,14 @@ export function columns({ address, assettype }: { address: Address, assettype: A
         </DataTableColumnHeader>
       ),
       cell: ({ row, table }) => {
-        const adminCount = table
-          .getRowModel()
-          .rows.filter((row) =>
+        const rows = table.getRowModel().rows;
+        const adminCount = rows.filter((row) =>
             row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
           ).length;
+          const admins = rows.filter((row) =>
+            row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
+          );
+          const isAdmin = admins.some((admin) => admin.original.id === row.original.id);
 
         return (
           <DataTableRowActions
@@ -92,7 +95,7 @@ export function columns({ address, assettype }: { address: Address, assettype: A
                     assettype={assettype}
                   />
                 ),
-                disabled: adminCount === 1,
+                disabled: adminCount === 1 && isAdmin,
               },
             ]}
           />
