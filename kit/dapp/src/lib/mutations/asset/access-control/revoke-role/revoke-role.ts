@@ -102,12 +102,32 @@ export const EquityRevokeRole = portalGraphql(`
   }
 `);
 
+/**
+ * GraphQL mutation for revoking a role from a user for a tokenized deposit
+ *
+ * @remarks
+ * Removes permissions from an account for interacting with the tokenized deposit
+ */
+export const TokenizedDepositRevokeRole = portalGraphql(`
+  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositRevokeRoleInput!) {
+    RevokeRole: TokenizedDepositRevokeRole(
+      from: $from
+      input: $input
+      address: $address
+      challengeResponse: $challengeResponse
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 type RevokeRoleInput = VariablesOf<
   | typeof StableCoinRevokeRole
   | typeof BondRevokeRole
   | typeof CryptoCurrencyRevokeRole
   | typeof FundRevokeRole
   | typeof EquityRevokeRole
+  | typeof TokenizedDepositRevokeRole
 >;
 type RevokeRoleOutput = ResultOf<
   | typeof StableCoinRevokeRole
@@ -115,6 +135,7 @@ type RevokeRoleOutput = ResultOf<
   | typeof CryptoCurrencyRevokeRole
   | typeof FundRevokeRole
   | typeof EquityRevokeRole
+  | typeof TokenizedDepositRevokeRole
 >;
 
 export type RevokeRoleMutation = TypedDocumentNode<

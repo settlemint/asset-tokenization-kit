@@ -117,7 +117,7 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === 'grant-role'}
           onOpenChange={onFormOpenChange}
-          grantRoleAction={bondGrantRoleAction}
+          assettype={assettype}
         />
       ),
     },

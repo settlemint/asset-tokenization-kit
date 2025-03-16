@@ -15,10 +15,11 @@ import { formatDate } from '@/lib/utils/date';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
+import type { AssetType } from '../../../types';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function columns({ address }: { address: Address }) {
+export function columns({ address, assettype }: { address: Address, assettype: AssetType }) {
   const t = useTranslations('private.assets.fields');
 
   return [
@@ -72,7 +73,7 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
-                    updateRolesAction={bondUpdatePermissionsAction}
+                    assettype={assettype}
                     adminsCount={adminCount}
                     assetName={row.original.assetName}
                   />
@@ -88,7 +89,7 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
-                    revokeRoleAction={bondRevokeRoleAction}
+                    assettype={assettype}
                   />
                 ),
                 disabled: adminCount === 1,

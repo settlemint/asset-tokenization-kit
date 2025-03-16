@@ -7,10 +7,11 @@ import {
   EquityRevokeRole,
   FundRevokeRole,
   StableCoinRevokeRole,
+  TokenizedDepositRevokeRole,
   getRevokeRoleAction,
 } from './revoke-role';
 
-export const stablecoinRevokeRoleAction =
+export const stableCoinRevokeRoleAction =
   getRevokeRoleAction(StableCoinRevokeRole);
 
 export const bondRevokeRoleAction = getRevokeRoleAction(BondRevokeRole);
@@ -23,9 +24,14 @@ export const equityRevokeRoleAction = getRevokeRoleAction(EquityRevokeRole);
 
 export const fundRevokeRoleAction = getRevokeRoleAction(FundRevokeRole);
 
+export const tokenizedDepositRevokeRoleAction = getRevokeRoleAction(
+  TokenizedDepositRevokeRole
+);
+
 export type RevokeRoleActionType =
-  | typeof stablecoinRevokeRoleAction
+  | typeof stableCoinRevokeRoleAction
   | typeof bondRevokeRoleAction
   | typeof cryptoCurrencyRevokeRoleAction
   | typeof equityRevokeRoleAction
-  | typeof fundRevokeRoleAction;
+  | typeof fundRevokeRoleAction
+  | typeof tokenizedDepositRevokeRoleAction;

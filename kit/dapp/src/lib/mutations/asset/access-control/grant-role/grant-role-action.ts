@@ -8,6 +8,7 @@ import {
   EquityGrantRole,
   FundGrantRole,
   StableCoinGrantRole,
+  TokenizedDepositGrantRole,
   getGrantRoleAction,
 } from './grant-role';
 
@@ -23,6 +24,10 @@ export const cryptoCurrencyGrantRoleAction = getGrantRoleAction(
 export const equityGrantRoleAction = getGrantRoleAction(EquityGrantRole);
 
 export const fundGrantRoleAction = getGrantRoleAction(FundGrantRole);
+
+export const tokenizedDepositGrantRoleAction = getGrantRoleAction(
+  TokenizedDepositGrantRole
+);
 
 export type GrantRoleActionType =
   | typeof stablecoinGrantRoleAction

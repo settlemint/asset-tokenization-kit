@@ -3,18 +3,19 @@
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
-import type { RevokeRoleActionType } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-action';
+import { bondRevokeRoleAction, cryptoCurrencyRevokeRoleAction, equityRevokeRoleAction, fundRevokeRoleAction, stableCoinRevokeRoleAction, tokenizedDepositRevokeRoleAction, type RevokeRoleActionType } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-action';
 import { RevokeRoleSchema } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 import { Summary } from './steps/summary';
+import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 
 export interface RevokeAllPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
-  revokeRoleAction: RevokeRoleActionType;
+  assettype: AssetType;
 }
 
 interface RevokeAllPermissionsFormPropsWithOpen
@@ -29,12 +30,30 @@ export function RevokeAllPermissionsForm({
   currentRoles,
   open,
   onOpenChange,
-  revokeRoleAction,
+  assettype,
 }: RevokeAllPermissionsFormPropsWithOpen) {
   const t = useTranslations(
     'private.assets.details.permissions.revoke-all-form'
   );
 
+  const getRevokeRoleAction = (assettype: AssetType) => {
+    switch (assettype) {
+      case 'bonds':
+        return bondRevokeRoleAction;
+      case 'equities':
+        return equityRevokeRoleAction;
+      case 'funds':
+        return fundRevokeRoleAction;
+      case 'tokenizeddeposits':
+        return tokenizedDepositRevokeRoleAction;
+      case 'cryptocurrencies':
+        return cryptoCurrencyRevokeRoleAction;
+      case 'stablecoins':
+        return stableCoinRevokeRoleAction;
+      default:
+        throw new Error(`Invalid asset type: ${assettype}`);
+    }
+  };
   return (
     <FormSheet
       open={open}
@@ -44,7 +63,7 @@ export function RevokeAllPermissionsForm({
       description={t('description')}
     >
       <Form
-        action={revokeRoleAction}
+        action={getRevokeRoleAction(assettype)}
         resolver={zodResolver(RevokeRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{

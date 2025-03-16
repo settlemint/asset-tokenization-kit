@@ -8,6 +8,7 @@ import {
   EquityGrantRole,
   FundGrantRole,
   StableCoinGrantRole,
+  TokenizedDepositGrantRole,
 } from '../grant-role/grant-role';
 import {
   BondRevokeRole,
@@ -15,6 +16,7 @@ import {
   EquityRevokeRole,
   FundRevokeRole,
   StableCoinRevokeRole,
+  TokenizedDepositRevokeRole,
 } from '../revoke-role/revoke-role';
 import { getUpdateRolesAction } from './update-roles';
 
@@ -43,9 +45,15 @@ export const equityUpdatePermissionsAction = getUpdateRolesAction({
   revokeRoleMutation: EquityRevokeRole,
 });
 
+export const tokenizedDepositUpdatePermissionsAction = getUpdateRolesAction({
+  grantRoleMutation: TokenizedDepositGrantRole,
+  revokeRoleMutation: TokenizedDepositRevokeRole,
+});
+
 export type UpdateRolesActionType =
   | typeof stableCoinUpdatePermissionsAction
   | typeof bondUpdatePermissionsAction
   | typeof cryptoCurrencyUpdatePermissionsAction
   | typeof fundUpdatePermissionsAction
-  | typeof equityUpdatePermissionsAction;
+  | typeof equityUpdatePermissionsAction
+  | typeof tokenizedDepositUpdatePermissionsAction;

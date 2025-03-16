@@ -102,12 +102,32 @@ export const EquityGrantRole = portalGraphql(`
   }
 `);
 
+/**
+ * GraphQL mutation for granting a role to a user for a tokenized deposit
+ *
+ * @remarks
+ * Assigns permissions to an account for interacting with the tokenized deposit
+ */
+export const TokenizedDepositGrantRole = portalGraphql(`
+  mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositGrantRoleInput!) {
+    GrantRole: TokenizedDepositGrantRole(
+      from: $from
+      input: $input
+      address: $address
+      challengeResponse: $challengeResponse
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 type GrantRoleInput = VariablesOf<
   | typeof StableCoinGrantRole
   | typeof BondGrantRole
   | typeof CryptoCurrencyGrantRole
   | typeof FundGrantRole
   | typeof EquityGrantRole
+  | typeof TokenizedDepositGrantRole
 >;
 type GrantRoleOutput = ResultOf<
   | typeof StableCoinGrantRole
@@ -115,6 +135,7 @@ type GrantRoleOutput = ResultOf<
   | typeof CryptoCurrencyGrantRole
   | typeof FundGrantRole
   | typeof EquityGrantRole
+  | typeof TokenizedDepositGrantRole
 >;
 
 export type GrantRoleMutation = TypedDocumentNode<
