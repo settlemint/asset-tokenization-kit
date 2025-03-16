@@ -116,74 +116,35 @@
         "my-activity": "My activity",
         "my-assets": "My assets"
       }
-    },
-    "users": {
-      "banned_reason": "Banned for {reason}",
-      "columns": {
-        "email": "Email",
-        "kyc_status": "KYC Status",
-        "last_activity": "Last activity",
-        "name": "Name",
-        "role": "Role",
-        "status": "Status",
-        "wallet": "Wallet"
-      },
-      "detail": {
-        "charts": {
-          "transaction-history-last-month": {
-            "description": "Showing transactions over the last month",
-            "title": "Transactions volume / day"
-          },
-          "transaction-history-last-year": {
-            "description": "Showing transactions over the last year",
-            "title": "Transactions volume / month"
-          }
-        },
-        "edit_user": "Edit user",
-        "platform-management": "Platform management",
-        "tabs": {
-          "details": "Details",
-          "holdings": "Holdings",
-          "latest-events": "Latest events",
-          "permissions": "Permissions"
-        },
-        "values": {
-          "asset_supply": "Asset supply",
-          "created_at": "Created at",
-          "email": "Email",
-          "last_activity": "Last activity",
-          "last_login": "Last login",
-          "name": "Name",
-          "status": "Status",
-          "transactions": "Transactions",
-          "verified_at": "Verified at",
-          "wallet": "Wallet"
-        }
-      },
-      "holdings": {
-        "table": {
-          "balance-header": "Balance",
-          "holder-type-header": "Holder tye",
-          "last-activity-header": "Last activity",
-          "name-header": "Name",
-          "status-header": "Status",
-          "symbol-header": "Symbol",
-          "type-header": "Type"
-        },
-        "title": "Holdings"
-      },
-      "latest-events": {
-        "view-all": "View more events"
-      },
-      "platform-management": "Platform management",
-      "status": {
-        "active": "Active",
-        "banned": "Banned"
-      },
-      "title": "Users"
     }
   },
   "admin-user": "Admin",
+  "asset-info": {
+    "admin": "Admin",
+    "creator-owner": "Creator / Owner",
+    "regular": "Regular",
+    "supply-manager": "Supply Manager"
+  },
+  "asset-status": {
+    "active": "Active",
+    "blocked": "Blocked",
+    "paused": "Paused"
+  },
+  "asset-type": {
+    "bonds": "Bond",
+    "bonds-plural": "Bonds",
+    "cryptocurrencies": "Cryptocurrency",
+    "cryptocurrencies-plural": "Cryptocurrencies",
+    "equities": "Equity",
+    "equities-plural": "Equities",
+    "funds": "Fund",
+    "funds-plural": "Funds",
+    "stablecoins": "Stablecoin",
+    "stablecoins-plural": "Stablecoins",
+    "tokenizeddeposits": "Tokenized Deposit",
+    "tokenizeddeposits-plural": "Tokenized Deposits",
+    "unknown": "Unknown"
+  },
   "blocked": "Blocked",
   "components": {
     "active-pill": {
@@ -246,15 +207,23 @@
     },
     "charts": {
       "assets": {
+        "asset-distribution": "Asset Distribution",
+        "asset-distribution-description": "Portfolio allocation by asset type",
+        "bond": "Bond",
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
           "no-data": "No collateral data available"
         },
+        "cryptocurrency": "Cryptocurrency",
+        "equity": "Equity",
         "free-collateral-ratio": {
           "label": "Free"
         },
+        "fund": "Fund",
         "last-updated": "Last updated",
+        "stablecoin": "Stablecoin",
+        "tokenizeddeposit": "Tokenized Deposit",
         "total-supply": {
           "description": "Showing the total supply of the token",
           "label": "Total supply",
@@ -333,6 +302,10 @@
         "letters-only": "Please enter letters only",
         "valid-email": "Please enter a valid email address"
       },
+      "pincode-dialog": {
+        "description": "To sign the transaction, please enter your pincode for verification and authorization.",
+        "title": "Enter your pincode to confirm"
+      },
       "progress": {
         "completed-step": "Completed step",
         "current-step": "Current step",
@@ -407,7 +380,8 @@
     "sending": "Sending",
     "success": "Success",
     "title": "Something went wrong!",
-    "try-again": "Try again"
+    "try-again": "Try again",
+    "validation-errors": "Validation error"
   },
   "layout": {
     "header": {
@@ -538,7 +512,14 @@
         "swagger-description": "All API requests must include your API key within the x-api-key header for authentication. This header ensures secure and authorized access to our API endpoints, allowing your applications to safely interact with our services.",
         "swagger-link-text": "Open API documentation",
         "swagger-title": "Create, view, and manage API keys to securely integrate your applications with our platform. API keys allow you to programmatically access all available features, documented clearly through our OpenAPI specification.",
-        "title": "API Keys"
+        "title": "API Keys",
+        "expiry-options": {
+          "1 day": "1 day",
+          "1 month": "1 month",
+          "1 week": "1 week",
+          "1 year": "1 year",
+          "No expiry": "No expiry"
+        }
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
@@ -555,7 +536,7 @@
         "title": "Enter Amount"
       },
       "asset-types": "{type} {name} ({symbol})",
-      "description": "Easily transfer an amount of {type} {name} ({symbol}) by selecting a recipient and specifying the amount.",
+      "description": "Easily transfer an amount of {name} ({symbol}) by selecting a recipient and specifying the amount.",
       "recipients": {
         "description": "Enter a wallet address to send tokens directly.",
         "title": "Select Recipients",
@@ -573,7 +554,8 @@
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
         "title": "Review and confirm transfer"
       },
-      "transfer": "Transfer"
+      "transfer": "Transfer",
+      "transfer-title": "Transfer {name} ({symbol})"
     }
   },
   "private": {
@@ -1326,6 +1308,14 @@
       },
       "table": {
         "asset-management": "Asset Management",
+        "page-title": {
+          "bonds": "Bonds",
+          "cryptocurrencies": "Cryptocurrencies",
+          "equities": "Equities",
+          "funds": "Funds",
+          "stablecoins": "Stablecoins",
+          "tokenizeddeposits": "Tokenized Deposits"
+        },
         "related": {
           "bonds": {
             "issue-new": {
@@ -1424,6 +1414,22 @@
               "title": "Usecases"
             }
           }
+        },
+        "topinfo-description": {
+          "bonds": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
+          "cryptocurrencies": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
+          "equities": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
+          "funds": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
+          "stablecoins": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
+          "tokenizeddeposits": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
+        },
+        "topinfo-title": {
+          "bonds": "A digital fixed-income security asset",
+          "cryptocurrencies": "A customizable and secure digital asset",
+          "equities": "Institutional-grade digital equity management",
+          "funds": "Digital asset for institutional fund management",
+          "stablecoins": "A secure and collateralized digital currency",
+          "tokenizeddeposits": "Secure and compliant digital deposit management"
         }
       }
     },
@@ -1523,12 +1529,93 @@
         "pincode-set": "Pincode set successfully",
         "setup-pincode": "Setup Pincode"
       }
+    },
+    "users": {
+      "banned_reason": "Banned for {reason}",
+      "columns": {
+        "email": "Email",
+        "kyc_status": "KYC Status",
+        "last_activity": "Last activity",
+        "name": "Name",
+        "role": "Role",
+        "status": "Status",
+        "wallet": "Wallet"
+      },
+      "detail": {
+        "charts": {
+          "transaction-history-last-month": {
+            "description": "Showing transactions over the last month",
+            "title": "Transactions volume / day"
+          },
+          "transaction-history-last-year": {
+            "description": "Showing transactions over the last year",
+            "title": "Transactions volume / month"
+          }
+        },
+        "edit_user": "Edit user",
+        "platform-management": "Platform management",
+        "tabs": {
+          "details": "Details",
+          "holdings": "Holdings",
+          "latest-events": "Latest events",
+          "permissions": "Permissions"
+        },
+        "values": {
+          "asset_supply": "Asset supply",
+          "created_at": "Created at",
+          "email": "Email",
+          "last_activity": "Last activity",
+          "last_login": "Last login",
+          "name": "Name",
+          "status": "Status",
+          "transactions": "Transactions",
+          "verified_at": "Verified at",
+          "wallet": "Wallet"
+        }
+      },
+      "holdings": {
+        "table": {
+          "balance-header": "Balance",
+          "holder-type-header": "Holder tye",
+          "last-activity-header": "Last activity",
+          "name-header": "Name",
+          "status-header": "Status",
+          "symbol-header": "Symbol",
+          "type-header": "Type"
+        },
+        "title": "Holdings"
+      },
+      "latest-events": {
+        "view-all": "View more events"
+      },
+      "platform-management": "Platform management",
+      "roles": {
+        "admin": "Admin",
+        "issuer": "Issuer",
+        "user": "User"
+      },
+      "status": {
+        "active": "Active",
+        "banned": "Banned",
+        "never": "Never",
+        "not_verified": "Not verified",
+        "verified": "Verified"
+      },
+      "title": "Users"
     }
   },
   "regular": "User",
   "supply-manager": "Supply Manager",
   "theme": {
+    "dark": "Dark",
+    "light": "Light",
     "switch-to-mode": "Switch to {mode} mode",
+    "system": "System",
     "toggle-label": "Toggle theme"
+  },
+  "transactions": {
+    "sending": "Sending",
+    "success": "Success",
+    "validation-errors": "Validation error"
   }
 }

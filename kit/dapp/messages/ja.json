@@ -285,7 +285,15 @@
         },
         "wallet-distribution": "ウォレット分配",
         "wallet-distribution-description": "保有者の数と保有している金額",
-        "wallet-distribution-no-data": "ウォレットデータは利用できません"
+        "wallet-distribution-no-data": "ウォレットデータは利用できません",
+        "asset-distribution": "資産分配",
+        "asset-distribution-description": "資産タイプによるポートフォリオ配分",
+        "bond": "債券",
+        "cryptocurrency": "暗号通貨",
+        "equity": "株式",
+        "fund": "ファンド",
+        "stablecoin": "ステーブルコイン",
+        "tokenizeddeposit": "トークン化された預金"
       }
     },
     "data-table": {
@@ -347,6 +355,10 @@
         "loading": "読み込み中...",
         "no-user-found": "ユーザーが見つかりません。",
         "search-placeholder": "ユーザーを検索..."
+      },
+      "pincode-dialog": {
+        "description": "取引にサインするには、確認と認証のためにピンコードを入力してください。",
+        "title": "確認するためにピンコードを入力してください"
       }
     },
     "logo": {
@@ -407,7 +419,8 @@
     "sending": "送信中",
     "success": "成功",
     "title": "何かがうまくいきませんでした！",
-    "try-again": "再試行"
+    "try-again": "再試行",
+    "validation-errors": "検証エラー"
   },
   "layout": {
     "header": {
@@ -538,7 +551,14 @@
         "swagger-description": "すべてのAPIリクエストには、認証のためにx-api-keyヘッダー内にAPIキーを含める必要があります。このヘッダーは、APIエンドポイントへの安全で認可されたアクセスを確保し、アプリケーションがサービスと安全に対話できるようにします。",
         "swagger-link-text": "APIドキュメントを開く",
         "swagger-title": "APIキーを作成、表示、管理して、アプリケーションをプラットフォームと安全に統合します。APIキーを使用すると、すべての利用可能な機能にプログラム的にアクセスでき、OpenAPI仕様を通じて明確に文書化されています。",
-        "title": "APIキー"
+        "title": "APIキー",
+        "expiry-options": {
+          "1 day": "1日",
+          "1 month": "1ヶ月",
+          "1 week": "1週間",
+          "1 year": "1年",
+          "No expiry": "有効期限なし"
+        }
       },
       "profile": {
         "portfolio-management": "ポートフォリオ管理",
@@ -555,7 +575,7 @@
         "title": "金額を入力"
       },
       "asset-types": "{type} {name} ({symbol})を受取人を選択し、金額を指定することで簡単に転送できます。",
-      "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
+      "description": "受取人を選択し、金額を指定することで、{name} ({symbol}) の金額を簡単に転送できます。",
       "recipients": {
         "description": "受取人を選択",
         "title": "ウォレットアドレス",
@@ -573,7 +593,8 @@
         "description": "転送を確認して承認する",
         "title": "転送"
       },
-      "transfer": "統計"
+      "transfer": "統計",
+      "transfer-title": "転送 {name} ({symbol})"
     }
   },
   "private": {
@@ -1424,6 +1445,30 @@
               "title": "ユースケース"
             }
           }
+        },
+        "page-title": {
+          "bonds": "債券",
+          "cryptocurrencies": "暗号通貨",
+          "equities": "株式",
+          "funds": "ファンド",
+          "stablecoins": "ステーブルコイン",
+          "tokenizeddeposits": "トークン化された預金"
+        },
+        "topinfo-description": {
+          "bonds": "デジタル債券は、実世界の担保に裏付けられた伝統的な固定収入証券を安全にブロックチェーン上で表現します。これらは、ブロックチェーンの透明性と予測可能なリターン、満期時の償還、そして自動化された利回り分配を組み合わせています。この債券資産は、安全な発行、正確な満期管理、包括的なコンプライアンス機能、そして金融機関向けに特化した投資家に優しい償還プロセスを保証します。",
+          "cryptocurrencies": "暗号通貨資産は、制御されたミンティング、堅牢なセキュリティ、完全な規制遵守を提供するカスタマイズ可能なデジタルツールであり、機関投資家に最適です。これらは、プログラム可能な取引、強化された透明性、そして使いやすさを向上させるための統合されたメタトランザクションを通じて、金融業務を効率化します。主な機能には、役割ベースのアクセス管理、安全な発行、および機関の支払いプロセスへの簡単な統合が含まれます。",
+          "equities": "株式資産は、伝統的な株式証券をデジタル化し、高度なブロックチェーン機能と堅牢なガバナンスおよびコンプライアンスツールを組み合わせています。機関投資家向けに設計されており、安全な株式発行、株主投票権、詳細なアクセス制御、および規制遵守メカニズムを提供します。この資産は、株式管理を簡素化し、透明性を高め、投資家の参加を確保します。",
+          "funds": "ファンド資産は、投資ファンドの持分をデジタル化し、自動化された管理手数料の徴収、投資家ガバナンス、および包括的な規制遵守を提供します。金融機関に最適で、管理プロセスを効率化し、透明な手数料管理を保証し、安全な投資家投票を可能にします。この契約は、強力なセキュリティ、カスタマイズ可能なファンド属性、および運用効率の向上を提供します。",
+          "stablecoins": "ステーブルコインは、実世界の資産または準備金に裏付けられた安定した価値を維持するように設計されたデジタル通貨です。これらは、暗号通貨に通常関連する価格変動を回避しながら、スピード、透明性、プログラム可能性などのデジタル資産の利点を提供します。このステーブルコイン契約は、発行されるすべてのトークンが完全に担保されていることを保証し、機関に安全で監査可能、信頼性の高いデジタルマネー管理を提供します。主な機能には、担保に裏付けられた発行、包括的な役割ベースの制御、堅牢な一時停止メカニズム、および規制遵守機能が含まれます。",
+          "tokenizeddeposits": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に強化されたセキュリティ、リアルタイムの透明性、および厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、および統合されたメタトランザクションが含まれ、機関の預金管理を簡素化します。"
+        },
+        "topinfo-title": {
+          "bonds": "デジタル固定収入証券資産",
+          "cryptocurrencies": "カスタマイズ可能で安全なデジタル資産",
+          "equities": "機関向けのデジタル株式管理",
+          "funds": "機関向けのデジタル資産ファンド管理",
+          "stablecoins": "安全で担保されたデジタル通貨",
+          "tokenizeddeposits": "安全でコンプライアンスに準拠したデジタル預金管理"
         }
       }
     },
@@ -1523,12 +1568,119 @@
         "pincode-set": "ピンコードが正常に設定されました",
         "setup-pincode": "ピンコードを設定"
       }
+    },
+    "users": {
+      "banned_reason": "{reason} のため禁止されています",
+      "columns": {
+        "email": "メール",
+        "kyc_status": "KYCステータス",
+        "last_activity": "最終活動",
+        "name": "名前",
+        "role": "役割",
+        "status": "ステータス",
+        "wallet": "ウォレット"
+      },
+      "detail": {
+        "charts": {
+          "transaction-history-last-month": {
+            "description": "過去1ヶ月の取引を表示",
+            "title": "取引量 / 日"
+          },
+          "transaction-history-last-year": {
+            "description": "過去1年の取引を表示",
+            "title": "取引量 / 月"
+          }
+        },
+        "edit_user": "ユーザーを編集",
+        "platform-management": "プラットフォーム管理",
+        "tabs": {
+          "details": "詳細",
+          "holdings": "保有",
+          "latest-events": "最新のイベント",
+          "permissions": "権限"
+        },
+        "values": {
+          "asset_supply": "資産供給",
+          "created_at": "作成日時",
+          "email": "メール",
+          "last_activity": "最終活動",
+          "last_login": "最終ログイン",
+          "name": "名前",
+          "status": "ステータス",
+          "transactions": "取引",
+          "verified_at": "確認日時",
+          "wallet": "ウォレット"
+        }
+      },
+      "holdings": {
+        "table": {
+          "balance-header": "残高",
+          "holder-type-header": "保有者タイプ",
+          "last-activity-header": "最終活動",
+          "name-header": "名前",
+          "status-header": "ステータス",
+          "symbol-header": "シンボル",
+          "type-header": "タイプ"
+        },
+        "title": "保有"
+      },
+      "latest-events": {
+        "view-all": "さらにイベントを表示"
+      },
+      "platform-management": "プラットフォーム管理",
+      "roles": {
+        "admin": "管理者",
+        "issuer": "発行者",
+        "user": "ユーザー"
+      },
+      "status": {
+        "active": "アクティブ",
+        "banned": "禁止",
+        "never": "決して",
+        "not_verified": "未確認",
+        "verified": "確認済み"
+      },
+      "title": "ユーザー"
     }
   },
   "regular": "ユーザー",
   "supply-manager": "供給マネージャー",
   "theme": {
     "switch-to-mode": "{mode}モードに切り替え",
-    "toggle-label": "テーマを切り替え"
+    "toggle-label": "テーマを切り替え",
+    "system": "システム",
+    "dark": "ダーク",
+    "light": "ライト"
+  },
+  "asset-info": {
+    "admin": "管理者",
+    "creator-owner": "クリエイター / オーナー",
+    "regular": "レギュラー",
+    "supply-manager": "供給マネージャー"
+  },
+  "asset-status": {
+    "active": "アクティブ",
+    "blocked": "ブロックされた",
+    "paused": "一時停止"
+  },
+  "asset-type": {
+    "bonds": "債券",
+    "bonds-plural": "債券",
+    "cryptocurrencies": "暗号通貨",
+    "cryptocurrencies-plural": "暗号通貨",
+    "equities": "株式",
+    "equities-plural": "株式",
+    "funds": "ファンド",
+    "funds-plural": "ファンド",
+    "stablecoins": "ステーブルコイン",
+    "stablecoins-plural": "ステーブルコイン",
+    "tokenizeddeposits": "トークン化された預金",
+    "tokenizeddeposits-plural": "トークン化された預金",
+    "unknown": "不明"
+  },
+  "transactions": {
+    "sending": "送信中",
+    "success": "成功",
+    "validation-errors": "検証エラー"
   }
 }

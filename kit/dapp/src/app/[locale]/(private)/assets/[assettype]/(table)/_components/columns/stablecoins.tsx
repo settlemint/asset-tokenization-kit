@@ -1,12 +1,12 @@
 'use client';
 
 import { ActivePill } from '@/components/blocks/active-pill/active-pill';
+import { ColumnAssetStatus } from '@/components/blocks/asset-info/column-asset-status';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PercentageProgressBar } from '@/components/blocks/percentage-progress/percentage-progress';
 import type { getStableCoinList } from '@/lib/queries/stablecoin/stablecoin-list';
-import { formatAssetStatus } from '@/lib/utils/format-asset-status';
 import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
@@ -52,7 +52,7 @@ export function stablecoinColumns() {
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, t), {
+    columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
       header: t('status-header'),
       cell: ({ row }) => {
         return <ActivePill paused={row.original.paused} />;

@@ -1,10 +1,15 @@
-import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
+'use client';
 
-export function formatHolderType<
-  T extends (
-    key: 'creator-owner' | 'admin' | 'supply-manager' | 'regular'
-  ) => unknown,
->(assetBalance: AssetBalance, t: T) {
+import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
+import { useTranslations } from 'next-intl';
+
+interface HolderTypeProps {
+  assetBalance: AssetBalance;
+}
+
+export function ColumnHolderType({ assetBalance }: HolderTypeProps) {
+  const t = useTranslations('asset-info');
+
   if (assetBalance.asset.creator.id === assetBalance.account.id) {
     return t('creator-owner');
   }
@@ -13,7 +18,7 @@ export function formatHolderType<
       (admin) => admin.id === assetBalance.account.id
     )
   ) {
-    return t('admin-user');
+    return t('admin');
   }
   if (
     assetBalance.asset.supplyManagers.some(

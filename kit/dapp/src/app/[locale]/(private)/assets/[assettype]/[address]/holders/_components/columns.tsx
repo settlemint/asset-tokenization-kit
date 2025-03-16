@@ -1,13 +1,13 @@
 'use client';
 
+import { ColumnAssetStatus } from '@/components/blocks/asset-info/column-asset-status';
+import { ColumnHolderType } from '@/components/blocks/asset-info/column-holder-type';
 import { AssetStatusPill } from '@/components/blocks/asset-status-pill/asset-status-pill';
 import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import type { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
 import { formatDate } from '@/lib/utils/date';
-import { formatAssetStatus } from '@/lib/utils/format-asset-status';
-import { formatHolderType } from '@/lib/utils/format-holder-type';
 import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
@@ -45,7 +45,7 @@ export function columns() {
         variant: 'numeric',
       },
     }),
-    columnHelper.accessor((row) => formatHolderType(row, t), {
+    columnHelper.accessor((row) => <ColumnHolderType assetBalance={row} />, {
       id: t('holder-type-header'),
       header: t('holder-type-header'),
     }),
@@ -58,7 +58,7 @@ export function columns() {
         variant: 'numeric',
       },
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, t), {
+    columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
       id: t('status-header'),
       header: t('status-header'),
       cell: ({ row }) => {

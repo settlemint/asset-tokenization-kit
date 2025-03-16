@@ -13,7 +13,7 @@ export default async function LatestEventsPage({
   params,
 }: LatestTransactionsPageProps) {
   const { id } = await params;
-  const t = await getTranslations('admin.users.latest-events');
+  const t = await getTranslations('private.users.latest-events');
   const user = await getUserDetail({ id });
 
   return (

@@ -285,7 +285,15 @@
         },
         "wallet-distribution": "Wallet-Verteilung",
         "wallet-distribution-description": "Anzahl der Inhaber vs. die Beträge, die sie halten",
-        "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar"
+        "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar",
+        "asset-distribution": "Vermögensverteilung",
+        "asset-distribution-description": "Portfolioallokation nach Vermögensart",
+        "bond": "Anleihe",
+        "cryptocurrency": "Kryptowährung",
+        "equity": "Eigenkapital",
+        "fund": "Fonds",
+        "stablecoin": "Stablecoin",
+        "tokenizeddeposit": "Tokenisierte Einzahlung"
       }
     },
     "data-table": {
@@ -347,6 +355,10 @@
         "loading": "Laden...",
         "no-user-found": "Kein Benutzer gefunden.",
         "search-placeholder": "Suchen Sie nach einem Benutzer..."
+      },
+      "pincode-dialog": {
+        "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
+        "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
       }
     },
     "logo": {
@@ -407,7 +419,8 @@
     "sending": "Senden",
     "success": "Erfolg",
     "title": "Etwas ist schiefgelaufen!",
-    "try-again": "Versuchen Sie es erneut"
+    "try-again": "Versuchen Sie es erneut",
+    "validation-errors": "Validierungsfehler"
   },
   "layout": {
     "header": {
@@ -538,7 +551,14 @@
         "swagger-description": "Alle API-Anfragen müssen Ihren API-Schlüssel im x-api-key-Header zur Authentifizierung enthalten. Dieser Header gewährleistet einen sicheren und autorisierten Zugriff auf unsere API-Endpunkte, sodass Ihre Anwendungen sicher mit unseren Diensten interagieren können.",
         "swagger-link-text": "API-Dokumentation öffnen",
         "swagger-title": "Erstellen, anzeigen und verwalten Sie API-Schlüssel, um Ihre Anwendungen sicher mit unserer Plattform zu integrieren. API-Schlüssel ermöglichen Ihnen den programmgesteuerten Zugriff auf alle verfügbaren Funktionen, die klar durch unsere OpenAPI-Spezifikation dokumentiert sind.",
-        "title": "API-Schlüssel"
+        "title": "API-Schlüssel",
+        "expiry-options": {
+          "1 day": "1 Tag",
+          "1 month": "1 Monat",
+          "1 week": "1 Woche",
+          "1 year": "1 Jahr",
+          "No expiry": "Keine Ablauffrist"
+        }
       },
       "profile": {
         "portfolio-management": "Portfolioverwaltung",
@@ -555,7 +575,7 @@
         "title": "Betrag eingeben"
       },
       "asset-types": "{type} {name} ({symbol})",
-      "description": "Übertragen Sie einfach einen Betrag von {type} {name} ({symbol}), indem Sie einen Empfänger auswählen und den Betrag angeben.",
+      "description": "Überweisen Sie einfach einen Betrag von {name} ({symbol}), indem Sie einen Empfänger auswählen und den Betrag angeben.",
       "recipients": {
         "description": "Geben Sie eine Wallet-Adresse ein, um Tokens direkt zu senden.",
         "title": "Empfänger auswählen",
@@ -573,7 +593,8 @@
         "description": "Überprüfen Sie die Einzelheiten Ihrer Übertragung, bevor Sie fortfahren. Stellen Sie sicher, dass der Empfänger und der Betrag korrekt sind.",
         "title": "Übertragung überprüfen und bestätigen"
       },
-      "transfer": "Übertragung"
+      "transfer": "Übertragung",
+      "transfer-title": "Überweisung von {name} ({symbol})"
     }
   },
   "private": {
@@ -1424,6 +1445,30 @@
               "title": "Anwendungsfälle"
             }
           }
+        },
+        "page-title": {
+          "bonds": "Anleihen",
+          "cryptocurrencies": "Kryptowährungen",
+          "equities": "Eigenkapitale",
+          "funds": "Fonds",
+          "stablecoins": "Stablecoins",
+          "tokenizeddeposits": "Tokenisierte Einzahlungen"
+        },
+        "topinfo-description": {
+          "bonds": "Digitale Anleihen repräsentieren traditionelle festverzinsliche Wertpapiere sicher auf der Blockchain, unterstützt durch reale Sicherheiten. Sie kombinieren die Transparenz der Blockchain mit vorhersehbaren Renditen, Rückzahlung bei Fälligkeit und automatisierter Ertragsverteilung. Dieses Anleihevermögen gewährleistet eine sichere Emission, präzises Fälligkeitsmanagement, umfassende Compliance-Fähigkeiten und investorenfreundliche Rückzahlungsprozesse, die speziell für Finanzinstitute entwickelt wurden.",
+          "cryptocurrencies": "Kryptowährungsvermögen sind anpassbare digitale Instrumente, die kontrollierte Prägung, robuste Sicherheit und vollständige regulatorische Compliance bieten, ideal für den institutionellen Einsatz. Sie optimieren Finanzoperationen durch programmierbare Transaktionen, verbesserte Transparenz und integrierte Meta-Transaktionen für eine verbesserte Benutzerfreundlichkeit. Zu den Hauptmerkmalen gehören rollenbasierte Zugriffsverwaltung, sichere Emission und einfache Integration in institutionelle Zahlungsprozesse.",
+          "equities": "Eigenkapitalvermögen digitalisieren traditionelle Eigenkapitalwertpapiere und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Sie sind für institutionelle Investoren konzipiert und bieten eine sichere Eigenkapitalemission, Stimmrechte der Aktionäre, detaillierte Zugriffssteuerungen und Mechanismen zur regulatorischen Compliance. Dieses Vermögen vereinfacht das Eigenkapitalmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
+          "funds": "Fondsvermögen digitalisieren Anteile an Investmentfonds und bieten automatisierte Verwaltung von Verwaltungsgebühren, Investoren-Governance und umfassende regulatorische Compliance. Ideal für Finanzinstitute, optimieren sie administrative Prozesse, gewährleisten eine transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Investoren. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
+          "stablecoins": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu halten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisvolatilität, die typischerweise mit Kryptowährungen verbunden ist. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist, und bietet Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Währungen. Zu den Hauptmerkmalen gehören besicherte Emission, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und regulatorische Compliance-Fähigkeiten.",
+          "tokenizeddeposits": "Tokenisierte Einzahlungen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robuste rollenbasierte Verwaltung und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen."
+        },
+        "topinfo-title": {
+          "bonds": "Ein digitales festverzinsliches Wertpapiervermögen",
+          "cryptocurrencies": "Ein anpassbares und sicheres digitales Vermögen",
+          "equities": "Institutionen-Grad digitales Eigenkapitalmanagement",
+          "funds": "Digitales Vermögen für institutionelles Fondsmanagement",
+          "stablecoins": "Eine sichere und besicherte digitale Währung",
+          "tokenizeddeposits": "Sichere und konforme digitale Einlagenverwaltung"
         }
       }
     },
@@ -1523,12 +1568,119 @@
         "pincode-set": "PIN-Code erfolgreich festgelegt",
         "setup-pincode": "PIN-Code einrichten"
       }
+    },
+    "users": {
+      "banned_reason": "Für {reason} gesperrt",
+      "columns": {
+        "email": "E-Mail",
+        "kyc_status": "KYC-Status",
+        "last_activity": "Letzte Aktivität",
+        "name": "Name",
+        "role": "Rolle",
+        "status": "Status",
+        "wallet": "Wallet"
+      },
+      "detail": {
+        "charts": {
+          "transaction-history-last-month": {
+            "description": "Transaktionen der letzten Monat anzeigen",
+            "title": "Transaktionsvolumen / Tag"
+          },
+          "transaction-history-last-year": {
+            "description": "Transaktionen der letzten Jahr anzeigen",
+            "title": "Transaktionsvolumen / Monat"
+          }
+        },
+        "edit_user": "Benutzer bearbeiten",
+        "platform-management": "Plattformverwaltung",
+        "tabs": {
+          "details": "Details",
+          "holdings": "Bestände",
+          "latest-events": "Neueste Ereignisse",
+          "permissions": "Berechtigungen"
+        },
+        "values": {
+          "asset_supply": "Vermögensangebot",
+          "created_at": "Erstellt am",
+          "email": "E-Mail",
+          "last_activity": "Letzte Aktivität",
+          "last_login": "Letzter Login",
+          "name": "Name",
+          "status": "Status",
+          "transactions": "Transaktionen",
+          "verified_at": "Verifiziert am",
+          "wallet": "Wallet"
+        }
+      },
+      "holdings": {
+        "table": {
+          "balance-header": "Guthaben",
+          "holder-type-header": "Inhaber-Typ",
+          "last-activity-header": "Letzte Aktivität",
+          "name-header": "Name",
+          "status-header": "Status",
+          "symbol-header": "Symbol",
+          "type-header": "Typ"
+        },
+        "title": "Bestände"
+      },
+      "latest-events": {
+        "view-all": "Weitere Ereignisse anzeigen"
+      },
+      "platform-management": "Plattformverwaltung",
+      "roles": {
+        "admin": "Admin",
+        "issuer": "Emittent",
+        "user": "Benutzer"
+      },
+      "status": {
+        "active": "Aktiv",
+        "banned": "Gesperrt",
+        "never": "Nie",
+        "not_verified": "Nicht verifiziert",
+        "verified": "Verifiziert"
+      },
+      "title": "Benutzer"
     }
   },
   "regular": "Benutzer",
   "supply-manager": "Lieferantenmanager",
   "theme": {
     "switch-to-mode": "Wechseln Sie in den {mode} Modus",
-    "toggle-label": "Thema umschalten"
+    "toggle-label": "Thema umschalten",
+    "system": "System",
+    "dark": "Dunkel",
+    "light": "Licht"
+  },
+  "asset-info": {
+    "admin": "Admin",
+    "creator-owner": "Ersteller / Eigentümer",
+    "regular": "Regelmäßig",
+    "supply-manager": "Liefermanager"
+  },
+  "asset-status": {
+    "active": "Aktiv",
+    "blocked": "Blockiert",
+    "paused": "Pausiert"
+  },
+  "asset-type": {
+    "bonds": "Anleihe",
+    "bonds-plural": "Anleihen",
+    "cryptocurrencies": "Kryptowährung",
+    "cryptocurrencies-plural": "Kryptowährungen",
+    "equities": "Eigenkapital",
+    "equities-plural": "Eigenkapitale",
+    "funds": "Fonds",
+    "funds-plural": "Fonds",
+    "stablecoins": "Stablecoin",
+    "stablecoins-plural": "Stablecoins",
+    "tokenizeddeposits": "Tokenisierte Einzahlung",
+    "tokenizeddeposits-plural": "Tokenisierte Einzahlungen",
+    "unknown": "Unbekannt"
+  },
+  "transactions": {
+    "sending": "Senden",
+    "success": "Erfolg",
+    "validation-errors": "Validierungsfehler"
   }
 }

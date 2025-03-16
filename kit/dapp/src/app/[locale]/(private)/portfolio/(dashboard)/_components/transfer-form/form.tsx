@@ -37,9 +37,8 @@ export function TransferForm({
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      title={`${t('transfer')} ${t(assetType)} ${name} (${symbol})`}
+      title={t('transfer-title', { name, symbol })}
       description={t('description', {
-        type: t(assetType),
         name,
         symbol,
       })}
