@@ -37,7 +37,6 @@ export function EventDetailSheet({
   assetType,
 }: NormalizedEventsListItem) {
   const t = useTranslations('components.asset-events-table.detail-sheet');
-  const tAssetType = useTranslations('asset-type');
 
   return (
     <Sheet>
@@ -66,7 +65,7 @@ export function EventDetailSheet({
                 <dt className="text-muted-foreground text-sm">
                   {t('asset-type')}:
                 </dt>
-                <dd className="text-sm">{tAssetType(assetType)}</dd>
+                <dd className="text-sm">{t(assetType)}</dd>
                 <dt className="text-muted-foreground text-sm">{t('asset')}:</dt>
                 <dd className="text-sm">
                   <EvmAddress address={asset as Address} />

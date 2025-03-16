@@ -1,4 +1,5 @@
 {
+  "active": "Active",
   "admin": {
     "activity": {
       "asset-management": "Asset Management",
@@ -38,7 +39,6 @@
         },
         "assets-supply": {
           "description": "Assets supply",
-          "label": "Assets",
           "title": "Assets supply"
         },
         "transaction-history": {
@@ -55,7 +55,6 @@
         "asset-management": "Asset management",
         "description": "Welcome to the dashboard",
         "latest-events-heading": "Latest events",
-        "my-portfolio": "My portfolio",
         "stats-heading": "Stats",
         "title": "Dashboard"
       },
@@ -141,18 +140,6 @@
           }
         },
         "edit_user": "Edit user",
-        "fields": {
-          "asset_supply": "Asset supply",
-          "created_at": "Created at",
-          "email": "Email",
-          "last_activity": "Last activity",
-          "last_login": "Last login",
-          "name": "Name",
-          "status": "Status",
-          "transactions": "Transactions",
-          "verified_at": "Verified at",
-          "wallet": "Wallet"
-        },
         "platform-management": "Platform management",
         "tabs": {
           "details": "Details",
@@ -167,8 +154,6 @@
           "last_activity": "Last activity",
           "last_login": "Last login",
           "name": "Name",
-          "never": "Never",
-          "not_verified": "Not Verified",
           "status": "Status",
           "transactions": "Transactions",
           "verified_at": "Verified at",
@@ -177,46 +162,20 @@
       },
       "holdings": {
         "table": {
-          "actions-header": "Action",
-          "active": "Active",
-          "admin": "Admin",
           "balance-header": "Balance",
-          "blocked": "Blocked",
-          "bond": "Bond",
-          "creator-owner": "Creator / Owner",
-          "cryptocurrency": "Cryptocurrency",
-          "equity": "Equity",
-          "fund": "Fund",
-          "holder-type-header": "Type",
+          "holder-type-header": "Holder tye",
           "last-activity-header": "Last activity",
           "name-header": "Name",
-          "paused": "Paused",
-          "regular": "Regular Holder",
-          "stablecoin": "Stablecoin",
           "status-header": "Status",
-          "supply-manager": "Supply Manager",
           "symbol-header": "Symbol",
-          "tokenizeddeposit": "Tokenized Deposit",
-          "type-header": "Asset type"
+          "type-header": "Type"
         },
         "title": "Holdings"
       },
-      "kyc_status": {
-        "notVerified": "Not Verified",
-        "verified": "Verified"
-      },
       "latest-events": {
-        "title": "Latest events",
         "view-all": "View more events"
       },
-      "page-description": "Manage users and their roles",
-      "page-title": "Users",
       "platform-management": "Platform management",
-      "roles": {
-        "admin": "Admin",
-        "issuer": "Issuer",
-        "user": "User"
-      },
       "status": {
         "active": "Active",
         "banned": "Banned"
@@ -224,15 +183,8 @@
       "title": "Users"
     }
   },
-  "asset-management": "Asset management",
-  "asset-type": {
-    "bond": "Bond",
-    "cryptocurrency": "Cryptocurrency",
-    "equity": "Equity",
-    "fund": "Fund",
-    "stablecoin": "Stablecoin",
-    "tokenizeddeposit": "Tokenized Deposit"
-  },
+  "admin-user": "Admin",
+  "blocked": "Blocked",
   "components": {
     "active-pill": {
       "active": "Active",
@@ -294,16 +246,6 @@
     },
     "charts": {
       "assets": {
-        "asset-distribution": "Asset Distribution",
-        "asset-distribution-description": "Portfolio allocation by asset type",
-        "asset-distribution-no-data": "No asset data available",
-        "asset-type-pluralizer": {
-          "bond": "Bonds",
-          "cryptocurrency": "Cryptocurrencies",
-          "equity": "Equities",
-          "fund": "Funds",
-          "stablecoin": "Stablecoins"
-        },
         "collateral-ratio": {
           "description": "Amount of collateral free vs used",
           "label": "Collateral Ratio",
@@ -389,14 +331,7 @@
       },
       "input": {
         "letters-only": "Please enter letters only",
-        "password-min-length": "Password must be at least 6 characters long",
-        "pin-code-length": "PIN code must be exactly 6 digits",
-        "pin-code-match": "PIN codes don't match",
         "valid-email": "Please enter a valid email address"
-      },
-      "pincode-dialog": {
-        "description": "To sign the transaction, please enter your pincode for verification and authorization.",
-        "title": "Enter your pincode to confirm"
       },
       "progress": {
         "completed-step": "Completed step",
@@ -406,12 +341,6 @@
       },
       "select": {
         "default-placeholder": "Select an option"
-      },
-      "summary": {
-        "security-confirmation": {
-          "description": "Enter your pin code to confirm and sign the transaction.",
-          "title": "Security Confirmation"
-        }
       },
       "users": {
         "default-placeholder": "Select an option",
@@ -471,46 +400,23 @@
       }
     }
   },
+  "creator-owner": "Creator / Owner",
   "error": {
-    "bond": {
-      "duplicate": "A Bond with these details already exists. Please change at least one of the details."
-    },
-    "cryptocurrency": {
-      "duplicate": "A Cryptocurrency with these details already exists. Please change at least one of the details."
-    },
-    "equity": {
-      "duplicate": "An Equity with these details already exists. Please change at least one of the details."
-    },
     "error-id": "Error ID",
-    "fund": {
-      "duplicate": "A Fund with these details already exists. Please change at least one of the details."
-    },
     "go-home": "Go home",
-    "stablecoin": {
-      "duplicate": "A Stablecoin with these details already exists. Please change at least one of the details."
-    },
+    "sending": "Sending",
+    "success": "Success",
     "title": "Something went wrong!",
-    "try-again": "Try again",
-    "unknown-error": "Unknown error",
-    "validation-errors": "Validation errors"
-  },
-  "holder-type": {
-    "admin": "Admin",
-    "creator-owner": "Creator / Owner",
-    "regular": "Regular Holder",
-    "supply-manager": "Supply Manager"
+    "try-again": "Try again"
   },
   "layout": {
     "header": {
       "app-description": "Asset Tokenization",
       "app-name": "SettleMint",
-      "home": "Home",
-      "issuer-portal": "Issuer portal"
+      "home": "Home"
     },
     "navigation": {
-      "admin": "Issuer portal",
-      "home": "Home",
-      "portfolio": "My portfolio"
+      "admin": "Issuer portal"
     },
     "user-dropdown": {
       "documentation": "Documentation",
@@ -518,6 +424,7 @@
       "pending-transactions": "Pending Transactions"
     }
   },
+  "paused": "Paused",
   "portfolio": {
     "activity": {
       "page-description": "Your activity on chain",
@@ -527,15 +434,6 @@
         "all-events": "All events",
         "recent-transactions": "Recent transactions"
       }
-    },
-    "asset-types": {
-      "bond": "Bond",
-      "cryptocurrency": "Cryptocurrency",
-      "equity": "Equity",
-      "fund": "Fund",
-      "stablecoin": "Stablecoin",
-      "tokenizeddeposit": "Tokenized Deposit",
-      "unknown": "Unknown"
     },
     "dashboard": {
       "latest-events": "Latest events",
@@ -572,22 +470,8 @@
           "trigger-label": "Redeem"
         },
         "transfer-form": {
-          "amount": {
-            "amount-label": "Amount",
-            "balance-description": "Available balance:",
-            "description": "Enter the amount of tokens you want to transfer",
-            "title": "Amount"
-          },
           "button-label": "Transfer",
           "description": "Transfer your bond tokens to another address",
-          "recipients": {
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "description": "Choose who will receive the tokens",
-            "manual-entry-link": "Enter address manually...",
-            "search-user-link": "Search for a user instead...",
-            "title": "Select Recipient"
-          },
           "summary": {
             "asset-label": "Asset",
             "description": "Verify the details of your transfer before proceeding",
@@ -609,8 +493,6 @@
             "description": "Enter the amount of tokens you want to transfer",
             "title": "Amount"
           },
-          "button-label": "Transfer",
-          "description": "Transfer your cryptocurrency tokens to another address",
           "recipients": {
             "address-label": "Recipient Address",
             "address-placeholder": "Search for a user",
@@ -618,130 +500,16 @@
             "manual-entry-link": "Enter address manually...",
             "search-user-link": "Search for a user instead...",
             "title": "Select Recipient"
-          },
-          "summary": {
-            "asset-label": "Asset",
-            "description": "Verify the details of your transfer before proceeding",
-            "recipient-label": "Recipient",
-            "title": "Review and confirm transfer",
-            "transfer-description": "Transfer operation details",
-            "transfer-title": "Transfer",
-            "value-label": "Amount"
-          },
-          "title": "Transfer Cryptocurrency",
-          "trigger-label": "Transfer"
-        }
-      },
-      "description": "View and manage your digital assets",
-      "equity": {
-        "transfer-form": {
-          "amount": {
-            "balance-available": "Available balance: {balance}",
-            "description": "Specify the amount you want to transfer",
-            "title": "Enter Amount",
-            "value-label": "Amount"
-          },
-          "button-label": "Transfer",
-          "description": "Transfer your equity tokens to another address",
-          "recipients": {
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "description": "Choose who will receive the tokens",
-            "manual-entry-link": "Enter address manually...",
-            "search-user-link": "Search for a user instead...",
-            "title": "Select Recipient"
-          },
-          "summary": {
-            "asset-label": "Asset",
-            "description": "Verify the details of your transfer before proceeding",
-            "recipient-label": "Recipient",
-            "title": "Review and confirm transfer",
-            "transfer-description": "Transfer operation details",
-            "transfer-title": "Transfer",
-            "value-label": "Amount"
-          },
-          "title": "Transfer Equity",
-          "trigger-label": "Transfer"
-        }
-      },
-      "fund": {
-        "transfer-form": {
-          "amount": {
-            "balance-available": "Available balance: {balance}",
-            "description": "Specify the amount you want to transfer",
-            "title": "Enter Amount",
-            "value-label": "Amount"
-          },
-          "button-label": "Transfer",
-          "description": "Transfer your fund tokens to another address",
-          "recipients": {
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "description": "Choose who will receive the tokens",
-            "manual-entry-link": "Enter address manually...",
-            "search-user-link": "Search for a user instead...",
-            "title": "Select Recipient"
-          },
-          "summary": {
-            "asset-label": "Asset",
-            "description": "Verify the details of your transfer before proceeding",
-            "recipient-label": "Recipient",
-            "title": "Review and confirm transfer",
-            "transfer-description": "Transfer operation details",
-            "transfer-title": "Transfer",
-            "value-label": "Amount"
-          },
-          "title": "Transfer Fund",
-          "trigger-label": "Transfer"
+          }
         }
       },
       "portfolio-management": "Portfolio management",
-      "stablecoin": {
-        "transfer-form": {
-          "amount": {
-            "balance-available": "Available balance: {balance}",
-            "description": "Specify the amount you want to transfer",
-            "title": "Enter Amount",
-            "value-label": "Amount"
-          },
-          "button-label": "Transfer",
-          "description": "Transfer your stablecoin tokens to another address",
-          "recipients": {
-            "address-label": "Recipient Address",
-            "address-placeholder": "Search for a user",
-            "description": "Choose who will receive the tokens",
-            "manual-entry-link": "Enter address manually...",
-            "search-user-link": "Search for a user instead...",
-            "title": "Select Recipient"
-          },
-          "summary": {
-            "asset-label": "Asset",
-            "description": "Verify the details of your transfer before proceeding",
-            "recipient-label": "Recipient",
-            "title": "Review and confirm transfer",
-            "transfer-description": "Transfer operation details",
-            "transfer-title": "Transfer",
-            "value-label": "Amount"
-          },
-          "title": "Transfer Stablecoin",
-          "trigger-label": "Transfer"
-        }
-      },
       "table": {
         "actions-header": "Action",
-        "active": "Active",
         "balance-header": "Balance",
-        "blocked": "Blocked",
-        "bond": "Bond",
-        "cryptocurrency": "Cryptocurrency",
-        "equity": "Equity",
-        "fund": "Fund",
         "name-header": "Name",
-        "paused": "Paused",
-        "stablecoin": "Stablecoin",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "tokenizeddeposit": "Tokenized Deposit",
         "type-header": "Type"
       },
       "title": "My Assets"
@@ -761,13 +529,6 @@
         "creating-api-key": "Creating API key...",
         "expires-at": "Expires at",
         "expiry-label": "Expiry",
-        "expiry-options": {
-          "1 day": "1 day",
-          "1 month": "1 month",
-          "1 week": "1 week",
-          "1 year": "1 year",
-          "No expiry": "No expiry"
-        },
         "fetch-error": "Failed to fetch API keys",
         "last-used": "Last used",
         "name-label": "Name",
@@ -804,8 +565,7 @@
         "asset-description": "Select an asset from your portfolio",
         "asset-label": "Asset",
         "description": "Choose the asset you want to transfer",
-        "title": "Select Asset",
-        "trigger-label": "Transfer Assets"
+        "title": "Select Asset"
       },
       "summary": {
         "address": "Address",
@@ -813,8 +573,7 @@
         "description": "Verify the details of your transfer before proceeding. Ensure the recipient and amount are correct.",
         "title": "Review and confirm transfer"
       },
-      "transfer": "Transfer",
-      "transferring": "Transferring..."
+      "transfer": "Transfer"
     }
   },
   "private": {
@@ -854,7 +613,6 @@
             "configuration-title": "Bond configuration",
             "decimals-label": "Decimals",
             "description": "Review the bond details before creating",
-            "error-duplicate": "A Bond with the same details already exists. Please try again with at least one different parameter.",
             "face-value-label": "Face value",
             "isin-label": "ISIN",
             "maturity-date-label": "Maturity date",
@@ -870,8 +628,6 @@
           "basics": {
             "decimals-label": "Decimals",
             "description": "Define essential details such as name, symbol, and visibility.",
-            "isin-label": "ISIN",
-            "isin-placeholder": "CRYPTO123456",
             "name-label": "Name",
             "name-placeholder": "Bitcoin",
             "symbol-label": "Symbol",
@@ -893,15 +649,10 @@
             "configuration-title": "Configuration",
             "decimals-label": "Decimals",
             "description": "Review and confirm the details of your new cryptocurrency before creation.",
-            "error-duplicate": "A Cryptocurrency with the same details already exists. Please try again with at least one different parameter.",
             "initial-supply-label": "Initial Supply",
-            "isin-label": "ISIN",
             "name-label": "Name",
-            "no": "No",
-            "private-label": "Private",
             "symbol-label": "Symbol",
-            "title": "Review and confirm",
-            "yes": "Yes"
+            "title": "Review and confirm"
           },
           "title": "Create Cryptocurrency",
           "trigger-label": "Issue a new cryptocurrency"
@@ -935,7 +686,6 @@
             "description": "Review and confirm the details of your new equity before creation.",
             "equity-category-label": "Equity Category",
             "equity-class-label": "Equity Class",
-            "error-duplicate": "An Equity with the same details already exists. Please try again with at least one different parameter.",
             "isin-label": "ISIN",
             "name-label": "Name",
             "symbol-label": "Symbol",
@@ -975,7 +725,6 @@
             "configuration-title": "Fund Configuration",
             "decimals-label": "Decimals",
             "description": "Review and confirm the details of your new fund before creation.",
-            "error-duplicate": "A Fund with the same details already exists. Please try again with at least one different parameter.",
             "fund-category-label": "Fund Category",
             "fund-class-label": "Fund Class",
             "isin-label": "ISIN",
@@ -1014,7 +763,6 @@
             "configuration-title": "Configuration",
             "decimals-label": "Decimals",
             "description": "Review and confirm the details of your new stablecoin before creation.",
-            "error-duplicate": "A Stablecoin with the same details already exists. Please try again with at least one different parameter.",
             "isin-label": "ISIN",
             "name-label": "Name",
             "seconds": "seconds",
@@ -1037,22 +785,14 @@
             "title": "Basic Information"
           },
           "button-label": "Issue a new tokenized deposit",
-          "configuration": {
-            "description": "Specify advanced settings.",
-            "title": "Configuration"
-          },
           "description": "Define and launch a new tokenized deposit asset.",
           "summary": {
             "asset-basics-description": "Basic asset information and settings.",
             "asset-basics-title": "Asset Basics",
-            "configuration-description": "Asset supply and additional settings.",
-            "configuration-title": "Configuration",
             "decimals-label": "Decimals",
             "description": "Review and confirm the details of your new tokenized deposit before creation.",
-            "error-duplicate": "A Tokenized Deposit with the same details already exists. Please try again with at least one different parameter.",
             "isin-label": "ISIN",
             "name-label": "Name",
-            "seconds": "seconds",
             "symbol-label": "Symbol",
             "title": "Review and confirm the details of your new tokenized deposit before creation."
           },
@@ -1200,10 +940,6 @@
               "amount-label": "Amount",
               "asset-label": "Underlying asset",
               "description": "Verify the details of your top-up before proceeding.",
-              "pincode": {
-                "description": "Enter your PIN code to confirm the transaction",
-                "label": "PIN Code"
-              },
               "title": "Review and confirm top-up"
             },
             "title": "Top up underlying asset",
@@ -1251,10 +987,6 @@
               "amount-label": "Amount",
               "asset-label": "Underlying asset",
               "description": "Verify the details of your withdrawal before proceeding.",
-              "pincode": {
-                "description": "Enter your PIN code to confirm the transaction",
-                "label": "PIN Code"
-              },
               "recipient-label": "Recipient",
               "title": "Review and confirm withdrawal"
             },
@@ -1264,10 +996,6 @@
         },
         "holders": {
           "actions-header": "Actions",
-          "active": "Active",
-          "admin": "Admin",
-          "blocked": "Blocked",
-          "creator-owner": "Creator / Owner",
           "fields": {
             "balance-header": "Balance",
             "wallet-header": "Wallet"
@@ -1319,15 +1047,11 @@
           "frozen-header": "Frozen",
           "holder-type-header": "Type",
           "last-activity-header": "Last activity",
-          "paused": "Paused",
-          "regular": "Regular Holder",
-          "status-header": "Status",
-          "supply-manager": "Supply Manager"
+          "status-header": "Status"
         },
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
         "permissions": {
-          "actions-header": "Actions",
           "edit-form": {
             "button-label": "Edit Permissions",
             "description": "Update the permissions and access levels assigned for {name}.",
@@ -1346,11 +1070,6 @@
             },
             "trigger-label": "Edit Roles"
           },
-          "last-activity-header": "Last Activity",
-          "page-description": "Permission management for {name} stablecoin",
-          "page-title": "{name} Permissions",
-          "permissions-page-description": "Manage user roles and access rights for {name}.",
-          "permissions-page-title": "{name} Permissions",
           "revoke-all-form": {
             "button-label": "Revoke Access",
             "description": "Completely revoke this user's access and permissions.",
@@ -1365,9 +1084,7 @@
             "title": "Remove All User Access",
             "trigger-label": "Revoke All"
           },
-          "roles-header": "Roles",
-          "table-title": "Permissions",
-          "wallet-header": "Wallet"
+          "table-title": "Permissions"
         },
         "related": {
           "bonds": {
@@ -1446,11 +1163,6 @@
         "address-header": "Address",
         "assets-under-management-header": "AuM",
         "balance-header": "Balance",
-        "basics-description": "Enter the basic details of your asset",
-        "basics-title": "Basics",
-        "blocked": "Blocked",
-        "bond-name-placeholder": "e.g. Company XYZ Bond 2023",
-        "bond-symbol-placeholder": "e.g. XYZ23",
         "category-header": "Category",
         "class-header": "Class",
         "collateral-proof-expiration": "Collateral proof expiration",
@@ -1463,7 +1175,6 @@
         "contract-address": "Address",
         "creator": "Creator",
         "decimals": "Decimals",
-        "decimals-label": "Decimals",
         "deployed-on": "Deployed on",
         "edit-roles-form": {
           "trigger-label": "Edit permissions"
@@ -1544,10 +1255,6 @@
             "merger-arbitrage": "Merger Arbitrage",
             "multi-strategy": "Multi-Strategy",
             "private-equity": "Private Equity (PE)",
-            "quantitative-systematic": "Quantitative/Systematic",
-            "relative-value": "Relative Value",
-            "statistical-arbitrage": "Statistical Arbitrage",
-            "structured-credit": "Structured Credit",
             "venture-capital": "Venture Capital (VC)"
           },
           "classes": {
@@ -1578,8 +1285,6 @@
           }
         },
         "isin": "ISIN",
-        "isin-label": "ISIN",
-        "isin-placeholder": "BE1234567890",
         "issuing": "Issuing",
         "last-activity-header": "Last activity",
         "management-fee-header": "Management fee",
@@ -1588,11 +1293,9 @@
         "maturity-status": "Maturity status",
         "name": "Name",
         "name-header": "Name",
-        "name-label": "Name",
         "not-available": "N/A",
         "ownership-concentration": "Ownership concentration",
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
-        "paused": "Paused",
         "proven-collateral": "Proven collateral",
         "proven-collateral-info": "The amount of collateral that has been proven to be held by the token",
         "redeemed": "Redeemed",
@@ -1607,7 +1310,6 @@
         "status-header": "Status",
         "symbol": "Symbol",
         "symbol-header": "Symbol",
-        "symbol-label": "Symbol",
         "total-burned": "Total burned",
         "total-burned-info": "Amount of tokens permanently removed from circulation",
         "total-holders": "# of holders",
@@ -1624,14 +1326,6 @@
       },
       "table": {
         "asset-management": "Asset Management",
-        "page-title": {
-          "bonds": "Bonds",
-          "cryptocurrencies": "Cryptocurrencies",
-          "equities": "Equities",
-          "funds": "Funds",
-          "stablecoins": "Stablecoins",
-          "tokenizeddeposits": "Tokenized Deposits"
-        },
         "related": {
           "bonds": {
             "issue-new": {
@@ -1730,22 +1424,6 @@
               "title": "Usecases"
             }
           }
-        },
-        "topinfo-description": {
-          "bonds": "Digital bonds represent traditional fixed-income securities securely on blockchain, backed by real-world collateral. They combine blockchain transparency with predictable returns, redemption at maturity, and automated yield distribution. This Bond asset ensures secure issuance, precise maturity management, comprehensive compliance capabilities, and investor-friendly redemption processes tailored specifically for financial institutions.",
-          "cryptocurrencies": "CryptoCurrency assets are customizable digital instruments offering controlled minting, robust security, and full regulatory compliance, ideal for institutional use. They streamline financial operations through programmable transactions, enhanced transparency, and integrated meta-transactions for improved usability. Key features include role-based access management, secure issuance, and easy integration into institutional payment processes.",
-          "equities": "Equity assets digitize traditional equity securities, combining advanced blockchain capabilities with robust governance and compliance tools. Designed for institutional investors, they offer secure equity issuance, shareholder voting rights, detailed access controls, and regulatory compliance mechanisms. This asset simplifies equity management, enhances transparency, and ensures secure investor participation.",
-          "funds": "Fund assets digitize investment fund shares, offering automated management fee collection, investor governance, and comprehensive regulatory compliance. Ideal for financial institutions, they streamline administrative processes, ensure transparent fee management, and enable secure investor voting. The contract provides strong security, customizable fund attributes, and enhanced operational efficiency.",
-          "stablecoins": "Stablecoins are digital currencies designed to maintain a stable value by being backed by real-world assets or reserves. They offer the advantages of digital assets — such as speed, transparency, and programmability — while avoiding price volatility typically associated with cryptocurrencies. This StableCoin contract ensures every token issued is fully collateralized, providing institutions with secure, auditable, and reliable digital money management. Key features include collateral-backed issuance, comprehensive role-based controls, robust pause mechanisms, and regulatory compliance capabilities.",
-          "tokenizeddeposits": "Tokenized Deposits digitally represent traditional banking deposits, providing financial institutions with enhanced security, real-time transparency, and rigorous compliance capabilities. Key features include customizable allowlists, custodial oversight, robust role-based management, and integrated meta-transactions, simplifying institutional deposit administration."
-        },
-        "topinfo-title": {
-          "bonds": "A digital fixed-income security asset",
-          "cryptocurrencies": "A customizable and secure digital asset",
-          "equities": "Institutional-grade digital equity management",
-          "funds": "Digital asset for institutional fund management",
-          "stablecoins": "A secure and collateralized digital currency",
-          "tokenizeddeposits": "Secure and compliant digital deposit management"
         }
       }
     },
@@ -1834,57 +1512,6 @@
       "sign-up-action": "Create an account",
       "sign-up-description": "Enter your information to create an account",
       "sign-up-email": "Check your email for the verification link.",
-      "signin": {
-        "description": "Enter your email below to login to your account",
-        "email": {
-          "label": "Email",
-          "placeholder": "m@example.com"
-        },
-        "no-account": "Don't have an account?",
-        "password": {
-          "label": "Password"
-        },
-        "remember-me": "Remember me",
-        "sign-in-with-passkey": "Sign in with passkey",
-        "sign-up": "Sign up",
-        "submit": "Sign in",
-        "submitting": "Signing in...",
-        "title": "Login to your account"
-      },
-      "signup": {
-        "description": "Enter the information below to create your account and managed blockchain wallet",
-        "email": {
-          "label": "Email",
-          "placeholder": "wolf@wallstreet.com"
-        },
-        "error": {
-          "generic": "An error occurred"
-        },
-        "have-account": "Already have an account?",
-        "name": {
-          "label": "Name",
-          "placeholder": "Warren Buffett Jr."
-        },
-        "page": {
-          "alert": {
-            "description": "The first user to sign up will be the given the admin role. You can add other admins later.",
-            "title": "Just created this dAPP?"
-          }
-        },
-        "password": {
-          "label": "Password"
-        },
-        "sign-in": "Sign in",
-        "submit": "Create account",
-        "submitting": "Creating account...",
-        "title": "Create an account",
-        "wallet-pin": {
-          "label": "Choose a secure wallet PIN code"
-        },
-        "wallet-pin-confirm": {
-          "label": "Confirm wallet PIN code"
-        }
-      },
       "unlink": "Unlink",
       "username": "Username",
       "username-description": "Enter the username you want to use to log in.",
@@ -1894,26 +1521,14 @@
       "wallet-security": {
         "pincode-instruction": "Enter a 6-digit pincode to secure your wallet.",
         "pincode-set": "Pincode set successfully",
-        "setup-pincode": "Setup Pincode",
-        "verification-description": "Please set up a pincode to secure your wallet.",
-        "verification-required": "Verification Required"
-      },
-      "wrong-role": {
-        "description": "You don't have the required role to access this page. Please sign in with an account that has the appropriate permissions.",
-        "go-to-portfolio": "Go to portfolio",
-        "title": "You are not authorized to access this page"
+        "setup-pincode": "Setup Pincode"
       }
     }
   },
+  "regular": "User",
+  "supply-manager": "Supply Manager",
   "theme": {
-    "dark": "Dark",
-    "light": "Light",
     "switch-to-mode": "Switch to {mode} mode",
-    "system": "System",
     "toggle-label": "Toggle theme"
-  },
-  "transactions": {
-    "sending": "Sending transaction",
-    "success": "Transaction successfully processed"
   }
 }
