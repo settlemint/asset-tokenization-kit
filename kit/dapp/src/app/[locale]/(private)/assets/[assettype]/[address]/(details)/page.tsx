@@ -30,7 +30,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     <>
       <Details assettype={assettype} address={address} />
       <ChartGrid title={t('asset-statistics-title')}>
-        {assettype === 'bonds' && <CollateralRatio address={address} />}
+        {assettype === 'stablecoins' && <CollateralRatio address={address} />}
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <WalletDistribution address={address} />

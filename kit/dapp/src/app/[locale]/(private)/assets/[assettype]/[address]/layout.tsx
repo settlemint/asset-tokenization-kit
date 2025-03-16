@@ -59,7 +59,7 @@ const tabs = async (params: LayoutProps['params']): Promise<TabItemProps[]> => {
   ];
 };
 
-export default async function DetailLayout({
+export default async function AssetDetailLayout({
   children,
   params,
 }: LayoutProps) {
