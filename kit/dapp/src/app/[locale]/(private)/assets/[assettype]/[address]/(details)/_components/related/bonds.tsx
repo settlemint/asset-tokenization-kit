@@ -1,9 +1,9 @@
-import { BurnForm } from "@/app/[locale]/(private)/assets/xbonds/[address]/_components/burn-form/form";
-import { MintForm } from "@/app/[locale]/(private)/assets/xbonds/[address]/_components/mint-form/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
+import { MintForm } from "../../../_components/manage-dropdown/mint-form/form";
 
 interface BondsRelatedProps {
 	address: Address;
@@ -22,13 +22,18 @@ export async function BondsRelated({
 				title={t("bonds.increase-supply.title")}
 				description={t("bonds.increase-supply.description")}
 			>
-				<MintForm address={address} asButton />
+				<MintForm address={address} assettype="bonds" asButton />
 			</RelatedGridItem>
 			<RelatedGridItem
 				title={t("bonds.decrease-supply.title")}
 				description={t("bonds.decrease-supply.description")}
 			>
-				<BurnForm address={address} balance={totalSupply} asButton />
+				<BurnForm
+					address={address}
+					balance={totalSupply}
+					assettype="bonds"
+					asButton
+				/>
 			</RelatedGridItem>
 		</RelatedGrid>
 	);

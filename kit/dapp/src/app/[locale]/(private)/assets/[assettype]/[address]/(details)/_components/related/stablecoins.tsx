@@ -1,10 +1,10 @@
-import { BurnForm } from "@/app/[locale]/(private)/assets/xstablecoins/[address]/_components/burn-form/form";
-import { MintForm } from "@/app/[locale]/(private)/assets/xstablecoins/[address]/_components/mint-form/form";
-import { UpdateCollateralForm } from "@/app/[locale]/(private)/assets/xstablecoins/[address]/_components/update-collateral-form/form";
 import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
+import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
+import { MintForm } from "../../../_components/manage-dropdown/mint-form/form";
+import { UpdateCollateralForm } from "../../../_components/manage-dropdown/update-collateral-form/form";
 
 interface StablecoinsRelatedProps {
 	address: Address;
@@ -33,18 +33,18 @@ export async function StablecoinsRelated({
 				title={t("stablecoins.increase-supply.title")}
 				description={t("stablecoins.increase-supply.description")}
 			>
-				<MintForm
-					address={address}
-					freeCollateral={freeCollateral}
-					symbol={symbol}
-					asButton
-				/>
+				<MintForm address={address} assettype="stablecoins" asButton />
 			</RelatedGridItem>
 			<RelatedGridItem
 				title={t("stablecoins.decrease-supply.title")}
 				description={t("stablecoins.decrease-supply.description")}
 			>
-				<BurnForm address={address} balance={totalSupply} asButton />
+				<BurnForm
+					address={address}
+					balance={totalSupply}
+					assettype="stablecoins"
+					asButton
+				/>
 			</RelatedGridItem>
 		</RelatedGrid>
 	);
