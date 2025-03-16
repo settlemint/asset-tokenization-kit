@@ -1,9 +1,9 @@
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import type { ApprovalEvent } from "@/lib/queries/asset-events/asset-events-fragments";
-import { formatNumber } from "@/lib/utils/number";
-import { useTranslations } from "next-intl";
-import { DetailsCard } from "../details-card";
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
+import type { ApprovalEvent } from '@/lib/queries/asset-events/asset-events-fragments';
+import { formatNumber } from '@/lib/utils/number';
+import { useTranslations } from 'next-intl';
+import { DetailsCard } from '../details-card';
 
 interface ApprovalDetailsProps {
   details: ApprovalEvent;
@@ -12,14 +12,14 @@ interface ApprovalDetailsProps {
 
 export function ApprovalDetails({
   details,
-  symbol = "",
+  symbol = '',
 }: ApprovalDetailsProps) {
-  const t = useTranslations("components.asset-events-table.details");
+  const t = useTranslations('components.asset-events-table.details');
 
   const detailItems = [
     {
-      key: "from",
-      label: t("from"),
+      key: 'from',
+      label: t('from'),
       value: (
         <EvmAddress address={details.owner.id}>
           <EvmAddressBalances address={details.owner.id} />
@@ -27,8 +27,8 @@ export function ApprovalDetails({
       ),
     },
     {
-      key: "to",
-      label: t("to"),
+      key: 'to',
+      label: t('to'),
       value: (
         <EvmAddress address={details.spender.id}>
           <EvmAddressBalances address={details.spender.id} />
@@ -36,8 +36,8 @@ export function ApprovalDetails({
       ),
     },
     {
-      key: "amount",
-      label: t("amount"),
+      key: 'amount',
+      label: t('amount'),
       value: formatNumber(details.value, { token: symbol }),
     },
   ];

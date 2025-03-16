@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { formatDate } from "@/lib/utils/date";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { CreateBondSchema } from "./create-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { formatDate } from '@/lib/utils/date';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { CreateBondSchema } from './create-schema';
 
 /**
  * GraphQL mutation for creating a new bond
@@ -64,7 +64,7 @@ export const createBond = action
     }) => {
       const capExact = String(parseUnits(String(cap), decimals));
       const maturityDateTimestamp = formatDate(maturityDate, {
-        type: "unixSeconds",
+        type: 'unixSeconds',
       });
 
       await hasuraClient.request(CreateOffchainBond, {

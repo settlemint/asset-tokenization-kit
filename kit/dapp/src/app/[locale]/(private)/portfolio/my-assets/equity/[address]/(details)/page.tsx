@@ -1,15 +1,15 @@
-import { ChartGrid } from "@/components/blocks/chart-grid/chart-grid";
-import { TotalSupply } from "@/components/blocks/charts/assets/total-supply";
-import { TotalSupplyChanged } from "@/components/blocks/charts/assets/total-supply-changed";
-import { TotalTransfers } from "@/components/blocks/charts/assets/total-transfers";
-import { TotalVolume } from "@/components/blocks/charts/assets/total-volume";
-import { WalletDistribution } from "@/components/blocks/charts/assets/wallet-distribution";
-import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
-import { Details } from "./_components/details";
+import { ChartGrid } from '@/components/blocks/chart-grid/chart-grid';
+import { TotalSupply } from '@/components/blocks/charts/assets/total-supply';
+import { TotalSupplyChanged } from '@/components/blocks/charts/assets/total-supply-changed';
+import { TotalTransfers } from '@/components/blocks/charts/assets/total-transfers';
+import { TotalVolume } from '@/components/blocks/charts/assets/total-volume';
+import { WalletDistribution } from '@/components/blocks/charts/assets/wallet-distribution';
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { Address } from 'viem';
+import { Details } from './_components/details';
 
 interface PageProps {
   params: Promise<{ locale: Locale; address: Address }>;
@@ -22,14 +22,14 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.equities.details",
+    namespace: 'admin.equities.details',
   });
 
   return {
-    title: t("details-page-title", {
+    title: t('details-page-title', {
       name: equity?.name,
     }),
-    description: t("details-page-description", {
+    description: t('details-page-description', {
       name: equity?.name,
     }),
   };
@@ -39,13 +39,13 @@ export default async function EquityDetailPage({ params }: PageProps) {
   const { address, locale } = await params;
   const t = await getTranslations({
     locale,
-    namespace: "admin.equities",
+    namespace: 'admin.equities',
   });
 
   return (
     <>
       <Details address={address} />
-      <ChartGrid title={t("charts.asset-statistics-title")}>
+      <ChartGrid title={t('charts.asset-statistics-title')}>
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <WalletDistribution address={address} />

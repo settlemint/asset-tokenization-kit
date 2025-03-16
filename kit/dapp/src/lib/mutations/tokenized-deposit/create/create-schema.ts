@@ -1,5 +1,5 @@
-import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/address-available";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { isAddressAvailable } from '@/lib/queries/stablecoin-factory/address-available';
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * Zod schema for validating stablecoin creation inputs
@@ -17,7 +17,7 @@ export const CreateTokenizedDepositSchema = z.object({
   isin: z.isin().optional(),
   pincode: z.pincode(),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "tokenized-deposit.duplicate",
+    message: 'tokenized-deposit.duplicate',
   }),
 });
 

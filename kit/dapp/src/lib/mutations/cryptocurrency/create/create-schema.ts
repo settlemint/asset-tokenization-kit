@@ -1,5 +1,5 @@
-import { isAddressAvailable } from "@/lib/queries/cryptocurrency-factory/address-available";
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { isAddressAvailable } from '@/lib/queries/cryptocurrency-factory/address-available';
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * Zod schema for validating cryptocurrency creation inputs
@@ -22,7 +22,7 @@ export const CreateCryptoCurrencySchema = z.object({
     .or(z.string())
     .pipe(z.coerce.number().optional().default(0)),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "cryptocurrency.duplicate",
+    message: 'cryptocurrency.duplicate',
   }),
 });
 

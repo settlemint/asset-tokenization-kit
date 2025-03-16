@@ -1,4 +1,4 @@
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 
 type CreateWalletResponse = {
   createWallet: null | {

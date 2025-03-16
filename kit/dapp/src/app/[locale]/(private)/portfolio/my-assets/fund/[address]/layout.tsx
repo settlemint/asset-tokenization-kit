@@ -1,10 +1,10 @@
-import { getFundDetail } from "@/lib/queries/fund/fund-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { PropsWithChildren } from "react";
-import type { Address } from "viem";
-import { FundPageHeader } from "./_components/page-header";
+import { getFundDetail } from '@/lib/queries/fund/fund-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { FundPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -20,12 +20,12 @@ export async function generateMetadata({
   const fund = await getFundDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.funds.details",
+    namespace: 'admin.funds.details',
   });
 
   return {
     title: fund?.name,
-    description: t("fund-details-description"),
+    description: t('fund-details-description'),
   };
 }
 

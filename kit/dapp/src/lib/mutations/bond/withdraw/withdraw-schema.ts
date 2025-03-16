@@ -1,4 +1,4 @@
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * Zod schema for validating withdraw underlying asset mutation inputs

@@ -1,10 +1,10 @@
-import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { PropsWithChildren } from "react";
-import type { Address } from "viem";
-import { BondPageHeader } from "./_components/page-header";
+import { getBondDetail } from '@/lib/queries/bond/bond-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { BondPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -20,12 +20,12 @@ export async function generateMetadata({
   const bond = await getBondDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.bonds.details",
+    namespace: 'admin.bonds.details',
   });
 
   return {
     title: bond?.name,
-    description: t("bond-details-description"),
+    description: t('bond-details-description'),
   };
 }
 

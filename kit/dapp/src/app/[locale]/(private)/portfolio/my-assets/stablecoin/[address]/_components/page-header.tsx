@@ -1,11 +1,11 @@
-import { ActivePill } from "@/components/blocks/active-pill/active-pill";
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
-import { PageHeader } from "@/components/layout/page-header";
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import { getTranslations } from "next-intl/server";
-import type { Address } from "viem";
-import { ManageDropdown } from "./manage-dropdown";
+import { ActivePill } from '@/components/blocks/active-pill/active-pill';
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
+import { PageHeader } from '@/components/layout/page-header';
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getTranslations } from 'next-intl/server';
+import type { Address } from 'viem';
+import { ManageDropdown } from './manage-dropdown';
 
 interface PageHeaderProps {
   address: Address;
@@ -13,7 +13,7 @@ interface PageHeaderProps {
 
 export async function StableCoinPageHeader({ address }: PageHeaderProps) {
   const stableCoin = await getStableCoinDetail({ address });
-  const t = await getTranslations("admin.stablecoins.table");
+  const t = await getTranslations('admin.stablecoins.table');
 
   return (
     <PageHeader
@@ -28,7 +28,7 @@ export async function StableCoinPageHeader({ address }: PageHeaderProps) {
           <EvmAddressBalances address={address} />
         </EvmAddress>
       }
-      section={t("asset-management")}
+      section={t('asset-management')}
       pill={<ActivePill paused={stableCoin.paused} />}
       button={<ManageDropdown address={address} stableCoin={stableCoin} />}
     />

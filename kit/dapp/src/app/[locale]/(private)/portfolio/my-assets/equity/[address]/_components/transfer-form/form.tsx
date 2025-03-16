@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { transfer } from "@/lib/mutations/equity/transfer/transfer-action";
-import { TransferEquitySchema } from "@/lib/mutations/equity/transfer/transfer-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import type { Address } from "viem";
-import { Amount } from "./steps/amount";
-import { Recipients } from "./steps/recipients";
-import { Summary } from "./steps/summary";
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { transfer } from '@/lib/mutations/equity/transfer/transfer-action';
+import { TransferEquitySchema } from '@/lib/mutations/equity/transfer/transfer-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import type { Address } from 'viem';
+import { Amount } from './steps/amount';
+import { Recipients } from './steps/recipients';
+import { Summary } from './steps/summary';
 
 interface TransferFormProps {
   address: Address;
@@ -29,7 +29,7 @@ export function TransferForm({
   open,
   onOpenChange,
 }: TransferFormProps) {
-  const t = useTranslations("portfolio.my-assets.equity.transfer-form");
+  const t = useTranslations('portfolio.my-assets.equity.transfer-form');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -40,9 +40,9 @@ export function TransferForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
       asButton={asButton}
     >
       <Form
@@ -52,11 +52,11 @@ export function TransferForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t("button-label"),
+          label: t('button-label'),
         }}
         defaultValues={{
           address,
-          assetType: "equity",
+          assetType: 'equity',
           decimals,
         }}
       >

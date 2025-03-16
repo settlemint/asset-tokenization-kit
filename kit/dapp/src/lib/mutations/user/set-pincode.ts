@@ -1,4 +1,4 @@
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 
 const SetPinCode = portalGraphql(`
   mutation SetPinCode($name: String!, $address: String!, $pincode: String!) {

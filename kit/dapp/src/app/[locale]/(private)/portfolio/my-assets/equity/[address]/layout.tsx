@@ -1,10 +1,10 @@
-import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { PropsWithChildren } from "react";
-import type { Address } from "viem";
-import { EquityPageHeader } from "./_components/page-header";
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { EquityPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -20,12 +20,12 @@ export async function generateMetadata({
   const equity = await getEquityDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.equities.details",
+    namespace: 'admin.equities.details',
   });
 
   return {
     title: equity?.name,
-    description: t("equity-details-description"),
+    description: t('equity-details-description'),
   };
 }
 

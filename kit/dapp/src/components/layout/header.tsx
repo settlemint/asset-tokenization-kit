@@ -1,7 +1,7 @@
-import { UserDropdown } from "@/components/layout/user-dropdown";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Search } from "../blocks/search/search";
+import { UserDropdown } from '@/components/layout/user-dropdown';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Search } from '../blocks/search/search';
 
 export default function Header() {
   return (

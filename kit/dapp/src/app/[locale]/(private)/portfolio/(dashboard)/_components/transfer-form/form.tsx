@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import type { TransferFormAssetType } from "@/lib/mutations/asset/transfer/transfer-schema";
-import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
-import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import type { Address } from "viem";
-import { Amount } from "./steps/amount";
-import { Recipients } from "./steps/recipients";
-import { Summary } from "./steps/summary";
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import type { TransferFormAssetType } from '@/lib/mutations/asset/transfer/transfer-schema';
+import { createStablecoin } from '@/lib/mutations/stablecoin/create/create-action';
+import { CreateStablecoinSchema } from '@/lib/mutations/stablecoin/create/create-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import type { Address } from 'viem';
+import { Amount } from './steps/amount';
+import { Recipients } from './steps/recipients';
+import { Summary } from './steps/summary';
 
 export function TransferForm({
   open,
@@ -31,15 +31,15 @@ export function TransferForm({
   decimals: number;
   onCloseAction: () => void;
 }) {
-  const t = useTranslations("portfolio.transfer-form");
-  const tAssetTypes = useTranslations("portfolio.asset-types");
+  const t = useTranslations('portfolio.transfer-form');
+  const tAssetTypes = useTranslations('portfolio.asset-types');
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      title={`${t("transfer")} ${tAssetTypes(assetType)} ${name} (${symbol})`}
-      description={t("description", {
+      title={`${t('transfer')} ${tAssetTypes(assetType)} ${name} (${symbol})`}
+      description={t('description', {
         type: tAssetTypes(assetType),
         name,
         symbol,
@@ -50,7 +50,7 @@ export function TransferForm({
         resolver={zodResolver(CreateStablecoinSchema)}
         onOpenChange={onCloseAction}
         buttonLabels={{
-          label: t("transfer"),
+          label: t('transfer'),
         }}
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,

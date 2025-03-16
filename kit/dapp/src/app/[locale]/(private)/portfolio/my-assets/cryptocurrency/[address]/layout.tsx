@@ -1,10 +1,10 @@
-import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { PropsWithChildren } from "react";
-import type { Address } from "viem";
-import { CryptoCurrencyPageHeader } from "./_components/page-header";
+import { getCryptoCurrencyDetail } from '@/lib/queries/cryptocurrency/cryptocurrency-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { CryptoCurrencyPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -20,12 +20,12 @@ export async function generateMetadata({
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.cryptocurrencies.details",
+    namespace: 'admin.cryptocurrencies.details',
   });
 
   return {
     title: cryptocurrency?.name,
-    description: t("cryptocurrency-details-description"),
+    description: t('cryptocurrency-details-description'),
   };
 }
 

@@ -1,12 +1,15 @@
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { formatNumber } from "@/lib/utils/number";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { cache } from "react";
-import { type Address, getAddress } from "viem";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
-} from "./asset-balance-fragment";
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from '@/lib/settlemint/the-graph';
+import { formatNumber } from '@/lib/utils/number';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { type Address, getAddress } from 'viem';
+import {
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
+} from './asset-balance-fragment';
 
 /**
  * GraphQL query to fetch a specific asset balance
@@ -61,7 +64,7 @@ export const getAssetBalanceDetail = cache(
     const validatedBalance = safeParseWithLogging(
       AssetBalanceFragmentSchema,
       result.assetBalances[0],
-      "asset balance"
+      'asset balance'
     );
 
     // Format BigDecimal values

@@ -1,51 +1,51 @@
-import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
-import { AssetTypeIcon } from "@/components/blocks/asset-type-icon/asset-type-icon";
-import { type NavItem, NavMain } from "@/components/layout/nav-main";
-import { ActivityIcon } from "@/components/ui/animated-icons/activity";
-import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
-import { getSidebarAssets } from "@/lib/queries/sidebar-assets/sidebar-assets";
-import { getTranslations } from "next-intl/server";
+import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
+import { AssetTypeIcon } from '@/components/blocks/asset-type-icon/asset-type-icon';
+import { type NavItem, NavMain } from '@/components/layout/nav-main';
+import { ActivityIcon } from '@/components/ui/animated-icons/activity';
+import { ChartScatterIcon } from '@/components/ui/animated-icons/chart-scatter';
+import { getSidebarAssets } from '@/lib/queries/sidebar-assets/sidebar-assets';
+import { getTranslations } from 'next-intl/server';
 
 export async function AssetManagement() {
-  const t = await getTranslations("admin.sidebar.asset-management");
+  const t = await getTranslations('admin.sidebar.asset-management');
   const data = await getSidebarAssets();
 
   // Asset configuration defined inline
   const assetItems: NavItem[] = [
     {
-      assetType: "bond",
-      label: t("bonds"),
-      path: `/assets/bonds`,
+      assetType: 'bond',
+      label: t('bonds'),
+      path: '/assets/bonds',
       icon: <AssetTypeIcon type="bond" />,
     },
     {
-      assetType: "cryptocurrency",
-      label: t("cryptocurrencies"),
-      path: `/assets/cryptocurrencies`,
+      assetType: 'cryptocurrency',
+      label: t('cryptocurrencies'),
+      path: '/assets/cryptocurrencies',
       icon: <AssetTypeIcon type="cryptocurrency" />,
     },
     {
-      assetType: "equity",
-      label: t("equities"),
-      path: `/assets/equities`,
+      assetType: 'equity',
+      label: t('equities'),
+      path: '/assets/equities',
       icon: <AssetTypeIcon type="equity" />,
     },
     {
-      assetType: "fund",
-      label: t("funds"),
-      path: `/assets/funds`,
+      assetType: 'fund',
+      label: t('funds'),
+      path: '/assets/funds',
       icon: <AssetTypeIcon type="fund" />,
     },
     {
-      assetType: "stablecoin",
-      label: t("stablecoins"),
-      path: `/assets/stablecoins`,
+      assetType: 'stablecoin',
+      label: t('stablecoins'),
+      path: '/assets/stablecoins',
       icon: <AssetTypeIcon type="stablecoin" />,
     },
     {
-      assetType: "tokenizeddeposit",
-      label: t("tokenized-deposits"),
-      path: `/assets/tokenized-deposits`,
+      assetType: 'tokenizeddeposit',
+      label: t('tokenized-deposits'),
+      path: '/assets/tokenized-deposits',
       icon: <AssetTypeIcon type="tokenizeddeposit" />,
     },
   ];
@@ -81,8 +81,8 @@ export async function AssetManagement() {
       // Add the "View all" item only if there are assets
       if (assetsOfSection.count > 0) {
         sectionItem.subItems.push({
-          id: "view-all",
-          label: t("view-all"),
+          id: 'view-all',
+          label: t('view-all'),
           path: section.path,
           icon: <span>→</span>,
         });
@@ -97,18 +97,18 @@ export async function AssetManagement() {
     <NavMain
       items={[
         {
-          groupTitle: t("group-title"),
+          groupTitle: t('group-title'),
           items: [
             {
-              label: t("dashboard"),
+              label: t('dashboard'),
               icon: <ChartScatterIcon className="size-4" />,
-              path: "/assets",
+              path: '/assets',
             },
             ...processedAssetItems,
             {
-              label: t("asset-activity"),
+              label: t('asset-activity'),
               icon: <ActivityIcon className="size-4" />,
-              path: "/assets/activity",
+              path: '/assets/activity',
             },
           ],
         },

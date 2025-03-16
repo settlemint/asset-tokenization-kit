@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 export interface PageHeaderProps {
   title: ReactNode;
@@ -19,11 +19,11 @@ export function PageHeader({
   section,
 }: PageHeaderProps) {
   return (
-    <div className={cn("relative pb-6", className)}>
+    <div className={cn('relative pb-6', className)}>
       {section && (
-        <div className="mb-1 text-xs text-muted-foreground">{section}</div>
+        <div className="mb-1 text-muted-foreground text-xs">{section}</div>
       )}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="flex items-center font-bold text-2xl">
             {title}

@@ -1,4 +1,4 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 export const RedeemBondSchema = z.object({
   address: z.address(),

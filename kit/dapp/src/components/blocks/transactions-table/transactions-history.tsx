@@ -1,12 +1,12 @@
-"use client";
-import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
-import type { ChartConfig } from "@/components/ui/chart";
+'use client';
+import { AreaChartComponent } from '@/components/blocks/charts/area-chart';
+import type { ChartConfig } from '@/components/ui/chart';
 import {
+  type TimeSeriesOptions,
   formatChartDate,
   formatInterval,
-  type TimeSeriesOptions,
-} from "@/lib/charts";
-import { useTranslations } from "next-intl";
+} from '@/lib/charts';
+import { useTranslations } from 'next-intl';
 
 export interface TransactionsHistoryProps {
   title?: string;
@@ -18,7 +18,7 @@ export interface TransactionsHistoryProps {
   }[];
   chartOptions: Pick<
     TimeSeriesOptions,
-    "intervalType" | "intervalLength" | "granularity"
+    'intervalType' | 'intervalLength' | 'granularity'
   > & {
     chartContainerClassName?: string;
   };
@@ -30,12 +30,12 @@ export function TransactionsHistory({
   title,
   description,
 }: TransactionsHistoryProps) {
-  const t = useTranslations("components.transactions-history");
+  const t = useTranslations('components.transactions-history');
 
   const TRANSACTIONS_CHART_CONFIG = {
     transaction: {
-      label: t("chart-label"),
-      color: "var(--chart-1)",
+      label: t('chart-label'),
+      color: 'var(--chart-1)',
     },
   } satisfies ChartConfig;
 
@@ -49,10 +49,10 @@ export function TransactionsHistory({
         ),
       }))}
       config={TRANSACTIONS_CHART_CONFIG}
-      title={title ?? t("title")}
+      title={title ?? t('title')}
       description={
         description ??
-        t("description", {
+        t('description', {
           interval: formatInterval(
             chartOptions.intervalLength,
             chartOptions.intervalType
@@ -60,7 +60,7 @@ export function TransactionsHistory({
         })
       }
       xAxis={{
-        key: "timestamp",
+        key: 'timestamp',
         tickFormatter: getTickFormatter(chartOptions),
       }}
       showYAxis={true}
@@ -70,16 +70,18 @@ export function TransactionsHistory({
 }
 
 function getTickFormatter(
-  chartOptions: Pick<TimeSeriesOptions, "granularity">
+  chartOptions: Pick<TimeSeriesOptions, 'granularity'>
 ) {
   switch (chartOptions.granularity) {
-    case "day":
+    case 'day':
       return (tick: string) => {
-        return formatChartDate(new Date(tick), "day");
+        return formatChartDate(new Date(tick), 'day');
       };
-    case "month":
-      return (tick: string) => formatChartDate(new Date(tick), "month");
-    case "hour":
-      return (tick: string) => formatChartDate(new Date(tick), "hour");
+    case 'month':
+      return (tick: string) => formatChartDate(new Date(tick), 'month');
+    case 'hour':
+      return (tick: string) => formatChartDate(new Date(tick), 'hour');
+    default:
+      throw new Error(`Invalid granularity: ${chartOptions.granularity}`);
   }
 }

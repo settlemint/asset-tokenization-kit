@@ -1,10 +1,10 @@
-import { getUserCount } from "@/lib/queries/user/user-count";
-import { startOfDay, subDays } from "date-fns";
-import { getTranslations } from "next-intl/server";
-import { Widget } from "./widget";
+import { getUserCount } from '@/lib/queries/user/user-count';
+import { startOfDay, subDays } from 'date-fns';
+import { getTranslations } from 'next-intl/server';
+import { Widget } from './widget';
 
 export async function UsersWidget() {
-  const t = await getTranslations("admin.dashboard.widgets");
+  const t = await getTranslations('admin.dashboard.widgets');
   const sevenDaysAgo = startOfDay(subDays(new Date(), 7));
   const { totalUsersCount, recentUsersCount } = await getUserCount({
     since: sevenDaysAgo,
@@ -12,9 +12,9 @@ export async function UsersWidget() {
 
   return (
     <Widget
-      label={t("users.label")}
+      label={t('users.label')}
       value={totalUsersCount.toLocaleString()}
-      subtext={t("users.subtext", { count: recentUsersCount, days: 7 })}
+      subtext={t('users.subtext', { count: recentUsersCount, days: 7 })}
     />
   );
 }

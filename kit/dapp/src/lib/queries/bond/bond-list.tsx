@@ -1,15 +1,18 @@
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { cache } from "react";
-import { getAddress } from "viem";
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
-    BondFragment,
-    BondFragmentSchema,
-    OffchainBondFragment,
-    OffchainBondFragmentSchema,
-} from "./bond-fragment";
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { getAddress } from 'viem';
+import {
+  BondFragment,
+  BondFragmentSchema,
+  OffchainBondFragment,
+  OffchainBondFragmentSchema,
+} from './bond-fragment';
 
 /**
  * GraphQL query to fetch on-chain bond list from The Graph
@@ -77,11 +80,11 @@ export const getBondList = cache(async () => {
 
   // Parse and validate the data using Zod schemas
   const validatedBonds = theGraphBonds.map((bond) =>
-    safeParseWithLogging(BondFragmentSchema, bond, "bond")
+    safeParseWithLogging(BondFragmentSchema, bond, 'bond')
   );
 
   const validatedDbAssets = dbAssets.map((asset) =>
-    safeParseWithLogging(OffchainBondFragmentSchema, asset, "offchain bond")
+    safeParseWithLogging(OffchainBondFragmentSchema, asset, 'offchain bond')
   );
 
   const assetsById = new Map(

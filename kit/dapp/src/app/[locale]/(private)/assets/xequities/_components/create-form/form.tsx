@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { Form } from "@/components/blocks/form/form";
-import { FormSheet } from "@/components/blocks/form/form-sheet";
-import { createEquity } from "@/lib/mutations/equity/create/create-action";
-import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Basics } from "./steps/basics";
-import { Configuration } from "./steps/configuration";
-import { Summary } from "./steps/summary";
+import { Form } from '@/components/blocks/form/form';
+import { FormSheet } from '@/components/blocks/form/form-sheet';
+import { createEquity } from '@/lib/mutations/equity/create/create-action';
+import { CreateEquitySchema } from '@/lib/mutations/equity/create/create-schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Basics } from './steps/basics';
+import { Configuration } from './steps/configuration';
+import { Summary } from './steps/summary';
 
 interface CreateEquityFormProps {
   open?: boolean;
@@ -22,7 +22,7 @@ export function CreateEquityForm({
   onOpenChange,
   asButton = false,
 }: CreateEquityFormProps) {
-  const t = useTranslations("admin.equities.create-form");
+  const t = useTranslations('admin.equities.create-form');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -30,21 +30,21 @@ export function CreateEquityForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t("title")}
-      description={t("description")}
+      title={t('title')}
+      description={t('description')}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
     >
       <Form
         action={createEquity}
         resolver={zodResolver(CreateEquitySchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t("button-label"),
+          label: t('button-label'),
         }}
         defaultValues={{}}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(["predictedAddress"]);
+          clearErrors(['predictedAddress']);
         }}
       >
         <Basics />

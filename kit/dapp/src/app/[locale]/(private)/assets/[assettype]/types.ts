@@ -1,7 +1,7 @@
 export type AssetType =
-	| "bonds"
-	| "cryptocurrencies"
-	| "stablecoins"
-	| "tokenizeddeposits"
-	| "equities"
-	| "funds";
+  | 'bonds'
+  | 'cryptocurrencies'
+  | 'stablecoins'
+  | 'tokenizeddeposits'
+  | 'equities'
+  | 'funds';

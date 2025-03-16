@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Link } from "@/i18n/routing";
-import { getBlockExplorerTxUrl } from "@/lib/block-explorer";
-import { shortHex } from "@/lib/utils/hex";
-import { useTranslations } from "next-intl";
-import type { PropsWithChildren } from "react";
-import { CopyToClipboard } from "../copy/copy";
+} from '@/components/ui/hover-card';
+import { Link } from '@/i18n/routing';
+import { getBlockExplorerTxUrl } from '@/lib/block-explorer';
+import { shortHex } from '@/lib/utils/hex';
+import { useTranslations } from 'next-intl';
+import type { PropsWithChildren } from 'react';
+import { CopyToClipboard } from '../copy/copy';
 
 interface TransactionHashProps extends PropsWithChildren {
   /** The transaction hash to display */
@@ -35,7 +35,7 @@ export function TransactionHash({
 }: TransactionHashProps) {
   const explorerLink = getBlockExplorerTxUrl(hash, explorerUrl);
   const shortHash = shortHex(hash, { prefixLength, suffixLength });
-  const t = useTranslations("components.transaction-hash");
+  const t = useTranslations('components.transaction-hash');
 
   return (
     <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export function TransactionHash({
                 rel="noopener noreferrer"
                 className="truncate text-primary text-xs hover:underline"
               >
-                {t("view-on-explorer")}
+                {t('view-on-explorer')}
               </Link>
             )}
           </div>

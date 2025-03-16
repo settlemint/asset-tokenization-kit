@@ -4,8 +4,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import type { PropsWithChildren } from "react";
+} from '@/components/ui/card';
+import type { PropsWithChildren } from 'react';
 
 interface RelatedGridItemProps extends PropsWithChildren {
   title: string;
@@ -18,7 +18,7 @@ export function RelatedGridItem({
   children,
 }: RelatedGridItemProps) {
   return (
-    <Card className="linear-gradient-related flex flex-col h-full">
+    <Card className="linear-gradient-related flex h-full flex-col">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

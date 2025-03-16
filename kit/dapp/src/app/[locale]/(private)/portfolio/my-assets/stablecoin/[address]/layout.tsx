@@ -1,10 +1,10 @@
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations } from "next-intl/server";
-import type { PropsWithChildren } from "react";
-import type { Address } from "viem";
-import { StableCoinPageHeader } from "./_components/page-header";
+import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import type { Metadata } from 'next';
+import type { Locale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import type { PropsWithChildren } from 'react';
+import type { Address } from 'viem';
+import { StableCoinPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -20,12 +20,12 @@ export async function generateMetadata({
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations({
     locale,
-    namespace: "admin.stablecoins.details",
+    namespace: 'admin.stablecoins.details',
   });
 
   return {
     title: stableCoin?.name,
-    description: t("stablecoin-details-description"),
+    description: t('stablecoin-details-description'),
   };
 }
 

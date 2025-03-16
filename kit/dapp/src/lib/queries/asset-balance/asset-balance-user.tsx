@@ -1,17 +1,17 @@
-import { fetchAllTheGraphPages } from "@/lib/pagination";
+import { fetchAllTheGraphPages } from '@/lib/pagination';
 import {
+  type AssetBalance,
   AssetBalanceFragment,
   AssetBalanceFragmentSchema,
-  type AssetBalance,
-} from "@/lib/queries/asset-balance/asset-balance-fragment";
+} from '@/lib/queries/asset-balance/asset-balance-fragment';
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import BigNumber from "bignumber.js";
-import { cache } from "react";
-import { getAddress, type Address } from "viem";
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import BigNumber from 'bignumber.js';
+import { cache } from 'react';
+import { type Address, getAddress } from 'viem';
 
 const UserAssetsBalance = theGraphGraphqlKit(
   `
@@ -28,9 +28,9 @@ const UserAssetsBalance = theGraphGraphqlKit(
 
 export type UserAsset = Awaited<
   ReturnType<typeof getUserAssetsBalance>
->["balances"][number];
+>['balances'][number];
 
-type AssetType = AssetBalance["asset"]["type"];
+type AssetType = AssetBalance['asset']['type'];
 
 export const getUserAssetsBalance = cache(async (wallet: Address) => {
   const userAssetsBalance = await fetchAllTheGraphPages(async (first, skip) => {
@@ -44,14 +44,14 @@ export const getUserAssetsBalance = cache(async (wallet: Address) => {
 
   // Parse and validate the data using Zod schemas
   const validatedUserAssetsBalance = userAssetsBalance.map((asset) =>
-    safeParseWithLogging(AssetBalanceFragmentSchema, asset, "balance")
+    safeParseWithLogging(AssetBalanceFragmentSchema, asset, 'balance')
   );
 
   if (!validatedUserAssetsBalance.length) {
     return {
       balances: [],
       distribution: [],
-      total: "0",
+      total: '0',
     };
   }
   // Group and sum balances by asset type

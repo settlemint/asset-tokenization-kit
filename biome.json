@@ -2,7 +2,14 @@
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "extends": ["ultracite"],
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": false, "ignore": ["src/components/ui/**/*"] },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": [
+      "kit/dapp/src/components/ui/**/*",
+      "kit/dapp/*.d.ts",
+      "kit/dapp/src/lib/settlemint/**/*"
+    ]
+  },
   "formatter": {
     "enabled": true,
     "useEditorconfig": true,
@@ -15,7 +22,32 @@
     "bracketSpacing": true
   },
   "organizeImports": { "enabled": true },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "useBlockStatements": "off"
+      },
+      "suspicious": {
+        "noConsole": "off",
+        "noConsoleLog": "off",
+        "noExplicitAny": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noVoid": "off"
+      },
+      "nursery": {
+        "noNestedTernary": "off",
+        "useAtIndex": "off",
+        "noStaticElementInteractions": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "off"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "jsxQuoteStyle": "double",

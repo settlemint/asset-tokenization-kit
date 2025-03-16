@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { BurnSchema } from "./burn-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { BurnSchema } from './burn-schema';
 
 /**
  * GraphQL mutation for burning equity tokens

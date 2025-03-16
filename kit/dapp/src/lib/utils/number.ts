@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from 'bignumber.js';
 
 /**
  * Options for currency formatting
@@ -30,7 +30,7 @@ export function formatNumber(
   const {
     currency,
     token,
-    locale = "en-US",
+    locale = 'en-US',
     decimals = 2,
     percentage = false,
   } = options;
@@ -41,7 +41,7 @@ export function formatNumber(
       if (amount instanceof BigNumber) return amount;
       if (amount === null || amount === undefined) return new BigNumber(0);
       return new BigNumber(
-        typeof amount === "bigint" ? amount.toString() : amount
+        typeof amount === 'bigint' ? amount.toString() : amount
       );
     } catch {
       return new BigNumber(0);
@@ -51,23 +51,23 @@ export function formatNumber(
   // Format number with appropriate options
   const numberValue = percentage ? value.div(100).toNumber() : value.toNumber();
   const formattedNumber = new Intl.NumberFormat(locale, {
-    style: percentage ? "percent" : currency ? "currency" : "decimal",
+    style: percentage ? 'percent' : currency ? 'currency' : 'decimal',
     currency,
-    currencyDisplay: currency ? "symbol" : undefined,
+    currencyDisplay: currency ? 'symbol' : undefined,
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(numberValue);
 
   // Check if the number is very small (less than the smallest displayable value based on decimals)
-  const minimumValue = new BigNumber(1).div(Math.pow(10, decimals));
+  const minimumValue = new BigNumber(1).div(10 ** decimals);
   if (
     value.isGreaterThan(0) &&
     value.isLessThan(percentage ? minimumValue : minimumValue)
   ) {
     const minFormatted = new Intl.NumberFormat(locale, {
-      style: percentage ? "percent" : currency ? "currency" : "decimal",
+      style: percentage ? 'percent' : currency ? 'currency' : 'decimal',
       currency,
-      currencyDisplay: currency ? "symbol" : undefined,
+      currencyDisplay: currency ? 'symbol' : undefined,
       maximumFractionDigits: decimals,
       minimumFractionDigits: decimals,
     }).format(percentage ? 0.0001 : minimumValue.toNumber());

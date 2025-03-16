@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { PropsWithChildren } from "react";
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import type { PropsWithChildren } from 'react';
 
 interface FormStepProps extends PropsWithChildren {
   title: string;

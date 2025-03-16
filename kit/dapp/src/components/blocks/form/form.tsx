@@ -1,24 +1,24 @@
-"use client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Form as UIForm } from "@/components/ui/form";
-import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
-import { type ZodInfer, z } from "@/lib/utils/zod";
-import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
-import { useTranslations } from "next-intl";
-import type { HookSafeActionFn } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
+'use client';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Form as UIForm } from '@/components/ui/form';
+import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
+import { type ZodInfer, z } from '@/lib/utils/zod';
+import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
+import { useTranslations } from 'next-intl';
+import type { HookSafeActionFn } from 'next-safe-action/hooks';
+import { useEffect, useState } from 'react';
 import type {
   DefaultValues,
   Path,
   Resolver,
   UseFormReturn,
-} from "react-hook-form";
-import { toast } from "sonner";
-import type { Schema } from "zod";
-import { type ButtonLabels, FormButton } from "./form-button";
-import { FormProgress } from "./form-progress";
-import { FormOtpDialog } from "./inputs/form-otp-dialog";
-import type { FormStepElement } from "./types";
+} from 'react-hook-form';
+import { toast } from 'sonner';
+import type { Schema } from 'zod';
+import { type ButtonLabels, FormButton } from './form-button';
+import { FormProgress } from './form-progress';
+import { FormOtpDialog } from './inputs/form-otp-dialog';
+import type { FormStepElement } from './types';
 
 interface FormProps<
   ServerError,
@@ -65,8 +65,8 @@ export function Form<
   secureForm = true,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const t = useTranslations("transactions");
-  const tError = useTranslations("error");
+  const t = useTranslations('transactions');
+  const tError = useTranslations('error');
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
@@ -74,8 +74,8 @@ export function Form<
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
       formProps: {
-        mode: "onSubmit",
-        criteriaMode: "all",
+        mode: 'onSubmit',
+        criteriaMode: 'all',
         shouldFocusError: false,
         defaultValues,
       },
@@ -83,20 +83,20 @@ export function Form<
         onSuccess: ({ data }) => {
           const hashes = z.hashes().parse(data);
           toast.promise(waitForTransactions(hashes), {
-            loading: toastMessages?.loading || t("sending"),
-            success: toastMessages?.success || t("success"),
+            loading: toastMessages?.loading || t('sending'),
+            success: toastMessages?.success || t('success'),
             error: (error: Error) => `Failed to submit: ${error.message}`,
           });
           resetFormAndAction();
           onOpenChange?.(false);
         },
         onError: (error) => {
-          let errorMessage = "Unknown error";
+          let errorMessage = 'Unknown error';
 
           if (error?.error?.serverError) {
             errorMessage = error.error.serverError as string;
           } else if (error?.error?.validationErrors) {
-            errorMessage = "Validation error";
+            errorMessage = 'Validation error';
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);
@@ -165,22 +165,22 @@ export function Form<
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
-    const error = errorMessage ?? "unknown-error";
+    const error = errorMessage ?? 'unknown-error';
     const translatedErrorMessage = tError.has(error as never)
       ? tError(error as never)
       : error;
-    const errorKey = key && type !== "custom" ? `${key}: ` : "";
+    const errorKey = key && type !== 'custom' ? `${key}: ` : '';
 
     return `${errorKey}${translatedErrorMessage}`;
   };
   return (
-    <div className="space-y-6 h-full">
-      <div className="container p-6 flex flex-col h-full">
+    <div className="h-full space-y-6">
+      <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
             onSubmit={handleSubmitWithAction}
             noValidate
-            className="flex flex-col flex-1"
+            className="flex flex-1 flex-col"
           >
             {totalSteps > 1 && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
@@ -189,9 +189,9 @@ export function Form<
               {isLastStep && hasError && (
                 <Alert
                   variant="destructive"
-                  className="text-destructive border-destructive mb-4"
+                  className="mb-4 border-destructive text-destructive"
                 >
-                  <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                  <AlertTitle>{tError('validation-errors')}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {
@@ -202,20 +202,20 @@ export function Form<
                         );
                       })
                       .filter(Boolean)
-                      .join("\n")}
+                      .join('\n')}
                   </AlertDescription>
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
-                  name={"pincode" as Path<ZodInfer<S>>}
+                  name={'pincode' as Path<ZodInfer<S>>}
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control}
                   onSubmit={() => {
                     handleSubmitWithAction().catch((error: Error) => {
-                      console.error("Error submitting form:", error);
+                      console.error('Error submitting form:', error);
                     });
                   }}
                 />
@@ -229,7 +229,7 @@ export function Form<
                 onPreviousStep={handlePrev}
                 onNextStep={() => {
                   handleNext().catch((error: Error) => {
-                    console.error("Error in handleNext:", error);
+                    console.error('Error in handleNext:', error);
                   });
                 }}
                 labels={buttonLabels}

@@ -1,37 +1,37 @@
-import { AuthProvider } from "@/components/blocks/auth/auth-provider";
-import { ThemeProvider } from "@/components/blocks/theme/theme-provider";
-import { TransitionProvider } from "@/components/layout/transition-provider";
-import { routing } from "@/i18n/routing";
-import { getServerEnvironment } from "@/lib/config/environment";
-import { cn } from "@/lib/utils";
-import type { Viewport } from "next";
-import { NextIntlClientProvider, type Locale } from "next-intl";
-import { Figtree, Roboto_Mono } from "next/font/google";
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-import { getLangDir } from "rtl-detect";
-import { Toaster } from "sonner";
-import "../globals.css";
+import { AuthProvider } from '@/components/blocks/auth/auth-provider';
+import { ThemeProvider } from '@/components/blocks/theme/theme-provider';
+import { TransitionProvider } from '@/components/layout/transition-provider';
+import { routing } from '@/i18n/routing';
+import { getServerEnvironment } from '@/lib/config/environment';
+import { cn } from '@/lib/utils';
+import type { Viewport } from 'next';
+import { type Locale, NextIntlClientProvider } from 'next-intl';
+import { Figtree, Roboto_Mono } from 'next/font/google';
+import { notFound } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { getLangDir } from 'rtl-detect';
+import { Toaster } from 'sonner';
+import '../globals.css';
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 };
 
 const figTree = Figtree({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
 });
 
 const geistMono = Roboto_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
+  variable: '--font-mono',
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export default async function RootLayout({
