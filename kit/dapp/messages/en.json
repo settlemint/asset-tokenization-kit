@@ -178,26 +178,26 @@
       "holdings": {
         "table": {
           "actions-header": "Action",
+          "active": "Active",
+          "admin": "Admin",
           "balance-header": "Balance",
-          "holder-type-header": "Type",
-          "last-activity-header": "Last activity",
-          "name-header": "Name",
-          "status-header": "Status",
-          "symbol-header": "Symbol",
-          "type-header": "Asset type",
+          "blocked": "Blocked",
           "bond": "Bond",
+          "creator-owner": "Creator / Owner",
           "cryptocurrency": "Cryptocurrency",
           "equity": "Equity",
           "fund": "Fund",
-          "stablecoin": "Stablecoin",
-          "tokenizeddeposit": "Tokenized Deposit",
-          "active": "Active",
+          "holder-type-header": "Type",
+          "last-activity-header": "Last activity",
+          "name-header": "Name",
           "paused": "Paused",
-          "blocked": "Blocked",
-          "admin": "Admin",
-          "creator-owner": "Creator / Owner",
           "regular": "Regular Holder",
-          "supply-manager": "Supply Manager"
+          "stablecoin": "Stablecoin",
+          "status-header": "Status",
+          "supply-manager": "Supply Manager",
+          "symbol-header": "Symbol",
+          "tokenizeddeposit": "Tokenized Deposit",
+          "type-header": "Asset type"
         },
         "title": "Holdings"
       },
@@ -729,20 +729,20 @@
       },
       "table": {
         "actions-header": "Action",
+        "active": "Active",
         "balance-header": "Balance",
-        "name-header": "Name",
-        "status-header": "Status",
-        "symbol-header": "Symbol",
-        "type-header": "Type",
+        "blocked": "Blocked",
         "bond": "Bond",
         "cryptocurrency": "Cryptocurrency",
         "equity": "Equity",
         "fund": "Fund",
-        "stablecoin": "Stablecoin",
-        "tokenizeddeposit": "Tokenized Deposit",
-        "active": "Active",
+        "name-header": "Name",
         "paused": "Paused",
-        "blocked": "Blocked"
+        "stablecoin": "Stablecoin",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "tokenizeddeposit": "Tokenized Deposit",
+        "type-header": "Type"
       },
       "title": "My Assets"
     },
@@ -819,6 +819,7 @@
   },
   "private": {
     "assets": {
+      "asset-statistics-title": "Statistics",
       "create": {
         "bonds": {
           "basics": {
@@ -1326,7 +1327,6 @@
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
         "permissions": {
-          "table-title": "Permissions",
           "actions-header": "Actions",
           "edit-form": {
             "button-label": "Edit Permissions",
@@ -1366,6 +1366,7 @@
             "trigger-label": "Revoke All"
           },
           "roles-header": "Roles",
+          "table-title": "Permissions",
           "wallet-header": "Wallet"
         },
         "related": {
