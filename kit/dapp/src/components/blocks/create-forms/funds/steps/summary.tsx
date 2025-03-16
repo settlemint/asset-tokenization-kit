@@ -3,16 +3,19 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
 import { getPredictedAddress } from '@/lib/queries/fund-factory/predict-address';
+import type { fundCategories, fundClasses } from '@/lib/utils/zod';
 import { DollarSign, Settings } from 'lucide-react';
-import { type MessageKeys, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type UseFormReturn, useFormContext, useWatch } from 'react-hook-form';
+import { FundCategoriesSummary } from './_components/fund-categories-summary';
+import { FundClassesSummary } from './_components/fund-classes-summary';
 
 export function Summary() {
   const { control } = useFormContext<CreateFundInput>();
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('admin.funds.create-form.summary');
+  const t = useTranslations('private.assets.create.funds.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>
@@ -47,27 +50,25 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t('fund-category-label')}
           value={
-            values.fundCategory
-              ? t(
-                  `category-${values.fundCategory.toLowerCase().replace(/_/g, '-')}` as MessageKeys<
-                    'admin.funds.create-form.summary',
-                    'fund-category-label'
-                  >
-                )
-              : '-'
+            values.fundCategory ? (
+              <FundCategoriesSummary
+                value={values.fundCategory as (typeof fundCategories)[number]}
+              />
+            ) : (
+              '-'
+            )
           }
         />
         <FormSummaryDetailItem
           label={t('fund-class-label')}
           value={
-            values.fundClass
-              ? t(
-                  `class-${values.fundClass.toLowerCase().replace(/_/g, '-')}` as MessageKeys<
-                    'admin.funds.create-form.summary',
-                    'fund-class-label'
-                  >
-                )
-              : '-'
+            values.fundClass ? (
+              <FundClassesSummary
+                value={values.fundClass as (typeof fundClasses)[number]}
+              />
+            ) : (
+              '-'
+            )
           }
         />
         <FormSummaryDetailItem

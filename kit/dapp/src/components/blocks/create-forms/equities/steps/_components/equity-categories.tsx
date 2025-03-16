@@ -1,5 +1,6 @@
 import { FormSelect } from '@/components/blocks/form/inputs/form-select';
 import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
+import type { equityCategories } from '@/lib/utils/zod';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 
@@ -11,7 +12,10 @@ export function EquityCategoriesSelect({
   const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations('private.assets.fields');
 
-  const translatedEquityCategories = [
+  const translatedEquityCategories: {
+    value: (typeof equityCategories)[number];
+    label: string;
+  }[] = [
     {
       value: 'COMMON_EQUITY',
       label: t('equity.categories.common-equity'),
@@ -159,7 +163,9 @@ export function EquityCategoriesSelect({
       control={control}
       name="equityCategory"
       label={label}
-      options={translatedEquityCategories}
+      options={translatedEquityCategories.sort((a, b) =>
+        a.label.localeCompare(b.label)
+      )}
       required
     />
   );

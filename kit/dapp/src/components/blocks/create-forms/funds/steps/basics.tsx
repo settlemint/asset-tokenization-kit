@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form';
 
 export function Basics() {
   const { control } = useFormContext<CreateFundInput>();
-  const t = useTranslations('admin.funds.create-form.basics');
+  const t = useTranslations('private.assets.create.funds.basics');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

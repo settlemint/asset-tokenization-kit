@@ -8,7 +8,10 @@ export function EquityClassesSummary({
 }) {
   const t = useTranslations('private.assets.fields');
 
-  const translatedEquityClasses = [
+  const translatedEquityClasses: {
+    value: (typeof equityClasses)[number];
+    label: string;
+  }[] = [
     {
       value: 'COMMON_EQUITY',
       label: t('equity.classes.common-equity'),

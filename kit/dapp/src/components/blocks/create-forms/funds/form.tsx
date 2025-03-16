@@ -22,7 +22,7 @@ export function CreateFundForm({
   onOpenChange,
   asButton = false,
 }: CreateFundFormProps) {
-  const t = useTranslations('admin.funds.create-form');
+  const t = useTranslations('private.assets.create.funds');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

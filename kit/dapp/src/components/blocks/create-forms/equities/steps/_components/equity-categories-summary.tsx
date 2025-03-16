@@ -1,17 +1,17 @@
-import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
 import type { equityCategories } from '@/lib/utils/zod';
 import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
 
 export function EquityCategoriesSummary({
   value,
 }: {
   value: (typeof equityCategories)[number];
 }) {
-  const { control } = useFormContext<CreateEquityInput>();
   const t = useTranslations('private.assets.fields');
 
-  const translatedEquityCategories = [
+  const translatedEquityCategories: {
+    value: (typeof equityCategories)[number];
+    label: string;
+  }[] = [
     {
       value: 'COMMON_EQUITY',
       label: t('equity.categories.common-equity'),
