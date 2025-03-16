@@ -15,7 +15,8 @@ export async function TokenizedDepositsDetails({
   address,
 }: TokenizedDepositsDetailsProps) {
   const tokenizedDeposit = await getTokenizedDepositDetail({ address });
-  const t = await getTranslations('admin.tokenized-deposits.details');
+  const t = await getTranslations('private.assets.fields');
+
   return (
     <Suspense>
       <DetailGrid>

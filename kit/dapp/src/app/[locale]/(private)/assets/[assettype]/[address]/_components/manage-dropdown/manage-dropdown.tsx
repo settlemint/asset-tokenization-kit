@@ -1,6 +1,5 @@
 'use client';
 
-import { GrantRoleForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/manage-dropdown/grant-role-form/form';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import type { Address } from 'viem';
 import type { AssetType } from '../../../types';
 import type { getDetailData } from '../detail-data';
 import { BurnForm } from './burn-form/form';
+import { GrantRoleForm } from './grant-role-form/form';
 import { MatureForm } from './mature-form/form';
 import { MintForm } from './mint-form/form';
 import { PauseForm } from './pause-form/form';
@@ -35,7 +35,7 @@ export function ManageDropdown({
   detail,
   assettype,
 }: ManageDropdownProps) {
-  const t = useTranslations('admin.bonds.manage');
+  const t = useTranslations('private.assets.detail.forms');
   const [openMenuItem, setOpenMenuItem] = useState<
     (typeof menuItems)[number]['id'] | null
   >(null);

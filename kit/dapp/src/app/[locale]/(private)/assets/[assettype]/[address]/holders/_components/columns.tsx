@@ -20,7 +20,7 @@ const columnHelper =
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const t = useTranslations('private.assets.details.holders');
 
   return [

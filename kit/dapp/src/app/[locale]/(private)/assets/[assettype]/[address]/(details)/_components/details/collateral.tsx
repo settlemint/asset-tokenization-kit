@@ -14,7 +14,7 @@ interface CollateralProps {
 
 export async function Collateral({ address }: CollateralProps) {
   const stableCoin = await getStableCoinDetail({ address });
-  const t = await getTranslations('admin.stablecoins.collateral');
+  const t = await getTranslations('private.assets.fields');
 
   return (
     <Suspense>

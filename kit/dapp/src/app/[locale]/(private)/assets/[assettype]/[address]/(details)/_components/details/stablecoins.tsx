@@ -13,7 +13,8 @@ interface StablecoinsDetailsProps {
 
 export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
   const stableCoin = await getStableCoinDetail({ address });
-  const t = await getTranslations('admin.stablecoins.details');
+  const t = await getTranslations('private.assets.fields');
+
   return (
     <Suspense>
       <DetailGrid>

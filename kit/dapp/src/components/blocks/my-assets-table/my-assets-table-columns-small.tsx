@@ -9,9 +9,9 @@ const columnHelper = createColumnHelper<UserAsset>();
 
 export function columnsSmall() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const t = useTranslations('portfolio.my-assets.table');
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const tAssetType = useTranslations('asset-type');
 
   return [

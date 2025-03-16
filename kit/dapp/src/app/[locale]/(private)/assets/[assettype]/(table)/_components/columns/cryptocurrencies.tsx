@@ -14,8 +14,6 @@ const columnHelper =
   >();
 
 export function cryptocurrencyColumns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations('private.assets.fields');
 
   return [

@@ -27,7 +27,6 @@ export default function ApiKeysPage() {
   // Fetch API keys on component mount
   useEffect(() => {
     void fetchApiKeys();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApiKeys = async () => {

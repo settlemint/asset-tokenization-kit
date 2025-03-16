@@ -6,7 +6,9 @@ import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
   const { control } = useFormContext<CreateCryptoCurrencyInput>();
-  const t = useTranslations('admin.cryptocurrencies.create-form.configuration');
+  const t = useTranslations(
+    'private.assets.create.cryptocurrencies.configuration'
+  );
 
   return (
     <FormStep title={t('title')} description={t('description')}>

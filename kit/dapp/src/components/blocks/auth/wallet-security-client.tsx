@@ -30,7 +30,7 @@ export function WalletSecurityClient({
   hasVerification,
 }: WalletSecurityClientProps) {
   const [showDialog, setShowDialog] = useState(!hasVerification);
-  const t = useTranslations('auth.wallet-security');
+  const t = useTranslations('private.auth.wallet-security');
   const router = useRouter();
 
   const onSubmit = async (data: PincodeFormValues) => {

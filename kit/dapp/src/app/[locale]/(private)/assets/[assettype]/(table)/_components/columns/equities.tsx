@@ -18,8 +18,6 @@ type EquityCategory = (typeof equityCategories)[number];
 type EquityClass = (typeof equityClasses)[number];
 
 export function equityColumns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations('private.assets.fields');
 
   const translatedEquityCategories: Record<EquityCategory, string> = {

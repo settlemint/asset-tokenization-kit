@@ -13,7 +13,8 @@ interface EquitiesDetailsProps {
 
 export async function EquitiesDetails({ address }: EquitiesDetailsProps) {
   const equity = await getEquityDetail({ address });
-  const t = await getTranslations('admin.equities.details');
+  const t = await getTranslations('private.assets.fields');
+
   return (
     <Suspense>
       <DetailGrid>

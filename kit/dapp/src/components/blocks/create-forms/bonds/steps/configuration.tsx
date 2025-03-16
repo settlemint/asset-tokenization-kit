@@ -7,7 +7,7 @@ import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
   const { control } = useFormContext<CreateBondInput>();
-  const t = useTranslations('admin.bonds.create-form.configuration');
+  const t = useTranslations('private.assets.create.bonds.configuration');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

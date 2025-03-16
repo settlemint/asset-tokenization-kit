@@ -22,7 +22,7 @@ export function CreateBondForm({
   onOpenChange,
   asButton = false,
 }: CreateBondFormProps) {
-  const t = useTranslations('admin.bonds.create-form');
+  const t = useTranslations('private.assets.create.bonds');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

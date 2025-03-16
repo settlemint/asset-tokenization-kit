@@ -22,7 +22,7 @@ export function CreateCryptoCurrencyForm({
   onOpenChange,
   asButton = false,
 }: CreateCryptoCurrencyFormProps) {
-  const t = useTranslations('admin.cryptocurrencies.create-form');
+  const t = useTranslations('private.assets.create.cryptocurrencies');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

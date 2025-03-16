@@ -15,7 +15,6 @@ const columnHelper =
   >();
 
 export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations('components.transactions-table');
 
   return [

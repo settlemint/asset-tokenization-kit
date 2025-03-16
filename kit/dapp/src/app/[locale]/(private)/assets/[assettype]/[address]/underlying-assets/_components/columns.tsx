@@ -16,11 +16,7 @@ const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
 export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations('admin.asset-holders-tab');
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetStatus = useTranslations('asset-status');
+  const t = useTranslations('private.assets.fields');
 
   return [
     columnHelper.accessor('asset.id', {
@@ -53,7 +49,7 @@ export function columns() {
         variant: 'numeric',
       },
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => formatAssetStatus(row, t), {
       id: t('status-header'),
       header: t('status-header'),
       cell: ({ row }) => {

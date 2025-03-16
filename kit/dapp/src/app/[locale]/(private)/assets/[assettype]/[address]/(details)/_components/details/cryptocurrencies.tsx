@@ -15,7 +15,8 @@ export async function CryptocurrenciesDetails({
   address,
 }: CryptocurrenciesDetailsProps) {
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
-  const t = await getTranslations('admin.cryptocurrencies.details');
+  const t = await getTranslations('private.assets.fields');
+
   return (
     <Suspense>
       <DetailGrid>

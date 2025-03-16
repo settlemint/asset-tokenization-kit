@@ -22,7 +22,7 @@ export function CreateEquityForm({
   onOpenChange,
   asButton = false,
 }: CreateEquityFormProps) {
-  const t = useTranslations('admin.equities.create-form');
+  const t = useTranslations('private.assets.create.equities');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

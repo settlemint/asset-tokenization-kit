@@ -12,11 +12,11 @@ const columnHelper = createColumnHelper<UserAsset>();
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const t = useTranslations('portfolio.my-assets.table');
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const tAssetType = useTranslations('asset-type');
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const tAssetStatus = useTranslations('asset-status');
 
   return [

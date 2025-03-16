@@ -21,7 +21,7 @@ export const icons = {
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
   const t = useTranslations('components.asset-events-table');
 
   return [

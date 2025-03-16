@@ -13,7 +13,7 @@ export function Summary() {
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('admin.bonds.create-form.summary');
+  const t = useTranslations('private.assets.create.bonds.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

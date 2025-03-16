@@ -19,9 +19,7 @@ import type { Address } from 'viem';
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
 export function columns({ address }: { address: Address }) {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations('admin.asset-permissions-tab');
+  const t = useTranslations('private.assets.fields');
 
   return [
     columnHelper.accessor('id', {
