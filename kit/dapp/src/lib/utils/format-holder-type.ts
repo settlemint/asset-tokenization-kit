@@ -13,7 +13,7 @@ export function formatHolderType<
       (admin) => admin.id === assetBalance.account.id
     )
   ) {
-    return t('admin');
+    return t('admin-user');
   }
   if (
     assetBalance.asset.supplyManagers.some(
