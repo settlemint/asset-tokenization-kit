@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { MintSchema } from "./mint-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { getBondDetail } from '@/lib/queries/bond/bond-detail';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { MintSchema } from './mint-schema';
 
 /**
  * GraphQL mutation to mint new bond tokens

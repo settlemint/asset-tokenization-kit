@@ -1,5 +1,5 @@
-import type { TranslationValues } from "next-intl";
-import { toast } from "sonner";
+import type { TranslationValues } from 'next-intl';
+import { toast } from 'sonner';
 
 /**
  * Error with additional context for better error handling
@@ -30,13 +30,13 @@ export interface ErrorToastOptions {
 export function getErrorCode(error: unknown): string {
   if (
     error instanceof Error &&
-    "code" in error &&
-    typeof (error as any).code === "string"
+    'code' in error &&
+    typeof (error as any).code === 'string'
   ) {
-    return (error as ExtendedError).code || "unknown";
+    return (error as ExtendedError).code || 'unknown';
   }
 
-  return "unknown";
+  return 'unknown';
 }
 
 /**
@@ -48,8 +48,8 @@ export function getErrorCode(error: unknown): string {
 export function getErrorContext(error: unknown): Record<string, unknown> {
   if (
     error instanceof Error &&
-    "context" in error &&
-    typeof (error as any).context === "object"
+    'context' in error &&
+    typeof (error as any).context === 'object'
   ) {
     return (error as ExtendedError).context || {};
   }

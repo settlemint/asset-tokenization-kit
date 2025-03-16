@@ -1,6 +1,6 @@
-import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { hasuraGraphql } from '@/lib/settlemint/hasura';
+import { theGraphGraphqlKit } from '@/lib/settlemint/the-graph';
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * GraphQL fragment for permission data related to accounts

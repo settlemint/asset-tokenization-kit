@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth/auth";
-import { headers } from "next/headers";
-import { unauthorized } from "next/navigation";
+import { auth } from '@/lib/auth/auth';
+import { headers } from 'next/headers';
+import { unauthorized } from 'next/navigation';
 
 /**
  * Get the currently authenticated user

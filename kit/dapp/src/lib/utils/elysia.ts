@@ -1,7 +1,7 @@
-import { BigNumber } from "bignumber.js";
-import { Elysia } from "elysia";
-import SuperJSON from "superjson";
-import { auth } from "../auth/auth";
+import { BigNumber } from 'bignumber.js';
+import { Elysia } from 'elysia';
+import SuperJSON from 'superjson';
+import { auth } from '../auth/auth';
 
 SuperJSON.registerCustom<BigNumber, string>(
   {
@@ -9,19 +9,19 @@ SuperJSON.registerCustom<BigNumber, string>(
     serialize: (v) => v.toJSON(),
     deserialize: (v) => new BigNumber(v),
   },
-  "bignumber.js"
+  'bignumber.js'
 );
 
-export const superJson = new Elysia({ name: "superjson" })
+export const superJson = new Elysia({ name: 'superjson' })
   .mapResponse(({ response }) => {
     if (response instanceof Object) {
       const { json } = SuperJSON.serialize(response);
       return new Response(JSON.stringify(json));
     }
   })
-  .as("plugin");
+  .as('plugin');
 
-export const betterAuth = new Elysia({ name: "better-auth" })
+export const betterAuth = new Elysia({ name: 'better-auth' })
   .mount(auth.handler)
   .macro({
     auth: {
@@ -39,4 +39,4 @@ export const betterAuth = new Elysia({ name: "better-auth" })
       },
     },
   })
-  .as("plugin");
+  .as('plugin');

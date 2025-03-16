@@ -1,6 +1,6 @@
-import { isAddressAvailable } from "@/lib/queries/bond-factory/address-available";
-import { type ZodInfer, z } from "@/lib/utils/zod";
-import { isFuture } from "date-fns";
+import { isAddressAvailable } from '@/lib/queries/bond-factory/address-available';
+import { type ZodInfer, z } from '@/lib/utils/zod';
+import { isFuture } from 'date-fns';
 
 /**
  * Zod schema for validating bond creation inputs
@@ -24,17 +24,17 @@ export const CreateBondSchema = z.object({
   cap: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+    .pipe(z.coerce.number().min(1, { message: 'Must be at least 1' })),
   faceValue: z
     .number()
     .or(z.string())
-    .pipe(z.coerce.number().min(1, { message: "Must be at least 1" })),
+    .pipe(z.coerce.number().min(1, { message: 'Must be at least 1' })),
   maturityDate: z
     .string()
-    .refine(isFuture, { message: "Maturity date must be in the future" }),
+    .refine(isFuture, { message: 'Maturity date must be in the future' }),
   underlyingAsset: z.address(),
   predictedAddress: z.address().refine(isAddressAvailable, {
-    message: "bond.duplicate",
+    message: 'bond.duplicate',
   }),
 });
 

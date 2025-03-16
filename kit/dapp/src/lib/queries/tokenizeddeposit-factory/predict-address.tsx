@@ -1,11 +1,11 @@
-"use server";
-import { getUser } from "@/lib/auth/utils";
-import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateTokenizedDepositInput } from "@/lib/mutations/tokenized-deposit/create/create-schema";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import { cache } from "react";
-import type { Address } from "viem";
+'use server';
+import { getUser } from '@/lib/auth/utils';
+import { TOKENIZED_DEPOSIT_FACTORY_ADDRESS } from '@/lib/contracts';
+import type { CreateTokenizedDepositInput } from '@/lib/mutations/tokenized-deposit/create/create-schema';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { cache } from 'react';
+import type { Address } from 'viem';
 
 /**
  * GraphQL query for predicting the address of a new stablecoin
@@ -61,7 +61,7 @@ export const getPredictedAddress = cache(
     const predictedAddress = safeParseWithLogging(
       PredictedAddressSchema,
       data,
-      "tokenized deposit"
+      'tokenized deposit'
     );
 
     return predictedAddress.TokenizedDepositFactory.predictAddress.predicted;

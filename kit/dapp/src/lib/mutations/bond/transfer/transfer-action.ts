@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { getBondDetail } from "@/lib/queries/bond/bond-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { TransferBondSchema } from "./transfer-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { getBondDetail } from '@/lib/queries/bond/bond-detail';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { TransferBondSchema } from './transfer-schema';
 
 /**
  * GraphQL mutation to transfer bond tokens
@@ -31,10 +31,7 @@ export const transfer = action
   .schema(TransferBondSchema)
   .outputSchema(z.hashes())
   .action(
-    async ({
-      parsedInput: { address, pincode, value, to },
-      ctx: { user },
-    }) => {
+    async ({ parsedInput: { address, pincode, value, to }, ctx: { user } }) => {
       const { decimals } = await getBondDetail({ address });
 
       const response = await portalClient.request(BondTransfer, {

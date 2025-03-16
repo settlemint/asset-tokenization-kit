@@ -1,12 +1,12 @@
-"use server";
-import { getUser } from "@/lib/auth/utils";
-import { BOND_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { formatDate } from "@/lib/utils/date";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import { cache } from "react";
-import { parseUnits, type Address } from "viem";
+'use server';
+import { getUser } from '@/lib/auth/utils';
+import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
+import type { CreateBondInput } from '@/lib/mutations/bond/create/create-schema';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { formatDate } from '@/lib/utils/date';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { type Address, parseUnits } from 'viem';
 
 /**
  * GraphQL query for predicting the address of a new bond
@@ -61,7 +61,7 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
 
   const capExact = String(parseUnits(String(cap), decimals));
   const maturityDateTimestamp = formatDate(maturityDate, {
-    type: "unixSeconds",
+    type: 'unixSeconds',
   });
 
   const data = await portalClient.request(CreateBondPredictAddress, {
@@ -79,7 +79,7 @@ export const getPredictedAddress = cache(async (input: CreateBondInput) => {
   const predictedAddress = safeParseWithLogging(
     PredictedAddressSchema,
     data,
-    "bond"
+    'bond'
   );
 
   return predictedAddress.BondFactory.predictAddress.predicted;

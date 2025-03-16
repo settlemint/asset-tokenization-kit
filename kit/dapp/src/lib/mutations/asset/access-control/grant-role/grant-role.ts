@@ -1,11 +1,11 @@
-import { handleChallenge } from "@/lib/challenge";
-import { getRoleIdentifier, type Role } from "@/lib/config/roles";
-import { action } from "@/lib/mutations/safe-action";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
-import type { ResultOf, VariablesOf } from "@settlemint/sdk-portal";
-import { GrantRoleSchema } from "./grant-role-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { type Role, getRoleIdentifier } from '@/lib/config/roles';
+import { action } from '@/lib/mutations/safe-action';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { ResultOf, VariablesOf } from '@settlemint/sdk-portal';
+import { GrantRoleSchema } from './grant-role-schema';
 
 /**
  * GraphQL mutation for granting a role to a user for a stablecoin

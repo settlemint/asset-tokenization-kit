@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { CreateApiKeyForm } from "@/components/blocks/api-key/create-api-key-form";
-import { TopInfo } from "@/components/blocks/top-info/top-info";
-import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/client";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { CreateApiKeyForm } from '@/components/blocks/api-key/create-api-key-form';
+import { TopInfo } from '@/components/blocks/top-info/top-info';
+import { PageHeader } from '@/components/layout/page-header';
+import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth/client';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface ApiKey {
   id: string;
@@ -20,14 +20,13 @@ interface ApiKey {
 }
 
 export default function ApiKeysPage() {
-  const t = useTranslations("portfolio.settings.api-keys");
+  const t = useTranslations('portfolio.settings.api-keys');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
 
   // Fetch API keys on component mount
   useEffect(() => {
     void fetchApiKeys();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApiKeys = async () => {
@@ -37,19 +36,19 @@ export default function ApiKeysPage() {
         setApiKeys(response.data);
       }
     } catch (error) {
-      console.error("Failed to fetch API keys:", error);
-      toast.error(t("fetch-error"));
+      console.error('Failed to fetch API keys:', error);
+      toast.error(t('fetch-error'));
     }
   };
 
   return (
     <>
       <PageHeader
-        title={t("title")}
-        section={t("portfolio-management")}
+        title={t('title')}
+        section={t('portfolio-management')}
         button={
           <Button onClick={() => setIsCreateModalOpen(true)}>
-            {t("create-api-key")}
+            {t('create-api-key')}
           </Button>
         }
       />
@@ -60,11 +59,11 @@ export default function ApiKeysPage() {
         onSuccess={fetchApiKeys}
       />
 
-      <TopInfo title={t("swagger-title")}>
+      <TopInfo title={t('swagger-title')}>
         <div className="flex flex-col gap-4">
-          <p>{t("swagger-description")}</p>
-          <a href="/api/swagger" target="_blank">
-            <Button>{t("swagger-link-text")}</Button>
+          <p>{t('swagger-description')}</p>
+          <a href="/api/swagger" target="_blank" rel="noreferrer">
+            <Button>{t('swagger-link-text')}</Button>
           </a>
         </div>
       </TopInfo>
@@ -77,18 +76,18 @@ export default function ApiKeysPage() {
           >
             <div className="space-y-1">
               <div className="font-medium">{apiKey.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {t("created-at")}: {apiKey.createdAt.toLocaleString()}
+              <div className="text-muted-foreground text-sm">
+                {t('created-at')}: {apiKey.createdAt.toLocaleString()}
               </div>
-              <div className="text-sm text-muted-foreground">
-                {t("last-used")}:{" "}
+              <div className="text-muted-foreground text-sm">
+                {t('last-used')}:{' '}
                 {apiKey.lastRequest
                   ? apiKey.lastRequest.toLocaleString()
-                  : t("never")}
+                  : t('never')}
               </div>
               {apiKey.expiresAt && (
-                <div className="text-sm text-muted-foreground">
-                  {t("expires-at")}: {apiKey.expiresAt.toLocaleString()}
+                <div className="text-muted-foreground text-sm">
+                  {t('expires-at')}: {apiKey.expiresAt.toLocaleString()}
                 </div>
               )}
             </div>

@@ -1,6 +1,6 @@
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { cache } from "react";
-import type { Address } from "viem";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { cache } from 'react';
+import type { Address } from 'viem';
 
 /**
  * GraphQL query to fetch processed and recent transactions from the Portal API

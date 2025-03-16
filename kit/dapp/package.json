@@ -14,8 +14,7 @@
     "build": "next build",
     "start": "next start",
     "test": "bun test",
-    "format": "prettier --write .",
-    "lint": "next lint",
+    "lint": "biome check --write",
     "addresses": "bash contract-addresses.sh",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
@@ -61,7 +60,7 @@
     "bignumber.js": "9.1.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "cmdk": "1.0.4",
+    "cmdk": "1.1.1",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.40.0",
     "elysia": "1.2.25",
@@ -91,8 +90,6 @@
   },
   "devDependencies": {
     "@better-auth/cli": "1.2.4",
-    "@eslint/eslintrc": "3.3.0",
-    "@eslint/js": "9.22.0",
     "@tailwindcss/postcss": "4.0.14",
     "@types/node": "22.13.10",
     "@types/pg": "8.11.11",
@@ -101,17 +98,14 @@
     "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
     "dotenv": "16.4.7",
     "drizzle-kit": "0.30.5",
-    "eslint": "9.22.0",
-    "eslint-config-next": "15.2.2",
     "languine": "3.1.2",
     "postcss": "8.5.3",
     "tailwindcss": "4.0.14",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "ultracite": "4.1.21"
   },
   "peerDependencies": {},
-  "trustedDependencies": [
-    "sharp"
-  ],
+  "trustedDependencies": ["sharp"],
   "overrides": {
     "react-is": "19.0.0"
   }

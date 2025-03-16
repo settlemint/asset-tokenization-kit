@@ -1,15 +1,15 @@
-import type { Role } from "@/lib/config/roles";
-import { action } from "@/lib/mutations/safe-action";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import type { Role } from '@/lib/config/roles';
+import { action } from '@/lib/mutations/safe-action';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
 import {
-  getGrantRoleAction,
   type GrantRoleMutation,
-} from "../grant-role/grant-role";
+  getGrantRoleAction,
+} from '../grant-role/grant-role';
 import {
-  getRevokeRoleAction,
   type RevokeRoleMutation,
-} from "../revoke-role/revoke-role";
-import { UpdateRolesSchema } from "./update-role-schema";
+  getRevokeRoleAction,
+} from '../revoke-role/revoke-role';
+import { UpdateRolesSchema } from './update-role-schema';
 
 /**
  * Server action for updating a user's roles for a equity
@@ -53,13 +53,13 @@ export const getUpdateRolesAction = ({
       const rolesToEnable: Record<string, boolean> = {};
       const rolesToDisable: Record<string, boolean> = {};
 
-      Object.entries(roles).forEach(([role, enabled]) => {
+      for (const [role, enabled] of Object.entries(roles)) {
         if (enabled) {
           rolesToEnable[role] = true;
         } else {
           rolesToDisable[role] = true;
         }
-      });
+      }
       const grantRole = getGrantRoleAction(grantRoleMutation);
       const revokeRole = getRevokeRoleAction(revokeRoleMutation);
 

@@ -1,11 +1,11 @@
-"use server";
-import { getUser } from "@/lib/auth/utils";
-import { FUND_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import { cache } from "react";
-import type { Address } from "viem";
+'use server';
+import { getUser } from '@/lib/auth/utils';
+import { FUND_FACTORY_ADDRESS } from '@/lib/contracts';
+import type { CreateFundInput } from '@/lib/mutations/fund/create/create-schema';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { cache } from 'react';
+import type { Address } from 'viem';
 
 /**
  * GraphQL query for predicting the address of a new fund
@@ -71,7 +71,7 @@ export const getPredictedAddress = cache(async (input: CreateFundInput) => {
   const predictedAddress = safeParseWithLogging(
     PredictedAddressSchema,
     data,
-    "fund"
+    'fund'
   );
 
   return predictedAddress.FundFactory.predictAddress.predicted;

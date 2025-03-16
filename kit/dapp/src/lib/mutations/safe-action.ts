@@ -1,26 +1,26 @@
-import { auth } from "@/lib/auth/auth";
-import type { User } from "better-auth";
+import { auth } from '@/lib/auth/auth';
+import type { User } from 'better-auth';
 import {
-  createSafeActionClient,
   type ValidationErrors,
-} from "next-safe-action";
-import { headers } from "next/headers";
-import { unauthorized } from "next/navigation";
-import type { Address } from "viem";
-import type { Schema } from "zod";
+  createSafeActionClient,
+} from 'next-safe-action';
+import { headers } from 'next/headers';
+import { unauthorized } from 'next/navigation';
+import type { Address } from 'viem';
+import type { Schema } from 'zod';
 
 type ValidationError = Error & {
   validationErrors: ValidationErrors<Schema>;
 };
 
 function isValidationError(error: Error): error is ValidationError {
-  return "validationErrors" in error;
+  return 'validationErrors' in error;
 }
 
 function consoleErrorValidationErrors(error: Error) {
   if (isValidationError(error)) {
     console.error(
-      "Validation Errors ->",
+      'Validation Errors ->',
       JSON.stringify(error.validationErrors, null, 2)
     );
   }
@@ -28,25 +28,25 @@ function consoleErrorValidationErrors(error: Error) {
 
 export const action = createSafeActionClient({
   throwValidationErrors: true,
-  defaultValidationErrorsShape: "formatted",
+  defaultValidationErrorsShape: 'formatted',
   handleServerError: (error: Error, { clientInput, metadata }) => {
-    console.error("\n" + "=".repeat(80));
-    console.error("🚨 Server Action Error");
-    console.error("=".repeat(80));
+    console.error(`\n${'='.repeat(80)}`);
+    console.error('🚨 Server Action Error');
+    console.error('='.repeat(80));
 
-    console.error("\n📥 Input Data:");
+    console.error('\n📥 Input Data:');
     console.error(redactSensitiveFields(clientInput));
 
-    console.error("\n🔍 Metadata:");
+    console.error('\n🔍 Metadata:');
     console.error(redactSensitiveFields(metadata));
 
-    console.error("\n❌ Error Details:");
+    console.error('\n❌ Error Details:');
     console.error(error);
 
-    console.error("\n🔍 Validation Info:");
+    console.error('\n🔍 Validation Info:');
     consoleErrorValidationErrors(error);
 
-    console.error("\n" + "=".repeat(80) + "\n");
+    console.error(`\n${'='.repeat(80)}\n`);
 
     return getErrorMessage(error);
   },
@@ -54,21 +54,22 @@ export const action = createSafeActionClient({
   .use(async ({ next, clientInput, metadata }) => {
     const result = await next({ ctx: undefined });
 
-    console.log("\n" + "=".repeat(80));
-    console.log("🔍 Server Action");
-    console.log("=".repeat(80));
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`\n${'='.repeat(80)}`);
+      console.log('🔍 Server Action');
+      console.log('='.repeat(80));
 
-    console.log("\n📥 Input Data:");
-    console.log(redactSensitiveFields(clientInput));
+      console.log('\n📥 Input Data:');
+      console.log(redactSensitiveFields(clientInput));
 
-    console.log("\n🔍 Metadata:");
-    console.log(redactSensitiveFields(metadata));
+      console.log('\n🔍 Metadata:');
+      console.log(redactSensitiveFields(metadata));
 
-    console.log("\n📤 Output:");
-    console.log(redactSensitiveFields(result.data));
+      console.log('\n📤 Output:');
+      console.log(redactSensitiveFields(result.data));
 
-    console.log("\n" + "=".repeat(80) + "\n");
-
+      console.log(`\n${'='.repeat(80)}\n`);
+    }
     return result;
   })
   .use(async ({ next }) => {
@@ -82,7 +83,7 @@ export const action = createSafeActionClient({
 
     return next({
       ctx: {
-        user: session.user as Omit<User, "wallet"> & { wallet: Address },
+        user: session.user as Omit<User, 'wallet'> & { wallet: Address },
       },
     });
   });
@@ -92,25 +93,25 @@ export const action = createSafeActionClient({
  */
 function getErrorMessage(error: Error): string {
   if (!(error instanceof Error)) {
-    return "An unexpected error occurred";
+    return 'An unexpected error occurred';
   }
 
-  if (error.message.includes("Invalid challenge response")) {
-    return "Invalid pincode or OTP";
+  if (error.message.includes('Invalid challenge response')) {
+    return 'Invalid pincode or OTP';
   }
 
   const revertReason = getRevertReason(error);
-  if (revertReason?.includes("AccessControlUnauthorizedAccount")) {
-    return "You are not authorized to perform this action";
+  if (revertReason?.includes('AccessControlUnauthorizedAccount')) {
+    return 'You are not authorized to perform this action';
   }
-  return revertReason ?? "An unexpected error occurred";
+  return revertReason ?? 'An unexpected error occurred';
 }
 
 const REVERT_REGEX =
-  /^The\s+contract\s+function\s+\".*?\"\s+reverted\.\s+Error:\s+(.*?)\(/i;
+  /^The\s+contract\s+function\s+".*?"\s+reverted\.\s+Error:\s+(.*?)\(/i;
 
 function getRevertReason(error: Error): string | undefined {
-  const match = error.message.replace(/\n/g, " ").match(REVERT_REGEX);
+  const match = error.message.replace(/\n/g, ' ').match(REVERT_REGEX);
   if (match) {
     return match[1];
   }
@@ -121,7 +122,7 @@ function getRevertReason(error: Error): string | undefined {
  * Redacts sensitive fields in an object by replacing their values with asterisks
  */
 function redactSensitiveFields(obj: unknown): unknown {
-  if (typeof obj !== "object" || obj === null) {
+  if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
 
@@ -131,10 +132,10 @@ function redactSensitiveFields(obj: unknown): unknown {
 
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => {
-      if (key === "pincode") {
-        return [key, "******"];
+      if (key === 'pincode') {
+        return [key, '******'];
       }
-      if (typeof value === "object" && value !== null) {
+      if (typeof value === 'object' && value !== null) {
         return [key, redactSensitiveFields(value)];
       }
       return [key, value];

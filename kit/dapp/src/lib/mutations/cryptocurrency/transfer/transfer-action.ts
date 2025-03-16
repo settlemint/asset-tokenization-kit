@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { TransferCryptoCurrencySchema } from "./transfer-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { getCryptoCurrencyDetail } from '@/lib/queries/cryptocurrency/cryptocurrency-detail';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { TransferCryptoCurrencySchema } from './transfer-schema';
 
 /**
  * GraphQL mutation to transfer cryptocurrency tokens
@@ -31,10 +31,7 @@ export const transfer = action
   .schema(TransferCryptoCurrencySchema)
   .outputSchema(z.hashes())
   .action(
-    async ({
-      parsedInput: { address, pincode, value, to },
-      ctx: { user },
-    }) => {
+    async ({ parsedInput: { address, pincode, value, to }, ctx: { user } }) => {
       const { decimals } = await getCryptoCurrencyDetail({ address });
 
       const response = await portalClient.request(TransferCryptoCurrency, {

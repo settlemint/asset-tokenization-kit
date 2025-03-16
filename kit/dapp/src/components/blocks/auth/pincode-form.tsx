@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,18 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
+} from '@/components/ui/input-otp';
 
 // Zod schema for the pincode form
 const pincodeSchema = z.object({
-  pincodeName: z.string().min(1, "Name is required"),
-  pincode: z.string().length(6, "Pincode must be 6 digits"),
+  pincodeName: z.string().min(1, 'Name is required'),
+  pincode: z.string().length(6, 'Pincode must be 6 digits'),
 });
 
 export type PincodeFormValues = z.infer<typeof pincodeSchema>;
@@ -34,13 +34,13 @@ interface PincodeFormProps {
 }
 
 export function PincodeForm({ onSubmit }: PincodeFormProps) {
-  const t = useTranslations("auth.pincode-form");
+  const t = useTranslations('private.auth.pincode-form');
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),
     defaultValues: {
-      pincodeName: "Default PIN",
-      pincode: "",
+      pincodeName: 'Default PIN',
+      pincode: '',
     },
   });
 
@@ -52,7 +52,7 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
           name="pincodeName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("name-label")}</FormLabel>
+              <FormLabel>{t('name-label')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -66,7 +66,7 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
           name="pincode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("pincode-label")}</FormLabel>
+              <FormLabel>{t('pincode-label')}</FormLabel>
               <FormControl>
                 <InputOTP
                   maxLength={6}
@@ -89,7 +89,7 @@ export function PincodeForm({ onSubmit }: PincodeFormProps) {
         />
 
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? t("setting-up") : t("submit")}
+          {form.formState.isSubmitting ? t('setting-up') : t('submit')}
         </Button>
       </form>
     </Form>

@@ -1,7 +1,7 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+'use client';
+'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -9,10 +9,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { Table } from "@tanstack/react-table";
-import { Settings2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/dropdown-menu';
+import type { Table } from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -21,7 +21,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const t = useTranslations("components.data-table");
+  const t = useTranslations('components.data-table');
 
   return (
     <DropdownMenu>
@@ -29,20 +29,20 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex border-muted-foreground text-muted-foreground"
+          className="ml-auto hidden h-8 border-muted-foreground text-muted-foreground lg:flex"
         >
           <Settings2 />
-          {t("view")}
+          {t('view')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>{t("toggle-columns")}</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('toggle-columns')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
           .filter(
             (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
+              typeof column.accessorFn !== 'undefined' && column.getCanHide()
           )
           .map((column) => {
             return (

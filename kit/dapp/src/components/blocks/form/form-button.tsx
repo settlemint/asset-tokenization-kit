@@ -1,11 +1,11 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler
+'use client';
+'use no memo'; // fixes rerendering with react compiler
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useFormContext } from "react-hook-form";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useFormContext } from 'react-hook-form';
 
 export type ButtonLabels = {
   label?: string;
@@ -54,14 +54,14 @@ export function FormButton({
     formState: { isSubmitting, errors },
   } = useFormContext();
   const isLastStep = currentStep === totalSteps - 1;
-  const t = useTranslations("components.form.button");
+  const t = useTranslations('components.form.button');
   if (hideButtons) {
     return null;
   }
   const defaultLabels = {
-    label: t("send-transaction"),
-    submittingLabel: t("sending-transaction"),
-    processingLabel: t("processing"),
+    label: t('send-transaction'),
+    submittingLabel: t('sending-transaction'),
+    processingLabel: t('processing'),
   };
 
   const finalLabels = {
@@ -82,9 +82,9 @@ export function FormButton({
       );
     }
     if (isSecurityDialogOpen) {
-      return <Loader2 size={16} className="animate-spin min-w-20" />;
+      return <Loader2 size={16} className="min-w-20 animate-spin" />;
     }
-    return isLastStep ? finalLabels.label : t("next");
+    return isLastStep ? finalLabels.label : t('next');
   };
 
   const disabled =
@@ -96,21 +96,21 @@ export function FormButton({
           type="button"
           variant="outline"
           onClick={onPreviousStep}
-          aria-label={t("previous")}
+          aria-label={t('previous')}
           disabled={isSubmitting}
         >
-          {t("previous")}
+          {t('previous')}
         </Button>
       )}
 
       <Button
-        type={isLastStep ? (onLastStep ? "button" : "submit") : "button"}
+        type={isLastStep ? (onLastStep ? 'button' : 'submit') : 'button'}
         variant="default"
         onClick={isLastStep ? onLastStep : onNextStep}
-        aria-label={isLastStep ? finalLabels.label : t("next")}
+        aria-label={isLastStep ? finalLabels.label : t('next')}
         className={cn(
-          currentStep === 0 ? "ml-auto" : "",
-          "bg-accent text-accent-foreground shadow-inset"
+          currentStep === 0 ? 'ml-auto' : '',
+          'bg-accent text-accent-foreground shadow-inset'
         )}
         disabled={disabled}
       >

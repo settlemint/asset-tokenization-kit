@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
+import { handleChallenge } from '@/lib/challenge';
 import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { WithdrawSchema } from "./withdraw-schema";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { WithdrawSchema } from './withdraw-schema';
 
 /**
  * GraphQL mutation for withdrawing the underlying asset of a bond
@@ -14,8 +14,8 @@ import { WithdrawSchema } from "./withdraw-schema";
  * @remarks
  * This mutation requires authentication via challenge response
  */
-const WithdrawUnderlyingAsset = portalGraphql(`
-  mutation WithdrawUnderlyingAsset(
+const BondWithdrawUnderlyingAsset = portalGraphql(`
+  mutation BondWithdrawUnderlyingAsset(
     $address: String!,
     $from: String!,
     $challengeResponse: String!,
@@ -42,7 +42,7 @@ export const withdrawUnderlyingAsset = action
     }) => {
       const asset = await getAssetDetail({ address: underlyingAssetAddress });
 
-      const response = await portalClient.request(WithdrawUnderlyingAsset, {
+      const response = await portalClient.request(BondWithdrawUnderlyingAsset, {
         address,
         from: user.wallet,
         input: {
@@ -53,9 +53,11 @@ export const withdrawUnderlyingAsset = action
       });
 
       if (!response.BondWithdrawUnderlyingAsset?.transactionHash) {
-        throw new Error("Failed to get transaction hash");
+        throw new Error('Failed to get transaction hash');
       }
 
-      return z.hashes().parse([response.BondWithdrawUnderlyingAsset.transactionHash]);
+      return z
+        .hashes()
+        .parse([response.BondWithdrawUnderlyingAsset.transactionHash]);
     }
   );

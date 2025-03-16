@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 
-"use server";
+'use server';
 
 import {
   BondGrantRole,
   CryptoCurrencyGrantRole,
   EquityGrantRole,
   FundGrantRole,
-  getGrantRoleAction,
   StableCoinGrantRole,
-} from "./grant-role";
+  getGrantRoleAction,
+} from './grant-role';
 
 export const stablecoinGrantRoleAction =
   getGrantRoleAction(StableCoinGrantRole);

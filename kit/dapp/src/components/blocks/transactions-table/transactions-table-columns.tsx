@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
-import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
-import type { getRecentTransactions } from "@/lib/queries/transactions/transactions-recent";
-import { formatDate } from "@/lib/utils/date";
-import { createColumnHelper } from "@tanstack/react-table";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { TransactionDetailSheet } from "./transaction-table-detail-sheet";
+import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
+import { TransactionHash } from '@/components/blocks/transaction-hash/transaction-hash';
+import type { getRecentTransactions } from '@/lib/queries/transactions/transactions-recent';
+import { formatDate } from '@/lib/utils/date';
+import { createColumnHelper } from '@tanstack/react-table';
+import { CheckCircle, Clock, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { TransactionDetailSheet } from './transaction-table-detail-sheet';
 
 const columnHelper =
   createColumnHelper<
@@ -15,30 +15,29 @@ const columnHelper =
   >();
 
 export function columns() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("components.transactions-table");
+  const t = useTranslations('components.transactions-table');
 
   return [
-    columnHelper.accessor("receipt.status", {
-      id: "status",
-      header: t("columns.status"),
+    columnHelper.accessor('receipt.status', {
+      id: 'status',
+      header: t('columns.status'),
       cell: ({ getValue }) => {
         const status = getValue();
         const Icon =
-          status === "Success"
+          status === 'Success'
             ? icons.success
-            : status === "Reverted"
+            : status === 'Reverted'
               ? icons.failed
               : icons.pending;
         return (
           <div className="flex items-center gap-2">
             <Icon
               className={
-                status === "Success"
-                  ? "text-success"
-                  : status === "Reverted"
-                    ? "text-destructive"
-                    : "text-muted-foreground"
+                status === 'Success'
+                  ? 'text-success'
+                  : status === 'Reverted'
+                    ? 'text-destructive'
+                    : 'text-muted-foreground'
               }
               size={18}
             />
@@ -47,29 +46,29 @@ export function columns() {
         );
       },
     }),
-    columnHelper.accessor("createdAt", {
-      header: t("columns.created-at"),
+    columnHelper.accessor('createdAt', {
+      header: t('columns.created-at'),
       cell: ({ getValue }) => formatDate(getValue() ?? new Date()),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("functionName", {
-      header: t("columns.function"),
+    columnHelper.accessor('functionName', {
+      header: t('columns.function'),
     }),
-    columnHelper.accessor("from", {
-      header: t("columns.from"),
+    columnHelper.accessor('from', {
+      header: t('columns.from'),
       cell: ({ getValue }) => <EvmAddress address={getValue()} />,
     }),
-    columnHelper.accessor("address", {
-      header: t("columns.contract"),
+    columnHelper.accessor('address', {
+      header: t('columns.contract'),
       cell: ({ getValue }) => <EvmAddress address={getValue()} />,
     }),
-    columnHelper.accessor("transactionHash", {
-      header: t("columns.transaction-hash"),
+    columnHelper.accessor('transactionHash', {
+      header: t('columns.transaction-hash'),
       cell: ({ getValue }) => <TransactionHash hash={getValue()} />,
     }),
     columnHelper.display({
-      id: "actions",
-      header: t("columns.actions"),
+      id: 'actions',
+      header: t('columns.actions'),
       cell: ({ row }) => (
         <TransactionDetailSheet
           address={row.original.address}

@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from 'react';
 
 interface FormSummaryDetailCardProps extends PropsWithChildren {
   icon: ReactNode;

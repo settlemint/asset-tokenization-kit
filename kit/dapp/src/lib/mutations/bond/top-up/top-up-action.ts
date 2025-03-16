@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { z } from "@/lib/utils/zod";
-import { parseUnits } from "viem";
-import { action } from "../../safe-action";
-import { TopUpSchema } from "./top-up-schema";
+import { handleChallenge } from '@/lib/challenge';
+import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { z } from '@/lib/utils/zod';
+import { parseUnits } from 'viem';
+import { action } from '../../safe-action';
+import { TopUpSchema } from './top-up-schema';
 
 const StableCoinApprove = portalGraphql(`
   mutation StableCoinApprove(
@@ -60,7 +60,10 @@ export const topUpUnderlyingAsset = action
     }) => {
       const asset = await getAssetDetail({ address: underlyingAssetAddress });
 
-      const formattedAmount = parseUnits(amount.toString(), asset.decimals).toString();
+      const formattedAmount = parseUnits(
+        amount.toString(),
+        asset.decimals
+      ).toString();
 
       const approvalData = await portalClient.request(StableCoinApprove, {
         address: underlyingAssetAddress,
@@ -74,7 +77,9 @@ export const topUpUnderlyingAsset = action
 
       const approvalTxHash = approvalData.StableCoinApprove?.transactionHash;
       if (!approvalTxHash) {
-        throw new Error('Failed to approve the bond to spend the underlying asset');
+        throw new Error(
+          'Failed to approve the bond to spend the underlying asset'
+        );
       }
 
       const response = await portalClient.request(BondTopUpUnderlyingAsset, {
@@ -87,9 +92,11 @@ export const topUpUnderlyingAsset = action
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
-        throw new Error("Failed to get transaction hash");
+        throw new Error('Failed to get transaction hash');
       }
 
-      return z.hashes().parse([response.BondTopUpUnderlyingAsset.transactionHash]);
+      return z
+        .hashes()
+        .parse([response.BondTopUpUnderlyingAsset.transactionHash]);
     }
   );

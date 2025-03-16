@@ -1,14 +1,17 @@
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { cache } from "react";
-import { getAddress, type Address } from "viem";
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
-    EquityFragment,
-    EquityFragmentSchema,
-    OffchainEquityFragment,
-    OffchainEquityFragmentSchema,
-} from "./equity-fragment";
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { type Address, getAddress } from 'viem';
+import {
+  EquityFragment,
+  EquityFragmentSchema,
+  OffchainEquityFragment,
+  OffchainEquityFragmentSchema,
+} from './equity-fragment';
 
 /**
  * GraphQL query to fetch on-chain equity details from The Graph
@@ -64,13 +67,13 @@ export const getEquityDetail = cache(async ({ address }: EquityDetailProps) => {
   const equity = safeParseWithLogging(
     EquityFragmentSchema,
     data.equity,
-    "equity"
+    'equity'
   );
   const offchainEquity = dbEquity.asset[0]
     ? safeParseWithLogging(
         OffchainEquityFragmentSchema,
         dbEquity.asset[0],
-        "offchain equity"
+        'offchain equity'
       )
     : undefined;
 

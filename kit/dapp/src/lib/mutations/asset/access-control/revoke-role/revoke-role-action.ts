@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 
-"use server";
+'use server';
 import {
   BondRevokeRole,
   CryptoCurrencyRevokeRole,
   EquityRevokeRole,
   FundRevokeRole,
-  getRevokeRoleAction,
   StableCoinRevokeRole,
-} from "./revoke-role";
+  getRevokeRoleAction,
+} from './revoke-role';
 
 export const stablecoinRevokeRoleAction =
   getRevokeRoleAction(StableCoinRevokeRole);

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 
-"use server";
+'use server';
 
 import {
   BondGrantRole,
@@ -8,15 +8,15 @@ import {
   EquityGrantRole,
   FundGrantRole,
   StableCoinGrantRole,
-} from "../grant-role/grant-role";
+} from '../grant-role/grant-role';
 import {
   BondRevokeRole,
   CryptoCurrencyRevokeRole,
   EquityRevokeRole,
   FundRevokeRole,
   StableCoinRevokeRole,
-} from "../revoke-role/revoke-role";
-import { getUpdateRolesAction } from "./update-roles";
+} from '../revoke-role/revoke-role';
+import { getUpdateRolesAction } from './update-roles';
 
 export const stableCoinUpdatePermissionsAction = getUpdateRolesAction({
   grantRoleMutation: StableCoinGrantRole,
