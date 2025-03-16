@@ -184,7 +184,20 @@
           "name-header": "Name",
           "status-header": "Status",
           "symbol-header": "Symbol",
-          "type-header": "Asset type"
+          "type-header": "Asset type",
+          "bond": "Bond",
+          "cryptocurrency": "Cryptocurrency",
+          "equity": "Equity",
+          "fund": "Fund",
+          "stablecoin": "Stablecoin",
+          "tokenizeddeposit": "Tokenized Deposit",
+          "active": "Active",
+          "paused": "Paused",
+          "blocked": "Blocked",
+          "admin": "Admin",
+          "creator-owner": "Creator / Owner",
+          "regular": "Regular Holder",
+          "supply-manager": "Supply Manager"
         },
         "title": "Holdings"
       },
@@ -720,7 +733,16 @@
         "name-header": "Name",
         "status-header": "Status",
         "symbol-header": "Symbol",
-        "type-header": "Type"
+        "type-header": "Type",
+        "bond": "Bond",
+        "cryptocurrency": "Cryptocurrency",
+        "equity": "Equity",
+        "fund": "Fund",
+        "stablecoin": "Stablecoin",
+        "tokenizeddeposit": "Tokenized Deposit",
+        "active": "Active",
+        "paused": "Paused",
+        "blocked": "Blocked"
       },
       "title": "My Assets"
     },
@@ -1304,7 +1326,47 @@
         "page-description": "Explore comprehensive data and metrics for {name}.",
         "page-title": "{name} Details",
         "permissions": {
-          "table-title": "Permissions"
+          "table-title": "Permissions",
+          "actions-header": "Actions",
+          "edit-form": {
+            "button-label": "Edit Permissions",
+            "description": "Update the permissions and access levels assigned for {name}.",
+            "roles": {
+              "description": "Choose the roles to assign to this user. At least one role must be selected.",
+              "title": "Select User Roles"
+            },
+            "summary": {
+              "current-roles-label": "Current roles",
+              "description": "Verify the details before proceeding. This action will change the roles for the user.",
+              "new-roles-label": "New roles",
+              "operation-description": "Updating roles operation details",
+              "title": "Review and confirm new roles",
+              "update-title": "Update Roles",
+              "user-label": "User"
+            },
+            "trigger-label": "Edit Roles"
+          },
+          "last-activity-header": "Last Activity",
+          "page-description": "Permission management for {name} stablecoin",
+          "page-title": "{name} Permissions",
+          "permissions-page-description": "Manage user roles and access rights for {name}.",
+          "permissions-page-title": "{name} Permissions",
+          "revoke-all-form": {
+            "button-label": "Revoke Access",
+            "description": "Completely revoke this user's access and permissions.",
+            "summary": {
+              "description": "Verify the details before proceeding. This action will revoke all permissions for the user.",
+              "operation-description": "Revoking all permissions operation details",
+              "revoke-title": "Revoke All",
+              "roles-to-revoke-label": "Roles to revoke",
+              "title": "Review and confirm",
+              "user-label": "User"
+            },
+            "title": "Remove All User Access",
+            "trigger-label": "Revoke All"
+          },
+          "roles-header": "Roles",
+          "wallet-header": "Wallet"
         },
         "related": {
           "bonds": {
@@ -1402,7 +1464,7 @@
         "decimals": "Decimals",
         "decimals-label": "Decimals",
         "deployed-on": "Deployed on",
-        "edit-form": {
+        "edit-roles-form": {
           "trigger-label": "Edit permissions"
         },
         "equity": {

@@ -12,15 +12,7 @@ import { useTranslations } from 'next-intl';
 const columnHelper = createColumnHelper<UserAsset>();
 
 export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-
   const t = useTranslations('admin.users.holdings.table');
-
-  const tHolderType = useTranslations('holder-type');
-
-  const tAssetType = useTranslations('asset-type');
-
-  const tAssetStatus = useTranslations('asset-status');
 
   return [
     columnHelper.accessor('asset.name', {
@@ -31,7 +23,7 @@ export function columns() {
       header: t('symbol-header'),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+    columnHelper.accessor((row) => t(row.asset.type), {
       id: t('type-header'),
       header: t('type-header'),
     }),
@@ -44,11 +36,11 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
+    columnHelper.accessor((row) => formatHolderType(row, t), {
       id: t('holder-type-header'),
       header: t('holder-type-header'),
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => formatAssetStatus(row, t), {
       id: t('status-header'),
       header: t('status-header'),
       cell: ({ row }) => {

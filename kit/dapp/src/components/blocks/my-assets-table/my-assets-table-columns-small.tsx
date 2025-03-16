@@ -8,11 +8,7 @@ import { useTranslations } from 'next-intl';
 const columnHelper = createColumnHelper<UserAsset>();
 
 export function columnsSmall() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
-
   const t = useTranslations('portfolio.my-assets.table');
-
-  const tAssetType = useTranslations('asset-type');
 
   return [
     columnHelper.accessor('asset.name', {
@@ -23,7 +19,7 @@ export function columnsSmall() {
       header: t('symbol-header'),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+    columnHelper.accessor((row) => t(row.asset.type), {
       id: t('type-header'),
       header: t('type-header'),
     }),

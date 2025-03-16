@@ -36,7 +36,7 @@ export function EditPermissionsForm({
   onOpenChange,
   updateRolesAction,
 }: EditPermissionsFormPropsWithOpen) {
-  const t = useTranslations('admin.asset-permissions-tab.edit-form');
+  const t = useTranslations('private.assets.details.permissions.edit-form');
 
   return (
     <FormSheet

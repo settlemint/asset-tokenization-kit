@@ -31,7 +31,9 @@ export function RevokeAllPermissionsForm({
   onOpenChange,
   revokeRoleAction,
 }: RevokeAllPermissionsFormPropsWithOpen) {
-  const t = useTranslations('admin.asset-permissions-tab.revoke-all-form');
+  const t = useTranslations(
+    'private.assets.details.permissions.revoke-all-form'
+  );
 
   return (
     <FormSheet

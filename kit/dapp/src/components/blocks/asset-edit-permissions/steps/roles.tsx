@@ -11,7 +11,9 @@ interface RolesProps {
 
 export function Roles({ adminsCount }: RolesProps) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations('admin.asset-permissions-tab.edit-form.roles');
+  const t = useTranslations(
+    'private.assets.details.permissions.edit-form.roles'
+  );
 
   return (
     <FormStep title={t('title')} description={t('description')}>

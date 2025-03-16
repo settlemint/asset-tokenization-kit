@@ -64,7 +64,7 @@ export function columns({ address }: { address: Address }) {
             actions={[
               {
                 id: 'edit-permissions',
-                label: t('edit-form.trigger-label'),
+                label: t('edit-roles-form.trigger-label'),
                 component: ({ open, onOpenChange }) => (
                   <EditPermissionsForm
                     address={address}

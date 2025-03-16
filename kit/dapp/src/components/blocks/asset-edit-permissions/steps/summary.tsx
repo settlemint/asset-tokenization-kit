@@ -17,7 +17,9 @@ export function Summary({
   userAddress: Address;
   currentRoles: Role[];
 }) {
-  const t = useTranslations('admin.asset-permissions-tab.edit-form.summary');
+  const t = useTranslations(
+    'private.assets.details.permissions.edit-form.summary'
+  );
   const { getValues } = useFormContext<UpdateRolesInput>();
   const values = getValues();
 
