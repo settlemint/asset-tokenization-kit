@@ -24,7 +24,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@daveyplate/better-auth-ui": "1.2.33",
+    "@daveyplate/better-auth-ui": "1.2.36",
     "@elysiajs/server-timing": "1.2.1",
     "@elysiajs/swagger": "1.2.2",
     "@hookform/resolvers": "4.1.3",
