@@ -21,7 +21,7 @@ export function CreateTokenizedDepositForm({
   onOpenChange,
   asButton = false,
 }: CreateTokenizedDepositFormProps) {
-  const t = useTranslations('admin.tokenized-deposits.create-form');
+  const t = useTranslations('private.assets.create.tokenizeddeposits');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

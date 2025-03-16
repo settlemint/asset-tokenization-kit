@@ -12,7 +12,7 @@ export function Summary() {
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('admin.stablecoins.create-form.summary');
+  const t = useTranslations('private.assets.create.tokenizeddeposits.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

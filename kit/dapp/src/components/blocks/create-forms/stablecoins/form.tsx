@@ -22,7 +22,7 @@ export function CreateStablecoinForm({
   onOpenChange,
   asButton = false,
 }: CreateStablecoinFormProps) {
-  const t = useTranslations('admin.stablecoins.create-form');
+  const t = useTranslations('private.assets.create.stablecoins');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);

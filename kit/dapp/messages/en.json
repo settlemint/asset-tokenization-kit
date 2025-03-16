@@ -963,6 +963,78 @@
           },
           "title": "Create Fund",
           "trigger-label": "Issue a new fund"
+        },
+        "stablecoins": {
+          "basics": {
+            "decimals-label": "Decimals",
+            "description": "Define essential details such as name, symbol, and visibility.",
+            "isin-label": "ISIN",
+            "isin-placeholder": "DEFI4EVER2024",
+            "name-label": "Name",
+            "name-placeholder": "TotallyNotTether",
+            "symbol-label": "Symbol",
+            "symbol-placeholder": "SAFU",
+            "title": "Basic Information"
+          },
+          "button-label": "Issue a new stablecoin",
+          "configuration": {
+            "collateral-proof-validity-label": "Collateral Proof Validity",
+            "description": "Specify advanced settings like collateral proof validity.",
+            "title": "Configuration"
+          },
+          "description": "Define and launch a new stablecoin asset.",
+          "summary": {
+            "asset-basics-description": "Basic asset information and settings.",
+            "asset-basics-title": "Asset Basics",
+            "collateral-proof-validity-label": "Collateral Proof Validity",
+            "configuration-description": "Asset supply and additional settings.",
+            "configuration-title": "Configuration",
+            "decimals-label": "Decimals",
+            "description": "Review and confirm the details of your new stablecoin before creation.",
+            "error-duplicate": "A Stablecoin with the same details already exists. Please try again with at least one different parameter.",
+            "isin-label": "ISIN",
+            "name-label": "Name",
+            "seconds": "seconds",
+            "symbol-label": "Symbol",
+            "title": "Review and confirm the details of your new stablecoin before creation."
+          },
+          "title": "Create Stablecoin",
+          "trigger-label": "Issue a new stablecoin"
+        },
+        "tokenizeddeposits": {
+          "basics": {
+            "decimals-label": "Decimals",
+            "description": "Define essential details such as name, symbol, and visibility.",
+            "isin-label": "ISIN",
+            "isin-placeholder": "DEFI4EVER2024",
+            "name-label": "Name",
+            "name-placeholder": "TotallyNotTether",
+            "symbol-label": "Symbol",
+            "symbol-placeholder": "SAFU",
+            "title": "Basic Information"
+          },
+          "button-label": "Issue a new tokenized deposit",
+          "configuration": {
+            "description": "Specify advanced settings.",
+            "title": "Configuration"
+          },
+          "description": "Define and launch a new tokenized deposit asset.",
+          "summary": {
+            "asset-basics-description": "Basic asset information and settings.",
+            "asset-basics-title": "Asset Basics",
+            "configuration-description": "Asset supply and additional settings.",
+            "configuration-title": "Configuration",
+            "decimals-label": "Decimals",
+            "description": "Review and confirm the details of your new tokenized deposit before creation.",
+            "error-duplicate": "A Tokenized Deposit with the same details already exists. Please try again with at least one different parameter.",
+            "isin-label": "ISIN",
+            "name-label": "Name",
+            "seconds": "seconds",
+            "symbol-label": "Symbol",
+            "title": "Review and confirm the details of your new tokenized deposit before creation."
+          },
+          "title": "Create Tokenized Deposit",
+          "trigger-label": "Issue a new tokenized deposit"
         }
       },
       "detail": {
