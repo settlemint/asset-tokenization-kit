@@ -1,4 +1,5 @@
 import { RoleGuard } from '@/components/blocks/auth/role-guard';
+import { DesignerButton } from '@/components/blocks/create-forms/designer-button';
 import { NavHeader } from '@/components/layout/nav-header';
 import NavSidebar from '@/components/layout/nav-sidebar';
 import {
@@ -6,7 +7,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { DesignerButton } from './designer-button';
 import { AssetManagement } from './items/asset-management';
 import { PlatformManagement } from './items/platform-management';
 import { PortfolioManagement } from './items/portfolio-management';

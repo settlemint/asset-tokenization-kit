@@ -1,4 +1,4 @@
-import { CreateTokenizedDepositForm } from '@/app/[locale]/(private)/assets/xtokenized-deposits/_components/create-form/form';
+import { CreateTokenizedDepositForm } from '@/components/blocks/create-forms/tokenized-deposits/form';
 import { RelatedGrid } from '@/components/blocks/related-grid/related-grid';
 import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-item';
 import { Button } from '@/components/ui/button';

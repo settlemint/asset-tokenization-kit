@@ -1,4 +1,4 @@
-import { CreateStablecoinForm } from '@/app/[locale]/(private)/assets/xstablecoins/_components/create-form/form';
+import { CreateStablecoinForm } from '@/components/blocks/create-forms/stablecoins/form';
 import { RelatedGrid } from '@/components/blocks/related-grid/related-grid';
 import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-item';
 import { Button } from '@/components/ui/button';

@@ -19,12 +19,12 @@ import {
 } from '@/components/ui/sidebar';
 import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
-import { CreateBondForm } from '../../assets/xbonds/_components/create-form/form';
-import { CreateCryptoCurrencyForm } from '../../assets/xcryptocurrencies/_components/create-form/form';
-import { CreateEquityForm } from '../../assets/xequities/_components/create-form/form';
-import { CreateFundForm } from '../../assets/xfunds/_components/create-form/form';
-import { CreateStablecoinForm } from '../../assets/xstablecoins/_components/create-form/form';
-import { CreateTokenizedDepositForm } from '../../assets/xtokenized-deposits/_components/create-form/form';
+import { CreateBondForm } from './bonds/form';
+import { CreateCryptoCurrencyForm } from './cryptocurrencies/form';
+import { CreateEquityForm } from './equities/form';
+import { CreateFundForm } from './funds/form';
+import { CreateStablecoinForm } from './stablecoins/form';
+import { CreateTokenizedDepositForm } from './tokenized-deposits/form';
 
 export function DesignerButton() {
   const t = useTranslations('admin.sidebar');
