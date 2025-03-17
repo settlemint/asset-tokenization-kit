@@ -11,13 +11,15 @@ import type { Address } from 'viem';
 interface DetailPageHeaderProps {
   address: Address;
   assettype: AssetType;
-  button: (details: Awaited<ReturnType<typeof getAssetDetail>>) => ReactNode;
+  manageDropdown: (
+    details: Awaited<ReturnType<typeof getAssetDetail>>
+  ) => ReactNode;
 }
 
 export async function DetailPageHeader({
   address,
   assettype,
-  button,
+  manageDropdown,
 }: DetailPageHeaderProps) {
   const details = await getAssetDetail({ address, assettype });
   const t = await getTranslations('private.assets.details');
@@ -39,7 +41,7 @@ export async function DetailPageHeader({
       pill={
         <ActivePill paused={'paused' in details ? details.paused : false} />
       }
-      button={button(details)}
+      button={manageDropdown(details)}
     />
   );
 }

@@ -1,4 +1,4 @@
-import { DetailPageHeader } from '@/app/[locale]/(private)/_components/page-header';
+import { DetailPageHeader } from '@/app/[locale]/(private)/_components/detail-page-header';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { AssetType } from '@/lib/utils/zod';
 import type { Metadata } from 'next';
@@ -27,7 +27,7 @@ export default async function AssetDetailLayout({
       <DetailPageHeader
         address={address}
         assettype={assettype}
-        button={(details) => (
+        manageDropdown={(details) => (
           <ManageDropdown
             address={address}
             assettype={assettype}
