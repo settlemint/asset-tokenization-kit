@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import type { TransferBondInput } from '@/lib/mutations/bond/transfer/transfer-schema';
+import type { TransferInput } from '@/lib/mutations/transfer/transfer-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -14,7 +14,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<TransferBondInput>();
+  const { control } = useFormContext<TransferInput>();
   const t = useTranslations('portfolio.my-assets.bond.transfer-form.summary');
   const values = useWatch({
     control: control,

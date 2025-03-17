@@ -2,7 +2,7 @@
 
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { TransferCryptoCurrencyInput } from '@/lib/mutations/cryptocurrency/transfer/transfer-schema';
+import type { TransferInput } from '@/lib/mutations/transfer/transfer-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -12,7 +12,7 @@ interface AmountProps {
 }
 
 export function Amount({ balance }: AmountProps) {
-  const { control } = useFormContext<TransferCryptoCurrencyInput>();
+  const { control } = useFormContext<TransferInput>();
   const t = useTranslations('portfolio.my-assets.cryptocurrency');
 
   return (

@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { FreezeInput } from '@/lib/mutations/bond/freeze/freeze-schema';
+import type { FreezeInput } from '@/lib/mutations/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';

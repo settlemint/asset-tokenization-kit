@@ -92,27 +92,23 @@ export const blockUser = action
           return z.hashes().parse([response.BondBlockUser?.transactionHash]);
         }
         case 'cryptocurrency': {
-          throw new Error('Cryptocurrency does not support block user');
+          throw new Error(
+            'Cryptocurrency does not support block user operations'
+          );
         }
         case 'equity': {
-          const response = await portalClient.request(EquityBlockUser, params);
-          return z.hashes().parse([response.EquityBlockUser?.transactionHash]);
+          throw new Error('Equity does not support block user operations');
         }
         case 'fund': {
-          const response = await portalClient.request(FundBlockUser, params);
-          return z.hashes().parse([response.FundBlockUser?.transactionHash]);
+          throw new Error('Fund does not support block user operations');
         }
         case 'stablecoin': {
-          const response = await portalClient.request(
-            StableCoinBlockUser,
-            params
-          );
-          return z
-            .hashes()
-            .parse([response.StableCoinBlockUser?.transactionHash]);
+          throw new Error('Stablecoin does not support block user operations');
         }
         case 'tokenizeddeposit': {
-          throw new Error('Tokenized deposit does not support block user');
+          throw new Error(
+            'Tokenized deposit does not support block user operations'
+          );
         }
         default:
           throw new Error('Invalid asset type');

@@ -2,11 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import type { BurnInput as BondBurnInput } from '@/lib/mutations/bond/burn/burn-schema';
-import type { BurnInput as EquityBurnInput } from '@/lib/mutations/equity/burn/burn-schema';
-import type { BurnInput as FundBurnInput } from '@/lib/mutations/fund/burn/burn-schema';
-import type { BurnInput as StablecoinBurnInput } from '@/lib/mutations/stablecoin/burn/burn-schema';
-import type { BurnInput as TokenizedDepositBurnInput } from '@/lib/mutations/tokenized-deposit/burn/burn-schema';
+import type { BurnInput } from '@/lib/mutations/burn/burn-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -18,13 +14,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<
-    | BondBurnInput
-    | EquityBurnInput
-    | FundBurnInput
-    | StablecoinBurnInput
-    | TokenizedDepositBurnInput
-  >();
+  const { control } = useFormContext<BurnInput>();
   const t = useTranslations('private.assets.details.forms.burn.summary');
   const values = useWatch({
     control: control,
