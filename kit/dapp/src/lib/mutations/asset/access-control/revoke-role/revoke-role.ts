@@ -1,4 +1,5 @@
 'use server';
+
 import { handleChallenge } from '@/lib/challenge';
 import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';

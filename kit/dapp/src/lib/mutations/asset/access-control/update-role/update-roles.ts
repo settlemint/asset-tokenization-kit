@@ -1,3 +1,5 @@
+'use server';
+
 import type { Role } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
 import { safeParseWithLogging, z } from '@/lib/utils/zod';
