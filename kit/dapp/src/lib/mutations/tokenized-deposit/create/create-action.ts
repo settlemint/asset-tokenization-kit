@@ -15,11 +15,11 @@ import { CreateTokenizedDepositSchema } from './create-schema';
  * Creates a new stablecoin contract through the stablecoin factory
  */
 const TokenizedDepositFactoryCreate = portalGraphql(`
-  mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!) {
+  mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
     TokenizedDepositFactoryCreate(
       address: $address
       from: $from
-      input: { name: $name, symbol: $symbol, decimals: $decimals}
+      input: { name: $name, symbol: $symbol, decimals: $decimals, collateralLivenessSeconds: $collateralLivenessSeconds}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -53,6 +53,7 @@ export const createTokenizedDeposit = action
         pincode,
         isin,
         predictedAddress,
+        collateralLivenessSeconds,
       },
       ctx: { user },
     }) => {
@@ -67,6 +68,7 @@ export const createTokenizedDeposit = action
         name: assetName,
         symbol,
         decimals,
+        collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 

@@ -3,7 +3,7 @@ import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
 import type { CreateTokenizedDepositInput } from '@/lib/mutations/tokenized-deposit/create/create-schema';
 import { getPredictedAddress } from '@/lib/queries/tokenizeddeposit-factory/predict-address';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { type UseFormReturn, useFormContext, useWatch } from 'react-hook-form';
 
@@ -36,6 +36,17 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t('isin-label')}
           value={values.isin === '' ? '-' : values.isin}
+        />
+      </FormSummaryDetailCard>
+
+      <FormSummaryDetailCard
+        title={t('configuration-title')}
+        description={t('configuration-description')}
+        icon={<Settings className="size-3 text-primary-foreground" />}
+      >
+        <FormSummaryDetailItem
+          label={t('collateral-proof-validity-label')}
+          value={`${values.collateralLivenessSeconds} ${t('seconds')}`}
         />
       </FormSummaryDetailCard>
     </FormStep>
