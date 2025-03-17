@@ -1,14 +1,14 @@
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
+import { getAssetDetail } from '@/lib/queries/asset-detail';
 import { getAssetEventsList } from '@/lib/queries/asset-events/asset-events-list';
+import type { AssetType } from '@/lib/utils/zod';
 import type { Metadata } from 'next';
 import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import type { AssetType } from '../types';
-import { getDetailData } from './_components/detail-data';
 import { DetailPageHeader } from './_components/page-header';
 
 interface LayoutProps extends PropsWithChildren {
@@ -27,7 +27,7 @@ const tabs = async (params: LayoutProps['params']): Promise<TabItemProps[]> => {
   });
 
   const [details, balances, events] = await Promise.all([
-    getDetailData({ address, assettype }),
+    getAssetDetail({ address, assettype }),
     getAssetBalanceList({ wallet: address }),
     getAssetEventsList({ asset: address }),
   ]);
@@ -85,7 +85,7 @@ export async function generateMetadata({
     locale,
     namespace: 'private.assets.details',
   });
-  const detailData = await getDetailData({ assettype, address });
+  const detailData = await getAssetDetail({ assettype, address });
 
   return {
     title: t('page-title', {

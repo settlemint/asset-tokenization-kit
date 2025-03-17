@@ -22,7 +22,7 @@ export async function TokenizedDepositsRelated({
         title={t('tokenizeddeposits.increase-supply.title')}
         description={t('tokenizeddeposits.increase-supply.description')}
       >
-        <MintForm address={address} assettype="tokenizeddeposits" asButton />
+        <MintForm address={address} assettype="tokenizeddeposit" asButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t('tokenizeddeposits.decrease-supply.title')}
@@ -31,7 +31,7 @@ export async function TokenizedDepositsRelated({
         <BurnForm
           address={address}
           balance={totalSupply}
-          assettype="tokenizeddeposits"
+          assettype="tokenizeddeposit"
           asButton
         />
       </RelatedGridItem>

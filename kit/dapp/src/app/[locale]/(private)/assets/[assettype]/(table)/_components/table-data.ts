@@ -4,21 +4,21 @@ import { getEquityList } from '@/lib/queries/equity/equity-list';
 import { getFundList } from '@/lib/queries/fund/fund-list';
 import { getStableCoinList } from '@/lib/queries/stablecoin/stablecoin-list';
 import { getTokenizedDepositList } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-list';
-import type { AssetType } from '../../types';
+import type { AssetType } from '@/lib/utils/zod';
 
 export function getTableData(assettype: AssetType) {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return getBondList();
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return getCryptoCurrencyList();
-    case 'stablecoins':
+    case 'stablecoin':
       return getStableCoinList();
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return getTokenizedDepositList();
-    case 'equities':
+    case 'equity':
       return getEquityList();
-    case 'funds':
+    case 'fund':
       return getFundList();
     default:
       throw new Error(`Invalid asset type: ${assettype}`);

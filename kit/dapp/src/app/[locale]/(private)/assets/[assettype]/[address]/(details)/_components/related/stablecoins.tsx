@@ -29,7 +29,7 @@ export async function StablecoinsRelated({
         title={t('stablecoins.increase-supply.title')}
         description={t('stablecoins.increase-supply.description')}
       >
-        <MintForm address={address} assettype="stablecoins" asButton />
+        <MintForm address={address} assettype="stablecoin" asButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t('stablecoins.decrease-supply.title')}
@@ -38,7 +38,7 @@ export async function StablecoinsRelated({
         <BurnForm
           address={address}
           balance={totalSupply}
-          assettype="stablecoins"
+          assettype="stablecoin"
           asButton
         />
       </RelatedGridItem>

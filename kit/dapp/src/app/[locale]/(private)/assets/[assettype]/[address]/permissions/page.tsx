@@ -1,9 +1,9 @@
 import { DataTable } from '@/components/blocks/data-table/data-table';
 import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
-import type { AssetType } from '../../types';
 import { columns } from './_components/columns';
 
 interface PageProps {

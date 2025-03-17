@@ -11,28 +11,28 @@ export async function TokenizedDepositsRelated() {
   return (
     <RelatedGrid title={t('title')}>
       <RelatedGridItem
-        title={t('tokenizeddeposits.issue-new.title')}
-        description={t('tokenizeddeposits.issue-new.description')}
+        title={t('tokenizeddeposit.issue-new.title')}
+        description={t('tokenizeddeposit.issue-new.description')}
       >
         <CreateTokenizedDepositForm asButton />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('tokenizeddeposits.mechanics.title')}
-        description={t('tokenizeddeposits.mechanics.description')}
+        title={t('tokenizeddeposit.mechanics.title')}
+        description={t('tokenizeddeposit.mechanics.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/stablecoin#contract-features-and-capabilities">
           <Button variant="secondary">
-            {t('tokenizeddeposits.mechanics.button')}
+            {t('tokenizeddeposit.mechanics.button')}
           </Button>
         </Link>
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('tokenizeddeposits.usecases.title')}
-        description={t('tokenizeddeposits.usecases.description')}
+        title={t('tokenizeddeposit.usecases.title')}
+        description={t('tokenizeddeposit.usecases.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/stablecoin#why-digital-fund-tokens">
           <Button variant="secondary">
-            {t('tokenizeddeposits.usecases.button')}
+            {t('tokenizeddeposit.usecases.button')}
           </Button>
         </Link>
       </RelatedGridItem>

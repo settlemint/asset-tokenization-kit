@@ -1,26 +1,13 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormUsers } from '@/components/blocks/form/inputs/form-users';
-import type { MintInput as BondMintInput } from '@/lib/mutations/bond/mint/mint-schema';
-import type { MintInput as CryptocurrencyMintInput } from '@/lib/mutations/cryptocurrency/mint/mint-schema';
-import type { MintInput as EquityMintInput } from '@/lib/mutations/equity/mint/mint-schema';
-import type { MintInput as FundMintInput } from '@/lib/mutations/fund/mint/mint-schema';
-import type { MintInput as StablecoinMintInput } from '@/lib/mutations/stablecoin/mint/mint-schema';
-import type { MintInput as TokenizedDepositMintInput } from '@/lib/mutations/tokenized-deposit/mint/mint-schema';
+import type { MintInput } from '@/lib/mutations/mint/mint-schema';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export function Recipients() {
-  const { control } = useFormContext<
-    | BondMintInput
-    | CryptocurrencyMintInput
-    | EquityMintInput
-    | FundMintInput
-    | StablecoinMintInput
-    | TokenizedDepositMintInput
-    | StablecoinMintInput
-  >();
+  const { control } = useFormContext<MintInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
   const t = useTranslations('private.assets.details.forms.mint.recipients');
