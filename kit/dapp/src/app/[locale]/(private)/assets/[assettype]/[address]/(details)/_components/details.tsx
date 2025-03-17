@@ -23,11 +23,16 @@ export function Details({ assettype, address }: DetailsProps) {
       return (
         <>
           <StablecoinsDetails address={address} />
-          <Collateral address={address} />
+          <Collateral address={address} assettype={assettype} />
         </>
       );
     case 'tokenizeddeposit':
-      return <TokenizedDepositsDetails address={address} />;
+      return (
+        <>
+          <TokenizedDepositsDetails address={address} />
+          <Collateral address={address} assettype={assettype} />
+        </>
+      );
     case 'equity':
       return <EquitiesDetails address={address} />;
     case 'fund':

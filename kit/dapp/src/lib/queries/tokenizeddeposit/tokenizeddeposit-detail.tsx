@@ -4,6 +4,7 @@ import {
   theGraphGraphqlKit,
 } from '@/lib/settlemint/the-graph';
 import { safeParseWithLogging } from '@/lib/utils/zod';
+import { addSeconds } from 'date-fns';
 import { cache } from 'react';
 import { type Address, getAddress } from 'viem';
 import {
@@ -89,6 +90,14 @@ export const getTokenizedDepositDetail = cache(
         ? 0
         : Number((topHoldersSum * 100n) / tokenizedDeposit.totalSupplyExact);
 
+    const collateralProofValidity =
+      tokenizedDeposit.lastCollateralUpdate.valueOf() > 0
+        ? addSeconds(
+            tokenizedDeposit.lastCollateralUpdate,
+            tokenizedDeposit.liveness
+          )
+        : undefined;
+
     return {
       ...tokenizedDeposit,
       ...{
@@ -96,6 +105,7 @@ export const getTokenizedDepositDetail = cache(
         ...offchainTokenizedDeposit,
       },
       concentration,
+      collateralProofValidity,
     };
   }
 );
