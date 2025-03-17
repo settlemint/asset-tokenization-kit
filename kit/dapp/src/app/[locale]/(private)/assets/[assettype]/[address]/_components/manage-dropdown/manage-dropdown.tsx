@@ -5,8 +5,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useRouter } from '@/i18n/routing';
 import { bondGrantRoleAction } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
 import type { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { getBondDetail } from '@/lib/queries/bond/bond-detail';
@@ -35,9 +37,15 @@ export function ManageDropdown({
   detail,
   assettype,
 }: ManageDropdownProps) {
+  const router = useRouter();
   const t = useTranslations('private.assets.detail.forms');
   const [openMenuItem, setOpenMenuItem] = useState<
-    (typeof menuItems)[number]['id'] | null
+    | (
+        | typeof contractActions
+        | typeof userActions
+        | typeof events
+      )[number]['id']
+    | null
   >(null);
 
   const onFormOpenChange = (open: boolean) => {
@@ -59,7 +67,7 @@ export function ManageDropdown({
         : false);
   }
 
-  const menuItems = [
+  const contractActions = [
     {
       id: 'mint',
       label: t('actions.mint'),
@@ -108,23 +116,9 @@ export function ManageDropdown({
       ),
     },
     {
-      id: 'grant-role',
-      label: t('actions.grant-role'),
-      disabled: false,
-      form: (
-        <GrantRoleForm
-          key="grant-role"
-          address={address}
-          open={openMenuItem === 'grant-role'}
-          onOpenChange={onFormOpenChange}
-          grantRoleAction={bondGrantRoleAction}
-        />
-      ),
-    },
-    {
       id: 'top-up',
       label: t('actions.top-up'),
-      disabled: hasUnderlyingAsset,
+      disabled: !hasUnderlyingAsset,
       form: (
         <TopUpForm
           key="top-up"
@@ -140,7 +134,7 @@ export function ManageDropdown({
     {
       id: 'withdraw',
       label: t('actions.withdraw'),
-      disabled: hasUnderlyingAsset,
+      disabled: !hasUnderlyingAsset,
       form: (
         <WithdrawForm
           key="withdraw"
@@ -181,6 +175,34 @@ export function ManageDropdown({
     },
   ] as const;
 
+  const userActions = [
+    {
+      id: 'grant-role',
+      label: t('actions.grant-role'),
+      disabled: false,
+      form: (
+        <GrantRoleForm
+          key="grant-role"
+          address={address}
+          open={openMenuItem === 'grant-role'}
+          onOpenChange={onFormOpenChange}
+          grantRoleAction={bondGrantRoleAction}
+        />
+      ),
+    },
+  ] as const;
+
+  const events = [
+    {
+      id: 'view-events',
+      label: t('actions.view-events'),
+      disabled: false,
+      onClick: () => {
+        router.push(`/assets/${assettype}/${address}/events`);
+      },
+    },
+  ] as const;
+
   return (
     <>
       <DropdownMenu>
@@ -193,8 +215,8 @@ export function ManageDropdown({
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded p-0 shadow-dropdown">
-          {menuItems
+        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
+          {contractActions
             .filter((item) => !item.disabled)
             .map((item) => (
               <DropdownMenuItem
@@ -204,9 +226,25 @@ export function ManageDropdown({
                 {item.label}
               </DropdownMenuItem>
             ))}
+          <DropdownMenuSeparator />
+          {userActions
+            .filter((item) => !item.disabled)
+            .map((item) => (
+              <DropdownMenuItem key={item.id}>{item.label}</DropdownMenuItem>
+            ))}
+          <DropdownMenuSeparator />
+          {events
+            .filter((item) => !item.disabled)
+            .map((item) => (
+              <DropdownMenuItem key={item.id} onSelect={item.onClick}>
+                {item.label}
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      {menuItems.filter((item) => !item.disabled).map((item) => item.form)}
+      {[...contractActions, ...userActions]
+        .filter((item) => !item.disabled)
+        .map((item) => item.form)}
     </>
   );
 }

@@ -789,14 +789,15 @@
         "forms": {
           "actions": {
             "burn": "Burn",
-            "grant-role": "Grant role",
+            "grant-role": "Add asset admin",
             "mature": "Mature",
             "mint": "Mint",
-            "pause": "Pause",
+            "pause": "Pause contract",
             "top-up": "Top up",
-            "unpause": "Unpause",
+            "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
-            "withdraw": "Withdraw"
+            "withdraw": "Withdraw",
+            "view-events": "View events"
           },
           "manage": "Manage"
         }
