@@ -3,7 +3,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../safe-action';
 import { MintSchema } from './mint-schema';
@@ -130,7 +130,7 @@ export const mint = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondMint, params);
-          return z.hashes().parse([response.BondMint?.transactionHash]);
+          return safeParseTransactionHash([response.BondMint?.transactionHash]);
         }
         case 'cryptocurrency': {
           const response = await portalClient.request(
@@ -143,15 +143,19 @@ export const mint = action
         }
         case 'equity': {
           const response = await portalClient.request(EquityMint, params);
-          return z.hashes().parse([response.EquityMint?.transactionHash]);
+          return safeParseTransactionHash([
+            response.EquityMint?.transactionHash,
+          ]);
         }
         case 'fund': {
           const response = await portalClient.request(FundMint, params);
-          return z.hashes().parse([response.FundMint?.transactionHash]);
+          return safeParseTransactionHash([response.FundMint?.transactionHash]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(StableCoinMint, params);
-          return z.hashes().parse([response.StableCoinMint?.transactionHash]);
+          return safeParseTransactionHash([
+            response.StableCoinMint?.transactionHash,
+          ]);
         }
         case 'tokenizeddeposit': {
           const response = await portalClient.request(

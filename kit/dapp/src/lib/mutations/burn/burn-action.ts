@@ -3,7 +3,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../safe-action';
 import { BurnSchema } from './burn-schema';
@@ -113,22 +113,26 @@ export const burn = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondBurn, params);
-          return z.hashes().parse([response.BondBurn?.transactionHash]);
+          return safeParseTransactionHash([response.BondBurn?.transactionHash]);
         }
         case 'cryptocurrency': {
           throw new Error('Cryptocurrency does not support burn operations');
         }
         case 'equity': {
           const response = await portalClient.request(EquityBurn, params);
-          return z.hashes().parse([response.EquityBurn?.transactionHash]);
+          return safeParseTransactionHash([
+            response.EquityBurn?.transactionHash,
+          ]);
         }
         case 'fund': {
           const response = await portalClient.request(FundBurn, params);
-          return z.hashes().parse([response.FundBurn?.transactionHash]);
+          return safeParseTransactionHash([response.FundBurn?.transactionHash]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(StableCoinBurn, params);
-          return z.hashes().parse([response.StableCoinBurn?.transactionHash]);
+          return safeParseTransactionHash([
+            response.StableCoinBurn?.transactionHash,
+          ]);
         }
         case 'tokenizeddeposit': {
           const response = await portalClient.request(

@@ -3,7 +3,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../safe-action';
 import { TransferSchema } from './transfer-schema';
@@ -130,36 +130,36 @@ export const transfer = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondTransfer, params);
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         case 'cryptocurrency': {
           const response = await portalClient.request(
             CryptoCurrencyTransfer,
             params
           );
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         case 'equity': {
           const response = await portalClient.request(EquityTransfer, params);
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         case 'fund': {
           const response = await portalClient.request(FundTransfer, params);
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(
             StableCoinTransfer,
             params
           );
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         case 'tokenizeddeposit': {
           const response = await portalClient.request(
             TokenizedDepositTransfer,
             params
           );
-          return z.hashes().parse([response.Transfer?.transactionHash]);
+          return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         default:
           throw new Error('Invalid asset type');

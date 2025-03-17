@@ -2,7 +2,7 @@
 
 import { handleChallenge } from '@/lib/challenge';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { action } from '../safe-action';
 import { UnpauseSchema } from './unpause-schema';
 
@@ -96,18 +96,24 @@ export const unpause = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondUnpause, params);
-          return z.hashes().parse([response.BondUnpause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.BondUnpause?.transactionHash,
+          ]);
         }
         case 'cryptocurrency': {
           throw new Error('Cryptocurrency does not support unpause operations');
         }
         case 'equity': {
           const response = await portalClient.request(EquityUnpause, params);
-          return z.hashes().parse([response.EquityUnpause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.EquityUnpause?.transactionHash,
+          ]);
         }
         case 'fund': {
           const response = await portalClient.request(FundUnpause, params);
-          return z.hashes().parse([response.FundUnpause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.FundUnpause?.transactionHash,
+          ]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(

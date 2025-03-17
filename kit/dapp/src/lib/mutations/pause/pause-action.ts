@@ -2,7 +2,7 @@
 
 import { handleChallenge } from '@/lib/challenge';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { action } from '../safe-action';
 import { PauseSchema } from './pause-schema';
 
@@ -96,22 +96,30 @@ export const pause = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondPause, params);
-          return z.hashes().parse([response.BondPause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.BondPause?.transactionHash,
+          ]);
         }
         case 'cryptocurrency': {
           throw new Error('Cryptocurrency does not support pause operations');
         }
         case 'equity': {
           const response = await portalClient.request(EquityPause, params);
-          return z.hashes().parse([response.EquityPause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.EquityPause?.transactionHash,
+          ]);
         }
         case 'fund': {
           const response = await portalClient.request(FundPause, params);
-          return z.hashes().parse([response.FundPause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.FundPause?.transactionHash,
+          ]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(StableCoinPause, params);
-          return z.hashes().parse([response.StableCoinPause?.transactionHash]);
+          return safeParseTransactionHash([
+            response.StableCoinPause?.transactionHash,
+          ]);
         }
         case 'tokenizeddeposit': {
           const response = await portalClient.request(
