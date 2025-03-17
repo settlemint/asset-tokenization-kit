@@ -20,13 +20,13 @@ export function columnsSmall() {
       header: t('symbol-header'),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor(
-      (row) => <ColumnAssetType assettype={row.asset.type} />,
-      {
-        id: t('type-header'),
-        header: t('type-header'),
-      }
-    ),
+    columnHelper.accessor('asset.type', {
+      id: t('type-header'),
+      header: t('type-header'),
+      cell: ({ getValue }) => {
+        return <ColumnAssetType assettype={getValue()} />;
+      },
+    }),
     columnHelper.accessor('value', {
       header: t('balance-header'),
       meta: {

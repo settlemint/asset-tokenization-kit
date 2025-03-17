@@ -24,13 +24,13 @@ export function columns() {
       header: t('symbol-header'),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor(
-      (row) => <ColumnAssetType assettype={row.asset.type} />,
-      {
-        id: t('type-header'),
-        header: t('type-header'),
-      }
-    ),
+    columnHelper.accessor('asset.type', {
+      id: t('type-header'),
+      header: t('type-header'),
+      cell: ({ getValue }) => {
+        return <ColumnAssetType assettype={getValue()} />;
+      },
+    }),
     columnHelper.accessor('value', {
       header: t('balance-header'),
       meta: {
@@ -40,9 +40,12 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => <ColumnHolderType assetBalance={row} />, {
+    columnHelper.accessor('asset', {
       id: t('holder-type-header'),
       header: t('holder-type-header'),
+      cell: ({ row }) => {
+        return <ColumnHolderType assetBalance={row.original} />;
+      },
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
       id: t('status-header'),
