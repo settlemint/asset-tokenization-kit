@@ -19,15 +19,14 @@ export function Account() {
             <FormInput
               control={control}
               name="account"
-              label={t('account.manual-toggle')}
+              label={t('parameters.account-label')}
               placeholder="0x0000000000000000000000000000000000000000"
             />
           ) : (
             <FormUsers
               control={control}
               name="account"
-              label={t('account.search-placeholder')}
-              placeholder={t('account.search-placeholder')}
+              label={t('parameters.account-label')}
             />
           )}
           <div className="flex justify-end">
@@ -37,8 +36,8 @@ export function Account() {
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
               {isManualEntry
-                ? t('account.search-toggle')
-                : t('account.manual-toggle')}
+                ? t('parameters.search-toggle')
+                : t('parameters.enter-address-manually')}
             </button>
           </div>
         </div>

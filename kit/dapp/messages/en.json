@@ -906,14 +906,14 @@
             },
             "parameters": {
               "asset-label": "Asset",
-              "account-label": "User"
+              "account-label": "User",
+              "search-placeholder": "Search for a user",
+              "search-toggle": "Search for a user instead...",
+              "enter-address-manually": "Enter address manually..."
             },
             "account": {
               "title": "Select user",
-              "description": "Choose a user to block.",
-              "manual-toggle": "Enter address manually...",
-              "search-placeholder": "Search for a user",
-              "search-toggle": "Search for a user instead..."
+              "description": "Search for a user by their name or email, or enter a wallet address manually."
             },
             "summary": {
               "title": "Summary",
