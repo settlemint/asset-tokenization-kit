@@ -1,6 +1,8 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getFundDetail } from "@/lib/queries/fund/fund-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
@@ -14,6 +16,7 @@ interface FundsDetailsProps {
 export async function FundsDetails({ address }: FundsDetailsProps) {
   const fund = await getFundDetail({ address });
   const t = await getTranslations("private.assets.fields");
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
 
   return (
     <Suspense>
@@ -48,6 +51,12 @@ export async function FundsDetails({ address }: FundsDetailsProps) {
         >
           {formatNumber(fund.concentration, {
             percentage: true,
+            decimals: 2,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("price")}>
+          {formatNumber(fund.value_in_base_currency, {
+            currency: baseCurrency,
             decimals: 2,
           })}
         </DetailGridItem>

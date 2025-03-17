@@ -1,6 +1,8 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
@@ -16,6 +18,7 @@ export async function CryptocurrenciesDetails({
 }: CryptocurrenciesDetailsProps) {
   const cryptocurrency = await getCryptoCurrencyDetail({ address });
   const t = await getTranslations("private.assets.fields");
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
 
   return (
     <Suspense>
@@ -51,6 +54,12 @@ export async function CryptocurrenciesDetails({
         >
           {formatNumber(cryptocurrency.concentration, {
             percentage: true,
+            decimals: 2,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("price")}>
+          {formatNumber(cryptocurrency.value_in_base_currency, {
+            currency: baseCurrency,
             decimals: 2,
           })}
         </DetailGridItem>

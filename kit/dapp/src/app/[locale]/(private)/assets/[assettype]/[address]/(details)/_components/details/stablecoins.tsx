@@ -1,6 +1,8 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
@@ -14,6 +16,7 @@ interface StablecoinsDetailsProps {
 export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
   const stableCoin = await getStableCoinDetail({ address });
   const t = await getTranslations("private.assets.fields");
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
 
   return (
     <Suspense>
@@ -59,6 +62,12 @@ export async function StablecoinsDetails({ address }: StablecoinsDetailsProps) {
         >
           {formatNumber(stableCoin.concentration, {
             percentage: true,
+            decimals: 2,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("price")}>
+          {formatNumber(stableCoin.value_in_base_currency, {
+            currency: baseCurrency,
             decimals: 2,
           })}
         </DetailGridItem>

@@ -1,6 +1,8 @@
 import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import { formatNumber } from "@/lib/utils/number";
 import { format } from "date-fns";
@@ -13,6 +15,7 @@ interface BondsDetailsProps {
 }
 
 export async function BondsDetails({ address }: BondsDetailsProps) {
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
   const bond = await getBondDetail({ address });
   const t = await getTranslations("private.assets.fields");
   return (
@@ -90,6 +93,12 @@ export async function BondsDetails({ address }: BondsDetailsProps) {
         <DetailGridItem label={t("ownership-concentration")}>
           {formatNumber(bond.concentration, {
             percentage: true,
+            decimals: 2,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("price")}>
+          {formatNumber(bond.value_in_base_currency, {
+            currency: baseCurrency,
             decimals: 2,
           })}
         </DetailGridItem>
