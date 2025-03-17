@@ -98,6 +98,15 @@ export const getFundList = cache(async () => {
       0
     );
 
+    const topHoldersSum = fund.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      fund.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / fund.totalSupplyExact);
+
     return {
       ...fund,
       ...{
@@ -105,6 +114,7 @@ export const getFundList = cache(async () => {
         ...dbAsset,
       },
       assetsUnderManagement,
+      concentration,
     };
   });
 

@@ -102,7 +102,7 @@ export const OffchainBondFragment = hasuraGraphql(`
 export const OffchainBondFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
-  value_in_base_currency: z.number().nullish().default(0),
+  value_in_base_currency: z.fiatCurrencyAmount(),
 });
 
 /**

@@ -74,7 +74,7 @@ export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
 export const OffchainCryptoCurrencyFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
-  value_in_base_currency: z.number().nullish().default(0),
+  value_in_base_currency: z.fiatCurrencyAmount(),
 });
 
 /**

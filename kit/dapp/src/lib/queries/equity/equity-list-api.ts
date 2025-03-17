@@ -1,28 +1,44 @@
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { Elysia, t } from "elysia";
-import { StablecoinDetailResponseSchema } from "./stablecoin-detail-api";
-import { getStableCoinList } from "./stablecoin-list";
+import { EquityDetailResponseSchema } from "./equity-detail-api";
+import { getEquityList } from "./equity-list";
 
-const StablecoinListResponseSchema = t.Array(StablecoinDetailResponseSchema);
+const EquityListResponseSchema = t.Array(EquityDetailResponseSchema);
 
-export const StablecoinListApi = new Elysia()
+export const EquityListApi = new Elysia()
   .use(betterAuth)
   .use(superJson)
   .get(
     "/",
-    () => {
-      return getStableCoinList();
+    async () => {
+      const equities = await getEquityList();
+      // Add concentration field to match the schema
+      return equities.map((equity) => {
+        const topHoldersSum = equity.holders.reduce(
+          (sum, holder) => sum + holder.valueExact,
+          0n
+        );
+        const concentration =
+          equity.totalSupplyExact === 0n
+            ? 0
+            : Number((topHoldersSum * 100n) / equity.totalSupplyExact);
+
+        return {
+          ...equity,
+          concentration,
+        };
+      });
     },
     {
       auth: true,
       detail: {
-        summary: "Get Stablecoin List",
+        summary: "Get Equity List",
         description:
-          "Retrieves a list of all stablecoins in the system with their details including supply, collateral, and holder information.",
-        tags: ["Stablecoins"],
+          "Retrieves a list of all equity tokens in the system with their details including supply and holder information.",
+        tags: ["Equities"],
       },
       response: {
-        200: StablecoinListResponseSchema,
+        200: EquityListResponseSchema,
         400: t.Object({
           error: t.String({
             description: "Bad Request - Invalid parameters or request format",

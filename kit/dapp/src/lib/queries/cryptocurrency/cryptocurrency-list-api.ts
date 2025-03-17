@@ -1,28 +1,46 @@
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { Elysia, t } from "elysia";
-import { StablecoinDetailResponseSchema } from "./stablecoin-detail-api";
-import { getStableCoinList } from "./stablecoin-list";
+import { CryptoCurrencyDetailResponseSchema } from "./cryptocurrency-detail-api";
+import { getCryptoCurrencyList } from "./cryptocurrency-list";
 
-const StablecoinListResponseSchema = t.Array(StablecoinDetailResponseSchema);
+const CryptoCurrencyListResponseSchema = t.Array(
+  CryptoCurrencyDetailResponseSchema
+);
 
-export const StablecoinListApi = new Elysia()
+export const CryptoCurrencyListApi = new Elysia()
   .use(betterAuth)
   .use(superJson)
   .get(
     "/",
-    () => {
-      return getStableCoinList();
+    async () => {
+      const cryptocurrencies = await getCryptoCurrencyList();
+      // Add concentration field to match the schema
+      return cryptocurrencies.map((crypto) => {
+        const topHoldersSum = crypto.holders.reduce(
+          (sum, holder) => sum + holder.valueExact,
+          0n
+        );
+        const concentration =
+          crypto.totalSupplyExact === 0n
+            ? 0
+            : Number((topHoldersSum * 100n) / crypto.totalSupplyExact);
+
+        return {
+          ...crypto,
+          concentration,
+        };
+      });
     },
     {
       auth: true,
       detail: {
-        summary: "Get Stablecoin List",
+        summary: "Get Cryptocurrency List",
         description:
-          "Retrieves a list of all stablecoins in the system with their details including supply, collateral, and holder information.",
-        tags: ["Stablecoins"],
+          "Retrieves a list of all cryptocurrency tokens in the system with their details including supply and holder information.",
+        tags: ["Cryptocurrencies"],
       },
       response: {
-        200: StablecoinListResponseSchema,
+        200: CryptoCurrencyListResponseSchema,
         400: t.Object({
           error: t.String({
             description: "Bad Request - Invalid parameters or request format",
