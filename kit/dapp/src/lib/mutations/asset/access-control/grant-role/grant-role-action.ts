@@ -14,7 +14,7 @@ import { GrantRoleSchema } from './grant-role-schema';
  */
 const StableCoinGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinGrantRoleInput!) {
-    GrantRole: StableCoinGrantRole(
+    StableCoinGrantRole(
       from: $from
       input: $input
       address: $address
@@ -33,7 +33,7 @@ const StableCoinGrantRole = portalGraphql(`
  */
 const BondGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondGrantRoleInput!) {
-    GrantRole: BondGrantRole(
+    BondGrantRole(
       from: $from
       input: $input
       address: $address
@@ -52,7 +52,7 @@ const BondGrantRole = portalGraphql(`
  */
 const CryptoCurrencyGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyGrantRoleInput!) {
-    GrantRole: CryptoCurrencyGrantRole(
+    CryptoCurrencyGrantRole(
       from: $from
       input: $input
       address: $address
@@ -71,7 +71,7 @@ const CryptoCurrencyGrantRole = portalGraphql(`
  */
 const FundGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundGrantRoleInput!) {
-    GrantRole: FundGrantRole(
+    FundGrantRole(
       from: $from
       input: $input
       address: $address
@@ -90,7 +90,7 @@ const FundGrantRole = portalGraphql(`
  */
 const EquityGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityGrantRoleInput!) {
-    GrantRole: EquityGrantRole(
+    EquityGrantRole(
       from: $from
       input: $input
       address: $address
@@ -109,7 +109,7 @@ const EquityGrantRole = portalGraphql(`
  */
 const TokenizedDepositGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositGrantRoleInput!) {
-    GrantRole: TokenizedDepositGrantRole(
+    TokenizedDepositGrantRole(
       from: $from
       input: $input
       address: $address
@@ -145,36 +145,36 @@ export const grantRole = action
               StableCoinGrantRole,
               params
             );
-            return response.GrantRole?.transactionHash;
+            return response.StableCoinGrantRole?.transactionHash;
           }
           case 'bond': {
             const response = await portalClient.request(BondGrantRole, params);
-            return response.GrantRole?.transactionHash;
+            return response.BondGrantRole?.transactionHash;
           }
           case 'cryptocurrency': {
             const response = await portalClient.request(
               CryptoCurrencyGrantRole,
               params
             );
-            return response.GrantRole?.transactionHash;
+            return response.CryptoCurrencyGrantRole?.transactionHash;
           }
           case 'fund': {
             const response = await portalClient.request(FundGrantRole, params);
-            return response.GrantRole?.transactionHash;
+            return response.FundGrantRole?.transactionHash;
           }
           case 'equity': {
             const response = await portalClient.request(
               EquityGrantRole,
               params
             );
-            return response.GrantRole?.transactionHash;
+            return response.EquityGrantRole?.transactionHash;
           }
           case 'tokenizeddeposit': {
             const response = await portalClient.request(
               TokenizedDepositGrantRole,
               params
             );
-            return response.GrantRole?.transactionHash;
+            return response.TokenizedDepositGrantRole?.transactionHash;
           }
           default:
             throw new Error(`Unsupported asset type: ${assettype}`);

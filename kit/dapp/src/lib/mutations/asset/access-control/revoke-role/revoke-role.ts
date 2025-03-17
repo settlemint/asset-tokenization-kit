@@ -15,7 +15,7 @@ import { RevokeRoleSchema } from './revoke-role-schema';
  */
 const BondRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondRevokeRoleInput!) {
-    RevokeRole: BondRevokeRole(
+    BondRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -34,7 +34,7 @@ const BondRevokeRole = portalGraphql(`
  */
 const CryptoCurrencyRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyRevokeRoleInput!) {
-    RevokeRole: CryptoCurrencyRevokeRole(
+    CryptoCurrencyRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -53,7 +53,7 @@ const CryptoCurrencyRevokeRole = portalGraphql(`
  */
 const StableCoinRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinRevokeRoleInput!) {
-    RevokeRole: StableCoinRevokeRole(
+    StableCoinRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -72,7 +72,7 @@ const StableCoinRevokeRole = portalGraphql(`
  */
 const FundRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundRevokeRoleInput!) {
-    RevokeRole: FundRevokeRole(
+    FundRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -91,7 +91,7 @@ const FundRevokeRole = portalGraphql(`
  */
 const EquityRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityRevokeRoleInput!) {
-    RevokeRole: EquityRevokeRole(
+    EquityRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -110,7 +110,7 @@ const EquityRevokeRole = portalGraphql(`
  */
 const TokenizedDepositRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositRevokeRoleInput!) {
-    RevokeRole: TokenizedDepositRevokeRole(
+    TokenizedDepositRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -146,36 +146,36 @@ export const revokeRole = action
               StableCoinRevokeRole,
               params
             );
-            return response.RevokeRole?.transactionHash;
+            return response.StableCoinRevokeRole?.transactionHash;
           }
           case 'bond': {
             const response = await portalClient.request(BondRevokeRole, params);
-            return response.RevokeRole?.transactionHash;
+            return response.BondRevokeRole?.transactionHash;
           }
           case 'cryptocurrency': {
             const response = await portalClient.request(
               CryptoCurrencyRevokeRole,
               params
             );
-            return response.RevokeRole?.transactionHash;
+            return response.CryptoCurrencyRevokeRole?.transactionHash;
           }
           case 'fund': {
             const response = await portalClient.request(FundRevokeRole, params);
-            return response.RevokeRole?.transactionHash;
+            return response.FundRevokeRole?.transactionHash;
           }
           case 'equity': {
             const response = await portalClient.request(
               EquityRevokeRole,
               params
             );
-            return response.RevokeRole?.transactionHash;
+            return response.EquityRevokeRole?.transactionHash;
           }
           case 'tokenizeddeposit': {
             const response = await portalClient.request(
               TokenizedDepositRevokeRole,
               params
             );
-            return response.RevokeRole?.transactionHash;
+            return response.TokenizedDepositRevokeRole?.transactionHash;
           }
           default:
             throw new Error(`Unsupported asset type: ${assettype}`);
