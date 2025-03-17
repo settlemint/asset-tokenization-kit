@@ -1,13 +1,13 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormUsers } from '@/components/blocks/form/inputs/form-users';
-import type { TransferEquityInput } from '@/lib/mutations/equity/transfer/transfer-schema';
+import type { TransferInput } from '@/lib/mutations/transfer/transfer-schema';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export function Recipients() {
-  const { control } = useFormContext<TransferEquityInput>();
+  const { control } = useFormContext<TransferInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
   const t = useTranslations(

@@ -2,16 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { burn as BondBurn } from '@/lib/mutations/bond/burn/burn-action';
-import { BurnSchema as BondBurnSchema } from '@/lib/mutations/bond/burn/burn-schema';
-import { burn as EquityBurn } from '@/lib/mutations/equity/burn/burn-action';
-import { BurnSchema as EquityBurnSchema } from '@/lib/mutations/equity/burn/burn-schema';
-import { burn as FundBurn } from '@/lib/mutations/fund/burn/burn-action';
-import { BurnSchema as FundBurnSchema } from '@/lib/mutations/fund/burn/burn-schema';
-import { burn as StablecoinBurn } from '@/lib/mutations/stablecoin/burn/burn-action';
-import { BurnSchema as StablecoinBurnSchema } from '@/lib/mutations/stablecoin/burn/burn-schema';
-import { burn as TokenizedDepositBurn } from '@/lib/mutations/tokenized-deposit/burn/burn-action';
-import { BurnSchema as TokenizedDepositBurnSchema } from '@/lib/mutations/tokenized-deposit/burn/burn-schema';
+import { burn } from '@/lib/mutations/burn/burn-action';
+import { BurnSchema } from '@/lib/mutations/burn/burn-schema';
 import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -54,28 +46,8 @@ export function BurnForm({
       asButton={asButton}
     >
       <Form
-        action={
-          assettype === 'bond'
-            ? BondBurn
-            : assettype === 'equity'
-              ? EquityBurn
-              : assettype === 'fund'
-                ? FundBurn
-                : assettype === 'tokenizeddeposit'
-                  ? TokenizedDepositBurn
-                  : StablecoinBurn
-        }
-        resolver={
-          assettype === 'bond'
-            ? zodResolver(BondBurnSchema)
-            : assettype === 'equity'
-              ? zodResolver(EquityBurnSchema)
-              : assettype === 'fund'
-                ? zodResolver(FundBurnSchema)
-                : assettype === 'tokenizeddeposit'
-                  ? zodResolver(TokenizedDepositBurnSchema)
-                  : zodResolver(StablecoinBurnSchema)
-        }
+        action={burn}
+        resolver={zodResolver(BurnSchema)}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
@@ -84,6 +56,7 @@ export function BurnForm({
         }}
         defaultValues={{
           address,
+          assettype,
         }}
       >
         <Amount maxBurnAmount={balance} />

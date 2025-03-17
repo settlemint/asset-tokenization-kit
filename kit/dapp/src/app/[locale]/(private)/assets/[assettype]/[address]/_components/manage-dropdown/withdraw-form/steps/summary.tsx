@@ -4,7 +4,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import type { WithdrawInput } from '@/lib/mutations/bond/withdraw/withdraw-schema';
+import type { WithdrawInput } from '@/lib/mutations/withdraw/withdraw-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';

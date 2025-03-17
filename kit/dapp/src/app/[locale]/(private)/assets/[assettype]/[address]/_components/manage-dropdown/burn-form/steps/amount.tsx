@@ -1,10 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { BurnInput as BondBurnInput } from '@/lib/mutations/bond/burn/burn-schema';
-import type { BurnInput as EquityBurnInput } from '@/lib/mutations/equity/burn/burn-schema';
-import type { BurnInput as FundBurnInput } from '@/lib/mutations/fund/burn/burn-schema';
-import type { BurnInput as StablecoinBurnInput } from '@/lib/mutations/stablecoin/burn/burn-schema';
-import type { BurnInput as TokenizedDepositBurnInput } from '@/lib/mutations/tokenized-deposit/burn/burn-schema';
+import type { BurnInput } from '@/lib/mutations/burn/burn-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
@@ -14,13 +10,7 @@ interface AmountProps {
 }
 
 export function Amount({ maxBurnAmount }: AmountProps) {
-  const { control } = useFormContext<
-    | BondBurnInput
-    | EquityBurnInput
-    | FundBurnInput
-    | StablecoinBurnInput
-    | TokenizedDepositBurnInput
-  >();
+  const { control } = useFormContext<BurnInput>();
   const t = useTranslations('private.assets.details.forms.burn.amount');
 
   return (
