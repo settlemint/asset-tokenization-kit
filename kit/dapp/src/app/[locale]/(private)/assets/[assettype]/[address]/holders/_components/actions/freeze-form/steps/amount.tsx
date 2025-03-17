@@ -13,9 +13,7 @@ interface AmountProps {
 
 export function Amount({ balance, frozen, symbol }: AmountProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations(
-    'private.assets.details.holders.forms.freeze.amount'
-  );
+  const t = useTranslations('private.assets.details.forms.freeze.amount');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

@@ -29,7 +29,7 @@ export function FreezeForm({
   open,
   onOpenChange,
 }: FreezeFormProps) {
-  const t = useTranslations('private.assets.details.holders.forms.freeze');
+  const t = useTranslations('private.assets.details.forms.freeze');
 
   // Convert to numbers for component use
   const balanceNum =

@@ -27,7 +27,7 @@ export function BlockForm({
   open,
   onOpenChange,
 }: BlockFormProps) {
-  const t = useTranslations('private.assets.details.holders.forms.block');
+  const t = useTranslations('private.assets.details.forms.block');
 
   return (
     <FormSheet

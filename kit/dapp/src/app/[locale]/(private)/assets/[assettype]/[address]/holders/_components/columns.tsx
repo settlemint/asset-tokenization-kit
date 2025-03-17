@@ -83,14 +83,15 @@ export function columns() {
       id: 'actions',
       header: t('actions-header'),
       cell: ({ row }) => {
+        const t = useTranslations('private.assets.details.forms');
         return (
           <DataTableRowActions
             actions={[
               {
                 id: 'block-form',
                 label: row.original.blocked
-                  ? t('forms.block.unblock-trigger-label')
-                  : t('forms.block.block-trigger-label'),
+                  ? t('block.unblock-trigger-label')
+                  : t('block.block-trigger-label'),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
@@ -104,7 +105,7 @@ export function columns() {
               },
               {
                 id: 'freeze-form',
-                label: t('forms.freeze.trigger-label'),
+                label: t('freeze.trigger-label'),
                 component: ({ open, onOpenChange }) => (
                   <FreezeForm
                     address={row.original.asset.id}
@@ -119,8 +120,7 @@ export function columns() {
               },
               {
                 id: 'mint-form',
-                // label: t('forms.mint.trigger-label'),
-                label: 'Mint',
+                label: t('mint.trigger-label'),
                 component: ({ open, onOpenChange }) => (
                   <MintForm
                     address={row.original.asset.id}

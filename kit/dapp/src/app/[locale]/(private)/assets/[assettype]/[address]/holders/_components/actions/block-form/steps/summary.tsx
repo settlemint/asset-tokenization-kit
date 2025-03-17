@@ -12,9 +12,7 @@ interface SummaryProps {
 }
 
 export function Summary({ address, isCurrentlyBlocked }: SummaryProps) {
-  const t = useTranslations(
-    'private.assets.details.holders.forms.block.summary'
-  );
+  const t = useTranslations('private.assets.details.forms.block.summary');
 
   return (
     <FormStep title={t('title')} description={t('description')}>

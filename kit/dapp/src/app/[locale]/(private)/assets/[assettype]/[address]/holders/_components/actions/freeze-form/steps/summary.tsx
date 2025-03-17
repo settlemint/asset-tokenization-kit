@@ -15,9 +15,7 @@ interface SummaryProps {
 
 export function Summary({ address }: SummaryProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations(
-    'private.assets.details.holders.forms.freeze.summary'
-  );
+  const t = useTranslations('private.assets.details.forms.freeze.summary');
   const values = useWatch({
     control: control,
   });
