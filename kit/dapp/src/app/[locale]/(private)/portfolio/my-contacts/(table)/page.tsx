@@ -2,7 +2,6 @@ import MyContactsTable from '@/components/blocks/my-contacts-table/my-contacts-t
 import { PageHeader } from '@/components/layout/page-header';
 import { getUser } from '@/lib/auth/utils';
 import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
 import { MyContactsActions } from './_components/actions';
 
 export default async function MyContactsPage() {
@@ -16,7 +15,7 @@ export default async function MyContactsPage() {
         section={t('description')}
         button={<MyContactsActions />}
       />
-      <MyContactsTable wallet={user.wallet as Address} title={t('title')} />
+      <MyContactsTable userId={user.id} title={t('title')} />
     </>
   );
 }

@@ -108,18 +108,3 @@ export const passkey = pgTable('passkey', {
   transports: text('transports'),
   createdAt: timestamp('created_at', { withTimezone: true }),
 });
-
-export const contact = pgTable("contact", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  wallet: text("wallet").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});

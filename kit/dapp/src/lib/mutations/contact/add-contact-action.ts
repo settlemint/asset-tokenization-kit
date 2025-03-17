@@ -2,6 +2,7 @@
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { nanoid } from 'nanoid';
+import { revalidatePath } from 'next/cache';
 import { action } from '../safe-action';
 import {
   AddContactOutputSchema,
@@ -46,6 +47,13 @@ export const addContact = action
         throw new Error('Failed to add contact');
       }
 
-      return [contact];
+      // Revalidate the contacts page to show the new contact
+      revalidatePath('/portfolio/my-contacts');
+
+      // Since this is a non-blockchain operation, return a dummy transaction hash
+      // that matches the format expected by the form
+      return [
+        '0x0000000000000000000000000000000000000000000000000000000000000000',
+      ];
     }
   );
