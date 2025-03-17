@@ -12,12 +12,7 @@ export function MyContactsActions() {
   return (
     <>
       <Button onClick={() => setIsOpen(true)}>{t('add-contact-button')}</Button>
-      <AddContactForm
-        open={isOpen}
-        onCloseAction={() => setIsOpen(false)}
-        balance="0"
-        decimals={18}
-      />
+      <AddContactForm open={isOpen} onCloseAction={() => setIsOpen(false)} />
     </>
   );
 }

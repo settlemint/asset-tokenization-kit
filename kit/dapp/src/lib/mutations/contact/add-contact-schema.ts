@@ -1,15 +1,15 @@
-import { z } from "zod";
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 export const getAddContactFormSchema = () => {
   return z.object({
-    address: z.string().min(1, { message: "Address is required" }),
-    firstName: z.string().min(1, { message: "First name is required" }),
-    lastName: z.string().min(1, { message: "Last name is required" }),
+    address: z.address(),
+    firstName: z.string().min(1, { message: 'First name is required' }),
+    lastName: z.string().min(1, { message: 'Last name is required' }),
   });
 };
 
 export type AddContactFormSchema = ReturnType<typeof getAddContactFormSchema>;
-export type AddContactFormType = z.infer<AddContactFormSchema>;
+export type AddContactFormType = ZodInfer<AddContactFormSchema>;
 
-export const AddContactOutputSchema = z.string();
-export type AddContactOutputType = z.infer<typeof AddContactOutputSchema>;
+export const AddContactOutputSchema = z.array(z.string());
+export type AddContactOutputType = ZodInfer<typeof AddContactOutputSchema>;

@@ -46,6 +46,6 @@ export const addContact = action
         throw new Error('Failed to add contact');
       }
 
-      return contact;
+      return [contact];
     }
   );
