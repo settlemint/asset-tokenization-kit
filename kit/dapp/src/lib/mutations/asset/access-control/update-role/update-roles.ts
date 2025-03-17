@@ -2,7 +2,7 @@
 
 import type { Role } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { grantRole } from '../grant-role/grant-role-action';
 import { revokeRole } from '../revoke-role/revoke-role';
 import { UpdateRolesSchema } from './update-role-schema';
@@ -82,6 +82,6 @@ export const updateRoles = action
         }
       }
 
-      return safeParseWithLogging(z.hashes(), txns);
+      return safeParseTransactionHash(txns);
     }
   );

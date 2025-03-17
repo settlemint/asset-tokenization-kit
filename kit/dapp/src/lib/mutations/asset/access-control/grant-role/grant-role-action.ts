@@ -3,7 +3,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { GrantRoleSchema } from './grant-role-schema';
 
 /**
@@ -186,8 +186,7 @@ export const grantRole = action
         .map(([role]) => role as Role);
       const grantPromises = selectedRoles.map((role) => grantRoleFn(role));
       const results = await Promise.all(grantPromises);
-      const transactions = results.filter(Boolean) as string[];
 
-      return safeParseWithLogging(z.hashes(), transactions);
+      return safeParseTransactionHash(results);
     }
   );

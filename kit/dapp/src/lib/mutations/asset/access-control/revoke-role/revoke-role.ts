@@ -187,8 +187,7 @@ export const revokeRole = action
         .map(([role]) => role as Role);
       const revokePromises = selectedRoles.map((role) => revokeRoleFn(role));
       const results = await Promise.all(revokePromises);
-      const transactions = results.filter(Boolean) as string[];
 
-      return safeParseWithLogging(z.hashes(), transactions);
+      return safeParseWithLogging(z.hashes(), results);
     }
   );
