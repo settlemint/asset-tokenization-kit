@@ -81,11 +81,13 @@ export function Form<
       actionProps: {
         onSuccess: ({ data }) => {
           const hashes = z.hashes().parse(data);
-          toast.promise(waitForTransactions(hashes), {
-            loading: toastMessages?.loading || t("sending"),
-            success: toastMessages?.success || t("success"),
-            error: (error: Error) => `Failed to submit: ${error.message}`,
-          });
+          if (secureForm) {
+            toast.promise(waitForTransactions(hashes), {
+              loading: toastMessages?.loading || t("sending"),
+              success: toastMessages?.success || t("success"),
+              error: (error: Error) => `Failed to submit: ${error.message}`,
+            });
+          }
           resetFormAndAction();
           onOpenChange?.(false);
         },

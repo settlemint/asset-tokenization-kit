@@ -1,10 +1,11 @@
-'use server';
-import { ContactFragment } from '@/lib/queries/contact/contact-fragment';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { revalidatePath } from 'next/cache';
-import { action } from '../safe-action';
-import { getAddContactFormSchema } from './add-contact-schema';
+"use server";
+import { ContactFragment } from "@/lib/queries/contact/contact-fragment";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { action } from "../safe-action";
+import { getAddContactFormSchema } from "./add-contact-schema";
 
 const AddContact = hasuraGraphql(
   `
@@ -37,6 +38,7 @@ const AddContact = hasuraGraphql(
 
 export const addContact = action
   .schema(getAddContactFormSchema())
+  .outputSchema(z.array(z.string()))
   .action(
     async ({
       parsedInput: { address, firstName, lastName },
@@ -52,18 +54,19 @@ export const addContact = action
 
         const contact = data?.insert_contact_one;
         if (!contact) {
-          throw new Error('Failed to add contact: No data returned');
+          throw new Error("Failed to add contact: No data returned");
         }
 
         // Revalidate both the parent and specific route to ensure table refresh
-        revalidatePath('/portfolio/my-contacts', 'page');
-        revalidatePath('/portfolio/my-contacts/(table)', 'page');
+        revalidatePath("/portfolio/my-contacts", "page");
+        revalidatePath("/portfolio/my-contacts/(table)", "page");
 
-        return null;
+        // Return a mock Ethereum transaction hash (0x + 64 hex chars)
+        return [`0x${"0".repeat(64)}`];
       } catch (error) {
-        console.error('Error adding contact:', error);
+        console.error("Error adding contact:", error);
         throw new Error(
-          error instanceof Error ? error.message : 'Failed to add contact'
+          error instanceof Error ? error.message : "Failed to add contact"
         );
       }
     }
