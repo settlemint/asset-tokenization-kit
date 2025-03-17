@@ -45,9 +45,12 @@ export function columns() {
         variant: 'numeric',
       },
     }),
-    columnHelper.accessor((row) => <ColumnHolderType assetBalance={row} />, {
+    columnHelper.accessor('asset', {
       id: t('holder-type-header'),
       header: t('holder-type-header'),
+      cell: ({ row }) => {
+        return <ColumnHolderType assetBalance={row.original} />;
+      },
     }),
     columnHelper.accessor('frozen', {
       header: t('frozen-header'),
