@@ -1,5 +1,5 @@
-import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { hasuraGraphql } from '@/lib/settlemint/hasura';
+import { z } from '@/lib/utils/zod';
 
 export const ContactFragment = hasuraGraphql(
   `
@@ -23,12 +23,18 @@ export const ContactFragmentSchema = z.object({
   name: z.string(),
   wallet: z.address(),
   created_at: z.coerce.date(),
-  updated_at: z.coerce.date().nullish(),
   user_id: z.string(),
-  lastActivity: z.string().nullish(),
+  updated_at: z.coerce.date().nullish(),
 });
 
 /**
  * Type definition for contact data
  */
-export type Contact = ZodInfer<typeof ContactFragmentSchema>;
+export interface Contact {
+  id: string;
+  name: string;
+  wallet: `0x${string}`;
+  created_at: Date;
+  user_id: string;
+  updated_at?: Date | null;
+}

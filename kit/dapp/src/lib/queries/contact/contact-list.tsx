@@ -1,5 +1,6 @@
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { ContactFragment } from "./contact-fragment";
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { ContactFragment } from './contact-fragment';
+import type { Contact } from './contact-fragment';
 
 /**
  * GraphQL query to fetch contact list from Hasura
@@ -18,12 +19,18 @@ const ContactList = hasuraGraphql(
   [ContactFragment]
 );
 
-export async function getContactsList(userId: string) {
+interface ContactListResponse {
+  contact: Contact[];
+}
+
+export async function getContactsList(userId: string): Promise<Contact[]> {
   try {
-    const data = await hasuraClient.request(ContactList, { userId });
+    const data = await hasuraClient.request<ContactListResponse>(ContactList, {
+      userId,
+    });
     return data.contact || [];
   } catch (error) {
-    console.error("Error fetching contacts:", error);
+    console.error('Error fetching contacts:', error);
     return [];
   }
 }
