@@ -23,7 +23,7 @@ const serverEnvironment = getServerEnvironment();
  */
 export const siteConfig = {
   publisher: 'SettleMint',
-  name: 'Asset Tokenization',
+  name: 'SettleMint Asset Tokenization Kit',
   description: 'SettleMint Asset Tokenization Kit',
   url: serverEnvironment.APP_URL,
   email: 'no-reply@tokenmint.be',

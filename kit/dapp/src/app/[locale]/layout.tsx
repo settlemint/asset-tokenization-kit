@@ -22,6 +22,8 @@ export const viewport: Viewport = {
   ],
 };
 
+export { metadata } from '@/lib/config/metadata';
+
 const figTree = Figtree({
   subsets: ['latin'],
   display: 'swap',

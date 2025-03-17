@@ -390,7 +390,10 @@
       "home": "Home"
     },
     "navigation": {
-      "admin": "Issuer portal"
+      "admin": "Issuer portal",
+      "asset-management": "Asset management",
+      "platform": "Platform management",
+      "portfolio": "My portfolio"
     },
     "user-dropdown": {
       "documentation": "Documentation",
