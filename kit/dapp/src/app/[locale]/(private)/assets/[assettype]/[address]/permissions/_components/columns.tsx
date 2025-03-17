@@ -56,12 +56,10 @@ export function columns({
       ),
       cell: ({ row, table }) => {
         const rows = table.getRowModel().rows;
-        const adminCount = rows.filter((row) =>
-          row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
-        ).length;
         const admins = rows.filter((row) =>
           row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
         );
+        const adminCount = admins.length;
         const isAdmin = admins.some(
           (admin) => admin.original.id === row.original.id
         );
