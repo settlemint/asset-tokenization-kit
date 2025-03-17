@@ -1,9 +1,9 @@
 import {
   PermissionFragment,
   PermissionFragmentSchema,
-} from '@/lib/queries/asset/asset-fragment';
-import { theGraphGraphqlKit } from '@/lib/settlemint/the-graph';
-import { type ZodInfer, z } from '@/lib/utils/zod';
+} from "@/lib/queries/asset/asset-fragment";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for asset balance data from The Graph

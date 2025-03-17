@@ -1,6 +1,6 @@
-import { portalGraphql } from '@/lib/settlemint/portal';
-import { theGraphGraphqlKit } from '@/lib/settlemint/the-graph';
-import { type ZodInfer, z } from '@/lib/utils/zod';
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 export const ReceiptFragment = portalGraphql(`
   fragment ReceiptFragment on TransactionReceiptOutput {

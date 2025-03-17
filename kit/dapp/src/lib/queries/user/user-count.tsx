@@ -1,12 +1,12 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
 import {
   RecentUsersCountFragment,
   RecentUsersCountFragmentSchema,
   UserFragment,
   UserFragmentSchema,
-} from './user-fragment';
+} from "./user-fragment";
 
 /**
  * GraphQL query to get users, with an optional filter for recent users
@@ -70,19 +70,19 @@ export const getUserCount = cache(async ({ since }: UserCountProps = {}) => {
   const validatedRecentUsers = safeParseWithLogging(
     RecentUsersCountFragmentSchema,
     result.recentUsers.aggregate,
-    'recent users count'
+    "recent users count"
   );
 
   const validatedTotalUsers = safeParseWithLogging(
     RecentUsersCountFragmentSchema,
     result.totalUsers.aggregate,
-    'total users count'
+    "total users count"
   );
 
   // Parse and validate each user in the results using the UserFragmentSchema
   const validatedUsers = Array.isArray(result.user)
     ? result.user.map((user) =>
-        safeParseWithLogging(UserFragmentSchema, user, 'user count')
+        safeParseWithLogging(UserFragmentSchema, user, "user count")
       )
     : [];
 

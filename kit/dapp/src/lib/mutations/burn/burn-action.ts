@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { BurnSchema } from './burn-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { BurnSchema } from "./burn-schema";
 
 /**
  * GraphQL mutation for burning bond tokens
@@ -111,30 +111,30 @@ export const burn = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondBurn, params);
           return safeParseTransactionHash([response.BondBurn?.transactionHash]);
         }
-        case 'cryptocurrency': {
-          throw new Error('Cryptocurrency does not support burn operations');
+        case "cryptocurrency": {
+          throw new Error("Cryptocurrency does not support burn operations");
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(EquityBurn, params);
           return safeParseTransactionHash([
             response.EquityBurn?.transactionHash,
           ]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(FundBurn, params);
           return safeParseTransactionHash([response.FundBurn?.transactionHash]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(StableCoinBurn, params);
           return safeParseTransactionHash([
             response.StableCoinBurn?.transactionHash,
           ]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositBurn,
             params
@@ -144,7 +144,7 @@ export const burn = action
             .parse([response.TokenizedDepositBurn?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

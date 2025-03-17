@@ -1,24 +1,24 @@
-'use client';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Form as UIForm } from '@/components/ui/form';
-import { waitForTransactions } from '@/lib/queries/transactions/wait-for-transaction';
-import { type ZodInfer, z } from '@/lib/utils/zod';
-import { useHookFormAction } from '@next-safe-action/adapter-react-hook-form/hooks';
-import { useTranslations } from 'next-intl';
-import type { HookSafeActionFn } from 'next-safe-action/hooks';
-import { useEffect, useState } from 'react';
+"use client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Form as UIForm } from "@/components/ui/form";
+import { waitForTransactions } from "@/lib/queries/transactions/wait-for-transaction";
+import { type ZodInfer, z } from "@/lib/utils/zod";
+import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
+import { useTranslations } from "next-intl";
+import type { HookSafeActionFn } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
 import type {
   DefaultValues,
   Path,
   Resolver,
   UseFormReturn,
-} from 'react-hook-form';
-import { toast } from 'sonner';
-import type { Schema } from 'zod';
-import { type ButtonLabels, FormButton } from './form-button';
-import { FormProgress } from './form-progress';
-import { FormOtpDialog } from './inputs/form-otp-dialog';
-import type { FormStepElement } from './types';
+} from "react-hook-form";
+import { toast } from "sonner";
+import type { Schema } from "zod";
+import { type ButtonLabels, FormButton } from "./form-button";
+import { FormProgress } from "./form-progress";
+import { FormOtpDialog } from "./inputs/form-otp-dialog";
+import type { FormStepElement } from "./types";
 
 interface FormProps<
   ServerError,
@@ -65,7 +65,7 @@ export function Form<
   secureForm = true,
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
-  const t = useTranslations('transactions');
+  const t = useTranslations("transactions");
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
@@ -73,8 +73,8 @@ export function Form<
   const { form, handleSubmitWithAction, resetFormAndAction } =
     useHookFormAction(action, resolver, {
       formProps: {
-        mode: 'onSubmit',
-        criteriaMode: 'all',
+        mode: "onSubmit",
+        criteriaMode: "all",
         shouldFocusError: false,
         defaultValues,
       },
@@ -82,20 +82,20 @@ export function Form<
         onSuccess: ({ data }) => {
           const hashes = z.hashes().parse(data);
           toast.promise(waitForTransactions(hashes), {
-            loading: toastMessages?.loading || t('sending'),
-            success: toastMessages?.success || t('success'),
+            loading: toastMessages?.loading || t("sending"),
+            success: toastMessages?.success || t("success"),
             error: (error: Error) => `Failed to submit: ${error.message}`,
           });
           resetFormAndAction();
           onOpenChange?.(false);
         },
         onError: (error) => {
-          let errorMessage = 'Unknown error';
+          let errorMessage = "Unknown error";
 
           if (error?.error?.serverError) {
             errorMessage = error.error.serverError as string;
           } else if (error?.error?.validationErrors) {
-            errorMessage = 'Validation error';
+            errorMessage = "Validation error";
           }
 
           toast.error(`Failed to submit: ${errorMessage}`);
@@ -164,11 +164,11 @@ export function Form<
 
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
-    const error = errorMessage ?? 'unknown-error';
+    const error = errorMessage ?? "unknown-error";
     const translatedErrorMessage = t.has(error as never)
       ? t(error as never)
       : error;
-    const errorKey = key && type !== 'custom' ? `${key}: ` : '';
+    const errorKey = key && type !== "custom" ? `${key}: ` : "";
 
     return `${errorKey}${translatedErrorMessage}`;
   };
@@ -190,7 +190,7 @@ export function Form<
                   variant="destructive"
                   className="mb-4 border-destructive text-destructive"
                 >
-                  <AlertTitle>{t('validation-errors')}</AlertTitle>
+                  <AlertTitle>{t("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {
@@ -201,20 +201,20 @@ export function Form<
                         );
                       })
                       .filter(Boolean)
-                      .join('\n')}
+                      .join("\n")}
                   </AlertDescription>
                 </Alert>
               )}
               {Array.isArray(children) ? children[currentStep] : children}
               {showFormSecurityConfirmation && (
                 <FormOtpDialog
-                  name={'pincode' as Path<ZodInfer<S>>}
+                  name={"pincode" as Path<ZodInfer<S>>}
                   open={showFormSecurityConfirmation}
                   onOpenChange={setShowFormSecurityConfirmation}
                   control={form.control}
                   onSubmit={() => {
                     handleSubmitWithAction().catch((error: Error) => {
-                      console.error('Error submitting form:', error);
+                      console.error("Error submitting form:", error);
                     });
                   }}
                 />
@@ -228,7 +228,7 @@ export function Form<
                 onPreviousStep={handlePrev}
                 onNextStep={() => {
                   handleNext().catch((error: Error) => {
-                    console.error('Error in handleNext:', error);
+                    console.error("Error in handleNext:", error);
                   });
                 }}
                 labels={buttonLabels}

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { topUpUnderlyingAsset } from '@/lib/mutations/bond/top-up/top-up-action';
-import { TopUpSchema } from '@/lib/mutations/bond/top-up/top-up-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Amount } from './steps/amount';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { topUpUnderlyingAsset } from "@/lib/mutations/bond/top-up/top-up-action";
+import { TopUpSchema } from "@/lib/mutations/bond/top-up/top-up-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Amount } from "./steps/amount";
+import { Summary } from "./steps/summary";
 
 interface TopUpFormProps {
   address: Address;
@@ -26,7 +26,7 @@ export function TopUpForm({
   open,
   onOpenChange,
 }: TopUpFormProps) {
-  const t = useTranslations('private.assets.details.forms.top-up');
+  const t = useTranslations("private.assets.details.forms.top-up");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -37,9 +37,9 @@ export function TopUpForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
     >
       <Form
@@ -49,7 +49,7 @@ export function TopUpForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

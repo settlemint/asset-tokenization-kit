@@ -1,18 +1,18 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { addSeconds } from 'date-fns';
-import { cache } from 'react';
-import { type Address, getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { addSeconds } from "date-fns";
+import { cache } from "react";
+import { type Address, getAddress } from "viem";
 import {
   OffchainTokenizedDepositFragment,
   OffchainTokenizedDepositFragmentSchema,
   TokenizedDepositFragment,
   TokenizedDepositFragmentSchema,
-} from './tokenizeddeposit-fragment';
+} from "./tokenizeddeposit-fragment";
 
 /**
  * GraphQL query to fetch on-chain stablecoin details from The Graph
@@ -71,13 +71,13 @@ export const getTokenizedDepositDetail = cache(
     const tokenizedDeposit = safeParseWithLogging(
       TokenizedDepositFragmentSchema,
       data.tokenizedDeposit,
-      'tokenized deposit'
+      "tokenized deposit"
     );
     const offchainTokenizedDeposit = dbTokenizedDeposit.asset[0]
       ? safeParseWithLogging(
           OffchainTokenizedDepositFragmentSchema,
           dbTokenizedDeposit.asset[0],
-          'offchain tokenized deposit'
+          "offchain tokenized deposit"
         )
       : undefined;
 

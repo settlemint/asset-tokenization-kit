@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { createTokenizedDeposit } from '@/lib/mutations/tokenized-deposit/create/create-action';
-import { CreateTokenizedDepositSchema } from '@/lib/mutations/tokenized-deposit/create/create-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { Basics } from './steps/basics';
-import { Configuration } from './steps/configuration';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { createTokenizedDeposit } from "@/lib/mutations/tokenized-deposit/create/create-action";
+import { CreateTokenizedDepositSchema } from "@/lib/mutations/tokenized-deposit/create/create-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Basics } from "./steps/basics";
+import { Configuration } from "./steps/configuration";
+import { Summary } from "./steps/summary";
 
 interface CreateTokenizedDepositFormProps {
   open?: boolean;
@@ -22,7 +22,7 @@ export function CreateTokenizedDepositForm({
   onOpenChange,
   asButton = false,
 }: CreateTokenizedDepositFormProps) {
-  const t = useTranslations('private.assets.create.form');
+  const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,13 +31,13 @@ export function CreateTokenizedDepositForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title.tokenizeddeposits')}
-      description={t('description.tokenizeddeposits')}
+      title={t("title.tokenizeddeposits")}
+      description={t("description.tokenizeddeposits")}
       asButton={asButton}
       triggerLabel={
         isExternallyControlled
           ? undefined
-          : t('trigger-label.tokenizeddeposits')
+          : t("trigger-label.tokenizeddeposits")
       }
     >
       <Form
@@ -45,10 +45,10 @@ export function CreateTokenizedDepositForm({
         resolver={zodResolver(CreateTokenizedDepositSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('trigger-label.tokenizeddeposits'),
+          label: t("trigger-label.tokenizeddeposits"),
         }}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(['predictedAddress']);
+          clearErrors(["predictedAddress"]);
         }}
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,

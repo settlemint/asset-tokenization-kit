@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
 import {
   LanguagesIcon,
   type LanguagesIconHandle,
-} from '@/components/ui/animated-icons/languages';
+} from "@/components/ui/animated-icons/languages";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/components/ui/dropdown-menu';
-import { routing, usePathname, useRouter } from '@/i18n/routing';
-import { Check } from 'lucide-react';
-import type { Locale } from 'next-intl';
-import { useParams } from 'next/navigation';
-import { useRef, useTransition } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { routing, usePathname, useRouter } from "@/i18n/routing";
+import { Check } from "lucide-react";
+import type { Locale } from "next-intl";
+import { useParams } from "next/navigation";
+import { useRef, useTransition } from "react";
 
 // Language display names mapping
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  de: 'Deutsch',
-  ja: '日本語',
-  ar: 'العربية',
+  en: "English",
+  de: "Deutsch",
+  ja: "日本語",
+  ar: "العربية",
 };
 
 export function LanguageMenuItem() {
@@ -65,7 +65,7 @@ export function LanguageMenuItem() {
           ref={languagesIconRef}
           className="mr-4 size-4 text-muted-foreground"
         />
-        <span>{isPending ? 'Changing...' : 'Language'}</span>
+        <span>{isPending ? "Changing..." : "Language"}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {routing.locales.map((locale) => (

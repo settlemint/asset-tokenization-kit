@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Card,
@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -15,9 +15,9 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
-import type { ReactNode } from 'react';
-import { Cell, Pie, PieChart } from 'recharts';
+} from "@/components/ui/chart";
+import type { ReactNode } from "react";
+import { Cell, Pie, PieChart } from "recharts";
 
 interface PieChartProps {
   title: string;

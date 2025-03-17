@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import type { Role } from '@/lib/config/roles';
-import { revokeRole } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import type { Role } from "@/lib/config/roles";
+import { revokeRole } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role";
 
-import { RevokeRoleSchema } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema';
-import type { AssetType } from '@/lib/utils/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
-import { Summary } from './steps/summary';
+import { RevokeRoleSchema } from "@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema";
+import type { AssetType } from "@/lib/utils/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
+import { Summary } from "./steps/summary";
 
 export interface RevokeAllPermissionsFormProps {
   address: Address;
@@ -34,23 +34,23 @@ export function RevokeAllPermissionsForm({
   assettype,
 }: RevokeAllPermissionsFormPropsWithOpen) {
   const t = useTranslations(
-    'private.assets.details.permissions.revoke-all-form'
+    "private.assets.details.permissions.revoke-all-form"
   );
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
     >
       <Form
         action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

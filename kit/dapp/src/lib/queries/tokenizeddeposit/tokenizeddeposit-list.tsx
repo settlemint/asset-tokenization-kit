@@ -1,18 +1,18 @@
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { getAddress } from "viem";
 import {
   OffchainTokenizedDepositFragment,
   OffchainTokenizedDepositFragmentSchema,
   TokenizedDepositFragment,
   TokenizedDepositFragmentSchema,
-} from './tokenizeddeposit-fragment';
+} from "./tokenizeddeposit-fragment";
 
 /**
  * GraphQL query to fetch on-chain stablecoin list from The Graph
@@ -78,7 +78,7 @@ export const getTokenizedDepositList = cache(async () => {
       safeParseWithLogging(
         TokenizedDepositFragmentSchema,
         tokenizedDeposit,
-        'tokenized deposit'
+        "tokenized deposit"
       )
   );
 
@@ -86,7 +86,7 @@ export const getTokenizedDepositList = cache(async () => {
     safeParseWithLogging(
       OffchainTokenizedDepositFragmentSchema,
       asset,
-      'offchain tokenized deposit'
+      "offchain tokenized deposit"
     )
   );
 

@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { WithdrawSchema } from './withdraw-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { WithdrawSchema } from "./withdraw-schema";
 
 /**
  * GraphQL mutation for withdrawing the underlying asset of a bond
@@ -151,7 +151,7 @@ export const withdraw = action
     }) => {
       const asset = await getAssetDetail({
         address: underlyingAssetAddress,
-        assettype: 'cryptocurrency', // Underlying asset is typically a cryptocurrency
+        assettype: "cryptocurrency", // Underlying asset is typically a cryptocurrency
       });
 
       // Bond input format (for underlying asset)
@@ -184,7 +184,7 @@ export const withdraw = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(
             BondWithdrawUnderlyingAsset,
             bondParams
@@ -193,7 +193,7 @@ export const withdraw = action
             .hashes()
             .parse([response.BondWithdrawUnderlyingAsset?.transactionHash]);
         }
-        case 'cryptocurrency': {
+        case "cryptocurrency": {
           const response = await portalClient.request(
             CryptoCurrencyWithdrawToken,
             tokenParams
@@ -202,7 +202,7 @@ export const withdraw = action
             .hashes()
             .parse([response.CryptoCurrencyWithdrawToken?.transactionHash]);
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(
             EquityWithdrawToken,
             tokenParams
@@ -211,7 +211,7 @@ export const withdraw = action
             .hashes()
             .parse([response.EquityWithdrawToken?.transactionHash]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(
             FundWithdrawToken,
             tokenParams
@@ -220,7 +220,7 @@ export const withdraw = action
             .hashes()
             .parse([response.FundWithdrawToken?.transactionHash]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(
             StableCoinWithdrawToken,
             tokenParams
@@ -229,7 +229,7 @@ export const withdraw = action
             .hashes()
             .parse([response.StableCoinWithdrawToken?.transactionHash]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositWithdrawToken,
             tokenParams
@@ -239,7 +239,7 @@ export const withdraw = action
             .parse([response.TokenizedDepositWithdrawToken?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

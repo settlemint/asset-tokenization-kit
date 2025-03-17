@@ -1,6 +1,6 @@
-import type { Metadata } from 'next';
-import StandardOGImage from './metadata/standard-og.png';
-import { siteConfig } from './site';
+import type { Metadata } from "next";
+import StandardOGImage from "./metadata/standard-og.png";
+import { siteConfig } from "./site";
 
 /**
  * Next.js metadata configuration for SEO and site presentation
@@ -12,19 +12,19 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   applicationName: siteConfig.name,
-  generator: 'SettleMint Asset Tokenization Kit',
+  generator: "SettleMint Asset Tokenization Kit",
   description: siteConfig.description,
   keywords: [
-    'blockchain',
-    'SettleMint',
-    'blockchain transformation',
-    'asset tokenization',
+    "blockchain",
+    "SettleMint",
+    "blockchain transformation",
+    "asset tokenization",
   ],
-  authors: [{ name: 'SettleMint', url: 'https://www.settlemint.com' }],
-  creator: 'SettleMint',
+  authors: [{ name: "SettleMint", url: "https://www.settlemint.com" }],
+  creator: "SettleMint",
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
+    type: "website",
+    locale: "en_US",
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
@@ -39,10 +39,10 @@ export const metadata = {
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    creator: '@SettleMintCom',
+    creator: "@SettleMintCom",
     images: [
       {
         url: new URL(StandardOGImage.src, siteConfig.url).toString(),
@@ -53,7 +53,7 @@ export const metadata = {
     ],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
   robots: {
     index: true,
@@ -61,20 +61,20 @@ export const metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   alternates: {
     canonical: siteConfig.url,
     languages: {
-      'en-US': `${siteConfig.url}/en`,
-      'de-DE': `${siteConfig.url}/de`,
-      'ja-JP': `${siteConfig.url}/ja`,
-      'ar-AE': `${siteConfig.url}/ar`,
+      "en-US": `${siteConfig.url}/en`,
+      "de-DE": `${siteConfig.url}/de`,
+      "ja-JP": `${siteConfig.url}/ja`,
+      "ar-AE": `${siteConfig.url}/ar`,
     },
   },
   other: {
-    'darkreader-lock': '',
+    "darkreader-lock": "",
   },
 } as const satisfies Metadata;

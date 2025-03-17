@@ -1,4 +1,4 @@
-import { AuthCard } from '@daveyplate/better-auth-ui';
+import { AuthCard } from "@daveyplate/better-auth-ui";
 
 export default async function AuthPage({
   params,

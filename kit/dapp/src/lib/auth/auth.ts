@@ -2,20 +2,20 @@ import {
   emailVerification,
   sendDeleteAccountVerification,
   sendMagicLink,
-} from '@/lib/auth/emails';
-import * as authSchema from '@/lib/db/schema-auth';
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { APIError } from 'better-auth/api';
-import { nextCookies } from 'better-auth/next-js';
-import { admin, apiKey, magicLink, multiSession } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
-import { eq } from 'drizzle-orm';
-import { revalidateTag } from 'next/cache';
-import { getServerEnvironment } from '../config/environment';
-import { metadata } from '../config/metadata';
-import { db } from '../db';
-import { createUserWallet } from './portal';
+} from "@/lib/auth/emails";
+import * as authSchema from "@/lib/db/schema-auth";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
+import { nextCookies } from "better-auth/next-js";
+import { admin, apiKey, magicLink, multiSession } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
+import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
+import { getServerEnvironment } from "../config/environment";
+import { metadata } from "../config/metadata";
+import { db } from "../db";
+import { createUserWallet } from "./portal";
 
 const env = getServerEnvironment();
 
@@ -30,7 +30,7 @@ export const auth = betterAuth({
   baseURL: env.APP_URL,
   trustedOrigins: [env.APP_URL],
   database: drizzleAdapter(db, {
-    provider: 'pg',
+    provider: "pg",
     schema: authSchema,
   }),
   socialProviders: {
@@ -61,24 +61,24 @@ export const auth = betterAuth({
     },
     additionalFields: {
       wallet: {
-        type: 'string',
+        type: "string",
         required: false,
         unique: true,
       },
       kycVerifiedAt: {
-        type: 'date',
+        type: "date",
         required: false,
         input: false,
       },
       lastLoginAt: {
-        type: 'date',
+        type: "date",
         required: false,
         input: false,
       },
       role: {
-        type: 'string',
+        type: "string",
         required: true,
-        default: 'user',
+        default: "user",
         input: false,
       },
     },
@@ -94,8 +94,8 @@ export const auth = betterAuth({
             });
 
             if (!wallet.createWallet?.address) {
-              throw new APIError('BAD_REQUEST', {
-                message: 'Failed to create wallet',
+              throw new APIError("BAD_REQUEST", {
+                message: "Failed to create wallet",
               });
             }
 
@@ -104,12 +104,12 @@ export const auth = betterAuth({
               data: {
                 ...user,
                 wallet: wallet.createWallet.address,
-                role: firstUser ? 'user' : 'admin',
+                role: firstUser ? "user" : "admin",
               },
             };
           } catch (error) {
-            throw new APIError('BAD_REQUEST', {
-              message: 'Failed to create user wallet',
+            throw new APIError("BAD_REQUEST", {
+              message: "Failed to create user wallet",
               cause: error instanceof Error ? error : undefined,
             });
           }
@@ -123,7 +123,7 @@ export const auth = betterAuth({
             .update(authSchema.user)
             .set({ lastLoginAt: new Date() })
             .where(eq(authSchema.user.id, session.userId));
-          revalidateTag('user');
+          revalidateTag("user");
           return {
             data: session,
           };
@@ -141,7 +141,7 @@ export const auth = betterAuth({
     admin(),
     apiKey({
       defaultKeyLength: 16,
-      defaultPrefix: 'sm_atk_',
+      defaultPrefix: "sm_atk_",
       enableMetadata: true,
       rateLimit: {
         enabled: true,

@@ -1,41 +1,41 @@
-'use client';
+"use client";
 
 import {
   FrameIcon,
   type FrameIconHandle,
-} from '@/components/ui/animated-icons/frame';
+} from "@/components/ui/animated-icons/frame";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
-import { CreateBondForm } from './bonds/form';
-import { CreateCryptoCurrencyForm } from './cryptocurrencies/form';
-import { CreateEquityForm } from './equities/form';
-import { CreateFundForm } from './funds/form';
-import { CreateStablecoinForm } from './stablecoins/form';
-import { CreateTokenizedDepositForm } from './tokenized-deposits/form';
+} from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
+import { CreateBondForm } from "./bonds/form";
+import { CreateCryptoCurrencyForm } from "./cryptocurrencies/form";
+import { CreateEquityForm } from "./equities/form";
+import { CreateFundForm } from "./funds/form";
+import { CreateStablecoinForm } from "./stablecoins/form";
+import { CreateTokenizedDepositForm } from "./tokenized-deposits/form";
 
 export function DesignerButton() {
-  const t = useTranslations('admin.sidebar');
+  const t = useTranslations("admin.sidebar");
   const { isMobile } = useSidebar();
   const [tokenType, setTokenType] = useState<
-    | 'bond'
-    | 'cryptocurrency'
-    | 'equity'
-    | 'fund'
-    | 'stablecoin'
-    | 'tokenized-deposit'
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenized-deposit"
     | null
   >(null);
   const frameIconRef = useRef<FrameIconHandle>(null);
@@ -56,34 +56,34 @@ export function DesignerButton() {
                 className="bg-accent text-accent-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-accent-foreground"
               >
                 <FrameIcon ref={frameIconRef} className="size-4" />
-                <span>{t('asset-designer')}</span>
+                <span>{t("asset-designer")}</span>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="-translate-y-2 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-md shadow-dropdown"
               align="start"
-              side={isMobile ? 'bottom' : 'right'}
+              side={isMobile ? "bottom" : "right"}
               sideOffset={16}
             >
-              <DropdownMenuItem onSelect={() => setTokenType('bond')}>
-                {t('asset-types.bond')}
+              <DropdownMenuItem onSelect={() => setTokenType("bond")}>
+                {t("asset-types.bond")}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setTokenType('cryptocurrency')}>
-                {t('asset-types.cryptocurrency')}
+              <DropdownMenuItem onSelect={() => setTokenType("cryptocurrency")}>
+                {t("asset-types.cryptocurrency")}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setTokenType('equity')}>
-                {t('asset-types.equity')}
+              <DropdownMenuItem onSelect={() => setTokenType("equity")}>
+                {t("asset-types.equity")}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setTokenType('fund')}>
-                {t('asset-types.fund')}
+              <DropdownMenuItem onSelect={() => setTokenType("fund")}>
+                {t("asset-types.fund")}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setTokenType('stablecoin')}>
-                {t('asset-types.stablecoin')}
+              <DropdownMenuItem onSelect={() => setTokenType("stablecoin")}>
+                {t("asset-types.stablecoin")}
               </DropdownMenuItem>
               <DropdownMenuItem
-                onSelect={() => setTokenType('tokenized-deposit')}
+                onSelect={() => setTokenType("tokenized-deposit")}
               >
-                {t('asset-types.tokenized-deposit')}
+                {t("asset-types.tokenized-deposit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -91,27 +91,27 @@ export function DesignerButton() {
       </SidebarMenu>
 
       <CreateBondForm
-        open={tokenType === 'bond'}
+        open={tokenType === "bond"}
         onOpenChange={onFormOpenChange}
       />
       <CreateCryptoCurrencyForm
-        open={tokenType === 'cryptocurrency'}
+        open={tokenType === "cryptocurrency"}
         onOpenChange={onFormOpenChange}
       />
       <CreateEquityForm
-        open={tokenType === 'equity'}
+        open={tokenType === "equity"}
         onOpenChange={onFormOpenChange}
       />
       <CreateFundForm
-        open={tokenType === 'fund'}
+        open={tokenType === "fund"}
         onOpenChange={onFormOpenChange}
       />
       <CreateStablecoinForm
-        open={tokenType === 'stablecoin'}
+        open={tokenType === "stablecoin"}
         onOpenChange={onFormOpenChange}
       />
       <CreateTokenizedDepositForm
-        open={tokenType === 'tokenized-deposit'}
+        open={tokenType === "tokenized-deposit"}
         onOpenChange={onFormOpenChange}
       />
     </SidebarGroup>

@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils';
-import { formatNumber } from '@/lib/utils/number';
-import * as ProgressPrimitive from '@radix-ui/react-progress';
-import type { BigNumber } from 'bignumber.js';
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/number";
+import * as ProgressPrimitive from "@radix-ui/react-progress";
+import type { BigNumber } from "bignumber.js";
 interface PercentageProgressBarProps {
   percentage: number | BigNumber;
 }
@@ -10,7 +10,7 @@ export function PercentageProgressBar({
   percentage,
 }: PercentageProgressBarProps) {
   const percentageNumber =
-    typeof percentage === 'number' ? percentage : Number(percentage.toString());
+    typeof percentage === "number" ? percentage : Number(percentage.toString());
 
   return (
     <div className="grid w-full grid-cols-3 items-center">
@@ -18,27 +18,27 @@ export function PercentageProgressBar({
         <ProgressPrimitive.Root
           data-slot="progress"
           className={cn(
-            'relative h-2 w-full overflow-hidden rounded-full',
+            "relative h-2 w-full overflow-hidden rounded-full",
             percentageNumber === 0
-              ? 'bg-background/20'
+              ? "bg-background/20"
               : percentageNumber > 90
-                ? 'bg-destructive/20'
+                ? "bg-destructive/20"
                 : percentageNumber > 75
-                  ? 'bg-warning/20'
-                  : 'bg-success/20'
+                  ? "bg-warning/20"
+                  : "bg-success/20"
           )}
         >
           <ProgressPrimitive.Indicator
             data-slot="progress-indicator"
             className={cn(
-              'h-full w-full flex-1 bg-primary transition-all',
+              "h-full w-full flex-1 bg-primary transition-all",
               percentageNumber === 0
-                ? 'bg-primary'
+                ? "bg-primary"
                 : percentageNumber > 90
-                  ? 'bg-destructive'
+                  ? "bg-destructive"
                   : percentageNumber > 75
-                    ? 'bg-warning'
-                    : 'bg-success'
+                    ? "bg-warning"
+                    : "bg-success"
             )}
             style={{
               transform: `translateX(-${100 - (percentageNumber || 0)}%)`,

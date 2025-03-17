@@ -1,7 +1,7 @@
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { cache } from 'react';
-import type { Address } from 'viem';
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { cache } from "react";
+import type { Address } from "viem";
 
 const ProcessedTransactionsTimeline = portalGraphql(
   `query ProcessedTransactionsTimeline($granularity: TransactionTimelineGranularity!, $timelineStartDate: String!, $from: String) {
@@ -26,7 +26,7 @@ export interface TransactionsTimelineProps {
   from?: Address;
   timelineStartDate: Date;
   granularity: ReturnType<
-    typeof portalGraphql.scalar<'TransactionTimelineGranularity'>
+    typeof portalGraphql.scalar<"TransactionTimelineGranularity">
   >;
 }
 

@@ -1,15 +1,16 @@
 {
-	"recommendations": [
-		"oven.bun-vscode",
-		"editorconfig.editorconfig",
-		"graphql.vscode-graphql-syntax",
-		"nhoizey.gremlins",
-		"yoavbls.pretty-ts-errors",
-		"bradlc.vscode-tailwindcss",
-		"shardulm94.trailing-spaces",
-		"nomicfoundation.hardhat-solidity",
-		"bruceyuhb.hsl-preview",
-		"nize.oklch-preview",
-		"biomejs.biome"
-	]
+  "recommendations": [
+    "oven.bun-vscode",
+    "editorconfig.editorconfig",
+    "graphql.vscode-graphql-syntax",
+    "nhoizey.gremlins",
+    "yoavbls.pretty-ts-errors",
+    "bradlc.vscode-tailwindcss",
+    "shardulm94.trailing-spaces",
+    "nomicfoundation.hardhat-solidity",
+    "bruceyuhb.hsl-preview",
+    "nize.oklch-preview",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
 }

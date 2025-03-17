@@ -1,12 +1,12 @@
-import { fetchAllPortalPages } from '@/lib/pagination';
+import { fetchAllPortalPages } from "@/lib/pagination";
 import {
   TransactionFragment,
   TransactionFragmentSchema,
-} from '@/lib/queries/transactions/transaction-fragment';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { cache } from 'react';
-import type { Address } from 'viem';
+} from "@/lib/queries/transactions/transaction-fragment";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { cache } from "react";
+import type { Address } from "viem";
 
 /**
  * GraphQL query to fetch processed transactions from the Portal API

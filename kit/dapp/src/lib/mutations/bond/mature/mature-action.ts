@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { MatureFormSchema } from './mature-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { MatureFormSchema } from "./mature-schema";
 
 /**
  * GraphQL mutation for maturing a bond
