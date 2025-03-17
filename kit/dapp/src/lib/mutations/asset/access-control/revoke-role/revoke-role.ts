@@ -1,10 +1,9 @@
+'use server';
 import { handleChallenge } from '@/lib/challenge';
 import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import type { ResultOf, VariablesOf } from '@settlemint/sdk-portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
 import { RevokeRoleSchema } from './revoke-role-schema';
 
 /**
@@ -121,62 +120,74 @@ export const TokenizedDepositRevokeRole = portalGraphql(`
   }
 `);
 
-type RevokeRoleInput = VariablesOf<
-  | typeof StableCoinRevokeRole
-  | typeof BondRevokeRole
-  | typeof CryptoCurrencyRevokeRole
-  | typeof FundRevokeRole
-  | typeof EquityRevokeRole
-  | typeof TokenizedDepositRevokeRole
->;
-type RevokeRoleOutput = ResultOf<
-  | typeof StableCoinRevokeRole
-  | typeof BondRevokeRole
-  | typeof CryptoCurrencyRevokeRole
-  | typeof FundRevokeRole
-  | typeof EquityRevokeRole
-  | typeof TokenizedDepositRevokeRole
->;
+export const revokeRole = action
+  .schema(RevokeRoleSchema)
+  .outputSchema(z.hashes())
+  .action(
+    async ({
+      parsedInput: { address, roles, userAddress, pincode, assettype },
+      ctx: { user },
+    }) => {
+      const revokeRoleFn = async (role: Role) => {
+        const params = {
+          address: address,
+          from: user.wallet,
+          input: {
+            role: getRoleIdentifier(role),
+            account: userAddress,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        };
 
-export type RevokeRoleMutation = TypedDocumentNode<
-  RevokeRoleOutput,
-  RevokeRoleInput
->;
+        switch (assettype) {
+          case 'stablecoin': {
+            const response = await portalClient.request(
+              StableCoinRevokeRole,
+              params
+            );
+            return response.RevokeRole?.transactionHash;
+          }
+          case 'bond': {
+            const response = await portalClient.request(BondRevokeRole, params);
+            return response.RevokeRole?.transactionHash;
+          }
+          case 'cryptocurrency': {
+            const response = await portalClient.request(
+              CryptoCurrencyRevokeRole,
+              params
+            );
+            return response.RevokeRole?.transactionHash;
+          }
+          case 'fund': {
+            const response = await portalClient.request(FundRevokeRole, params);
+            return response.RevokeRole?.transactionHash;
+          }
+          case 'equity': {
+            const response = await portalClient.request(
+              EquityRevokeRole,
+              params
+            );
+            return response.RevokeRole?.transactionHash;
+          }
+          case 'tokenizeddeposit': {
+            const response = await portalClient.request(
+              TokenizedDepositRevokeRole,
+              params
+            );
+            return response.RevokeRole?.transactionHash;
+          }
+          default:
+            throw new Error(`Unsupported asset type: ${assettype}`);
+        }
+      };
 
-export const getRevokeRoleAction = (revokeRoleMutation: RevokeRoleMutation) =>
-  action
-    .schema(RevokeRoleSchema)
-    .outputSchema(z.hashes())
-    .action(
-      async ({
-        parsedInput: { address, roles, userAddress, pincode },
-        ctx: { user },
-      }) => {
-        const selectedRoles = Object.entries(roles)
-          .filter(([, enabled]) => enabled)
-          .map(([role]) => role as Role);
+      const selectedRoles = Object.entries(roles)
+        .filter(([, enabled]) => enabled)
+        .map(([role]) => role as Role);
+      const revokePromises = selectedRoles.map((role) => revokeRoleFn(role));
+      const results = await Promise.all(revokePromises);
+      const transactions = results.filter(Boolean) as string[];
 
-        // Create an array of promises for each role revocation request
-        const revokePromises = selectedRoles.map(async (role) => {
-          const response = await portalClient.request(revokeRoleMutation, {
-            address: address,
-            from: user.wallet,
-            input: {
-              role: getRoleIdentifier(role),
-              account: userAddress,
-            },
-            challengeResponse: await handleChallenge(user.wallet, pincode),
-          });
-
-          return response.RevokeRole?.transactionHash;
-        });
-
-        // Execute all requests in parallel
-        const results = await Promise.all(revokePromises);
-
-        // Filter out any undefined values and return transaction hashes
-        const transactions = results.filter(Boolean) as string[];
-
-        return z.hashes().parse(transactions);
-      }
-    );
+      return safeParseWithLogging(z.hashes(), transactions);
+    }
+  );

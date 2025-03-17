@@ -8,18 +8,19 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { ROLES } from '@/lib/config/roles';
-import { bondRevokeRoleAction } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-action';
-import { bondUpdatePermissionsAction } from '@/lib/mutations/asset/access-control/update-role/update-roles-action';
 import type { PermissionWithRoles } from '@/lib/queries/asset/asset-detail';
 import { formatDate } from '@/lib/utils/date';
+import type { AssetType } from '@/lib/utils/zod';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../types';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function columns({ address, assettype,  }: { address: Address, assettype: AssetType,  }) {
+export function columns({
+  address,
+  assettype,
+}: { address: Address; assettype: AssetType }) {
   const t = useTranslations('private.assets.fields');
 
   return [
@@ -56,12 +57,14 @@ export function columns({ address, assettype,  }: { address: Address, assettype:
       cell: ({ row, table }) => {
         const rows = table.getRowModel().rows;
         const adminCount = rows.filter((row) =>
-            row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
-          ).length;
-          const admins = rows.filter((row) =>
-            row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
-          );
-          const isAdmin = admins.some((admin) => admin.original.id === row.original.id);
+          row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
+        ).length;
+        const admins = rows.filter((row) =>
+          row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
+        );
+        const isAdmin = admins.some(
+          (admin) => admin.original.id === row.original.id
+        );
 
         return (
           <DataTableRowActions

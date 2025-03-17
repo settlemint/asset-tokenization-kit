@@ -4,14 +4,14 @@ import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
 import { UpdateRolesSchema } from '@/lib/mutations/asset/access-control/update-role/update-role-schema';
-import { bondUpdatePermissionsAction, cryptoCurrencyUpdatePermissionsAction, equityUpdatePermissionsAction, fundUpdatePermissionsAction, stableCoinUpdatePermissionsAction, tokenizedDepositUpdatePermissionsAction, type UpdateRolesActionType } from '@/lib/mutations/asset/access-control/update-role/update-roles-action';
+import { updateRoles } from '@/lib/mutations/asset/access-control/update-role/update-roles';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 import { EvmAddress } from '../evm-address/evm-address';
 import { Roles } from './steps/roles';
 import { Summary } from './steps/summary';
-import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 
 export interface EditPermissionsFormProps {
   address: Address;
@@ -39,25 +39,6 @@ export function EditPermissionsForm({
 }: EditPermissionsFormPropsWithOpen) {
   const t = useTranslations('private.assets.details.permissions.edit-form');
 
-  const getUpdateRolesAction = (assettype: AssetType) => {
-    switch (assettype) {
-      case 'bonds':
-        return bondUpdatePermissionsAction;
-      case 'equities':
-        return equityUpdatePermissionsAction;
-      case 'funds':
-        return fundUpdatePermissionsAction;
-      case 'tokenizeddeposits':
-        return tokenizedDepositUpdatePermissionsAction;
-      case 'cryptocurrencies':
-        return cryptoCurrencyUpdatePermissionsAction;
-      case 'stablecoins':
-        return stableCoinUpdatePermissionsAction;
-      default:
-        throw new Error(`Invalid asset type: ${assettype}`);
-    }
-  };
-
   return (
     <FormSheet
       open={open}
@@ -67,7 +48,7 @@ export function EditPermissionsForm({
       description={t('description', { name: assetName })}
     >
       <Form
-        action={getUpdateRolesAction(assettype)}
+        action={updateRoles}
         resolver={zodResolver(UpdateRolesSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
@@ -76,6 +57,7 @@ export function EditPermissionsForm({
         defaultValues={{
           address,
           userAddress: account,
+          assettype,
           roles: currentRoles.reduce(
             (acc, role) => {
               acc[role] = true;
