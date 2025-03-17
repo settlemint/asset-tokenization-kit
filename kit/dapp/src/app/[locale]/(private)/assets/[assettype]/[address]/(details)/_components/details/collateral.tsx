@@ -2,19 +2,31 @@ import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
 import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
 import { PercentageProgressBar } from '@/components/blocks/percentage-progress/percentage-progress';
 import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
+import { getTokenizedDepositDetail } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail';
 import { formatDate, formatDuration } from '@/lib/utils/date';
 import { formatNumber } from '@/lib/utils/number';
+import type { AssetType } from '@/lib/utils/zod';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import type { Address } from 'viem';
 
 interface CollateralProps {
   address: Address;
+  assettype: AssetType;
 }
 
-export async function Collateral({ address }: CollateralProps) {
-  const stableCoin = await getStableCoinDetail({ address });
+export async function Collateral({ address, assettype }: CollateralProps) {
+  const asset =
+    assettype === 'stablecoin'
+      ? await getStableCoinDetail({ address })
+      : assettype === 'tokenizeddeposit'
+        ? await getTokenizedDepositDetail({ address })
+        : undefined;
   const t = await getTranslations('private.assets.fields');
+
+  if (!asset) {
+    return null;
+  }
 
   return (
     <Suspense>
@@ -23,7 +35,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('proven-collateral')}
           info={t('proven-collateral-info')}
         >
-          {formatNumber(stableCoin.collateral, { token: stableCoin.symbol })}
+          {formatNumber(asset.collateral, { token: asset.symbol })}
         </DetailGridItem>
         <DetailGridItem
           label={t('required-collateral-threshold')}
@@ -35,14 +47,14 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('committed-collateral-ratio')}
           info={t('committed-collateral-ratio-info')}
         >
-          <PercentageProgressBar percentage={stableCoin.collateralRatio} />
+          <PercentageProgressBar percentage={asset.collateralRatio} />
         </DetailGridItem>
         <DetailGridItem
           label={t('collateral-proof-expiration')}
           info={t('collateral-proof-expiration-info')}
         >
-          {stableCoin.collateralProofValidity
-            ? formatDate(stableCoin.collateralProofValidity, {
+          {asset.collateralProofValidity
+            ? formatDate(asset.collateralProofValidity, {
                 type: 'absolute',
               })
             : '-'}
@@ -51,7 +63,7 @@ export async function Collateral({ address }: CollateralProps) {
           label={t('collateral-proof-validity')}
           info={t('collateral-proof-validity-info')}
         >
-          {formatDuration(stableCoin.liveness)}
+          {formatDuration(asset.liveness)}
         </DetailGridItem>
       </DetailGrid>
     </Suspense>
