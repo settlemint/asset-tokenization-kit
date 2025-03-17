@@ -23,6 +23,7 @@ export const CreateTokenizedDepositSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "tokenized-deposit.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateTokenizedDepositInput = ZodInfer<

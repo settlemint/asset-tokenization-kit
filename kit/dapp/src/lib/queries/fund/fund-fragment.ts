@@ -87,6 +87,7 @@ export const OffchainFundFragment = hasuraGraphql(`
   fragment OffchainFundFragment on asset {
     id
     isin
+    value_in_base_currency
   }
 `);
 
@@ -97,6 +98,7 @@ export const OffchainFundFragment = hasuraGraphql(`
 export const OffchainFundFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
+  value_in_base_currency: z.number().nullish().default(0),
 });
 
 /**

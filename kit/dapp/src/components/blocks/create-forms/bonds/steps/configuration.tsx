@@ -1,11 +1,16 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
-export function Configuration() {
+interface ConfigurationProps {
+  baseCurrency: CurrencyCode;
+}
+
+export function Configuration({ baseCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateBondInput>();
   const t = useTranslations("private.assets.create");
 
@@ -43,6 +48,16 @@ export function Configuration() {
           name="underlyingAsset"
           label={t("parameters.bonds.underlying-asset-label")}
           description={t("parameters.bonds.underlying-asset-description")}
+          required
+        />
+        <FormInput
+          control={control}
+          name="valueInBaseCurrency"
+          type="number"
+          step={0.01}
+          label={t("parameters.common.value-in-base-currency-label", {
+            baseCurrency,
+          })}
           required
         />
       </div>

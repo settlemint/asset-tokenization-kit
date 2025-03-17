@@ -5,6 +5,7 @@ import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-s
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getFundList } from "@/lib/queries/fund/fund-list";
 import { formatNumber } from "@/lib/utils/number";
 import type { fundCategories, fundClasses } from "@/lib/utils/zod";
@@ -17,7 +18,7 @@ const columnHelper =
 type FundCategory = (typeof fundCategories)[number];
 type FundClass = (typeof fundClasses)[number];
 
-export function fundColumns() {
+export function fundColumns({ baseCurrency }: { baseCurrency: CurrencyCode }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
 
@@ -88,6 +89,15 @@ export function fundColumns() {
     columnHelper.accessor("symbol", {
       header: t("symbol-header"),
       cell: ({ getValue }) => getValue(),
+      enableColumnFilter: false,
+    }),
+    columnHelper.accessor("value_in_base_currency", {
+      header: t("price-header"),
+      cell: ({ getValue }) =>
+        formatNumber(getValue(), {
+          currency: baseCurrency,
+          decimals: 2,
+        }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("totalSupply", {

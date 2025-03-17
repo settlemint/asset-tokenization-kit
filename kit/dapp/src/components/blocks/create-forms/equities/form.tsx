@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useSettings } from "@/hooks/use-settings";
 import { createEquity } from "@/lib/mutations/equity/create/create-action";
 import { CreateEquitySchema } from "@/lib/mutations/equity/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +27,8 @@ export function CreateEquityForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const baseCurrency = useSettings("baseCurrency");
+
   return (
     <FormSheet
       open={open ?? localOpen}
@@ -44,13 +47,15 @@ export function CreateEquityForm({
         buttonLabels={{
           label: t("trigger-label.equities"),
         }}
-        defaultValues={{}}
+        defaultValues={{
+          valueInBaseCurrency: 1,
+        }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration />
+        <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
     </FormSheet>

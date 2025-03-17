@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useSettings } from "@/hooks/use-settings";
 import { createFund } from "@/lib/mutations/fund/create/create-action";
 import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +27,7 @@ export function CreateFundForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
@@ -47,13 +49,14 @@ export function CreateFundForm({
         }}
         defaultValues={{
           managementFeeBps: 100, // Default 1% management fee
+          valueInBaseCurrency: 1,
         }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration />
+        <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
     </FormSheet>

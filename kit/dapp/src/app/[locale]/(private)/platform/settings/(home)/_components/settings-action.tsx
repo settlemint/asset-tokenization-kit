@@ -1,12 +1,12 @@
 "use server";
 
 import { setSetting } from "@/lib/config/settings";
-import { FiatCurrencies, SETTING_KEYS } from "@/lib/db/schema-settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { action } from "@/lib/mutations/safe-action";
-import { z } from "zod";
+import { z } from "@/lib/utils/zod";
 
 const schema = z.object({
-  baseCurrency: z.enum(FiatCurrencies),
+  baseCurrency: z.fiatCurrency(),
 });
 
 export const updateSettings = action

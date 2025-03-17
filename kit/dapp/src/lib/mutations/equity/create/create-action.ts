@@ -34,10 +34,10 @@ const EquityFactoryCreate = portalGraphql(`
  * Stores additional metadata about the equity in Hasura
  */
 const CreateOffchainEquity = hasuraGraphql(`
-  mutation CreateOffchainEquity($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
-      id
-    }
+    mutation CreateOffchainEquity($id: String!, $isin: String, $value_in_base_currency: numeric) {
+      insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+        id
+      }
   }
 `);
 
@@ -55,12 +55,14 @@ export const createEquity = action
         equityCategory,
         equityClass,
         predictedAddress,
+        valueInBaseCurrency,
       },
       ctx: { user },
     }) => {
       await hasuraClient.request(CreateOffchainEquity, {
         id: predictedAddress,
         isin: isin,
+        value_in_base_currency: String(valueInBaseCurrency),
       });
 
       const data = await portalClient.request(EquityFactoryCreate, {

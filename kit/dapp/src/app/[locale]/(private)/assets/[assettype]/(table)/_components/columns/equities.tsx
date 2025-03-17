@@ -5,6 +5,7 @@ import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-s
 import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
 import type { getEquityList } from "@/lib/queries/equity/equity-list";
 import { formatNumber } from "@/lib/utils/number";
 import type { equityCategories, equityClasses } from "@/lib/utils/zod";
@@ -17,7 +18,11 @@ const columnHelper =
 type EquityCategory = (typeof equityCategories)[number];
 type EquityClass = (typeof equityClasses)[number];
 
-export function equityColumns() {
+export function equityColumns({
+  baseCurrency,
+}: {
+  baseCurrency: CurrencyCode;
+}) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.fields");
 
@@ -107,12 +112,13 @@ export function equityColumns() {
       cell: ({ getValue }) => getValue(),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("totalSupply", {
-      header: t("total-supply-header"),
-      meta: {
-        variant: "numeric",
-      },
-      cell: ({ getValue }) => formatNumber(getValue()),
+    columnHelper.accessor("value_in_base_currency", {
+      header: t("price-header"),
+      cell: ({ getValue }) =>
+        formatNumber(getValue(), {
+          currency: baseCurrency,
+          decimals: 2,
+        }),
       enableColumnFilter: false,
     }),
     columnHelper.accessor("equityCategory", {

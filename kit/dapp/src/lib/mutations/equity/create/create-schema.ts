@@ -23,6 +23,7 @@ export const CreateEquitySchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "equity.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;

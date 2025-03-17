@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useSettings } from "@/hooks/use-settings";
 import { createTokenizedDeposit } from "@/lib/mutations/tokenized-deposit/create/create-action";
 import { CreateTokenizedDepositSchema } from "@/lib/mutations/tokenized-deposit/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +27,7 @@ export function CreateTokenizedDepositForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
@@ -52,10 +54,11 @@ export function CreateTokenizedDepositForm({
         }}
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,
+          valueInBaseCurrency: 1,
         }}
       >
         <Basics />
-        <Configuration />
+        <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
     </FormSheet>

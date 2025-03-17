@@ -33,6 +33,7 @@ export const CreateFundSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "fund.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;
