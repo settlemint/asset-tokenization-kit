@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import type { FreezeInput } from '@/lib/mutations/bond/freeze/freeze-schema';
+import type { FreezeInput } from '@/lib/mutations/freeze/freeze-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';

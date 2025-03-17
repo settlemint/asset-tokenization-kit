@@ -2,8 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { withdrawUnderlyingAsset } from '@/lib/mutations/bond/withdraw/withdraw-action';
-import { WithdrawSchema } from '@/lib/mutations/bond/withdraw/withdraw-schema';
+import { withdraw } from '@/lib/mutations/withdraw/withdraw-action';
+import { WithdrawSchema } from '@/lib/mutations/withdraw/withdraw-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -44,7 +44,7 @@ export function WithdrawForm({
       asButton={asButton}
     >
       <Form
-        action={withdrawUnderlyingAsset}
+        action={withdraw}
         resolver={zodResolver(WithdrawSchema)}
         onOpenChange={
           isExternallyControlled ? onOpenChange : setInternalOpenState

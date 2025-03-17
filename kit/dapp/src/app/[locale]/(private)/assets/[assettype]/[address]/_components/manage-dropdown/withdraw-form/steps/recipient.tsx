@@ -3,7 +3,7 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
 import { FormUsers } from '@/components/blocks/form/inputs/form-users';
-import type { WithdrawInput } from '@/lib/mutations/bond/withdraw/withdraw-schema';
+import type { WithdrawInput } from '@/lib/mutations/withdraw/withdraw-schema';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';

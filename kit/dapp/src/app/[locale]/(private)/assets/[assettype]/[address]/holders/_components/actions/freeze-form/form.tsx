@@ -2,8 +2,8 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { freeze } from '@/lib/mutations/bond/freeze/freeze-action';
-import { FreezeSchema } from '@/lib/mutations/bond/freeze/freeze-schema';
+import { freeze } from '@/lib/mutations/freeze/freeze-action';
+import { FreezeSchema } from '@/lib/mutations/freeze/freeze-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
