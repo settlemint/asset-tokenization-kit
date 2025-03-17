@@ -252,7 +252,7 @@
         "used-collateral-ratio": {
           "label": "Committed"
         },
-        "wallet-distribution": "Wallet Distribution",
+        "wallet-distribution": "Wallet distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
         "wallet-distribution-no-data": "No wallet data available"
       }

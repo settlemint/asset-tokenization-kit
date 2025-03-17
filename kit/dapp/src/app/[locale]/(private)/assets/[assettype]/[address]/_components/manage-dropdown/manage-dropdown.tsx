@@ -53,23 +53,24 @@ export function ManageDropdown({
     }
   };
 
-  let cannotMature = true;
+  let canMature = false;
   let hasUnderlyingAsset = false;
   if (assettype === 'bond') {
     const bond = detail as Awaited<ReturnType<typeof getBondDetail>>;
     hasUnderlyingAsset = true;
-    cannotMature =
-      bond.isMatured ||
-      !bond.hasSufficientUnderlying ||
-      (bond.maturityDate
-        ? new Date(Number(bond.maturityDate) * 1000) < new Date()
-        : false);
+    canMature = Boolean(
+      !bond.isMatured &&
+        bond.hasSufficientUnderlying &&
+        bond.maturityDate &&
+        new Date(Number(bond.maturityDate)) > new Date()
+    );
   }
 
   const contractActions = [
     {
       id: 'mint',
       label: t('actions.mint'),
+      hidden: false,
       disabled: false,
       form: (
         <MintForm
@@ -84,6 +85,7 @@ export function ManageDropdown({
     {
       id: 'burn',
       label: t('actions.burn'),
+      hidden: false,
       disabled: false,
       form: (
         <BurnForm
@@ -97,19 +99,15 @@ export function ManageDropdown({
       ),
     },
     {
-      id: 'pause',
-      label:
-        'paused' in detail && detail.paused
-          ? t('actions.unpause')
-          : t('actions.pause'),
-      disabled: !('paused' in detail),
+      id: 'mature',
+      label: t('actions.mature'),
+      disabled: !canMature,
+      hidden: assettype !== 'bond',
       form: (
-        <PauseForm
-          key="pause"
+        <MatureForm
+          key="mature"
           address={address}
-          assettype={assettype}
-          isPaused={'paused' in detail && detail.paused}
-          open={openMenuItem === 'pause'}
+          open={openMenuItem === 'mature'}
           onOpenChange={onFormOpenChange}
         />
       ),
@@ -117,7 +115,8 @@ export function ManageDropdown({
     {
       id: 'top-up',
       label: t('actions.top-up'),
-      disabled: !hasUnderlyingAsset,
+      hidden: !hasUnderlyingAsset,
+      disabled: false,
       form: (
         <TopUpForm
           key="top-up"
@@ -133,7 +132,8 @@ export function ManageDropdown({
     {
       id: 'withdraw',
       label: t('actions.withdraw'),
-      disabled: !hasUnderlyingAsset,
+      hidden: !hasUnderlyingAsset,
+      disabled: false,
       form: (
         <WithdrawForm
           key="withdraw"
@@ -146,28 +146,36 @@ export function ManageDropdown({
         />
       ),
     },
-    {
-      id: 'mature',
-      label: t('actions.mature'),
-      disabled: cannotMature,
-      form: (
-        <MatureForm
-          key="mature"
-          address={address}
-          open={openMenuItem === 'mature'}
-          onOpenChange={onFormOpenChange}
-        />
-      ),
-    },
+
     {
       id: 'update-collateral',
       label: t('actions.update-collateral'),
-      disabled: assettype !== 'stablecoin',
+      hidden: assettype !== 'stablecoin',
+      disabled: false,
       form: (
         <UpdateCollateralForm
           key="update-collateral"
           address={address}
           open={openMenuItem === 'update-collateral'}
+          onOpenChange={onFormOpenChange}
+        />
+      ),
+    },
+    {
+      id: 'pause',
+      label:
+        'paused' in detail && detail.paused
+          ? t('actions.unpause')
+          : t('actions.pause'),
+      hidden: !('paused' in detail),
+      disabled: false,
+      form: (
+        <PauseForm
+          key="pause"
+          address={address}
+          assettype={assettype}
+          isPaused={'paused' in detail && detail.paused}
+          open={openMenuItem === 'pause'}
           onOpenChange={onFormOpenChange}
         />
       ),
@@ -178,7 +186,7 @@ export function ManageDropdown({
     {
       id: 'grant-role',
       label: t('actions.grant-role'),
-      disabled: false,
+      hidden: false,
       form: (
         <GrantRoleForm
           key="grant-role"
@@ -195,7 +203,6 @@ export function ManageDropdown({
     {
       id: 'view-events',
       label: t('actions.view-events'),
-      disabled: false,
       onClick: () => {
         router.push(`/assets/${assettype}/${address}/events`);
       },
@@ -216,33 +223,32 @@ export function ManageDropdown({
         </DropdownMenuTrigger>
         <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
           {contractActions
-            .filter((item) => !item.disabled)
+            .filter((item) => !item.hidden)
             .map((item) => (
               <DropdownMenuItem
                 key={item.id}
                 onSelect={() => setOpenMenuItem(item.id)}
+                disabled={item.disabled}
               >
                 {item.label}
               </DropdownMenuItem>
             ))}
           <DropdownMenuSeparator />
           {userActions
-            .filter((item) => !item.disabled)
+            .filter((item) => !item.hidden)
             .map((item) => (
               <DropdownMenuItem key={item.id}>{item.label}</DropdownMenuItem>
             ))}
           <DropdownMenuSeparator />
-          {events
-            .filter((item) => !item.disabled)
-            .map((item) => (
-              <DropdownMenuItem key={item.id} onSelect={item.onClick}>
-                {item.label}
-              </DropdownMenuItem>
-            ))}
+          {events.map((item) => (
+            <DropdownMenuItem key={item.id} onSelect={item.onClick}>
+              {item.label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       {[...contractActions, ...userActions]
-        .filter((item) => !item.disabled)
+        .filter((item) => !item.hidden)
         .map((item) => item.form)}
     </>
   );
