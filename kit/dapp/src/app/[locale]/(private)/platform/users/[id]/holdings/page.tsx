@@ -12,7 +12,7 @@ export default async function UserHoldingsPage({
   const { id, locale } = await params;
   const t = await getTranslations({
     locale,
-    namespace: 'admin.users.holdings',
+    namespace: 'private.users.holdings',
   });
   const user = await getUserDetail({ id });
 

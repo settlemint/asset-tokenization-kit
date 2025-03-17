@@ -28,7 +28,7 @@ export async function generateMetadata({
 }
 
 const getTabs = async (user: UserDetail): Promise<TabItemProps[]> => {
-  const t = await getTranslations('admin.users.detail.tabs');
+  const t = await getTranslations('private.users.detail.tabs');
   return [
     {
       name: t('details'),
@@ -56,7 +56,7 @@ export default async function UserDetailLayout({
 }: LayoutProps) {
   const { id } = await params;
   const user = await getUserDetail({ id });
-  const t = await getTranslations('admin.users.detail');
+  const t = await getTranslations('private.users.detail');
   const tabs = await getTabs(user);
 
   return (

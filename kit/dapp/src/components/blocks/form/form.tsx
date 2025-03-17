@@ -66,7 +66,6 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations('transactions');
-  const tError = useTranslations('error');
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
@@ -166,8 +165,8 @@ export function Form<
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
     const error = errorMessage ?? 'unknown-error';
-    const translatedErrorMessage = tError.has(error as never)
-      ? tError(error as never)
+    const translatedErrorMessage = t.has(error as never)
+      ? t(error as never)
       : error;
     const errorKey = key && type !== 'custom' ? `${key}: ` : '';
 
@@ -191,7 +190,7 @@ export function Form<
                   variant="destructive"
                   className="mb-4 border-destructive text-destructive"
                 >
-                  <AlertTitle>{tError('validation-errors')}</AlertTitle>
+                  <AlertTitle>{t('validation-errors')}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {

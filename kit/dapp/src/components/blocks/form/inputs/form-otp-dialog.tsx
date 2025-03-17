@@ -48,14 +48,14 @@ export function FormOtpDialog<T extends FieldValues>({
     onSubmit();
     onOpenChange(false);
   }, [onSubmit, onOpenChange]);
-  const tPincode = useTranslations('components.form.pincode-dialog');
+  const t = useTranslations('components.form.pincode-dialog');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{tPincode('title')}</DialogTitle>
-          <DialogDescription>{tPincode('description')}</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <FormField
           {...props}

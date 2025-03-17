@@ -3,8 +3,8 @@
   "admin": {
     "activity": {
       "asset-management": "資産管理",
-      "page-description": "組織内のすべての活動を表示",
-      "page-title": "活動",
+      "page-description": "組織内のすべてのアクティビティを表示",
+      "page-title": "アクティビティ",
       "tabs": {
         "all-events": "すべてのイベント",
         "recent-transactions": "最近の取引"
@@ -24,9 +24,9 @@
       "charts": {
         "asset-activity": {
           "burn": "焼却",
-          "description": "資産活動",
+          "description": "資産アクティビティ",
           "mint": "ミント",
-          "title": "資産活動",
+          "title": "資産アクティビティ",
           "transfer": "転送"
         },
         "asset-types": {
@@ -66,7 +66,7 @@
       "widgets": {
         "assets": {
           "label": "資産",
-          "subtext": "{bonds} 債券 {cryptocurrencies} 暗号通貨, {equities} 株式, {funds} ファンド, {stableCoins} ステーブルコイン"
+          "subtext": "{bonds} 債券 | {cryptocurrencies} 暗号通貨 | {equities} 株式 | {funds} ファンド | {stableCoins} ステーブルコイン | {tokenizedDeposits} トークン化された預金"
         },
         "transactions": {
           "label": "取引",
@@ -86,7 +86,7 @@
     "sidebar": {
       "asset-designer": "資産デザイナー",
       "asset-management": {
-        "asset-activity": "資産活動",
+        "asset-activity": "資産アクティビティ",
         "bonds": "債券",
         "cryptocurrencies": "暗号通貨",
         "dashboard": "ダッシュボード",
@@ -113,77 +113,38 @@
       "portfolio-management": {
         "dashboard": "ダッシュボード",
         "group-title": "マイポートフォリオ",
-        "my-activity": "マイ活動",
+        "my-activity": "マイアクティビティ",
         "my-assets": "マイ資産"
       }
-    },
-    "users": {
-      "banned_reason": "理由: {reason} により禁止されています",
-      "columns": {
-        "email": "メール",
-        "kyc_status": "KYCステータス",
-        "last_activity": "最終活動",
-        "name": "名前",
-        "role": "役割",
-        "status": "ステータス",
-        "wallet": "ウォレット"
-      },
-      "detail": {
-        "charts": {
-          "transaction-history-last-month": {
-            "description": "過去1ヶ月の取引を表示",
-            "title": "取引量 / 日"
-          },
-          "transaction-history-last-year": {
-            "description": "過去1年の取引を表示",
-            "title": "取引量 / 月"
-          }
-        },
-        "edit_user": "ユーザーを編集",
-        "platform-management": "プラットフォーム管理",
-        "tabs": {
-          "details": "詳細",
-          "holdings": "保有",
-          "latest-events": "最新のイベント",
-          "permissions": "権限"
-        },
-        "values": {
-          "asset_supply": "資産供給",
-          "created_at": "作成日時",
-          "email": "メール",
-          "last_activity": "最終活動",
-          "last_login": "最終ログイン",
-          "name": "名前",
-          "status": "ステータス",
-          "transactions": "取引",
-          "verified_at": "確認日時",
-          "wallet": "ウォレット"
-        }
-      },
-      "holdings": {
-        "table": {
-          "balance-header": "残高",
-          "holder-type-header": "保有者タイプ",
-          "last-activity-header": "最終活動",
-          "name-header": "名前",
-          "status-header": "ステータス",
-          "symbol-header": "シンボル",
-          "type-header": "タイプ"
-        },
-        "title": "保有"
-      },
-      "latest-events": {
-        "view-all": "さらにイベントを表示"
-      },
-      "platform-management": "プラットフォーム管理",
-      "status": {
-        "active": "アクティブ",
-        "banned": "禁止"
-      },
-      "title": "ユーザー"
     }
   },
   "admin-user": "管理者",
+  "asset-info": {
+    "admin": "管理者",
+    "creator-owner": "クリエイター / オーナー",
+    "regular": "通常",
+    "supply-manager": "供給管理者"
+  },
+  "asset-status": {
+    "active": "アクティブ",
+    "blocked": "ブロック",
+    "paused": "一時停止"
+  },
+  "asset-type": {
+    "bonds": "債券",
+    "bonds-plural": "債券",
+    "cryptocurrencies": "暗号通貨",
+    "cryptocurrencies-plural": "暗号通貨",
+    "equities": "株式",
+    "equities-plural": "株式",
+    "funds": "ファンド",
+    "funds-plural": "ファンド",
+    "stablecoins": "ステーブルコイン",
+    "stablecoins-plural": "ステーブルコイン",
+    "tokenizeddeposits": "トークン化された預金",
+    "tokenizeddeposits-plural": "トークン化された預金",
+    "unknown": "不明"
+  },
   "blocked": "ブロック",
   "components": {
     "active-pill": {
@@ -203,25 +164,25 @@
         "asset-type": "資産タイプ",
         "date": "日付",
         "details-button": "詳細",
-        "details-for-event": "イベント {event} の詳細",
+        "details-for-event": "{event} イベントの詳細",
         "sender": "送信者",
-        "transaction-hash": "トランザクションハッシュ"
+        "transaction-hash": "取引ハッシュ"
       },
       "details": {
         "account": "アカウント",
         "amount": "金額",
         "bond-amount": "債券金額",
-        "burned": "焼却済み",
+        "burned": "燃焼済み",
         "details-header": "詳細",
-        "from": "から",
+        "from": "送信元",
         "holder": "保有者",
-        "new-admin-role": "新しい管理者役割",
+        "new-admin-role": "新しい管理者ロール",
         "new-amount": "新しい金額",
         "new-mint": "新しいミント",
         "old-amount": "古い金額",
-        "previous-admin-role": "前の管理者役割",
-        "role": "役割",
-        "to": "宛先",
+        "previous-admin-role": "前の管理者ロール",
+        "role": "ロール",
+        "to": "送信先",
         "token": "トークン",
         "underlying-amount": "基礎金額",
         "user": "ユーザー",
@@ -233,7 +194,7 @@
       "timestamp": "タイムスタンプ"
     },
     "asset-status-pill": {
-      "blocked": "ブロック"
+      "blocked": "ブロック済み"
     },
     "asset-type-icon": {
       "bond-initials": "BN",
@@ -246,45 +207,53 @@
     },
     "charts": {
       "assets": {
+        "asset-distribution": "資産分配",
+        "asset-distribution-description": "資産タイプ別のポートフォリオ配分",
+        "bond": "債券",
         "collateral-ratio": {
-          "description": "使用されていない担保の金額と使用された担保の金額",
+          "description": "担保なしと使用済みの金額",
           "label": "担保比率",
           "no-data": "担保データは利用できません"
         },
+        "cryptocurrency": "暗号通貨",
+        "equity": "株式",
         "free-collateral-ratio": {
           "label": "無料"
         },
+        "fund": "ファンド",
         "last-updated": "最終更新",
+        "stablecoin": "ステーブルコイン",
+        "tokenizeddeposit": "トークン化された預金",
         "total-supply": {
-          "description": "トークンの総供給を表示",
-          "label": "総供給",
-          "no-data": "このウィンドウにはデータがありません",
-          "title": "総供給"
+          "description": "トークンの総供給量を表示",
+          "label": "総供給量",
+          "no-data": "このウィンドウにデータはありません",
+          "title": "総供給量"
         },
         "total-supply-changed": {
-          "burned-label": "総焼却",
+          "burned-label": "総燃焼量",
           "description": "トークンの供給変化を表示",
-          "minted-label": "総ミント",
-          "no-data": "このウィンドウにはデータがありません",
-          "title": "供給の変化"
+          "minted-label": "総ミント量",
+          "no-data": "このウィンドウにデータはありません",
+          "title": "供給変化"
         },
         "total-transfers": {
           "description": "トークンの総転送を表示",
           "label": "総転送",
-          "no-data": "このウィンドウにはデータがありません",
+          "no-data": "このウィンドウにデータはありません",
           "title": "総転送"
         },
         "total-volume": {
           "description": "トークンの総ボリュームを表示",
           "label": "総ボリューム",
-          "no-data": "このウィンドウにはデータがありません",
+          "no-data": "このウィンドウにデータはありません",
           "title": "総ボリューム"
         },
         "used-collateral-ratio": {
           "label": "コミット済み"
         },
         "wallet-distribution": "ウォレット分配",
-        "wallet-distribution-description": "保有者の数と保有している金額",
+        "wallet-distribution-description": "保有者の数と保有金額",
         "wallet-distribution-no-data": "ウォレットデータは利用できません"
       }
     },
@@ -307,9 +276,9 @@
       "search": "検索...",
       "selected": "選択済み",
       "selected-rows-info": "{selected} / {total} 行が選択されました。",
-      "sort-ascending": "昇順でソート",
-      "sort-descending": "降順でソート",
-      "toggle-columns": "列を切り替える",
+      "sort-ascending": "昇順に並べ替え",
+      "sort-descending": "降順に並べ替え",
+      "toggle-columns": "列を切り替え",
       "view": "表示"
     },
     "detail-grid": {
@@ -326,12 +295,16 @@
         "next": "次へ",
         "previous": "前へ",
         "processing": "処理中...",
-        "send-transaction": "トランザクションを送信",
-        "sending-transaction": "トランザクションを送信中..."
+        "send-transaction": "取引を送信",
+        "sending-transaction": "取引を送信中..."
       },
       "input": {
         "letters-only": "文字のみを入力してください",
         "valid-email": "有効なメールアドレスを入力してください"
+      },
+      "pincode-dialog": {
+        "description": "取引を署名するには、確認と承認のためにピンコードを入力してください。",
+        "title": "確認するためにピンコードを入力してください"
       },
       "progress": {
         "completed-step": "ステップ完了",
@@ -370,7 +343,7 @@
       "from-label": "送信元",
       "function-label": "関数",
       "gas-used-label": "使用したガス",
-      "receipt-title": "レシート",
+      "receipt-title": "領収書",
       "revert-reason-label": "リバート理由",
       "status-label": "ステータス",
       "title": "トランザクション",
@@ -407,7 +380,8 @@
     "sending": "送信中",
     "success": "成功",
     "title": "何かがうまくいきませんでした！",
-    "try-again": "再試行"
+    "try-again": "再試行",
+    "validation-errors": "検証エラー"
   },
   "layout": {
     "header": {
@@ -416,7 +390,10 @@
       "home": "ホーム"
     },
     "navigation": {
-      "admin": "発行者ポータル"
+      "admin": "発行者ポータル",
+      "asset-management": "資産管理",
+      "platform": "プラットフォーム管理",
+      "portfolio": "マイポートフォリオ"
     },
     "user-dropdown": {
       "documentation": "ドキュメント",
@@ -424,10 +401,10 @@
       "pending-transactions": "保留中のトランザクション"
     }
   },
-  "paused": "一時停止中",
+  "paused": "一時停止",
   "portfolio": {
     "activity": {
-      "page-description": "チェーン上のあなたの活動",
+      "page-description": "チェーン上でのあなたの活動",
       "page-title": "活動",
       "portfolio-management": "ポートフォリオ管理",
       "tabs": {
@@ -445,14 +422,14 @@
       "afternoon": "こんにちは",
       "evening": "こんばんは",
       "morning": "おはようございます",
-      "you-have": "あなたは"
+      "you-have": "あなたは持っています"
     },
     "my-assets": {
       "bond": {
         "redeem-form": {
           "amount": {
             "amount-label": "金額",
-            "balance-description": "利用可能残高:",
+            "balance-description": "利用可能残高：",
             "description": "引き換えたい金額を入力してください。",
             "title": "金額を入力"
           },
@@ -471,17 +448,17 @@
         },
         "transfer-form": {
           "button-label": "転送",
-          "description": "別のアドレスにボンドトークンを転送する",
+          "description": "あなたの債券トークンを別のアドレスに転送",
           "summary": {
             "asset-label": "資産",
-            "description": "転送を進める前に、転送の詳細を確認してください",
+            "description": "進む前に転送の詳細を確認してください",
             "recipient-label": "受取人",
-            "title": "転送を確認して承認する",
+            "title": "転送を確認して承認",
             "transfer-description": "転送操作の詳細",
             "transfer-title": "転送",
             "value-label": "金額"
           },
-          "title": "ボンドを転送する",
+          "title": "転送債券",
           "trigger-label": "転送"
         }
       },
@@ -495,8 +472,8 @@
           },
           "recipients": {
             "address-label": "受取人アドレス",
-            "address-placeholder": "ユーザーを検索する",
-            "description": "トークンを受け取る人を選択してください",
+            "address-placeholder": "ユーザーを検索",
+            "description": "トークンを受け取る人を選択",
             "manual-entry-link": "アドレスを手動で入力...",
             "search-user-link": "代わりにユーザーを検索...",
             "title": "受取人を選択"
@@ -517,8 +494,8 @@
     "settings": {
       "api-keys": {
         "api-key-copied": "APIキーがクリップボードにコピーされました",
-        "api-key-created-description": "APIキーが作成されました。再度表示されないため、今すぐコピーしてください。",
-        "api-key-save-warning": "今すぐAPIキーをコピーしてください。再度表示されません！",
+        "api-key-created-description": "APIキーが作成されました。今すぐコピーしてください。再度表示することはできません。",
+        "api-key-save-warning": "今すぐAPIキーをコピーしてください。再度表示することはできません！",
         "cancel": "キャンセル",
         "close": "閉じる",
         "create": "作成",
@@ -529,15 +506,22 @@
         "creating-api-key": "APIキーを作成中...",
         "expires-at": "有効期限",
         "expiry-label": "有効期限",
+        "expiry-options": {
+          "1 day": "1日",
+          "1 month": "1ヶ月",
+          "1 week": "1週間",
+          "1 year": "1年",
+          "No expiry": "有効期限なし"
+        },
         "fetch-error": "APIキーの取得に失敗しました",
-        "last-used": "最終使用",
+        "last-used": "最終使用日時",
         "name-label": "名前",
         "never": "なし",
         "portfolio-management": "ポートフォリオ管理",
         "select-expiry-placeholder": "有効期限を選択",
-        "swagger-description": "すべてのAPIリクエストには、認証のためにx-api-keyヘッダー内にAPIキーを含める必要があります。このヘッダーは、APIエンドポイントへの安全で認可されたアクセスを確保し、アプリケーションがサービスと安全に対話できるようにします。",
+        "swagger-description": "すべてのAPIリクエストには、認証のためにx-api-keyヘッダー内にAPIキーを含める必要があります。このヘッダーは、APIエンドポイントへの安全で認可されたアクセスを保証し、アプリケーションが当社のサービスと安全に対話できるようにします。",
         "swagger-link-text": "APIドキュメントを開く",
-        "swagger-title": "APIキーを作成、表示、管理して、アプリケーションをプラットフォームと安全に統合します。APIキーを使用すると、すべての利用可能な機能にプログラム的にアクセスでき、OpenAPI仕様を通じて明確に文書化されています。",
+        "swagger-title": "APIキーを作成、表示、管理して、アプリケーションを当社のプラットフォームと安全に統合します。APIキーを使用すると、すべての利用可能な機能にプログラム的にアクセスでき、当社のOpenAPI仕様書を通じて明確に文書化されています。",
         "title": "APIキー"
       },
       "profile": {
@@ -554,89 +538,90 @@
         "description": "転送したい金額を指定してください",
         "title": "金額を入力"
       },
-      "asset-types": "{type} {name} ({symbol})を受取人を選択し、金額を指定することで簡単に転送できます。",
-      "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
+      "asset-types": "{type} {name} ({symbol})",
+      "description": "{name} ({symbol})の金額を簡単に転送するには、受取人を選択し、金額を指定します。",
       "recipients": {
-        "description": "受取人を選択",
-        "title": "ウォレットアドレス",
-        "wallet-address-label": "ポートフォリオから資産を選択"
+        "description": "トークンを直接送信するためのウォレットアドレスを入力してください。",
+        "title": "受取人を選択",
+        "wallet-address-label": "ウォレットアドレス"
       },
       "select-asset": {
-        "asset-description": "資産",
-        "asset-label": "転送したい資産を選択してください",
-        "description": "資産を選択",
-        "title": "アドレス"
+        "asset-description": "ポートフォリオから資産を選択",
+        "asset-label": "資産",
+        "description": "転送したい資産を選択してください",
+        "title": "資産を選択"
       },
       "summary": {
-        "address": "金額",
-        "amount": "転送を進める前に、転送の詳細を確認してください。受取人と金額が正しいことを確認してください。",
-        "description": "転送を確認して承認する",
-        "title": "転送"
+        "address": "アドレス",
+        "amount": "金額",
+        "description": "転送の詳細を確認してから進んでください。受取人と金額が正しいことを確認してください。",
+        "title": "転送を確認して確認"
       },
-      "transfer": "統計"
+      "transfer": "転送",
+      "transfer-title": "転送 {name} ({symbol})"
     }
   },
   "private": {
     "assets": {
-      "asset-statistics-title": "ボンドの基本情報を入力してください",
+      "asset-statistics-title": "統計",
       "create": {
         "bonds": {
           "basics": {
-            "decimals-label": "ISIN",
-            "description": "例: US000000AA00",
-            "isin-label": "資産名",
-            "isin-placeholder": "例: 会社XYZボンド2023",
-            "name-label": "シンボル",
-            "name-placeholder": "例: XYZ23",
-            "symbol-label": "基本情報",
-            "symbol-placeholder": "新しいボンドを発行する",
-            "title": "発行可能なトークンの最大金額"
-          },
-          "button-label": "最大供給量",
-          "configuration": {
-            "cap-description": "ボンドのプロパティを設定する",
-            "cap-label": "単一ボンドユニットの名目価値",
-            "description": "額面価値",
-            "face-value-description": "満期日",
-            "face-value-label": "ボンドの設定",
-            "maturity-date-label": "このボンドを裏付ける資産のアドレス",
-            "title": "基礎資産",
-            "underlying-asset-description": "ブロックチェーン上に新しいボンドを発行する",
-            "underlying-asset-label": "ボンドに関する基本情報"
-          },
-          "description": "基本情報",
-          "summary": {
-            "asset-basics-description": "最大供給量",
-            "asset-basics-title": "ボンドの技術的設定",
-            "cap-label": "ボンドの設定",
-            "configuration-description": "小数",
-            "configuration-title": "ボンド構成",
             "decimals-label": "小数",
-            "description": "作成する前に債券の詳細を確認してください",
+            "description": "債券の基本情報を入力してください",
+            "isin-label": "ISIN",
+            "isin-placeholder": "例: US000000AA00",
+            "name-label": "資産名",
+            "name-placeholder": "例: 会社XYZ債券2023",
+            "symbol-label": "シンボル",
+            "symbol-placeholder": "例: XYZ23",
+            "title": "基本情報"
+          },
+          "button-label": "新しい債券を発行",
+          "configuration": {
+            "cap-description": "発行可能なトークンの最大金額",
+            "cap-label": "最大供給量",
+            "description": "債券のプロパティを設定",
+            "face-value-description": "単一の債券単位の名目価値",
+            "face-value-label": "額面価値",
+            "maturity-date-label": "満期日",
+            "title": "債券の設定",
+            "underlying-asset-description": "この債券を裏付ける資産のアドレス",
+            "underlying-asset-label": "基礎資産"
+          },
+          "description": "ブロックチェーン上で新しい債券を発行",
+          "summary": {
+            "asset-basics-description": "債券に関する基本情報",
+            "asset-basics-title": "基本情報",
+            "cap-label": "最大供給量",
+            "configuration-description": "債券の技術的設定",
+            "configuration-title": "債券の設定",
+            "decimals-label": "小数",
+            "description": "作成する前に債券の詳細を確認",
             "face-value-label": "額面",
             "isin-label": "ISIN",
             "maturity-date-label": "満期日",
             "name-label": "名前",
             "symbol-label": "シンボル",
-            "title": "確認して承認する",
+            "title": "レビューと確認",
             "underlying-asset-label": "基礎資産"
           },
-          "title": "新しい債券を作成する",
-          "trigger-label": "新しい債券を発行する"
+          "title": "新しい債券を作成",
+          "trigger-label": "新しい債券を発行"
         },
         "cryptocurrencies": {
           "basics": {
             "decimals-label": "小数点以下の桁数",
-            "description": "名前、シンボル、可視性などの重要な詳細を定義してください。",
+            "description": "名前、シンボル、可視性などの基本的な詳細を定義します。",
             "name-label": "名前",
             "name-placeholder": "ビットコイン",
             "symbol-label": "シンボル",
             "symbol-placeholder": "BTC",
             "title": "基本情報"
           },
-          "button-label": "新しい暗号通貨を発行する",
+          "button-label": "新しい暗号通貨を発行",
           "configuration": {
-            "description": "暗号通貨の高度な設定を指定してください。",
+            "description": "暗号通貨の高度な設定を指定します。",
             "initial-supply-description": "作成時にミントするトークンの量",
             "initial-supply-label": "初期供給",
             "title": "設定"
@@ -645,22 +630,22 @@
           "summary": {
             "asset-basics-description": "基本的な資産情報と設定。",
             "asset-basics-title": "資産の基本",
-            "configuration-description": "資産供給と追加設定。",
+            "configuration-description": "資産の供給と追加設定。",
             "configuration-title": "設定",
             "decimals-label": "小数点以下の桁数",
-            "description": "作成する前に新しい暗号通貨の詳細を確認して承認してください。",
+            "description": "作成前に新しい暗号通貨の詳細をレビューして確認します。",
             "initial-supply-label": "初期供給",
             "name-label": "名前",
             "symbol-label": "シンボル",
-            "title": "確認して承認する"
+            "title": "レビューと確認"
           },
-          "title": "暗号通貨を作成する",
-          "trigger-label": "新しい暗号通貨を発行する"
+          "title": "暗号通貨を作成",
+          "trigger-label": "新しい暗号通貨を発行"
         },
         "equities": {
           "basics": {
             "decimals-label": "小数点以下の桁数",
-            "description": "名前、シンボル、可視性などの重要な詳細を定義してください。",
+            "description": "名前、シンボル、可視性などの基本的な詳細を定義します。",
             "isin-label": "ISIN",
             "isin-placeholder": "US1234567890",
             "name-label": "名前",
@@ -669,35 +654,35 @@
             "symbol-placeholder": "GLEQ",
             "title": "基本情報"
           },
-          "button-label": "新しい株式を発行する",
+          "button-label": "新しい株式を発行",
           "configuration": {
-            "description": "株式分類の詳細を設定する",
-            "equity-category-label": "株式カテゴリー",
+            "description": "株式分類の詳細を設定",
+            "equity-category-label": "株式カテゴリ",
             "equity-class-label": "株式クラス",
             "title": "設定"
           },
-          "description": "ブロックチェーン上に新しい株式を発行する",
+          "description": "ブロックチェーン上に新しい株式を発行",
           "summary": {
             "asset-basics-description": "基本的な資産情報と設定。",
             "asset-basics-title": "資産の基本",
             "configuration-description": "株式分類の詳細。",
             "configuration-title": "設定",
             "decimals-label": "小数点以下の桁数",
-            "description": "作成する前に新しい株式の詳細を確認して承認してください。",
-            "equity-category-label": "株式カテゴリー",
+            "description": "作成前に新しい株式の詳細をレビューして確認します。",
+            "equity-category-label": "株式カテゴリ",
             "equity-class-label": "株式クラス",
             "isin-label": "ISIN",
             "name-label": "名前",
             "symbol-label": "シンボル",
-            "title": "確認して承認する"
+            "title": "レビューと確認"
           },
-          "title": "新しい株式を作成する",
+          "title": "新しい株式を作成",
           "trigger-label": "ミント"
         },
         "funds": {
           "basics": {
             "decimals-label": "小数点以下の桁数",
-            "description": "名前、シンボル、可視性などの重要な詳細を定義してください。",
+            "description": "名前、シンボル、可視性などの基本的な詳細を定義します。",
             "isin-label": "ISIN",
             "isin-placeholder": "US1234567890",
             "name-label": "名前",
@@ -706,11 +691,11 @@
             "symbol-placeholder": "GGF",
             "title": "基本情報"
           },
-          "button-label": "新しいファンドを発行する",
+          "button-label": "新しいファンドを発行",
           "configuration": {
             "basis-points": "bps",
-            "description": "ファンドのカテゴリー、クラス、管理手数料を指定してください。",
-            "fund-category-label": "ファンドカテゴリー",
+            "description": "ファンドのカテゴリ、クラス、管理手数料を指定します。",
+            "fund-category-label": "ファンドカテゴリ",
             "fund-class-label": "ファンドクラス",
             "management-fee-description": "ベーシスポイントでの年間管理手数料（100 bps = 1%）",
             "management-fee-label": "管理手数料",
@@ -721,25 +706,25 @@
             "asset-basics-description": "基本的な資産情報と設定。",
             "asset-basics-title": "資産の基本",
             "basis-points": "bps",
-            "configuration-description": "ファンドのカテゴリー、クラス、手数料設定。",
+            "configuration-description": "ファンドのカテゴリ、クラス、手数料の設定。",
             "configuration-title": "ファンド設定",
             "decimals-label": "小数点以下の桁数",
-            "description": "作成する前に新しいファンドの詳細を確認して承認してください。",
-            "fund-category-label": "ファンドカテゴリー",
+            "description": "作成前に新しいファンドの詳細をレビューして確認します。",
+            "fund-category-label": "ファンドカテゴリ",
             "fund-class-label": "ファンドクラス",
             "isin-label": "ISIN",
             "management-fee-label": "管理手数料",
             "name-label": "名前",
             "symbol-label": "シンボル",
-            "title": "確認して承認する"
+            "title": "レビューと確認"
           },
-          "title": "ファンドを作成する",
-          "trigger-label": "新しいファンドを発行する"
+          "title": "ファンドを作成",
+          "trigger-label": "新しいファンドを発行"
         },
         "stablecoins": {
           "basics": {
             "decimals-label": "小数点以下の桁数",
-            "description": "名前、シンボル、可視性などの重要な詳細を定義してください。",
+            "description": "名前、シンボル、可視性などの基本的な詳細を定義します。",
             "isin-label": "ISIN",
             "isin-placeholder": "DEFI4EVER2024",
             "name-label": "名前",
@@ -754,7 +739,7 @@
             "description": "担保証明の有効性などの高度な設定を指定します。",
             "title": "設定"
           },
-          "description": "新しいステーブルコイン資産を定義して開始します。",
+          "description": "新しいステーブルコイン資産を定義して発行します。",
           "summary": {
             "asset-basics-description": "基本的な資産情報と設定。",
             "asset-basics-title": "資産の基本",
@@ -769,13 +754,13 @@
             "symbol-label": "シンボル",
             "title": "作成前に新しいステーブルコインの詳細を確認して承認します。"
           },
-          "title": "ステーブルコインを作成する",
+          "title": "ステーブルコインを作成",
           "trigger-label": "新しいステーブルコインを発行する"
         },
         "tokenizeddeposits": {
           "basics": {
             "decimals-label": "小数点以下の桁数",
-            "description": "名前、シンボル、可視性などの重要な詳細を定義します。",
+            "description": "名前、シンボル、可視性などの基本的な詳細を定義します。",
             "isin-label": "ISIN",
             "isin-placeholder": "DEFI4EVER2024",
             "name-label": "名前",
@@ -785,7 +770,7 @@
             "title": "基本情報"
           },
           "button-label": "新しいトークン化された預金を発行する",
-          "description": "新しいトークン化された預金資産を定義して開始します。",
+          "description": "新しいトークン化された預金資産を定義して発行します。",
           "summary": {
             "asset-basics-description": "基本的な資産情報と設定。",
             "asset-basics-title": "資産の基本",
@@ -796,7 +781,7 @@
             "symbol-label": "シンボル",
             "title": "作成前に新しいトークン化された預金の詳細を確認して承認します。"
           },
-          "title": "トークン化された預金を作成する",
+          "title": "トークン化された預金を作成",
           "trigger-label": "新しいトークン化された預金を発行する"
         }
       },
@@ -804,16 +789,16 @@
         "forms": {
           "actions": {
             "burn": "バーン",
-            "grant-role": "役割を付与する",
+            "grant-role": "役割を付与",
             "mature": "満期",
             "mint": "ミント",
             "pause": "一時停止",
             "top-up": "追加",
             "unpause": "再開",
-            "update-collateral": "担保を更新する",
-            "withdraw": "引き出す"
+            "update-collateral": "担保を更新",
+            "withdraw": "引き出し"
           },
-          "manage": "管理する"
+          "manage": "管理"
         }
       },
       "details": {
@@ -826,15 +811,15 @@
               "description": "バーンしたい金額を入力してください。",
               "title": "金額を入力"
             },
-            "button-label": "資産をバーンする",
-            "description": "供給を減らすために、ボンドトークンを循環から永久に削除します。",
+            "button-label": "資産をバーン",
+            "description": "供給を減らすために、債券トークンを循環から永久に削除します。",
             "summary": {
               "amount-label": "金額",
               "asset-label": "資産",
               "burn-description": "バーン操作の詳細",
               "burn-title": "バーン",
-              "description": "進む前にバーンの詳細を確認してください。",
-              "title": "バーンを確認して承認する"
+              "description": "進む前にバーンの詳細を確認します。",
+              "title": "バーンを確認して承認"
             },
             "title": "バーン",
             "trigger-label": "バーン"
@@ -842,15 +827,15 @@
           "grant-role": {
             "address": {
               "address-label": "管理者ウォレットアドレス",
-              "description": "名前またはメールアドレスでユーザーを検索するか、手動でウォレットアドレスを入力します。",
+              "description": "名前またはメールアドレスでユーザーを検索するか、ウォレットアドレスを手動で入力します。",
               "manual-placeholder": "0x0000000000000000000000000000000000000000",
               "manual-toggle": "アドレスを手動で入力...",
               "search-placeholder": "ユーザーを検索",
               "search-toggle": "代わりにユーザーを検索...",
               "title": "新しい管理者を選択"
             },
-            "button-label": "役割を割り当てる",
-            "description": "新しいユーザーに管理権限を割り当てます。",
+            "button-label": "役割を割り当て",
+            "description": "新しいユーザーに管理権限を付与します。",
             "roles": {
               "description": "新しい管理者に付与する役割を選択します。少なくとも1つの役割を選択する必要があります。",
               "title": "管理者役割を選択"
@@ -858,25 +843,25 @@
             "summary": {
               "admin-address-label": "管理者アドレス",
               "asset-label": "資産",
-              "description": "進む前に役割付与の詳細を確認してください。",
+              "description": "進む前に役割付与の詳細を確認します。",
               "grant-description": "役割付与操作の詳細",
-              "grant-title": "役割を付与する",
+              "grant-title": "役割を付与",
               "roles-label": "役割",
-              "title": "役割付与を確認して承認する"
+              "title": "役割付与を確認して承認"
             },
-            "title": "役割を付与する"
+            "title": "役割を付与"
           },
           "mature": {
-            "button-label": "ボンドを満期にする",
-            "description": "ボンドを満期にし、基礎資産を受け取ります",
+            "button-label": "債券を満期にする",
+            "description": "債券を満期にして基礎資産を受け取ります",
             "summary": {
-              "asset-label": "ボンド",
-              "description": "進む前にボンド満期の詳細を確認してください。",
-              "mature-description": "ボンド満期の詳細",
+              "asset-label": "債券",
+              "description": "進む前に債券満期の詳細を確認します。",
+              "mature-description": "債券満期の詳細",
               "mature-title": "満期",
-              "title": "満期を確認して承認する"
+              "title": "満期を確認して承認"
             },
-            "title": "ボンドを満期にする",
+            "title": "債券を満期にする",
             "trigger-label": "満期"
           },
           "mint": {
@@ -897,7 +882,7 @@
               "description": "進む前にミントの詳細を確認してください。",
               "mint-description": "ミント操作の詳細",
               "mint-title": "ミント",
-              "title": "ミントを確認して承認"
+              "title": "ミントを確認して承認する"
             },
             "title": "ミント",
             "trigger-label": "ミント"
@@ -917,7 +902,7 @@
               "state-active": "アクティブ",
               "state-paused": "一時停止中",
               "target-state-label": "ターゲット状態",
-              "title": "一時停止操作を確認して承認"
+              "title": "一時停止操作を確認して承認する"
             },
             "unpause": {
               "button-label": "取引を再開",
@@ -935,12 +920,12 @@
               "title": "金額を入力"
             },
             "button-label": "追加",
-            "description": "債券に基礎資産を追加",
+            "description": "債券に基礎資産を追加する",
             "summary": {
               "amount-label": "金額",
               "asset-label": "基礎資産",
               "description": "進む前にトップアップの詳細を確認してください。",
-              "title": "トップアップを確認して承認"
+              "title": "トップアップを確認して承認する"
             },
             "title": "基礎資産をトップアップ",
             "trigger-label": "追加"
@@ -948,16 +933,16 @@
           "update-collateral": {
             "amount": {
               "amount-label": "金額",
-              "description": "担保を更新したい金額を入力してください。金額は現在の供給と同じかそれ以上であることを確認してください。",
+              "description": "担保を更新するための金額を入力してください。金額は現在の供給と同じかそれ以上であることを確認してください。",
               "title": "金額を入力"
             },
             "button-label": "担保金額を更新",
-            "description": "現在の要件を反映するためにステーブルコインを支える担保を調整します。",
+            "description": "安定コインを支える担保を現在の要件に合わせて調整します。",
             "summary": {
               "amount-label": "金額",
               "asset-label": "資産",
               "description": "進む前に更新された担保の詳細を確認してください。",
-              "title": "更新された担保を確認して承認",
+              "title": "更新された担保を確認して承認する",
               "update-description": "担保更新操作の詳細",
               "update-title": "担保を更新"
             },
@@ -988,7 +973,7 @@
               "asset-label": "基礎資産",
               "description": "進む前に引き出しの詳細を確認してください。",
               "recipient-label": "受取人",
-              "title": "引き出しを確認して承認"
+              "title": "引き出しを確認して承認する"
             },
             "title": "基礎資産を引き出す",
             "trigger-label": "引き出し"
@@ -1015,7 +1000,7 @@
                 "state-active": "アクティブ",
                 "state-blocked": "ブロック中",
                 "target-state-label": "ターゲット状態",
-                "title": "ブロック操作を確認して承認",
+                "title": "ブロック操作を確認して承認する",
                 "unblock-title": "ブロック解除"
               },
               "unblock-button-label": "ユーザーのブロックを解除",
@@ -1053,11 +1038,11 @@
         "page-title": "{name}の詳細",
         "permissions": {
           "edit-form": {
-            "button-label": "権限を編集する",
+            "button-label": "権限を編集",
             "description": "{name}に割り当てられた権限とアクセスレベルを更新します。",
             "roles": {
               "description": "このユーザーに割り当てる役割を選択してください。少なくとも1つの役割を選択する必要があります。",
-              "title": "ユーザー役割を選択する"
+              "title": "ユーザー役割を選択"
             },
             "summary": {
               "current-roles-label": "現在の役割",
@@ -1065,10 +1050,10 @@
               "new-roles-label": "新しい役割",
               "operation-description": "役割更新操作の詳細",
               "title": "新しい役割を確認して承認する",
-              "update-title": "役割を更新する",
+              "update-title": "役割を更新",
               "user-label": "ユーザー"
             },
-            "trigger-label": "役割を編集する"
+            "trigger-label": "役割を編集"
           },
           "revoke-all-form": {
             "button-label": "アクセスを取り消す",
@@ -1081,7 +1066,7 @@
               "title": "確認して承認する",
               "user-label": "ユーザー"
             },
-            "title": "すべてのユーザーアクセスを削除する",
+            "title": "すべてのユーザーアクセスを削除",
             "trigger-label": "すべてを取り消す"
           },
           "table-title": "権限"
@@ -1089,7 +1074,7 @@
         "related": {
           "bonds": {
             "decrease-supply": {
-              "description": "債券マネージャーは、満期時の債券償還または早期買い戻しプログラムを通じて総供給を減少させることができます。",
+              "description": "債券マネージャーは、満期時または早期買い戻しプログラムを通じて総供給を減少させることができます。",
               "title": "債券を償還する"
             },
             "increase-supply": {
@@ -1099,13 +1084,13 @@
           },
           "cryptocurrencies": {
             "increase-supply": {
-              "description": "トークンマネージャーは、トークノミクス計画と発行スケジュールに従って新しいトークンをミントできます。",
+              "description": "トークンマネージャーは、トークノミクスプランと発行スケジュールに従って新しいトークンをミントできます。",
               "title": "トークンをミントする"
             }
           },
           "equities": {
             "decrease-supply": {
-              "description": "株式マネージャーは、買い戻しプログラムや資本削減を通じて株式の総供給を減少させることができます。",
+              "description": "株式マネージャーは、買い戻しプログラムまたは資本削減を通じて株式の総供給を減少させることができます。",
               "title": "株式供給を減少させる"
             },
             "increase-supply": {
@@ -1115,7 +1100,7 @@
           },
           "funds": {
             "decrease-supply": {
-              "description": "債券マネージャーは、満期時の債券償還または早期買い戻しプログラムを通じて総供給を減少させることができます。",
+              "description": "債券マネージャーは、満期時または早期買い戻しプログラムを通じて総供給を減少させることができます。",
               "title": "債券を償還する"
             },
             "increase-supply": {
@@ -1133,7 +1118,7 @@
               "title": "供給を増加させる"
             },
             "update-collateral": {
-              "description": "供給マネージャーは、ステーブルコインを支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されていることが保証されます。",
+              "description": "供給マネージャーは、ステーブルコインを支える担保を更新し、確認する必要があります。これにより、資産が常に完全に担保されることが保証されます。",
               "title": "担保を更新する"
             }
           },
@@ -1163,7 +1148,7 @@
         "address-header": "アドレス",
         "assets-under-management-header": "AuM",
         "balance-header": "残高",
-        "category-header": "カテゴリ",
+        "category-header": "カテゴリー",
         "class-header": "クラス",
         "collateral-proof-expiration": "担保証明の有効期限",
         "collateral-proof-expiration-info": "この時点から担保証明は無効です",
@@ -1177,7 +1162,7 @@
         "decimals": "小数点以下の桁数",
         "deployed-on": "展開日",
         "edit-roles-form": {
-          "trigger-label": "権限を編集する"
+          "trigger-label": "権限を編集"
         },
         "equity": {
           "categories": {
@@ -1194,7 +1179,7 @@
             "emerging-market-equity": "新興市場株式",
             "energy": "エネルギー",
             "esop-shares": "従業員持株制度（ESOP）株式",
-            "financials": "財務",
+            "financials": "金融",
             "frontier-market-equity": "フロンティア市場株式",
             "global-equity": "グローバル株式",
             "growth-capital": "成長資本",
@@ -1220,7 +1205,7 @@
             "utilities": "ユーティリティ",
             "value-equity": "バリュー株式",
             "venture-capital": "ベンチャーキャピタル",
-            "voting-common-stock": "投票権付き普通株"
+            "voting-common-stock": "投票権のある普通株"
           },
           "classes": {
             "common-equity": "普通株式",
@@ -1242,7 +1227,7 @@
             "convertible-arbitrage": "転換アービトラージ",
             "credit": "クレジット",
             "currency-fx": "通貨FX",
-            "distressed-debt": "困難な債務",
+            "distressed-debt": "困難債務",
             "emerging-markets": "新興市場",
             "equity-hedge": "株式ヘッジ",
             "event-driven": "イベントドリブン",
@@ -1277,7 +1262,7 @@
             "regional": "地域",
             "sector-specific": "セクター特化",
             "seed-pre-seed": "シード / プレシード",
-            "series-b-late-stage": "シリーズB / 後期段階",
+            "series-b-late-stage": "シリーズB / レイトステージ",
             "short-equity": "ショート株式",
             "small-cap": "小型株",
             "tactical-asset-allocation": "戦略的資産配分",
@@ -1297,12 +1282,12 @@
         "ownership-concentration": "所有集中",
         "ownership-concentration-info": "上位5名の保有者による所有割合",
         "proven-collateral": "証明された担保",
-        "proven-collateral-info": "トークンによって保有されていることが証明された担保の量",
+        "proven-collateral-info": "トークンによって保持されていることが証明された担保の金額",
         "redeemed": "償還済み",
         "redeemed-info": "償還された資産の総額",
         "redemption-readiness": "償還準備状況",
-        "required-collateral-threshold": "必要担保閾値",
-        "required-collateral-threshold-info": "証明されなければならない担保の量",
+        "required-collateral-threshold": "必要な担保の閾値",
+        "required-collateral-threshold-info": "証明されなければならない担保の金額",
         "revoke-all-form": {
           "trigger-label": "すべてを取り消す"
         },
@@ -1312,24 +1297,32 @@
         "symbol-header": "シンボル",
         "total-burned": "総燃焼量",
         "total-burned-info": "流通から永久に除去されたトークンの量",
-        "total-holders": "保有者数",
-        "total-holders-info": "現在資産を保有しているアドレスの量",
+        "total-holders": "#の保有者",
+        "total-holders-info": "現在資産を保有しているアドレスの数",
         "total-issued": "総発行量",
         "total-issued-info": "発行された資産の総量",
         "total-supply": "総供給量",
         "total-supply-header": "総供給量",
         "total-supply-info": "資産の総供給量",
         "underlying-asset": "基礎資産",
-        "underlying-asset-balance": "基礎資産の残高",
+        "underlying-asset-balance": "基礎資産残高",
         "wallet-header": "ウォレット",
         "yield-type": "利回りタイプ"
       },
       "table": {
         "asset-management": "資産管理",
+        "page-title": {
+          "bonds": "債券",
+          "cryptocurrencies": "暗号通貨",
+          "equities": "株式",
+          "funds": "ファンド",
+          "stablecoins": "ステーブルコイン",
+          "tokenizeddeposits": "トークン化された預金"
+        },
         "related": {
           "bonds": {
             "issue-new": {
-              "description": "定義された満期、クーポン利率、額面価値を持つ新しい債券を作成し、発行します。自動利息支払いと償還スケジュールで債券発行を効率化します。",
+              "description": "定義された満期、クーポン率、額面価値を持つ新しい債券を作成し、発行します。自動利息支払いと償還スケジュールで債券発行を効率化します。",
               "title": "新しい債券を発行"
             },
             "mechanics": {
@@ -1339,23 +1332,23 @@
             },
             "usecases": {
               "button": "探る",
-              "description": "企業債務から構造化商品まで、固定収入市場でのアプリケーションを探ります。利息支払い、満期管理、規制遵守の効率を最大化します。",
+              "description": "企業債務から構造化商品まで、固定収入市場におけるアプリケーションを探ります。利息支払い、満期管理、規制遵守の効率を最大化します。",
               "title": "債券ユースケース"
             }
           },
           "cryptocurrencies": {
             "issue-new": {
-              "description": "カスタマイズ可能なパラメータとセキュリティ機能を持つ新しい暗号通貨トークンを作成し、発行します。構成可能な供給メカニズムと転送制御でトークン展開を効率化します。",
+              "description": "カスタマイズ可能なパラメータとセキュリティ機能を持つ新しい暗号通貨トークンを作成し、発行します。設定可能な供給メカニズムと転送制御でトークンの展開を効率化します。",
               "title": "新しい暗号通貨を発行"
             },
             "mechanics": {
               "button": "詳細を学ぶ",
-              "description": "暗号通貨のトークン経済、供給制御、転送制限、セキュリティ機能を管理する方法を学びます。",
+              "description": "暗号通貨のトークン経済、供給管理、転送制限、セキュリティ機能を管理する方法を学びます。",
               "title": "トークンメカニクス"
             },
             "usecases": {
               "button": "探る",
-              "description": "デジタル決済、報酬システム、トークン化されたサービスでのアプリケーションを探ります。プログラム可能な取引と機関レベルのセキュリティ機能を通じてユーティリティを最大化します。",
+              "description": "デジタル決済、報酬システム、トークン化されたサービスにおけるアプリケーションを探ります。プログラム可能な取引と機関レベルのセキュリティ機能を通じてユーティリティを最大化します。",
               "title": "暗号通貨ユースケース"
             }
           },
@@ -1366,7 +1359,7 @@
             },
             "mechanics": {
               "button": "詳細を学ぶ",
-              "description": "株主権、投票メカニズム、配当分配、株式所有構造を管理する方法を学びます。",
+              "description": "株主の権利、投票メカニズム、配当分配、株式所有構造を管理する方法を学びます。",
               "title": "株式メカニクス"
             },
             "usecases": {
@@ -1377,7 +1370,7 @@
           },
           "funds": {
             "issue-new": {
-              "description": "定義されたパラメータと資産の裏付けを持つ新しいファンドを作成し、発行します。新しい投資機会と市場セグメントをサポートするためにファンド展開を効率化します。",
+              "description": "定義されたパラメータと資産の裏付けを持つ新しいファンドを作成し、発行します。新しい投資機会と市場セグメントをサポートするためにファンドの展開を効率化します。",
               "title": "新しいファンドを発行"
             },
             "mechanics": {
@@ -1393,12 +1386,12 @@
           },
           "stablecoins": {
             "issue-new": {
-              "description": "定義されたパラメータと担保の裏付けを持つ新しいステーブルコインを作成し、発行します。新しいプロジェクトと市場セグメントをサポートするためにトークン展開を効率化します。",
+              "description": "定義されたパラメータと担保の裏付けを持つ新しいステーブルコインを作成し、発行します。新しいプロジェクトと市場セグメントをサポートするためにトークンの展開を効率化します。",
               "title": "新しいステーブルコインを発行"
             },
             "mechanics": {
               "button": "詳細を学ぶ",
-              "description": "主要なステーブルコインパラメータ、担保方法、安定性メカニズムを調整する方法を学びます。",
+              "description": "主要なステーブルコインパラメータ、担保化方法、安定性メカニズムを調整する方法を学びます。",
               "title": "ステーブルコインメカニクス"
             },
             "usecases": {
@@ -1410,7 +1403,7 @@
           "title": "関連アクション",
           "tokenizeddeposits": {
             "issue-new": {
-              "description": "定義されたパラメータを持つ新しいトークン化された預金を作成し、発行します。新しいプロジェクトと市場セグメントをサポートするためにトークン展開を効率化します。",
+              "description": "定義されたパラメータを持つ新しいトークン化された預金を作成し、発行します。新しいプロジェクトと市場セグメントをサポートするためにトークンの展開を効率化します。",
               "title": "新しいトークン化された預金を発行"
             },
             "mechanics": {
@@ -1424,6 +1417,22 @@
               "title": "ユースケース"
             }
           }
+        },
+        "topinfo-description": {
+          "bonds": "デジタル債券は、実世界の担保によって安全にブロックチェーン上に伝統的な固定収入証券を表します。ブロックチェーンの透明性と予測可能なリターン、満期時の償還、自動利回り分配を組み合わせています。この債券資産は、安全な発行、正確な満期管理、包括的なコンプライアンス機能、金融機関向けに特別に調整された投資家に優しい償還プロセスを保証します。",
+          "cryptocurrencies": "暗号通貨資産は、制御されたミンティング、堅牢なセキュリティ、完全な規制遵守を提供するカスタマイズ可能なデジタルインストゥルメントで、機関使用に最適です。プログラム可能な取引、透明性の向上、使いやすさを向上させるための統合メタトランザクションを通じて、金融業務を効率化します。主な機能には、役割ベースのアクセス管理、安全な発行、機関の支払いプロセスへの簡単な統合が含まれます。",
+          "equities": "株式資産は、伝統的な株式証券をデジタル化し、高度なブロックチェーン機能と堅牢なガバナンスおよびコンプライアンスツールを組み合わせています。機関投資家向けに設計されており、安全な株式発行、株主の投票権、詳細なアクセス制御、規制遵守メカニズムを提供します。この資産は、株式管理を簡素化し、透明性を向上させ、安全な投資家参加を保証します。",
+          "funds": "ファンド資産は、投資ファンドの株式をデジタル化し、自動管理手数料の徴収、投資家ガバナンス、包括的な規制遵守を提供します。金融機関に最適で、管理プロセスを効率化し、透明な手数料管理を確保し、安全な投資家投票を可能にします。この契約は、強力なセキュリティ、カスタマイズ可能なファンド属性、運用効率の向上を提供します。",
+          "stablecoins": "ステーブルコインは、実世界の資産または準備金によって裏付けられた安定した価値を維持するように設計されたデジタル通貨です。暗号通貨に通常関連する価格変動を回避しながら、デジタル資産の利点（スピード、透明性、プログラム可能性など）を提供します。このステーブルコイン契約は、発行されたすべてのトークンが完全に担保されていることを保証し、機関に安全で監査可能、信頼性のあるデジタルマネー管理を提供します。主な機能には、担保による発行、包括的な役割ベースの制御、堅牢な一時停止メカニズム、規制遵守機能が含まれます。",
+          "tokenizeddeposits": "トークン化された預金は、伝統的な銀行預金をデジタルで表現し、金融機関に強化されたセキュリティ、リアルタイムの透明性、厳格なコンプライアンス機能を提供します。主な機能には、カスタマイズ可能な許可リスト、保管監視、堅牢な役割ベースの管理、統合メタトランザクションが含まれ、機関の預金管理を簡素化します。"
+        },
+        "topinfo-title": {
+          "bonds": "デジタル固定収入証券資産",
+          "cryptocurrencies": "カスタマイズ可能で安全なデジタル資産",
+          "equities": "機関レベルのデジタル株式管理",
+          "funds": "機関ファンド管理のためのデジタル資産",
+          "stablecoins": "安全で担保されたデジタル通貨",
+          "tokenizeddeposits": "安全でコンプライアンスに準拠したデジタル預金管理"
         }
       }
     },
@@ -1435,37 +1444,37 @@
       "avatar-description": "アバターをクリックして、ファイルからカスタムのものをアップロードします。",
       "avatar-instructions": "アバターは任意ですが、強く推奨されます。",
       "change-password": "パスワードを変更",
-      "change-password-description": "現在のパスワードと新しいパスワードを入力してください。",
+      "change-password-description": "現在のパスワードと新しいパスワードを入力します。",
       "change-password-instructions": "最低8文字を使用してください。",
       "change-password-success": "パスワードが変更されました。",
       "current-password": "現在のパスワード",
-      "current-password-placeholder": "現在のパスワードを入力してください",
+      "current-password-placeholder": "現在のパスワードを入力",
       "current-session": "現在のセッション",
       "delete-account": "アカウントを削除",
-      "delete-account-description": "アカウントとそのすべての内容を永久に削除します。これにより、プライベートキーへのアクセスが失われ、資産へのアクセスも失われます！この操作は元に戻せないため、慎重に続行してください。",
-      "delete-account-email": "アカウント削除の確認のためにメールを確認してください。",
+      "delete-account-description": "アカウントとそのすべての内容を永久に削除します。これにより、プライベートキーへのアクセスが失われ、資産へのアクセスも失われます！この操作は元に戻せないため、注意して続行してください。",
+      "delete-account-email": "アカウントの削除を確認するために、メールを確認してください。",
       "delete-account-instructions": "アカウントの削除を確認してください。この操作は元に戻せないため、慎重に続行してください。",
       "delete-account-not-fresh": "アカウントを削除するには、最近ログインしている必要があります。",
-      "delete-account-success": "アカウントが削除されました。",
-      "disabled-credentials-description": "アカウントにログインするためのプロバイダーを選択",
+      "delete-account-success": "アカウントは削除されました。",
+      "disabled-credentials-description": "アカウントにログインするためのプロバイダーを選択してください",
       "dont-have-account": "アカウントをお持ちでないですか？",
-      "email": "メール",
+      "email": "メールアドレス",
       "email-description": "ログインに使用するメールアドレスを入力してください。",
       "email-instructions": "有効なメールアドレスを使用してください。",
       "email-placeholder": "m@example.com",
-      "email-verification": "確認リンクのためにメールを確認してください。",
-      "email-verify-change": "変更を確認するためにメールを確認してください。",
+      "email-verification": "確認リンクのためにメールをチェックしてください。",
+      "email-verify-change": "変更を確認するためにメールをチェックしてください。",
       "failed-to-validate": "検証に失敗しました",
       "forgot-password": "パスワードを忘れた",
       "forgot-password-action": "リセットリンクを送信",
       "forgot-password-description": "パスワードをリセットするためにメールを入力してください",
-      "forgot-password-email": "パスワードリセットリンクのためにメールを確認してください。",
-      "forgot-password-link": "パスワードを忘れましたか？",
+      "forgot-password-email": "パスワードリセットリンクのためにメールをチェックしてください。",
+      "forgot-password-link": "パスワードをお忘れですか？",
       "link": "リンク",
       "magic-link": "マジックリンク",
       "magic-link-action": "マジックリンクを送信",
-      "magic-link-description": "マジックリンクを受け取るためにメールアドレスを入力してください",
-      "magic-link-email": "マジックリンクのためにメールを確認してください",
+      "magic-link-description": "マジックリンクを受け取るためにメールを入力してください",
+      "magic-link-email": "マジックリンクのためにメールをチェックしてください",
       "name": "名前",
       "name-description": "フルネームまたは表示名を入力してください。",
       "name-instructions": "最大32文字を使用してください。",
@@ -1486,21 +1495,21 @@
       "provider-link-success": "プロバイダーが正常にリンクされました。",
       "provider-unlink-success": "プロバイダーが正常にリンク解除されました。",
       "providers": "プロバイダー",
-      "providers-description": "アカウントをサードパーティサービスに接続します。",
+      "providers-description": "アカウントをサードパーティサービスと接続します。",
       "providers-loading-error": "アカウント情報を読み込めませんでした",
       "remember-me": "私を覚えておいてください",
       "reset-password": "パスワードをリセット",
       "reset-password-action": "新しいパスワードを保存",
       "reset-password-description": "以下に新しいパスワードを入力してください",
-      "reset-password-invalid-token": "無効なリセットパスワードリンク",
+      "reset-password-invalid-token": "無効なパスワードリセットリンク",
       "reset-password-success": "パスワードが正常にリセットされました",
       "revoke": "取り消す",
       "save": "保存",
       "sessions": "セッション",
       "sessions-description": "アクティブなセッションを管理し、アクセスを取り消します。",
       "set-password": "パスワードを設定",
-      "set-password-description": "パスワードを設定するためにメールを確認してください。",
-      "set-password-email-sent": "パスワードを設定するためにメールを確認してください。",
+      "set-password-description": "パスワードを設定するためにメールをチェックしてください。",
+      "set-password-email-sent": "パスワードを設定するためにメールをチェックしてください。",
       "settings": "設定",
       "sign-in": "サインイン",
       "sign-in-action": "ログイン",
@@ -1511,7 +1520,7 @@
       "sign-up": "サインアップ",
       "sign-up-action": "アカウントを作成",
       "sign-up-description": "アカウントを作成するために情報を入力してください",
-      "sign-up-email": "確認リンクのためにメールを確認してください。",
+      "sign-up-email": "確認リンクのためにメールをチェックしてください。",
       "unlink": "リンク解除",
       "username": "ユーザー名",
       "username-description": "ログインに使用するユーザー名を入力してください。",
@@ -1523,12 +1532,93 @@
         "pincode-set": "ピンコードが正常に設定されました",
         "setup-pincode": "ピンコードを設定"
       }
+    },
+    "users": {
+      "banned_reason": "理由により禁止されています {reason}",
+      "columns": {
+        "email": "メール",
+        "kyc_status": "KYCステータス",
+        "last_activity": "最終活動",
+        "name": "名前",
+        "role": "役割",
+        "status": "ステータス",
+        "wallet": "ウォレット"
+      },
+      "detail": {
+        "charts": {
+          "transaction-history-last-month": {
+            "description": "過去1ヶ月の取引を表示",
+            "title": "取引量 / 日"
+          },
+          "transaction-history-last-year": {
+            "description": "過去1年の取引を表示",
+            "title": "取引量 / 月"
+          }
+        },
+        "edit_user": "ユーザーを編集",
+        "platform-management": "プラットフォーム管理",
+        "tabs": {
+          "details": "詳細",
+          "holdings": "保有資産",
+          "latest-events": "最新のイベント",
+          "permissions": "権限"
+        },
+        "values": {
+          "asset_supply": "資産供給",
+          "created_at": "作成日時",
+          "email": "メール",
+          "last_activity": "最終活動",
+          "last_login": "最終ログイン",
+          "name": "名前",
+          "status": "ステータス",
+          "transactions": "取引",
+          "verified_at": "確認日時",
+          "wallet": "ウォレット"
+        }
+      },
+      "holdings": {
+        "table": {
+          "balance-header": "残高",
+          "holder-type-header": "保有者タイプ",
+          "last-activity-header": "最終活動",
+          "name-header": "名前",
+          "status-header": "ステータス",
+          "symbol-header": "シンボル",
+          "type-header": "タイプ"
+        },
+        "title": "保有資産"
+      },
+      "latest-events": {
+        "view-all": "さらにイベントを表示"
+      },
+      "platform-management": "プラットフォーム管理",
+      "roles": {
+        "admin": "管理者",
+        "issuer": "発行者",
+        "user": "ユーザー"
+      },
+      "status": {
+        "active": "アクティブ",
+        "banned": "禁止",
+        "never": "なし",
+        "not_verified": "未確認",
+        "verified": "確認済み"
+      },
+      "title": "ユーザー"
     }
   },
   "regular": "ユーザー",
-  "supply-manager": "供給マネージャー",
+  "supply-manager": "供給管理者",
   "theme": {
-    "switch-to-mode": "{mode}モードに切り替え",
-    "toggle-label": "テーマを切り替え"
+    "dark": "ダーク",
+    "light": "ライト",
+    "switch-to-mode": "モードを {mode} に切り替える",
+    "system": "システム",
+    "toggle-label": "テーマを切り替える"
+  },
+  "transactions": {
+    "sending": "送信中",
+    "success": "成功",
+    "validation-errors": "検証エラー"
   }
 }

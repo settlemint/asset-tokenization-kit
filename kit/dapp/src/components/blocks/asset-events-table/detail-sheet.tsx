@@ -12,6 +12,7 @@ import {
 import type { NormalizedEventsListItem } from '@/lib/queries/asset-events/asset-events-fragments';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
+import { ColumnAssetType } from '../asset-info/column-asset-type';
 import { EvmAddress } from '../evm-address/evm-address';
 import { ApprovalDetails } from './details/approval';
 import { BondRedeemedDetails } from './details/bond-redeemed';
@@ -65,7 +66,9 @@ export function EventDetailSheet({
                 <dt className="text-muted-foreground text-sm">
                   {t('asset-type')}:
                 </dt>
-                <dd className="text-sm">{t(assetType)}</dd>
+                <dd className="text-sm">
+                  <ColumnAssetType assettype={assetType} />
+                </dd>
                 <dt className="text-muted-foreground text-sm">{t('asset')}:</dt>
                 <dd className="text-sm">
                   <EvmAddress address={asset as Address} />

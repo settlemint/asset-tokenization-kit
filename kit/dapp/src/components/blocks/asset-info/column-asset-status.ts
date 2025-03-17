@@ -1,10 +1,17 @@
+'use client';
+
 import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
+import { useTranslations } from 'next-intl';
 
 type AssetOrBalance = AssetBalance | { paused?: boolean };
 
-export function formatAssetStatus<
-  T extends (key: 'active' | 'paused' | 'blocked') => unknown,
->(assetOrBalance: AssetOrBalance, t: T) {
+interface AssetStatusProps {
+  assetOrBalance: AssetOrBalance;
+}
+
+export function ColumnAssetStatus({ assetOrBalance }: AssetStatusProps) {
+  const t = useTranslations('asset-status');
+
   if (isAssetBalance(assetOrBalance)) {
     if (assetOrBalance.blocked) {
       return t('blocked');

@@ -12,7 +12,7 @@ export default async function UserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const t = await getTranslations('admin.users.detail.charts');
+  const t = await getTranslations('private.users.detail.charts');
   const user = await getUserDetail({ id });
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
   const oneYearAgo = startOfDay(subYears(new Date(), 1));

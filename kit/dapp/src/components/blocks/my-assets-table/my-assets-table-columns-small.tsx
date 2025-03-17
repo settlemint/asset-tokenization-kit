@@ -4,6 +4,7 @@ import type { UserAsset } from '@/lib/queries/asset-balance/asset-balance-user';
 import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import { ColumnAssetType } from '../asset-info/column-asset-type';
 
 const columnHelper = createColumnHelper<UserAsset>();
 
@@ -19,10 +20,13 @@ export function columnsSmall() {
       header: t('symbol-header'),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => t(row.asset.type), {
-      id: t('type-header'),
-      header: t('type-header'),
-    }),
+    columnHelper.accessor(
+      (row) => <ColumnAssetType assettype={row.asset.type} />,
+      {
+        id: t('type-header'),
+        header: t('type-header'),
+      }
+    ),
     columnHelper.accessor('value', {
       header: t('balance-header'),
       meta: {

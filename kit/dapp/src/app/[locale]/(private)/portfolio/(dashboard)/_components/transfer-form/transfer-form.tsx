@@ -34,7 +34,6 @@ export function MyAssetsTransferForm() {
             symbol: selectedAsset?.symbol,
           })}`}
           description={t('description', {
-            type: t(selectedAsset?.type),
             name: selectedAsset?.name,
             symbol: selectedAsset?.symbol,
           })}

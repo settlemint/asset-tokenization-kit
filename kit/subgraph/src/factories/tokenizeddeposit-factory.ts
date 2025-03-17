@@ -19,7 +19,7 @@ export function handleTokenizedDepositCreated(
   asset.deployedOn = event.block.timestamp;
   asset.save();
 
-  const assetCount = fetchAssetCount(AssetType.stablecoin);
+  const assetCount = fetchAssetCount(AssetType.tokenizeddeposit);
   assetCount.count = assetCount.count + 1;
   assetCount.save();
 
@@ -34,7 +34,7 @@ export function handleTokenizedDepositCreated(
     creator,
     EventName.AssetCreated,
     event.block.timestamp,
-    AssetType.stablecoin,
+    AssetType.tokenizeddeposit,
     asset.id
   );
 

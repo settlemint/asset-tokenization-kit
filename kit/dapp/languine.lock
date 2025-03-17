@@ -38,7 +38,7 @@ files:
     admin.dashboard.page.title: 2938c7f7e560ed972f8a4f68e80ff834
     admin.dashboard.table.latest-events.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.dashboard.widgets.assets.label: 9aedeaf1f77b8642abe528503b8c5de8
-    admin.dashboard.widgets.assets.subtext: d982ec82265596eb2db78fcfcb180bf8
+    admin.dashboard.widgets.assets.subtext: 235881ad252944b7acca8b854cd5ca27
     admin.dashboard.widgets.transactions.label: 31112aca11d0e9e6eb7db96f317dda49
     admin.dashboard.widgets.transactions.subtext: 2fad55667c83a280f2147280d9351aaf
     admin.dashboard.widgets.users.label: f9aae5fda8d810a29f12d1e61b4ab25f
@@ -68,48 +68,27 @@ files:
     admin.sidebar.portfolio-management.group-title: 654b240dd044565e9ba2ff98858003c3
     admin.sidebar.portfolio-management.my-activity: c9ddda1b1f76481bd82fa329a6ad4bc8
     admin.sidebar.portfolio-management.my-assets: c13bec88b2b106c9a25dc6c64c2eb243
-    admin.users.banned_reason: 2c0a5680f5a30d18540bfb65a23f7e63
-    admin.users.columns.email: ce8ae9da5b7cd6c3df2929543a9af92d
-    admin.users.columns.kyc_status: 04c850a81052df23680d00d2aa1d891e
-    admin.users.columns.last_activity: bc5188ca43d423ba3730e4c030609d6e
-    admin.users.columns.name: 49ee3087348e8d44e1feda1917443987
-    admin.users.columns.role: bbbabdbe1b262f75d99d62880b953be1
-    admin.users.columns.status: ec53a8c4f07baed5d8825072c89799be
-    admin.users.columns.wallet: 156e132b014314b1eae89410e54bcc8c
-    admin.users.detail.charts.transaction-history-last-month.description: 7e55e2762aa8aa600b79add382caf96e
-    admin.users.detail.charts.transaction-history-last-month.title: 1b362a69bb5610f7110e8727a04aa6b9
-    admin.users.detail.charts.transaction-history-last-year.description: 5a3aebd98735589619e369e55d4cf674
-    admin.users.detail.charts.transaction-history-last-year.title: b5db8dbcd9904973e2a3aa699c671ab8
-    admin.users.detail.edit_user: ed29920fade587761581f737fff44155
-    admin.users.detail.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
-    admin.users.detail.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
-    admin.users.detail.tabs.holdings: 063215beb567e666b3c937ae83163e92
-    admin.users.detail.tabs.latest-events: 8b0807a79d36ca9fece2ab62e26bdd9f
-    admin.users.detail.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
-    admin.users.detail.values.asset_supply: fce5ea1f98b0ccadb1cdb32e22f04d68
-    admin.users.detail.values.created_at: 5f2b9345f9bbd74079b99d6fcf461408
-    admin.users.detail.values.email: ce8ae9da5b7cd6c3df2929543a9af92d
-    admin.users.detail.values.last_activity: bc5188ca43d423ba3730e4c030609d6e
-    admin.users.detail.values.last_login: a235efe8452eee7c9cbdb6dbe3d6b978
-    admin.users.detail.values.name: 49ee3087348e8d44e1feda1917443987
-    admin.users.detail.values.status: ec53a8c4f07baed5d8825072c89799be
-    admin.users.detail.values.transactions: 31112aca11d0e9e6eb7db96f317dda49
-    admin.users.detail.values.verified_at: f3b51254827bd09f30accc598f65d682
-    admin.users.detail.values.wallet: 156e132b014314b1eae89410e54bcc8c
-    admin.users.holdings.table.balance-header: 99a808d8d16122d70e44bd7f709d30fb
-    admin.users.holdings.table.holder-type-header: 41d8b55a8fce35ea7e8b6c12efbb8f6f
-    admin.users.holdings.table.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
-    admin.users.holdings.table.name-header: 49ee3087348e8d44e1feda1917443987
-    admin.users.holdings.table.status-header: ec53a8c4f07baed5d8825072c89799be
-    admin.users.holdings.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
-    admin.users.holdings.table.type-header: a1fa27779242b4902f7ae3bdd5c6d508
-    admin.users.holdings.title: 063215beb567e666b3c937ae83163e92
-    admin.users.latest-events.view-all: 95cc62dbab1792d532f132c46a767920
-    admin.users.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
-    admin.users.status.active: 4d3d769b812b6faa6b76e1a8abaece2d
-    admin.users.status.banned: a6f2b2df29609876b609c318bdbdf9a1
-    admin.users.title: f9aae5fda8d810a29f12d1e61b4ab25f
     admin-user: e3afed0047b08059d0fada10f400c1e5
+    asset-info.admin: e3afed0047b08059d0fada10f400c1e5
+    asset-info.creator-owner: 5439f356b537a6081aabf0ab5ead403d
+    asset-info.regular: d2203cb1237cb6460cbad94564e39345
+    asset-info.supply-manager: b0b82823b10ee1538db2bcfc0a89be7f
+    asset-status.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    asset-status.blocked: 4ecc0d90eec1cea3e9db96583a1bb9c2
+    asset-status.paused: e99180abf47a8b3a856e0bcb2656990a
+    asset-type.bonds: 7a3b691731db2969498907b960183633
+    asset-type.bonds-plural: b98e3a37b62f7207c8a0a27e0c0d8777
+    asset-type.cryptocurrencies: 4c11904ee0b793fc10046d533cae723e
+    asset-type.cryptocurrencies-plural: 69ab3e648e5586bd2a099fc9b21b7440
+    asset-type.equities: d9df825203724a2f3412de3fc7a7a2be
+    asset-type.equities-plural: f38992a52cef8611666b2db431b493a6
+    asset-type.funds: c1098dd48f0fb20eeea79235055d02ca
+    asset-type.funds-plural: d42b2bb7ac17fc34a099909c0a2f1de9
+    asset-type.stablecoins: 0501a2e331bfc725e5ea1728a8de9098
+    asset-type.stablecoins-plural: 2f7d136a5b9efb222650243b1d38b6ff
+    asset-type.tokenizeddeposits: b76912a65edce9a71850a9e09b4f3fd3
+    asset-type.tokenizeddeposits-plural: 54e943a5918f140003ed964d64393d5d
+    asset-type.unknown: 88183b946cc5f0e8c96b2e66e1c74a7e
     blocked: 4ecc0d90eec1cea3e9db96583a1bb9c2
     components.active-pill.active: 4d3d769b812b6faa6b76e1a8abaece2d
     components.active-pill.paused: e99180abf47a8b3a856e0bcb2656990a
@@ -153,11 +132,19 @@ files:
     components.asset-type-icon.not-available-initials: d4cd0dabcf4caa22ad92fab40844c786
     components.asset-type-icon.stablecoin-initials: 6a65edb0cc17d66c677814115b1477f5
     components.asset-type-icon.tokenized-deposit-initials: fc089489555aee7519548ff7f589f384
+    components.charts.assets.asset-distribution: 1eec46c77577b5bc13860d676fef6804
+    components.charts.assets.asset-distribution-description: f2f637627e48036150f1a99adbdf4397
+    components.charts.assets.bond: 7a3b691731db2969498907b960183633
     components.charts.assets.collateral-ratio.description: 7c2b795ab5e7407ae5a5dbc2618c5b4f
     components.charts.assets.collateral-ratio.label: 402c0bb389fdb67267e5ced7921d5fbf
     components.charts.assets.collateral-ratio.no-data: a174e0686d26c92d56bf13366f54f84c
+    components.charts.assets.cryptocurrency: 4c11904ee0b793fc10046d533cae723e
+    components.charts.assets.equity: d9df825203724a2f3412de3fc7a7a2be
     components.charts.assets.free-collateral-ratio.label: b24ce0cd392a5b0b8dedc66c25213594
+    components.charts.assets.fund: c1098dd48f0fb20eeea79235055d02ca
     components.charts.assets.last-updated: ffbb3331182cbfda3ccea5bb0c3eea46
+    components.charts.assets.stablecoin: 0501a2e331bfc725e5ea1728a8de9098
+    components.charts.assets.tokenizeddeposit: b76912a65edce9a71850a9e09b4f3fd3
     components.charts.assets.total-supply.description: 2c73005a0303bc52d3f4285cc4a71104
     components.charts.assets.total-supply.label: 1ecae95c3c8f236721cce5b740b2deaa
     components.charts.assets.total-supply.no-data: 81b8d7f38f15cfa0b46a1ff4eb2977fd
@@ -213,6 +200,8 @@ files:
     components.form.button.sending-transaction: 838f5dfdf348bac768f078b5eab87211
     components.form.input.letters-only: 3018601c9aef68d0a7338681c25a8dc6
     components.form.input.valid-email: 6fc78ea6908a7cbd0b36f7bc468b4275
+    components.form.pincode-dialog.description: 270fcb334b1eca6a3475504fbebfd3b7
+    components.form.pincode-dialog.title: 502e7d8e83097a1e726112cf13e842a8
     components.form.progress.completed-step: 11da564a254921897afcf5f9f1082860
     components.form.progress.current-step: efd1e491da96a6b4c7e3e2363b06bcc3
     components.form.progress.step-of-total: 5dd5b5cd70ce1c14f436a43f0329ec17
@@ -265,10 +254,14 @@ files:
     error.success: 505a83f220c02df2f85c3810cd9ceb38
     error.title: c6701602de1528fd79d5eff3e8eb1edd
     error.try-again: f915a95e609bbd517a8a1e7bdcceef37
+    error.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b
     layout.header.app-description: b66a3f5e7ce9d50507f6935435e5f4a9
     layout.header.app-name: 0ca5471816725ad71ffdeca830e37eb0
     layout.header.home: 8cf04a9734132302f96da8e113e80ce5
     layout.navigation.admin: 05e93ee934950bba9b453434d9ad6ff3
+    layout.navigation.asset-management: 177512b9add0b40c38dad61838bf7d79
+    layout.navigation.platform: bf6ba0d41ffdc7a03e03f87c569e0c3a
+    layout.navigation.portfolio: 654b240dd044565e9ba2ff98858003c3
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
@@ -342,6 +335,11 @@ files:
     portfolio.settings.api-keys.creating-api-key: ebff765a0e1f05f807b2bd278320d675
     portfolio.settings.api-keys.expires-at: 8d7f12bd0dc53389421144669ff4ee63
     portfolio.settings.api-keys.expiry-label: ad7a5dccbb87e6c4be1cfd32954711fc
+    portfolio.settings.api-keys.expiry-options.1 day: e3b481d5297f475abc283227bedbd9b9
+    portfolio.settings.api-keys.expiry-options.1 month: 1634e66b522edaa910370cc5581a47f1
+    portfolio.settings.api-keys.expiry-options.1 week: 705fbbd6e1667845569c00fd7523d343
+    portfolio.settings.api-keys.expiry-options.1 year: ca4c73c1f333c437a47c58afd0623530
+    portfolio.settings.api-keys.expiry-options.No expiry: e802832461472c11f820164736f1ca60
     portfolio.settings.api-keys.fetch-error: 0c51948a1c6264a813f6a45c01d1791d
     portfolio.settings.api-keys.last-used: 135daaf0d59548436c6858c7f0798c45
     portfolio.settings.api-keys.name-label: 49ee3087348e8d44e1feda1917443987
@@ -361,7 +359,7 @@ files:
     portfolio.transfer-form.amount.description: c1021c36236769dd26df6b07f6664845
     portfolio.transfer-form.amount.title: 034f1f16f32db94ee6659289fdcaa4e8
     portfolio.transfer-form.asset-types: 7a8f32058273f93cf158d8ce39ba40ad
-    portfolio.transfer-form.description: f734631d30ed6c61f228314b4c4d0fef
+    portfolio.transfer-form.description: ac6a6a8b4b60372d71aed84172ab9f31
     portfolio.transfer-form.recipients.description: 121576e6c032ae5dbfb878d1b91e14c7
     portfolio.transfer-form.recipients.title: 8f419c48506f3cf74a150f1f5257d6e7
     portfolio.transfer-form.recipients.wallet-address-label: a45e5458e44f09f0c4b7682ce8e5b1cc
@@ -374,6 +372,7 @@ files:
     portfolio.transfer-form.summary.description: cba2fa49a91ac25f8f1128210fad3176
     portfolio.transfer-form.summary.title: 9a70d04b8aa584ec566fb222399890cc
     portfolio.transfer-form.transfer: 6950810f0d2bba97a6f710c7b965b84e
+    portfolio.transfer-form.transfer-title: 2ebe32cd04f98bb3bdb78cf93dcc220e
     private.assets.asset-statistics-title: c33e404a441c6ba9648f88af3c68a1ca
     private.assets.create.bonds.basics.decimals-label: 2b417805040de3a3df31c8fd3626b57c
     private.assets.create.bonds.basics.description: b0742cacc1c17a8794e7f651b762cd8a
@@ -919,6 +918,12 @@ files:
     private.assets.fields.wallet-header: 156e132b014314b1eae89410e54bcc8c
     private.assets.fields.yield-type: c4c250e0ca984c7f8b5df9afdf45ae94
     private.assets.table.asset-management: 1e1a97e508b3d959b9fc916092948c35
+    private.assets.table.page-title.bonds: b98e3a37b62f7207c8a0a27e0c0d8777
+    private.assets.table.page-title.cryptocurrencies: 69ab3e648e5586bd2a099fc9b21b7440
+    private.assets.table.page-title.equities: f38992a52cef8611666b2db431b493a6
+    private.assets.table.page-title.funds: d42b2bb7ac17fc34a099909c0a2f1de9
+    private.assets.table.page-title.stablecoins: 2f7d136a5b9efb222650243b1d38b6ff
+    private.assets.table.page-title.tokenizeddeposits: 54e943a5918f140003ed964d64393d5d
     private.assets.table.related.bonds.issue-new.description: e44ca2106a431321e5def542ebf7aa7d
     private.assets.table.related.bonds.issue-new.title: 7c0e6619fc4ec60325fedb518b433011
     private.assets.table.related.bonds.mechanics.button: d59048f21fd887ad520398ce677be586
@@ -968,6 +973,18 @@ files:
     private.assets.table.related.tokenizeddeposits.usecases.button: 1819001b72329e2ef5799fe504238035
     private.assets.table.related.tokenizeddeposits.usecases.description: 1fb72671bf0bfa2cf9c1ad7fdae46181
     private.assets.table.related.tokenizeddeposits.usecases.title: 5cb617d22da857ea5d75209d6b70acb4
+    private.assets.table.topinfo-description.bonds: 02f83369cc0b4196389a63173ca6394a
+    private.assets.table.topinfo-description.cryptocurrencies: 32f6c295a1eb4b1917c52640a63c9fd6
+    private.assets.table.topinfo-description.equities: 733a23481639c91d4b0af1e4605bbfb5
+    private.assets.table.topinfo-description.funds: 6fe711b5b1a17c8cbc33a96dc55d8dea
+    private.assets.table.topinfo-description.stablecoins: c19137c40d26f0ed7b3133cb9b437578
+    private.assets.table.topinfo-description.tokenizeddeposits: 603f4d613a4d178dbdd137539235f658
+    private.assets.table.topinfo-title.bonds: 9c7082a1716b0aaa413358023fab9f05
+    private.assets.table.topinfo-title.cryptocurrencies: 808b05e1459f37a892dbbf0b7ff4f09c
+    private.assets.table.topinfo-title.equities: 312c92df8efe98841244aa0d8d46425d
+    private.assets.table.topinfo-title.funds: 29bb67fc502cc282055b5c9721ef9fcb
+    private.assets.table.topinfo-title.stablecoins: 6f6022eaec5ef1ee3228ec932584ae1e
+    private.assets.table.topinfo-title.tokenizeddeposits: c511fe12d6830ee73154705f480e6a35
     private.auth.account: 08bd40c7543007ad06e4fce31618f6ec
     private.auth.add-account: 1f78ae0500c549603a85262981982518
     private.auth.already-have-account: 21bdc5689c12595ae14298354d5550d5
@@ -1059,7 +1076,60 @@ files:
     private.auth.wallet-security.pincode-instruction: 1835fd81901c702bdfe2f09ec8e37cbd
     private.auth.wallet-security.pincode-set: a5c7192ea095028d2c5958503263f57c
     private.auth.wallet-security.setup-pincode: afbf8375e2309f2a64e18911ffa9fd98
+    private.users.banned_reason: 2c0a5680f5a30d18540bfb65a23f7e63
+    private.users.columns.email: ce8ae9da5b7cd6c3df2929543a9af92d
+    private.users.columns.kyc_status: 04c850a81052df23680d00d2aa1d891e
+    private.users.columns.last_activity: bc5188ca43d423ba3730e4c030609d6e
+    private.users.columns.name: 49ee3087348e8d44e1feda1917443987
+    private.users.columns.role: bbbabdbe1b262f75d99d62880b953be1
+    private.users.columns.status: ec53a8c4f07baed5d8825072c89799be
+    private.users.columns.wallet: 156e132b014314b1eae89410e54bcc8c
+    private.users.detail.charts.transaction-history-last-month.description: 7e55e2762aa8aa600b79add382caf96e
+    private.users.detail.charts.transaction-history-last-month.title: 1b362a69bb5610f7110e8727a04aa6b9
+    private.users.detail.charts.transaction-history-last-year.description: 5a3aebd98735589619e369e55d4cf674
+    private.users.detail.charts.transaction-history-last-year.title: b5db8dbcd9904973e2a3aa699c671ab8
+    private.users.detail.edit_user: ed29920fade587761581f737fff44155
+    private.users.detail.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
+    private.users.detail.tabs.details: 3ec365dd533ddb7ef3d1c111186ce872
+    private.users.detail.tabs.holdings: 063215beb567e666b3c937ae83163e92
+    private.users.detail.tabs.latest-events: 8b0807a79d36ca9fece2ab62e26bdd9f
+    private.users.detail.tabs.permissions: d08ccf52b4cdd08e41cfb99ec42e0b29
+    private.users.detail.values.asset_supply: fce5ea1f98b0ccadb1cdb32e22f04d68
+    private.users.detail.values.created_at: 5f2b9345f9bbd74079b99d6fcf461408
+    private.users.detail.values.email: ce8ae9da5b7cd6c3df2929543a9af92d
+    private.users.detail.values.last_activity: bc5188ca43d423ba3730e4c030609d6e
+    private.users.detail.values.last_login: a235efe8452eee7c9cbdb6dbe3d6b978
+    private.users.detail.values.name: 49ee3087348e8d44e1feda1917443987
+    private.users.detail.values.status: ec53a8c4f07baed5d8825072c89799be
+    private.users.detail.values.transactions: 31112aca11d0e9e6eb7db96f317dda49
+    private.users.detail.values.verified_at: f3b51254827bd09f30accc598f65d682
+    private.users.detail.values.wallet: 156e132b014314b1eae89410e54bcc8c
+    private.users.holdings.table.balance-header: 99a808d8d16122d70e44bd7f709d30fb
+    private.users.holdings.table.holder-type-header: 41d8b55a8fce35ea7e8b6c12efbb8f6f
+    private.users.holdings.table.last-activity-header: bc5188ca43d423ba3730e4c030609d6e
+    private.users.holdings.table.name-header: 49ee3087348e8d44e1feda1917443987
+    private.users.holdings.table.status-header: ec53a8c4f07baed5d8825072c89799be
+    private.users.holdings.table.symbol-header: 02c86eb2792f3262c21d030a87e19793
+    private.users.holdings.table.type-header: a1fa27779242b4902f7ae3bdd5c6d508
+    private.users.holdings.title: 063215beb567e666b3c937ae83163e92
+    private.users.latest-events.view-all: 95cc62dbab1792d532f132c46a767920
+    private.users.platform-management: bf6ba0d41ffdc7a03e03f87c569e0c3a
+    private.users.roles.admin: e3afed0047b08059d0fada10f400c1e5
+    private.users.roles.issuer: 51360304ea03557e79bdf5ff9cd2e234
+    private.users.roles.user: 8f9bfe9d1345237cb3b2b205864da075
+    private.users.status.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    private.users.status.banned: a6f2b2df29609876b609c318bdbdf9a1
+    private.users.status.never: 6e7b34fa59e1bd229b207892956dc41c
+    private.users.status.not_verified: ecddbd73a90aaf17dd71134521b09079
+    private.users.status.verified: 3f68e67dc6c397aaa9d1c24c356f754f
+    private.users.title: f9aae5fda8d810a29f12d1e61b4ab25f
     regular: 8f9bfe9d1345237cb3b2b205864da075
     supply-manager: b0b82823b10ee1538db2bcfc0a89be7f
+    theme.dark: a18366b217ebf811ad1886e4f4f865b2
+    theme.light: 9914a0ce04a7b7b6a8e39bec55064b82
     theme.switch-to-mode: 66a8b43baa23b85e40869726ded57e76
+    theme.system: a45da96d0bf6575970f2d27af22be28a
     theme.toggle-label: 5a9663b09544b4cfe12a13a805d7ac2b
+    transactions.sending: e4b0c2b6d59cb4cf3e169a9886008087
+    transactions.success: 505a83f220c02df2f85c3810cd9ceb38
+    transactions.validation-errors: ad92169e95e13b3fcd8bad5afedbd49b

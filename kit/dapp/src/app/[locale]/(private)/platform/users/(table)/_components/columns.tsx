@@ -41,7 +41,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
 
-  const t = useTranslations('admin.users');
+  const t = useTranslations('private.users');
 
   return [
     columnHelper.accessor('name', {
@@ -93,7 +93,13 @@ export function columns() {
         return (
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{t(`roles.${role as 'admin' | 'issuer' | 'user'}`)}</span>
+            <span>
+              {role === 'admin'
+                ? t('roles.admin')
+                : role === 'issuer'
+                  ? t('roles.issuer')
+                  : t('roles.user')}
+            </span>
           </>
         );
       },
@@ -131,7 +137,11 @@ export function columns() {
         return (
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{t(`kyc_status.${status}`)}</span>
+            <span>
+              {status === 'verified'
+                ? t('status.verified')
+                : t('status.not_verified')}
+            </span>
           </>
         );
       },

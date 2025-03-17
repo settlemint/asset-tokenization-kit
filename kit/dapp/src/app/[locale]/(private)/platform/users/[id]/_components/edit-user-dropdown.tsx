@@ -19,7 +19,7 @@ interface EditUserDropdownProps {
 }
 
 export function EditUserDropdown({ user }: EditUserDropdownProps) {
-  const t = useTranslations('admin.users.detail');
+  const t = useTranslations('private.users.detail');
 
   const menuItems = [
     {
