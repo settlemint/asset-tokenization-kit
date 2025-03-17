@@ -102,6 +102,8 @@ export type Asset = ZodInfer<typeof AssetFragmentSchema>;
 export const OffchainAssetFragment = hasuraGraphql(`
   fragment OffchainAssetFragment on asset {
     id
+    isin
+    value_in_base_currency
   }
 `);
 
@@ -111,6 +113,8 @@ export const OffchainAssetFragment = hasuraGraphql(`
  */
 export const OffchainAssetFragmentSchema = z.object({
   id: z.address(),
+  isin: z.isin().nullish(),
+  value_in_base_currency: z.number().nullish().default(0),
 });
 
 /**

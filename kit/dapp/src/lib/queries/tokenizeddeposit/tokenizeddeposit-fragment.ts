@@ -79,6 +79,7 @@ export const OffchainTokenizedDepositFragment = hasuraGraphql(`
   fragment OffchainTokenizedDepositFragment on asset {
     id
     isin
+    value_in_base_currency
   }
 `);
 
@@ -89,6 +90,7 @@ export const OffchainTokenizedDepositFragment = hasuraGraphql(`
 export const OffchainTokenizedDepositFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
+  value_in_base_currency: z.number().nullish().default(0),
 });
 
 /**

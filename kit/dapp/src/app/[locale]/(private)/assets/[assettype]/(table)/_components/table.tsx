@@ -1,4 +1,6 @@
 import { DataTable } from "@/components/blocks/data-table/data-table";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
 import { getBondList } from "@/lib/queries/bond/bond-list";
 import { getCryptoCurrencyList } from "@/lib/queries/cryptocurrency/cryptocurrency-list";
 import { getEquityList } from "@/lib/queries/equity/equity-list";
@@ -18,6 +20,8 @@ interface TableProps {
 }
 
 export async function Table({ assettype }: TableProps) {
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
+
   switch (assettype) {
     case "bond":
       return (
@@ -25,6 +29,7 @@ export async function Table({ assettype }: TableProps) {
           columns={bondColumns}
           data={await getBondList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     case "cryptocurrency":
@@ -33,6 +38,7 @@ export async function Table({ assettype }: TableProps) {
           columns={cryptocurrencyColumns}
           data={await getCryptoCurrencyList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     case "stablecoin":
@@ -41,6 +47,7 @@ export async function Table({ assettype }: TableProps) {
           columns={stablecoinColumns}
           data={await getStableCoinList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     case "tokenizeddeposit":
@@ -49,6 +56,7 @@ export async function Table({ assettype }: TableProps) {
           columns={tokenizedDepositColumns}
           data={await getTokenizedDepositList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     case "equity":
@@ -57,6 +65,7 @@ export async function Table({ assettype }: TableProps) {
           columns={equityColumns}
           data={await getEquityList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     case "fund":
@@ -65,6 +74,7 @@ export async function Table({ assettype }: TableProps) {
           columns={fundColumns}
           data={await getFundList()}
           name={assettype}
+          columnParams={{ baseCurrency }}
         />
       );
     default:

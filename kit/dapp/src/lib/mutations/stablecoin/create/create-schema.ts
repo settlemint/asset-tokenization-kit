@@ -24,6 +24,7 @@ export const CreateStablecoinSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "stablecoin.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

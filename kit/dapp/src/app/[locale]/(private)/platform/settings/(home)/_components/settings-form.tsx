@@ -16,15 +16,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type CurrencyCode, FiatCurrencies } from "@/lib/db/schema-settings";
+import { z } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormAction } from "@next-safe-action/adapter-react-hook-form/hooks";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { z } from "zod";
 import { updateSettings } from "./settings-action";
 
 const schema = z.object({
-  baseCurrency: z.enum(FiatCurrencies),
+  baseCurrency: z.fiatCurrency(),
 });
 
 const currencyKeys = {

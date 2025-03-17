@@ -2,6 +2,7 @@
 
 import { Form } from "@/components/blocks/form/form";
 import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useSettings } from "@/hooks/use-settings";
 import { createBond } from "@/lib/mutations/bond/create/create-action";
 import { CreateBondSchema } from "@/lib/mutations/bond/create/create-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +27,7 @@ export function CreateBondForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
@@ -45,13 +47,15 @@ export function CreateBondForm({
         buttonLabels={{
           label: t("trigger-label.bonds"),
         }}
-        defaultValues={{}}
+        defaultValues={{
+          valueInBaseCurrency: 1,
+        }}
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration />
+        <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
     </FormSheet>

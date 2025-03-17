@@ -36,8 +36,8 @@ const BondFactoryCreate = portalGraphql(`
  * Stores additional metadata about the bond in Hasura
  */
 const CreateOffchainBond = hasuraGraphql(`
-  mutation CreateOffchainBond($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+  mutation CreateOffchainBond($id: String!, $isin: String, $value_in_base_currency: numeric) {
+    insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}) {
       id
     }
   }
@@ -59,6 +59,7 @@ export const createBond = action
         maturityDate,
         underlyingAsset,
         predictedAddress,
+        valueInBaseCurrency,
       },
       ctx: { user },
     }) => {
@@ -70,6 +71,7 @@ export const createBond = action
       await hasuraClient.request(CreateOffchainBond, {
         id: predictedAddress,
         isin: isin,
+        value_in_base_currency: String(valueInBaseCurrency),
       });
 
       const data = await portalClient.request(BondFactoryCreate, {

@@ -36,6 +36,7 @@ export const CreateBondSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "bond.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateBondInput = ZodInfer<typeof CreateBondSchema>;

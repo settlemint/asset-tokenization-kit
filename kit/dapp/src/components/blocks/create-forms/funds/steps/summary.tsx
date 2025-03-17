@@ -1,6 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { useSettings } from "@/hooks/use-settings";
 import type { CreateFundInput } from "@/lib/mutations/fund/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/fund-factory/predict-address";
 import type { fundCategories, fundClasses } from "@/lib/utils/zod";
@@ -16,6 +17,7 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("private.assets.create");
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
@@ -78,6 +80,12 @@ export function Summary() {
               ? `${values.managementFeeBps / 100}% (${values.managementFeeBps} ${t("parameters.funds.basis-points")})`
               : "-"
           }
+        />
+        <FormSummaryDetailItem
+          label={t("parameters.common.value-in-base-currency-label", {
+            baseCurrency,
+          })}
+          value={values.valueInBaseCurrency || "-"}
         />
       </FormSummaryDetailCard>
     </FormStep>

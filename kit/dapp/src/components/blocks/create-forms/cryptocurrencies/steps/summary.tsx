@@ -1,6 +1,7 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { useSettings } from "@/hooks/use-settings";
 import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
 import { getPredictedAddress } from "@/lib/queries/cryptocurrency-factory/predict-address";
 import { DollarSign, Settings } from "lucide-react";
@@ -13,6 +14,7 @@ export function Summary() {
     control: control,
   });
   const t = useTranslations("private.assets.create");
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormStep title={t("summary.title")} description={t("summary.description")}>
@@ -43,6 +45,12 @@ export function Summary() {
         <FormSummaryDetailItem
           label={t("parameters.cryptocurrencies.initial-supply-label")}
           value={values.initialSupply || "-"}
+        />
+        <FormSummaryDetailItem
+          label={t("parameters.common.value-in-base-currency-label", {
+            baseCurrency,
+          })}
+          value={values.valueInBaseCurrency || "-"}
         />
       </FormSummaryDetailCard>
     </FormStep>
