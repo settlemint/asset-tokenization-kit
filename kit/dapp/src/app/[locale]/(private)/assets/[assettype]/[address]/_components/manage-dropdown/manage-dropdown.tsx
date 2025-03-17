@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useRouter } from '@/i18n/routing';
+import { usePathname, useRouter } from '@/i18n/routing';
 import type { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { getBondDetail } from '@/lib/queries/bond/bond-detail';
 import type { AssetType } from '@/lib/utils/zod';
@@ -37,6 +37,9 @@ export function ManageDropdown({
   assettype,
 }: ManageDropdownProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isInPortfolio = pathname.includes('portfolio');
+
   const t = useTranslations('private.assets.detail.forms');
   const [openMenuItem, setOpenMenuItem] = useState<
     | (
@@ -233,18 +236,28 @@ export function ManageDropdown({
                 {item.label}
               </DropdownMenuItem>
             ))}
-          <DropdownMenuSeparator />
-          {userActions
-            .filter((item) => !item.hidden)
-            .map((item) => (
-              <DropdownMenuItem key={item.id}>{item.label}</DropdownMenuItem>
-            ))}
-          <DropdownMenuSeparator />
-          {events.map((item) => (
-            <DropdownMenuItem key={item.id} onSelect={item.onClick}>
-              {item.label}
-            </DropdownMenuItem>
-          ))}
+          {!isInPortfolio && (
+            <>
+              <DropdownMenuSeparator />
+              {userActions
+                .filter((item) => !item.hidden)
+                .map((item) => (
+                  <DropdownMenuItem key={item.id}>
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+            </>
+          )}
+          {!isInPortfolio && (
+            <>
+              <DropdownMenuSeparator />
+              {events.map((item) => (
+                <DropdownMenuItem key={item.id} onSelect={item.onClick}>
+                  {item.label}
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       {[...contractActions, ...userActions]
