@@ -94,12 +94,22 @@ export const getBondList = cache(async () => {
   const bonds = validatedBonds.map((bond) => {
     const dbAsset = assetsById.get(getAddress(bond.id));
 
+    const topHoldersSum = bond.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      bond.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
+
     return {
       ...bond,
       ...{
         private: false,
         ...dbAsset,
       },
+      concentration,
     };
   });
 

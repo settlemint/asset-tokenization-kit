@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import SuperJSON from "superjson";
 import { auth } from "../auth/auth";
 
+// Register BigNumber serializer
 SuperJSON.registerCustom<BigNumber, string>(
   {
     isApplicable: (v): v is BigNumber => BigNumber.isBigNumber(v),
@@ -13,9 +14,13 @@ SuperJSON.registerCustom<BigNumber, string>(
 );
 
 export const superJson = new Elysia({ name: "superjson" })
-  .mapResponse(({ response }) => {
-    if (response instanceof Object) {
-      const { json } = SuperJSON.serialize(response);
+  .onAfterHandle(async ({ response }) => {
+    // Handle Promise responses by awaiting them
+    const resolvedResponse =
+      response instanceof Promise ? await response : response;
+
+    if (resolvedResponse instanceof Object) {
+      const { json } = SuperJSON.serialize(resolvedResponse);
       return new Response(JSON.stringify(json));
     }
   })

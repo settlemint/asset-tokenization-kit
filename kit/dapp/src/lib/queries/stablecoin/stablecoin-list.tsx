@@ -92,9 +92,19 @@ export const getStableCoinList = cache(async () => {
   return validatedStableCoins.map((stableCoin) => {
     const dbAsset = assetsById.get(getAddress(stableCoin.id));
 
+    const topHoldersSum = stableCoin.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      stableCoin.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / stableCoin.totalSupplyExact);
+
     return {
       ...stableCoin,
       ...dbAsset,
+      concentration,
     };
   });
 });

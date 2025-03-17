@@ -1,28 +1,28 @@
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { Elysia, t } from "elysia";
-import { StablecoinDetailResponseSchema } from "./stablecoin-detail-api";
-import { getStableCoinList } from "./stablecoin-list";
+import { BondDetailResponseSchema } from "./bond-detail-api";
+import { getBondList } from "./bond-list";
 
-const StablecoinListResponseSchema = t.Array(StablecoinDetailResponseSchema);
+const BondListResponseSchema = t.Array(BondDetailResponseSchema);
 
-export const StablecoinListApi = new Elysia()
+export const BondListApi = new Elysia()
   .use(betterAuth)
   .use(superJson)
   .get(
     "/",
     () => {
-      return getStableCoinList();
+      return getBondList();
     },
     {
       auth: true,
       detail: {
-        summary: "Get Stablecoin List",
+        summary: "Get Bond List",
         description:
-          "Retrieves a list of all stablecoins in the system with their details including supply, collateral, and holder information.",
-        tags: ["Stablecoins"],
+          "Retrieves a list of all bonds in the system with their details including supply, maturity, and holder information.",
+        tags: ["Bonds"],
       },
       response: {
-        200: StablecoinListResponseSchema,
+        200: BondListResponseSchema,
         400: t.Object({
           error: t.String({
             description: "Bad Request - Invalid parameters or request format",
