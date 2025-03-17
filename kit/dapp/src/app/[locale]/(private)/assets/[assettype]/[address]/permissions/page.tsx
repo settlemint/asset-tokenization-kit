@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 export default async function PermissionsPage({ params }: PageProps) {
-  const { address } = await params;
+  const { address, assettype } = await params;
   const assetDetail = await getAssetDetail({ address });
   const t = await getTranslations('private.assets.details.permissions');
 
@@ -19,6 +19,7 @@ export default async function PermissionsPage({ params }: PageProps) {
     <DataTable
       columnParams={{
         address,
+        assettype,
       }}
       columns={columns}
       data={assetDetail.roles}

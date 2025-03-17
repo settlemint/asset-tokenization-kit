@@ -15,7 +15,7 @@ interface LayoutProps extends PropsWithChildren {
   }>;
 }
 
-export default async function BondsDetailLayout({
+export default async function AssetDetailLayout({
   children,
   params,
 }: LayoutProps) {

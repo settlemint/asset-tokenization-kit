@@ -34,7 +34,7 @@ export async function DetailPageHeader({
         </EvmAddress>
       }
       section={t('asset-management')}
-      pill={<ActivePill paused={'paused' in details ? details.paused : true} />}
+      pill={<ActivePill paused={'paused' in details ? details.paused : false} />}
       button={
         <ManageDropdown
           address={address}

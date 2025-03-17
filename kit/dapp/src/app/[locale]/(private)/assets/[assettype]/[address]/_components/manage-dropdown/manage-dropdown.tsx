@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { bondGrantRoleAction } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
 import type { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { getBondDetail } from '@/lib/queries/bond/bond-detail';
 import type { AssetType } from '@/lib/utils/zod';
@@ -117,7 +116,7 @@ export function ManageDropdown({
           address={address}
           open={openMenuItem === 'grant-role'}
           onOpenChange={onFormOpenChange}
-          grantRoleAction={bondGrantRoleAction}
+          assettype={assettype}
         />
       ),
     },
