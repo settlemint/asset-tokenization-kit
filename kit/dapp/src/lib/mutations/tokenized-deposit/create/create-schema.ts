@@ -16,6 +16,7 @@ export const CreateTokenizedDepositSchema = z.object({
   decimals: z.decimals(),
   isin: z.isin().optional(),
   pincode: z.pincode(),
+  collateralLivenessSeconds: z.number().min(0),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: 'tokenized-deposit.duplicate',
   }),

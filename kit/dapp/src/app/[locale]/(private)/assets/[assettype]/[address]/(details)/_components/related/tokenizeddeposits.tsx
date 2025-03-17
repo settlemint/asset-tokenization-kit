@@ -1,3 +1,4 @@
+import { UpdateCollateralForm } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/manage-dropdown/update-collateral-form/form';
 import { RelatedGrid } from '@/components/blocks/related-grid/related-grid';
 import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-item';
 import { getTranslations } from 'next-intl/server';
@@ -18,6 +19,16 @@ export async function TokenizedDepositsRelated({
 
   return (
     <RelatedGrid title={t('title')}>
+      <RelatedGridItem
+        title={t('tokenizeddeposits.update-collateral.title')}
+        description={t('tokenizeddeposits.update-collateral.description')}
+      >
+        <UpdateCollateralForm
+          address={address}
+          assettype="tokenizeddeposit"
+          asButton
+        />
+      </RelatedGridItem>
       <RelatedGridItem
         title={t('tokenizeddeposits.increase-supply.title')}
         description={t('tokenizeddeposits.increase-supply.description')}

@@ -1,6 +1,6 @@
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { UpdateCollateralInput } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-schema';
+import type { UpdateCollateralInput } from '@/lib/mutations/update-collateral/update-collateral-schema';
 import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 

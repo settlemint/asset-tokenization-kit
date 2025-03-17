@@ -15,11 +15,11 @@ import { CreateTokenizedDepositSchema } from './create-schema';
  * Creates a new stablecoin contract through the stablecoin factory
  */
 const TokenizedDepositFactoryCreate = portalGraphql(`
-  mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!) {
+  mutation TokenizedDepositFactoryCreate($address: String!, $from: String!, $name: String!, $symbol: String!, $decimals: Int!, $challengeResponse: String!, $collateralLivenessSeconds: Float!) {
     TokenizedDepositFactoryCreate(
       address: $address
       from: $from
-      input: { name: $name, symbol: $symbol, decimals: $decimals}
+      input: { name: $name, symbol: $symbol, decimals: $decimals, collateralLivenessSeconds: $collateralLivenessSeconds}
       challengeResponse: $challengeResponse
     ) {
       transactionHash
@@ -33,7 +33,7 @@ const TokenizedDepositFactoryCreate = portalGraphql(`
  * @remarks
  * Stores additional metadata about the stablecoin in Hasura
  */
-const CreateOffchainStablecoin = hasuraGraphql(`
+const CreateOffchainTokenizedDeposit = hasuraGraphql(`
   mutation CreateOffchainStablecoin($id: String!, $isin: String) {
     insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
@@ -50,13 +50,14 @@ export const createTokenizedDeposit = action
         assetName,
         symbol,
         decimals,
+        collateralLivenessSeconds,
         pincode,
         isin,
         predictedAddress,
       },
       ctx: { user },
     }) => {
-      await hasuraClient.request(CreateOffchainStablecoin, {
+      await hasuraClient.request(CreateOffchainTokenizedDeposit, {
         id: predictedAddress,
         isin,
       });
@@ -67,6 +68,7 @@ export const createTokenizedDeposit = action
         name: assetName,
         symbol,
         decimals,
+        collateralLivenessSeconds,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 

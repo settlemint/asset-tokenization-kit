@@ -172,6 +172,7 @@ export function ManageDropdown({
       form: (
         <UpdateCollateralForm
           key="update-collateral"
+          assettype={assettype}
           address={address}
           open={openMenuItem === 'update-collateral'}
           onOpenChange={onFormOpenChange}

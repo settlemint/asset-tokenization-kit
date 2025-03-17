@@ -2,7 +2,7 @@ import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { FormStep } from '@/components/blocks/form/form-step';
 import { FormSummaryDetailCard } from '@/components/blocks/form/summary/card';
 import { FormSummaryDetailItem } from '@/components/blocks/form/summary/item';
-import type { UpdateCollateralInput } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-schema';
+import type { UpdateCollateralInput } from '@/lib/mutations/update-collateral/update-collateral-schema';
 import { formatNumber } from '@/lib/utils/number';
 import { DollarSign } from 'lucide-react';
 import { useTranslations } from 'next-intl';
