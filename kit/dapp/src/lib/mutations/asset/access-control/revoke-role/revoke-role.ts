@@ -12,7 +12,7 @@ import { RevokeRoleSchema } from './revoke-role-schema';
  * @remarks
  * Removes permissions from an account for interacting with the bond
  */
-export const BondRevokeRole = portalGraphql(`
+const BondRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondRevokeRoleInput!) {
     RevokeRole: BondRevokeRole(
       from: $from
@@ -31,7 +31,7 @@ export const BondRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the cryptocurrency
  */
-export const CryptoCurrencyRevokeRole = portalGraphql(`
+const CryptoCurrencyRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyRevokeRoleInput!) {
     RevokeRole: CryptoCurrencyRevokeRole(
       from: $from
@@ -50,7 +50,7 @@ export const CryptoCurrencyRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the stablecoin
  */
-export const StableCoinRevokeRole = portalGraphql(`
+const StableCoinRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinRevokeRoleInput!) {
     RevokeRole: StableCoinRevokeRole(
       from: $from
@@ -69,7 +69,7 @@ export const StableCoinRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the fund
  */
-export const FundRevokeRole = portalGraphql(`
+const FundRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundRevokeRoleInput!) {
     RevokeRole: FundRevokeRole(
       from: $from
@@ -88,7 +88,7 @@ export const FundRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the equity
  */
-export const EquityRevokeRole = portalGraphql(`
+const EquityRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityRevokeRoleInput!) {
     RevokeRole: EquityRevokeRole(
       from: $from
@@ -107,7 +107,7 @@ export const EquityRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the tokenized deposit
  */
-export const TokenizedDepositRevokeRole = portalGraphql(`
+const TokenizedDepositRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositRevokeRoleInput!) {
     RevokeRole: TokenizedDepositRevokeRole(
       from: $from

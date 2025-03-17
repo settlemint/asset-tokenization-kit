@@ -12,7 +12,7 @@ import { GrantRoleSchema } from './grant-role-schema';
  * @remarks
  * Assigns permissions to an account for interacting with the stablecoin
  */
-export const StableCoinGrantRole = portalGraphql(`
+const StableCoinGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinGrantRoleInput!) {
     GrantRole: StableCoinGrantRole(
       from: $from
@@ -31,7 +31,7 @@ export const StableCoinGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the bond
  */
-export const BondGrantRole = portalGraphql(`
+const BondGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondGrantRoleInput!) {
     GrantRole: BondGrantRole(
       from: $from
@@ -50,7 +50,7 @@ export const BondGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the cryptocurrency
  */
-export const CryptoCurrencyGrantRole = portalGraphql(`
+const CryptoCurrencyGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyGrantRoleInput!) {
     GrantRole: CryptoCurrencyGrantRole(
       from: $from
@@ -69,7 +69,7 @@ export const CryptoCurrencyGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the fund
  */
-export const FundGrantRole = portalGraphql(`
+const FundGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundGrantRoleInput!) {
     GrantRole: FundGrantRole(
       from: $from
@@ -88,7 +88,7 @@ export const FundGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the equity
  */
-export const EquityGrantRole = portalGraphql(`
+const EquityGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityGrantRoleInput!) {
     GrantRole: EquityGrantRole(
       from: $from
@@ -107,7 +107,7 @@ export const EquityGrantRole = portalGraphql(`
  * @remarks
  * Assigns permissions to an account for interacting with the tokenized deposit
  */
-export const TokenizedDepositGrantRole = portalGraphql(`
+const TokenizedDepositGrantRole = portalGraphql(`
   mutation GrantRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositGrantRoleInput!) {
     GrantRole: TokenizedDepositGrantRole(
       from: $from
