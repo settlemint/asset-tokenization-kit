@@ -2,6 +2,7 @@ import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PageHeader } from '@/components/layout/page-header';
+import { getUser } from '@/lib/auth/utils';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { AssetType } from '@/lib/utils/zod';
 import { getTranslations } from 'next-intl/server';
@@ -19,6 +20,7 @@ export async function DetailPageHeader({
 }: PageHeaderProps) {
   const details = await getAssetDetail({ address, assettype });
   const t = await getTranslations('private.assets.details');
+  const user = await getUser();
 
   return (
     <PageHeader
@@ -34,7 +36,9 @@ export async function DetailPageHeader({
         </EvmAddress>
       }
       section={t('asset-management')}
-      pill={<ActivePill paused={'paused' in details ? details.paused : false} />}
+      pill={
+        <ActivePill paused={'paused' in details ? details.paused : false} />
+      }
       button={
         <ManageDropdown
           address={address}

@@ -33,7 +33,7 @@ const TokenizedDepositFactoryCreate = portalGraphql(`
  * @remarks
  * Stores additional metadata about the stablecoin in Hasura
  */
-const CreateOffchainStablecoin = hasuraGraphql(`
+const CreateOffchainTokenizedDeposit = hasuraGraphql(`
   mutation CreateOffchainStablecoin($id: String!, $isin: String) {
     insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
       id
@@ -50,6 +50,7 @@ export const createTokenizedDeposit = action
         assetName,
         symbol,
         decimals,
+        collateralLivenessSeconds,
         pincode,
         isin,
         predictedAddress,
@@ -57,7 +58,7 @@ export const createTokenizedDeposit = action
       },
       ctx: { user },
     }) => {
-      await hasuraClient.request(CreateOffchainStablecoin, {
+      await hasuraClient.request(CreateOffchainTokenizedDeposit, {
         id: predictedAddress,
         isin,
       });

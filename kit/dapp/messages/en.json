@@ -252,7 +252,7 @@
         "used-collateral-ratio": {
           "label": "Committed"
         },
-        "wallet-distribution": "Wallet Distribution",
+        "wallet-distribution": "Wallet distribution",
         "wallet-distribution-description": "Amount of holders vs the amounts they hold",
         "wallet-distribution-no-data": "No wallet data available"
       }
@@ -762,11 +762,11 @@
             "decimals-label": "Decimals",
             "description": "Define essential details such as name, symbol, and visibility.",
             "isin-label": "ISIN",
-            "isin-placeholder": "DEFI4EVER2024",
+            "isin-placeholder": "EU1234567890",
             "name-label": "Name",
-            "name-placeholder": "TotallyNotTether",
+            "name-placeholder": "Tokenized Euro",
             "symbol-label": "Symbol",
-            "symbol-placeholder": "SAFU",
+            "symbol-placeholder": "TEUR",
             "title": "Basic Information"
           },
           "configuration": {
@@ -798,14 +798,15 @@
         "forms": {
           "actions": {
             "burn": "Burn",
-            "grant-role": "Grant role",
+            "grant-role": "Add asset admin",
             "mature": "Mature",
             "mint": "Mint",
-            "pause": "Pause",
+            "pause": "Pause contract",
             "top-up": "Top up",
-            "unpause": "Unpause",
+            "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
-            "withdraw": "Withdraw"
+            "withdraw": "Withdraw",
+            "view-events": "View events"
           },
           "manage": "Manage"
         }
@@ -1140,6 +1141,10 @@
             "increase-supply": {
               "description": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available.",
               "title": "Increase Tokenized Deposit Supply"
+            },
+            "update-collateral": {
+              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
+              "title": "Update collateral"
             }
           }
         },

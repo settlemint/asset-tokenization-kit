@@ -2,8 +2,9 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { updateCollateral } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-action';
-import { UpdateCollateralSchema } from '@/lib/mutations/stablecoin/update-collateral/update-collateral-schema';
+import { updateCollateral } from '@/lib/mutations/update-collateral/update-collateral-action';
+import { UpdateCollateralSchema } from '@/lib/mutations/update-collateral/update-collateral-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { Summary } from './steps/summary';
 
 interface UpdateCollateralFormProps {
   address: Address;
+  assettype: AssetType;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -20,6 +22,7 @@ interface UpdateCollateralFormProps {
 
 export function UpdateCollateralForm({
   address,
+  assettype,
   asButton = false,
   open,
   onOpenChange,
@@ -51,6 +54,7 @@ export function UpdateCollateralForm({
         }}
         defaultValues={{
           address,
+          assettype: assettype,
         }}
       >
         <Amount />
