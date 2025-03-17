@@ -12,11 +12,11 @@ import { burn as StablecoinBurn } from '@/lib/mutations/stablecoin/burn/burn-act
 import { BurnSchema as StablecoinBurnSchema } from '@/lib/mutations/stablecoin/burn/burn-schema';
 import { burn as TokenizedDepositBurn } from '@/lib/mutations/tokenized-deposit/burn/burn-action';
 import { BurnSchema as TokenizedDepositBurnSchema } from '@/lib/mutations/tokenized-deposit/burn/burn-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../../types';
 import { Amount } from './steps/amount';
 import { Summary } from './steps/summary';
 
@@ -55,24 +55,24 @@ export function BurnForm({
     >
       <Form
         action={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? BondBurn
-            : assettype === 'equities'
+            : assettype === 'equity'
               ? EquityBurn
-              : assettype === 'funds'
+              : assettype === 'fund'
                 ? FundBurn
-                : assettype === 'tokenizeddeposits'
+                : assettype === 'tokenizeddeposit'
                   ? TokenizedDepositBurn
                   : StablecoinBurn
         }
         resolver={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? zodResolver(BondBurnSchema)
-            : assettype === 'equities'
+            : assettype === 'equity'
               ? zodResolver(EquityBurnSchema)
-              : assettype === 'funds'
+              : assettype === 'fund'
                 ? zodResolver(FundBurnSchema)
-                : assettype === 'tokenizeddeposits'
+                : assettype === 'tokenizeddeposit'
                   ? zodResolver(TokenizedDepositBurnSchema)
                   : zodResolver(StablecoinBurnSchema)
         }

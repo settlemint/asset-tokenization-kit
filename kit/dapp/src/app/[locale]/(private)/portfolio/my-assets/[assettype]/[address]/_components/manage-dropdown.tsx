@@ -1,7 +1,5 @@
 'use client';
 
-import type { getDetailData } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/detail-data';
-import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,6 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import type { getAssetDetail } from '@/lib/queries/asset-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ import { TransferForm } from './transfer-form/form';
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
-  detail: Awaited<ReturnType<typeof getDetailData>>;
+  detail: Awaited<ReturnType<typeof getAssetDetail>>;
 }
 
 export function ManageDropdown({
@@ -34,7 +34,7 @@ export function ManageDropdown({
       id: 'transfer',
       label: t('transfer-form.trigger-label'),
     },
-    ...(assettype === 'bonds'
+    ...(assettype === 'bond'
       ? [
           {
             id: 'redeem',

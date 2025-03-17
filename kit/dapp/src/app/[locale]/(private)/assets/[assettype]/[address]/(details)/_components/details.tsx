@@ -1,5 +1,5 @@
+import type { AssetType } from '@/lib/utils/zod';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../types';
 import { BondsDetails } from './details/bonds';
 import { Collateral } from './details/collateral';
 import { CryptocurrenciesDetails } from './details/cryptocurrencies';
@@ -15,22 +15,22 @@ interface DetailsProps {
 
 export function Details({ assettype, address }: DetailsProps) {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return <BondsDetails address={address} />;
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return <CryptocurrenciesDetails address={address} />;
-    case 'stablecoins':
+    case 'stablecoin':
       return (
         <>
           <StablecoinsDetails address={address} />
           <Collateral address={address} />
         </>
       );
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return <TokenizedDepositsDetails address={address} />;
-    case 'equities':
+    case 'equity':
       return <EquitiesDetails address={address} />;
-    case 'funds':
+    case 'fund':
       return <FundsDetails address={address} />;
     default:
       throw new Error(`Invalid asset type: ${assettype}`);

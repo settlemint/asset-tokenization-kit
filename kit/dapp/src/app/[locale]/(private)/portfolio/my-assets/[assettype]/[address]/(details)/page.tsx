@@ -1,5 +1,4 @@
 import { Details } from '@/app/[locale]/(private)/assets/[assettype]/[address]/(details)/_components/details';
-import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 import { ChartGrid } from '@/components/blocks/chart-grid/chart-grid';
 import { CollateralRatio } from '@/components/blocks/charts/assets/collateral-ratio';
 import { TotalSupply } from '@/components/blocks/charts/assets/total-supply';
@@ -7,6 +6,7 @@ import { TotalSupplyChanged } from '@/components/blocks/charts/assets/total-supp
 import { TotalTransfers } from '@/components/blocks/charts/assets/total-transfers';
 import { TotalVolume } from '@/components/blocks/charts/assets/total-volume';
 import { WalletDistribution } from '@/components/blocks/charts/assets/wallet-distribution';
+import type { AssetType } from '@/lib/utils/zod';
 import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
@@ -26,7 +26,7 @@ export default async function AssetDetailsPage({ params }: PageProps) {
     <>
       <Details assettype={assettype} address={address} />
       <ChartGrid title={t('asset-statistics-title')}>
-        {assettype === 'stablecoins' && <CollateralRatio address={address} />}
+        {assettype === 'stablecoin' && <CollateralRatio address={address} />}
         <TotalSupply address={address} />
         <TotalSupplyChanged address={address} />
         <WalletDistribution address={address} />

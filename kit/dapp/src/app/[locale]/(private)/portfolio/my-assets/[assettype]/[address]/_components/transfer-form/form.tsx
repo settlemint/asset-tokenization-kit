@@ -1,6 +1,5 @@
 'use client';
 
-import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import { transfer as BondTransfer } from '@/lib/mutations/bond/transfer/transfer-action';
@@ -15,6 +14,7 @@ import { transfer as StablecoinsTransfer } from '@/lib/mutations/stablecoin/tran
 import { TransferStableCoinSchema } from '@/lib/mutations/stablecoin/transfer/transfer-schema';
 import { transfer as TokenizedDepositTransfer } from '@/lib/mutations/tokenized-deposit/transfer/transfer-action';
 import { TransferTokenizedDepositSchema } from '@/lib/mutations/tokenized-deposit/transfer/transfer-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -62,28 +62,28 @@ export function TransferForm({
     >
       <Form
         action={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? BondTransfer
-            : assettype === 'cryptocurrencies'
+            : assettype === 'cryptocurrency'
               ? CryptoCurrencyTransfer
-              : assettype === 'equities'
+              : assettype === 'equity'
                 ? EquitiesTransfer
-                : assettype === 'funds'
+                : assettype === 'fund'
                   ? FundsTransfer
-                  : assettype === 'stablecoins'
+                  : assettype === 'stablecoin'
                     ? StablecoinsTransfer
                     : TokenizedDepositTransfer
         }
         resolver={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? zodResolver(TransferBondSchema)
-            : assettype === 'cryptocurrencies'
+            : assettype === 'cryptocurrency'
               ? zodResolver(TransferCryptoCurrencySchema)
-              : assettype === 'equities'
+              : assettype === 'equity'
                 ? zodResolver(TransferEquitySchema)
-                : assettype === 'funds'
+                : assettype === 'fund'
                   ? zodResolver(TransferFundSchema)
-                  : assettype === 'stablecoins'
+                  : assettype === 'stablecoin'
                     ? zodResolver(TransferStableCoinSchema)
                     : zodResolver(TransferTokenizedDepositSchema)
         }

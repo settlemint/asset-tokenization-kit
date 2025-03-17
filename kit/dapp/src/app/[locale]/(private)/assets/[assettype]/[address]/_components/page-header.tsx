@@ -2,10 +2,10 @@ import { ActivePill } from '@/components/blocks/active-pill/active-pill';
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { PageHeader } from '@/components/layout/page-header';
+import { getAssetDetail } from '@/lib/queries/asset-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
-import type { AssetType } from '../../types';
-import { getDetailData } from './detail-data';
 import { ManageDropdown } from './manage-dropdown/manage-dropdown';
 
 interface PageHeaderProps {
@@ -17,7 +17,7 @@ export async function DetailPageHeader({
   address,
   assettype,
 }: PageHeaderProps) {
-  const details = await getDetailData({ address, assettype });
+  const details = await getAssetDetail({ address, assettype });
   const t = await getTranslations('private.assets.details');
 
   return (

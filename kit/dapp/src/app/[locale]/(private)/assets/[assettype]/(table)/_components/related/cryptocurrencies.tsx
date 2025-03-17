@@ -11,28 +11,28 @@ export async function CryptocurrenciesRelated() {
   return (
     <RelatedGrid title={t('title')}>
       <RelatedGridItem
-        title={t('cryptocurrencies.issue-new.title')}
-        description={t('cryptocurrencies.issue-new.description')}
+        title={t('cryptocurrency.issue-new.title')}
+        description={t('cryptocurrency.issue-new.description')}
       >
         <CreateCryptoCurrencyForm asButton />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('cryptocurrencies.mechanics.title')}
-        description={t('cryptocurrencies.mechanics.description')}
+        title={t('cryptocurrency.mechanics.title')}
+        description={t('cryptocurrency.mechanics.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/cryptocurrency#contract-features-and-capabilities">
           <Button variant="secondary">
-            {t('cryptocurrencies.mechanics.button')}
+            {t('cryptocurrency.mechanics.button')}
           </Button>
         </Link>
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('cryptocurrencies.usecases.title')}
-        description={t('cryptocurrencies.usecases.description')}
+        title={t('cryptocurrency.usecases.title')}
+        description={t('cryptocurrency.usecases.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/cryptocurrency#why-digital-fund-tokens">
           <Button variant="secondary">
-            {t('cryptocurrencies.usecases.button')}
+            {t('cryptocurrency.usecases.button')}
           </Button>
         </Link>
       </RelatedGridItem>
