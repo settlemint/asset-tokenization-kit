@@ -46,6 +46,7 @@ export function PauseForm({
           }}
           defaultValues={{
             address,
+            assettype,
           }}
         >
           <Summary address={address} isCurrentlyPaused={isPaused} />

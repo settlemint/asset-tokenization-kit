@@ -8,54 +8,51 @@ import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
+import { Account } from './steps/account';
 import { Summary } from './steps/summary';
 
 interface BlockFormProps {
   address: Address;
   assettype: AssetType;
-  account: Address;
-  isBlocked: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  account?: Address;
 }
 
 export function BlockForm({
   address,
   assettype,
   account,
-  isBlocked,
   open,
   onOpenChange,
 }: BlockFormProps) {
-  const t = useTranslations('private.assets.details.forms.block');
+  const t = useTranslations('private.assets.details.forms.block.form');
+  const steps = account
+    ? [<Summary key="summary" />]
+    : [<Account key="account" />, <Summary key="summary" />];
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={
-        isBlocked ? t('unblock-trigger-label') : t('block-trigger-label')
-      }
-      title={isBlocked ? t('unblock-title') : t('block-title')}
-      description={
-        isBlocked ? t('unblock-description') : t('block-description')
-      }
+      triggerLabel={t('trigger-label')}
+      title={t('title')}
+      description={t('description')}
     >
       <Form
         action={blockUser}
         resolver={zodResolver(BlockUserSchema)}
         buttonLabels={{
-          label: isBlocked
-            ? t('unblock-button-label')
-            : t('block-button-label'),
+          label: t('trigger-label'),
         }}
+        onOpenChange={onOpenChange}
         defaultValues={{
           address,
           account,
           assettype,
         }}
       >
-        <Summary address={address} isCurrentlyBlocked={isBlocked} />
+        {steps.map((step) => step)}
       </Form>
     </FormSheet>
   );

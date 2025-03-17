@@ -16,6 +16,7 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
+import { BlockForm } from '../block-form/form';
 import { MintForm } from '../mint-form/form';
 import { BurnForm } from './burn-form/form';
 import { GrantRoleForm } from './grant-role-form/form';
@@ -201,6 +202,20 @@ export function ManageDropdown({
         />
       ),
     },
+    {
+      id: 'block-user',
+      label: t('actions.block-user'),
+      hidden: assettype !== 'bond',
+      form: (
+        <BlockForm
+          key="block-user"
+          address={address}
+          open={openMenuItem === 'block-user'}
+          onOpenChange={onFormOpenChange}
+          assettype={assettype}
+        />
+      ),
+    },
   ] as const;
 
   const events = [
@@ -237,28 +252,25 @@ export function ManageDropdown({
                 {item.label}
               </DropdownMenuItem>
             ))}
-          {!isInPortfolio && (
-            <>
-              <DropdownMenuSeparator />
-              {userActions
-                .filter((item) => !item.hidden)
-                .map((item) => (
-                  <DropdownMenuItem key={item.id}>
-                    {item.label}
-                  </DropdownMenuItem>
-                ))}
-            </>
-          )}
-          {!isInPortfolio && (
-            <>
-              <DropdownMenuSeparator />
-              {events.map((item) => (
-                <DropdownMenuItem key={item.id} onSelect={item.onClick}>
-                  {item.label}
-                </DropdownMenuItem>
-              ))}
-            </>
-          )}
+
+          <DropdownMenuSeparator />
+          {userActions
+            .filter((item) => !item.hidden)
+            .map((item) => (
+              <DropdownMenuItem
+                key={item.id}
+                onSelect={() => setOpenMenuItem(item.id)}
+              >
+                {item.label}
+              </DropdownMenuItem>
+            ))}
+
+          <DropdownMenuSeparator />
+          {events.map((item) => (
+            <DropdownMenuItem key={item.id} onSelect={item.onClick}>
+              {item.label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
       {[...contractActions, ...userActions]

@@ -12,9 +12,9 @@ import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { getAddress } from 'viem';
-import { MintForm } from '../../_components/mint-form/form';
-import { BlockForm } from './actions/block-form/form';
-import { FreezeForm } from './actions/freeze-form/form';
+import { BlockForm } from '../_components/block-form/form';
+import { FreezeForm } from '../_components/freeze-form/form';
+import { MintForm } from '../_components/mint-form/form';
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
@@ -89,15 +89,12 @@ export function columns() {
             actions={[
               {
                 id: 'block-form',
-                label: row.original.blocked
-                  ? t('block.unblock-trigger-label')
-                  : t('block.block-trigger-label'),
+                label: t('block.form.trigger-label'),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
                     assettype={row.original.asset.type}
                     account={row.original.account.id}
-                    isBlocked={row.original.blocked}
                     open={open}
                     onOpenChange={onOpenChange}
                   />

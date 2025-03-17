@@ -799,6 +799,7 @@
           "actions": {
             "burn": "Burn",
             "grant-role": "Add asset admin",
+            "block-user": "Block user",
             "mature": "Mature",
             "mint": "Mint",
             "pause": "Pause contract",
@@ -898,26 +899,27 @@
             "trigger-label": "Mint"
           },
           "block": {
-            "block-button-label": "Block user",
-            "block-description": "Prevent this user from performing any transactions or interactions.",
-            "block-title": "Block user transactions",
-            "block-trigger-label": "Block",
-            "summary": {
-              "asset-label": "Asset",
-              "block-title": "Block",
-              "current-state-label": "Current state",
-              "description": "Verify the details of your block operation before proceeding.",
-              "operation-description": "Block operation details",
-              "state-active": "Active",
-              "state-blocked": "Blocked",
-              "target-state-label": "Target state",
-              "title": "Review and confirm block operation",
-              "unblock-title": "Unblock"
+            "form": {
+              "title": "Block user",
+              "description": "Prevent this user from performing any transactions or interactions.",
+              "trigger-label": "Block user"
             },
-            "unblock-button-label": "Unblock user",
-            "unblock-description": "Restore this user's ability to transact and interact.",
-            "unblock-title": "Restore user transactions",
-            "unblock-trigger-label": "Unblock"
+            "parameters": {
+              "asset-label": "Asset",
+              "account-label": "User"
+            },
+            "account": {
+              "title": "Select user",
+              "description": "Choose a user to block.",
+              "manual-toggle": "Enter address manually...",
+              "search-placeholder": "Search for a user",
+              "search-toggle": "Search for a user instead..."
+            },
+            "summary": {
+              "title": "Summary",
+              "description": "This is the final step of the block operation. Please review the details before proceeding.",
+              "operation-description": "Information"
+            }
           },
           "freeze": {
             "amount": {
