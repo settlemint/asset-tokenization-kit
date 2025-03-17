@@ -38,7 +38,7 @@ files:
     admin.dashboard.page.title: 2938c7f7e560ed972f8a4f68e80ff834
     admin.dashboard.table.latest-events.view-all: 0b4db271fc4624853e634ef6882ea8be
     admin.dashboard.widgets.assets.label: 9aedeaf1f77b8642abe528503b8c5de8
-    admin.dashboard.widgets.assets.subtext: d982ec82265596eb2db78fcfcb180bf8
+    admin.dashboard.widgets.assets.subtext: 235881ad252944b7acca8b854cd5ca27
     admin.dashboard.widgets.transactions.label: 31112aca11d0e9e6eb7db96f317dda49
     admin.dashboard.widgets.transactions.subtext: 2fad55667c83a280f2147280d9351aaf
     admin.dashboard.widgets.users.label: f9aae5fda8d810a29f12d1e61b4ab25f
@@ -259,6 +259,9 @@ files:
     layout.header.app-name: 0ca5471816725ad71ffdeca830e37eb0
     layout.header.home: 8cf04a9734132302f96da8e113e80ce5
     layout.navigation.admin: 05e93ee934950bba9b453434d9ad6ff3
+    layout.navigation.asset-management: 177512b9add0b40c38dad61838bf7d79
+    layout.navigation.platform: bf6ba0d41ffdc7a03e03f87c569e0c3a
+    layout.navigation.portfolio: 654b240dd044565e9ba2ff98858003c3
     layout.user-dropdown.documentation: 5b6cf869265c13af8566f192b4ab3d2a
     layout.user-dropdown.logout: 4394c8d8e63c470de62ced3ae85de5ae
     layout.user-dropdown.pending-transactions: d20ab843371da5dfa95bb6212a9f6aeb
@@ -332,6 +335,11 @@ files:
     portfolio.settings.api-keys.creating-api-key: ebff765a0e1f05f807b2bd278320d675
     portfolio.settings.api-keys.expires-at: 8d7f12bd0dc53389421144669ff4ee63
     portfolio.settings.api-keys.expiry-label: ad7a5dccbb87e6c4be1cfd32954711fc
+    portfolio.settings.api-keys.expiry-options.1 day: e3b481d5297f475abc283227bedbd9b9
+    portfolio.settings.api-keys.expiry-options.1 month: 1634e66b522edaa910370cc5581a47f1
+    portfolio.settings.api-keys.expiry-options.1 week: 705fbbd6e1667845569c00fd7523d343
+    portfolio.settings.api-keys.expiry-options.1 year: ca4c73c1f333c437a47c58afd0623530
+    portfolio.settings.api-keys.expiry-options.No expiry: e802832461472c11f820164736f1ca60
     portfolio.settings.api-keys.fetch-error: 0c51948a1c6264a813f6a45c01d1791d
     portfolio.settings.api-keys.last-used: 135daaf0d59548436c6858c7f0798c45
     portfolio.settings.api-keys.name-label: 49ee3087348e8d44e1feda1917443987
@@ -342,11 +350,6 @@ files:
     portfolio.settings.api-keys.swagger-link-text: 82c9ba4aeb5fe98e629511e02945fa19
     portfolio.settings.api-keys.swagger-title: 27fb4d5fbeafb3e5071af8b600d0f738
     portfolio.settings.api-keys.title: b4717f6ab3c2357c13c0c2cd32dfc4ca
-    portfolio.settings.api-keys.expiry-options.1 day: e3b481d5297f475abc283227bedbd9b9
-    portfolio.settings.api-keys.expiry-options.1 month: 1634e66b522edaa910370cc5581a47f1
-    portfolio.settings.api-keys.expiry-options.1 week: 705fbbd6e1667845569c00fd7523d343
-    portfolio.settings.api-keys.expiry-options.1 year: ca4c73c1f333c437a47c58afd0623530
-    portfolio.settings.api-keys.expiry-options.No expiry: e802832461472c11f820164736f1ca60
     portfolio.settings.profile.portfolio-management: a15cf1ff7f2295ea409d18db54625651
     portfolio.settings.profile.title: cce99c598cfdb9773ab041d54c3d973a
     portfolio.transfer-form.amount.amount-label: b2f40690858b404ed10e62bdf422c704
