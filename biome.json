@@ -7,7 +7,8 @@
     "ignore": [
       "kit/dapp/src/components/ui/**/*",
       "kit/dapp/*.d.ts",
-      "kit/dapp/src/lib/settlemint/**/*"
+      "kit/dapp/src/lib/settlemint/**/*",
+      "kit/subgraph/**/*"
     ]
   },
   "formatter": {

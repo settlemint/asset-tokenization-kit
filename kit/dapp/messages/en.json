@@ -66,7 +66,7 @@
       "widgets": {
         "assets": {
           "label": "Assets",
-          "subtext": "{bonds} bonds {cryptocurrencies} cryptocurrencies, {equities} equities, {funds} funds, {stableCoins} stablecoins"
+          "subtext": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {tokenizedDeposits} tokenized deposits"
         },
         "transactions": {
           "label": "Transactions",
@@ -503,6 +503,13 @@
         "creating-api-key": "Creating API key...",
         "expires-at": "Expires at",
         "expiry-label": "Expiry",
+        "expiry-options": {
+          "1 day": "1 day",
+          "1 month": "1 month",
+          "1 week": "1 week",
+          "1 year": "1 year",
+          "No expiry": "No expiry"
+        },
         "fetch-error": "Failed to fetch API keys",
         "last-used": "Last used",
         "name-label": "Name",
@@ -512,14 +519,7 @@
         "swagger-description": "All API requests must include your API key within the x-api-key header for authentication. This header ensures secure and authorized access to our API endpoints, allowing your applications to safely interact with our services.",
         "swagger-link-text": "Open API documentation",
         "swagger-title": "Create, view, and manage API keys to securely integrate your applications with our platform. API keys allow you to programmatically access all available features, documented clearly through our OpenAPI specification.",
-        "title": "API Keys",
-        "expiry-options": {
-          "1 day": "1 day",
-          "1 month": "1 month",
-          "1 week": "1 week",
-          "1 year": "1 year",
-          "No expiry": "No expiry"
-        }
+        "title": "API Keys"
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
