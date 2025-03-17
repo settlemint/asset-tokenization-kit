@@ -1,105 +1,74 @@
 import { db } from "@/lib/db";
-import { exchangeRate } from "@/lib/db/schema-asset-tokenization";
+import { exchangeRate } from "@/lib/db/schema-exchange-rates";
+import { type CurrencyCode, FiatCurrencies } from "@/lib/db/schema-settings";
+import { z } from "@/lib/utils/zod";
 import { eq } from "drizzle-orm";
-import { XMLParser } from "fast-xml-parser";
 
-const FiatCurrencies = [
-  "EUR", // Base currency for ECB
-  "USD",
-  "JPY",
-  "GBP",
-  "AUD",
-  "CAD",
-  "CHF",
-  "CNY",
-  "HKD",
-  "NZD",
-  "SEK",
-  "KRW",
-  "SGD",
-  "NOK",
-  "MXN",
-  "INR",
-  "ZAR",
-  "TRY",
-  "BRL",
-] as const;
-
-export type Currency = (typeof FiatCurrencies)[number];
-
-interface ECBRate {
-  currency: string;
-  rate: number;
-}
+const ExchangeRateAPIResponseSchema = z.object({
+  result: z.literal("success"),
+  provider: z.string(),
+  documentation: z.string(),
+  terms_of_use: z.string(),
+  time_last_update_unix: z.number(),
+  time_last_update_utc: z.string(),
+  time_next_update_unix: z.number(),
+  time_next_update_utc: z.string(),
+  time_eol_unix: z.number(),
+  base_code: z.string(),
+  rates: z.record(z.string(), z.number()),
+});
 
 /**
- * Fetches exchange rates from the European Central Bank
+ * Fetches exchange rates from the ExchangeRate-API Open Access Endpoint
  */
-async function fetchECBRates(): Promise<ECBRate[]> {
-  try {
-    const response = await fetch(
-      "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
-    );
-    const xmlText = await response.text();
+async function fetchExchangeRates(
+  baseCurrency: CurrencyCode
+): Promise<Record<string, number>> {
+  const response = await fetch(
+    `https://open.er-api.com/v6/latest/${baseCurrency}`
+  );
 
-    // Parse the XML response
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: "",
-    });
-    const result = parser.parse(xmlText);
-
-    // Navigate through the XML structure to get to the rates
-    const ratesList = result["gesmes:Envelope"]?.Cube?.Cube?.Cube || [];
-
-    // Convert to our internal format
-    const rates: ECBRate[] = Array.isArray(ratesList)
-      ? ratesList.map((item) => ({
-          currency: item.currency,
-          rate: Number(item.rate),
-        }))
-      : [];
-
-    if (rates.length === 0) {
-      throw new Error("No rates found in ECB response");
-    }
-
-    return rates;
-  } catch (error) {
-    console.error("Error fetching ECB rates:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  const data = await response.json();
+  const parsed = ExchangeRateAPIResponseSchema.safeParse(data);
+
+  if (!parsed.success) {
+    console.error("API Response validation failed:", parsed.error);
+    throw new Error("Invalid API response format");
+  }
+
+  return parsed.data.rates;
 }
 
 /**
  * Calculate cross rates for all currency pairs
  */
-function calculateCrossRates(ecbRates: ECBRate[]): Map<string, number> {
+async function calculateCrossRates(): Promise<Map<string, number>> {
   const ratesMap = new Map<string, number>();
+  const calculatedPairs = new Set<string>();
 
-  // First, create a map of EUR rates
-  const eurRates = new Map<string, number>();
-  eurRates.set("EUR", 1); // Base currency
-  for (const { currency, rate } of ecbRates) {
-    eurRates.set(currency, rate);
-  }
+  // Fetch USD rates as base currency
+  const usdRates = await fetchExchangeRates("USD");
 
   // Calculate cross rates for all currency pairs
   for (const baseCurrency of FiatCurrencies) {
     for (const quoteCurrency of FiatCurrencies) {
-      if (baseCurrency === quoteCurrency) continue;
-
-      const baseRate = eurRates.get(baseCurrency) || 0;
-      const quoteRate = eurRates.get(quoteCurrency) || 0;
-
-      if (baseRate && quoteRate) {
-        // Calculate cross rate: base/quote = (base/eur) / (quote/eur)
-        const crossRate = quoteRate / baseRate;
-        ratesMap.set(`${baseCurrency}${quoteCurrency}`, crossRate);
+      if (baseCurrency === quoteCurrency) {
+        continue;
       }
+
+      // Convert through USD
+      const baseToUSD = baseCurrency === "USD" ? 1 : 1 / usdRates[baseCurrency];
+      const usdToQuote = quoteCurrency === "USD" ? 1 : usdRates[quoteCurrency];
+      const crossRate = baseToUSD * usdToQuote;
+
+      ratesMap.set(`${baseCurrency}${quoteCurrency}`, crossRate);
+      calculatedPairs.add(`${baseCurrency}/${quoteCurrency}`);
     }
   }
-
   return ratesMap;
 }
 
@@ -107,56 +76,40 @@ function calculateCrossRates(ecbRates: ECBRate[]): Map<string, number> {
  * Updates exchange rates for all currency pairs in the database
  */
 export async function updateExchangeRates() {
-  try {
-    // Fetch rates from ECB
-    const ecbRates = await fetchECBRates();
+  // Calculate all cross rates
+  const ratesMap = await calculateCrossRates();
+  const updatedPairs = new Set<string>();
 
-    // Calculate all cross rates
-    const ratesMap = calculateCrossRates(ecbRates);
+  // Update database
+  for (const baseCurrency of FiatCurrencies) {
+    for (const quoteCurrency of FiatCurrencies) {
+      if (baseCurrency === quoteCurrency) continue;
 
-    // Update database
-    for (const baseCurrency of FiatCurrencies) {
-      for (const quoteCurrency of FiatCurrencies) {
-        if (baseCurrency === quoteCurrency) continue;
+      const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);
+      if (!rate) {
+        continue;
+      }
 
-        const rate = ratesMap.get(`${baseCurrency}${quoteCurrency}`);
-        if (!rate) {
-          console.warn(`No rate found for ${baseCurrency}/${quoteCurrency}`);
-          continue;
-        }
+      const pairId = `${baseCurrency}-${quoteCurrency}`;
 
-        // Check if rate already exists
-        const existingRate = await db.query.exchangeRate.findFirst({
-          where:
-            eq(exchangeRate.baseCurrency, baseCurrency) &&
-            eq(exchangeRate.quoteCurrency, quoteCurrency),
+      // Insert or update rate
+      await db
+        .insert(exchangeRate)
+        .values({
+          id: pairId,
+          baseCurrency,
+          quoteCurrency,
+          rate: rate.toString(),
+        })
+        .onConflictDoUpdate({
+          target: exchangeRate.id,
+          set: {
+            rate: rate.toString(),
+          },
         });
 
-        if (existingRate) {
-          // Update existing rate
-          await db
-            .update(exchangeRate)
-            .set({
-              rate: rate.toString(),
-              lastUpdated: new Date(),
-            })
-            .where(eq(exchangeRate.id, existingRate.id));
-        } else {
-          // Insert new rate
-          await db.insert(exchangeRate).values({
-            baseCurrency,
-            quoteCurrency,
-            rate: rate.toString(),
-            lastUpdated: new Date(),
-          });
-        }
-      }
+      updatedPairs.add(pairId);
     }
-
-    console.log("Exchange rates updated successfully");
-  } catch (error) {
-    console.error("Error updating exchange rates:", error);
-    throw error;
   }
 }
 
@@ -164,26 +117,47 @@ export async function updateExchangeRates() {
  * Gets the current exchange rate for a currency pair
  */
 export async function getExchangeRate(
-  baseCurrency: string,
-  quoteCurrency: string
+  baseCurrency: CurrencyCode,
+  quoteCurrency: CurrencyCode
 ): Promise<number | null> {
   const rate = await db.query.exchangeRate.findFirst({
-    where:
-      eq(exchangeRate.baseCurrency, baseCurrency) &&
-      eq(exchangeRate.quoteCurrency, quoteCurrency),
+    where: eq(exchangeRate.id, `${baseCurrency}-${quoteCurrency}`),
   });
 
-  return rate ? Number.parseFloat(rate.rate.toString()) : null;
+  if (!rate) {
+    // If no rate exists, update all exchange rates
+    await updateExchangeRates();
+
+    // Try to get the rate again after update
+    const updatedRate = await db.query.exchangeRate.findFirst({
+      where: eq(exchangeRate.id, `${baseCurrency}-${quoteCurrency}`),
+    });
+
+    return updatedRate ? Number.parseFloat(updatedRate.rate.toString()) : null;
+  }
+
+  return Number.parseFloat(rate.rate.toString());
 }
 
 /**
- * Gets all stored exchange rates
+ * Gets all exchange rates for a specific base currency
  */
-export async function getAllExchangeRates() {
-  return await db.query.exchangeRate.findMany({
-    orderBy: (exchangeRate, { asc }) => [
-      asc(exchangeRate.baseCurrency),
-      asc(exchangeRate.quoteCurrency),
-    ],
+export async function getExchangeRatesForBase(baseCurrency: CurrencyCode) {
+  const rates = await db.query.exchangeRate.findMany({
+    where: eq(exchangeRate.baseCurrency, baseCurrency),
+    orderBy: (exchangeRate, { asc }) => [asc(exchangeRate.id)],
   });
+
+  if (rates.length === 0) {
+    // If no rates exist, update all exchange rates
+    await updateExchangeRates();
+
+    // Try to get the rates again after update
+    return await db.query.exchangeRate.findMany({
+      where: eq(exchangeRate.baseCurrency, baseCurrency),
+      orderBy: (exchangeRate, { asc }) => [asc(exchangeRate.id)],
+    });
+  }
+
+  return rates;
 }

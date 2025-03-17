@@ -1,16 +1,22 @@
-import { numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { user } from "./schema-auth";
 
 export const asset = pgTable("asset", {
   id: text("id").primaryKey(),
   isin: text("isin"),
-  valueCurrency: text("value_currency").notNull().default("EUR"),
-  value: numeric("value").notNull().default("1"),
 });
 
-export const exchangeRate = pgTable("exchange_rate", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  baseCurrency: text("base_currency").notNull(),
-  quoteCurrency: text("quote_currency").notNull(),
-  rate: numeric("rate").notNull(),
-  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+export const contact = pgTable("contact", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  wallet: text("wallet").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
