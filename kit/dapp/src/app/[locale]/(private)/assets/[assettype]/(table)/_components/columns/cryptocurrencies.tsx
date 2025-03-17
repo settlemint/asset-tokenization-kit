@@ -50,7 +50,7 @@ export function cryptocurrencyColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/cryptocurrencies/${row.original.id}`}
+            detailUrl={`/assets/cryptocurrency/${row.original.id}`}
           />
         );
       },

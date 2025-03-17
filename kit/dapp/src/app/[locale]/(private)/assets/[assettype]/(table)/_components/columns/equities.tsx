@@ -136,7 +136,7 @@ export function equityColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/equities/${row.original.id}`}
+            detailUrl={`/assets/equity/${row.original.id}`}
           />
         );
       },
