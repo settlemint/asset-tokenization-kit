@@ -90,6 +90,7 @@ export function columns() {
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
+                    assettype={row.original.asset.type}
                     account={row.original.account.id}
                     isBlocked={row.original.blocked}
                     open={open}

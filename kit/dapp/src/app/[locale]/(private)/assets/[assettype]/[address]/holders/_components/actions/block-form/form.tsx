@@ -2,8 +2,9 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { blockUser } from '@/lib/mutations/bond/block-user/block-user-action';
-import { BlockUserSchema } from '@/lib/mutations/bond/block-user/block-user-schema';
+import { blockUser } from '@/lib/mutations/block-user/block-user-action';
+import { BlockUserSchema } from '@/lib/mutations/block-user/block-user-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
@@ -11,6 +12,7 @@ import { Summary } from './steps/summary';
 
 interface BlockFormProps {
   address: Address;
+  assettype: AssetType;
   account: Address;
   isBlocked: boolean;
   open: boolean;
@@ -19,6 +21,7 @@ interface BlockFormProps {
 
 export function BlockForm({
   address,
+  assettype,
   account,
   isBlocked,
   open,
@@ -49,6 +52,7 @@ export function BlockForm({
         defaultValues={{
           address,
           account,
+          assettype,
         }}
       >
         <Summary address={address} isCurrentlyBlocked={isBlocked} />
