@@ -3,7 +3,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../safe-action';
 import { FreezeSchema } from './freeze-schema';
@@ -114,22 +114,30 @@ export const freeze = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondFreeze, params);
-          return z.hashes().parse([response.BondFreeze?.transactionHash]);
+          return safeParseTransactionHash([
+            response.BondFreeze?.transactionHash,
+          ]);
         }
         case 'cryptocurrency': {
           throw new Error('Cryptocurrency does not support freeze operations');
         }
         case 'equity': {
           const response = await portalClient.request(EquityFreeze, params);
-          return z.hashes().parse([response.EquityFreeze?.transactionHash]);
+          return safeParseTransactionHash([
+            response.EquityFreeze?.transactionHash,
+          ]);
         }
         case 'fund': {
           const response = await portalClient.request(FundFreeze, params);
-          return z.hashes().parse([response.FundFreeze?.transactionHash]);
+          return safeParseTransactionHash([
+            response.FundFreeze?.transactionHash,
+          ]);
         }
         case 'stablecoin': {
           const response = await portalClient.request(StableCoinFreeze, params);
-          return z.hashes().parse([response.StableCoinFreeze?.transactionHash]);
+          return safeParseTransactionHash([
+            response.StableCoinFreeze?.transactionHash,
+          ]);
         }
         case 'tokenizeddeposit': {
           const response = await portalClient.request(

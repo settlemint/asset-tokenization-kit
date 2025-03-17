@@ -5,7 +5,7 @@ import { BOND_FACTORY_ADDRESS } from '@/lib/contracts';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 import { formatDate } from '@/lib/utils/date';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../../safe-action';
 import { CreateBondSchema } from './create-schema';
@@ -85,6 +85,8 @@ export const createBond = action
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return z.hashes().parse([data.BondFactoryCreate?.transactionHash]);
+      return safeParseTransactionHash([
+        data.BondFactoryCreate?.transactionHash,
+      ]);
     }
   );

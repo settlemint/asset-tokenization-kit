@@ -2,7 +2,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { ResultOf, VariablesOf } from '@settlemint/sdk-portal';
 import { RevokeRoleSchema } from './revoke-role-schema';
@@ -156,6 +156,6 @@ export const getRevokeRoleAction = (revokeRoleMutation: RevokeRoleMutation) =>
         // Filter out any undefined values and return transaction hashes
         const transactions = results.filter(Boolean) as string[];
 
-        return z.hashes().parse(transactions);
+        return safeParseTransactionHash(transactions);
       }
     );
