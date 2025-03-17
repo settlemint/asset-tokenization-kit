@@ -568,6 +568,31 @@
       },
       "transfer": "Transfer",
       "transfer-title": "Transfer {name} ({symbol})"
+    },
+    "my-contacts": {
+      "title": "My Contacts",
+      "add-contact-button": "Add Contact",
+      "description": "Contacts management",
+      "table": {
+        "actions-header": "Action",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Type",
+        "wallet-header": "Wallet",
+        "created-at-header": "Created At"
+      }
+    },
+    "add-contact-form": {
+      "contact": {
+        "title": "Add Contact",
+        "description": "Add a new contact to your address book",
+        "wallet-address-label": "Wallet Address",
+        "first-name-label": "First Name",
+        "last-name-label": "Last Name",
+        "adding": "Adding contact...",
+        "added": "Contact added successfully"
+      }
     }
   },
   "private": {
