@@ -4,7 +4,7 @@ import { handleChallenge } from '@/lib/challenge';
 import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
 import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { action } from '../../safe-action';
 import { CreateEquitySchema } from './create-schema';
 
@@ -74,6 +74,8 @@ export const createEquity = action
         equityClass,
       });
 
-      return z.hashes().parse([data.EquityFactoryCreate?.transactionHash]);
+      return safeParseTransactionHash([
+        data.EquityFactoryCreate?.transactionHash,
+      ]);
     }
   );

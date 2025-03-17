@@ -2,7 +2,7 @@
 
 import { handleChallenge } from '@/lib/challenge';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { action } from '../../safe-action';
 import { MatureFormSchema } from './mature-schema';
 
@@ -38,5 +38,5 @@ export const mature = action
       challengeResponse: await handleChallenge(user.wallet, pincode),
     });
 
-    return z.hashes().parse([response.BondMature?.transactionHash]);
+    return safeParseTransactionHash([response.BondMature?.transactionHash]);
   });
