@@ -1,5 +1,5 @@
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { cache } from "react";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { cache } from 'react';
 
 const UserWalletVerifications = portalGraphql(`
   query UserWalletVerifications($userWalletAddress: String = "") {

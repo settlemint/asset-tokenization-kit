@@ -1,18 +1,21 @@
-import type { Role } from "@/lib/config/roles";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { unstable_cache } from "next/cache";
-import { cache } from "react";
-import { type Address, getAddress } from "viem";
+import type { Role } from '@/lib/config/roles';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
 import {
-    AssetFragment,
-    AssetFragmentSchema,
-    OffchainAssetFragment,
-    OffchainAssetFragmentSchema,
-    type Permission,
-    PermissionFragmentSchema,
-} from "./asset-fragment";
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
+import { type Address, getAddress } from 'viem';
+import {
+  AssetFragment,
+  AssetFragmentSchema,
+  OffchainAssetFragment,
+  OffchainAssetFragmentSchema,
+  type Permission,
+  PermissionFragmentSchema,
+} from './asset-fragment';
 /**
  * GraphQL query to fetch on-chain asset details from The Graph
  */
@@ -55,6 +58,8 @@ export interface AssetDetailProps {
 export interface PermissionWithRoles extends Permission {
   /** List of roles assigned to this permission */
   roles: Role[];
+  /** Name of the asset */
+  assetName: string;
 }
 
 /**
@@ -70,19 +75,19 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const [onchainData, offchainData] = await Promise.all([
     unstable_cache(
       () => theGraphClientKit.request(AssetDetail, { id: address }),
-      ["asset", "asset-detail", address],
+      ['asset', 'asset-detail', address],
       {
         revalidate: 60 * 60 * 24, // 24 hours
-        tags: ["asset"],
+        tags: ['asset'],
       }
     )(),
     unstable_cache(
       () =>
         hasuraClient.request(OffchainAssetDetail, { id: normalizedAddress }),
-      ["asset", "offchain-asset-detail", normalizedAddress],
+      ['asset', 'offchain-asset-detail', normalizedAddress],
       {
         revalidate: 60 * 60 * 24, // 24 hours
-        tags: ["asset"],
+        tags: ['asset'],
       }
     )(),
   ]);
@@ -95,14 +100,14 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const validatedAsset = safeParseWithLogging(
     AssetFragmentSchema,
     onchainData.asset,
-    "asset"
+    'asset'
   );
 
   const offchainAsset = offchainData.asset[0]
     ? safeParseWithLogging(
         OffchainAssetFragmentSchema,
         offchainData.asset[0],
-        "offchain asset"
+        'offchain asset'
       )
     : undefined;
 
@@ -110,15 +115,15 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const roleConfigs = [
     {
       permissions: validatedAsset.admins,
-      role: "DEFAULT_ADMIN_ROLE" as const,
+      role: 'DEFAULT_ADMIN_ROLE' as const,
     },
     {
       permissions: validatedAsset.supplyManagers,
-      role: "SUPPLY_MANAGEMENT_ROLE" as const,
+      role: 'SUPPLY_MANAGEMENT_ROLE' as const,
     },
     {
       permissions: validatedAsset.userManagers,
-      role: "USER_MANAGEMENT_ROLE" as const,
+      role: 'USER_MANAGEMENT_ROLE' as const,
     },
   ];
 
@@ -126,11 +131,11 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const usersWithRoles = new Map<string, PermissionWithRoles>();
 
   // Process all role configurations
-  roleConfigs.forEach(({ permissions, role }) => {
+  for (const { permissions, role } of roleConfigs) {
     const validatedPermissions = permissions.map((permission) =>
-      safeParseWithLogging(PermissionFragmentSchema, permission, "permission")
+      safeParseWithLogging(PermissionFragmentSchema, permission, 'permission')
     );
-    validatedPermissions.forEach((validatedPermission) => {
+    for (const validatedPermission of validatedPermissions) {
       const userId = validatedPermission.id;
       const existing = usersWithRoles.get(userId);
 
@@ -142,10 +147,11 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
         usersWithRoles.set(userId, {
           ...validatedPermission,
           roles: [role],
+          assetName: validatedAsset.name,
         });
       }
-    });
-  });
+    }
+  }
 
   return {
     ...validatedAsset,
@@ -156,18 +162,3 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
     roles: Array.from(usersWithRoles.values()),
   };
 });
-
-/**
- * Fetches a user by ID, returning null if not found
- *
- * @param params - Object containing the user ID
- */
-export const getOptionalAssetDetail = cache(
-  async ({ address }: AssetDetailProps) => {
-    try {
-      return await getAssetDetail({ address });
-    } catch {
-      return null;
-    }
-  }
-);

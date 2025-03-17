@@ -32,7 +32,7 @@ export function fetchAllTheGraphPages<T>(
   pageSize = 999
 ): Promise<T[]> {
   if (pageSize > 999) {
-    throw new Error("pageSize must be less than 1000");
+    throw new Error('pageSize must be less than 1000');
   }
   return fetchAllPages(fetch, pageSize);
 }

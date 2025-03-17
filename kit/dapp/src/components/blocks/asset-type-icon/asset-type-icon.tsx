@@ -1,35 +1,49 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { getAssetColor } from "./asset-color";
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { getAssetColor } from './asset-color';
 
 interface AssetTypeIconProps {
-  type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
-  size?: "sm" | "md";
+  type:
+    | 'bond'
+    | 'cryptocurrency'
+    | 'equity'
+    | 'fund'
+    | 'stablecoin'
+    | 'tokenizeddeposit';
+  size?: 'sm' | 'md';
 }
 
-export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
-  const t = useTranslations("components.asset-type-icon");
-  const sizeClass = size === "sm" ? "size-4" : "size-6";
+export function AssetTypeIcon({ type, size = 'sm' }: AssetTypeIconProps) {
+  const t = useTranslations('components.asset-type-icon');
+  const sizeClass = size === 'sm' ? 'size-4' : 'size-6';
 
   function getAssetInitials(
-    type: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"
+    type:
+      | 'bond'
+      | 'cryptocurrency'
+      | 'equity'
+      | 'fund'
+      | 'stablecoin'
+      | 'tokenizeddeposit'
   ): string {
     switch (type) {
-      case "bond":
-        return t("bond-initials");
-      case "cryptocurrency":
-        return t("cryptocurrency-initials");
-      case "equity":
-        return t("equity-initials");
-      case "fund":
-        return t("fund-initials");
-      case "stablecoin":
-        return t("stablecoin-initials");
+      case 'bond':
+        return t('bond-initials');
+      case 'cryptocurrency':
+        return t('cryptocurrency-initials');
+      case 'equity':
+        return t('equity-initials');
+      case 'fund':
+        return t('fund-initials');
+      case 'stablecoin':
+        return t('stablecoin-initials');
+      case 'tokenizeddeposit':
+        return t('tokenized-deposit-initials');
       default:
-        return t("not-available-initials");
+        return t('not-available-initials');
     }
   }
 
@@ -37,7 +51,7 @@ export function AssetTypeIcon({ type, size = "sm" }: AssetTypeIconProps) {
     <Avatar className={`${sizeClass} border border-foreground-muted`}>
       <AvatarFallback
         className={cn(
-          "text-[7px] text-foreground dark:text-sm-dark-gray font-bold",
+          'font-bold text-[7px] text-foreground dark:text-sm-dark-gray',
           getAssetColor(type)
         )}
       >

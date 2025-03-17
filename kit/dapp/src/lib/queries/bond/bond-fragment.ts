@@ -1,6 +1,6 @@
-import { hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { hasuraGraphql } from '@/lib/settlemint/hasura';
+import { theGraphGraphqlKit } from '@/lib/settlemint/the-graph';
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph
@@ -30,6 +30,13 @@ export const BondFragment = theGraphGraphqlKit(`
     maturityDate
     isMatured
     hasSufficientUnderlying
+    redeemedAmount
+    faceValue
+    underlyingBalance
+    totalUnderlyingNeeded
+    totalUnderlyingNeededExact
+    cap
+    deployedOn
   }
 `);
 
@@ -60,6 +67,13 @@ export const BondFragmentSchema = z.object({
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
+  redeemedAmount: z.bigInt(),
+  faceValue: z.bigInt(),
+  underlyingBalance: z.bigInt(),
+  totalUnderlyingNeeded: z.bigDecimal(),
+  totalUnderlyingNeededExact: z.bigInt(),
+  cap: z.bigInt(),
+  deployedOn: z.bigInt(),
 });
 
 /**

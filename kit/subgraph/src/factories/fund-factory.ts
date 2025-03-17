@@ -14,6 +14,7 @@ export function handleFundCreated(event: FundCreated): void {
   const creator = fetchAccount(event.params.creator);
   const asset = fetchFund(event.params.token);
   asset.creator = creator.id;
+  asset.deployedOn = event.block.timestamp;
   asset.save();
 
   const assetCount = fetchAssetCount(AssetType.fund);

@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 export interface PageHeaderProps {
   title: ReactNode;
@@ -19,24 +19,26 @@ export function PageHeader({
   section,
 }: PageHeaderProps) {
   return (
-    <div className={cn("relative flex justify-between pb-6", className)}>
-      <div>
-        {section && (
-          <div className="mb-0 text-xs text-muted-foreground">{section}</div>
-        )}
-        <h1 className="flex items-center font-bold text-2xl">
-          {title}
-          {pill && (
-            <div className="ml-2 flex items-center gap-2 font-normal text-base">
-              {pill}
-            </div>
+    <div className={cn('relative pb-6', className)}>
+      {section && (
+        <div className="mb-1 text-muted-foreground text-xs">{section}</div>
+      )}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="flex items-center font-bold text-2xl">
+            {title}
+            {pill && (
+              <div className="ml-2 flex items-center gap-2 font-normal text-base">
+                {pill}
+              </div>
+            )}
+          </h1>
+          {subtitle && (
+            <div className="mt-1 text-muted-foreground text-sm">{subtitle}</div>
           )}
-        </h1>
-        {subtitle && (
-          <div className="mt-1 text-muted-foreground text-sm">{subtitle}</div>
-        )}
+        </div>
+        {button && <div>{button}</div>}
       </div>
-      {button && <div className="h-full">{button}</div>}
     </div>
   );
 }

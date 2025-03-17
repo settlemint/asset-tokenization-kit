@@ -8,13 +8,13 @@ export function sanitizeSearchTerm(search: string): string {
   const cleaned = search
     .trim()
     // Escape backslashes
-    .replace(/\\/g, "\\\\")
+    .replace(/\\/g, '\\\\')
     // Allow letters, numbers, spaces, and common symbols
-    .replace(/[^a-zA-Z0-9\s@._-]/g, "")
+    .replace(/[^a-zA-Z0-9\s@._-]/g, '')
     // Replace multiple spaces with single space
-    .replace(/\s+/g, " ")
+    .replace(/\s+/g, ' ')
     // Escape special characters used in LIKE patterns
-    .replace(/[%_]/g, "\\$&")
+    .replace(/[%_]/g, '\\$&')
     .trim();
 
   return cleaned;

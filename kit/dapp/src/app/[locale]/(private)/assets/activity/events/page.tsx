@@ -1,4 +1,4 @@
-import { AssetEventsTable } from "@/components/blocks/asset-events-table/asset-events-table";
+import { AssetEventsTable } from '@/components/blocks/asset-events-table/asset-events-table';
 
 export default async function ActivityPage({
   searchParams,
@@ -8,7 +8,7 @@ export default async function ActivityPage({
   const { sender } = await searchParams;
   return (
     <AssetEventsTable
-      initialColumnFilters={sender ? [{ id: "sender", value: [sender] }] : []}
+      initialColumnFilters={sender ? [{ id: 'sender', value: [sender] }] : []}
     />
   );
 }

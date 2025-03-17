@@ -1,16 +1,16 @@
-import { cn } from "@/lib/utils";
-import { type VariantProps, cva } from "class-variance-authority";
-import type { HTMLAttributes, PropsWithChildren } from "react";
+import { cn } from '@/lib/utils';
+import { type VariantProps, cva } from 'class-variance-authority';
+import type { HTMLAttributes, PropsWithChildren } from 'react';
 
-const dataTableColumnCellVariants = cva("flex items-center space-x-2", {
+const dataTableColumnCellVariants = cva('flex items-center space-x-2', {
   variants: {
     variant: {
-      default: "",
-      numeric: "justify-end pr-2",
+      default: '',
+      numeric: 'justify-end pr-2',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
@@ -20,7 +20,7 @@ interface DataTableColumnCellProps
 
 export function DataTableColumnCell({
   className,
-  variant = "default",
+  variant = 'default',
   children,
   ...props
 }: PropsWithChildren<DataTableColumnCellProps>) {

@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
+import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { useRef } from "react";
-import type { FieldValues } from "react-hook-form";
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useRef } from 'react';
+import type { FieldValues } from 'react-hook-form';
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
   getAriaAttributes,
-} from "./types";
+} from './types';
 
 type Option = {
   /** The display text for the option */
@@ -66,11 +66,12 @@ export function FormSelect<T extends FieldValues>({
   options,
   className,
   defaultValue,
+  disabled,
   ...props
 }: FormSelectProps<T>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const t = useTranslations("components.form.select");
-  const defaultPlaceholder = t("default-placeholder");
+  const t = useTranslations('components.form.select');
+  const defaultPlaceholder = t('default-placeholder');
 
   return (
     <FormField
@@ -81,9 +82,7 @@ export function FormSelect<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(
-                  props.disabled && "cursor-not-allowed opacity-70"
-                )}
+                className={cn(disabled && 'cursor-not-allowed opacity-70')}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -95,20 +94,20 @@ export function FormSelect<T extends FieldValues>({
               onValueChange={field.onChange}
               defaultValue={defaultValue}
               value={field.value ?? defaultValue}
-              disabled={props.disabled}
+              disabled={disabled}
               name={field.name}
             >
               <FormControl>
                 <SelectTrigger
                   ref={triggerRef}
                   className={cn(
-                    props.disabled && "cursor-not-allowed opacity-50",
+                    disabled && 'cursor-not-allowed opacity-50',
                     className
                   )}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,
-                    props.disabled
+                    disabled
                   )}
                 >
                   <SelectValue

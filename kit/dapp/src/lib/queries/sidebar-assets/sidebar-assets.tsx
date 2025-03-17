@@ -1,23 +1,27 @@
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging, z, type ZodInfer } from "@/lib/utils/zod";
-import { cache } from "react";
-import { BondFragment, BondFragmentSchema } from "../bond/bond-fragment";
+} from '@/lib/settlemint/the-graph';
+import { type ZodInfer, safeParseWithLogging, z } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { BondFragment, BondFragmentSchema } from '../bond/bond-fragment';
 import {
   CryptoCurrencyFragment,
   CryptoCurrencyFragmentSchema,
-} from "../cryptocurrency/cryptocurrency-fragment";
+} from '../cryptocurrency/cryptocurrency-fragment';
 import {
   EquityFragment,
   EquityFragmentSchema,
-} from "../equity/equity-fragment";
-import { FundFragment, FundFragmentSchema } from "../fund/fund-fragment";
+} from '../equity/equity-fragment';
+import { FundFragment, FundFragmentSchema } from '../fund/fund-fragment';
 import {
   StableCoinFragment,
   StableCoinFragmentSchema,
-} from "../stablecoin/stablecoin-fragment";
+} from '../stablecoin/stablecoin-fragment';
+import {
+  TokenizedDepositFragment,
+  TokenizedDepositFragmentSchema,
+} from '../tokenizeddeposit/tokenizeddeposit-fragment';
 
 /**
  * GraphQL query to fetch sidebar asset data
@@ -40,6 +44,9 @@ const SidebarAssets = theGraphGraphqlKit(
     cryptoCurrencies(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
       ...CryptoCurrencyFragment
     }
+    tokenizedDeposits(orderBy: totalSupplyExact, orderDirection: desc, first: 10) {
+      ...TokenizedDepositFragment
+    }
     assetCounts {
       assetType
       count
@@ -52,6 +59,7 @@ const SidebarAssets = theGraphGraphqlKit(
     EquityFragment,
     FundFragment,
     CryptoCurrencyFragment,
+    TokenizedDepositFragment,
   ]
 );
 
@@ -89,19 +97,19 @@ export const getSidebarAssets = cache(
 
     // Validate stableCoins with Zod schema
     const validatedStableCoins = (result.stableCoins || []).map((coin) =>
-      safeParseWithLogging(StableCoinFragmentSchema, coin, "stablecoin")
+      safeParseWithLogging(StableCoinFragmentSchema, coin, 'stablecoin')
     );
 
     const validatedBonds = (result.bonds || []).map((bond) =>
-      safeParseWithLogging(BondFragmentSchema, bond, "bond")
+      safeParseWithLogging(BondFragmentSchema, bond, 'bond')
     );
 
     const validatedEquities = (result.equities || []).map((equity) =>
-      safeParseWithLogging(EquityFragmentSchema, equity, "equity")
+      safeParseWithLogging(EquityFragmentSchema, equity, 'equity')
     );
 
     const validatedFunds = (result.funds || []).map((fund) =>
-      safeParseWithLogging(FundFragmentSchema, fund, "fund")
+      safeParseWithLogging(FundFragmentSchema, fund, 'fund')
     );
 
     const validatedCryptoCurrencies = (result.cryptoCurrencies || []).map(
@@ -109,13 +117,22 @@ export const getSidebarAssets = cache(
         safeParseWithLogging(
           CryptoCurrencyFragmentSchema,
           currency,
-          "cryptocurrency"
+          'cryptocurrency'
+        )
+    );
+
+    const validatedTokenizedDeposits = (result.tokenizedDeposits || []).map(
+      (deposit) =>
+        safeParseWithLogging(
+          TokenizedDepositFragmentSchema,
+          deposit,
+          'tokenizeddeposit'
         )
     );
 
     // Validate assetCounts with Zod schema
     const validatedAssetCounts = (result.assetCounts || []).map((count) =>
-      safeParseWithLogging(AssetCountSchema, count, "assetCount")
+      safeParseWithLogging(AssetCountSchema, count, 'assetCount')
     );
 
     // Limit the number of records if requested
@@ -139,11 +156,21 @@ export const getSidebarAssets = cache(
       ? validatedCryptoCurrencies.slice(0, limit)
       : validatedCryptoCurrencies;
 
+    const limitedTokenizedDeposits = limit
+      ? validatedTokenizedDeposits.slice(0, limit)
+      : validatedTokenizedDeposits;
+
     /**
      * Helper function to get the count for a specific asset type
      */
     const getCount = (
-      assetType: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin"
+      assetType:
+        | 'bond'
+        | 'cryptocurrency'
+        | 'equity'
+        | 'fund'
+        | 'stablecoin'
+        | 'tokenizeddeposit'
     ) =>
       validatedAssetCounts.find((asset) => asset.assetType === assetType)
         ?.count ?? 0;
@@ -151,23 +178,27 @@ export const getSidebarAssets = cache(
     return {
       stablecoin: {
         records: limitedStableCoins,
-        count: getCount("stablecoin"),
+        count: getCount('stablecoin'),
       },
       equity: {
         records: limitedEquities,
-        count: getCount("equity"),
+        count: getCount('equity'),
       },
       bond: {
         records: limitedBonds,
-        count: getCount("bond"),
+        count: getCount('bond'),
       },
       fund: {
         records: limitedFunds,
-        count: getCount("fund"),
+        count: getCount('fund'),
       },
       cryptocurrency: {
         records: limitedCryptoCurrencies,
-        count: getCount("cryptocurrency"),
+        count: getCount('cryptocurrency'),
+      },
+      tokenizeddeposit: {
+        records: limitedTokenizedDeposits,
+        count: getCount('tokenizeddeposit'),
       },
     };
   }

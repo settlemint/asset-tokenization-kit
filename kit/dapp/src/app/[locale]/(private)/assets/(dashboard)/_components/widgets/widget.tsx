@@ -4,7 +4,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 interface WidgetProps {
   label: string;
@@ -19,7 +19,7 @@ export function Widget({ label, value, subtext }: WidgetProps) {
         <CardTitle>{label}</CardTitle>
       </CardHeader>
       <CardContent className="font-bold text-3xl">{value}</CardContent>
-      <CardFooter className="text-sm text-muted-foreground">
+      <CardFooter className="text-muted-foreground text-sm">
         {subtext}
       </CardFooter>
     </Card>

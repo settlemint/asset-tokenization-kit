@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/routing";
-import { FileQuestion } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { useRouter } from '@/i18n/routing';
+import { FileQuestion } from 'lucide-react';
 
 export default function NotFoundPage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function NotFoundPage() {
         <Button onClick={() => router.back()} variant="default">
           Go back
         </Button>
-        <Button onClick={() => router.push("/")} variant="outline">
+        <Button onClick={() => router.push('/')} variant="outline">
           Go home
         </Button>
       </div>

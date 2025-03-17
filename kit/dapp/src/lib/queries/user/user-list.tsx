@@ -1,13 +1,16 @@
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
 import {
-    AccountFragment,
-    AccountFragmentSchema,
-} from "@/lib/queries/accounts/accounts-fragment";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { safeParseWithLogging } from "@/lib/utils/zod";
-import { cache } from "react";
-import { UserFragment, UserFragmentSchema } from "./user-fragment";
+  AccountFragment,
+  AccountFragmentSchema,
+} from '@/lib/queries/accounts/accounts-fragment';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from '@/lib/settlemint/the-graph';
+import { safeParseWithLogging } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { UserFragment, UserFragmentSchema } from './user-fragment';
 
 /**
  * GraphQL query to fetch user list from Hasura
@@ -70,11 +73,11 @@ export const getUserList = cache(async () => {
 
   // Validate each dataset with their respective schemas
   const validatedUsers = users.map((user) =>
-    safeParseWithLogging(UserFragmentSchema, user, "user")
+    safeParseWithLogging(UserFragmentSchema, user, 'user')
   );
 
   const validatedAccounts = accounts.map((account) =>
-    safeParseWithLogging(AccountFragmentSchema, account, "account")
+    safeParseWithLogging(AccountFragmentSchema, account, 'account')
   );
 
   // Combine validated user data with validated activity data

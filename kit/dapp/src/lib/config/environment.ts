@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const serverEnvironmentSchema = z
   .object({
@@ -15,7 +15,7 @@ const serverEnvironmentSchema = z
     // Wallet related
     SETTLEMINT_HD_PRIVATE_KEY: z.string().regex(/^[a-z0-9-]+$/, {
       message:
-        "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces",
+        'SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces',
     }),
   })
   .transform((env) => ({
@@ -24,20 +24,14 @@ const serverEnvironmentSchema = z
       env.NEXT_PUBLIC_APP_URL ??
       env.BETTER_AUTH_URL ??
       env.NEXTAUTH_URL ??
-      "http://localhost:3000",
+      'http://localhost:3000',
   }));
 
 type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 
-const clientEnvironmentSchema = z
-  .object({
-    NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
-    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  })
-  .transform((env) => ({
-    ...env,
-    APP_URL: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-  }));
+const clientEnvironmentSchema = z.object({
+  NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
+});
 
 type ClientEnvironment = z.infer<typeof clientEnvironmentSchema>;
 

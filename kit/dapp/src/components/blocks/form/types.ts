@@ -1,6 +1,6 @@
-import type { ZodInfer, ZodType } from "@/lib/utils/zod";
-import type { ComponentType, ReactElement } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import type { ZodInfer, ZodType } from '@/lib/utils/zod';
+import type { ComponentType, ReactElement } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 
 export type Schema = ZodType;
 export type ValidatedFields<S extends Schema> = {
@@ -9,9 +9,7 @@ export type ValidatedFields<S extends Schema> = {
 
 export type FormStepComponent<S extends Schema> = ComponentType & {
   validatedFields: readonly (keyof ZodInfer<S>)[];
-  beforeValidate?: {
-    (form: UseFormReturn<ZodInfer<S>>): Promise<unknown>;
-  }[];
+  beforeValidate?: ((form: UseFormReturn<ZodInfer<S>>) => Promise<unknown>)[];
 };
 
 export type FormStepElement<S extends Schema> = ReactElement<

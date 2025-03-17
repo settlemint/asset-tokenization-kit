@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Bar,
@@ -8,7 +8,7 @@ import {
   Legend,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 
 import {
   Card,
@@ -17,15 +17,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { useAssetTypeFormatter } from "@/hooks/use-asset-type-formatter";
-import type { ReactNode } from "react";
+} from '@/components/ui/chart';
+import { useAssetTypeFormatter } from '@/hooks/use-asset-type-formatter';
+import type { ReactNode } from 'react';
 
 export interface BarChartData {
   [key: string]: string | number;
@@ -53,10 +53,10 @@ interface BarChartProps {
 
 const defaultTickFormatter = (value: string) => {
   if (!value) {
-    return "";
+    return '';
   }
   // Try comma split first
-  const commaSplit = value.split(",")[0];
+  const commaSplit = value.split(',')[0];
   if (commaSplit !== value) {
     return commaSplit;
   }

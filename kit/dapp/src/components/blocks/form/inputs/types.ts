@@ -1,4 +1,4 @@
-import type { FieldValues, UseControllerProps } from "react-hook-form";
+import type { FieldValues, UseControllerProps } from 'react-hook-form';
 
 /**
  * Base props for all form inputs
@@ -65,9 +65,9 @@ export function getAriaAttributes(
   disabled?: boolean
 ) {
   return {
-    "aria-invalid": hasError,
-    "aria-describedby": `${name}-error ${name}-description ${name}-label`,
-    "aria-disabled": disabled,
+    'aria-invalid': hasError,
+    'aria-describedby': `${name}-error ${name}-description ${name}-label`,
+    'aria-disabled': disabled,
     id: name,
   };
 }

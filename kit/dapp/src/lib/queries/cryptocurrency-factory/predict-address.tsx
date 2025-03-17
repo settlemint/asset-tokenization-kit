@@ -1,11 +1,11 @@
-"use server";
-import { getUser } from "@/lib/auth/utils";
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
-import type { CreateCryptoCurrencyInput } from "@/lib/mutations/cryptocurrency/create/create-schema";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { safeParseWithLogging, z } from "@/lib/utils/zod";
-import { cache } from "react";
-import { parseUnits, type Address } from "viem";
+'use server';
+import { getUser } from '@/lib/auth/utils';
+import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
+import type { CreateCryptoCurrencyInput } from '@/lib/mutations/cryptocurrency/create/create-schema';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
+import { cache } from 'react';
+import { type Address, parseUnits } from 'viem';
 
 /**
  * GraphQL query for predicting the address of a new cryptocurrency
@@ -67,7 +67,7 @@ export const getPredictedAddress = cache(
     const predictedAddress = safeParseWithLogging(
       PredictedAddressSchema,
       data,
-      "cryptocurrency"
+      'cryptocurrency'
     );
 
     return predictedAddress.CryptoCurrencyFactory.predictAddress.predicted;

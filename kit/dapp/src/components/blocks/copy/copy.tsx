@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Check, CopyIcon } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Check, CopyIcon } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface CopyProps {
   value: string;
@@ -24,8 +24,8 @@ interface CopyProps {
 
 export function CopyToClipboard({
   value,
-  displayText = "",
-  successMessage = "Copied to clipboard!",
+  displayText = '',
+  successMessage = 'Copied to clipboard!',
   className,
 }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
@@ -42,18 +42,18 @@ export function CopyToClipboard({
         }, 2000);
       })
       .catch((error: Error) => {
-        console.error("copy to clipboard failed", error);
-        toast.error("Failed to copy to clipboard");
+        console.error('copy to clipboard failed', error);
+        toast.error('Failed to copy to clipboard');
       });
   };
 
   return (
-    <div className={cn("flex items-center justify-between", className)}>
+    <div className={cn('flex items-center justify-between', className)}>
       <div
         className="flex-1 cursor-pointer overflow-x-auto whitespace-nowrap"
         onClick={handleCopy}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (e.key === 'Enter' || e.key === ' ') {
             handleCopy();
           }
         }}
@@ -63,7 +63,7 @@ export function CopyToClipboard({
       <Button
         variant="ghost"
         size="icon"
-        className="size-4 hover:bg-theme-accent-background ml-1 cursor-pointer"
+        className="ml-1 size-4 cursor-pointer hover:bg-theme-accent-background"
         onClick={handleCopy}
         title="Copy to clipboard"
       >

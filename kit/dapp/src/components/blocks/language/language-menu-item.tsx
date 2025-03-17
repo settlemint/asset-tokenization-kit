@@ -1,39 +1,40 @@
-"use client";
+'use client';
 
 import {
-  EarthIcon,
-  type EarthIconHandle,
-} from "@/components/ui/animated-icons/earth";
+  LanguagesIcon,
+  type LanguagesIconHandle,
+} from '@/components/ui/animated-icons/languages';
 import {
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu";
-import { routing, usePathname, useRouter } from "@/i18n/routing";
-import { Check } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useRef, useTransition } from "react";
+} from '@/components/ui/dropdown-menu';
+import { routing, usePathname, useRouter } from '@/i18n/routing';
+import { Check } from 'lucide-react';
+import type { Locale } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { useRef, useTransition } from 'react';
 
 // Language display names mapping
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  de: "Deutsch",
-  ja: "日本語",
-  ar: "العربية",
+  en: 'English',
+  de: 'Deutsch',
+  ja: '日本語',
+  ar: 'العربية',
 };
 
 export function LanguageMenuItem() {
   const router = useRouter();
   const pathname = usePathname();
-  const globeIconRef = useRef<EarthIconHandle>(null);
+  const languagesIconRef = useRef<LanguagesIconHandle>(null);
   // Get locale from params which will be updated correctly after navigation
   const params = useParams();
   const currentLocale = ((params.locale as string) ||
     routing.defaultLocale) as (typeof routing.locales)[number];
   const [isPending, startTransition] = useTransition();
 
-  const handleLanguageChange = (locale: string) => {
+  const handleLanguageChange = (locale: Locale) => {
     // Use React's useTransition to avoid blocking the UI during navigation
     startTransition(() => {
       // Navigate to the same page but with the new locale
@@ -45,11 +46,11 @@ export function LanguageMenuItem() {
   };
 
   const handleMouseEnter = () => {
-    globeIconRef.current?.startAnimation();
+    languagesIconRef.current?.startAnimation();
   };
 
   const handleMouseLeave = () => {
-    globeIconRef.current?.stopAnimation();
+    languagesIconRef.current?.stopAnimation();
   };
 
   return (
@@ -60,11 +61,11 @@ export function LanguageMenuItem() {
         disabled={isPending}
         className="p-2"
       >
-        <EarthIcon
-          ref={globeIconRef}
+        <LanguagesIcon
+          ref={languagesIconRef}
           className="mr-4 size-4 text-muted-foreground"
         />
-        <span>{isPending ? "Changing..." : "Language"}</span>
+        <span>{isPending ? 'Changing...' : 'Language'}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="min-w-[8rem]">
         {routing.locales.map((locale) => (

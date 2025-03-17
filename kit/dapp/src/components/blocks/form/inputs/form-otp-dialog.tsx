@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
-import { Button } from "@/components/ui/button";
+import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,26 +9,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
+} from '@/components/ui/dialog';
+import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { cn } from "@/lib/utils";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useTranslations } from "next-intl";
-import type { ComponentPropsWithoutRef } from "react";
-import { useCallback } from "react";
-import type { FieldValues } from "react-hook-form";
-import type { BaseFormInputProps } from "./types";
+} from '@/components/ui/input-otp';
+import { cn } from '@/lib/utils';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { useTranslations } from 'next-intl';
+import type { ComponentPropsWithoutRef } from 'react';
+import { useCallback } from 'react';
+import type { FieldValues } from 'react-hook-form';
+import type { BaseFormInputProps } from './types';
 
 type InputProps = ComponentPropsWithoutRef<typeof InputOTP>;
 
 type FormOtpDialogProps<T extends FieldValues> = Omit<
   InputProps,
-  keyof BaseFormInputProps<T> | "maxLength" | "pattern"
+  keyof BaseFormInputProps<T> | 'maxLength' | 'pattern'
 > &
   BaseFormInputProps<T> & {
     open: boolean;
@@ -41,21 +41,21 @@ export function FormOtpDialog<T extends FieldValues>({
   open,
   onOpenChange,
   onSubmit,
-
+  disabled,
   ...props
 }: FormOtpDialogProps<T>) {
   const handleSubmit = useCallback(() => {
     onSubmit();
     onOpenChange(false);
   }, [onSubmit, onOpenChange]);
-  const tPincode = useTranslations("components.form.pincode-dialog");
+  const t = useTranslations('components.form.pincode-dialog');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{tPincode("title")}</DialogTitle>
-          <DialogDescription>{tPincode("description")}</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <FormField
           {...props}
@@ -67,11 +67,12 @@ export function FormOtpDialog<T extends FieldValues>({
                     minLength={6}
                     maxLength={6}
                     pattern={REGEXP_ONLY_DIGITS}
-                    value={(field.value ?? "").toString()}
+                    value={(field.value ?? '').toString()}
                     onChange={field.onChange}
-                    className={cn("justify-center gap-1.5", className)}
+                    className={cn('justify-center gap-1.5', className)}
                     autoComplete="off"
                     required
+                    disabled={disabled}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} className="size-8" />

@@ -140,6 +140,28 @@ dataSources:
         - event: FixedYieldCreated(indexed address,indexed address)
           handler: handleFixedYieldCreated
       file: ./src/factories/fixedyield-factory.ts
+  - kind: ethereum/contract
+    name: TokenizedDepositFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000000007"
+      abi: TokenizedDepositFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Factory
+        - TokenizedDepositCreatedEvent
+      abis:
+        - name: TokenizedDepositFactory
+          file: ../contracts/artifacts/contracts/TokenizedDepositFactory.sol/TokenizedDepositFactory.json
+        - name: TokenizedDeposit
+          file: ../contracts/artifacts/contracts/TokenizedDeposit.sol/TokenizedDeposit.json
+      eventHandlers:
+        - event: TokenizedDepositCreated(indexed address,indexed address)
+          handler: handleTokenizedDepositCreated
+      file: ./src/factories/tokenizeddeposit-factory.ts
 templates:
   - kind: ethereum/contract
     name: Bond
@@ -155,6 +177,11 @@ templates:
         - Account
         - Factory
         - Bond
+        - CryptoCurrency
+        - Equity
+        - StableCoin
+        - Fund
+        - TokenizedDeposit
         - AssetEvent
         - FactoryEvent
         - BondCreatedEvent
@@ -167,6 +194,8 @@ templates:
         - UnpausedEvent
         - UserBlockedEvent
         - UserUnblockedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
@@ -233,6 +262,11 @@ templates:
         - Account
         - Factory
         - CryptoCurrency
+        - Bond
+        - Equity
+        - StableCoin
+        - Fund
+        - TokenizedDeposit
         - AssetEvent
         - FactoryEvent
         - CryptoCurrencyCreatedEvent
@@ -243,6 +277,8 @@ templates:
         - UnpausedEvent
         - UserBlockedEvent
         - UserUnblockedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
@@ -289,6 +325,11 @@ templates:
         - Account
         - Factory
         - Equity
+        - Bond
+        - CryptoCurrency
+        - StableCoin
+        - Fund
+        - TokenizedDeposit
         - AssetEvent
         - FactoryEvent
         - EquityCreatedEvent
@@ -299,6 +340,8 @@ templates:
         - UnpausedEvent
         - UserBlockedEvent
         - UserUnblockedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
@@ -355,6 +398,11 @@ templates:
         - Account
         - Factory
         - StableCoin
+        - Bond
+        - CryptoCurrency
+        - Equity
+        - Fund
+        - TokenizedDeposit
         - AssetEvent
         - FactoryEvent
         - StableCoinCreatedEvent
@@ -365,6 +413,8 @@ templates:
         - UnpausedEvent
         - UserBlockedEvent
         - UserUnblockedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
@@ -446,6 +496,11 @@ templates:
         - Account
         - Factory
         - Fund
+        - Bond
+        - CryptoCurrency
+        - Equity
+        - StableCoin
+        - TokenizedDeposit
         - AssetEvent
         - FactoryEvent
         - FundCreatedEvent
@@ -456,6 +511,8 @@ templates:
         - UnpausedEvent
         - UserBlockedEvent
         - UserUnblockedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
         - RoleGrantedEvent
         - RoleRevokedEvent
         - RoleAdminChangedEvent
@@ -505,3 +562,74 @@ templates:
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
       file: ./src/assets/fund.ts
+  - kind: ethereum/contract
+    name: TokenizedDeposit
+    network: settlemint
+    source:
+      abi: TokenizedDeposit
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Asset
+        - Account
+        - Factory
+        - TokenizedDeposit
+        - AssetEvent
+        - FactoryEvent
+        - TokenizedDepositCreatedEvent
+        - ApprovalEvent
+        - PausedEvent
+        - TokensFrozenEvent
+        - TransferEvent
+        - UnpausedEvent
+        - UserAllowedEvent
+        - UserDisallowedEvent
+        - RoleGrantedEvent
+        - RoleRevokedEvent
+        - RoleAdminChangedEvent
+        - AssetStats
+        - AssetStatsData
+        - PortfolioStats
+        - PortfolioStatsData
+        - TokenizedDepositStats
+        - TokenizedDepositStatsData
+        - TransferData
+        - AccountActivityData
+        - RoleActivityData
+        - TokenizedDepositActivityData
+        - TransferStats
+        - AccountActivityStats
+        - RoleActivityStats
+        - TokenizedDepositActivityStats
+        - CollateralUpdatedEvent
+      abis:
+        - name: TokenizedDeposit
+          file: ../contracts/artifacts/contracts/TokenizedDeposit.sol/TokenizedDeposit.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: Paused(address)
+          handler: handlePaused
+        - event: TokensFrozen(indexed address,uint256)
+          handler: handleTokensFrozen
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: UserAllowed(indexed address)
+          handler: handleUserAllowed
+        - event: UserDisallowed(indexed address)
+          handler: handleUserDisallowed
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: TokenWithdrawn(indexed address,indexed address,uint256)
+          handler: handleTokenWithdrawn
+        - event: CollateralUpdated(uint256,uint256,uint256)
+          handler: handleCollateralUpdated
+      file: ./src/assets/tokenizeddeposit.ts

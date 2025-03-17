@@ -1,12 +1,4 @@
-import { type ZodInfer, z } from "@/lib/utils/zod";
-
-const assetKeys = [
-  "bond",
-  "cryptocurrency",
-  "equity",
-  "fund",
-  "stablecoin",
-] as const;
+import { type ZodInfer, z } from '@/lib/utils/zod';
 
 export const getTransferFormSchema = (balance?: string) =>
   z.object({
@@ -15,16 +7,16 @@ export const getTransferFormSchema = (balance?: string) =>
     value: balance
       ? z
           .number()
-          .min(1, { message: "Amount is required" })
+          .min(1, { message: 'Amount is required' })
           .max(Number(balance), {
             message: `Amount cannot be greater than balance ${balance}`,
           })
       : z.amount(),
-    assetType: z.enum(assetKeys),
+    assetType: z.assetType(),
     pincode: z.pincode(),
     decimals: z.decimals(),
   });
 
 export type TransferFormSchema = ReturnType<typeof getTransferFormSchema>;
 export type TransferFormType = ZodInfer<TransferFormSchema>;
-export type TransferFormAssetType = ZodInfer<TransferFormSchema>["assetType"];
+export type TransferFormAssetType = ZodInfer<TransferFormSchema>['assetType'];

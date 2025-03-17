@@ -1,5 +1,5 @@
-"use client";
-import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+'use client';
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from 'recharts';
 
 import {
   Card,
@@ -8,22 +8,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from '@/components/ui/chart';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+} from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 export interface AreaChartData {
   [key: string]: string | number;
@@ -50,7 +50,7 @@ interface AreaChartProps {
   chartContainerClassName?: string;
 }
 
-const defaultTickFormatter = (value: string) => value.split(",")[0];
+const defaultTickFormatter = (value: string) => value.split(',')[0];
 const defaultTickMargin = 8;
 
 export function AreaChartComponent({
@@ -65,7 +65,7 @@ export function AreaChartComponent({
   stacked,
   chartContainerClassName,
 }: AreaChartProps) {
-  const t = useTranslations("components.area-chart");
+  const t = useTranslations('components.area-chart');
   const dataKeys = Object.keys(config);
   const {
     key,
@@ -84,7 +84,7 @@ export function AreaChartComponent({
                 <TooltipTrigger asChild>
                   <Info
                     className="size-4 text-muted-foreground"
-                    aria-label={t("info-icon-label")}
+                    aria-label={t('info-icon-label')}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -123,7 +123,7 @@ export function AreaChartComponent({
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}
-              wrapperStyle={{ minWidth: "200px", width: "auto" }}
+              wrapperStyle={{ minWidth: '200px', width: 'auto' }}
             />
             <defs>
               {dataKeys.map((key) => (
@@ -157,7 +157,7 @@ export function AreaChartComponent({
                 fillOpacity={0.4}
                 stroke={config[key].color}
                 strokeWidth={2}
-                stackId={stacked ? "a" : key}
+                stackId={stacked ? 'a' : key}
               />
             ))}
           </AreaChart>

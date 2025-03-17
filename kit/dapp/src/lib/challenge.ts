@@ -1,5 +1,5 @@
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { Address } from "viem";
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { Address } from 'viem';
 
 /**
  * Represents the structure of a wallet verification challenge
@@ -29,7 +29,7 @@ class ChallengeError extends Error {
 
   constructor(message: string, code: string) {
     super(message);
-    this.name = "ChallengeError";
+    this.name = 'ChallengeError';
     this.code = code;
   }
 }
@@ -54,10 +54,10 @@ const CreateWalletVerificationChallengesMutation = portalGraphql(`
 async function hashPincode(pincode: number, salt: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(`${salt}${pincode}`);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -75,10 +75,10 @@ async function generateChallengeResponse(
   const hashedPincode = await hashPincode(pincode, salt);
   const encoder = new TextEncoder();
   const data = encoder.encode(`${hashedPincode}_${challenge}`);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**
@@ -103,8 +103,8 @@ export async function handleChallenge(
 
     if (!verificationChallenges.createWalletVerificationChallenges?.length) {
       throw new ChallengeError(
-        "No verification challenges received",
-        "NO_CHALLENGES"
+        'No verification challenges received',
+        'NO_CHALLENGES'
       );
     }
 
@@ -113,7 +113,7 @@ export async function handleChallenge(
     const challenge = firstChallenge?.challenge;
 
     if (!challenge?.secret || !challenge?.salt) {
-      throw new ChallengeError("Invalid challenge format", "INVALID_CHALLENGE");
+      throw new ChallengeError('Invalid challenge format', 'INVALID_CHALLENGE');
     }
 
     const { secret, salt } = challenge;
@@ -123,8 +123,8 @@ export async function handleChallenge(
       throw error;
     }
     throw new ChallengeError(
-      "Failed to process wallet verification challenge",
-      "CHALLENGE_PROCESSING_ERROR"
+      'Failed to process wallet verification challenge',
+      'CHALLENGE_PROCESSING_ERROR'
     );
   }
 }

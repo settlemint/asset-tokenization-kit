@@ -2,7 +2,6 @@ import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { CryptoCurrency } from "../../../generated/schema";
 import { CryptoCurrency as CryptoCurrencyContract } from "../../../generated/templates/CryptoCurrency/CryptoCurrency";
 import { fetchAccount } from "../../fetch/account";
-import { fetchAssetBalance } from "../../fetch/balance";
 import { AssetType } from "../../utils/enums";
 
 export function fetchCryptoCurrency(address: Address): CryptoCurrency {
@@ -32,18 +31,13 @@ export function fetchCryptoCurrency(address: Address): CryptoCurrency {
     cryptoCurrency.totalBurned = BigDecimal.zero();
     cryptoCurrency.totalBurnedExact = BigInt.zero();
     cryptoCurrency.totalHolders = 0;
+    cryptoCurrency.deployedOn = BigInt.zero();
 
     cryptoCurrency.save();
 
     account.asAsset = cryptoCurrency.id;
     account.save();
   }
-
-  fetchAssetBalance(
-    cryptoCurrency.id,
-    cryptoCurrency.id,
-    cryptoCurrency.decimals
-  );
 
   return cryptoCurrency;
 }

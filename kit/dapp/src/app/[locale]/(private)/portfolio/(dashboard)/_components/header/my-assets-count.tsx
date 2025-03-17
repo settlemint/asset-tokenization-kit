@@ -1,4 +1,4 @@
-import { formatNumber } from "@/lib/utils/number";
+import { formatNumber } from '@/lib/utils/number';
 
 export function MyAssetsCount({ total }: { total: string }) {
   return (

@@ -46,10 +46,9 @@
     "test:e2e": "bun run --cwd kit/e2e test:e2e",
     "test:e2e:ui": "bun run --cwd kit/e2e test:e2e:ui"
   },
-  "dependencies": {
-    "rtl-detect": "1.1.2"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.2.2",
     "@types/rtl-detect": "1.0.3",
     "prettier": "3.5.3",
@@ -68,9 +67,7 @@
     "protobufjs",
     "secp256k1"
   ],
-  "workspaces": [
-    "kit/*"
-  ],
+  "workspaces": ["kit/*"],
   "packageManager": "bun@1.2.3",
   "overrides": {
     "react-is": "19.0.0",
