@@ -2,7 +2,7 @@ import { RelatedGrid } from '@/components/blocks/related-grid/related-grid';
 import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-item';
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
-import { MintForm } from '../../../_components/manage-dropdown/mint-form/form';
+import { MintForm } from '../../../_components/mint-form/form';
 
 interface CryptocurrenciesRelatedProps {
   address: Address;

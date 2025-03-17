@@ -3,8 +3,8 @@ import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-i
 import { getTranslations } from 'next-intl/server';
 import type { Address } from 'viem';
 import { BurnForm } from '../../../_components/manage-dropdown/burn-form/form';
-import { MintForm } from '../../../_components/manage-dropdown/mint-form/form';
 import { UpdateCollateralForm } from '../../../_components/manage-dropdown/update-collateral-form/form';
+import { MintForm } from '../../../_components/mint-form/form';
 
 interface StablecoinsRelatedProps {
   address: Address;

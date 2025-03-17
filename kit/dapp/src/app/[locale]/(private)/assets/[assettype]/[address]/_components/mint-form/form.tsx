@@ -16,6 +16,7 @@ import { Summary } from './steps/summary';
 interface MintFormProps {
   address: Address;
   assettype: AssetType;
+  recipient?: Address;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,6 +25,7 @@ interface MintFormProps {
 export function MintForm({
   address,
   assettype,
+  recipient,
   asButton = false,
   open,
   onOpenChange,
@@ -32,7 +34,13 @@ export function MintForm({
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
-
+  const steps = recipient
+    ? [<Amount key="amount" />, <Summary key="summary" address={address} />]
+    : [
+        <Amount key="amount" />,
+        <Recipients key="recipients" />,
+        <Summary key="summary" address={address} />,
+      ];
   return (
     <FormSheet
       open={isExternallyControlled ? open : internalOpenState}
@@ -56,11 +64,10 @@ export function MintForm({
         defaultValues={{
           address,
           assettype,
+          to: recipient,
         }}
       >
-        <Amount />
-        <Recipients />
-        <Summary address={address} />
+        {steps.map((step) => step)}
       </Form>
     </FormSheet>
   );

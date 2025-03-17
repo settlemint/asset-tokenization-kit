@@ -12,6 +12,7 @@ import { formatNumber } from '@/lib/utils/number';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { getAddress } from 'viem';
+import { MintForm } from '../../_components/mint-form/form';
 import { BlockForm } from './actions/block-form/form';
 import { FreezeForm } from './actions/freeze-form/form';
 
@@ -111,6 +112,20 @@ export function columns() {
                     balance={row.original.value}
                     frozen={row.original.frozen}
                     symbol={row.original.asset.symbol}
+                    open={open}
+                    onOpenChange={onOpenChange}
+                  />
+                ),
+              },
+              {
+                id: 'mint-form',
+                // label: t('forms.mint.trigger-label'),
+                label: 'Mint',
+                component: ({ open, onOpenChange }) => (
+                  <MintForm
+                    address={row.original.asset.id}
+                    recipient={row.original.account.id}
+                    assettype={row.original.asset.type}
                     open={open}
                     onOpenChange={onOpenChange}
                   />
