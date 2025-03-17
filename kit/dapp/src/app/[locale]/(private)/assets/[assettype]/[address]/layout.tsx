@@ -9,7 +9,8 @@ import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { DetailPageHeader } from './_components/page-header';
+import { DetailPageHeader } from '../../../_components/page-header';
+import { ManageDropdown } from './_components/manage-dropdown/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -68,7 +69,17 @@ export default async function AssetDetailLayout({
 
   return (
     <>
-      <DetailPageHeader address={address} assettype={assettype} />
+      <DetailPageHeader
+        address={address}
+        assettype={assettype}
+        button={(details) => (
+          <ManageDropdown
+            address={address}
+            assettype={assettype}
+            detail={details}
+          />
+        )}
+      />
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabItems} />
       </div>

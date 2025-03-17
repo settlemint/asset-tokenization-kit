@@ -27,18 +27,18 @@ export function ManageDropdown({
   assettype,
   detail,
 }: ManageDropdownProps) {
-  const t = useTranslations('portfolio.my-assets.bond');
+  const t = useTranslations('portfolio.my-assets.detail');
 
   const menuItems = [
     {
       id: 'transfer',
-      label: t('transfer-form.trigger-label'),
+      label: t('forms.actions.transfer'),
     },
     ...(assettype === 'bond'
       ? [
           {
             id: 'redeem',
-            label: t('redeem-form.trigger-label'),
+            label: t('forms.actions.redeem'),
           },
         ]
       : []),
@@ -62,7 +62,7 @@ export function ManageDropdown({
             variant="default"
             className="bg-accent text-accent-foreground shadow-inset hover:bg-accent-hover"
           >
-            {t('transfer-form.trigger-label')}
+            {t('manage')}
             <ChevronDown className="ml-2 size-4" />
           </Button>
         </DropdownMenuTrigger>
