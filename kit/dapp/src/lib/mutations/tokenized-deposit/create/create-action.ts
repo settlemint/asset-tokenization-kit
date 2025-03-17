@@ -54,7 +54,6 @@ export const createTokenizedDeposit = action
         pincode,
         isin,
         predictedAddress,
-        collateralLivenessSeconds,
       },
       ctx: { user },
     }) => {
