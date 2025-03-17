@@ -603,6 +603,7 @@ templates:
         - AccountActivityStats
         - RoleActivityStats
         - TokenizedDepositActivityStats
+        - CollateralUpdatedEvent
       abis:
         - name: TokenizedDeposit
           file: ../contracts/artifacts/contracts/TokenizedDeposit.sol/TokenizedDeposit.json
@@ -629,4 +630,6 @@ templates:
           handler: handleRoleAdminChanged
         - event: TokenWithdrawn(indexed address,indexed address,uint256)
           handler: handleTokenWithdrawn
+        - event: CollateralUpdated(uint256,uint256,uint256)
+          handler: handleCollateralUpdated
       file: ./src/assets/tokenizeddeposit.ts

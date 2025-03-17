@@ -29,12 +29,12 @@ import { collateralCalculatedFields } from "./calculations/collateral";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
+import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
 import { roleGrantedEvent } from "./events/rolegranted";
 import { roleRevokedEvent } from "./events/rolerevoked";
-import { stablecoinCollateralUpdatedEvent } from "./events/stablecoincollateralupdated";
 import { tokensFrozenEvent } from "./events/tokensfrozen";
 import { transferEvent } from "./events/transfer";
 import { unpausedEvent } from "./events/unpaused";
@@ -950,7 +950,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   updateCollateralData(assetStats, stableCoin);
   assetStats.save();
 
-  stablecoinCollateralUpdatedEvent(
+  collateralUpdatedEvent(
     eventId(event),
     event.block.timestamp,
     event.address,

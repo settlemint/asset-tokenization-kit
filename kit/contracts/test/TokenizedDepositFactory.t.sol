@@ -12,6 +12,7 @@ contract TokenizedDepositFactoryTest is Test {
     Forwarder public forwarder;
     address public owner;
     uint8 public constant DECIMALS = 8;
+    uint48 public constant COLLATERAL_LIVENESS = 7 days;
 
     function setUp() public {
         owner = makeAddr("owner");
@@ -26,7 +27,7 @@ contract TokenizedDepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
 
         assertNotEq(tokenAddress, address(0), "Token address should not be zero");
@@ -52,7 +53,7 @@ contract TokenizedDepositFactoryTest is Test {
             string memory name = string(abi.encodePacked(baseName, vm.toString(i + 1)));
             string memory symbol = string(abi.encodePacked(baseSymbol, vm.toString(i + 1)));
 
-            address tokenAddress = factory.create(name, symbol, decimalValues[i]);
+            address tokenAddress = factory.create(name, symbol, decimalValues[i], COLLATERAL_LIVENESS);
             assertNotEq(tokenAddress, address(0), "Token address should not be zero");
 
             TokenizedDeposit token = TokenizedDeposit(tokenAddress);
@@ -64,13 +65,13 @@ contract TokenizedDepositFactoryTest is Test {
         string memory name = "Test Deposit Token";
         string memory symbol = "TDT";
 
-        address token1 = factory.create(name, symbol, DECIMALS);
+        address token1 = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
 
         // Create a new factory instance
         TokenizedDepositFactory newFactory = new TokenizedDepositFactory(address(forwarder));
 
         // Create a token with the same parameters
-        address token2 = newFactory.create(name, symbol, DECIMALS);
+        address token2 = newFactory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
 
         // The addresses should be different because the factory addresses are different
         assertNotEq(token1, token2, "Tokens should have different addresses due to different factory addresses");
@@ -80,7 +81,7 @@ contract TokenizedDepositFactoryTest is Test {
         string memory name = "Test Deposit";
         string memory symbol = "TDEP";
 
-        address tokenAddress = factory.create(name, symbol, DECIMALS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         TokenizedDeposit token = TokenizedDeposit(tokenAddress);
 
         // Test initial state
@@ -94,16 +95,20 @@ contract TokenizedDepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         TokenizedDeposit token = TokenizedDeposit(tokenAddress);
 
         // Test minting with supply management role
         uint256 amount = 1000 ether;
         address user = makeAddr("user");
 
-        // Allow the user before minting
+        // Important: First allow the user, then update collateral before minting
         token.allowUser(user);
+        // Update collateral before minting
+        token.updateCollateral(amount);
+        // Now mint tokens
         token.mint(user, amount);
+
         assertEq(token.balanceOf(user), amount, "User should have minted amount");
         assertEq(token.totalSupply(), amount, "Total supply should match minted amount");
         vm.stopPrank();
@@ -147,10 +152,11 @@ contract TokenizedDepositFactoryTest is Test {
 
         vm.recordLogs();
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
 
         VmSafe.Log[] memory entries = vm.getRecordedLogs();
+        // Updated to match the actual number of events emitted
         assertEq(
             entries.length,
             5,
@@ -205,9 +211,9 @@ contract TokenizedDepositFactoryTest is Test {
         string memory name = "Test Deposit";
         string memory symbol = "TDEP";
 
-        address predicted = factory.predictAddress(owner, name, symbol, DECIMALS);
+        address predicted = factory.predictAddress(owner, name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.startPrank(owner);
-        address actual = factory.create(name, symbol, DECIMALS);
+        address actual = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
 
         assertEq(predicted, actual, "Predicted address should match actual deployed address");
@@ -218,7 +224,7 @@ contract TokenizedDepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        address tokenAddress = factory.create(name, symbol, DECIMALS);
+        address tokenAddress = factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
 
         assertTrue(factory.isFactoryToken(tokenAddress), "Should recognize token as created by factory");
@@ -230,10 +236,10 @@ contract TokenizedDepositFactoryTest is Test {
         string memory symbol = "TDEP";
 
         vm.startPrank(owner);
-        factory.create(name, symbol, DECIMALS);
+        factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
 
         vm.expectRevert(abi.encodeWithSelector(TokenizedDepositFactory.AddressAlreadyDeployed.selector));
-        factory.create(name, symbol, DECIMALS);
+        factory.create(name, symbol, DECIMALS, COLLATERAL_LIVENESS);
         vm.stopPrank();
     }
 }

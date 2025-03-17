@@ -9,6 +9,7 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Approval,
+  CollateralUpdated,
   Paused,
   RoleAdminChanged,
   RoleGranted,
@@ -25,9 +26,11 @@ import { fetchAssetBalance, hasBalance } from "../fetch/balance";
 import { toDecimals } from "../utils/decimals";
 import { AssetType, EventName } from "../utils/enums";
 import { eventId } from "../utils/events";
+import { tokenizedDepositCollateralCalculatedFields } from "./calculations/collateral";
 import { accountActivityEvent } from "./events/accountactivity";
 import { approvalEvent } from "./events/approval";
 import { burnEvent } from "./events/burn";
+import { collateralUpdatedEvent } from "./events/collateralupdated";
 import { mintEvent } from "./events/mint";
 import { pausedEvent } from "./events/paused";
 import { roleAdminChangedEvent } from "./events/roleadminchanged";
@@ -40,7 +43,7 @@ import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
-import { newAssetStatsData } from "./stats/assets";
+import { newAssetStatsData, updateCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -89,6 +92,9 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.plus(mint.value);
 
+    // Update collateral calculated fields after supply change
+    tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+
     if (!hasBalance(tokenizedDeposit.id, to.id)) {
       tokenizedDeposit.totalHolders = tokenizedDeposit.totalHolders + 1;
       to.balancesCount = to.balancesCount + 1;
@@ -123,6 +129,9 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.decimals
     );
     assetStats.mintedExact = event.params.value;
+    // Update collateral data in asset stats
+    updateCollateralData(assetStats, tokenizedDeposit);
+
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
     accountActivityEvent(
@@ -183,6 +192,9 @@ export function handleTransfer(event: Transfer): void {
     );
     assetActivity.totalSupply = assetActivity.totalSupply.minus(burn.value);
 
+    // Update collateral calculated fields after supply change
+    tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+
     const balance = fetchAssetBalance(
       tokenizedDeposit.id,
       from.id,
@@ -219,6 +231,9 @@ export function handleTransfer(event: Transfer): void {
       tokenizedDeposit.decimals
     );
     assetStats.burnedExact = event.params.value;
+    // Update collateral data in asset stats
+    updateCollateralData(assetStats, tokenizedDeposit);
+
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
     accountActivityEvent(
@@ -330,6 +345,9 @@ export function handleTransfer(event: Transfer): void {
     assetStats.transfers = 1;
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
+    // Update collateral data in asset stats
+    updateCollateralData(assetStats, tokenizedDeposit);
+
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
 
     accountActivityEvent(
@@ -357,7 +375,12 @@ export function handleTransfer(event: Transfer): void {
 
   tokenizedDeposit.lastActivity = event.block.timestamp;
   tokenizedDeposit.save();
+
+  // Update supply in asset stats
+  assetStats.supply = tokenizedDeposit.totalSupply;
+  assetStats.supplyExact = tokenizedDeposit.totalSupplyExact;
   assetStats.save();
+
   assetActivity.save();
 }
 
@@ -903,6 +926,52 @@ export function handleRoleAdminChanged(event: RoleAdminChanged): void {
   accountActivityEvent(
     sender,
     EventName.RoleAdminChanged,
+    event.block.timestamp,
+    AssetType.tokenizeddeposit,
+    tokenizedDeposit.id
+  );
+}
+
+export function handleCollateralUpdated(event: CollateralUpdated): void {
+  const tokenizedDeposit = fetchTokenizedDeposit(event.address);
+  const sender = fetchAccount(event.transaction.from);
+
+  log.info(
+    "TokenizedDeposit collateral updated event: oldAmount={}, newAmount={}, sender={}, tokenizedDeposit={}",
+    [
+      event.params.oldAmount.toString(),
+      event.params.newAmount.toString(),
+      sender.id.toHexString(),
+      event.address.toHexString(),
+    ]
+  );
+
+  tokenizedDeposit.collateral = toDecimals(
+    event.params.newAmount,
+    tokenizedDeposit.decimals
+  );
+  tokenizedDeposit.collateralExact = event.params.newAmount;
+  tokenizedDeposit.lastActivity = event.block.timestamp;
+  tokenizedDeposit.lastCollateralUpdate = event.block.timestamp;
+  tokenizedDepositCollateralCalculatedFields(tokenizedDeposit);
+  tokenizedDeposit.save();
+
+  const assetStats = newAssetStatsData(tokenizedDeposit.id, AssetType.tokenizeddeposit);
+  updateCollateralData(assetStats, tokenizedDeposit);
+  assetStats.save();
+
+  collateralUpdatedEvent(
+    eventId(event),
+    event.block.timestamp,
+    event.address,
+    sender.id,
+    event.params.oldAmount,
+    event.params.newAmount,
+    tokenizedDeposit.decimals
+  );
+  accountActivityEvent(
+    sender,
+    EventName.CollateralUpdated,
     event.block.timestamp,
     AssetType.tokenizeddeposit,
     tokenizedDeposit.id
