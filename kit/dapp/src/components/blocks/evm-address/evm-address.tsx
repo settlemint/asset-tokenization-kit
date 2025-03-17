@@ -1,30 +1,30 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler
+"use client";
+"use no memo"; // fixes rerendering with react compiler
 
-import { AddressAvatar } from '@/components/blocks/address-avatar/address-avatar';
-import { Badge } from '@/components/ui/badge';
+import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@/components/ui/hover-card';
-import { Link } from '@/i18n/routing';
-import { getBlockExplorerAddressUrl } from '@/lib/block-explorer';
-import type { Asset } from '@/lib/queries/asset/asset-fragment';
-import { getAssetSearch } from '@/lib/queries/asset/asset-search';
-import type { User } from '@/lib/queries/user/user-fragment';
-import { getUserSearch } from '@/lib/queries/user/user-search';
-import { shortHex } from '@/lib/utils/hex';
+} from "@/components/ui/hover-card";
+import { Link } from "@/i18n/routing";
+import { getBlockExplorerAddressUrl } from "@/lib/block-explorer";
+import type { Asset } from "@/lib/queries/asset/asset-fragment";
+import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import type { User } from "@/lib/queries/user/user-fragment";
+import { getUserSearch } from "@/lib/queries/user/user-search";
+import { shortHex } from "@/lib/utils/hex";
 import {
   type FC,
   type PropsWithChildren,
   cache,
   useEffect,
   useState,
-} from 'react';
-import type { Address } from 'viem';
-import { getAddress } from 'viem';
-import { CopyToClipboard } from '../copy/copy';
+} from "react";
+import type { Address } from "viem";
+import { getAddress } from "viem";
+import { CopyToClipboard } from "../copy/copy";
 
 // Cache the user search function
 const cachedUserSearch = cache(async (address: Address) => {
@@ -51,7 +51,7 @@ interface EvmAddressProps extends PropsWithChildren {
   explorerUrl?: string;
   prefixLength?: number;
   suffixLength?: number;
-  iconSize?: 'tiny' | 'small' | 'big';
+  iconSize?: "tiny" | "small" | "big";
   prettyNames?: boolean;
   verbose?: boolean;
   hoverCard?: boolean;
@@ -71,7 +71,7 @@ export function EvmAddress({
   children,
   prefixLength = 6,
   suffixLength = 4,
-  iconSize = 'tiny',
+  iconSize = "tiny",
   prettyNames = true,
   verbose = false,
   hoverCard = true,
@@ -126,7 +126,7 @@ export function EvmAddress({
         )}
         {displayName && (
           <span>
-            {displayName}{' '}
+            {displayName}{" "}
             {symbol && (
               <span className="text-muted-foreground text-xs">({symbol}) </span>
             )}
@@ -164,7 +164,7 @@ export function EvmAddress({
               <span className="font-mono">{getAddress(address)}</span>
               {displayName && (
                 <span className="text-sm">
-                  {displayName}{' '}
+                  {displayName}{" "}
                   {symbol && (
                     <span className="text-muted-foreground text-xs">
                       ({symbol})

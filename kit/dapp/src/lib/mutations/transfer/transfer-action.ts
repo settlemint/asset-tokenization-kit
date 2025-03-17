@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { TransferSchema } from './transfer-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { TransferSchema } from "./transfer-schema";
 
 /**
  * GraphQL mutation to transfer bond tokens
@@ -128,33 +128,33 @@ export const transfer = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondTransfer, params);
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
-        case 'cryptocurrency': {
+        case "cryptocurrency": {
           const response = await portalClient.request(
             CryptoCurrencyTransfer,
             params
           );
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(EquityTransfer, params);
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(FundTransfer, params);
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(
             StableCoinTransfer,
             params
           );
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositTransfer,
             params
@@ -162,7 +162,7 @@ export const transfer = action
           return safeParseTransactionHash([response.Transfer?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

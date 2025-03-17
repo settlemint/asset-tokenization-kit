@@ -1,11 +1,11 @@
-import { getBondDetail } from '@/lib/queries/bond/bond-detail';
-import { getCryptoCurrencyDetail } from '@/lib/queries/cryptocurrency/cryptocurrency-detail';
-import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
-import { getFundDetail } from '@/lib/queries/fund/fund-detail';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
-import { getTokenizedDepositDetail } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail';
-import type { AssetType } from '@/lib/utils/zod';
-import type { Address } from 'viem';
+import { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import { getCryptoCurrencyDetail } from "@/lib/queries/cryptocurrency/cryptocurrency-detail";
+import { getEquityDetail } from "@/lib/queries/equity/equity-detail";
+import { getFundDetail } from "@/lib/queries/fund/fund-detail";
+import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import type { AssetType } from "@/lib/utils/zod";
+import type { Address } from "viem";
 
 interface AssetDetailProps {
   assettype: AssetType;
@@ -23,19 +23,19 @@ export function getAssetDetail({
   | ReturnType<typeof getEquityDetail>
   | ReturnType<typeof getFundDetail> {
   switch (assettype) {
-    case 'bond':
+    case "bond":
       return getBondDetail({ address });
-    case 'cryptocurrency':
+    case "cryptocurrency":
       return getCryptoCurrencyDetail({ address });
-    case 'stablecoin':
+    case "stablecoin":
       return getStableCoinDetail({ address });
-    case 'tokenizeddeposit':
+    case "tokenizeddeposit":
       return getTokenizedDepositDetail({ address });
-    case 'equity':
+    case "equity":
       return getEquityDetail({ address });
-    case 'fund':
+    case "fund":
       return getFundDetail({ address });
     default:
-      throw new Error(`Invalid asset type: ${assettype}`);
+      throw new Error("Invalid asset type");
   }
 }

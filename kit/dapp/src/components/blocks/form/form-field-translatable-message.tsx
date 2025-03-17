@@ -1,7 +1,7 @@
-import { useFormField } from '@/components/ui/form';
-import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
-import type React from 'react';
+import { useFormField } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import type React from "react";
 
 /**
  * TranslatableFormMessage component
@@ -17,17 +17,17 @@ export function TranslatableFormFieldMessage({
   children,
   className,
   ...props
-}: React.ComponentProps<'p'>) {
-  const t = useTranslations('components.form.input');
+}: React.ComponentProps<"p">) {
+  const t = useTranslations("components.form.input");
   const { error, formMessageId } = useFormField();
 
   if (!error && !children) {
     return null;
   }
 
-  const errorMessage = error ? String(error?.message ?? '') : undefined;
+  const errorMessage = error ? String(error?.message ?? "") : undefined;
   const translatedMessage =
-    typeof errorMessage === 'string' && t.has(errorMessage as never)
+    typeof errorMessage === "string" && t.has(errorMessage as never)
       ? t(errorMessage as never)
       : errorMessage;
 
@@ -35,7 +35,7 @@ export function TranslatableFormFieldMessage({
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn('text-destructive text-sm', className)}
+      className={cn("text-destructive text-sm", className)}
       {...props}
     >
       {translatedMessage ?? children}

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { createFund } from '@/lib/mutations/fund/create/create-action';
-import { CreateFundSchema } from '@/lib/mutations/fund/create/create-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { Basics } from './steps/basics';
-import { Configuration } from './steps/configuration';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { createFund } from "@/lib/mutations/fund/create/create-action";
+import { CreateFundSchema } from "@/lib/mutations/fund/create/create-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Basics } from "./steps/basics";
+import { Configuration } from "./steps/configuration";
+import { Summary } from "./steps/summary";
 
 interface CreateFundFormProps {
   open?: boolean;
@@ -22,7 +22,7 @@ export function CreateFundForm({
   onOpenChange,
   asButton = false,
 }: CreateFundFormProps) {
-  const t = useTranslations('private.assets.create.form');
+  const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,11 +31,11 @@ export function CreateFundForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title.funds')}
-      description={t('description.funds')}
+      title={t("title.funds")}
+      description={t("description.funds")}
       asButton={asButton}
       triggerLabel={
-        isExternallyControlled ? undefined : t('trigger-label.funds')
+        isExternallyControlled ? undefined : t("trigger-label.funds")
       }
     >
       <Form
@@ -43,13 +43,13 @@ export function CreateFundForm({
         resolver={zodResolver(CreateFundSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('trigger-label.funds'),
+          label: t("trigger-label.funds"),
         }}
         defaultValues={{
           managementFeeBps: 100, // Default 1% management fee
         }}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(['predictedAddress']);
+          clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />

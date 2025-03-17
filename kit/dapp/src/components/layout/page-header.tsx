@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
-import type { ReactNode } from 'react';
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 export interface PageHeaderProps {
   title: ReactNode;
@@ -19,7 +19,7 @@ export function PageHeader({
   section,
 }: PageHeaderProps) {
   return (
-    <div className={cn('relative pb-6', className)}>
+    <div className={cn("relative pb-6", className)}>
       {section && (
         <div className="mb-1 text-muted-foreground text-xs">{section}</div>
       )}

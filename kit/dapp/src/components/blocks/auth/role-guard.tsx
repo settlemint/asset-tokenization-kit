@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { authClient } from '@/lib/auth/client';
-import type { PropsWithChildren } from 'react';
+import { authClient } from "@/lib/auth/client";
+import type { PropsWithChildren } from "react";
 
-type UserRole = 'admin' | 'issuer' | 'user';
+type UserRole = "admin" | "issuer" | "user";
 
 interface RoleGuardProps extends PropsWithChildren {
   /**

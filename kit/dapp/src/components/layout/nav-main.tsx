@@ -1,9 +1,9 @@
-'use client';
+"use client";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,22 +14,22 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { Link, usePathname } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { useState } from 'react';
+} from "@/components/ui/sidebar";
+import { Link, usePathname } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
 export type NavItem = {
   id?: string;
   assetType?:
-    | 'bond'
-    | 'cryptocurrency'
-    | 'equity'
-    | 'fund'
-    | 'stablecoin'
-    | 'tokenizeddeposit';
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenizeddeposit";
   label: ReactNode;
   path: string;
   icon?: ReactNode;
@@ -43,7 +43,7 @@ export type NavGroup = {
 };
 
 const isGroup = (item: NavElement): item is NavGroup => {
-  return 'groupTitle' in item;
+  return "groupTitle" in item;
 };
 
 export type NavElement = NavItem | NavGroup;
@@ -59,12 +59,12 @@ function NavItemComponent({
   const { state } = useSidebar();
 
   // Regular menu item without subitems
-  if (!item.subItems?.length || state !== 'expanded') {
+  if (!item.subItems?.length || state !== "expanded") {
     return (
-      <SidebarMenuItem className={isActiveFn(item.path) ? 'active' : undefined}>
+      <SidebarMenuItem className={isActiveFn(item.path) ? "active" : undefined}>
         <SidebarMenuButton
           asChild
-          className={isActiveFn(item.path) ? 'font-bold' : undefined}
+          className={isActiveFn(item.path) ? "font-bold" : undefined}
         >
           <Link href={item.path} className="flex w-full items-center">
             {Icon ?? null}
@@ -95,7 +95,7 @@ function NavItemComponent({
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
-            className={isGroupActive ? 'font-bold' : undefined}
+            className={isGroupActive ? "font-bold" : undefined}
           >
             {Icon ?? null}
             <span className="min-w-0 flex-1 truncate">{item.label}</span>
@@ -117,7 +117,7 @@ function NavItemComponent({
                   <SidebarMenuSubButton
                     asChild
                     className={cn(
-                      isActiveFn(subItem.path) ? 'font-bold' : undefined
+                      isActiveFn(subItem.path) ? "font-bold" : undefined
                     )}
                   >
                     <Link
@@ -186,11 +186,11 @@ export function NavMain({ items }: { items: NavElement[] }) {
     collectPaths(allItems);
 
     // Normalize paths and find matches
-    const normalizedPathname = pathname.endsWith('/')
+    const normalizedPathname = pathname.endsWith("/")
       ? pathname.slice(0, -1)
       : pathname;
     const matches = allPaths
-      .map((path) => (path.endsWith('/') ? path.slice(0, -1) : path))
+      .map((path) => (path.endsWith("/") ? path.slice(0, -1) : path))
       .filter((path) => {
         // Skip empty paths
         if (path === normalizedPathname) {
@@ -198,8 +198,8 @@ export function NavMain({ items }: { items: NavElement[] }) {
         } // Exact match
 
         // Check if this path is a direct parent of the current path
-        const pathParts = path.split('/').filter(Boolean);
-        const pathnameParts = normalizedPathname.split('/').filter(Boolean);
+        const pathParts = path.split("/").filter(Boolean);
+        const pathnameParts = normalizedPathname.split("/").filter(Boolean);
 
         // If this path has more parts than the current pathname, it can't be a parent
         if (pathParts.length > pathnameParts.length) {
@@ -217,13 +217,13 @@ export function NavMain({ items }: { items: NavElement[] }) {
       })
       .sort((a, b) => b.length - a.length); // Sort by length, longest first
 
-    return matches[0] || '';
+    return matches[0] || "";
   };
 
   const mostSpecificPath = findMostSpecificMatch(items);
 
   const isActive = (path: string) => {
-    const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    const normalizedPath = path.endsWith("/") ? path.slice(0, -1) : path;
     return normalizedPath === mostSpecificPath;
   };
 

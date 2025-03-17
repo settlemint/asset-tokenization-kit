@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Card,
@@ -6,20 +6,20 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { type VariantProps, cva } from 'class-variance-authority';
-import type { PropsWithChildren } from 'react';
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { type VariantProps, cva } from "class-variance-authority";
+import type { PropsWithChildren } from "react";
 
-const containerVariants = cva('', {
+const containerVariants = cva("", {
   variants: {
     variant: {
-      loading: '',
-      noData: 'text-muted-foreground text-sm',
+      loading: "",
+      noData: "text-muted-foreground text-sm",
     },
   },
   defaultVariants: {
-    variant: 'loading',
+    variant: "loading",
   },
 });
 
@@ -31,7 +31,7 @@ interface ChartSkeletonProps extends ChartSkeletonVariants, PropsWithChildren {
 }
 
 export function ChartSkeleton({
-  variant = 'loading',
+  variant = "loading",
   children,
   title,
   description,
@@ -43,10 +43,10 @@ export function ChartSkeleton({
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent
-        className={cn(containerVariants({ variant }), 'flex-1 gap-2')}
+        className={cn(containerVariants({ variant }), "flex-1 gap-2")}
       >
         <div className="flex h-full flex-col items-center justify-center">
-          {variant === 'loading' ? <></> : children}
+          {variant === "loading" ? <></> : children}
         </div>
       </CardContent>
     </Card>

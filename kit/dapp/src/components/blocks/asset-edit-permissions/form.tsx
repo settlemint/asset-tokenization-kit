@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import type { Role } from '@/lib/config/roles';
-import { UpdateRolesSchema } from '@/lib/mutations/asset/access-control/update-role/update-role-schema';
-import { updateRoles } from '@/lib/mutations/asset/access-control/update-role/update-roles';
-import type { AssetType } from '@/lib/utils/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
-import { EvmAddress } from '../evm-address/evm-address';
-import { Roles } from './steps/roles';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import type { Role } from "@/lib/config/roles";
+import { UpdateRolesSchema } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
+import { updateRoles } from "@/lib/mutations/asset/access-control/update-role/update-roles";
+import type { AssetType } from "@/lib/utils/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
+import { EvmAddress } from "../evm-address/evm-address";
+import { Roles } from "./steps/roles";
+import { Summary } from "./steps/summary";
 
 export interface EditPermissionsFormProps {
   address: Address;
@@ -37,22 +37,22 @@ export function EditPermissionsForm({
   onOpenChange,
   assettype,
 }: EditPermissionsFormPropsWithOpen) {
-  const t = useTranslations('private.assets.details.permissions.edit-form');
+  const t = useTranslations("private.assets.details.permissions.edit-form");
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t('trigger-label')}
+      triggerLabel={t("trigger-label")}
       title={<EvmAddress address={account} />}
-      description={t('description', { name: assetName })}
+      description={t("description", { name: assetName })}
     >
       <Form
         action={updateRoles}
         resolver={zodResolver(UpdateRolesSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

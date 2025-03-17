@@ -212,7 +212,9 @@ h3: text-xl
   }
   body {
     @apply bg-background text-foreground;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
 }
 
@@ -228,8 +230,10 @@ h3: text-xl
         var(--sm-background-gradient-end) 100%
       )
       0% 0% no-repeat padding-box;
-    box-shadow: 0 0 var(--sm-text), 0 0 var(--sm-text), 0 5px 15px
-      var(--sm-colored-shadow);
+    box-shadow:
+      0 0 var(--sm-text),
+      0 0 var(--sm-text),
+      0 5px 15px var(--sm-colored-shadow);
   }
 
   [data-slot="card"] {
@@ -240,8 +244,10 @@ h3: text-xl
         var(--sm-background-gradient-end) 100%
       )
       0% 0% no-repeat padding-box;
-    box-shadow: 0 0 var(--sm-text), 0 0 var(--sm-text), 0 5px 15px
-      var(--sm-colored-shadow);
+    box-shadow:
+      0 0 var(--sm-text),
+      0 0 var(--sm-text),
+      0 5px 15px var(--sm-colored-shadow);
   }
 
   [data-slot="accordion"] {
@@ -252,8 +258,10 @@ h3: text-xl
         var(--sm-background-gradient-end) 100%
       )
       0% 0% no-repeat padding-box;
-    box-shadow: 0 0 var(--sm-text), 0 0 var(--sm-text), 0 5px 15px
-      var(--sm-colored-shadow);
+    box-shadow:
+      0 0 var(--sm-text),
+      0 0 var(--sm-text),
+      0 5px 15px var(--sm-colored-shadow);
   }
 
   [data-slot="dropdown-menu-content"] {

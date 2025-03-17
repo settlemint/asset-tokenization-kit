@@ -1,39 +1,39 @@
-'use client';
+"use client";
 
-import { ChangeRoleAction } from '@/app/[locale]/(private)/platform/users/(table)/_components/actions/change-role-action';
-import { UpdateKycStatusAction } from '@/app/[locale]/(private)/platform/users/(table)/_components/actions/update-kyc-status-action';
-import { Button } from '@/components/ui/button';
+import { ChangeRoleAction } from "@/app/[locale]/(private)/platform/users/(table)/_components/actions/change-role-action";
+import { UpdateKycStatusAction } from "@/app/[locale]/(private)/platform/users/(table)/_components/actions/update-kyc-status-action";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { getUserDetail } from '@/lib/queries/user/user-detail';
-import { ChevronDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import type { getUserDetail } from "@/lib/queries/user/user-detail";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 interface EditUserDropdownProps {
   user: Awaited<ReturnType<typeof getUserDetail>>;
 }
 
 export function EditUserDropdown({ user }: EditUserDropdownProps) {
-  const t = useTranslations('private.users.detail');
+  const t = useTranslations("private.users.detail");
 
   const menuItems = [
     {
-      id: 'change-role',
-      label: 'Change Role',
+      id: "change-role",
+      label: "Change Role",
     },
     {
-      id: 'update-kyc-status',
-      label: 'Update KYC Status',
+      id: "update-kyc-status",
+      label: "Update KYC Status",
     },
   ] as const;
 
   const [openMenuItem, setOpenMenuItem] = useState<
-    (typeof menuItems)[number]['id'] | null
+    (typeof menuItems)[number]["id"] | null
   >(null);
 
   const onFormOpenChange = (open: boolean) => {
@@ -47,7 +47,7 @@ export function EditUserDropdown({ user }: EditUserDropdownProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="bg-accent text-accent-foreground shadow-inset hover:bg-accent-hover">
-            {t('edit_user')}
+            {t("edit_user")}
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -64,12 +64,12 @@ export function EditUserDropdown({ user }: EditUserDropdownProps) {
       </DropdownMenu>
       <ChangeRoleAction
         user={user}
-        open={openMenuItem === 'change-role'}
+        open={openMenuItem === "change-role"}
         onOpenChange={onFormOpenChange}
       />
       <UpdateKycStatusAction
         user={user}
-        open={openMenuItem === 'update-kyc-status'}
+        open={openMenuItem === "update-kyc-status"}
         onOpenChange={onFormOpenChange}
       />
     </>

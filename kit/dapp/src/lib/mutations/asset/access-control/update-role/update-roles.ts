@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import type { Role } from '@/lib/config/roles';
-import { action } from '@/lib/mutations/safe-action';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { grantRole } from '../grant-role/grant-role-action';
-import { revokeRole } from '../revoke-role/revoke-role';
-import { UpdateRolesSchema } from './update-role-schema';
+import type { Role } from "@/lib/config/roles";
+import { action } from "@/lib/mutations/safe-action";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { grantRole } from "../grant-role/grant-role-action";
+import { revokeRole } from "../revoke-role/revoke-role";
+import { UpdateRolesSchema } from "./update-role-schema";
 
 /**
  * Server action for updating a user's roles for a equity

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { getAssetDetail } from '@/lib/queries/asset-detail';
-import type { AssetType } from '@/lib/utils/zod';
-import { ChevronDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { RedeemForm } from './redeem-form/form';
-import { TransferForm } from './transfer-form/form';
+} from "@/components/ui/dropdown-menu";
+import type { getAssetDetail } from "@/lib/queries/asset-detail";
+import type { AssetType } from "@/lib/utils/zod";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { RedeemForm } from "./redeem-form/form";
+import { TransferForm } from "./transfer-form/form";
 
 interface ManageDropdownProps {
   address: Address;
@@ -27,25 +27,25 @@ export function ManageDropdown({
   assettype,
   detail,
 }: ManageDropdownProps) {
-  const t = useTranslations('portfolio.my-assets.detail');
+  const t = useTranslations("portfolio.my-assets.detail");
 
   const menuItems = [
     {
-      id: 'transfer',
-      label: t('forms.actions.transfer'),
+      id: "transfer",
+      label: t("forms.actions.transfer"),
     },
-    ...(assettype === 'bond'
+    ...(assettype === "bond"
       ? [
           {
-            id: 'redeem',
-            label: t('forms.actions.redeem'),
+            id: "redeem",
+            label: t("forms.actions.redeem"),
           },
         ]
       : []),
   ] as const;
 
   const [openMenuItem, setOpenMenuItem] = useState<
-    (typeof menuItems)[number]['id'] | null
+    (typeof menuItems)[number]["id"] | null
   >(null);
 
   const onFormOpenChange = (open: boolean) => {
@@ -62,7 +62,7 @@ export function ManageDropdown({
             variant="default"
             className="bg-accent text-accent-foreground shadow-inset hover:bg-accent-hover"
           >
-            {t('manage')}
+            {t("manage")}
             <ChevronDown className="ml-2 size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -81,14 +81,13 @@ export function ManageDropdown({
         address={address}
         assettype={assettype}
         balance={Number(detail.totalSupply)}
-        decimals={detail.decimals}
-        open={openMenuItem === 'transfer'}
+        open={openMenuItem === "transfer"}
         onOpenChange={onFormOpenChange}
       />
       <RedeemForm
         address={address}
         balance={Number(detail.totalSupply)}
-        open={openMenuItem === 'redeem'}
+        open={openMenuItem === "redeem"}
         onOpenChange={onFormOpenChange}
       />
     </>

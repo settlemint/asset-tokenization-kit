@@ -1,4 +1,4 @@
-import type { ChartConfig } from '@/components/ui/chart';
+import type { ChartConfig } from "@/components/ui/chart";
 
 export interface BarChartData {
   [key: string]: string | number;

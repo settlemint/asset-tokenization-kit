@@ -1,6 +1,6 @@
-import { SidebarInset } from '@/components/ui/sidebar';
-import type { PropsWithChildren } from 'react';
-import Header from './header';
+import { SidebarInset } from "@/components/ui/sidebar";
+import type { PropsWithChildren } from "react";
+import Header from "./header";
 
 export default function NavInset({ children }: PropsWithChildren) {
   return (

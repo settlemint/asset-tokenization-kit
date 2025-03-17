@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { action } from '../safe-action';
-import { UnpauseSchema } from './unpause-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { action } from "../safe-action";
+import { UnpauseSchema } from "./unpause-schema";
 
 /**
  * GraphQL mutation for unpausing a bond contract
@@ -94,28 +94,28 @@ export const unpause = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondUnpause, params);
           return safeParseTransactionHash([
             response.BondUnpause?.transactionHash,
           ]);
         }
-        case 'cryptocurrency': {
-          throw new Error('Cryptocurrency does not support unpause operations');
+        case "cryptocurrency": {
+          throw new Error("Cryptocurrency does not support unpause operations");
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(EquityUnpause, params);
           return safeParseTransactionHash([
             response.EquityUnpause?.transactionHash,
           ]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(FundUnpause, params);
           return safeParseTransactionHash([
             response.FundUnpause?.transactionHash,
           ]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(
             StableCoinUnpause,
             params
@@ -124,7 +124,7 @@ export const unpause = action
             .hashes()
             .parse([response.StableCoinUnpause?.transactionHash]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositUnpause,
             params
@@ -134,7 +134,7 @@ export const unpause = action
             .parse([response.TokenizedDepositUnpause?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

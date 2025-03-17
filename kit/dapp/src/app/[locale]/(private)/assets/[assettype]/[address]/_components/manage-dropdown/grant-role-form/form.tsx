@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { grantRole } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
-import { GrantRoleSchema } from '@/lib/mutations/asset/access-control/grant-role/grant-role-schema';
-import type { AssetType } from '@/lib/utils/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
-import { AdminAddress } from './steps/address';
-import { AdminRoles } from './steps/roles';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { grantRole } from "@/lib/mutations/asset/access-control/grant-role/grant-role-action";
+import { GrantRoleSchema } from "@/lib/mutations/asset/access-control/grant-role/grant-role-schema";
+import type { AssetType } from "@/lib/utils/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
+import { AdminAddress } from "./steps/address";
+import { AdminRoles } from "./steps/roles";
+import { Summary } from "./steps/summary";
 
 interface GrantRoleFormProps {
   address: Address;
@@ -25,21 +25,21 @@ export function GrantRoleForm({
   onOpenChange,
   assettype,
 }: GrantRoleFormProps) {
-  const t = useTranslations('private.assets.details.forms.grant-role');
+  const t = useTranslations("private.assets.details.forms.grant-role");
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t('title')}
-      description={t('description')}
+      title={t("title")}
+      description={t("description")}
     >
       <Form
         action={grantRole}
         resolver={zodResolver(GrantRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

@@ -1,8 +1,8 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { sanitizeSearchTerm } from '@/lib/utils/string';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { UserFragment, UserFragmentSchema } from './user-fragment';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { sanitizeSearchTerm } from "@/lib/utils/string";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { UserFragment, UserFragmentSchema } from "./user-fragment";
 
 /**
  * GraphQL query to search for users by name, wallet address, or email
@@ -61,7 +61,7 @@ export const getUserSearch = cache(async ({ searchTerm }: UserSearchProps) => {
 
   // Parse and validate each user in the results using Zod schema
   const validatedUsers = (result.user || []).map((user) =>
-    safeParseWithLogging(UserFragmentSchema, user, 'user search')
+    safeParseWithLogging(UserFragmentSchema, user, "user search")
   );
 
   return validatedUsers;

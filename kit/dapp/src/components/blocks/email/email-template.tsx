@@ -1,5 +1,5 @@
-import { siteConfig } from '@/lib/config/site';
-import { cn } from '@/lib/utils';
+import { siteConfig } from "@/lib/config/site";
+import { cn } from "@/lib/utils";
 import {
   Body,
   Button,
@@ -14,8 +14,8 @@ import {
   Section,
   Tailwind,
   Text,
-} from '@react-email/components';
-import type { ReactNode } from 'react';
+} from "@react-email/components";
+import type { ReactNode } from "react";
 
 export interface EmailTemplateClassNames {
   body?: string;
@@ -46,7 +46,7 @@ export const EmailTemplate = ({
   url,
 }: EmailTemplateProps) => {
   const imageUrl = `${siteConfig.url}/logos/settlemint-logo-i-lm.svg`;
-  preview = preview || (typeof heading === 'string' ? heading : undefined);
+  preview = preview || (typeof heading === "string" ? heading : undefined);
 
   return (
     <Html>
@@ -119,7 +119,7 @@ export const EmailTemplate = ({
 
       <Tailwind>
         <Body
-          className={cn('mx-auto my-auto px-2 font-sans', classNames?.body)}
+          className={cn("mx-auto my-auto px-2 font-sans", classNames?.body)}
         >
           <Container className="container-gradient mx-auto my-[40px] max-w-[465px] rounded-xl border border-color border-solid p-[20px]">
             <Section className="mt-[32px]">
@@ -134,7 +134,7 @@ export const EmailTemplate = ({
 
             <Heading
               className={cn(
-                'mx-0 my-[30px] p-0 text-center font-bold text-[24px]',
+                "mx-0 my-[30px] p-0 text-center font-bold text-[24px]",
                 classNames?.heading
               )}
             >
@@ -142,7 +142,7 @@ export const EmailTemplate = ({
             </Heading>
 
             <Text
-              className={cn('text-[14px] leading-[24px]', classNames?.content)}
+              className={cn("text-[14px] leading-[24px]", classNames?.content)}
             >
               {content}
             </Text>
@@ -150,7 +150,7 @@ export const EmailTemplate = ({
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
                 className={cn(
-                  'action-button px-5 py-3 text-center font-semibold text-[12px] no-underline',
+                  "action-button px-5 py-3 text-center font-semibold text-[12px] no-underline",
                   classNames?.button
                 )}
                 href={url}
@@ -161,14 +161,14 @@ export const EmailTemplate = ({
 
             <Hr
               className={cn(
-                'mx-0 my-[26px] w-full border border-color border-solid',
+                "mx-0 my-[26px] w-full border border-color border-solid",
                 classNames?.hr
               )}
             />
 
             <Text
               className={cn(
-                'footer-text text-[12px] leading-[24px]',
+                "footer-text text-[12px] leading-[24px]",
                 classNames?.footer
               )}
             >
@@ -176,13 +176,13 @@ export const EmailTemplate = ({
 
               {siteConfig.url && (
                 <Link
-                  className={cn('no-underline', classNames?.link)}
+                  className={cn("no-underline", classNames?.link)}
                   href={siteConfig.url}
-                  style={{ color: 'inherit' }}
+                  style={{ color: "inherit" }}
                 >
                   {siteConfig.url
-                    .replace('https://', '')
-                    .replace('http://', '')}
+                    .replace("https://", "")
+                    .replace("http://", "")}
                 </Link>
               )}
             </Text>

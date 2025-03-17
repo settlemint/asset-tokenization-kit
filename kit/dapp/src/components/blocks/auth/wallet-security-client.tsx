@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
 import {
   PincodeForm,
   type PincodeFormValues,
-} from '@/components/blocks/auth/pincode-form';
+} from "@/components/blocks/auth/pincode-form";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useRouter } from '@/i18n/routing';
-import { setPinCode } from '@/lib/mutations/user/set-pincode';
-import { useTranslations } from 'next-intl';
-import { type ReactNode, useState } from 'react';
-import { toast } from 'sonner';
-import type { Address } from 'viem';
+} from "@/components/ui/dialog";
+import { useRouter } from "@/i18n/routing";
+import { setPinCode } from "@/lib/mutations/user/set-pincode";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useState } from "react";
+import { toast } from "sonner";
+import type { Address } from "viem";
 
 interface WalletSecurityClientProps {
   children: ReactNode;
@@ -30,7 +30,7 @@ export function WalletSecurityClient({
   hasVerification,
 }: WalletSecurityClientProps) {
   const [showDialog, setShowDialog] = useState(!hasVerification);
-  const t = useTranslations('private.auth.wallet-security');
+  const t = useTranslations("private.auth.wallet-security");
   const router = useRouter();
 
   const onSubmit = async (data: PincodeFormValues) => {
@@ -41,10 +41,10 @@ export function WalletSecurityClient({
         address: walletAddress,
         pincode: data.pincode,
       });
-      toast.success(t('pincode-set'));
+      toast.success(t("pincode-set"));
       router.refresh();
     } catch (error) {
-      console.error('Failed to set pincode:', error);
+      console.error("Failed to set pincode:", error);
     }
   };
 
@@ -57,9 +57,9 @@ export function WalletSecurityClient({
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{t('setup-pincode')}</DialogTitle>
+                <DialogTitle>{t("setup-pincode")}</DialogTitle>
                 <DialogDescription>
-                  {t('pincode-instruction')}
+                  {t("pincode-instruction")}
                 </DialogDescription>
               </DialogHeader>
 
