@@ -7,6 +7,7 @@
       "outputs": ["*.d.ts", "src/lib/settlemint/**", "generated/**"]
     },
     "codegen:settlemint": {
+      "dependsOn": ["contracts#compile:hardhat"],
       "outputs": [
         "*-env.d.ts",
         "*-schema.graphql",
