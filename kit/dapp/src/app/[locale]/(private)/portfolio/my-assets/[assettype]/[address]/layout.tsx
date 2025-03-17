@@ -1,4 +1,4 @@
-import { DetailPageHeader } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/page-header';
+import { DetailPageHeader } from '@/app/[locale]/(private)/_components/detail-page-header';
 import { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { AssetType } from '@/lib/utils/zod';
 import type { Metadata } from 'next';
@@ -6,6 +6,7 @@ import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
+import { ManageDropdown } from './_components/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -23,7 +24,17 @@ export default async function AssetDetailLayout({
 
   return (
     <>
-      <DetailPageHeader address={address} assettype={assettype} />
+      <DetailPageHeader
+        address={address}
+        assettype={assettype}
+        manageDropdown={(details) => (
+          <ManageDropdown
+            address={address}
+            assettype={assettype}
+            detail={details}
+          />
+        )}
+      />
       {children}
     </>
   );

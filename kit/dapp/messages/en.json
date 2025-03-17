@@ -425,6 +425,15 @@
       "you-have": "You have"
     },
     "my-assets": {
+      "detail": {
+        "manage": "Manage",
+        "forms": {
+          "actions": {
+            "transfer": "Transfer",
+            "redeem": "Redeem"
+          }
+        }
+      },
       "bond": {
         "redeem-form": {
           "amount": {
