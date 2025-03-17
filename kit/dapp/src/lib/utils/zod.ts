@@ -34,6 +34,12 @@ export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
   }
 }
 
+export function safeParseTransactionHash(
+  transactionHashes: (string | undefined | null)[]
+) {
+  return safeParseWithLogging(extendedZod.hashes(), transactionHashes);
+}
+
 export const equityClasses = [
   'COMMON_EQUITY',
   'PREFERRED_EQUITY',

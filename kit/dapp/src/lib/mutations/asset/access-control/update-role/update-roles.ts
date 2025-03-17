@@ -1,14 +1,10 @@
+'use server';
+
 import type { Role } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
-import {
-  type GrantRoleMutation,
-  getGrantRoleAction,
-} from '../grant-role/grant-role';
-import {
-  type RevokeRoleMutation,
-  getRevokeRoleAction,
-} from '../revoke-role/revoke-role';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
+import { grantRole } from '../grant-role/grant-role-action';
+import { revokeRole } from '../revoke-role/revoke-role';
 import { UpdateRolesSchema } from './update-role-schema';
 
 /**
@@ -36,19 +32,13 @@ import { UpdateRolesSchema } from './update-role-schema';
  * }
  * ```
  */
-export const getUpdateRolesAction = ({
-  grantRoleMutation,
-  revokeRoleMutation,
-}: {
-  grantRoleMutation: GrantRoleMutation;
-  revokeRoleMutation: RevokeRoleMutation;
-}) =>
-  action
-    .schema(UpdateRolesSchema)
-    .outputSchema(z.hashes())
-    .action(async ({ parsedInput }) => {
-      const { address, roles, userAddress, pincode } = parsedInput;
-
+export const updateRoles = action
+  .schema(UpdateRolesSchema)
+  .outputSchema(z.hashes())
+  .action(
+    async ({
+      parsedInput: { address, roles, userAddress, pincode, assettype },
+    }) => {
       // Separate roles to grant and revoke
       const rolesToEnable: Record<string, boolean> = {};
       const rolesToDisable: Record<string, boolean> = {};
@@ -60,8 +50,6 @@ export const getUpdateRolesAction = ({
           rolesToDisable[role] = true;
         }
       }
-      const grantRole = getGrantRoleAction(grantRoleMutation);
-      const revokeRole = getRevokeRoleAction(revokeRoleMutation);
 
       const txns: string[] = [];
 
@@ -72,8 +60,8 @@ export const getUpdateRolesAction = ({
           roles: rolesToEnable as Record<Role, boolean>,
           userAddress,
           pincode,
+          assettype,
         });
-
         if (grantResult?.data) {
           txns.push(...grantResult.data);
         }
@@ -86,6 +74,7 @@ export const getUpdateRolesAction = ({
           roles: rolesToDisable as Record<Role, boolean>,
           userAddress,
           pincode,
+          assettype,
         });
 
         if (revokeResult?.data) {
@@ -93,5 +82,6 @@ export const getUpdateRolesAction = ({
         }
       }
 
-      return safeParseWithLogging(z.hashes(), txns);
-    });
+      return safeParseTransactionHash(txns);
+    }
+  );

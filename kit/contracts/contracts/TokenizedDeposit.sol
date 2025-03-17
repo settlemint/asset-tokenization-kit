@@ -7,6 +7,7 @@ import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ER
 import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC20Allowlist } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Allowlist.sol";
+import { ERC20Collateral } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Collateral.sol";
 import { ERC20Custodian } from "@openzeppelin/community-contracts/token/ERC20/extensions/ERC20Custodian.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
@@ -27,6 +28,7 @@ contract TokenizedDeposit is
     AccessControl,
     ERC20Permit,
     ERC20Allowlist,
+    ERC20Collateral,
     ERC20Custodian,
     ERC2771Context
 {
@@ -45,12 +47,36 @@ contract TokenizedDeposit is
     error InvalidDecimals(uint8 decimals);
     error InvalidISIN();
     error InvalidLiveness();
+    error InsufficientCollateral();
     error InvalidTokenAddress();
     error InsufficientTokenBalance();
+
+    /// @notice Structure to store collateral proof details
+    /// @dev Used to track the amount and timestamp of collateral proofs
+    struct CollateralProof {
+        /// @notice The amount of collateral proven
+        uint256 amount;
+        /// @notice The timestamp when the proof was submitted
+        uint48 timestamp;
+    }
+
+    /// @notice The current collateral proof details
+    /// @dev Stores the latest proven collateral amount and timestamp
+    CollateralProof private _collateralProof;
 
     /// @notice The number of decimals used for token amounts
     /// @dev Set at deployment and cannot be changed
     uint8 private immutable _decimals;
+
+    /// @notice The timestamp of the last collateral update
+    /// @dev Used to track when collateral was last proven
+    uint256 private _lastCollateralUpdate;
+
+    /// @notice Emitted when the collateral amount is updated
+    /// @param oldAmount The previous collateral amount
+    /// @param newAmount The new collateral amount
+    /// @param timestamp The timestamp when the update occurred
+    event CollateralUpdated(uint256 oldAmount, uint256 newAmount, uint256 timestamp);
 
     /// @notice Emitted when mistakenly sent tokens are withdrawn
     /// @param token The address of the token being withdrawn
@@ -65,21 +91,26 @@ contract TokenizedDeposit is
     /// @param symbol The token symbol
     /// @param decimals_ The number of decimals for the token (must be <= 18)
     /// @param initialOwner The address that will receive admin rights
+    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid (must be > 0)
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals_,
         address initialOwner,
+        uint48 collateralLivenessSeconds,
         address forwarder
     )
         ERC20(name, symbol)
         ERC20Permit(name)
+        ERC20Collateral(collateralLivenessSeconds)
         ERC2771Context(forwarder)
     {
         if (decimals_ > 18) revert InvalidDecimals(decimals_);
+        if (collateralLivenessSeconds == 0) revert InvalidLiveness();
 
         _decimals = decimals_;
+        _lastCollateralUpdate = block.timestamp;
         _allowUser(initialOwner);
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
@@ -132,7 +163,38 @@ contract TokenizedDeposit is
     /// @param to The address that will receive the minted tokens
     /// @param amount The quantity of tokens to create in base units
     function mint(address to, uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        (uint256 collateralAmount,) = collateral();
+        if (collateralAmount < totalSupply() + amount) revert InsufficientCollateral();
+
         _mint(to, amount);
+    }
+
+    /// @notice Returns current collateral amount and timestamp
+    /// @dev Implements the ERC20Collateral interface
+    /// @return amount Current proven collateral amount
+    /// @return timestamp Timestamp when the collateral was last proven
+    function collateral() public view virtual override returns (uint256 amount, uint48 timestamp) {
+        return (_collateralProof.amount, _collateralProof.timestamp);
+    }
+
+    /// @notice Returns the timestamp of the last collateral update
+    /// @dev Returns the timestamp of the last collateral update
+    /// @return The timestamp of the last collateral update
+    function lastCollateralUpdate() public view returns (uint256) {
+        return _lastCollateralUpdate;
+    }
+
+    /// @notice Updates the proven collateral amount with a timestamp
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Requires collateral >= total supply.
+    /// @param amount New collateral amount
+    function updateCollateral(uint256 amount) public onlyRole(SUPPLY_MANAGEMENT_ROLE) {
+        if (amount < totalSupply()) revert InsufficientCollateral();
+
+        uint256 oldAmount = _collateralProof.amount;
+        _collateralProof = CollateralProof({ amount: amount, timestamp: uint48(block.timestamp) });
+        _lastCollateralUpdate = block.timestamp;
+
+        emit CollateralUpdated(oldAmount, amount, block.timestamp);
     }
 
     /// @notice Checks if an address is a custodian
@@ -170,7 +232,7 @@ contract TokenizedDeposit is
         uint256 value
     )
         internal
-        override(ERC20, ERC20Pausable, ERC20Allowlist, ERC20Custodian)
+        override(ERC20, ERC20Pausable, ERC20Allowlist, ERC20Collateral, ERC20Custodian)
     {
         super._update(from, to, value);
     }

@@ -8,17 +8,19 @@ import { DataTableRowActions } from '@/components/blocks/data-table/data-table-r
 import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
 import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
 import { ROLES } from '@/lib/config/roles';
-import { bondRevokeRoleAction } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-action';
-import { bondUpdatePermissionsAction } from '@/lib/mutations/asset/access-control/update-role/update-roles-action';
 import type { PermissionWithRoles } from '@/lib/queries/asset/asset-detail';
 import { formatDate } from '@/lib/utils/date';
+import type { AssetType } from '@/lib/utils/zod';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
 
 const columnHelper = createColumnHelper<PermissionWithRoles>();
 
-export function columns({ address }: { address: Address }) {
+export function columns({
+  address,
+  assettype,
+}: { address: Address; assettype: AssetType }) {
   const t = useTranslations('private.assets.fields');
 
   return [
@@ -53,11 +55,14 @@ export function columns({ address }: { address: Address }) {
         </DataTableColumnHeader>
       ),
       cell: ({ row, table }) => {
-        const adminCount = table
-          .getRowModel()
-          .rows.filter((row) =>
-            row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
-          ).length;
+        const rows = table.getRowModel().rows;
+        const admins = rows.filter((row) =>
+          row.original.roles.includes(ROLES.DEFAULT_ADMIN_ROLE.contractRole)
+        );
+        const adminCount = admins.length;
+        const isAdmin = admins.some(
+          (admin) => admin.original.id === row.original.id
+        );
 
         return (
           <DataTableRowActions
@@ -72,8 +77,8 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
-                    updateRolesAction={bondUpdatePermissionsAction}
-                    adminsCount={adminCount}
+                    assettype={assettype}
+                    disableEditAdminRole={adminCount === 1 && isAdmin}
                     assetName={row.original.assetName}
                   />
                 ),
@@ -88,10 +93,10 @@ export function columns({ address }: { address: Address }) {
                     currentRoles={row.original.roles}
                     open={open}
                     onOpenChange={onOpenChange}
-                    revokeRoleAction={bondRevokeRoleAction}
+                    assettype={assettype}
                   />
                 ),
-                disabled: adminCount === 1,
+                disabled: adminCount === 1 && isAdmin,
               },
             ]}
           />

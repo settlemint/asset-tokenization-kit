@@ -3,8 +3,10 @@
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
-import type { RevokeRoleActionType } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-action';
+import { revokeRole } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role';
+
 import { RevokeRoleSchema } from '@/lib/mutations/asset/access-control/revoke-role/revoke-role-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
@@ -14,7 +16,7 @@ export interface RevokeAllPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
-  revokeRoleAction: RevokeRoleActionType;
+  assettype: AssetType;
 }
 
 interface RevokeAllPermissionsFormPropsWithOpen
@@ -29,7 +31,7 @@ export function RevokeAllPermissionsForm({
   currentRoles,
   open,
   onOpenChange,
-  revokeRoleAction,
+  assettype,
 }: RevokeAllPermissionsFormPropsWithOpen) {
   const t = useTranslations(
     'private.assets.details.permissions.revoke-all-form'
@@ -44,7 +46,7 @@ export function RevokeAllPermissionsForm({
       description={t('description')}
     >
       <Form
-        action={revokeRoleAction}
+        action={revokeRole}
         resolver={zodResolver(RevokeRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
@@ -53,6 +55,7 @@ export function RevokeAllPermissionsForm({
         defaultValues={{
           address,
           userAddress: account,
+          assettype,
           roles: currentRoles.reduce(
             (acc, role) => {
               acc[role] = true;

@@ -2,8 +2,9 @@
 
 import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
-import type { GrantRoleActionType } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
+import { grantRole } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
 import { GrantRoleSchema } from '@/lib/mutations/asset/access-control/grant-role/grant-role-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
@@ -15,14 +16,14 @@ interface GrantRoleFormProps {
   address: Address;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  grantRoleAction: GrantRoleActionType;
+  assettype: AssetType;
 }
 
 export function GrantRoleForm({
   address,
   open,
   onOpenChange,
-  grantRoleAction,
+  assettype,
 }: GrantRoleFormProps) {
   const t = useTranslations('private.assets.details.forms.grant-role');
 
@@ -34,7 +35,7 @@ export function GrantRoleForm({
       description={t('description')}
     >
       <Form
-        action={grantRoleAction}
+        action={grantRole}
         resolver={zodResolver(GrantRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
@@ -42,6 +43,7 @@ export function GrantRoleForm({
         }}
         defaultValues={{
           address,
+          assettype,
           roles: {
             DEFAULT_ADMIN_ROLE: false,
             SUPPLY_MANAGEMENT_ROLE: false,

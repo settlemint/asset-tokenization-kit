@@ -13,6 +13,7 @@ export const GrantRoleSchema = z.object({
   roles: z.roles(),
   userAddress: z.address(),
   pincode: z.pincode(),
+  assettype: z.assetType(),
 });
 
 export type GrantRoleInput = ZodInfer<typeof GrantRoleSchema>;

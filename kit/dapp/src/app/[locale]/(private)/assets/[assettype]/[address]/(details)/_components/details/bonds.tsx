@@ -82,7 +82,7 @@ export async function BondsDetails({ address }: BondsDetailsProps) {
           {/* Calculate percentage: (part/total) * 100
               Since we're using bigInt which doesn't support decimal division,
               we multiply the numerator by 100 before dividing to preserve precision */}
-          {(bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact}%
+          {bond.totalUnderlyingNeededExact > 0 ? (bond.underlyingBalance * 100n) / bond.totalUnderlyingNeededExact : 0}%
         </DetailGridItem>
         <DetailGridItem label={t('ownership-concentration')}>
           {formatNumber(bond.concentration, {

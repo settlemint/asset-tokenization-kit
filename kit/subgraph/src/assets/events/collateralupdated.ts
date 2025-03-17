@@ -2,7 +2,8 @@ import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { CollateralUpdatedEvent } from "../../../generated/schema";
 import { toDecimals } from "../../utils/decimals";
 import { AssetType, EventName } from "../../utils/enums";
-export function stablecoinCollateralUpdatedEvent(
+
+export function collateralUpdatedEvent(
   id: Bytes,
   timestamp: BigInt,
   emitter: Bytes,

@@ -4,7 +4,8 @@ import { Form } from '@/components/blocks/form/form';
 import { FormSheet } from '@/components/blocks/form/form-sheet';
 import type { Role } from '@/lib/config/roles';
 import { UpdateRolesSchema } from '@/lib/mutations/asset/access-control/update-role/update-role-schema';
-import type { UpdateRolesActionType } from '@/lib/mutations/asset/access-control/update-role/update-roles-action';
+import { updateRoles } from '@/lib/mutations/asset/access-control/update-role/update-roles';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
@@ -16,9 +17,9 @@ export interface EditPermissionsFormProps {
   address: Address;
   account: Address;
   currentRoles: Role[];
-  adminsCount: number;
+  disableEditAdminRole: boolean;
   assetName: string;
-  updateRolesAction: UpdateRolesActionType;
+  assettype: AssetType;
 }
 
 interface EditPermissionsFormPropsWithOpen extends EditPermissionsFormProps {
@@ -30,11 +31,11 @@ export function EditPermissionsForm({
   address,
   account,
   currentRoles,
-  adminsCount,
+  disableEditAdminRole,
   assetName,
   open,
   onOpenChange,
-  updateRolesAction,
+  assettype,
 }: EditPermissionsFormPropsWithOpen) {
   const t = useTranslations('private.assets.details.permissions.edit-form');
 
@@ -47,7 +48,7 @@ export function EditPermissionsForm({
       description={t('description', { name: assetName })}
     >
       <Form
-        action={updateRolesAction}
+        action={updateRoles}
         resolver={zodResolver(UpdateRolesSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
@@ -56,6 +57,7 @@ export function EditPermissionsForm({
         defaultValues={{
           address,
           userAddress: account,
+          assettype,
           roles: currentRoles.reduce(
             (acc, role) => {
               acc[role] = true;
@@ -65,7 +67,7 @@ export function EditPermissionsForm({
           ),
         }}
       >
-        <Roles adminsCount={adminsCount} />
+        <Roles disableEditAdminRole={disableEditAdminRole} />
         <Summary userAddress={account} currentRoles={currentRoles} />
       </Form>
     </FormSheet>

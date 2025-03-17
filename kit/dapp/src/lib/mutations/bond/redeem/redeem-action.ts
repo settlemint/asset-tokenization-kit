@@ -3,7 +3,7 @@
 import { handleChallenge } from '@/lib/challenge';
 import { getBondDetail } from '@/lib/queries/bond/bond-detail';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { parseUnits } from 'viem';
 import { action } from '../../safe-action';
 import { RedeemBondSchema } from './redeem-schema';
@@ -37,6 +37,6 @@ export const redeem = action
         challengeResponse: await handleChallenge(user.wallet, pincode),
       });
 
-      return z.hashes().parse([response.BondRedeem?.transactionHash]);
+      return safeParseTransactionHash([response.BondRedeem?.transactionHash]);
     }
   );

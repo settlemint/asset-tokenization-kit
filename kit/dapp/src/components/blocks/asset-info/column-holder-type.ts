@@ -9,7 +9,6 @@ interface HolderTypeProps {
 
 export function ColumnHolderType({ assetBalance }: HolderTypeProps) {
   const t = useTranslations('asset-info');
-
   if (assetBalance.asset.creator.id === assetBalance.account.id) {
     return t('creator-owner');
   }

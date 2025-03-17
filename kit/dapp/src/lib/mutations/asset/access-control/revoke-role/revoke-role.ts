@@ -1,10 +1,10 @@
+'use server';
+
 import { handleChallenge } from '@/lib/challenge';
 import { type Role, getRoleIdentifier } from '@/lib/config/roles';
 import { action } from '@/lib/mutations/safe-action';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import type { ResultOf, VariablesOf } from '@settlemint/sdk-portal';
+import { safeParseWithLogging, z } from '@/lib/utils/zod';
 import { RevokeRoleSchema } from './revoke-role-schema';
 
 /**
@@ -13,9 +13,9 @@ import { RevokeRoleSchema } from './revoke-role-schema';
  * @remarks
  * Removes permissions from an account for interacting with the bond
  */
-export const BondRevokeRole = portalGraphql(`
+const BondRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: BondRevokeRoleInput!) {
-    RevokeRole: BondRevokeRole(
+    BondRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -32,9 +32,9 @@ export const BondRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the cryptocurrency
  */
-export const CryptoCurrencyRevokeRole = portalGraphql(`
+const CryptoCurrencyRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: CryptoCurrencyRevokeRoleInput!) {
-    RevokeRole: CryptoCurrencyRevokeRole(
+    CryptoCurrencyRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -51,9 +51,9 @@ export const CryptoCurrencyRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the stablecoin
  */
-export const StableCoinRevokeRole = portalGraphql(`
+const StableCoinRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: StableCoinRevokeRoleInput!) {
-    RevokeRole: StableCoinRevokeRole(
+    StableCoinRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -70,9 +70,9 @@ export const StableCoinRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the fund
  */
-export const FundRevokeRole = portalGraphql(`
+const FundRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: FundRevokeRoleInput!) {
-    RevokeRole: FundRevokeRole(
+    FundRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -89,9 +89,9 @@ export const FundRevokeRole = portalGraphql(`
  * @remarks
  * Removes permissions from an account for interacting with the equity
  */
-export const EquityRevokeRole = portalGraphql(`
+const EquityRevokeRole = portalGraphql(`
   mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: EquityRevokeRoleInput!) {
-    RevokeRole: EquityRevokeRole(
+    EquityRevokeRole(
       from: $from
       input: $input
       address: $address
@@ -102,60 +102,92 @@ export const EquityRevokeRole = portalGraphql(`
   }
 `);
 
-type RevokeRoleInput = VariablesOf<
-  | typeof StableCoinRevokeRole
-  | typeof BondRevokeRole
-  | typeof CryptoCurrencyRevokeRole
-  | typeof FundRevokeRole
-  | typeof EquityRevokeRole
->;
-type RevokeRoleOutput = ResultOf<
-  | typeof StableCoinRevokeRole
-  | typeof BondRevokeRole
-  | typeof CryptoCurrencyRevokeRole
-  | typeof FundRevokeRole
-  | typeof EquityRevokeRole
->;
+/**
+ * GraphQL mutation for revoking a role from a user for a tokenized deposit
+ *
+ * @remarks
+ * Removes permissions from an account for interacting with the tokenized deposit
+ */
+const TokenizedDepositRevokeRole = portalGraphql(`
+  mutation RevokeRole($address: String!, $from: String!, $challengeResponse: String!, $input: TokenizedDepositRevokeRoleInput!) {
+    TokenizedDepositRevokeRole(
+      from: $from
+      input: $input
+      address: $address
+      challengeResponse: $challengeResponse
+    ) {
+      transactionHash
+    }
+  }
+`);
 
-export type RevokeRoleMutation = TypedDocumentNode<
-  RevokeRoleOutput,
-  RevokeRoleInput
->;
+export const revokeRole = action
+  .schema(RevokeRoleSchema)
+  .outputSchema(z.hashes())
+  .action(
+    async ({
+      parsedInput: { address, roles, userAddress, pincode, assettype },
+      ctx: { user },
+    }) => {
+      const revokeRoleFn = async (role: Role) => {
+        const params = {
+          address: address,
+          from: user.wallet,
+          input: {
+            role: getRoleIdentifier(role),
+            account: userAddress,
+          },
+          challengeResponse: await handleChallenge(user.wallet, pincode),
+        };
 
-export const getRevokeRoleAction = (revokeRoleMutation: RevokeRoleMutation) =>
-  action
-    .schema(RevokeRoleSchema)
-    .outputSchema(z.hashes())
-    .action(
-      async ({
-        parsedInput: { address, roles, userAddress, pincode },
-        ctx: { user },
-      }) => {
-        const selectedRoles = Object.entries(roles)
-          .filter(([, enabled]) => enabled)
-          .map(([role]) => role as Role);
+        switch (assettype) {
+          case 'stablecoin': {
+            const response = await portalClient.request(
+              StableCoinRevokeRole,
+              params
+            );
+            return response.StableCoinRevokeRole?.transactionHash;
+          }
+          case 'bond': {
+            const response = await portalClient.request(BondRevokeRole, params);
+            return response.BondRevokeRole?.transactionHash;
+          }
+          case 'cryptocurrency': {
+            const response = await portalClient.request(
+              CryptoCurrencyRevokeRole,
+              params
+            );
+            return response.CryptoCurrencyRevokeRole?.transactionHash;
+          }
+          case 'fund': {
+            const response = await portalClient.request(FundRevokeRole, params);
+            return response.FundRevokeRole?.transactionHash;
+          }
+          case 'equity': {
+            const response = await portalClient.request(
+              EquityRevokeRole,
+              params
+            );
+            return response.EquityRevokeRole?.transactionHash;
+          }
+          case 'tokenizeddeposit': {
+            const response = await portalClient.request(
+              TokenizedDepositRevokeRole,
+              params
+            );
+            return response.TokenizedDepositRevokeRole?.transactionHash;
+          }
+          default:
+            throw new Error(`Unsupported asset type: ${assettype}`);
+        }
+      };
 
-        // Create an array of promises for each role revocation request
-        const revokePromises = selectedRoles.map(async (role) => {
-          const response = await portalClient.request(revokeRoleMutation, {
-            address: address,
-            from: user.wallet,
-            input: {
-              role: getRoleIdentifier(role),
-              account: userAddress,
-            },
-            challengeResponse: await handleChallenge(user.wallet, pincode),
-          });
+      const selectedRoles = Object.entries(roles)
+        .filter(([, enabled]) => enabled)
+        .map(([role]) => role as Role);
+      const revokePromises = selectedRoles.map((role) => revokeRoleFn(role));
+      const results = await Promise.all(revokePromises);
 
-          return response.RevokeRole?.transactionHash;
-        });
-
-        // Execute all requests in parallel
-        const results = await Promise.all(revokePromises);
-
-        // Filter out any undefined values and return transaction hashes
-        const transactions = results.filter(Boolean) as string[];
-
-        return z.hashes().parse(transactions);
-      }
-    );
+      return safeParseWithLogging(z.hashes(), results);
+    }
+  );

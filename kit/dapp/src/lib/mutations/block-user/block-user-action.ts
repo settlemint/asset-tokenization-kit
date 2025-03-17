@@ -2,7 +2,7 @@
 
 import { handleChallenge } from '@/lib/challenge';
 import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
+import { safeParseTransactionHash, z } from '@/lib/utils/zod';
 import { action } from '../safe-action';
 import { BlockUserSchema } from './block-user-schema';
 
@@ -12,54 +12,6 @@ import { BlockUserSchema } from './block-user-schema';
 const BondBlockUser = portalGraphql(`
   mutation BondBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
     BondBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
-      challengeResponse: $challengeResponse
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL mutation to block a user from an equity
- */
-const EquityBlockUser = portalGraphql(`
-  mutation EquityBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
-    EquityBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
-      challengeResponse: $challengeResponse
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL mutation to block a user from a fund
- */
-const FundBlockUser = portalGraphql(`
-  mutation FundBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
-    FundBlockUser(
-      address: $address
-      input: { user: $account }
-      from: $from
-      challengeResponse: $challengeResponse
-    ) {
-      transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL mutation to block a user from a stablecoin
- */
-const StableCoinBlockUser = portalGraphql(`
-  mutation StableCoinBlockUser($address: String!, $account: String!, $from: String!, $challengeResponse: String!) {
-    StableCoinBlockUser(
       address: $address
       input: { user: $account }
       from: $from
@@ -89,7 +41,9 @@ export const blockUser = action
       switch (assettype) {
         case 'bond': {
           const response = await portalClient.request(BondBlockUser, params);
-          return z.hashes().parse([response.BondBlockUser?.transactionHash]);
+          return safeParseTransactionHash([
+            response.BondBlockUser?.transactionHash,
+          ]);
         }
         case 'cryptocurrency': {
           throw new Error(
