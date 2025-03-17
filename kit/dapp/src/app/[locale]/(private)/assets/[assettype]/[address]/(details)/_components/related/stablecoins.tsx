@@ -23,7 +23,11 @@ export async function StablecoinsRelated({
         title={t('stablecoins.update-collateral.title')}
         description={t('stablecoins.update-collateral.description')}
       >
-        <UpdateCollateralForm address={address} asButton />
+        <UpdateCollateralForm
+          address={address}
+          assettype="stablecoin"
+          asButton
+        />
       </RelatedGridItem>
       <RelatedGridItem
         title={t('stablecoins.increase-supply.title')}

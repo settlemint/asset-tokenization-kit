@@ -762,11 +762,11 @@
             "decimals-label": "Decimals",
             "description": "Define essential details such as name, symbol, and visibility.",
             "isin-label": "ISIN",
-            "isin-placeholder": "DEFI4EVER2024",
+            "isin-placeholder": "EU1234567890",
             "name-label": "Name",
-            "name-placeholder": "TotallyNotTether",
+            "name-placeholder": "Tokenized Euro",
             "symbol-label": "Symbol",
-            "symbol-placeholder": "SAFU",
+            "symbol-placeholder": "TEUR",
             "title": "Basic Information"
           },
           "button-label": "Issue a new tokenized deposit",
@@ -1131,6 +1131,10 @@
             "increase-supply": {
               "description": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available.",
               "title": "Increase Tokenized Deposit Supply"
+            },
+            "update-collateral": {
+              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
+              "title": "Update collateral"
             }
           }
         },

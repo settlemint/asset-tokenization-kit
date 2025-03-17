@@ -14,13 +14,14 @@ import type { Address } from 'viem';
  * Uses deterministic deployment to predict the contract address before creation
  */
 const CreateTokenizedDepositPredictAddress = portalGraphql(`
-  query CreateTokenizedDepositPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!) {
+  query CreateTokenizedDepositPredictAddress($address: String!, $sender: String!, $decimals: Int!, $name: String!, $symbol: String!, $collateralLivenessSeconds: Float!) {
     TokenizedDepositFactory(address: $address) {
       predictAddress(
         sender: $sender
         decimals: $decimals
         name: $name
         symbol: $symbol
+        collateralLivenessSeconds: $collateralLivenessSeconds
       ) {
         predicted
       }
@@ -44,7 +45,7 @@ const PredictedAddressSchema = z.object({
  */
 export const getPredictedAddress = cache(
   async (input: CreateTokenizedDepositInput) => {
-    const { assetName, symbol, decimals } = input;
+    const { assetName, symbol, decimals, collateralLivenessSeconds } = input;
     const user = await getUser();
 
     const data = await portalClient.request(
@@ -55,6 +56,7 @@ export const getPredictedAddress = cache(
         decimals,
         name: assetName,
         symbol,
+        collateralLivenessSeconds,
       }
     );
 
