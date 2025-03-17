@@ -22,7 +22,7 @@ export function CreateBondForm({
   onOpenChange,
   asButton = false,
 }: CreateBondFormProps) {
-  const t = useTranslations('private.assets.create');
+  const t = useTranslations('private.assets.create.form');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,11 +31,11 @@ export function CreateBondForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('form-title.bonds')}
-      description={t('form-description.bonds')}
+      title={t('title.bonds')}
+      description={t('description.bonds')}
       asButton={asButton}
       triggerLabel={
-        isExternallyControlled ? undefined : t('form-trigger-label.bonds')
+        isExternallyControlled ? undefined : t('trigger-label.bonds')
       }
     >
       <Form
@@ -43,7 +43,7 @@ export function CreateBondForm({
         resolver={zodResolver(CreateBondSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('submit-button-label.bonds'),
+          label: t('trigger-label.bonds'),
         }}
         defaultValues={{}}
         onAnyFieldChange={({ clearErrors }) => {

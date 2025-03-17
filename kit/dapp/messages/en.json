@@ -612,24 +612,16 @@
             "fund-category-label": "Fund category",
             "fund-class-label": "Fund class",
             "management-fee-label": "Management fee",
-            "management-fee-description": "Management fee in basis points",
+            "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
             "basis-points": "bps"
           },
           "tokenizeddeposits": {
             "collateral-proof-validity-label": "Collateral proof validity",
             "seconds-unit-label": "seconds",
-            "name-placeholder": "Tokenized Deposit",
-            "symbol-placeholder": "TD",
-            "isin-placeholder": "US1234567890"
+            "name-placeholder": "Tokenized Euro",
+            "symbol-placeholder": "TEUR",
+            "isin-placeholder": "EU1234567890"
           }
-        },
-        "submit-button-label": {
-          "stablecoins": "Create a new stablecoin",
-          "bonds": "Create a new bond",
-          "cryptocurrencies": "Create a new cryptocurrency",
-          "equities": "Create a new equity",
-          "funds": "Create a new fund",
-          "tokenizeddeposits": "Create a new tokenized deposit"
         },
         "basics": {
           "title": "Asset basics",
@@ -661,30 +653,6 @@
             "description": "Set parameters specific to your tokenized deposit."
           }
         },
-        "form-title": {
-          "stablecoins": "Design a new stable coin",
-          "bonds": "Design a new bond",
-          "cryptocurrencies": "Design a new cryptocurrency",
-          "equities": "Design a new equity",
-          "funds": "Design a new fund",
-          "tokenizeddeposits": "Design a new tokenized deposit"
-        },
-        "form-description": {
-          "stablecoins": "Digital assets pegged to a stable asset like USD.",
-          "bonds": "Debt instruments issued as tokenized securities.",
-          "cryptocurrencies": "Decentralized digital assets used as a medium of exchange or store of value.",
-          "equities": "Assets representing ownership in a company.",
-          "funds": "Investment vehicles pooled by professional managers.",
-          "tokenizeddeposits": "Digital assets representing a traditional deposit."
-        },
-        "form-trigger-label": {
-          "stablecoins": "Design stablecoin",
-          "bonds": "Design bond",
-          "cryptocurrencies": "Design cryptocurrency",
-          "equities": "Design equity",
-          "funds": "Design fund",
-          "tokenizeddeposits": "Design tokenized deposit"
-        },
         "summary": {
           "title": "Summary",
           "description": "This is the final step before creating your asset. Please review all the details you have entered.",
@@ -692,6 +660,32 @@
           "asset-basics-description": "General information about your asset.",
           "configuration-title": "Configuration",
           "configuration-description": "Specific parameters for your asset."
+        },
+        "form": {
+          "title": {
+            "stablecoins": "Design a new stable coin",
+            "bonds": "Design a new bond",
+            "cryptocurrencies": "Design a new cryptocurrency",
+            "equities": "Design a new equity",
+            "funds": "Design a new fund",
+            "tokenizeddeposits": "Design a new tokenized deposit"
+          },
+          "description": {
+            "stablecoins": "Digital assets pegged to a stable asset like USD.",
+            "bonds": "Debt instruments issued as tokenized securities.",
+            "cryptocurrencies": "Decentralized digital assets used as a medium of exchange or store of value.",
+            "equities": "Assets representing ownership in a company.",
+            "funds": "Investment vehicles pooled by professional managers.",
+            "tokenizeddeposits": "Digital assets that represent a deposit of a traditional asset."
+          },
+          "trigger-label": {
+            "stablecoins": "Issue a new stablecoin",
+            "bonds": "Issue a new bond",
+            "cryptocurrencies": "Issue a new cryptocurrency",
+            "equities": "Issue a new equity",
+            "funds": "Issue a new fund",
+            "tokenizeddeposits": "Issue a new tokenized deposit"
+          }
         }
       },
       "detail": {
