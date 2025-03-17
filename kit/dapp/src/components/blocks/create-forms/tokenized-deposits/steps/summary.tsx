@@ -12,41 +12,45 @@ export function Summary() {
   const values = useWatch({
     control: control,
   });
-  const t = useTranslations('private.assets.create.tokenizeddeposits.summary');
+  const t = useTranslations('private.assets.create');
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t('summary.title')} description={t('summary.description')}>
       <FormSummaryDetailCard
-        title={t('asset-basics-title')}
-        description={t('asset-basics-description')}
+        title={t('summary.asset-basics-title')}
+        description={t('summary.asset-basics-description')}
         icon={<DollarSign className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t('name-label')}
+          label={t('parameters.common.name-label')}
           value={values.assetName}
         />
         <FormSummaryDetailItem
-          label={t('symbol-label')}
+          label={t('parameters.common.symbol-label')}
           value={values.symbol}
         />
         <FormSummaryDetailItem
-          label={t('decimals-label')}
+          label={t('parameters.common.decimals-label')}
           value={values.decimals}
         />
         <FormSummaryDetailItem
-          label={t('isin-label')}
+          label={t('parameters.common.isin-label')}
           value={values.isin === '' ? '-' : values.isin}
         />
       </FormSummaryDetailCard>
 
       <FormSummaryDetailCard
-        title={t('configuration-title')}
-        description={t('configuration-description')}
+        title={t('summary.configuration-title')}
+        description={t('summary.configuration-description')}
         icon={<Settings className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t('collateral-proof-validity-label')}
-          value={`${values.collateralLivenessSeconds} ${t('seconds')}`}
+          label={t(
+            'parameters.tokenizeddeposits.collateral-proof-validity-label'
+          )}
+          value={`${values.collateralLivenessSeconds} ${t(
+            'parameters.tokenizeddeposits.seconds-unit-label'
+          )}`}
         />
       </FormSummaryDetailCard>
     </FormStep>

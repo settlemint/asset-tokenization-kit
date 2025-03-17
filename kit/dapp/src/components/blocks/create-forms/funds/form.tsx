@@ -22,7 +22,7 @@ export function CreateFundForm({
   onOpenChange,
   asButton = false,
 }: CreateFundFormProps) {
-  const t = useTranslations('private.assets.create.funds');
+  const t = useTranslations('private.assets.create');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,17 +31,19 @@ export function CreateFundForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title')}
-      description={t('description')}
+      title={t('form-title.funds')}
+      description={t('form-description.funds')}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      triggerLabel={
+        isExternallyControlled ? undefined : t('form-trigger-label.funds')
+      }
     >
       <Form
         action={createFund}
         resolver={zodResolver(CreateFundSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('button-label'),
+          label: t('submit-button-label.funds'),
         }}
         defaultValues={{
           managementFeeBps: 100, // Default 1% management fee

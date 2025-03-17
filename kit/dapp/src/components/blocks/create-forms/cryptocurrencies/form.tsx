@@ -22,7 +22,7 @@ export function CreateCryptoCurrencyForm({
   onOpenChange,
   asButton = false,
 }: CreateCryptoCurrencyFormProps) {
-  const t = useTranslations('private.assets.create.cryptocurrencies');
+  const t = useTranslations('private.assets.create');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,17 +31,21 @@ export function CreateCryptoCurrencyForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title')}
-      description={t('description')}
+      title={t('form-title.cryptocurrencies')}
+      description={t('form-description.cryptocurrencies')}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      triggerLabel={
+        isExternallyControlled
+          ? undefined
+          : t('form-trigger-label.cryptocurrencies')
+      }
     >
       <Form
         action={createCryptoCurrency}
         resolver={zodResolver(CreateCryptoCurrencySchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('button-label'),
+          label: t('submit-button-label.cryptocurrencies'),
         }}
         defaultValues={{}}
         onAnyFieldChange={({ clearErrors }) => {

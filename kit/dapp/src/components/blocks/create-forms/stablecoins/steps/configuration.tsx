@@ -6,17 +6,20 @@ import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
   const { control } = useFormContext<CreateStablecoinInput>();
-  const t = useTranslations('private.assets.create.stablecoins.configuration');
+  const t = useTranslations('private.assets.create');
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep
+      title={t('configuration.stablecoins.title')}
+      description={t('configuration.stablecoins.description')}
+    >
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
           type="number"
           name="collateralLivenessSeconds"
-          label={t('collateral-proof-validity-label')}
-          postfix="seconds"
+          label={t('parameters.stablecoins.collateral-proof-validity-label')}
+          postfix={t('parameters.stablecoins.seconds-unit-label')}
           required
         />
       </div>

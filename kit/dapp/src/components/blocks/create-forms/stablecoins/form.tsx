@@ -22,7 +22,7 @@ export function CreateStablecoinForm({
   onOpenChange,
   asButton = false,
 }: CreateStablecoinFormProps) {
-  const t = useTranslations('private.assets.create.stablecoins');
+  const t = useTranslations('private.assets.create');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -31,17 +31,19 @@ export function CreateStablecoinForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title')}
-      description={t('description')}
+      title={t('form-title.stablecoins')}
+      description={t('form-description.stablecoins')}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      triggerLabel={
+        isExternallyControlled ? undefined : t('form-trigger-label.stablecoins')
+      }
     >
       <Form
         action={createStablecoin}
         resolver={zodResolver(CreateStablecoinSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('button-label'),
+          label: t('submit-button-label.stablecoins'),
         }}
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,
