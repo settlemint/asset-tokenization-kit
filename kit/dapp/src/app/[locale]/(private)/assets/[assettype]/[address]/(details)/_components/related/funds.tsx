@@ -22,7 +22,7 @@ export async function FundsRelated({
         title={t('funds.increase-supply.title')}
         description={t('funds.increase-supply.description')}
       >
-        <MintForm address={address} assettype="funds" asButton />
+        <MintForm address={address} assettype="fund" asButton />
       </RelatedGridItem>
       <RelatedGridItem
         title={t('funds.decrease-supply.title')}
@@ -31,7 +31,7 @@ export async function FundsRelated({
         <BurnForm
           address={address}
           balance={totalSupply}
-          assettype="funds"
+          assettype="fund"
           asButton
         />
       </RelatedGridItem>

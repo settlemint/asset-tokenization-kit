@@ -8,13 +8,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { bondGrantRoleAction } from '@/lib/mutations/asset/access-control/grant-role/grant-role-action';
+import type { getAssetDetail } from '@/lib/queries/asset-detail';
 import type { getBondDetail } from '@/lib/queries/bond/bond-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../types';
-import type { getDetailData } from '../detail-data';
 import { BurnForm } from './burn-form/form';
 import { GrantRoleForm } from './grant-role-form/form';
 import { MatureForm } from './mature-form/form';
@@ -27,7 +27,7 @@ import { WithdrawForm } from './withdraw-form/form';
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
-  detail: Awaited<ReturnType<typeof getDetailData>>;
+  detail: Awaited<ReturnType<typeof getAssetDetail>>;
 }
 
 export function ManageDropdown({
@@ -48,7 +48,7 @@ export function ManageDropdown({
 
   let cannotMature = true;
   let hasUnderlyingAsset = false;
-  if (assettype === 'bonds') {
+  if (assettype === 'bond') {
     const bond = detail as Awaited<ReturnType<typeof getBondDetail>>;
     hasUnderlyingAsset = true;
     cannotMature =
@@ -169,7 +169,7 @@ export function ManageDropdown({
     {
       id: 'update-collateral',
       label: t('actions.update-collateral'),
-      disabled: assettype !== 'stablecoins',
+      disabled: assettype !== 'stablecoin',
       form: (
         <UpdateCollateralForm
           key="update-collateral"

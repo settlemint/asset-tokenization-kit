@@ -11,25 +11,25 @@ export async function BondsRelated() {
   return (
     <RelatedGrid title={t('title')}>
       <RelatedGridItem
-        title={t('bonds.issue-new.title')}
-        description={t('bonds.issue-new.description')}
+        title={t('bond.issue-new.title')}
+        description={t('bond.issue-new.description')}
       >
         <CreateBondForm asButton />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('bonds.mechanics.title')}
-        description={t('bonds.mechanics.description')}
+        title={t('bond.mechanics.title')}
+        description={t('bond.mechanics.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/bond#contract-features-and-capabilities">
-          <Button variant="secondary">{t('bonds.mechanics.button')}</Button>
+          <Button variant="secondary">{t('bond.mechanics.button')}</Button>
         </Link>
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('bonds.usecases.title')}
-        description={t('bonds.usecases.description')}
+        title={t('bond.usecases.title')}
+        description={t('bond.usecases.description')}
       >
         <Link href="https://console.settlemint.com/documentation/building-with-settlemint/kits/asset-tokenization/contracts/bond#why-digital-fund-tokens">
-          <Button variant="secondary">{t('bonds.usecases.button')}</Button>
+          <Button variant="secondary">{t('bond.usecases.button')}</Button>
         </Link>
       </RelatedGridItem>
     </RelatedGrid>

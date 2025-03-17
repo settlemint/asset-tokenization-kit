@@ -1,4 +1,4 @@
-import type { AssetType } from '../../types';
+import type { AssetType } from '@/lib/utils/zod';
 import { bondColumns } from './columns/bonds';
 import { cryptocurrencyColumns } from './columns/cryptocurrencies';
 import { equityColumns } from './columns/equities';
@@ -8,17 +8,17 @@ import { tokenizedDepositColumns } from './columns/tokenizeddeposits';
 
 export function getTableColumns(assettype: AssetType) {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return bondColumns;
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return cryptocurrencyColumns;
-    case 'stablecoins':
+    case 'stablecoin':
       return stablecoinColumns;
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return tokenizedDepositColumns;
-    case 'equities':
+    case 'equity':
       return equityColumns;
-    case 'funds':
+    case 'fund':
       return fundColumns;
     default:
       throw new Error(`Invalid asset type: ${assettype}`);

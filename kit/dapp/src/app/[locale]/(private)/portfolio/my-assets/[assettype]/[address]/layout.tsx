@@ -1,6 +1,6 @@
-import { getDetailData } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/detail-data';
 import { DetailPageHeader } from '@/app/[locale]/(private)/assets/[assettype]/[address]/_components/page-header';
-import type { AssetType } from '@/app/[locale]/(private)/assets/[assettype]/types';
+import { getAssetDetail } from '@/lib/queries/asset-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import type { Metadata } from 'next';
 import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
@@ -37,7 +37,7 @@ export async function generateMetadata({
     locale,
     namespace: 'private.assets.details',
   });
-  const detailData = await getDetailData({ assettype, address });
+  const detailData = await getAssetDetail({ assettype, address });
 
   return {
     title: t('page-title', {

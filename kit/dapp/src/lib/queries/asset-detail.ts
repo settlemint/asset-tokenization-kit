@@ -4,18 +4,18 @@ import { getEquityDetail } from '@/lib/queries/equity/equity-detail';
 import { getFundDetail } from '@/lib/queries/fund/fund-detail';
 import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
 import { getTokenizedDepositDetail } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail';
+import type { AssetType } from '@/lib/utils/zod';
 import type { Address } from 'viem';
-import type { AssetType } from '../../types';
 
-interface DetailDataProps {
+interface AssetDetailProps {
   assettype: AssetType;
   address: Address;
 }
 
-export function getDetailData({
+export function getAssetDetail({
   assettype,
   address,
-}: DetailDataProps):
+}: AssetDetailProps):
   | ReturnType<typeof getBondDetail>
   | ReturnType<typeof getCryptoCurrencyDetail>
   | ReturnType<typeof getStableCoinDetail>
@@ -23,17 +23,17 @@ export function getDetailData({
   | ReturnType<typeof getEquityDetail>
   | ReturnType<typeof getFundDetail> {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return getBondDetail({ address });
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return getCryptoCurrencyDetail({ address });
-    case 'stablecoins':
+    case 'stablecoin':
       return getStableCoinDetail({ address });
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return getTokenizedDepositDetail({ address });
-    case 'equities':
+    case 'equity':
       return getEquityDetail({ address });
-    case 'funds':
+    case 'fund':
       return getFundDetail({ address });
     default:
       throw new Error(`Invalid asset type: ${assettype}`);

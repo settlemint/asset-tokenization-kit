@@ -19,7 +19,7 @@ export async function CryptocurrenciesRelated({
         title={t('cryptocurrencies.increase-supply.title')}
         description={t('cryptocurrencies.increase-supply.description')}
       >
-        <MintForm address={address} assettype="cryptocurrencies" asButton />
+        <MintForm address={address} assettype="cryptocurrency" asButton />
       </RelatedGridItem>
     </RelatedGrid>
   );

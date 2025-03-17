@@ -1,5 +1,5 @@
+import type { AssetType } from '@/lib/utils/zod';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../types';
 import { BondsRelated } from './related/bonds';
 import { CryptocurrenciesRelated } from './related/cryptocurrencies';
 import { EquitiesRelated } from './related/equities';
@@ -15,19 +15,19 @@ interface RelatedProps {
 
 export function Related({ assettype, address, totalSupply }: RelatedProps) {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return <BondsRelated address={address} totalSupply={totalSupply} />;
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return <CryptocurrenciesRelated address={address} />;
-    case 'stablecoins':
+    case 'stablecoin':
       return <StablecoinsRelated address={address} totalSupply={totalSupply} />;
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return (
         <TokenizedDepositsRelated address={address} totalSupply={totalSupply} />
       );
-    case 'equities':
+    case 'equity':
       return <EquitiesRelated address={address} totalSupply={totalSupply} />;
-    case 'funds':
+    case 'fund':
       return <FundsRelated address={address} totalSupply={totalSupply} />;
     default:
       throw new Error(`Invalid asset type: ${assettype}`);

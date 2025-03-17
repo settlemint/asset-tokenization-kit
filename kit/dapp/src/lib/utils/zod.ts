@@ -137,6 +137,17 @@ export const fundClasses = [
   'VALUE_FOCUSED',
 ] as const;
 
+const assetTypes = [
+  'bond',
+  'cryptocurrency',
+  'equity',
+  'fund',
+  'stablecoin',
+  'tokenizeddeposit',
+] as const;
+
+export type AssetType = (typeof assetTypes)[number];
+
 // Create a custom extension of Zod
 // This approach avoids TypeScript errors with namespace merging
 const extendedZod = {
@@ -359,15 +370,7 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates asset types
    */
-  assetType: () =>
-    z.enum([
-      'bond',
-      'cryptocurrency',
-      'equity',
-      'fund',
-      'stablecoin',
-      'tokenizeddeposit',
-    ]),
+  assetType: () => z.enum(assetTypes),
 
   /**
    * Validates an equity category

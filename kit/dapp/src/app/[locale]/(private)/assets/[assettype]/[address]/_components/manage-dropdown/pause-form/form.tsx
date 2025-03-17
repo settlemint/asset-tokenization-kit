@@ -22,10 +22,10 @@ import { pause as TokenizedDepositPause } from '@/lib/mutations/tokenized-deposi
 import { PauseSchema as TokenizedDepositPauseSchema } from '@/lib/mutations/tokenized-deposit/pause/pause-schema';
 import { unpause as TokenizedDepositUnpause } from '@/lib/mutations/tokenized-deposit/unpause/unpause-action';
 import { UnPauseSchema as TokenizedDepositUnPauseSchema } from '@/lib/mutations/tokenized-deposit/unpause/unpause-schema';
+import type { AssetType } from '@/lib/utils/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import type { Address } from 'viem';
-import type { AssetType } from '../../../../types';
 import { Summary } from './steps/summary';
 
 interface PauseFormProps {
@@ -55,24 +55,24 @@ export function PauseForm({
       >
         <Form
           action={
-            assettype === 'bonds'
+            assettype === 'bond'
               ? BondUnpause
-              : assettype === 'equities'
+              : assettype === 'equity'
                 ? EquityUnpause
-                : assettype === 'funds'
+                : assettype === 'fund'
                   ? FundUnpause
-                  : assettype === 'stablecoins'
+                  : assettype === 'stablecoin'
                     ? StablecoinUnpause
                     : TokenizedDepositUnpause
           }
           resolver={
-            assettype === 'bonds'
+            assettype === 'bond'
               ? zodResolver(BondUnPauseSchema)
-              : assettype === 'equities'
+              : assettype === 'equity'
                 ? zodResolver(EquityUnPauseSchema)
-                : assettype === 'funds'
+                : assettype === 'fund'
                   ? zodResolver(FundUnPauseSchema)
-                  : assettype === 'stablecoins'
+                  : assettype === 'stablecoin'
                     ? zodResolver(StablecoinUnPauseSchema)
                     : zodResolver(TokenizedDepositUnPauseSchema)
           }
@@ -99,24 +99,24 @@ export function PauseForm({
     >
       <Form
         action={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? BondPause
-            : assettype === 'equities'
+            : assettype === 'equity'
               ? EquityPause
-              : assettype === 'funds'
+              : assettype === 'fund'
                 ? FundPause
-                : assettype === 'stablecoins'
+                : assettype === 'stablecoin'
                   ? StablecoinPause
                   : TokenizedDepositPause
         }
         resolver={
-          assettype === 'bonds'
+          assettype === 'bond'
             ? zodResolver(BondPauseSchema)
-            : assettype === 'equities'
+            : assettype === 'equity'
               ? zodResolver(EquityPauseSchema)
-              : assettype === 'funds'
+              : assettype === 'fund'
                 ? zodResolver(FundPauseSchema)
-                : assettype === 'stablecoins'
+                : assettype === 'stablecoin'
                   ? zodResolver(StablecoinPauseSchema)
                   : zodResolver(TokenizedDepositPauseSchema)
         }

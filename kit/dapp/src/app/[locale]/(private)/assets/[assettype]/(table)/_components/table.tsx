@@ -5,7 +5,7 @@ import { getEquityList } from '@/lib/queries/equity/equity-list';
 import { getFundList } from '@/lib/queries/fund/fund-list';
 import { getStableCoinList } from '@/lib/queries/stablecoin/stablecoin-list';
 import { getTokenizedDepositList } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-list';
-import type { AssetType } from '../../types';
+import type { AssetType } from '@/lib/utils/zod';
 import { bondColumns } from './columns/bonds';
 import { cryptocurrencyColumns } from './columns/cryptocurrencies';
 import { equityColumns } from './columns/equities';
@@ -19,7 +19,7 @@ interface TableProps {
 
 export async function Table({ assettype }: TableProps) {
   switch (assettype) {
-    case 'bonds':
+    case 'bond':
       return (
         <DataTable
           columns={bondColumns}
@@ -27,7 +27,7 @@ export async function Table({ assettype }: TableProps) {
           name={assettype}
         />
       );
-    case 'cryptocurrencies':
+    case 'cryptocurrency':
       return (
         <DataTable
           columns={cryptocurrencyColumns}
@@ -35,7 +35,7 @@ export async function Table({ assettype }: TableProps) {
           name={assettype}
         />
       );
-    case 'stablecoins':
+    case 'stablecoin':
       return (
         <DataTable
           columns={stablecoinColumns}
@@ -43,7 +43,7 @@ export async function Table({ assettype }: TableProps) {
           name={assettype}
         />
       );
-    case 'tokenizeddeposits':
+    case 'tokenizeddeposit':
       return (
         <DataTable
           columns={tokenizedDepositColumns}
@@ -51,7 +51,7 @@ export async function Table({ assettype }: TableProps) {
           name={assettype}
         />
       );
-    case 'equities':
+    case 'equity':
       return (
         <DataTable
           columns={equityColumns}
@@ -59,7 +59,7 @@ export async function Table({ assettype }: TableProps) {
           name={assettype}
         />
       );
-    case 'funds':
+    case 'fund':
       return (
         <DataTable
           columns={fundColumns}
