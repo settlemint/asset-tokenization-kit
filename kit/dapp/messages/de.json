@@ -80,7 +80,21 @@
     },
     "platform": {
       "settings": {
-        "platform-management": "Plattformverwaltung"
+        "base-currency-label": "Basiswährung",
+        "base-currency-updated": "Basiswährung erfolgreich aktualisiert",
+        "currencies": {
+          "aed": "VAE-Dirham (AED)",
+          "eur": "Euro (EUR)",
+          "jpy": "Japanischer Yen (JPY)",
+          "sar": "Saudi-Riyal (SAR)",
+          "sgd": "Singapur-Dollar (SGD)",
+          "usd": "US-Dollar (USD)"
+        },
+        "platform-management": "Plattformverwaltung",
+        "save": "Speichern",
+        "save-changes": "Änderungen speichern",
+        "saving": "Speichern...",
+        "select-base-currency": "Basiswährung auswählen"
       }
     },
     "sidebar": {
@@ -158,13 +172,13 @@
       "info-icon-label": "Info"
     },
     "asset-events-table": {
-      "asset": "Vermögen",
+      "asset": "Vermögenswert",
       "detail-sheet": {
-        "asset": "Vermögen",
+        "asset": "Vermögenswert",
         "asset-type": "Vermögensart",
         "date": "Datum",
-        "details-button": "Einzelheiten",
-        "details-for-event": "Einzelheiten für das Ereignis {event}",
+        "details-button": "Details",
+        "details-for-event": "Details für das {event} Ereignis",
         "sender": "Absender",
         "transaction-hash": "Transaktions-Hash"
       },
@@ -212,8 +226,8 @@
         "bond": "Anleihe",
         "collateral-ratio": {
           "description": "Betrag an unbesicherten vs. besicherten Mitteln",
-          "label": "Sicherheitsquote",
-          "no-data": "Keine Sicherungsdaten verfügbar"
+          "label": "Sicherheitenquote",
+          "no-data": "Keine Sicherheisdaten verfügbar"
         },
         "cryptocurrency": "Kryptowährung",
         "equity": "Eigenkapital",
@@ -225,26 +239,26 @@
         "stablecoin": "Stablecoin",
         "tokenizeddeposit": "Tokenisierte Einzahlung",
         "total-supply": {
-          "description": "Gesamtangebot des Tokens anzeigen",
+          "description": "Zeigt das gesamte Angebot des Tokens an",
           "label": "Gesamtangebot",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Gesamtangebot"
         },
         "total-supply-changed": {
           "burned-label": "Insgesamt verbrannt",
-          "description": "Änderung des Angebots des Tokens anzeigen",
+          "description": "Zeigt die Angebotsänderung des Tokens an",
           "minted-label": "Insgesamt geprägt",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Angebotsänderungen"
         },
         "total-transfers": {
-          "description": "Gesamtübertragungen des Tokens anzeigen",
+          "description": "Zeigt die gesamten Übertragungen des Tokens an",
           "label": "Insgesamt Übertragungen",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Insgesamt Übertragungen"
         },
         "total-volume": {
-          "description": "Gesamtvolumen des Tokens anzeigen",
+          "description": "Zeigt das gesamte Volumen des Tokens an",
           "label": "Insgesamt Volumen",
           "no-data": "Keine Daten in diesem Fenster verfügbar",
           "title": "Insgesamt Volumen"
@@ -253,7 +267,7 @@
           "label": "Verpflichtet"
         },
         "wallet-distribution": "Wallet-Verteilung",
-        "wallet-distribution-description": "Anzahl der Inhaber im Vergleich zu den gehaltenen Beträgen",
+        "wallet-distribution-description": "Anzahl der Inhaber vs. die Beträge, die sie halten",
         "wallet-distribution-no-data": "Keine Wallet-Daten verfügbar"
       }
     },
@@ -287,13 +301,13 @@
     "form": {
       "assets": {
         "default-placeholder": "Wählen Sie eine Option",
-        "loading": "Laden...",
-        "no-asset-found": "Kein Vermögen gefunden.",
-        "search-placeholder": "Nach einem Vermögen suchen..."
+        "loading": "Lade...",
+        "no-asset-found": "Kein Vermögenswert gefunden.",
+        "search-placeholder": "Suchen Sie nach einem Vermögenswert..."
       },
       "button": {
-        "next": "Nächste",
-        "previous": "Vorherige",
+        "next": "Weiter",
+        "previous": "Zurück",
         "processing": "Verarbeitung...",
         "send-transaction": "Transaktion senden",
         "sending-transaction": "Transaktion wird gesendet..."
@@ -303,21 +317,21 @@
         "valid-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
       },
       "pincode-dialog": {
-        "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Überprüfung und Autorisierung ein.",
+        "description": "Um die Transaktion zu signieren, geben Sie bitte Ihren PIN-Code zur Verifizierung und Autorisierung ein.",
         "title": "Geben Sie Ihren PIN-Code zur Bestätigung ein"
       },
       "progress": {
-        "completed-step": "Schritt abgeschlossen",
+        "completed-step": "Abgeschlossener Schritt",
         "current-step": "Aktueller Schritt",
         "step-of-total": "Schritt {current} von {total}",
-        "upcoming-step": "Bevorstehender Schritt"
+        "upcoming-step": "Kommender Schritt"
       },
       "select": {
         "default-placeholder": "Wählen Sie eine Option"
       },
       "users": {
         "default-placeholder": "Wählen Sie eine Option",
-        "loading": "Wird geladen...",
+        "loading": "Lade...",
         "no-user-found": "Kein Benutzer gefunden.",
         "search-placeholder": "Suchen Sie nach einem Benutzer..."
       }
@@ -333,7 +347,7 @@
     },
     "transaction-details": {
       "blob-gas-price-label": "Blob-Gaspreis",
-      "blob-gas-used-label": "Verwendetes Blob-Gas",
+      "blob-gas-used-label": "Blob-Gas verwendet",
       "block-hash-label": "Block-Hash",
       "block-number-label": "Blocknummer",
       "contract-label": "Vertrag",
@@ -358,7 +372,7 @@
     },
     "transactions-history": {
       "chart-label": "Transaktion",
-      "description": "Transaktionen der letzten {interval} anzeigen",
+      "description": "Zeige Transaktionen der letzten {interval}",
       "title": "Transaktionen"
     },
     "transactions-table": {
@@ -385,12 +399,12 @@
   },
   "layout": {
     "header": {
-      "app-description": "Tokenisierung von Vermögenswerten",
+      "app-description": "Asset-Tokenisierung",
       "app-name": "SettleMint",
       "home": "Startseite"
     },
     "navigation": {
-      "admin": "Ausstellerportal",
+      "admin": "Aussteller-Portal",
       "asset-management": "Vermögensverwaltung",
       "platform": "Plattformverwaltung",
       "portfolio": "Mein Portfolio"
@@ -404,12 +418,23 @@
   "paused": "Pausiert",
   "portfolio": {
     "activity": {
-      "page-description": "Ihre Aktivität auf der Blockchain",
+      "page-description": "Ihre Aktivität auf der Kette",
       "page-title": "Aktivität",
       "portfolio-management": "Portfoliomanagement",
       "tabs": {
         "all-events": "Alle Ereignisse",
         "recent-transactions": "Aktuelle Transaktionen"
+      }
+    },
+    "add-contact-form": {
+      "contact": {
+        "added": "Kontakt erfolgreich hinzugefügt",
+        "adding": "Kontakt wird hinzugefügt...",
+        "description": "Fügen Sie einen neuen Kontakt zu Ihrem Adressbuch hinzu",
+        "first-name-label": "Vorname",
+        "last-name-label": "Nachname",
+        "title": "Kontakt hinzufügen",
+        "wallet-address-label": "Wallet-Adresse"
       }
     },
     "dashboard": {
@@ -458,8 +483,8 @@
             "transfer-title": "Übertragen",
             "value-label": "Betrag"
           },
-          "title": "Übertragungsanleihe",
-          "trigger-label": "Übertragung"
+          "title": "Anleihe übertragen",
+          "trigger-label": "Übertragen"
         }
       },
       "cryptocurrency": {
@@ -467,18 +492,27 @@
           "amount": {
             "amount-label": "Betrag",
             "balance-description": "Verfügbarer Saldo:",
-            "description": "Geben Sie den Betrag der Token ein, die Sie übertragen möchten",
+            "description": "Geben Sie den Betrag der Tokens ein, den Sie übertragen möchten",
             "title": "Betrag"
           },
           "recipients": {
             "address-label": "Empfängeradresse",
-            "address-placeholder": "Benutzer suchen",
-            "description": "Wählen Sie, wer die Token erhalten soll",
+            "address-placeholder": "Nach einem Benutzer suchen",
+            "description": "Wählen Sie, wer die Tokens erhalten soll",
             "manual-entry-link": "Adresse manuell eingeben...",
             "search-user-link": "Stattdessen nach einem Benutzer suchen...",
             "title": "Empfänger auswählen"
           }
         }
+      },
+      "detail": {
+        "forms": {
+          "actions": {
+            "redeem": "Einlösen",
+            "transfer": "Übertragen"
+          }
+        },
+        "manage": "Verwalten"
       },
       "portfolio-management": "Portfolioverwaltung",
       "table": {
@@ -490,6 +524,20 @@
         "type-header": "Typ"
       },
       "title": "Meine Vermögenswerte"
+    },
+    "my-contacts": {
+      "add-contact-button": "Kontakt hinzufügen",
+      "description": "Kontaktverwaltung",
+      "table": {
+        "actions-header": "Aktion",
+        "created-at-header": "Erstellt am",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Typ",
+        "wallet-header": "Brieftasche"
+      },
+      "title": "Meine Kontakte"
     },
     "settings": {
       "api-keys": {
@@ -535,274 +583,175 @@
         "balance-description": "Saldo:",
         "decimals-description": "Anzahl der Dezimalstellen für den Token",
         "decimals-label": "Dezimalstellen",
-        "description": "Geben Sie den Betrag ein, den Sie übertragen möchten",
+        "description": "Geben Sie den Betrag an, den Sie übertragen möchten",
         "title": "Betrag eingeben"
       },
       "asset-types": "{type} {name} ({symbol})",
       "description": "Übertragen Sie einfach einen Betrag von {name} ({symbol}), indem Sie einen Empfänger auswählen und den Betrag angeben.",
       "recipients": {
-        "description": "Geben Sie eine Wallet-Adresse ein, um Token direkt zu senden.",
+        "description": "Geben Sie eine Brieftaschenadresse ein, um Tokens direkt zu senden.",
         "title": "Empfänger auswählen",
-        "wallet-address-label": "Wallet-Adresse"
+        "wallet-address-label": "Brieftaschenadresse"
       },
       "select-asset": {
-        "asset-description": "Wählen Sie ein Asset aus Ihrem Portfolio",
-        "asset-label": "Asset",
-        "description": "Wählen Sie das Asset aus, das Sie übertragen möchten",
-        "title": "Asset auswählen"
+        "asset-description": "Wählen Sie einen Vermögenswert aus Ihrem Portfolio",
+        "asset-label": "Vermögenswert",
+        "description": "Wählen Sie den Vermögenswert aus, den Sie übertragen möchten",
+        "title": "Vermögenswert auswählen"
       },
       "summary": {
         "address": "Adresse",
         "amount": "Betrag",
-        "description": "Überprüfen Sie die Einzelheiten Ihrer Übertragung, bevor Sie fortfahren. Stellen Sie sicher, dass der Empfänger und der Betrag korrekt sind.",
-        "title": "Übertragung überprüfen und bestätigen"
+        "description": "Überprüfen Sie die Einzelheiten Ihrer Überweisung, bevor Sie fortfahren. Stellen Sie sicher, dass der Empfänger und der Betrag korrekt sind.",
+        "title": "Überweisung überprüfen und bestätigen"
       },
-      "transfer": "Übertragung",
-      "transfer-title": "Übertragung von {name} ({symbol})"
+      "transfer": "Überweisung",
+      "transfer-title": "Überweisung {name} ({symbol})"
     }
   },
   "private": {
     "assets": {
       "asset-statistics-title": "Statistiken",
       "create": {
-        "bonds": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Geben Sie die grundlegenden Einzelheiten der Anleihe ein",
-            "isin-label": "ISIN",
-            "isin-placeholder": "z.B. US000000AA00",
-            "name-label": "Asset-Name",
-            "name-placeholder": "z.B. Unternehmensanleihe XYZ 2023",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "z.B. XYZ23",
-            "title": "Grundlegende Informationen"
-          },
-          "button-label": "Eine neue Anleihe ausgeben",
-          "configuration": {
-            "cap-description": "Maximaler Betrag an Token, der ausgegeben werden kann",
-            "cap-label": "Maximale Menge",
-            "description": "Konfigurieren Sie die Eigenschaften der Anleihe",
-            "face-value-description": "Nennwert einer einzelnen Anleihe",
-            "face-value-label": "Nennwert",
-            "maturity-date-label": "Fälligkeitsdatum",
-            "title": "Anleihekonfiguration",
-            "underlying-asset-description": "Adresse des Vermögenswerts, der diese Anleihe absichert",
-            "underlying-asset-label": "Unterliegendes Asset"
-          },
-          "description": "Eine neue Anleihe auf der Blockchain ausgeben",
-          "summary": {
-            "asset-basics-description": "Grundlegende Informationen zur Anleihe",
-            "asset-basics-title": "Grundlegende Informationen",
-            "cap-label": "Maximale Menge",
-            "configuration-description": "Technische Konfiguration der Anleihe",
-            "configuration-title": "Anleihekonfiguration",
-            "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen Sie die Anleihedetails, bevor Sie erstellen",
-            "face-value-label": "Nennwert",
-            "isin-label": "ISIN",
-            "maturity-date-label": "Fälligkeitsdatum",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen",
-            "underlying-asset-label": "Unterliegendes Asset"
-          },
-          "title": "Neuen Anleihe erstellen",
-          "trigger-label": "Eine neue Anleihe ausgeben"
+        "basics": {
+          "description": "Geben Sie die allgemeinen Informationen an, die erforderlich sind, um Ihr Vermögen zu definieren.",
+          "title": "Vermögensgrundlagen"
         },
-        "cryptocurrencies": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
-            "name-label": "Name",
-            "name-placeholder": "Bitcoin",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "BTC",
-            "title": "Grundinformationen"
+        "configuration": {
+          "bonds": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihre Anleihe sind.",
+            "title": "Anleihekonfiguration"
           },
-          "button-label": "Eine neue Kryptowährung ausgeben",
-          "configuration": {
-            "description": "Geben Sie erweiterte Einstellungen für Ihre Kryptowährung an.",
-            "initial-supply-description": "Die Anzahl der Token, die bei der Erstellung geprägt werden sollen",
-            "initial-supply-label": "Anfänglicher Bestand",
-            "title": "Konfiguration"
+          "cryptocurrencies": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihre Kryptowährung sind.",
+            "title": "Kryptowährungs-Konfiguration"
           },
-          "description": "Definieren und starten Sie ein neues Kryptowährungs-Asset.",
-          "summary": {
-            "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-            "asset-basics-title": "Asset-Grundlagen",
-            "configuration-description": "Asset-Bestand und zusätzliche Einstellungen.",
-            "configuration-title": "Konfiguration",
-            "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen Kryptowährung vor der Erstellung.",
-            "initial-supply-label": "Anfänglicher Bestand",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen"
+          "equities": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihr Eigenkapital sind.",
+            "title": "Eigenkapital-Konfiguration"
           },
-          "title": "Kryptowährung erstellen",
-          "trigger-label": "Eine neue Kryptowährung ausgeben"
-        },
-        "equities": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
-            "isin-label": "ISIN",
-            "isin-placeholder": "US1234567890",
-            "name-label": "Name",
-            "name-placeholder": "Globale Aktien",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "GLEQ",
-            "title": "Grundinformationen"
-          },
-          "button-label": "Eine neue Aktie ausgeben",
-          "configuration": {
-            "description": "Konfigurieren Sie die Details zur Aktienklassifizierung",
-            "equity-category-label": "Aktienkategorie",
-            "equity-class-label": "Aktienklasse",
-            "title": "Konfiguration"
-          },
-          "description": "Eine neue Aktie auf der Blockchain ausgeben",
-          "summary": {
-            "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-            "asset-basics-title": "Asset-Grundlagen",
-            "configuration-description": "Details zur Aktienklassifizierung.",
-            "configuration-title": "Konfiguration",
-            "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen Aktie vor der Erstellung.",
-            "equity-category-label": "Aktienkategorie",
-            "equity-class-label": "Aktienklasse",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen"
-          },
-          "title": "Neue Aktie erstellen",
-          "trigger-label": "Prägen"
-        },
-        "funds": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
-            "isin-label": "ISIN",
-            "isin-placeholder": "US1234567890",
-            "name-label": "Name",
-            "name-placeholder": "Global Growth Fund",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "GGF",
-            "title": "Grundinformationen"
-          },
-          "button-label": "Einen neuen Fonds ausgeben",
-          "configuration": {
-            "basis-points": "bps",
-            "description": "Geben Sie die Fonds-Kategorie, Klasse und Verwaltungsgebühr an.",
-            "fund-category-label": "Fonds-Kategorie",
-            "fund-class-label": "Fonds-Klasse",
-            "management-fee-description": "Jährliche Verwaltungsgebühr in Basispunkten (100 bps = 1%)",
-            "management-fee-label": "Verwaltungsgebühr",
+          "funds": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihren Fonds sind.",
             "title": "Fonds-Konfiguration"
           },
-          "description": "Definieren und starten Sie ein neues Fonds-Asset.",
-          "summary": {
-            "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-            "asset-basics-title": "Asset-Grundlagen",
-            "basis-points": "bps",
-            "configuration-description": "Einstellungen zur Fonds-Kategorie, Klasse und Gebühr.",
-            "configuration-title": "Fonds-Konfiguration",
+          "stablecoins": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihre Stable Coin sind.",
+            "title": "Stable Coin-Konfiguration"
+          },
+          "tokenizeddeposits": {
+            "description": "Legen Sie Parameter fest, die spezifisch für Ihre tokenisierte Einzahlung sind.",
+            "title": "Tokenisierte Einzahlungs-Konfiguration"
+          }
+        },
+        "form": {
+          "description": {
+            "bonds": "Schuldtitel, die als tokenisierte Wertpapiere ausgegeben werden.",
+            "cryptocurrencies": "Dezentralisierte digitale Vermögenswerte, die als Tauschmittel oder Wertspeicher verwendet werden.",
+            "equities": "Vermögenswerte, die Eigentum an einem Unternehmen repräsentieren.",
+            "funds": "Anlagevehikel, die von professionellen Managern gebündelt werden.",
+            "stablecoins": "Digitale Vermögenswerte, die an einen stabilen Vermögenswert wie USD gekoppelt sind.",
+            "tokenizeddeposits": "Digitale Vermögenswerte, die eine Einzahlung eines traditionellen Vermögenswerts repräsentieren."
+          },
+          "title": {
+            "bonds": "Gestalten Sie eine neue Anleihe",
+            "cryptocurrencies": "Gestalten Sie eine neue Kryptowährung",
+            "equities": "Gestalten Sie ein neues Eigenkapital",
+            "funds": "Gestalten Sie einen neuen Fonds",
+            "stablecoins": "Gestalten Sie eine neue Stable Coin",
+            "tokenizeddeposits": "Gestalten Sie eine neue tokenisierte Einzahlung"
+          },
+          "trigger-label": {
+            "bonds": "Geben Sie eine neue Anleihe aus",
+            "cryptocurrencies": "Geben Sie eine neue Kryptowährung aus",
+            "equities": "Geben Sie ein neues Eigenkapital aus",
+            "funds": "Geben Sie einen neuen Fonds aus",
+            "stablecoins": "Geben Sie eine neue Stablecoin aus",
+            "tokenizeddeposits": "Geben Sie eine neue tokenisierte Einzahlung aus"
+          }
+        },
+        "parameters": {
+          "bonds": {
+            "cap-description": "Maximale Anzahl von Token, die ausgegeben werden können",
+            "cap-label": "Maximale Menge",
+            "face-value-description": "Nennwert einer einzelnen Anleiheeinheit",
+            "face-value-label": "Nennwert",
+            "isin-placeholder": "US000000AA00",
+            "maturity-date-label": "Fälligkeitsdatum",
+            "name-placeholder": "Unternehmen XYZ Anleihe 2023",
+            "symbol-placeholder": "XYZ23",
+            "underlying-asset-description": "Adresse des Vermögenswerts, der diese Anleihe absichert",
+            "underlying-asset-label": "Unterliegender Vermögenswert"
+          },
+          "common": {
+            "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
             "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen und bestätigen Sie die Details Ihres neuen Fonds vor der Erstellung.",
+            "isin-label": "ISIN",
+            "name-label": "Name",
+            "seconds-unit-label": "Sekunden",
+            "symbol-label": "Symbol"
+          },
+          "cryptocurrencies": {
+            "initial-supply-description": "Anfängliche Menge an Token, die geprägt werden sollen",
+            "initial-supply-label": "Anfängliche Menge",
+            "name-placeholder": "Bitcoin",
+            "symbol-placeholder": "BTC"
+          },
+          "equities": {
+            "equity-category-label": "Eigenkapitalkategorie",
+            "equity-class-label": "Eigenkapitalklasse",
+            "isin-placeholder": "US1234567890",
+            "name-placeholder": "Globale Eigenkapital",
+            "symbol-placeholder": "GLEQ"
+          },
+          "funds": {
+            "basis-points": "bps",
             "fund-category-label": "Fonds-Kategorie",
             "fund-class-label": "Fonds-Klasse",
-            "isin-label": "ISIN",
+            "isin-placeholder": "US1234567890",
+            "management-fee-description": "Jährliche Verwaltungsgebühr in Basispunkten (100 bps = 1%)",
             "management-fee-label": "Verwaltungsgebühr",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen"
+            "name-placeholder": "Global Growth Fund",
+            "symbol-placeholder": "GGF"
           },
-          "title": "Fonds erstellen",
-          "trigger-label": "Einen neuen Fonds ausgeben"
-        },
-        "stablecoins": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
-            "isin-label": "ISIN",
+          "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
-            "name-label": "Name",
             "name-placeholder": "TotallyNotTether",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "SAFU",
-            "title": "Grundinformationen"
+            "symbol-placeholder": "SAFU"
           },
-          "button-label": "Geben Sie einen neuen Stablecoin aus",
-          "configuration": {
-            "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
-            "description": "Geben Sie erweiterte Einstellungen wie die Gültigkeit des Sicherheitennachweises an.",
-            "title": "Konfiguration"
-          },
-          "description": "Definieren und starten Sie ein neues Stablecoin-Asset.",
-          "summary": {
-            "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-            "asset-basics-title": "Asset-Grundlagen",
-            "collateral-proof-validity-label": "Gültigkeit des Sicherheitennachweises",
-            "configuration-description": "Asset-Angebot und zusätzliche Einstellungen.",
-            "configuration-title": "Konfiguration",
-            "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen und bestätigen Sie die Details Ihres neuen Stablecoins vor der Erstellung.",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "seconds": "Sekunden",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen Sie die Details Ihres neuen Stablecoins vor der Erstellung."
-          },
-          "title": "Stablecoin erstellen",
-          "trigger-label": "Geben Sie einen neuen Stablecoin aus"
+          "tokenizeddeposits": {
+            "isin-placeholder": "EU1234567890",
+            "name-placeholder": "Tokenisierter Euro",
+            "symbol-placeholder": "TEUR"
+          }
         },
-        "tokenizeddeposits": {
-          "basics": {
-            "decimals-label": "Dezimalstellen",
-            "description": "Definieren Sie wesentliche Details wie Name, Symbol und Sichtbarkeit.",
-            "isin-label": "ISIN",
-            "isin-placeholder": "DEFI4EVER2024",
-            "name-label": "Name",
-            "name-placeholder": "TotallyNotTether",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "SAFU",
-            "title": "Grundinformationen"
-          },
-          "button-label": "Geben Sie eine neue tokenisierte Einzahlung aus",
-          "description": "Definieren und starten Sie ein neues tokenisiertes Einzahlungs-Asset.",
-          "summary": {
-            "asset-basics-description": "Grundlegende Asset-Informationen und Einstellungen.",
-            "asset-basics-title": "Asset-Grundlagen",
-            "decimals-label": "Dezimalstellen",
-            "description": "Überprüfen und bestätigen Sie die Details Ihrer neuen tokenisierten Einzahlung vor der Erstellung.",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Überprüfen und bestätigen Sie die Details Ihrer neuen tokenisierten Einzahlung vor der Erstellung."
-          },
-          "title": "Tokenisierte Einzahlung erstellen",
-          "trigger-label": "Geben Sie eine neue tokenisierte Einzahlung aus"
+        "summary": {
+          "asset-basics-description": "Allgemeine Informationen zu Ihrem Vermögen.",
+          "asset-basics-title": "Grundinformationen",
+          "configuration-description": "Spezifische Parameter für Ihr Vermögen.",
+          "configuration-title": "Konfiguration",
+          "description": "Dies ist der letzte Schritt, bevor Sie Ihr Vermögen erstellen. Bitte überprüfen Sie alle eingegebenen Details.",
+          "title": "Zusammenfassung"
         }
       },
       "detail": {
         "forms": {
           "actions": {
             "burn": "Verbrennen",
-            "grant-role": "Rolle gewähren",
+            "grant-role": "Vermögensadministrator hinzufügen",
             "mature": "Fällig",
             "mint": "Prägen",
-            "pause": "Pause",
+            "pause": "Vertrag pausieren",
             "top-up": "Aufladen",
-            "unpause": "Wieder aktivieren",
+            "unpause": "Vertrag fortsetzen",
             "update-collateral": "Sicherheiten aktualisieren",
+            "view-events": "Ereignisse anzeigen",
             "withdraw": "Abheben"
           },
           "manage": "Verwalten"
         }
       },
       "details": {
-        "asset-management": "Asset-Management",
+        "asset-management": "Vermögensverwaltung",
         "forms": {
           "burn": {
             "amount": {
@@ -812,14 +761,14 @@
               "title": "Betrag eingeben"
             },
             "button-label": "Vermögenswerte verbrennen",
-            "description": "Bonds dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+            "description": "Bonds-Token dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
             "summary": {
               "amount-label": "Betrag",
-              "asset-label": "Asset",
+              "asset-label": "Vermögenswert",
               "burn-description": "Details der Verbrennungsoperation",
               "burn-title": "Verbrennen",
               "description": "Überprüfen Sie die Details Ihrer Verbrennung, bevor Sie fortfahren.",
-              "title": "Überprüfen und Verbrennung bestätigen"
+              "title": "Überprüfen und bestätigen Sie die Verbrennung"
             },
             "title": "Verbrennen",
             "trigger-label": "Verbrennen"
@@ -842,26 +791,26 @@
             },
             "summary": {
               "admin-address-label": "Admin-Adresse",
-              "asset-label": "Asset",
+              "asset-label": "Vermögenswert",
               "description": "Überprüfen Sie die Details Ihrer Rollenvergabe, bevor Sie fortfahren.",
-              "grant-description": "Details der Rollenvergabe",
+              "grant-description": "Details der Rollenvergabeoperation",
               "grant-title": "Rolle gewähren",
               "roles-label": "Rollen",
-              "title": "Überprüfen und Rollenvergabe bestätigen"
+              "title": "Überprüfen und bestätigen Sie die Rollenvergabe"
             },
             "title": "Rolle gewähren"
           },
           "mature": {
-            "button-label": "Anleihe fällig",
-            "description": "Fälligkeit Ihrer Anleihe und Erhalt des zugrunde liegenden Vermögenswerts",
+            "button-label": "Fällige Anleihe",
+            "description": "Fällige Anleihe und den zugrunde liegenden Vermögenswert erhalten",
             "summary": {
               "asset-label": "Anleihe",
               "description": "Überprüfen Sie die Details Ihrer Anleihefälligkeit, bevor Sie fortfahren.",
               "mature-description": "Details der Anleihefälligkeit",
               "mature-title": "Fällig",
-              "title": "Überprüfen und Fälligkeit bestätigen"
+              "title": "Überprüfen und bestätigen Sie die Fälligkeit"
             },
-            "title": "Anleihe fällig",
+            "title": "Fällige Anleihe",
             "trigger-label": "Fällig"
           },
           "mint": {
@@ -871,7 +820,7 @@
               "title": "Betrag eingeben"
             },
             "button-label": "Vermögenswerte prägen",
-            "description": "Geben Sie neue Token aus, um das zirkulierende Angebot der Anleihe zu erhöhen.",
+            "description": "Geben Sie neue Token aus, um das umlaufende Angebot der Anleihe zu erhöhen.",
             "recipients": {
               "description": "Wählen Sie aus, wer die geprägten Token erhalten soll",
               "title": "Empfänger auswählen"
@@ -879,8 +828,8 @@
             "summary": {
               "amount-label": "Betrag",
               "asset-label": "Vermögenswert",
-              "description": "Überprüfen Sie die Einzelheiten Ihrer Prägung, bevor Sie fortfahren.",
-              "mint-description": "Einzelheiten der Prägungsoperation",
+              "description": "Überprüfen Sie die Details Ihrer Prägung, bevor Sie fortfahren.",
+              "mint-description": "Details der Prägeoperation",
               "mint-title": "Prägen",
               "title": "Überprüfen und bestätigen Sie die Prägung"
             },
@@ -890,19 +839,19 @@
           "pause": {
             "pause": {
               "button-label": "Transaktionen pausieren",
-              "description": "Halten Sie alle Transaktionen und Interaktionen für diese Anleihe vorübergehend an.",
+              "description": "Halten Sie vorübergehend alle Transaktionen und Interaktionen für diese Anleihe an.",
               "title": "Anleihe-Transaktionen pausieren"
             },
             "summary": {
               "asset-label": "Vermögenswert",
               "current-state-label": "Aktueller Zustand",
-              "description": "Überprüfen Sie die Einzelheiten Ihrer Pause-Operation, bevor Sie fortfahren.",
-              "pause-description": "Einzelheiten der Pausierung",
+              "description": "Überprüfen Sie die Details Ihrer Pauseoperation, bevor Sie fortfahren.",
+              "pause-description": "Details der Pausierung",
               "pause-title": "Pause",
               "state-active": "Aktiv",
               "state-paused": "Pausiert",
               "target-state-label": "Zielzustand",
-              "title": "Überprüfen und bestätigen Sie die Pause-Operation"
+              "title": "Überprüfen und bestätigen Sie die Pauseoperation"
             },
             "unpause": {
               "button-label": "Transaktionen fortsetzen",
@@ -924,7 +873,7 @@
             "summary": {
               "amount-label": "Betrag",
               "asset-label": "Zugrunde liegender Vermögenswert",
-              "description": "Überprüfen Sie die Einzelheiten Ihres Aufladens, bevor Sie fortfahren.",
+              "description": "Überprüfen Sie die Details Ihres Aufladens, bevor Sie fortfahren.",
               "title": "Überprüfen und bestätigen Sie das Aufladen"
             },
             "title": "Zugrunde liegenden Vermögenswert aufladen",
@@ -941,9 +890,9 @@
             "summary": {
               "amount-label": "Betrag",
               "asset-label": "Vermögenswert",
-              "description": "Überprüfen Sie die Einzelheiten Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
+              "description": "Überprüfen Sie die Details Ihrer Aktualisierung der nachgewiesenen Sicherheiten, bevor Sie fortfahren.",
               "title": "Überprüfen und bestätigen Sie die Aktualisierung der nachgewiesenen Sicherheiten",
-              "update-description": "Einzelheiten der Aktualisierung der Sicherheitenoperation",
+              "update-description": "Details der Aktualisierung der Sicherheitenoperation",
               "update-title": "Sicherheiten aktualisieren"
             },
             "title": "Sicherheiten aktualisieren",
@@ -952,14 +901,14 @@
           "withdraw": {
             "amount": {
               "amount": {
-                "description": "Geben Sie den Betrag ein, den Sie abheben möchten",
+                "description": "Geben Sie den Betrag zum Abheben ein",
                 "label": "Betrag"
               },
               "description": "Geben Sie den Betrag an, den Sie abheben möchten.",
               "title": "Betrag eingeben"
             },
             "button-label": "Abheben",
-            "description": "Zugrunde liegenden Vermögenswert von Ihrer Anleihe abheben",
+            "description": "Zugrunde liegenden Vermögenswert aus Ihrer Anleihe abheben",
             "recipient": {
               "description": "Wählen Sie aus, wer den zugrunde liegenden Vermögenswert erhalten soll.",
               "label": "Empfänger",
@@ -970,12 +919,12 @@
             },
             "summary": {
               "amount-label": "Betrag",
-              "asset-label": "Zugrunde liegender Vermögenswert",
+              "asset-label": "Basiswert",
               "description": "Überprüfen Sie die Einzelheiten Ihrer Abhebung, bevor Sie fortfahren.",
               "recipient-label": "Empfänger",
-              "title": "Überprüfen und bestätigen Sie die Abhebung"
+              "title": "Abhebung überprüfen und bestätigen"
             },
-            "title": "Zugrunde liegenden Vermögenswert abheben",
+            "title": "Basiswert abheben",
             "trigger-label": "Abheben"
           }
         },
@@ -1000,7 +949,7 @@
                 "state-active": "Aktiv",
                 "state-blocked": "Blockiert",
                 "target-state-label": "Zielzustand",
-                "title": "Überprüfen und bestätigen Sie die Blockierungsoperation",
+                "title": "Blockierungsoperation überprüfen und bestätigen",
                 "unblock-title": "Entsperren"
               },
               "unblock-button-label": "Benutzer entsperren",
@@ -1022,10 +971,10 @@
                 "asset-label": "Vermögenswert",
                 "description": "Überprüfen Sie die Einzelheiten Ihrer Einfrieroperation, bevor Sie fortfahren.",
                 "freeze-title": "Einfrieren",
-                "operation-description": "Einzelheiten zur Einfrieroperation",
-                "title": "Überprüfen und bestätigen Sie die Einfrieroperation"
+                "operation-description": "Einzelheiten der Einfrieroperation",
+                "title": "Einfrieroperation überprüfen und bestätigen"
               },
-              "title": "Benutzerfonds einschränken",
+              "title": "Benutzermittel einschränken",
               "trigger-label": "Einfrieren"
             }
           },
@@ -1046,10 +995,10 @@
             },
             "summary": {
               "current-roles-label": "Aktuelle Rollen",
-              "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion ändert die Rollen des Benutzers.",
+              "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion ändert die Rollen für den Benutzer.",
               "new-roles-label": "Neue Rollen",
-              "operation-description": "Einzelheiten zur Aktualisierung der Rollenoperation",
-              "title": "Überprüfen und bestätigen Sie die neuen Rollen",
+              "operation-description": "Einzelheiten der Rollenaktualisierung",
+              "title": "Neue Rollen überprüfen und bestätigen",
               "update-title": "Rollen aktualisieren",
               "user-label": "Benutzer"
             },
@@ -1057,16 +1006,16 @@
           },
           "revoke-all-form": {
             "button-label": "Zugriff widerrufen",
-            "description": "Widerrufen Sie den Zugriff und die Berechtigungen dieses Benutzers vollständig.",
+            "description": "Den Zugriff und die Berechtigungen dieses Benutzers vollständig widerrufen.",
             "summary": {
               "description": "Überprüfen Sie die Einzelheiten, bevor Sie fortfahren. Diese Aktion widerruft alle Berechtigungen für den Benutzer.",
-              "operation-description": "Einzelheiten zum Widerruf aller Berechtigungen",
+              "operation-description": "Einzelheiten des Widerrufs aller Berechtigungen",
               "revoke-title": "Alle widerrufen",
               "roles-to-revoke-label": "Zu widerrufende Rollen",
               "title": "Überprüfen und bestätigen",
               "user-label": "Benutzer"
             },
-            "title": "Zugriff für alle Benutzer entfernen",
+            "title": "Zugriff aller Benutzer entfernen",
             "trigger-label": "Alle widerrufen"
           },
           "table-title": "Berechtigungen"
@@ -1074,7 +1023,7 @@
         "related": {
           "bonds": {
             "decrease-supply": {
-              "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleiheerückzahlung bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
+              "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleihe-Rückzahlungen bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
               "title": "Anleihen einlösen"
             },
             "increase-supply": {
@@ -1084,7 +1033,7 @@
           },
           "cryptocurrencies": {
             "increase-supply": {
-              "description": "Ein Tokenmanager kann neue Token gemäß dem Tokenomics-Plan und dem Emissionszeitplan prägen.",
+              "description": "Ein Token-Manager kann neue Token gemäß dem Tokenomics-Plan und dem Emissionszeitplan prägen.",
               "title": "Token prägen"
             }
           },
@@ -1100,7 +1049,7 @@
           },
           "funds": {
             "decrease-supply": {
-              "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleiheerückzahlung bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
+              "description": "Ein Anleihemanager kann das Gesamtangebot durch Anleihe-Rückzahlungen bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
               "title": "Anleihen einlösen"
             },
             "increase-supply": {
@@ -1110,27 +1059,31 @@
           },
           "stablecoins": {
             "decrease-supply": {
-              "description": "Ein Liefermanager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
-              "title": "Angebot verringern"
+              "description": "Ein Supply-Manager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "title": "Angebot reduzieren"
             },
             "increase-supply": {
-              "description": "Ein Liefermanager kann neue Stablecoins prägen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "description": "Ein Supply-Manager kann neue Stablecoins prägen, sofern ausreichende Sicherheiten vorhanden sind.",
               "title": "Angebot erhöhen"
             },
             "update-collateral": {
-              "description": "Ein Liefermanager muss die Sicherheiten, die den Stablecoin unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Vermögen jederzeit vollständig besichert bleibt.",
+              "description": "Ein Supply-Manager muss die Sicherheiten, die den Stablecoin absichern, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
               "title": "Sicherheiten aktualisieren"
             }
           },
           "title": "Verwandte Aktionen",
           "tokenizeddeposits": {
             "decrease-supply": {
-              "description": "Ein Liefermanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "description": "Ein Supply-Manager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
               "title": "Angebot tokenisierter Einlagen reduzieren"
             },
             "increase-supply": {
-              "description": "Ein Liefermanager kann neue tokenisierte Einlagen prägen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "description": "Ein Supply-Manager kann neue tokenisierte Einlagen prägen, sofern ausreichende Sicherheiten vorhanden sind.",
               "title": "Angebot tokenisierter Einlagen erhöhen"
+            },
+            "update-collateral": {
+              "description": "Ein Supply-Manager muss die Sicherheiten, die den Stablecoin absichern, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
+              "title": "Aktualisieren Sie Sicherheiten"
             }
           }
         },
@@ -1150,13 +1103,13 @@
         "balance-header": "Guthaben",
         "category-header": "Kategorie",
         "class-header": "Klasse",
-        "collateral-proof-expiration": "Ablauf der Sicherheitenprüfung",
-        "collateral-proof-expiration-info": "Ab diesem Zeitpunkt ist die Sicherheitenprüfung ungültig",
-        "collateral-proof-validity": "Gültigkeit der Sicherheitenprüfung",
-        "collateral-proof-validity-info": "Wie lange die Sicherheitenprüfung gültig ist",
+        "collateral-proof-expiration": "Ablauf der Sicherheitenbestätigung",
+        "collateral-proof-expiration-info": "Ab diesem Zeitpunkt ist die Sicherheitenbestätigung ungültig",
+        "collateral-proof-validity": "Gültigkeit der Sicherheitenbestätigung",
+        "collateral-proof-validity-info": "Wie lange die Sicherheitenbestätigung gültig ist",
         "committed-collateral-header": "Verpflichtete Sicherheiten",
         "committed-collateral-ratio": "Verhältnis der verpflichteten Sicherheiten",
-        "committed-collateral-ratio-info": "Das Verhältnis der verpflichteten Sicherheiten zum Gesamtangebot des Tokens",
+        "committed-collateral-ratio-info": "Das Verhältnis der verpflichteten Sicherheiten zur Gesamtmenge des Tokens",
         "contract-address": "Adresse",
         "creator": "Ersteller",
         "decimals": "Dezimalstellen",
@@ -1166,21 +1119,21 @@
         },
         "equity": {
           "categories": {
-            "blend-equity": "Eigenkapital mischen",
-            "common-equity": "Stammaktien",
+            "blend-equity": "Blend Equity",
+            "common-equity": "Common Equity",
             "communication-services": "Kommunikationsdienste",
-            "consumer-discretionary": "Verbraucher discretionary",
-            "consumer-staples": "Verbraucher staples",
-            "convertible-preferred-stock": "Wandelanleihen",
+            "consumer-discretionary": "Zyklische Konsumgüter",
+            "consumer-staples": "Nichtzyklische Konsumgüter",
+            "convertible-preferred-stock": "Wandelbare Vorzugsaktien",
             "cumulative-preferred-stock": "Kumulative Vorzugsaktien",
             "distressed-equity": "Notleidende Aktien",
-            "domestic-equity": "Inländisches Eigenkapital",
+            "domestic-equity": "Inländische Aktien",
             "dual-class-shares": "Aktien mit doppelter Klasse",
             "emerging-market-equity": "Aktien aus Schwellenländern",
             "energy": "Energie",
             "esop-shares": "Mitarbeiterbeteiligungsplan (ESOP) Aktien",
             "financials": "Finanzen",
-            "frontier-market-equity": "Grenzmarkt-Aktien",
+            "frontier-market-equity": "Aktien aus Grenzmärkten",
             "global-equity": "Globale Aktien",
             "growth-capital": "Wachstumskapital",
             "growth-equity": "Wachstumsaktien",
@@ -1192,9 +1145,9 @@
             "leveraged-buyouts": "Leveraged Buyouts (LBOs)",
             "materials": "Materialien",
             "mezzanine-financing": "Mezzanine-Finanzierung",
-            "micro-cap-equity": "Mikrokapital-Aktien",
+            "micro-cap-equity": "Micro-Cap-Aktien",
             "mid-cap-equity": "Mid-Cap-Aktien",
-            "non-cumulative-preferred-stock": "Nicht kumulierte Vorzugsaktien",
+            "non-cumulative-preferred-stock": "Nicht-kumulative Vorzugsaktien",
             "non-voting-common-stock": "Stimmrechtslose Stammaktien",
             "real-estate": "Immobilien",
             "redeemable-preferred-stock": "Einlösbare Vorzugsaktien",
@@ -1203,19 +1156,19 @@
             "technology": "Technologie",
             "tracking-stocks": "Tracking Stocks",
             "utilities": "Versorgungsunternehmen",
-            "value-equity": "Wertaktien",
+            "value-equity": "Value Equity",
             "venture-capital": "Risikokapital",
-            "voting-common-stock": "Stimmrechtsfähige Stammaktien"
+            "voting-common-stock": "Stimmrechtsaktien"
           },
           "classes": {
-            "common-equity": "Stammaktien",
+            "common-equity": "Common Equity",
             "geographic-equity": "Geografische Aktien",
             "investment-stage-private-equity": "Investitionsphase (Private Equity)",
-            "investment-style-equity": "Investitionsstil-Aktien",
+            "investment-style-equity": "Investmentstil-Aktien",
             "market-capitalization-equity": "Marktkapitalisierungsaktien",
             "preferred-equity": "Bevorzugte Aktien",
             "sector-industry-equity": "Sektor-/Branchenaktien",
-            "special-classes-equity": "Sonderklassen von Aktien"
+            "special-classes-equity": "Besondere Aktienklassen"
           }
         },
         "face-value": "Nennwert",
@@ -1224,36 +1177,36 @@
           "categories": {
             "activist": "Aktivist",
             "commodity-trading": "Rohstoffhandel",
-            "convertible-arbitrage": "Wandelarbitrage",
+            "convertible-arbitrage": "Wandelbare Arbitrage",
             "credit": "Kredit",
             "currency-fx": "Währungs-FX",
             "distressed-debt": "Notleidende Schulden",
-            "emerging-markets": "Schwellenländer",
+            "emerging-markets": "Schwellenmärkte",
             "equity-hedge": "Aktien-Hedge",
             "event-driven": "Ereignisgesteuert",
             "fixed-income-arbitrage": "Festzinsarbitrage",
             "fund-of-funds": "Fond von Fonds",
-            "global-macro": "Global Macro",
+            "global-macro": "Globale Makroökonomie",
             "high-frequency-trading": "Hochfrequenzhandel (HFT)",
             "managed-futures-cta": "Verwaltete Futures / CTA",
             "market-neutral": "Marktneutral",
-            "merger-arbitrage": "Fusionsarbitrage",
+            "merger-arbitrage": "Fusionarbitrage",
             "multi-strategy": "Multi-Strategie",
             "private-equity": "Private Equity (PE)",
             "venture-capital": "Risikokapital (VC)"
           },
           "classes": {
             "absolute-return": "Absolute Rendite",
-            "core-blend": "Kern / Mischung",
+            "core-blend": "Kern / Blend",
             "diversified": "Diversifiziert",
             "early-stage": "Frühphase",
-            "factor-based": "Faktor-basiert",
+            "factor-based": "Faktorbasiert",
             "growth-focused": "Wachstumsorientiert",
-            "income-focused": "Einkommensorientiert",
+            "income-focused": "Einkommensfokussiert",
             "large-cap": "Large-Cap",
-            "long-equity": "Long-Aktien (nur Long)",
-            "long-short-equity": "Long/Short-Aktien",
-            "market-neutral": "Marktneutral",
+            "long-equity": "Long Equity (Nur Long)",
+            "long-short-equity": "Long/Short Equity",
+            "market-neutral": "Markenneutral",
             "mid-cap": "Mid-Cap",
             "momentum-oriented": "Momentum-orientiert",
             "opportunistic": "Opportunistisch",
@@ -1263,10 +1216,10 @@
             "sector-specific": "Sektor-spezifisch",
             "seed-pre-seed": "Seed / Pre-Seed",
             "series-b-late-stage": "Series B / Spätphase",
-            "short-equity": "Short-Aktien",
+            "short-equity": "Short Equity",
             "small-cap": "Small-Cap",
-            "tactical-asset-allocation": "Taktische Vermögensallokation",
-            "value-focused": "Wertorientiert"
+            "tactical-asset-allocation": "Taktische Asset-Allokation",
+            "value-focused": "Wertfokussiert"
           }
         },
         "isin": "ISIN",
@@ -1280,14 +1233,14 @@
         "name-header": "Name",
         "not-available": "N/A",
         "ownership-concentration": "Besitzkonzentration",
-        "ownership-concentration-info": "Prozentsatz, der den Top 5 Inhabern gehört",
-        "proven-collateral": "Nachgewiesene Sicherheiten",
-        "proven-collateral-info": "Der Betrag der Sicherheiten, der nachgewiesen wurde, dass er vom Token gehalten wird",
-        "redeemed": "Einlöst",
+        "ownership-concentration-info": "Prozentsatz, der von den 5 größten Inhabern gehalten wird",
+        "proven-collateral": "Bewiesene Sicherheiten",
+        "proven-collateral-info": "Der Betrag an Sicherheiten, der nachgewiesen wurde, dass er vom Token gehalten wird",
+        "redeemed": "Eingelöst",
         "redeemed-info": "Gesamtbetrag der eingelösten Vermögenswerte",
         "redemption-readiness": "Einlösungsbereitschaft",
         "required-collateral-threshold": "Erforderliche Sicherheiten-Schwelle",
-        "required-collateral-threshold-info": "Der Betrag der Sicherheiten, der nachgewiesen werden muss",
+        "required-collateral-threshold-info": "Der Betrag an Sicherheiten, der nachgewiesen werden muss",
         "revoke-all-form": {
           "trigger-label": "Alle widerrufen"
         },
@@ -1296,11 +1249,11 @@
         "symbol": "Symbol",
         "symbol-header": "Symbol",
         "total-burned": "Insgesamt verbrannt",
-        "total-burned-info": "Menge der Token, die dauerhaft aus dem Umlauf entfernt wurden",
+        "total-burned-info": "Menge an Token, die dauerhaft aus dem Umlauf entfernt wurden",
         "total-holders": "# der Inhaber",
-        "total-holders-info": "Menge der Adressen, die derzeit die Vermögenswerte halten",
+        "total-holders-info": "Menge an Adressen, die derzeit die Vermögenswerte halten",
         "total-issued": "Insgesamt ausgegeben",
-        "total-issued-info": "Gesamtmenge der ausgegebenen Vermögenswerte",
+        "total-issued-info": "Gesamtbetrag der ausgegebenen Vermögenswerte",
         "total-supply": "Gesamtangebot",
         "total-supply-header": "Gesamtangebot",
         "total-supply-info": "Das Gesamtangebot des Vermögenswerts",
@@ -1322,7 +1275,7 @@
         "related": {
           "bond": {
             "issue-new": {
-              "description": "Erstellen und starten Sie eine neue Anleihe mit definiertem Fälligkeitsdatum, Kuponzinssätzen und Nennwert. Optimieren Sie die Anleiheausgabe mit automatisierten Zinszahlungen und Rückzahlungsplänen.",
+              "description": "Erstellen und starten Sie eine neue Anleihe mit definiertem Fälligkeitsdatum, Kuponraten und Nennwert. Optimieren Sie die Anleiheemission mit automatisierten Zinszahlungen und Rückzahlungsplänen.",
               "title": "Neue Anleihe ausgeben"
             },
             "mechanics": {
@@ -1331,14 +1284,14 @@
               "title": "Anleihemechanik"
             },
             "usecases": {
-              "button": "Erforschen",
-              "description": "Erforschen Sie Anwendungen in den Märkten für festverzinsliche Wertpapiere, von Unternehmensschulden bis hin zu strukturierten Produkten. Maximieren Sie die Effizienz bei Zinszahlungen, Fälligkeitsmanagement und regulatorischer Compliance.",
+              "button": "Entdecken",
+              "description": "Entdecken Sie Anwendungen in den Märkten für festverzinsliche Wertpapiere, von Unternehmensschulden bis hin zu strukturierten Produkten. Maximieren Sie die Effizienz bei Zinszahlungen, Fälligkeitsmanagement und regulatorischer Compliance.",
               "title": "Anleihe-Anwendungsfälle"
             }
           },
           "cryptocurrency": {
             "issue-new": {
-              "description": "Erstellen und starten Sie ein neues Kryptowährungstoken mit anpassbaren Parametern und Sicherheitsfunktionen. Optimieren Sie die Tokenbereitstellung mit konfigurierbaren Angebotsmechanismen und Übertragungssteuerungen.",
+              "description": "Erstellen und starten Sie einen neuen Kryptowährungs-Token mit anpassbaren Parametern und Sicherheitsfunktionen. Optimieren Sie die Token-Bereitstellung mit konfigurierbaren Angebotsmechanismen und Übertragungssteuerungen.",
               "title": "Neue Kryptowährung ausgeben"
             },
             "mechanics": {
@@ -1347,47 +1300,47 @@
               "title": "Tokenmechanik"
             },
             "usecases": {
-              "button": "Erforschen",
-              "description": "Erforschen Sie Anwendungen in digitalen Zahlungen, Belohnungssystemen und tokenisierten Dienstleistungen. Maximieren Sie den Nutzen durch programmierbare Transaktionen und Sicherheitsfunktionen auf institutionellem Niveau.",
+              "button": "Entdecken",
+              "description": "Entdecken Sie Anwendungen in digitalen Zahlungen, Belohnungssystemen und tokenisierten Dienstleistungen. Maximieren Sie den Nutzen durch programmierbare Transaktionen und Sicherheitsfunktionen auf institutionellem Niveau.",
               "title": "Kryptowährungs-Anwendungsfälle"
             }
           },
           "equity": {
             "issue-new": {
-              "description": "Erstellen und starten Sie ein neues Aktien-Token mit definierten Aktienklassen und Eigentumsrechten. Optimieren Sie die Aktienausgabe zur Unterstützung der Aktionärsverteilung und Unternehmensführung.",
-              "title": "Neue Aktien-Token ausgeben"
+              "description": "Erstellen und starten Sie einen neuen Equity-Token mit definierten Aktienklassen und Eigentumsrechten. Optimieren Sie die Aktienemission zur Unterstützung der Aktionärsverteilung und Unternehmensführung.",
+              "title": "Neue Equity-Token ausgeben"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
               "description": "Erfahren Sie, wie Sie Aktionärsrechte, Abstimmungsmechanismen, Dividendenverteilungen und Eigentumsstrukturen verwalten.",
-              "title": "Aktienmechanik"
+              "title": "Equity-Mechanik"
             },
             "usecases": {
-              "button": "Erforschen",
-              "description": "Erforschen Sie Anwendungen im Bereich der Unternehmensaktienverwaltung, von der Aktienausgabe bis zur Stakeholder-Governance. Maximieren Sie die Effizienz in der Aktienverwaltung, den Abstimmungsrechten und der Dividendenverteilung.",
-              "title": "Aktien-Anwendungsfälle"
+              "button": "Entdecken",
+              "description": "Entdecken Sie Anwendungen im Management von Unternehmensaktien, von der Aktienemission bis zur Stakeholder-Governance. Maximieren Sie die Effizienz in der Aktienverwaltung, Abstimmungsrechten und Dividendenverteilung.",
+              "title": "Equity-Anwendungsfälle"
             }
           },
           "fund": {
             "issue-new": {
               "description": "Erstellen und starten Sie einen neuen Fonds mit definierten Parametern und Vermögensunterlegung. Optimieren Sie die Fondsbereitstellung zur Unterstützung neuer Investitionsmöglichkeiten und Marktsegmente.",
-              "title": "Neuen Fonds ausgeben"
+              "title": "Einen neuen Fonds ausgeben"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
-              "description": "Erfahren Sie, wie Sie wichtige Fondsparameter, Methoden zur Vermögensallokation und Strukturen der Verwaltungsgebühren anpassen.",
+              "description": "Erfahren Sie, wie Sie wichtige Fondsparameter, Methoden zur Vermögensallokation und Strukturen der Managementgebühren anpassen.",
               "title": "Fondsmechanik"
             },
             "usecases": {
-              "button": "Erforschen",
-              "description": "Erforschen Sie die praktischen Anwendungen und Integrationen digitaler Fonds. Maximieren Sie den Nutzen in der Vermögensverwaltung, der Tokenisierung von Vermögenswerten und den Ökosystemen der institutionellen Finanzen.",
+              "button": "Entdecken",
+              "description": "Entdecken Sie die praktischen Anwendungen und Integrationen digitaler Fonds. Maximieren Sie den Nutzen in den Bereichen Investmentmanagement, Vermögens-Tokenisierung und institutionelle Finanzökosysteme.",
               "title": "Anwendungsfälle"
             }
           },
           "stablecoin": {
             "issue-new": {
-              "description": "Erstellen und starten Sie einen neuen Stablecoin mit definierten Parametern und Sicherheiten. Optimieren Sie die Tokenbereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
-              "title": "Neuen Stablecoin ausgeben"
+              "description": "Erstellen und starten Sie einen neuen Stablecoin mit definierten Parametern und Sicherheiten. Optimieren Sie die Token-Bereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
+              "title": "Einen neuen Stablecoin ausgeben"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
@@ -1395,21 +1348,21 @@
               "title": "Stablecoin-Mechanik"
             },
             "usecases": {
-              "button": "Erforschen",
-              "description": "Erforschen Sie die praktischen Anwendungen und Integrationen von Stablecoins. Maximieren Sie den Nutzen in den Bereichen Zahlungen, Ersparnisse, Kredite und dezentrale Finanzökosysteme.",
+              "button": "Entdecken",
+              "description": "Erforschen Sie die praktischen Anwendungen und Integrationen von Stablecoins. Maximieren Sie den Nutzen in den Bereichen Zahlungen, Ersparnisse, Kreditvergabe und dezentralisierte Finanzökosysteme.",
               "title": "Anwendungsfälle"
             }
           },
           "title": "Verwandte Aktionen",
           "tokenizeddeposit": {
             "issue-new": {
-              "description": "Erstellen und starten Sie eine neue tokenisierte Einlage mit definierten Parametern. Optimieren Sie die Tokenbereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
-              "title": "Neue tokenisierte Einlage ausgeben"
+              "description": "Erstellen und starten Sie eine neue tokenisierte Einzahlung mit definierten Parametern. Optimieren Sie die Token-Bereitstellung zur Unterstützung neuer Projekte und Marktsegmente.",
+              "title": "Geben Sie eine neue tokenisierte Einzahlung aus"
             },
             "mechanics": {
               "button": "Erfahren Sie mehr",
-              "description": "Erfahren Sie, wie Sie wichtige Parameter für tokenisierte Einlagen anpassen.",
-              "title": "Mechanik der tokenisierten Einlage"
+              "description": "Erfahren Sie, wie Sie wichtige Parameter für tokenisierte Einzahlungen anpassen können.",
+              "title": "Mechanik der tokenisierten Einlagen"
             },
             "usecases": {
               "button": "Erforschen",
@@ -1419,20 +1372,20 @@
           }
         },
         "topinfo-description": {
-          "bond": "Digitale Anleihen repräsentieren traditionelle festverzinsliche Wertpapiere sicher auf der Blockchain, unterstützt durch reale Sicherheiten. Sie kombinieren die Transparenz der Blockchain mit vorhersehbaren Renditen, Rückzahlungen bei Fälligkeit und automatisierten Ertragsverteilungen. Dieses Anleihevermögen gewährleistet eine sichere Ausgabe, präzises Fälligkeitsmanagement, umfassende Compliance-Fähigkeiten und investorenfreundliche Rückzahlungsprozesse, die speziell für Finanzinstitute entwickelt wurden.",
-          "cryptocurrency": "Krypto-Währungsvermögen sind anpassbare digitale Instrumente, die kontrolliertes Minting, robuste Sicherheit und vollständige regulatorische Compliance bieten, ideal für den institutionellen Einsatz. Sie optimieren Finanzoperationen durch programmierbare Transaktionen, verbesserte Transparenz und integrierte Meta-Transaktionen für eine verbesserte Benutzerfreundlichkeit. Zu den Hauptmerkmalen gehören rollenbasierte Zugriffsverwaltung, sichere Ausgabe und einfache Integration in institutionelle Zahlungsprozesse.",
-          "equity": "Aktienvermögen digitalisieren traditionelle Aktienwertpapiere und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Entwickelt für institutionelle Investoren bieten sie eine sichere Aktienausgabe, Abstimmungsrechte für Aktionäre, detaillierte Zugriffssteuerungen und Mechanismen zur regulatorischen Compliance. Dieses Vermögen vereinfacht das Aktienmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
-          "fund": "Fondsvermögen digitalisieren Anteile an Investmentfonds und bieten automatisierte Erhebung von Verwaltungsgebühren, Investoren-Governance und umfassende regulatorische Compliance. Ideal für Finanzinstitute optimieren sie administrative Prozesse, gewährleisten transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Investoren. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
-          "stablecoin": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu erhalten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisschwankungen, die typischerweise mit Kryptowährungen verbunden sind. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist und den Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Währungen bietet. Zu den Hauptmerkmalen gehören besicherte Ausgabe, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und regulatorische Compliance-Fähigkeiten.",
-          "tokenizeddeposit": "Tokenisierte Einlagen repräsentieren traditionell Bankeinlagen digital und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robuste rollenbasierte Verwaltung und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen."
+          "bond": "Digitale Anleihen repräsentieren traditionelle festverzinsliche Wertpapiere sicher auf der Blockchain, unterstützt durch reale Sicherheiten. Sie kombinieren die Transparenz der Blockchain mit vorhersehbaren Renditen, Rückzahlung bei Fälligkeit und automatisierter Ertragsverteilung. Dieses Anleihe-Asset gewährleistet eine sichere Emission, präzises Fälligkeitsmanagement, umfassende Compliance-Fähigkeiten und investorenfreundliche Rückzahlungsprozesse, die speziell für Finanzinstitute entwickelt wurden.",
+          "cryptocurrency": "Krypto-Währungs-Assets sind anpassbare digitale Instrumente, die kontrolliertes Minting, robuste Sicherheit und vollständige regulatorische Compliance bieten, ideal für institutionelle Nutzung. Sie optimieren Finanzoperationen durch programmierbare Transaktionen, verbesserte Transparenz und integrierte Meta-Transaktionen für eine verbesserte Benutzerfreundlichkeit. Zu den Hauptmerkmalen gehören rollenbasiertes Zugriffsmanagement, sichere Emission und einfache Integration in institutionelle Zahlungsprozesse.",
+          "equity": "Eigenkapital-Assets digitalisieren traditionelle Eigenkapitalwertpapiere und kombinieren fortschrittliche Blockchain-Funktionen mit robusten Governance- und Compliance-Tools. Sie sind für institutionelle Investoren konzipiert und bieten eine sichere Eigenkapitalemission, Stimmrechte der Aktionäre, detaillierte Zugriffskontrollen und Mechanismen zur Einhaltung von Vorschriften. Dieses Asset vereinfacht das Eigenkapitalmanagement, erhöht die Transparenz und gewährleistet eine sichere Teilnahme der Investoren.",
+          "fund": "Fonds-Assets digitalisieren Anteile an Investmentfonds und bieten automatisierte Verwaltung von Verwaltungsgebühren, Investoren-Governance und umfassende regulatorische Compliance. Ideal für Finanzinstitute optimieren sie administrative Prozesse, gewährleisten eine transparente Gebührenverwaltung und ermöglichen eine sichere Abstimmung der Investoren. Der Vertrag bietet starke Sicherheit, anpassbare Fondsattribute und verbesserte betriebliche Effizienz.",
+          "stablecoin": "Stablecoins sind digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert zu erhalten, indem sie durch reale Vermögenswerte oder Reserven gedeckt sind. Sie bieten die Vorteile digitaler Vermögenswerte – wie Geschwindigkeit, Transparenz und Programmierbarkeit – und vermeiden gleichzeitig die Preisschwankungen, die typischerweise mit Kryptowährungen verbunden sind. Dieser StableCoin-Vertrag stellt sicher, dass jeder ausgegebene Token vollständig besichert ist und den Institutionen eine sichere, prüfbare und zuverlässige Verwaltung digitaler Gelder bietet. Zu den Hauptmerkmalen gehören besicherte Emissionen, umfassende rollenbasierte Kontrollen, robuste Pausierungsmechanismen und Compliance-Fähigkeiten.",
+          "tokenizeddeposit": "Tokenisierte Einlagen repräsentieren digital traditionelle Bankeinlagen und bieten Finanzinstituten verbesserte Sicherheit, Echtzeit-Transparenz und strenge Compliance-Fähigkeiten. Zu den Hauptmerkmalen gehören anpassbare Zulassungslisten, treuhänderische Aufsicht, robustes rollenbasiertes Management und integrierte Meta-Transaktionen, die die Verwaltung institutioneller Einlagen vereinfachen."
         },
         "topinfo-title": {
-          "bond": "Ein digitales festverzinsliches Wertpapiervermögen",
-          "cryptocurrency": "Ein anpassbares und sicheres digitales Vermögen",
-          "equity": "Digitale Aktienverwaltung auf institutionellem Niveau",
-          "fund": "Digitales Vermögen für institutionelles Fondsmanagement",
+          "bond": "Ein digitales festverzinsliches Wertpapier-Asset",
+          "cryptocurrency": "Ein anpassbares und sicheres digitales Asset",
+          "equity": "Digitale Eigenkapitalverwaltung auf institutionellem Niveau",
+          "fund": "Digitales Asset für das institutionelle Fondsmanagement",
           "stablecoin": "Eine sichere und besicherte digitale Währung",
-          "tokenizeddeposit": "Sichere und konforme Verwaltung digitaler Einlagen"
+          "tokenizeddeposit": "Sichere und konforme digitale Einlagenverwaltung"
         }
       }
     },
@@ -1442,7 +1395,7 @@
       "already-have-account": "Haben Sie bereits ein Konto?",
       "avatar": "Avatar",
       "avatar-description": "Klicken Sie auf das Avatar, um ein benutzerdefiniertes von Ihren Dateien hochzuladen.",
-      "avatar-instructions": "Ein Avatar ist optional, wird jedoch dringend empfohlen.",
+      "avatar-instructions": "Ein Avatar ist optional, wird aber dringend empfohlen.",
       "change-password": "Passwort ändern",
       "change-password-description": "Geben Sie Ihr aktuelles Passwort und ein neues Passwort ein.",
       "change-password-instructions": "Bitte verwenden Sie mindestens 8 Zeichen.",
@@ -1451,7 +1404,7 @@
       "current-password-placeholder": "Geben Sie Ihr aktuelles Passwort ein",
       "current-session": "Aktuelle Sitzung",
       "delete-account": "Konto löschen",
-      "delete-account-description": "Entfernen Sie Ihr Konto und alle seine Inhalte dauerhaft. Dies WIRD Ihren Zugriff auf Ihren privaten Schlüssel entfernen und Sie WERDEN den Zugriff auf Ihre Vermögenswerte verlieren! Diese Aktion ist nicht umkehrbar, also fahren Sie bitte mit Vorsicht fort.",
+      "delete-account-description": "Entfernen Sie Ihr Konto und alle Inhalte dauerhaft. Dies WIRD Ihren Zugriff auf Ihren privaten Schlüssel entfernen und Sie WERDEN den Zugriff auf Ihre Vermögenswerte verlieren! Diese Aktion ist nicht umkehrbar, also fahren Sie bitte mit Vorsicht fort.",
       "delete-account-email": "Bitte überprüfen Sie Ihre E-Mail, um die Löschung Ihres Kontos zu bestätigen.",
       "delete-account-instructions": "Bitte bestätigen Sie die Löschung Ihres Kontos. Diese Aktion ist nicht umkehrbar, also fahren Sie bitte mit Vorsicht fort.",
       "delete-account-not-fresh": "Sie müssen sich kürzlich angemeldet haben, um Ihr Konto zu löschen.",
@@ -1487,17 +1440,17 @@
       "password-instructions": "Bitte verwenden Sie mindestens 8 Zeichen.",
       "password-placeholder": "Geben Sie Ihr Passwort ein",
       "pincode-form": {
-        "name-label": "PIN-Code Name",
+        "name-label": "PIN-Code-Name",
         "pincode-label": "PIN-Code",
-        "setting-up": "Wird eingerichtet...",
+        "setting-up": "Einrichten...",
         "submit": "PIN-Code einrichten"
       },
       "provider-link-success": "Anbieter erfolgreich verknüpft.",
-      "provider-unlink-success": "Anbieter erfolgreich getrennt.",
+      "provider-unlink-success": "Anbieter erfolgreich entkoppelt.",
       "providers": "Anbieter",
       "providers-description": "Verbinden Sie Ihr Konto mit einem Drittanbieterdienst.",
       "providers-loading-error": "Konto-Informationen konnten nicht geladen werden",
-      "remember-me": "Erinnere mich",
+      "remember-me": "Erinnere dich an mich",
       "reset-password": "Passwort zurücksetzen",
       "reset-password-action": "Neues Passwort speichern",
       "reset-password-description": "Geben Sie Ihr neues Passwort unten ein",
@@ -1515,7 +1468,7 @@
       "sign-in-action": "Einloggen",
       "sign-in-description": "Geben Sie Ihre E-Mail unten ein, um sich in Ihr Konto einzuloggen",
       "sign-in-username-description": "Geben Sie Ihren Benutzernamen unten ein, um sich in Ihr Konto einzuloggen",
-      "sign-in-with": "Mit anmelden",
+      "sign-in-with": "Melden Sie sich an mit",
       "sign-out": "Abmelden",
       "sign-up": "Registrieren",
       "sign-up-action": "Ein Konto erstellen",
@@ -1523,9 +1476,9 @@
       "sign-up-email": "Überprüfen Sie Ihre E-Mail auf den Bestätigungslink.",
       "unlink": "Trennen",
       "username": "Benutzername",
-      "username-description": "Geben Sie den Benutzernamen ein, den Sie zum Einloggen verwenden möchten.",
+      "username-description": "Geben Sie den Benutzernamen ein, den Sie zum Anmelden verwenden möchten.",
       "username-instructions": "Bitte verwenden Sie maximal 32 Zeichen.",
-      "username-placeholder": "John Doe",
+      "username-placeholder": "Max Mustermann",
       "username-sign-in-placeholder": "Benutzername oder E-Mail",
       "wallet-security": {
         "pincode-instruction": "Geben Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftasche zu sichern.",
@@ -1534,7 +1487,7 @@
       }
     },
     "users": {
-      "banned_reason": "Für {reason} gesperrt",
+      "banned_reason": "Gesperrt wegen {reason}",
       "columns": {
         "email": "E-Mail",
         "kyc_status": "KYC-Status",
@@ -1551,29 +1504,29 @@
             "title": "Transaktionsvolumen / Tag"
           },
           "transaction-history-last-year": {
-            "description": "Transaktionen des letzten Jahres anzeigen",
+            "description": "Transaktionen der letzten Jahr anzeigen",
             "title": "Transaktionsvolumen / Monat"
           }
         },
         "edit_user": "Benutzer bearbeiten",
         "platform-management": "Plattformverwaltung",
         "tabs": {
-          "details": "Details",
+          "details": "Einzelheiten",
           "holdings": "Bestände",
           "latest-events": "Neueste Ereignisse",
           "permissions": "Berechtigungen"
         },
         "values": {
-          "asset_supply": "Vermögensversorgung",
+          "asset_supply": "Vermögensangebot",
           "created_at": "Erstellt am",
           "email": "E-Mail",
           "last_activity": "Letzte Aktivität",
-          "last_login": "Letzter Login",
+          "last_login": "Letzte Anmeldung",
           "name": "Name",
           "status": "Status",
           "transactions": "Transaktionen",
           "verified_at": "Verifiziert am",
-          "wallet": "Wallet"
+          "wallet": "Brieftasche"
         }
       },
       "holdings": {
@@ -1594,7 +1547,7 @@
       "platform-management": "Plattformverwaltung",
       "roles": {
         "admin": "Admin",
-        "issuer": "Aussteller",
+        "issuer": "Emittent",
         "user": "Benutzer"
       },
       "status": {
@@ -1612,7 +1565,7 @@
   "theme": {
     "dark": "Dunkel",
     "light": "Hell",
-    "switch-to-mode": "Wechseln zu {mode} Modus",
+    "switch-to-mode": "Wechseln Sie zu {mode} Modus",
     "system": "System",
     "toggle-label": "Thema umschalten"
   },

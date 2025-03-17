@@ -80,7 +80,21 @@
     },
     "platform": {
       "settings": {
-        "platform-management": "Platform management"
+        "base-currency-label": "Base Currency",
+        "base-currency-updated": "Base currency updated successfully",
+        "currencies": {
+          "aed": "UAE Dirham (AED)",
+          "eur": "Euro (EUR)",
+          "jpy": "Japanese Yen (JPY)",
+          "sar": "Saudi Riyal (SAR)",
+          "sgd": "Singapore Dollar (SGD)",
+          "usd": "US Dollar (USD)"
+        },
+        "platform-management": "Platform management",
+        "save": "Save",
+        "save-changes": "Save changes",
+        "saving": "Saving...",
+        "select-base-currency": "Select base currency"
       }
     },
     "sidebar": {
@@ -412,6 +426,17 @@
         "recent-transactions": "Recent transactions"
       }
     },
+    "add-contact-form": {
+      "contact": {
+        "added": "Contact added successfully",
+        "adding": "Adding contact...",
+        "description": "Add a new contact to your address book",
+        "first-name-label": "First Name",
+        "last-name-label": "Last Name",
+        "title": "Add Contact",
+        "wallet-address-label": "Wallet Address"
+      }
+    },
     "dashboard": {
       "latest-events": "Latest events",
       "my-assets": "My Assets",
@@ -425,15 +450,6 @@
       "you-have": "You have"
     },
     "my-assets": {
-      "detail": {
-        "manage": "Manage",
-        "forms": {
-          "actions": {
-            "transfer": "Transfer",
-            "redeem": "Redeem"
-          }
-        }
-      },
       "bond": {
         "redeem-form": {
           "amount": {
@@ -489,6 +505,15 @@
           }
         }
       },
+      "detail": {
+        "forms": {
+          "actions": {
+            "redeem": "Redeem",
+            "transfer": "Transfer"
+          }
+        },
+        "manage": "Manage"
+      },
       "portfolio-management": "Portfolio management",
       "table": {
         "actions-header": "Action",
@@ -499,6 +524,20 @@
         "type-header": "Type"
       },
       "title": "My Assets"
+    },
+    "my-contacts": {
+      "add-contact-button": "Add Contact",
+      "description": "Contacts management",
+      "table": {
+        "actions-header": "Action",
+        "created-at-header": "Created At",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Type",
+        "wallet-header": "Wallet"
+      },
+      "title": "My Contacts"
     },
     "settings": {
       "api-keys": {
@@ -568,155 +607,130 @@
       },
       "transfer": "Transfer",
       "transfer-title": "Transfer {name} ({symbol})"
-    },
-    "my-contacts": {
-      "title": "My Contacts",
-      "add-contact-button": "Add Contact",
-      "description": "Contacts management",
-      "table": {
-        "actions-header": "Action",
-        "name-header": "Name",
-        "status-header": "Status",
-        "symbol-header": "Symbol",
-        "type-header": "Type",
-        "wallet-header": "Wallet",
-        "created-at-header": "Created At"
-      }
-    },
-    "add-contact-form": {
-      "contact": {
-        "title": "Add Contact",
-        "description": "Add a new contact to your address book",
-        "wallet-address-label": "Wallet Address",
-        "first-name-label": "First Name",
-        "last-name-label": "Last Name",
-        "adding": "Adding contact...",
-        "added": "Contact added successfully"
-      }
     }
   },
   "private": {
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
-        "parameters": {
-          "common": {
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "isin-label": "ISIN",
-            "decimals-label": "Decimals",
-            "collateral-proof-validity-label": "Collateral proof validity",
-            "seconds-unit-label": "seconds"
-          },
-          "stablecoins": {
-            "name-placeholder": "TotallyNotTether",
-            "symbol-placeholder": "SAFU",
-            "isin-placeholder": "DEFI4EVER2024"
-          },
-          "bonds": {
-            "cap-label": "Maximum supply",
-            "cap-description": "Maximum amount of tokens that can be issued",
-            "face-value-label": "Face value",
-            "face-value-description": "Nominal value of a single bond unit",
-            "maturity-date-label": "Maturity date",
-            "underlying-asset-description": "Address of the asset that backs this bond",
-            "underlying-asset-label": "Underlying asset",
-            "name-placeholder": "Company XYZ Bond 2023",
-            "isin-placeholder": "US000000AA00",
-            "symbol-placeholder": "XYZ23"
-          },
-          "cryptocurrencies": {
-            "name-placeholder": "Bitcoin",
-            "symbol-placeholder": "BTC",
-            "initial-supply-label": "Initial supply",
-            "initial-supply-description": "Initial amount of tokens to be minted"
-          },
-          "equities": {
-            "name-placeholder": "Global Equity",
-            "isin-placeholder": "US1234567890",
-            "symbol-placeholder": "GLEQ",
-            "equity-class-label": "Equity class",
-            "equity-category-label": "Equity category"
-          },
-          "funds": {
-            "name-placeholder": "Global Growth Fund",
-            "isin-placeholder": "US1234567890",
-            "symbol-placeholder": "GGF",
-            "fund-category-label": "Fund category",
-            "fund-class-label": "Fund class",
-            "management-fee-label": "Management fee",
-            "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
-            "basis-points": "bps"
-          },
-          "tokenizeddeposits": {
-            "name-placeholder": "Tokenized Euro",
-            "symbol-placeholder": "TEUR",
-            "isin-placeholder": "EU1234567890"
-          }
-        },
         "basics": {
-          "title": "Asset basics",
-          "description": "Provide the general information required to define your asset."
+          "description": "Provide the general information required to define your asset.",
+          "title": "Asset basics"
         },
         "configuration": {
-          "stablecoins": {
-            "title": "Stable coin configuration",
-            "description": "Set parameters specific to your stable coin."
-          },
           "bonds": {
-            "title": "Bond configuration",
-            "description": "Set parameters specific to your bond."
+            "description": "Set parameters specific to your bond.",
+            "title": "Bond configuration"
           },
           "cryptocurrencies": {
-            "title": "Cryptocurrency configuration",
-            "description": "Set parameters specific to your cryptocurrency."
+            "description": "Set parameters specific to your cryptocurrency.",
+            "title": "Cryptocurrency configuration"
           },
           "equities": {
-            "title": "Equity configuration",
-            "description": "Set parameters specific to your equity."
+            "description": "Set parameters specific to your equity.",
+            "title": "Equity configuration"
           },
           "funds": {
-            "title": "Fund configuration",
-            "description": "Set parameters specific to your fund."
+            "description": "Set parameters specific to your fund.",
+            "title": "Fund configuration"
+          },
+          "stablecoins": {
+            "description": "Set parameters specific to your stable coin.",
+            "title": "Stable coin configuration"
           },
           "tokenizeddeposits": {
-            "title": "Tokenized deposit configuration",
-            "description": "Set parameters specific to your tokenized deposit."
+            "description": "Set parameters specific to your tokenized deposit.",
+            "title": "Tokenized deposit configuration"
           }
         },
-        "summary": {
-          "title": "Summary",
-          "description": "This is the final step before creating your asset. Please review all the details you have entered.",
-          "asset-basics-title": "Basic information",
-          "asset-basics-description": "General information about your asset.",
-          "configuration-title": "Configuration",
-          "configuration-description": "Specific parameters for your asset."
-        },
         "form": {
-          "title": {
-            "stablecoins": "Design a new stable coin",
-            "bonds": "Design a new bond",
-            "cryptocurrencies": "Design a new cryptocurrency",
-            "equities": "Design a new equity",
-            "funds": "Design a new fund",
-            "tokenizeddeposits": "Design a new tokenized deposit"
-          },
           "description": {
-            "stablecoins": "Digital assets pegged to a stable asset like USD.",
             "bonds": "Debt instruments issued as tokenized securities.",
             "cryptocurrencies": "Decentralized digital assets used as a medium of exchange or store of value.",
             "equities": "Assets representing ownership in a company.",
             "funds": "Investment vehicles pooled by professional managers.",
+            "stablecoins": "Digital assets pegged to a stable asset like USD.",
             "tokenizeddeposits": "Digital assets that represent a deposit of a traditional asset."
           },
+          "title": {
+            "bonds": "Design a new bond",
+            "cryptocurrencies": "Design a new cryptocurrency",
+            "equities": "Design a new equity",
+            "funds": "Design a new fund",
+            "stablecoins": "Design a new stable coin",
+            "tokenizeddeposits": "Design a new tokenized deposit"
+          },
           "trigger-label": {
-            "stablecoins": "Issue a new stablecoin",
             "bonds": "Issue a new bond",
             "cryptocurrencies": "Issue a new cryptocurrency",
             "equities": "Issue a new equity",
             "funds": "Issue a new fund",
+            "stablecoins": "Issue a new stablecoin",
             "tokenizeddeposits": "Issue a new tokenized deposit"
           }
+        },
+        "parameters": {
+          "bonds": {
+            "cap-description": "Maximum amount of tokens that can be issued",
+            "cap-label": "Maximum supply",
+            "face-value-description": "Nominal value of a single bond unit",
+            "face-value-label": "Face value",
+            "isin-placeholder": "US000000AA00",
+            "maturity-date-label": "Maturity date",
+            "name-placeholder": "Company XYZ Bond 2023",
+            "symbol-placeholder": "XYZ23",
+            "underlying-asset-description": "Address of the asset that backs this bond",
+            "underlying-asset-label": "Underlying asset"
+          },
+          "common": {
+            "collateral-proof-validity-label": "Collateral proof validity",
+            "decimals-label": "Decimals",
+            "isin-label": "ISIN",
+            "name-label": "Name",
+            "seconds-unit-label": "seconds",
+            "symbol-label": "Symbol"
+          },
+          "cryptocurrencies": {
+            "initial-supply-description": "Initial amount of tokens to be minted",
+            "initial-supply-label": "Initial supply",
+            "name-placeholder": "Bitcoin",
+            "symbol-placeholder": "BTC"
+          },
+          "equities": {
+            "equity-category-label": "Equity category",
+            "equity-class-label": "Equity class",
+            "isin-placeholder": "US1234567890",
+            "name-placeholder": "Global Equity",
+            "symbol-placeholder": "GLEQ"
+          },
+          "funds": {
+            "basis-points": "bps",
+            "fund-category-label": "Fund category",
+            "fund-class-label": "Fund class",
+            "isin-placeholder": "US1234567890",
+            "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
+            "management-fee-label": "Management fee",
+            "name-placeholder": "Global Growth Fund",
+            "symbol-placeholder": "GGF"
+          },
+          "stablecoins": {
+            "isin-placeholder": "DEFI4EVER2024",
+            "name-placeholder": "TotallyNotTether",
+            "symbol-placeholder": "SAFU"
+          },
+          "tokenizeddeposits": {
+            "isin-placeholder": "EU1234567890",
+            "name-placeholder": "Tokenized Euro",
+            "symbol-placeholder": "TEUR"
+          }
+        },
+        "summary": {
+          "asset-basics-description": "General information about your asset.",
+          "asset-basics-title": "Basic information",
+          "configuration-description": "Specific parameters for your asset.",
+          "configuration-title": "Configuration",
+          "description": "This is the final step before creating your asset. Please review all the details you have entered.",
+          "title": "Summary"
         }
       },
       "detail": {
@@ -730,8 +744,8 @@
             "top-up": "Top up",
             "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
-            "withdraw": "Withdraw",
-            "view-events": "View events"
+            "view-events": "View events",
+            "withdraw": "Withdraw"
           },
           "manage": "Manage"
         }
