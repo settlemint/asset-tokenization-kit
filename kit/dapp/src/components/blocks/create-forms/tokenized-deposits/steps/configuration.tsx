@@ -18,10 +18,8 @@ export function Configuration() {
           control={control}
           type="number"
           name="collateralLivenessSeconds"
-          label={t(
-            'parameters.tokenizeddeposits.collateral-proof-validity-label'
-          )}
-          postfix={t('parameters.tokenizeddeposits.seconds-unit-label')}
+          label={t('parameters.common.collateral-proof-validity-label')}
+          postfix={t('parameters.common.seconds-unit-label')}
           required
         />
       </div>

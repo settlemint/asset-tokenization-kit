@@ -45,11 +45,9 @@ export function Summary() {
         icon={<Settings className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t(
-            'parameters.tokenizeddeposits.collateral-proof-validity-label'
-          )}
+          label={t('parameters.common.collateral-proof-validity-label')}
           value={`${values.collateralLivenessSeconds} ${t(
-            'parameters.tokenizeddeposits.seconds-unit-label'
+            'parameters.common.seconds-unit-label'
           )}`}
         />
       </FormSummaryDetailCard>

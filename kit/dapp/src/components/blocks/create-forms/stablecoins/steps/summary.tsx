@@ -45,8 +45,8 @@ export function Summary() {
         icon={<Settings className="size-3 text-primary-foreground" />}
       >
         <FormSummaryDetailItem
-          label={t('parameters.stablecoins.collateral-proof-validity-label')}
-          value={`${values.collateralLivenessSeconds} ${t('parameters.stablecoins.seconds-unit-label')}`}
+          label={t('parameters.common.collateral-proof-validity-label')}
+          value={`${values.collateralLivenessSeconds} ${t('parameters.common.seconds-unit-label')}`}
         />
       </FormSummaryDetailCard>
     </FormStep>

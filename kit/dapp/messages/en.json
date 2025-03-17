@@ -571,11 +571,10 @@
             "symbol-label": "Symbol",
             "isin-label": "ISIN",
             "decimals-label": "Decimals",
-            "decimals-placeholder": "18"
+            "collateral-proof-validity-label": "Collateral proof validity",
+            "seconds-unit-label": "seconds"
           },
           "stablecoins": {
-            "collateral-proof-validity-label": "Collateral proof validity",
-            "seconds-unit-label": "seconds",
             "name-placeholder": "TotallyNotTether",
             "symbol-placeholder": "SAFU",
             "isin-placeholder": "DEFI4EVER2024"
@@ -616,8 +615,6 @@
             "basis-points": "bps"
           },
           "tokenizeddeposits": {
-            "collateral-proof-validity-label": "Collateral proof validity",
-            "seconds-unit-label": "seconds",
             "name-placeholder": "Tokenized Euro",
             "symbol-placeholder": "TEUR",
             "isin-placeholder": "EU1234567890"

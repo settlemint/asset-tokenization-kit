@@ -18,8 +18,8 @@ export function Configuration() {
           control={control}
           type="number"
           name="collateralLivenessSeconds"
-          label={t('parameters.stablecoins.collateral-proof-validity-label')}
-          postfix={t('parameters.stablecoins.seconds-unit-label')}
+          label={t('parameters.common.collateral-proof-validity-label')}
+          postfix={t('parameters.common.seconds-unit-label')}
           required
         />
       </div>
