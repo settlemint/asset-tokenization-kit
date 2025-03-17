@@ -55,7 +55,7 @@ export function bondColumns() {
       header: t('actions-header'),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions detailUrl={`/assets/bonds/${row.original.id}`} />
+          <DataTableRowActions detailUrl={`/assets/bond/${row.original.id}`} />
         );
       },
       meta: {

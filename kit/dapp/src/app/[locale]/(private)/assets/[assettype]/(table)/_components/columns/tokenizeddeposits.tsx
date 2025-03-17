@@ -58,7 +58,7 @@ export function tokenizedDepositColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/tokenizeddeposits/${row.original.id}`}
+            detailUrl={`/assets/tokenizeddeposit/${row.original.id}`}
           />
         );
       },

@@ -64,7 +64,7 @@ export function stablecoinColumns() {
       cell: ({ row }) => {
         return (
           <DataTableRowActions
-            detailUrl={`/assets/stablecoins/${row.original.id}`}
+            detailUrl={`/assets/stablecoin/${row.original.id}`}
           />
         );
       },

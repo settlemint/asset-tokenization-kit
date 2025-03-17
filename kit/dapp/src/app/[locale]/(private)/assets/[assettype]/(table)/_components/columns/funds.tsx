@@ -134,7 +134,7 @@ export function fundColumns() {
       header: t('actions-header'),
       cell: ({ row }) => {
         return (
-          <DataTableRowActions detailUrl={`/assets/funds/${row.original.id}`} />
+          <DataTableRowActions detailUrl={`/assets/fund/${row.original.id}`} />
         );
       },
       meta: {
