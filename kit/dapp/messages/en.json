@@ -562,6 +562,7 @@
     },
     "my-contacts": {
       "title": "My Contacts",
+      "add-contact-button": "Add Contact",
       "description": "Contacts management",
       "table": {
         "actions-header": "Action",
