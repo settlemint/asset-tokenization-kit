@@ -46,9 +46,23 @@ export function newAssetStatsData(
   return assetStats;
 }
 
-export function updateCollateralData(
+export function updateTokenizedDepositCollateralData(
   assetStats: AssetStatsData,
-  asset: StableCoin | TokenizedDeposit
+  asset: TokenizedDeposit
+): AssetStatsData {
+  // Collateral
+  assetStats.collateral = asset.collateral;
+  assetStats.collateralExact = asset.collateralExact;
+  assetStats.freeCollateral = asset.freeCollateral;
+  assetStats.freeCollateralExact = asset.freeCollateralExact;
+  assetStats.collateralRatio = asset.collateralRatio;
+
+  return assetStats;
+}
+
+export function updateStableCoinCollateralData(
+  assetStats: AssetStatsData,
+  asset: StableCoin
 ): AssetStatsData {
   // Collateral
   assetStats.collateral = asset.collateral;

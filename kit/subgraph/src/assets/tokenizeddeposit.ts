@@ -43,7 +43,7 @@ import { userAllowedEvent } from "./events/userallowed";
 import { userDisallowedEvent } from "./events/userdisallowed";
 import { fetchAssetActivity } from "./fetch/assets";
 import { fetchTokenizedDeposit } from "./fetch/tokenizeddeposit";
-import { newAssetStatsData, updateCollateralData } from "./stats/assets";
+import { newAssetStatsData, updateTokenizedDepositCollateralData } from "./stats/assets";
 import { newPortfolioStatsData } from "./stats/portfolio";
 
 export function handleTransfer(event: Transfer): void {
@@ -130,7 +130,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetStats.mintedExact = event.params.value;
     // Update collateral data in asset stats
-    updateCollateralData(assetStats, tokenizedDeposit);
+    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
 
     assetActivity.mintEventCount = assetActivity.mintEventCount + 1;
 
@@ -232,7 +232,7 @@ export function handleTransfer(event: Transfer): void {
     );
     assetStats.burnedExact = event.params.value;
     // Update collateral data in asset stats
-    updateCollateralData(assetStats, tokenizedDeposit);
+    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
 
     assetActivity.burnEventCount = assetActivity.burnEventCount + 1;
 
@@ -346,7 +346,7 @@ export function handleTransfer(event: Transfer): void {
     assetStats.volume = transfer.value;
     assetStats.volumeExact = transfer.valueExact;
     // Update collateral data in asset stats
-    updateCollateralData(assetStats, tokenizedDeposit);
+    updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
 
     assetActivity.transferEventCount = assetActivity.transferEventCount + 1;
 
@@ -957,7 +957,7 @@ export function handleCollateralUpdated(event: CollateralUpdated): void {
   tokenizedDeposit.save();
 
   const assetStats = newAssetStatsData(tokenizedDeposit.id, AssetType.tokenizeddeposit);
-  updateCollateralData(assetStats, tokenizedDeposit);
+  updateTokenizedDepositCollateralData(assetStats, tokenizedDeposit);
   assetStats.save();
 
   collateralUpdatedEvent(
