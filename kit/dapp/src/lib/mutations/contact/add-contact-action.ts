@@ -1,11 +1,12 @@
-"use server";
-import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { nanoid } from "nanoid";
-import { action } from "../safe-action";
+'use server';
+import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { nanoid } from 'nanoid';
+import { action } from '../safe-action';
 import {
   AddContactOutputSchema,
   getAddContactFormSchema,
-} from "./add-contact-schema";
+} from './add-contact-schema';
 
 const AddContact = hasuraGraphql(`
   mutation AddContact($address: String!, $name: String!, $id: String!, $userId: String!) {
@@ -20,7 +21,10 @@ const AddContact = hasuraGraphql(`
       id
     }
   }
-`);
+`) as TypedDocumentNode<
+  { insert_contact_one: { id: string } },
+  { address: string; name: string; id: string; userId: string }
+>;
 
 export const addContact = action
   .schema(getAddContactFormSchema())
@@ -39,7 +43,7 @@ export const addContact = action
 
       const contact = data?.insert_contact_one?.id;
       if (!contact) {
-        throw new Error("Failed to add contact");
+        throw new Error('Failed to add contact');
       }
 
       return contact;

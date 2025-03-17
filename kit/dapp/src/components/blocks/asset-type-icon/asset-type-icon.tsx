@@ -2,17 +2,12 @@
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import type { AssetType } from '@/lib/utils/zod';
 import { useTranslations } from 'next-intl';
 import { getAssetColor } from './asset-color';
 
 interface AssetTypeIconProps {
-  type:
-    | 'bond'
-    | 'cryptocurrency'
-    | 'equity'
-    | 'fund'
-    | 'stablecoin'
-    | 'tokenizeddeposit';
+  type: AssetType;
   size?: 'sm' | 'md';
 }
 
