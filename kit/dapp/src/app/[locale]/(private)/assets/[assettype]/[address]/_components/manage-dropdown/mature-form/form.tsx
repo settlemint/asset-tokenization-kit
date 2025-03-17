@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { mature } from '@/lib/mutations/bond/mature/mature-action';
-import { MatureFormSchema } from '@/lib/mutations/bond/mature/mature-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { mature } from "@/lib/mutations/bond/mature/mature-action";
+import { MatureFormSchema } from "@/lib/mutations/bond/mature/mature-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Summary } from "./steps/summary";
 
 interface MatureFormProps {
   address: Address;
@@ -23,7 +23,7 @@ export function MatureForm({
   open,
   onOpenChange,
 }: MatureFormProps) {
-  const t = useTranslations('private.assets.details.forms.mature');
+  const t = useTranslations("private.assets.details.forms.mature");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -34,9 +34,9 @@ export function MatureForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
     >
       <Form
@@ -46,7 +46,7 @@ export function MatureForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

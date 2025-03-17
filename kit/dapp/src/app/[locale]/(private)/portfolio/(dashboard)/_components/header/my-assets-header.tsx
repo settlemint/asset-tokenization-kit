@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { AssetBalance } from '@/lib/queries/asset-balance/asset-balance-fragment';
-import { MyAssetsTransferForm } from '../transfer-form/transfer-form';
-import { MyAssetsCount } from './my-assets-count';
+import type { AssetBalance } from "@/lib/queries/asset-balance/asset-balance-fragment";
+import { MyAssetsTransferForm } from "../transfer-form/transfer-form";
+import { MyAssetsCount } from "./my-assets-count";
 
 interface MyAssetsHeaderProps {
   data: {

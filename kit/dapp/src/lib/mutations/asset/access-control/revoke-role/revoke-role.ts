@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { type Role, getRoleIdentifier } from '@/lib/config/roles';
-import { action } from '@/lib/mutations/safe-action';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
-import { RevokeRoleSchema } from './revoke-role-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { type Role, getRoleIdentifier } from "@/lib/config/roles";
+import { action } from "@/lib/mutations/safe-action";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { RevokeRoleSchema } from "./revoke-role-schema";
 
 /**
  * GraphQL mutation for revoking a role from a user for a bond
@@ -141,36 +141,36 @@ export const revokeRole = action
         };
 
         switch (assettype) {
-          case 'stablecoin': {
+          case "stablecoin": {
             const response = await portalClient.request(
               StableCoinRevokeRole,
               params
             );
             return response.StableCoinRevokeRole?.transactionHash;
           }
-          case 'bond': {
+          case "bond": {
             const response = await portalClient.request(BondRevokeRole, params);
             return response.BondRevokeRole?.transactionHash;
           }
-          case 'cryptocurrency': {
+          case "cryptocurrency": {
             const response = await portalClient.request(
               CryptoCurrencyRevokeRole,
               params
             );
             return response.CryptoCurrencyRevokeRole?.transactionHash;
           }
-          case 'fund': {
+          case "fund": {
             const response = await portalClient.request(FundRevokeRole, params);
             return response.FundRevokeRole?.transactionHash;
           }
-          case 'equity': {
+          case "equity": {
             const response = await portalClient.request(
               EquityRevokeRole,
               params
             );
             return response.EquityRevokeRole?.transactionHash;
           }
-          case 'tokenizeddeposit': {
+          case "tokenizeddeposit": {
             const response = await portalClient.request(
               TokenizedDepositRevokeRole,
               params
@@ -178,7 +178,7 @@ export const revokeRole = action
             return response.TokenizedDepositRevokeRole?.transactionHash;
           }
           default:
-            throw new Error(`Unsupported asset type: ${assettype}`);
+            throw new Error("Unsupported asset type");
         }
       };
 

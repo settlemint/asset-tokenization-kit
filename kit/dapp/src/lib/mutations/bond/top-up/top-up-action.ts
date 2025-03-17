@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../../safe-action';
-import { TopUpSchema } from './top-up-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../../safe-action";
+import { TopUpSchema } from "./top-up-schema";
 
 const StableCoinApprove = portalGraphql(`
   mutation StableCoinApprove(
@@ -78,7 +78,7 @@ export const topUpUnderlyingAsset = action
       const approvalTxHash = approvalData.StableCoinApprove?.transactionHash;
       if (!approvalTxHash) {
         throw new Error(
-          'Failed to approve the bond to spend the underlying asset'
+          "Failed to approve the bond to spend the underlying asset"
         );
       }
 
@@ -92,7 +92,7 @@ export const topUpUnderlyingAsset = action
       });
 
       if (!response.BondTopUpUnderlyingAsset?.transactionHash) {
-        throw new Error('Failed to get transaction hash');
+        throw new Error("Failed to get transaction hash");
       }
 
       return z

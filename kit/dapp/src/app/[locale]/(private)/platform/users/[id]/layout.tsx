@@ -1,13 +1,13 @@
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
-import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
-import { PageHeader } from '@/components/layout/page-header';
-import { type UserDetail, getUserDetail } from '@/lib/queries/user/user-detail';
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import type { PropsWithChildren } from 'react';
-import { EditUserDropdown } from './_components/edit-user-dropdown';
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { TabItemProps } from "@/components/blocks/tab-navigation/tab-item";
+import { TabNavigation } from "@/components/blocks/tab-navigation/tab-navigation";
+import { PageHeader } from "@/components/layout/page-header";
+import { type UserDetail, getUserDetail } from "@/lib/queries/user/user-detail";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { PropsWithChildren } from "react";
+import { EditUserDropdown } from "./_components/edit-user-dropdown";
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -28,23 +28,23 @@ export async function generateMetadata({
 }
 
 const getTabs = async (user: UserDetail): Promise<TabItemProps[]> => {
-  const t = await getTranslations('private.users.detail.tabs');
+  const t = await getTranslations("private.users.detail.tabs");
   return [
     {
-      name: t('details'),
+      name: t("details"),
       href: `/platform/users/${user.id}`,
     },
     {
-      name: t('holdings'),
+      name: t("holdings"),
       href: `/platform/users/${user.id}/holdings`,
       badge: user?.assetCount,
     },
     {
-      name: t('latest-events'),
+      name: t("latest-events"),
       href: `/platform/users/${user.id}/latest-events`,
     },
     {
-      name: t('permissions'),
+      name: t("permissions"),
       href: `/platform/users/${user.id}/token-permissions`,
     },
   ];
@@ -56,7 +56,7 @@ export default async function UserDetailLayout({
 }: LayoutProps) {
   const { id } = await params;
   const user = await getUserDetail({ id });
-  const t = await getTranslations('private.users.detail');
+  const t = await getTranslations("private.users.detail");
   const tabs = await getTabs(user);
 
   return (
@@ -68,7 +68,7 @@ export default async function UserDetailLayout({
             <EvmAddressBalances address={user.wallet} />
           </EvmAddress>
         }
-        section={t('platform-management')}
+        section={t("platform-management")}
         button={<EditUserDropdown user={user} />}
       />
 

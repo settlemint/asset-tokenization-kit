@@ -3,8 +3,8 @@ import {
   type RolesInput,
   getActiveRoles,
   getRoleDisplayName,
-} from '@/lib/config/roles';
-import type { ReactElement } from 'react';
+} from "@/lib/config/roles";
+import type { ReactElement } from "react";
 
 type AssetRolePillProps = {
   roles?: RolesInput | Role[];

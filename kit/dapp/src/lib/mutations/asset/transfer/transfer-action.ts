@@ -1,14 +1,14 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../../safe-action';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../../safe-action";
 import {
   type TransferFormAssetType,
   getTransferFormSchema,
-} from './transfer-schema';
+} from "./transfer-schema";
 
 const TransferStableCoin = portalGraphql(`
   mutation TransferStableCoin($address: String!, $from: String!, $challengeResponse: String!, $value: String!, $to: String!) {
@@ -106,7 +106,7 @@ export const transferAsset = action
 
       const transactionHash = data?.Transfer?.transactionHash;
       if (!transactionHash) {
-        throw new Error('Failed to send the transfer transaction');
+        throw new Error("Failed to send the transfer transaction");
       }
 
       return [transactionHash as `0x${string}`];
@@ -115,17 +115,17 @@ export const transferAsset = action
 
 function getQuery(assetType: TransferFormAssetType) {
   switch (assetType) {
-    case 'stablecoin':
+    case "stablecoin":
       return TransferStableCoin;
-    case 'fund':
+    case "fund":
       return TransferFund;
-    case 'bond':
+    case "bond":
       return TransferBond;
-    case 'equity':
+    case "equity":
       return TransferEquity;
-    case 'cryptocurrency':
+    case "cryptocurrency":
       return TransferCryptoCurrency;
-    case 'tokenizeddeposit':
+    case "tokenizeddeposit":
       return TransferTokenizedDeposit;
     default: {
       const _exhaustiveCheck: never = assetType;

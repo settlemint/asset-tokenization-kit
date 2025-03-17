@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { usePathname } from '@/i18n/routing';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useParams } from 'next/navigation';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { usePathname } from "@/i18n/routing";
+import { AnimatePresence, motion } from "framer-motion";
+import { useParams } from "next/navigation";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 interface TransitionProviderProps {
   children: ReactNode;
@@ -22,7 +22,7 @@ export function TransitionProvider({ children }: TransitionProviderProps) {
   const [isLanguageChange, setIsLanguageChange] = useState(false);
 
   // This key is used to trigger animations ONLY when locale changes
-  const routeKey = `${locale}-${isLanguageChange ? Math.random() : ''}`;
+  const routeKey = `${locale}-${isLanguageChange ? Math.random() : ""}`;
 
   // We use this to prevent animation on initial load
   const [isInitialRender, setIsInitialRender] = useState(true);
@@ -61,7 +61,7 @@ export function TransitionProvider({ children }: TransitionProviderProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.1, ease: 'easeInOut' }}
+        transition={{ duration: 0.1, ease: "easeInOut" }}
         className="h-full w-full"
       >
         {children}

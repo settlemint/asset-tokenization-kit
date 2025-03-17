@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { EventDetailSheet } from '@/components/blocks/asset-events-table/detail-sheet';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { getAssetEventsList } from '@/lib/queries/asset-events/asset-events-list';
-import { createColumnHelper } from '@tanstack/react-table';
-import { Lock, PauseCircle, PlayCircle, Unlock } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
+import { EventDetailSheet } from "@/components/blocks/asset-events-table/detail-sheet";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { getAssetEventsList } from "@/lib/queries/asset-events/asset-events-list";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Lock, PauseCircle, PlayCircle, Unlock } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetEventsList>>[number]>();
@@ -21,19 +21,19 @@ export const icons = {
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-
-  const t = useTranslations('components.asset-events-table');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const t = useTranslations("components.asset-events-table");
 
   return [
-    columnHelper.accessor('timestamp', {
-      header: t('timestamp'),
+    columnHelper.accessor("timestamp", {
+      header: t("timestamp"),
       cell: ({ getValue }) => (
         <span className="first-letter:uppercase">{getValue()}</span>
       ),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('asset', {
-      header: t('asset'),
+    columnHelper.accessor("asset", {
+      header: t("asset"),
       cell: ({ getValue }) => {
         const asset = getValue();
 
@@ -45,12 +45,12 @@ export function columns() {
       },
       enableColumnFilter: true,
     }),
-    columnHelper.accessor('event', {
-      header: t('event'),
+    columnHelper.accessor("event", {
+      header: t("event"),
       enableColumnFilter: true,
     }),
-    columnHelper.accessor('sender', {
-      header: t('sender'),
+    columnHelper.accessor("sender", {
+      header: t("sender"),
       cell: ({ getValue }) => {
         const senderId = getValue();
 
@@ -63,8 +63,8 @@ export function columns() {
       enableColumnFilter: true,
     }),
     columnHelper.display({
-      id: 'actions',
-      header: () => '',
+      id: "actions",
+      header: () => "",
       cell: ({ row }) => (
         <EventDetailSheet
           event={row.original.event}

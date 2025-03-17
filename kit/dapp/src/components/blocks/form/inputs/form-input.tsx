@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
-import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
-import { type FieldValues, useFormContext } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import { type FieldValues, useFormContext } from "react-hook-form";
 import {
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
   getAriaAttributes,
-} from './types';
+} from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
@@ -59,23 +59,23 @@ export function FormInput<T extends FieldValues>({
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
-  const t = useTranslations('components.form.input');
+  const t = useTranslations("components.form.input");
 
   return (
     <FormField
       {...props}
       rules={{
         ...rules,
-        ...(props.type === 'email' && {
+        ...(props.type === "email" && {
           pattern: {
             value: EMAIL_PATTERN,
-            message: t('valid-email'),
+            message: t("valid-email"),
           },
         }),
         ...(textOnly && {
           pattern: {
             value: TEXT_ONLY_PATTERN,
-            message: t('letters-only'),
+            message: t("letters-only"),
           },
         }),
       }}
@@ -84,7 +84,7 @@ export function FormInput<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(disabled && 'cursor-not-allowed opacity-70')}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -97,8 +97,8 @@ export function FormInput<T extends FieldValues>({
             <FormControl>
               <div
                 className={cn(
-                  'flex rounded-lg shadow-black/5 shadow-xs',
-                  !postfix && 'shadow-none'
+                  "flex rounded-lg shadow-black/5 shadow-xs",
+                  !postfix && "shadow-none"
                 )}
               >
                 <Input
@@ -107,19 +107,19 @@ export function FormInput<T extends FieldValues>({
                   className={cn(
                     className,
                     postfix &&
-                      '-me-px rounded-e-none shadow-none focus:mr-[1px]'
+                      "-me-px rounded-e-none shadow-none focus:mr-[1px]"
                   )}
                   type={props.type}
-                  value={props.defaultValue ? undefined : (field.value ?? '')}
+                  value={props.defaultValue ? undefined : (field.value ?? "")}
                   onChange={async (evt: ChangeEvent<HTMLInputElement>) => {
                     field.onChange(evt);
                     if (form.formState.errors[field.name]) {
                       await form.trigger(field.name);
                     }
                   }}
-                  inputMode={props.type === 'number' ? 'decimal' : 'text'}
+                  inputMode={props.type === "number" ? "decimal" : "text"}
                   pattern={
-                    props.type === 'number' ? '[0-9]*.?[0-9]*' : undefined
+                    props.type === "number" ? "[0-9]*.?[0-9]*" : undefined
                   }
                   {...getAriaAttributes(
                     field.name,

@@ -1,18 +1,18 @@
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { getAddress } from "viem";
 import {
   OffchainStableCoinFragment,
   OffchainStableCoinFragmentSchema,
   StableCoinFragment,
   StableCoinFragmentSchema,
-} from './stablecoin-fragment';
+} from "./stablecoin-fragment";
 
 /**
  * GraphQL query to fetch on-chain stablecoin list from The Graph
@@ -74,14 +74,14 @@ export const getStableCoinList = cache(async () => {
 
   // Parse and validate the data using Zod schemas
   const validatedStableCoins = theGraphStableCoins.map((stableCoin) =>
-    safeParseWithLogging(StableCoinFragmentSchema, stableCoin, 'stablecoin')
+    safeParseWithLogging(StableCoinFragmentSchema, stableCoin, "stablecoin")
   );
 
   const validatedDbAssets = dbAssets.map((asset) =>
     safeParseWithLogging(
       OffchainStableCoinFragmentSchema,
       asset,
-      'offchain stablecoin'
+      "offchain stablecoin"
     )
   );
 

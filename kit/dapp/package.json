@@ -14,7 +14,8 @@
     "build": "next build",
     "start": "next start",
     "test": "bun test",
-    "lint": "biome check --write",
+    "format": "prettier --write .",
+    "lint": "next lint",
     "addresses": "bash contract-addresses.sh",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
@@ -64,6 +65,7 @@
     "date-fns": "4.1.0",
     "drizzle-orm": "0.40.0",
     "elysia": "1.2.25",
+    "fast-xml-parser": "5.0.9",
     "framer-motion": "12.5.0",
     "input-otp": "1.4.2",
     "lucide-react": "0.482.0",
@@ -103,10 +105,15 @@
     "postcss": "8.5.3",
     "tailwindcss": "4.0.14",
     "typescript": "5.8.2",
-    "ultracite": "4.1.21"
+    "@eslint/eslintrc": "3.3.0",
+    "@eslint/js": "9.22.0",
+    "eslint": "9.22.0",
+    "eslint-config-next": "15.2.2"
   },
   "peerDependencies": {},
-  "trustedDependencies": ["sharp"],
+  "trustedDependencies": [
+    "sharp"
+  ],
   "overrides": {
     "react-is": "19.0.0"
   }

@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
-import type { ComponentPropsWithoutRef } from 'react';
-import type { FieldValues } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import type { ComponentPropsWithoutRef } from "react";
+import type { FieldValues } from "react-hook-form";
 import {
   type BaseFormInputProps,
   type WithHelperTextProps,
   getAriaAttributes,
-} from './types';
+} from "./types";
 
 type SwitchProps = ComponentPropsWithoutRef<typeof Switch>;
 
@@ -59,7 +59,7 @@ export function FormSwitch<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(disabled && 'cursor-not-allowed opacity-70')}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -77,7 +77,7 @@ export function FormSwitch<T extends FieldValues>({
                   disabled={disabled}
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className={cn('w-9', className)}
+                  className={cn("w-9", className)}
                   {...getAriaAttributes(
                     field.name,
                     !!fieldState.error,

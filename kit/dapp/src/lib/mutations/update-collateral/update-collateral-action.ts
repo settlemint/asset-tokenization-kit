@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { UpdateCollateralSchema } from './update-collateral-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { UpdateCollateralSchema } from "./update-collateral-schema";
 
 /**
  * GraphQL mutation for updating a stablecoin's collateral amount
@@ -64,7 +64,7 @@ export const updateCollateral = action
       };
 
       switch (assettype) {
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(
             StableCoinUpdateCollateral,
             params
@@ -73,7 +73,7 @@ export const updateCollateral = action
             .hashes()
             .parse([response.StableCoinUpdateCollateral?.transactionHash]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositUpdateCollateral,
             params
@@ -85,7 +85,7 @@ export const updateCollateral = action
             ]);
         }
         default:
-          throw new Error('Invalid asset type for collateral update');
+          throw new Error("Invalid asset type for collateral update");
       }
     }
   );

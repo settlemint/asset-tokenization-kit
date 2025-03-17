@@ -1,39 +1,39 @@
-import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
-import { Button } from '@/components/ui/button';
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { useDebounce } from '@/hooks/use-debounce';
-import type { UserAsset } from '@/lib/queries/asset-balance/asset-balance-user';
-import { getAssetSearch } from '@/lib/queries/asset/asset-search';
-import { cn } from '@/lib/utils';
-import { CommandEmpty, useCommandState } from 'cmdk';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import type { FieldValues } from 'react-hook-form';
-import type { Address } from 'viem';
-import { EvmAddress } from '../../evm-address/evm-address';
+} from "@/components/ui/popover";
+import { useDebounce } from "@/hooks/use-debounce";
+import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
+import { getAssetSearch } from "@/lib/queries/asset/asset-search";
+import { cn } from "@/lib/utils";
+import { CommandEmpty, useCommandState } from "cmdk";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import type { FieldValues } from "react-hook-form";
+import type { Address } from "viem";
+import { EvmAddress } from "../../evm-address/evm-address";
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
   getAriaAttributes,
-} from './types';
+} from "./types";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
@@ -42,7 +42,7 @@ type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
     onSelect?: (asset: Asset) => void;
   };
 
-type Asset = UserAsset['asset'] & {
+type Asset = UserAsset["asset"] & {
   holders: { value: number; account: { id: string } }[];
 };
 
@@ -56,8 +56,8 @@ export function FormAssets<T extends FieldValues>({
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('components.form.assets');
-  const defaultPlaceholder = t('default-placeholder');
+  const t = useTranslations("components.form.assets");
+  const defaultPlaceholder = t("default-placeholder");
 
   return (
     <FormField
@@ -69,7 +69,7 @@ export function FormAssets<T extends FieldValues>({
             {label && (
               <FormLabel
                 className={cn(
-                  props.disabled && 'cursor-not-allowed opacity-70'
+                  props.disabled && "cursor-not-allowed opacity-70"
                 )}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
@@ -101,7 +101,7 @@ export function FormAssets<T extends FieldValues>({
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder={t('search-placeholder')}
+                    placeholder={t("search-placeholder")}
                     className="h-9"
                   />
                   <MemoizedFormUsersList
@@ -141,13 +141,13 @@ function FormUsersList({
   value: string;
   onSelect: (asset: UserAsset) => void;
 }) {
-  const search = (useCommandState((state) => state.search) || '') as string;
+  const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
   const [assets, setAssets] = useState<
     Awaited<ReturnType<typeof getAssetSearch>>
   >([]);
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations('components.form.assets');
+  const t = useTranslations("components.form.assets");
 
   // Memoize the fetch function to prevent recreating it on every render
   const fetchAssets = useCallback(async () => {
@@ -161,7 +161,7 @@ function FormUsersList({
       const results = await getAssetSearch({ searchTerm: debounced });
       setAssets(results);
     } catch (error) {
-      console.error('Error fetching assets:', error);
+      console.error("Error fetching assets:", error);
       setAssets([]);
     } finally {
       setIsLoading(false);
@@ -214,15 +214,15 @@ function FormUsersList({
         <EvmAddress address={asset.id} hoverCard={false} />
         <Check
           className={cn(
-            'ml-auto',
-            value === asset.id ? 'opacity-100' : 'opacity-0'
+            "ml-auto",
+            value === asset.id ? "opacity-100" : "opacity-0"
           )}
         />
       </CommandItem>
     )
   );
 
-  AssetItem.displayName = 'AssetItem';
+  AssetItem.displayName = "AssetItem";
 
   // Memoize the asset list to prevent unnecessary re-renders
   const memoizedAssetList = useMemo(
@@ -243,7 +243,7 @@ function FormUsersList({
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {isLoading ? t('loading') : t('no-asset-found')}
+        {isLoading ? t("loading") : t("no-asset-found")}
       </CommandEmpty>
       <CommandGroup>{memoizedAssetList}</CommandGroup>
     </CommandList>

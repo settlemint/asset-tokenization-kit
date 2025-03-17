@@ -1,5 +1,5 @@
-import { hasuraGraphql } from '@/lib/settlemint/hasura';
-import { type ZodInfer, z } from '@/lib/utils/zod';
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for user data from Hasura

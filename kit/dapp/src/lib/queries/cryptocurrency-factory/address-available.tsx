@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
-import { cache } from 'react';
-import type { Address } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { cache } from "react";
+import type { Address } from "viem";
 
 /**
  * GraphQL query for checking if an address is deployed
@@ -38,7 +38,7 @@ export const isAddressAvailable = cache(async (address: Address) => {
   const cryptoCurrencyExists = safeParseWithLogging(
     CryptoCurrencyExistsSchema,
     data,
-    'cryptocurrency factory'
+    "cryptocurrency factory"
   );
 
   return !cryptoCurrencyExists.cryptoCurrency;

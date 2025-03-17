@@ -1,5 +1,5 @@
-'use client';
-'use no memo'; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+"use client";
+"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
 import {
   Table,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import {
   type ColumnFiltersState,
   type RowData,
@@ -23,19 +23,19 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
-import { type ComponentType, useMemo, useState } from 'react';
-import { DataTableColumnCell } from './data-table-column-cell';
-import { DataTableColumnHeader } from './data-table-column-header';
+} from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { type ComponentType, useMemo, useState } from "react";
+import { DataTableColumnCell } from "./data-table-column-cell";
+import { DataTableColumnHeader } from "./data-table-column-header";
 import {
   DataTablePagination,
   type DataTablePaginationOptions,
-} from './data-table-pagination';
+} from "./data-table-pagination";
 import {
   DataTableToolbar,
   type DataTableToolbarOptions,
-} from './data-table-toolbar';
+} from "./data-table-toolbar";
 
 interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   columnParams?: CParams;
@@ -43,8 +43,8 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   columns:
     | ((
         params: CParams
-      ) => Parameters<typeof useReactTable<TData>>[0]['columns'])
-    | (() => Parameters<typeof useReactTable<TData>>[0]['columns']);
+      ) => Parameters<typeof useReactTable<TData>>[0]["columns"])
+    | (() => Parameters<typeof useReactTable<TData>>[0]["columns"]);
   /** The data to be displayed in the table. */
   data: TData[];
   isLoading?: boolean;
@@ -57,19 +57,19 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   className?: string;
 }
 
-declare module '@tanstack/table-core' {
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+declare module "@tanstack/table-core" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     name: string;
     icons?: Record<string, ComponentType<{ className?: string }>>;
   }
 }
 
-declare module '@tanstack/react-table' {
-  // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     enableCsvExport?: boolean;
-    variant?: 'default' | 'numeric';
+    variant?: "default" | "numeric";
     detailUrl?: string;
   }
 }
@@ -94,14 +94,14 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   initialColumnFilters,
   className,
 }: DataTableProps<TData, CParams>) {
-  const t = useTranslations('components.data-table');
+  const t = useTranslations("components.data-table");
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     initialColumnFilters ?? []
   );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const memoizedData = useMemo(() => data, [data]);
 
@@ -121,7 +121,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
 
     state: {
       sorting,
@@ -146,7 +146,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   const renderTableBody = () => {
     if (table.getRowModel().rows?.length) {
       return table.getRowModel().rows.map((row) => (
-        <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
           {row.getVisibleCells().map((cell) => {
             const content = flexRender(
               cell.column.columnDef.cell,
@@ -170,7 +170,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     return (
       <TableRow>
         <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-          {t('no-results')}
+          {t("no-results")}
         </TableCell>
       </TableRow>
     );
@@ -182,7 +182,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       <div
         data-slot="data-table"
         className={cn(
-          'w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm',
+          "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
           className
         )}
       >
@@ -194,7 +194,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder ? null : typeof header.column
-                          .columnDef.header === 'string' ? (
+                          .columnDef.header === "string" ? (
                         <DataTableColumnHeader
                           column={header.column}
                           variant={header.column.columnDef.meta?.variant}

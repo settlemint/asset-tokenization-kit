@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { action } from '../safe-action';
-import { BlockUserSchema } from './block-user-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { action } from "../safe-action";
+import { BlockUserSchema } from "./block-user-schema";
 
 /**
  * GraphQL mutation to block a user from a bond
@@ -39,33 +39,33 @@ export const blockUser = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondBlockUser, params);
           return safeParseTransactionHash([
             response.BondBlockUser?.transactionHash,
           ]);
         }
-        case 'cryptocurrency': {
+        case "cryptocurrency": {
           throw new Error(
-            'Cryptocurrency does not support block user operations'
+            "Cryptocurrency does not support block user operations"
           );
         }
-        case 'equity': {
-          throw new Error('Equity does not support block user operations');
+        case "equity": {
+          throw new Error("Equity does not support block user operations");
         }
-        case 'fund': {
-          throw new Error('Fund does not support block user operations');
+        case "fund": {
+          throw new Error("Fund does not support block user operations");
         }
-        case 'stablecoin': {
-          throw new Error('Stablecoin does not support block user operations');
+        case "stablecoin": {
+          throw new Error("Stablecoin does not support block user operations");
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           throw new Error(
-            'Tokenized deposit does not support block user operations'
+            "Tokenized deposit does not support block user operations"
           );
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

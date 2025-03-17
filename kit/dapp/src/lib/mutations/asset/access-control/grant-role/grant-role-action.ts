@@ -1,10 +1,10 @@
-'use server';
-import { handleChallenge } from '@/lib/challenge';
-import { type Role, getRoleIdentifier } from '@/lib/config/roles';
-import { action } from '@/lib/mutations/safe-action';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { GrantRoleSchema } from './grant-role-schema';
+"use server";
+import { handleChallenge } from "@/lib/challenge";
+import { type Role, getRoleIdentifier } from "@/lib/config/roles";
+import { action } from "@/lib/mutations/safe-action";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { GrantRoleSchema } from "./grant-role-schema";
 
 /**
  * GraphQL mutation for granting a role to a user for a stablecoin
@@ -140,36 +140,36 @@ export const grantRole = action
         };
 
         switch (assettype) {
-          case 'stablecoin': {
+          case "stablecoin": {
             const response = await portalClient.request(
               StableCoinGrantRole,
               params
             );
             return response.StableCoinGrantRole?.transactionHash;
           }
-          case 'bond': {
+          case "bond": {
             const response = await portalClient.request(BondGrantRole, params);
             return response.BondGrantRole?.transactionHash;
           }
-          case 'cryptocurrency': {
+          case "cryptocurrency": {
             const response = await portalClient.request(
               CryptoCurrencyGrantRole,
               params
             );
             return response.CryptoCurrencyGrantRole?.transactionHash;
           }
-          case 'fund': {
+          case "fund": {
             const response = await portalClient.request(FundGrantRole, params);
             return response.FundGrantRole?.transactionHash;
           }
-          case 'equity': {
+          case "equity": {
             const response = await portalClient.request(
               EquityGrantRole,
               params
             );
             return response.EquityGrantRole?.transactionHash;
           }
-          case 'tokenizeddeposit': {
+          case "tokenizeddeposit": {
             const response = await portalClient.request(
               TokenizedDepositGrantRole,
               params
@@ -177,7 +177,7 @@ export const grantRole = action
             return response.TokenizedDepositGrantRole?.transactionHash;
           }
           default:
-            throw new Error(`Unsupported asset type: ${assettype}`);
+            throw new Error("Unsupported asset type");
         }
       };
 

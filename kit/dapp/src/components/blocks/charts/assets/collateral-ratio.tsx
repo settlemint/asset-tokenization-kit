@@ -1,26 +1,26 @@
-import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
-import { PieChartComponent } from '@/components/blocks/charts/pie-chart';
-import { ChartPieIcon } from '@/components/ui/animated-icons/chart-pie';
-import type { ChartConfig } from '@/components/ui/chart';
-import { getStableCoinDetail } from '@/lib/queries/stablecoin/stablecoin-detail';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
+import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
+import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
+import type { ChartConfig } from "@/components/ui/chart";
+import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 
 interface CollateralRatioProps {
   address: Address;
 }
 
 export async function CollateralRatio({ address }: CollateralRatioProps) {
-  const t = await getTranslations('components.charts.assets');
+  const t = await getTranslations("components.charts.assets");
 
   const chartConfig = {
     freeCollateral: {
-      label: t('free-collateral-ratio.label'),
-      color: 'var(--chart-1)',
+      label: t("free-collateral-ratio.label"),
+      color: "var(--chart-1)",
     },
     committedCollateral: {
-      label: t('used-collateral-ratio.label'),
-      color: 'var(--chart-2)',
+      label: t("used-collateral-ratio.label"),
+      color: "var(--chart-2)",
     },
   } satisfies ChartConfig;
 
@@ -28,10 +28,10 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
 
   if (!data || data.collateral === 0) {
     return (
-      <ChartSkeleton title={t('collateral-ratio.label')} variant="noData">
+      <ChartSkeleton title={t("collateral-ratio.label")} variant="noData">
         <div className="flex flex-col items-center gap-2 text-center">
           <ChartPieIcon className="h-8 w-8 text-muted-foreground" />
-          <p>{t('collateral-ratio.no-data')}</p>
+          <p>{t("collateral-ratio.no-data")}</p>
         </div>
       </ChartSkeleton>
     );
@@ -39,19 +39,19 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
 
   const collateralData = [
     {
-      name: 'freeCollateral',
+      name: "freeCollateral",
       value: data.freeCollateral,
     },
     {
-      name: 'committedCollateral',
+      name: "committedCollateral",
       value: data.collateral - data.freeCollateral,
     },
   ];
 
   return (
     <PieChartComponent
-      description={t('collateral-ratio.description')}
-      title={t('collateral-ratio.label')}
+      description={t("collateral-ratio.description")}
+      title={t("collateral-ratio.label")}
       data={collateralData}
       dataKey="value"
       nameKey="name"

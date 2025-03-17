@@ -1,18 +1,18 @@
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { addSeconds } from 'date-fns';
-import { cache } from 'react';
-import { type Address, getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { addSeconds } from "date-fns";
+import { cache } from "react";
+import { type Address, getAddress } from "viem";
 import {
   OffchainStableCoinFragment,
   OffchainStableCoinFragmentSchema,
   StableCoinFragment,
   StableCoinFragmentSchema,
-} from './stablecoin-fragment';
+} from "./stablecoin-fragment";
 
 /**
  * GraphQL query to fetch on-chain stablecoin details from The Graph
@@ -69,13 +69,13 @@ export const getStableCoinDetail = cache(
     const stableCoin = safeParseWithLogging(
       StableCoinFragmentSchema,
       data.stableCoin,
-      'stablecoin'
+      "stablecoin"
     );
     const offchainStableCoin = dbStableCoin.asset[0]
       ? safeParseWithLogging(
           OffchainStableCoinFragmentSchema,
           dbStableCoin.asset[0],
-          'offchain stablecoin'
+          "offchain stablecoin"
         )
       : undefined;
 

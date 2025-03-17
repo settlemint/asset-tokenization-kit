@@ -1,9 +1,9 @@
-import { auth } from '@/lib/auth/auth';
-import { getUserWalletVerifications } from '@/lib/queries/user/wallet-security';
-import { headers } from 'next/headers';
-import type { ReactNode } from 'react';
-import type { Address } from 'viem';
-import { WalletSecurityClient } from './wallet-security-client';
+import { auth } from "@/lib/auth/auth";
+import { getUserWalletVerifications } from "@/lib/queries/user/wallet-security";
+import { headers } from "next/headers";
+import type { ReactNode } from "react";
+import type { Address } from "viem";
+import { WalletSecurityClient } from "./wallet-security-client";
 
 interface WalletSecurityProps {
   children: ReactNode;

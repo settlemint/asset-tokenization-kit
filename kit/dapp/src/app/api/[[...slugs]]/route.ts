@@ -1,12 +1,14 @@
-import { metadata } from '@/lib/config/metadata';
-import { StablecoinListApi } from '@/lib/queries/stablecoin/stablecoin-list-api';
-import { TokenizedDepositListApi } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-list-api';
-import { serverTiming } from '@elysiajs/server-timing';
-import { swagger } from '@elysiajs/swagger';
-import { Elysia } from 'elysia';
-import { version } from '../../../../package.json';
+import { metadata } from "@/lib/config/metadata";
+import { ExchangeRatesApi } from "@/lib/providers/exchange-rates/exchange-rates-api";
+import { ExchangeRateUpdateApi } from "@/lib/providers/exchange-rates/exchange-rates-update-api";
+import { StablecoinListApi } from "@/lib/queries/stablecoin/stablecoin-list-api";
+import { TokenizedDepositListApi } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-list-api";
+import { serverTiming } from "@elysiajs/server-timing";
+import { swagger } from "@elysiajs/swagger";
+import { Elysia } from "elysia";
+import { version } from "../../../../package.json";
 
-const app = new Elysia({ prefix: '/api' })
+const app = new Elysia({ prefix: "/api" })
   .use(serverTiming())
   .use(
     swagger({
@@ -18,32 +20,37 @@ const app = new Elysia({ prefix: '/api' })
         components: {
           securitySchemes: {
             apiKeyAuth: {
-              type: 'apiKey',
-              in: 'header',
-              name: 'x-api-key',
+              type: "apiKey",
+              in: "header",
+              name: "x-api-key",
             },
           },
         },
         tags: [
-          { name: 'Auth', description: 'Authentication endpoints' },
-          { name: 'Bonds', description: 'Bond endpoints' },
+          { name: "Auth", description: "Authentication endpoints" },
+          { name: "Bonds", description: "Bond endpoints" },
           {
-            name: 'Cryptocurrencies',
-            description: 'CryptoCurrency endpoints',
+            name: "Cryptocurrencies",
+            description: "CryptoCurrency endpoints",
           },
-          { name: 'Equities', description: 'Equity endpoints' },
-          { name: 'Funds', description: 'Fund endpoints' },
-          { name: 'Stablecoins', description: 'Stablecoin endpoints' },
+          { name: "Equities", description: "Equity endpoints" },
+          { name: "Funds", description: "Fund endpoints" },
+          { name: "Stablecoins", description: "Stablecoin endpoints" },
           {
-            name: 'Tokenized Deposits',
-            description: 'Tokenized Deposit endpoints',
+            name: "Tokenized Deposits",
+            description: "Tokenized Deposit endpoints",
           },
+          { name: "Providers", description: "Provider endpoints" },
         ],
       },
     })
   )
-  .group('/stablecoins', (app) => app.use(StablecoinListApi))
-  .group('/tokenized-deposits', (app) => app.use(TokenizedDepositListApi));
+  .group("/stablecoins", (app) => app.use(StablecoinListApi))
+  .group("/tokenized-deposits", (app) => app.use(TokenizedDepositListApi))
+  .group("/providers/exchange-rates", (app) =>
+    app.use(ExchangeRatesApi).use(ExchangeRateUpdateApi)
+  );
 
 export const GET = app.handle;
 export const POST = app.handle;
+export const PATCH = app.handle;

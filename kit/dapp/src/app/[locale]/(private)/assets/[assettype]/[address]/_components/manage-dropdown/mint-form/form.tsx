@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { mint } from '@/lib/mutations/mint/mint-action';
-import { MintSchema } from '@/lib/mutations/mint/mint-schema';
-import type { AssetType } from '@/lib/utils/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Amount } from './steps/amount';
-import { Recipients } from './steps/recipients';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { mint } from "@/lib/mutations/mint/mint-action";
+import { MintSchema } from "@/lib/mutations/mint/mint-schema";
+import type { AssetType } from "@/lib/utils/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Amount } from "./steps/amount";
+import { Recipients } from "./steps/recipients";
+import { Summary } from "./steps/summary";
 
 interface MintFormProps {
   address: Address;
@@ -28,7 +28,7 @@ export function MintForm({
   open,
   onOpenChange,
 }: MintFormProps) {
-  const t = useTranslations('private.assets.details.forms.mint');
+  const t = useTranslations("private.assets.details.forms.mint");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -39,9 +39,9 @@ export function MintForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
     >
       <Form
@@ -51,7 +51,7 @@ export function MintForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,
