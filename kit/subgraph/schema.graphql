@@ -200,6 +200,14 @@ type TokenizedDeposit implements Asset @entity {
   userManagers: [Account!]!
   # TokenizedDeposit-Specific Fields
   paused: Boolean!
+  # Collateral Fields
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
+  liveness: BigInt!
+  lastCollateralUpdate: BigInt!
 }
 
 # --------------------------------------------------

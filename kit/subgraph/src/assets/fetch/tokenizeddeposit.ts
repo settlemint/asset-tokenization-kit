@@ -15,6 +15,7 @@ export function fetchTokenizedDeposit(address: Address): TokenizedDeposit {
     let decimals = endpoint.try_decimals();
     let paused = endpoint.try_paused();
     let totalSupply = endpoint.try_totalSupply();
+    let liveness = endpoint.try_liveness();
 
     const account = fetchAccount(address);
 
@@ -38,11 +39,20 @@ export function fetchTokenizedDeposit(address: Address): TokenizedDeposit {
     tokenizedDeposit.totalHolders = 0;
     tokenizedDeposit.deployedOn = BigInt.zero();
     tokenizedDeposit.paused = paused.reverted ? false : paused.value;
+    tokenizedDeposit.liveness = liveness.reverted ? BigInt.zero() : liveness.value;
 
     // Initialize arrays for access control roles
     tokenizedDeposit.admins = [];
     tokenizedDeposit.supplyManagers = [];
     tokenizedDeposit.userManagers = [];
+
+    // Add collateral related fields
+    tokenizedDeposit.collateralExact = BigInt.zero();
+    tokenizedDeposit.collateral = BigDecimal.zero();
+    tokenizedDeposit.freeCollateral = BigDecimal.zero();
+    tokenizedDeposit.freeCollateralExact = BigInt.zero();
+    tokenizedDeposit.collateralRatio = BigDecimal.zero();
+    tokenizedDeposit.lastCollateralUpdate = BigInt.zero();
 
     tokenizedDeposit.save();
 

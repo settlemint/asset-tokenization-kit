@@ -5,16 +5,16 @@ import { TokenizedDeposit } from "./TokenizedDeposit.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
-/// @title StableCoinFactory - A factory contract for creating StableCoin tokens
-/// @notice This contract allows the creation of new StableCoin tokens with deterministic addresses using CREATE2.
-/// It provides functionality to create collateralized stablecoins with specific parameters and predict their
+/// @title TokenizedDepositFactory - A factory contract for creating TokenizedDeposit tokens
+/// @notice This contract allows the creation of new TokenizedDeposit tokens with deterministic addresses using CREATE2.
+/// It provides functionality to create tokenized deposits with specific parameters and predict their
 /// deployment addresses.
 /// @dev Inherits from ReentrancyGuard for protection against reentrancy attacks and ERC2771Context for
 /// meta-transaction support. Uses CREATE2 for deterministic deployment addresses and maintains a registry
 /// of deployed tokens.
 /// @custom:security-contact support@settlemint.com
 contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
-    /// @notice Custom errors for the StableCoinFactory contract
+    /// @notice Custom errors for the TokenizedDepositFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
     error AddressAlreadyDeployed();
 
@@ -22,39 +22,42 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
     /// @dev Maps token addresses to a boolean indicating if they were created by this factory
     mapping(address => bool) public isFactoryToken;
 
-    /// @notice Emitted when a new stablecoin is created
+    /// @notice Emitted when a new tokenized deposit is created
     /// @param token The address of the newly created token
     event TokenizedDepositCreated(address indexed token, address indexed creator);
 
-    /// @notice Deploys a new StableCoinFactory contract
+    /// @notice Deploys a new TokenizedDepositFactory contract
     /// @dev Sets up the factory with meta-transaction support
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(address forwarder) ERC2771Context(forwarder) { }
 
-    /// @notice Creates a new stablecoin token with the specified parameters
+    /// @notice Creates a new tokenized deposit token with the specified parameters
     /// @dev Uses CREATE2 for deterministic addresses, includes reentrancy protection,
     /// and validates that the predicted address hasn't been used before.
-    /// @param name The name of the token (e.g., "USD Stablecoin")
-    /// @param symbol The symbol of the token (e.g., "USDS")
+    /// @param name The name of the token
+    /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token (must be <= 18)
+    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid (must be > 0)
     /// @return token The address of the newly created token
     function create(
         string memory name,
         string memory symbol,
-        uint8 decimals
+        uint8 decimals,
+        uint48 collateralLivenessSeconds
     )
         external
         nonReentrant
         returns (address token)
     {
         // Check if address is already deployed
-        address predicted = predictAddress(_msgSender(), name, symbol, decimals);
+        address predicted = predictAddress(_msgSender(), name, symbol, decimals, collateralLivenessSeconds);
         if (isAddressDeployed(predicted)) revert AddressAlreadyDeployed();
 
         bytes32 salt = _calculateSalt(name, symbol, decimals);
 
-        TokenizedDeposit newToken =
-            new TokenizedDeposit{ salt: salt }(name, symbol, decimals, _msgSender(), trustedForwarder());
+        TokenizedDeposit newToken = new TokenizedDeposit{ salt: salt }(
+            name, symbol, decimals, _msgSender(), collateralLivenessSeconds, trustedForwarder()
+        );
 
         token = address(newToken);
         isFactoryToken[token] = true;
@@ -69,12 +72,14 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
     /// @param name The name of the token
     /// @param symbol The symbol of the token
     /// @param decimals The number of decimals for the token
+    /// @param collateralLivenessSeconds Duration in seconds that collateral proofs remain valid
     /// @return predicted The address where the token would be deployed
     function predictAddress(
         address sender,
         string memory name,
         string memory symbol,
-        uint8 decimals
+        uint8 decimals,
+        uint48 collateralLivenessSeconds
     )
         public
         view
@@ -93,7 +98,9 @@ contract TokenizedDepositFactory is ReentrancyGuard, ERC2771Context {
                             keccak256(
                                 abi.encodePacked(
                                     type(TokenizedDeposit).creationCode,
-                                    abi.encode(name, symbol, decimals, sender, trustedForwarder())
+                                    abi.encode(
+                                        name, symbol, decimals, sender, collateralLivenessSeconds, trustedForwarder()
+                                    )
                                 )
                             )
                         )

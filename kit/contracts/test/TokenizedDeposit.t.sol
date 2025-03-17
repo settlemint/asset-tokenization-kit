@@ -14,6 +14,7 @@ contract TokenizedDepositTest is Test {
     address public user2;
     address public spender;
     uint256 public constant INITIAL_SUPPLY = 1_000_000 * 10 ** 18;
+    uint48 public constant COLLATERAL_LIVENESS = 7 days;
     uint8 public constant DECIMALS = 8;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -30,7 +31,8 @@ contract TokenizedDepositTest is Test {
         forwarder = new Forwarder();
 
         vm.startPrank(owner);
-        tokenizedDeposit = new TokenizedDeposit("TokenizedDeposit", "TKD", DECIMALS, owner, address(forwarder));
+        tokenizedDeposit =
+            new TokenizedDeposit("TokenizedDeposit", "TKD", DECIMALS, owner, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 
@@ -54,8 +56,9 @@ contract TokenizedDepositTest is Test {
 
         for (uint256 i = 0; i < decimalValues.length; i++) {
             vm.startPrank(owner);
-            TokenizedDeposit newToken =
-                new TokenizedDeposit("TokenizedDeposit", "TKD", decimalValues[i], owner, address(forwarder));
+            TokenizedDeposit newToken = new TokenizedDeposit(
+                "TokenizedDeposit", "TKD", decimalValues[i], owner, COLLATERAL_LIVENESS, address(forwarder)
+            );
             vm.stopPrank();
             assertEq(newToken.decimals(), decimalValues[i]);
         }
@@ -64,7 +67,7 @@ contract TokenizedDepositTest is Test {
     function test_RevertOnInvalidDecimals() public {
         vm.startPrank(owner);
         vm.expectRevert(abi.encodeWithSelector(TokenizedDeposit.InvalidDecimals.selector, 19));
-        new TokenizedDeposit("TokenizedDeposit", "TKD", 19, owner, address(forwarder));
+        new TokenizedDeposit("TokenizedDeposit", "TKD", 19, owner, COLLATERAL_LIVENESS, address(forwarder));
         vm.stopPrank();
     }
 
@@ -72,6 +75,8 @@ contract TokenizedDepositTest is Test {
         vm.startPrank(owner);
         // Allow user1 before minting
         tokenizedDeposit.allowUser(user1);
+        // Update collateral first
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(user1, INITIAL_SUPPLY);
         assertEq(tokenizedDeposit.balanceOf(user1), INITIAL_SUPPLY);
         assertEq(tokenizedDeposit.totalSupply(), INITIAL_SUPPLY);
@@ -85,6 +90,25 @@ contract TokenizedDepositTest is Test {
         );
         tokenizedDeposit.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
+    }
+
+    // ERC20Collateral tests
+    function test_OnlyAdminCanUpdateCollateral() public {
+        uint256 collateralAmount = 1_000_000;
+
+        bytes32 role = tokenizedDeposit.SUPPLY_MANAGEMENT_ROLE();
+        vm.startPrank(user1);
+        vm.expectRevert(abi.encodeWithSignature("AccessControlUnauthorizedAccount(address,bytes32)", user1, role));
+        tokenizedDeposit.updateCollateral(collateralAmount);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        tokenizedDeposit.updateCollateral(collateralAmount);
+        vm.stopPrank();
+
+        (uint256 amount, uint48 timestamp) = tokenizedDeposit.collateral();
+        assertEq(amount, collateralAmount);
+        assertEq(timestamp, uint48(block.timestamp));
     }
 
     function test_RoleManagement() public {
@@ -101,6 +125,7 @@ contract TokenizedDepositTest is Test {
     function test_Burn() public {
         vm.startPrank(owner);
         tokenizedDeposit.allowUser(user1);
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
 
@@ -115,6 +140,7 @@ contract TokenizedDepositTest is Test {
         vm.startPrank(owner);
         tokenizedDeposit.allowUser(user1);
         tokenizedDeposit.allowUser(spender);
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
 
@@ -152,6 +178,7 @@ contract TokenizedDepositTest is Test {
         vm.startPrank(owner);
         tokenizedDeposit.allowUser(user1);
         tokenizedDeposit.allowUser(user2);
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(user1, INITIAL_SUPPLY);
         vm.stopPrank();
 
@@ -193,6 +220,7 @@ contract TokenizedDepositTest is Test {
         vm.startPrank(owner);
         tokenizedDeposit.allowUser(user1);
         tokenizedDeposit.allowUser(user2);
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(user1, 100);
         vm.stopPrank();
 
@@ -227,6 +255,7 @@ contract TokenizedDepositTest is Test {
         vm.startPrank(owner);
         tokenizedDeposit.allowUser(signer);
         tokenizedDeposit.allowUser(spender);
+        tokenizedDeposit.updateCollateral(INITIAL_SUPPLY);
         tokenizedDeposit.mint(signer, INITIAL_SUPPLY);
         vm.stopPrank();
 
@@ -264,12 +293,14 @@ contract TokenizedDepositTest is Test {
     // Token withdrawal tests
     function test_WithdrawToken() public {
         // Deploy a mock ERC20 token
-        TokenizedDeposit mockToken = new TokenizedDeposit("Mock", "MCK", 18, owner, address(forwarder));
+        TokenizedDeposit mockToken =
+            new TokenizedDeposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder));
 
         vm.startPrank(owner);
         // Allow the contract and user1 for the mock token
         mockToken.allowUser(address(tokenizedDeposit));
         mockToken.allowUser(user1);
+        mockToken.updateCollateral(1000);
         mockToken.mint(address(tokenizedDeposit), 1000);
 
         // Test withdrawal
@@ -289,12 +320,14 @@ contract TokenizedDepositTest is Test {
 
     function test_WithdrawTokenRevertOnInsufficientBalance() public {
         // Deploy a mock ERC20 token
-        TokenizedDeposit mockToken = new TokenizedDeposit("Mock", "MCK", 18, owner, address(forwarder));
+        TokenizedDeposit mockToken =
+            new TokenizedDeposit("Mock", "MCK", 18, owner, COLLATERAL_LIVENESS, address(forwarder));
 
         vm.startPrank(owner);
         // Allow the contract and user1 for the mock token
         mockToken.allowUser(address(tokenizedDeposit));
         mockToken.allowUser(user1);
+        mockToken.updateCollateral(100);
         mockToken.mint(address(tokenizedDeposit), 100);
 
         vm.expectRevert(abi.encodeWithSelector(TokenizedDeposit.InsufficientTokenBalance.selector));
