@@ -22,7 +22,7 @@ export function CreateEquityForm({
   onOpenChange,
   asButton = false,
 }: CreateEquityFormProps) {
-  const t = useTranslations('private.assets.create.equities');
+  const t = useTranslations('private.assets.create.form');
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
@@ -30,17 +30,19 @@ export function CreateEquityForm({
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title')}
-      description={t('description')}
+      title={t('title.equities')}
+      description={t('description.equities')}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      triggerLabel={
+        isExternallyControlled ? undefined : t('trigger-label.equities')
+      }
     >
       <Form
         action={createEquity}
         resolver={zodResolver(CreateEquitySchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('button-label'),
+          label: t('trigger-label.equities'),
         }}
         defaultValues={{}}
         onAnyFieldChange={({ clearErrors }) => {

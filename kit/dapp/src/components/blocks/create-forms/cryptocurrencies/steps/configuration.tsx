@@ -6,19 +6,22 @@ import { useFormContext } from 'react-hook-form';
 
 export function Configuration() {
   const { control } = useFormContext<CreateCryptoCurrencyInput>();
-  const t = useTranslations(
-    'private.assets.create.cryptocurrencies.configuration'
-  );
+  const t = useTranslations('private.assets.create');
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep
+      title={t('configuration.cryptocurrencies.title')}
+      description={t('configuration.cryptocurrencies.description')}
+    >
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
           name="initialSupply"
           type="number"
-          label={t('initial-supply-label')}
-          description={t('initial-supply-description')}
+          label={t('parameters.cryptocurrencies.initial-supply-label')}
+          description={t(
+            'parameters.cryptocurrencies.initial-supply-description'
+          )}
           required
         />
       </div>

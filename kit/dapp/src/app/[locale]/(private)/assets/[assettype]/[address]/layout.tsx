@@ -1,3 +1,4 @@
+import { DetailPageHeader } from '@/app/[locale]/(private)/_components/detail-page-header';
 import type { TabItemProps } from '@/components/blocks/tab-navigation/tab-item';
 import { TabNavigation } from '@/components/blocks/tab-navigation/tab-navigation';
 import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
@@ -9,7 +10,7 @@ import type { Locale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { PropsWithChildren } from 'react';
 import type { Address } from 'viem';
-import { DetailPageHeader } from './_components/page-header';
+import { ManageDropdown } from './_components/manage-dropdown/manage-dropdown';
 
 interface LayoutProps extends PropsWithChildren {
   params: Promise<{
@@ -68,7 +69,17 @@ export default async function AssetDetailLayout({
 
   return (
     <>
-      <DetailPageHeader address={address} assettype={assettype} />
+      <DetailPageHeader
+        address={address}
+        assettype={assettype}
+        manageDropdown={(details) => (
+          <ManageDropdown
+            address={address}
+            assettype={assettype}
+            detail={details}
+          />
+        )}
+      />
       <div className="relative mt-4 space-y-2">
         <TabNavigation items={tabItems} />
       </div>
