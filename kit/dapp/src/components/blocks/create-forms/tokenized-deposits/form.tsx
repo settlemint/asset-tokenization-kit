@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Basics } from './steps/basics';
+import { Configuration } from './steps/configuration';
 import { Summary } from './steps/summary';
 
 interface CreateTokenizedDepositFormProps {
@@ -45,8 +46,12 @@ export function CreateTokenizedDepositForm({
         onAnyFieldChange={({ clearErrors }) => {
           clearErrors(['predictedAddress']);
         }}
+        defaultValues={{
+          collateralLivenessSeconds: 3600 * 24 * 365,
+        }}
       >
         <Basics />
+        <Configuration />
         <Summary />
       </Form>
     </FormSheet>

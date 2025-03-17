@@ -744,7 +744,7 @@
             "asset-basics-description": "Basic asset information and settings.",
             "asset-basics-title": "Asset Basics",
             "collateral-proof-validity-label": "Collateral Proof Validity",
-            "configuration-description": "Asset supply and additional settings.",
+            "configuration-description": "Advanced settings like collateral proof validity.",
             "configuration-title": "Configuration",
             "decimals-label": "Decimals",
             "description": "Review and confirm the details of your new stablecoin before creation.",
@@ -769,6 +769,11 @@
             "symbol-placeholder": "TEUR",
             "title": "Basic Information"
           },
+          "configuration": {
+            "collateral-proof-validity-label": "Collateral Proof Validity",
+            "description": "Specify advanced settings like collateral proof validity.",
+            "title": "Configuration"
+          },
           "button-label": "Issue a new tokenized deposit",
           "description": "Define and launch a new tokenized deposit asset.",
           "summary": {
@@ -779,7 +784,11 @@
             "isin-label": "ISIN",
             "name-label": "Name",
             "symbol-label": "Symbol",
-            "title": "Review and confirm the details of your new tokenized deposit before creation."
+            "title": "Review and confirm the details of your new tokenized deposit before creation.",
+            "configuration-title": "Configuration",
+            "configuration-description": "Advanced settings like collateral proof validity.",
+            "collateral-proof-validity-label": "Collateral Proof Validity",
+            "seconds": "seconds"
           },
           "title": "Create Tokenized Deposit",
           "trigger-label": "Issue a new tokenized deposit"
