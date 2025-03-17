@@ -19,6 +19,11 @@ export const TokenizedDepositFragment = theGraphGraphqlKit(`
     totalBurned
     totalBurnedExact
     totalHolders
+    collateral
+    collateralRatio
+    freeCollateral
+    lastCollateralUpdate
+    liveness
     paused
     creator {
       id
@@ -43,6 +48,11 @@ export const TokenizedDepositFragmentSchema = z.object({
   totalBurned: z.bigDecimal(),
   totalBurnedExact: z.bigInt(),
   totalHolders: z.number(),
+  collateral: z.bigDecimal(),
+  collateralRatio: z.bigDecimal(),
+  freeCollateral: z.bigDecimal(),
+  lastCollateralUpdate: z.timestamp(),
+  liveness: z.coerce.number(),
   paused: z.boolean(),
   creator: z.object({
     id: z.address(),
