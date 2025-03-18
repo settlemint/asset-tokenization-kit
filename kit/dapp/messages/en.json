@@ -748,7 +748,9 @@
             "view-events": "View events",
             "withdraw": "Withdraw"
           },
-          "manage": "Manage"
+          "available-balance": "Balance available to burn: {maxLimit}",
+          "manage": "Manage",
+          "max-mint-amount": "Collateral available to mint: {limit}"
         }
       },
       "details": {
@@ -757,7 +759,6 @@
           "burn": {
             "amount": {
               "amount-label": "Amount",
-              "available-balance": "Available balance: {balance}",
               "description": "Input the amount you wish to burn.",
               "title": "Enter Amount"
             },
@@ -1022,6 +1023,7 @@
           "table-title": "Permissions"
         },
         "related": {
+          "available-balance": "Balance available to burn: {maxLimit}",
           "bonds": {
             "decrease-supply": {
               "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
@@ -1058,6 +1060,7 @@
               "title": "Issue Bonds"
             }
           },
+          "max-mint-amount": "Collateral available to mint: {limit}",
           "stablecoins": {
             "decrease-supply": {
               "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",

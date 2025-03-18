@@ -16,6 +16,7 @@ interface FormSheetProps extends PropsWithChildren {
   description: string;
   triggerLabel?: string;
   asButton?: boolean;
+  disabled?: boolean;
 }
 
 export function FormSheet({
@@ -26,12 +27,15 @@ export function FormSheet({
   description,
   triggerLabel,
   asButton,
+  disabled = false,
 }: FormSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {triggerLabel && asButton && (
         <SheetTrigger asChild>
-          <Button variant="secondary">{triggerLabel}</Button>
+          <Button variant="secondary" disabled={disabled}>
+            {triggerLabel}
+          </Button>
         </SheetTrigger>
       )}
       <SheetContent className="min-w-[34rem]">

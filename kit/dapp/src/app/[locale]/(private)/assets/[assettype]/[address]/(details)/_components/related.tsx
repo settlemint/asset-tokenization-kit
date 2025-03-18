@@ -1,3 +1,5 @@
+import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import type { Address } from "viem";
 import { BondsRelated } from "./related/bonds";
@@ -10,25 +12,65 @@ import { TokenizedDepositsRelated } from "./related/tokenizeddeposits";
 interface RelatedProps {
   assettype: AssetType;
   address: Address;
-  totalSupply: number;
+  assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+  userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
 }
 
-export function Related({ assettype, address, totalSupply }: RelatedProps) {
+export function Related({
+  assettype,
+  address,
+  assetDetails,
+  userBalance,
+}: RelatedProps) {
   switch (assettype) {
     case "bond":
-      return <BondsRelated address={address} totalSupply={totalSupply} />;
+      return (
+        <BondsRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
+      );
     case "cryptocurrency":
-      return <CryptocurrenciesRelated address={address} />;
+      return (
+        <CryptocurrenciesRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
+      );
     case "stablecoin":
-      return <StablecoinsRelated address={address} totalSupply={totalSupply} />;
+      return (
+        <StablecoinsRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
+      );
     case "tokenizeddeposit":
       return (
-        <TokenizedDepositsRelated address={address} totalSupply={totalSupply} />
+        <TokenizedDepositsRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
       );
     case "equity":
-      return <EquitiesRelated address={address} totalSupply={totalSupply} />;
+      return (
+        <EquitiesRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
+      );
     case "fund":
-      return <FundsRelated address={address} totalSupply={totalSupply} />;
+      return (
+        <FundsRelated
+          address={address}
+          assetDetails={assetDetails}
+          userBalance={userBalance}
+        />
+      );
     default:
       throw new Error("Invalid asset type");
   }

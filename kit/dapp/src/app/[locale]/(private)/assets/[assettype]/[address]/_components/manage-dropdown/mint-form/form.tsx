@@ -7,7 +7,7 @@ import { MintSchema } from "@/lib/mutations/mint/mint-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Recipients } from "./steps/recipients";
@@ -16,17 +16,23 @@ import { Summary } from "./steps/summary";
 interface MintFormProps {
   address: Address;
   assettype: AssetType;
+  maxLimit?: number;
+  maxLimitDescription?: ReactNode;
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function MintForm({
   address,
   assettype,
+  maxLimit,
+  maxLimitDescription,
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: MintFormProps) {
   const t = useTranslations("private.assets.details.forms.mint");
   const isExternallyControlled =
@@ -43,6 +49,7 @@ export function MintForm({
       title={t("title")}
       description={t("description")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={mint}
@@ -58,7 +65,7 @@ export function MintForm({
           assettype,
         }}
       >
-        <Amount />
+        <Amount maxLimit={maxLimit} maxLimitDescription={maxLimitDescription} />
         <Recipients />
         <Summary address={address} />
       </Form>

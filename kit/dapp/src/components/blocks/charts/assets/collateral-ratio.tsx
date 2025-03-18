@@ -2,7 +2,7 @@ import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
 import { PieChartComponent } from "@/components/blocks/charts/pie-chart";
 import { ChartPieIcon } from "@/components/ui/animated-icons/chart-pie";
 import type { ChartConfig } from "@/components/ui/chart";
-import { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
+import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 
@@ -24,9 +24,9 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
     },
   } satisfies ChartConfig;
 
-  const data = await getStableCoinDetail({ address });
+  const data = await getAssetDetail({ address });
 
-  if (!data || data.collateral === 0) {
+  if (!data || ("collateral" in data && data.collateral === 0)) {
     return (
       <ChartSkeleton title={t("collateral-ratio.label")} variant="noData">
         <div className="flex flex-col items-center gap-2 text-center">
@@ -37,14 +37,17 @@ export async function CollateralRatio({ address }: CollateralRatioProps) {
     );
   }
 
-  const collateralData = [
+  const collateralData: { name: string; value: number }[] = [
     {
       name: "freeCollateral",
-      value: data.freeCollateral,
+      value: "freeCollateral" in data ? (data.freeCollateral as number) : 0,
     },
     {
       name: "committedCollateral",
-      value: data.collateral - data.freeCollateral,
+      value:
+        "collateral" in data && "freeCollateral" in data
+          ? (data.collateral as number) - (data.freeCollateral as number)
+          : 0,
     },
   ];
 

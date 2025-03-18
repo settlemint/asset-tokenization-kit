@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { FieldValues, UseControllerProps } from "react-hook-form";
 
 /**
@@ -8,7 +9,7 @@ export type BaseFormInputProps<T extends FieldValues> =
     /** The label text for the input */
     label?: string;
     /** Additional description text */
-    description?: string;
+    description?: string | ReactNode;
     /** Whether the field is required */
     required?: boolean;
     /** Custom CSS classes */
