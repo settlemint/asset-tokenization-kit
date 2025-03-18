@@ -216,7 +216,11 @@ export function ManageDropdown({
     },
   ] as const;
 
-  const canPerformUserActions = !isBlocked && !isPaused && userIsUserManager;
+  const assetSupportsUserManagement = assettype !== "cryptocurrency";
+  
+  const canPerformUserActions = !isBlocked && !isPaused && 
+    (assetSupportsUserManagement ? userIsUserManager : userIsAdmin);
+
   const userActions = [
     {
       id: "grant-role",

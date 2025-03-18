@@ -6,13 +6,20 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 export function AdminRoles() {
-  const { control } = useFormContext<GrantRoleInput>();
+  const { control, watch } = useFormContext<GrantRoleInput>();
   const t = useTranslations("private.assets.details.forms");
+  const assettype = watch("assettype");
+
+  // Filter out USER_MANAGEMENT_ROLE for cryptocurrency assets
+  const roleEntries = Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][];
+  const filteredRoles = assettype === "cryptocurrency" 
+    ? roleEntries.filter(([key]) => key !== "USER_MANAGEMENT_ROLE")
+    : roleEntries;
 
   return (
     <FormStep title={t("roles.title")} description={t("roles.description")}>
       <div className="space-y-3">
-        {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
+        {filteredRoles.map(
           ([key, role]) => (
             <FormCheckbox
               key={key}
