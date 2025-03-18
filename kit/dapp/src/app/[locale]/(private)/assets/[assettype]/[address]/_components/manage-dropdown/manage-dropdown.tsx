@@ -183,7 +183,7 @@ export function ManageDropdown({
     {
       id: "update-collateral",
       label: t("actions.update-collateral"),
-      hidden: assettype !== "stablecoin",
+      hidden: !["stablecoin", "tokenizeddeposit"].includes(assettype),
       disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <UpdateCollateralForm
