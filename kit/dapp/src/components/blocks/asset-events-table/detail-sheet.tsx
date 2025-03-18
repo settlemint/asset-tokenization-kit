@@ -1,6 +1,6 @@
-import { TransactionHash } from '@/components/blocks/transaction-hash/transaction-hash';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { TransactionHash } from "@/components/blocks/transaction-hash/transaction-hash";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Sheet,
   SheetContent,
@@ -8,25 +8,25 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import type { NormalizedEventsListItem } from '@/lib/queries/asset-events/asset-events-fragments';
-import { useTranslations } from 'next-intl';
-import type { Address } from 'viem';
-import { ColumnAssetType } from '../asset-info/column-asset-type';
-import { EvmAddress } from '../evm-address/evm-address';
-import { ApprovalDetails } from './details/approval';
-import { BondRedeemedDetails } from './details/bond-redeemed';
-import { BurnDetails } from './details/burn';
-import { CollateralUpdatedDetails } from './details/collateral-updated';
-import { FeeCollectedDetails } from './details/fee-collected';
-import { MintDetails } from './details/mint';
-import { RoleAdminChangedDetails } from './details/role-admin-changed';
-import { RoleGrantedDetails } from './details/role-granted';
-import { RoleRevokedDetails } from './details/role-revoked';
-import { TokenWithdrawnDetails } from './details/token-withdrawn';
-import { TokensFrozenDetails } from './details/tokens-frozen';
-import { TransferDetails } from './details/transfer';
-import { UserBlockedDetails } from './details/user-blocked';
+} from "@/components/ui/sheet";
+import type { NormalizedEventsListItem } from "@/lib/queries/asset-events/asset-events-fragments";
+import { useTranslations } from "next-intl";
+import type { Address } from "viem";
+import { ColumnAssetType } from "../asset-info/column-asset-type";
+import { EvmAddress } from "../evm-address/evm-address";
+import { ApprovalDetails } from "./details/approval";
+import { BondRedeemedDetails } from "./details/bond-redeemed";
+import { BurnDetails } from "./details/burn";
+import { CollateralUpdatedDetails } from "./details/collateral-updated";
+import { FeeCollectedDetails } from "./details/fee-collected";
+import { MintDetails } from "./details/mint";
+import { RoleAdminChangedDetails } from "./details/role-admin-changed";
+import { RoleGrantedDetails } from "./details/role-granted";
+import { RoleRevokedDetails } from "./details/role-revoked";
+import { TokenWithdrawnDetails } from "./details/token-withdrawn";
+import { TokensFrozenDetails } from "./details/tokens-frozen";
+import { TransferDetails } from "./details/transfer";
+import { UserBlockedDetails } from "./details/user-blocked";
 
 export function EventDetailSheet({
   event,
@@ -37,20 +37,20 @@ export function EventDetailSheet({
   transactionHash,
   assetType,
 }: NormalizedEventsListItem) {
-  const t = useTranslations('components.asset-events-table.detail-sheet');
+  const t = useTranslations("components.asset-events-table.detail-sheet");
 
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          {t('details-button')}
+          {t("details-button")}
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[34rem]">
         <SheetHeader>
           <SheetTitle>{event}</SheetTitle>
           <SheetDescription>
-            {t('details-for-event', { event })}
+            {t("details-for-event", { event })}
           </SheetDescription>
         </SheetHeader>
         <div className="mx-4 overflow-auto">
@@ -58,25 +58,25 @@ export function EventDetailSheet({
             <CardContent className="pt-6">
               <dl className="grid grid-cols-[1fr_2fr] gap-4">
                 <dt className="text-muted-foreground text-sm">
-                  {t('sender')}:
+                  {t("sender")}:
                 </dt>
                 <dd className="text-sm">
                   <EvmAddress address={sender as Address} />
                 </dd>
                 <dt className="text-muted-foreground text-sm">
-                  {t('asset-type')}:
+                  {t("asset-type")}:
                 </dt>
                 <dd className="text-sm">
                   <ColumnAssetType assettype={assetType} />
                 </dd>
-                <dt className="text-muted-foreground text-sm">{t('asset')}:</dt>
+                <dt className="text-muted-foreground text-sm">{t("asset")}:</dt>
                 <dd className="text-sm">
                   <EvmAddress address={asset as Address} />
                 </dd>
-                <dt className="text-muted-foreground text-sm">{t('date')}:</dt>
+                <dt className="text-muted-foreground text-sm">{t("date")}:</dt>
                 <dd className="text-sm first-letter:uppercase">{timestamp}</dd>
                 <dt className="text-muted-foreground text-sm">
-                  {t('transaction-hash')}:
+                  {t("transaction-hash")}:
                 </dt>
                 <dd className="text-sm">
                   <TransactionHash hash={transactionHash} />
@@ -87,40 +87,40 @@ export function EventDetailSheet({
           <div className="mt-6 mb-6">
             {(() => {
               switch (details.__typename) {
-                case 'ApprovalEvent':
+                case "ApprovalEvent":
                   return <ApprovalDetails details={details} />;
-                case 'BondRedeemedEvent':
+                case "BondRedeemedEvent":
                   return <BondRedeemedDetails details={details} />;
-                case 'BurnEvent':
+                case "BurnEvent":
                   return <BurnDetails details={details} />;
-                case 'CollateralUpdatedEvent':
+                case "CollateralUpdatedEvent":
                   return <CollateralUpdatedDetails details={details} />;
-                case 'ManagementFeeCollectedEvent':
-                case 'PerformanceFeeCollectedEvent':
+                case "ManagementFeeCollectedEvent":
+                case "PerformanceFeeCollectedEvent":
                   return <FeeCollectedDetails details={details} />;
-                case 'MintEvent':
+                case "MintEvent":
                   return <MintDetails details={details} />;
-                case 'RoleAdminChangedEvent':
+                case "RoleAdminChangedEvent":
                   return <RoleAdminChangedDetails details={details} />;
-                case 'RoleGrantedEvent':
+                case "RoleGrantedEvent":
                   return <RoleGrantedDetails details={details} />;
-                case 'RoleRevokedEvent':
+                case "RoleRevokedEvent":
                   return <RoleRevokedDetails details={details} />;
-                case 'TokenWithdrawnEvent':
+                case "TokenWithdrawnEvent":
                   return <TokenWithdrawnDetails details={details} />;
-                case 'TokensFrozenEvent':
+                case "TokensFrozenEvent":
                   return <TokensFrozenDetails details={details} />;
-                case 'TransferEvent':
+                case "TransferEvent":
                   return <TransferDetails details={details} />;
-                case 'UserBlockedEvent':
+                case "UserBlockedEvent":
                   return <UserBlockedDetails details={details} />;
-                case 'AssetCreatedEvent':
-                case 'BondMaturedEvent':
-                case 'PausedEvent':
-                case 'UnpausedEvent':
-                case 'UserUnblockedEvent':
-                case 'UnderlyingAssetTopUpEvent':
-                case 'UnderlyingAssetWithdrawnEvent':
+                case "AssetCreatedEvent":
+                case "BondMaturedEvent":
+                case "PausedEvent":
+                case "UnpausedEvent":
+                case "UserUnblockedEvent":
+                case "UnderlyingAssetTopUpEvent":
+                case "UnderlyingAssetWithdrawnEvent":
                   // These events don't have additional details to display
                   return null;
                 default: {

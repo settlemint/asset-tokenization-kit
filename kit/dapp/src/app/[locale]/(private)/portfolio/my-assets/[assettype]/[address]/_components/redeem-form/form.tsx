@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { redeem } from '@/lib/mutations/bond/redeem/redeem-action';
-import { RedeemBondSchema } from '@/lib/mutations/bond/redeem/redeem-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Amount } from './steps/amount';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { redeem } from "@/lib/mutations/bond/redeem/redeem-action";
+import { RedeemBondSchema } from "@/lib/mutations/bond/redeem/redeem-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Amount } from "./steps/amount";
+import { Summary } from "./steps/summary";
 
 interface RedeemFormProps {
   address: Address;
@@ -26,7 +26,7 @@ export function RedeemForm({
   open,
   onOpenChange,
 }: RedeemFormProps) {
-  const t = useTranslations('portfolio.my-assets.bond');
+  const t = useTranslations("portfolio.my-assets.bond");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -38,10 +38,10 @@ export function RedeemForm({
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
       triggerLabel={
-        isExternallyControlled ? undefined : t('redeem-form.trigger-label')
+        isExternallyControlled ? undefined : t("redeem-form.trigger-label")
       }
-      title={t('redeem-form.title')}
-      description={t('redeem-form.description')}
+      title={t("redeem-form.title")}
+      description={t("redeem-form.description")}
       asButton={asButton}
     >
       <Form
@@ -51,7 +51,7 @@ export function RedeemForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t('redeem-form.button-label'),
+          label: t("redeem-form.button-label"),
         }}
         defaultValues={{
           address,

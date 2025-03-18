@@ -80,7 +80,21 @@
     },
     "platform": {
       "settings": {
-        "platform-management": "Platform management"
+        "base-currency-label": "Base Currency",
+        "base-currency-updated": "Base currency updated successfully",
+        "currencies": {
+          "aed": "UAE Dirham (AED)",
+          "eur": "Euro (EUR)",
+          "jpy": "Japanese Yen (JPY)",
+          "sar": "Saudi Riyal (SAR)",
+          "sgd": "Singapore Dollar (SGD)",
+          "usd": "US Dollar (USD)"
+        },
+        "platform-management": "Platform management",
+        "save": "Save",
+        "save-changes": "Save changes",
+        "saving": "Saving...",
+        "select-base-currency": "Select base currency"
       }
     },
     "sidebar": {
@@ -412,6 +426,17 @@
         "recent-transactions": "Recent transactions"
       }
     },
+    "add-contact-form": {
+      "contact": {
+        "added": "Contact added successfully",
+        "adding": "Adding contact...",
+        "description": "Add a new contact to your address book",
+        "first-name-label": "First Name",
+        "last-name-label": "Last Name",
+        "title": "Add Contact",
+        "wallet-address-label": "Wallet Address"
+      }
+    },
     "dashboard": {
       "latest-events": "Latest events",
       "my-assets": "My Assets",
@@ -480,6 +505,15 @@
           }
         }
       },
+      "detail": {
+        "forms": {
+          "actions": {
+            "redeem": "Redeem",
+            "transfer": "Transfer"
+          }
+        },
+        "manage": "Manage"
+      },
       "portfolio-management": "Portfolio management",
       "table": {
         "actions-header": "Action",
@@ -490,6 +524,20 @@
         "type-header": "Type"
       },
       "title": "My Assets"
+    },
+    "my-contacts": {
+      "add-contact-button": "Add Contact",
+      "description": "Contacts management",
+      "table": {
+        "actions-header": "Action",
+        "created-at-header": "Created At",
+        "name-header": "Name",
+        "status-header": "Status",
+        "symbol-header": "Symbol",
+        "type-header": "Type",
+        "wallet-header": "Wallet"
+      },
+      "title": "My Contacts"
     },
     "settings": {
       "api-keys": {
@@ -565,233 +613,125 @@
     "assets": {
       "asset-statistics-title": "Statistics",
       "create": {
-        "bonds": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Enter the basic details of the bond",
-            "isin-label": "ISIN",
-            "isin-placeholder": "e.g. US000000AA00",
-            "name-label": "Asset name",
-            "name-placeholder": "e.g. Company XYZ Bond 2023",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "e.g. XYZ23",
-            "title": "Basic information"
+        "basics": {
+          "description": "Provide the general information required to define your asset.",
+          "title": "Asset basics"
+        },
+        "configuration": {
+          "bonds": {
+            "description": "Set parameters specific to your bond.",
+            "title": "Bond configuration"
           },
-          "button-label": "Issue a new bond",
-          "configuration": {
+          "cryptocurrencies": {
+            "description": "Set parameters specific to your cryptocurrency.",
+            "title": "Cryptocurrency configuration"
+          },
+          "equities": {
+            "description": "Set parameters specific to your equity.",
+            "title": "Equity configuration"
+          },
+          "funds": {
+            "description": "Set parameters specific to your fund.",
+            "title": "Fund configuration"
+          },
+          "stablecoins": {
+            "description": "Set parameters specific to your stable coin.",
+            "title": "Stable coin configuration"
+          },
+          "tokenizeddeposits": {
+            "description": "Set parameters specific to your tokenized deposit.",
+            "title": "Tokenized deposit configuration"
+          }
+        },
+        "form": {
+          "description": {
+            "bonds": "Debt instruments issued as tokenized securities.",
+            "cryptocurrencies": "Decentralized digital assets used as a medium of exchange or store of value.",
+            "equities": "Assets representing ownership in a company.",
+            "funds": "Investment vehicles pooled by professional managers.",
+            "stablecoins": "Digital assets pegged to a stable asset like USD.",
+            "tokenizeddeposits": "Digital assets that represent a deposit of a traditional asset."
+          },
+          "title": {
+            "bonds": "Design a new bond",
+            "cryptocurrencies": "Design a new cryptocurrency",
+            "equities": "Design a new equity",
+            "funds": "Design a new fund",
+            "stablecoins": "Design a new stable coin",
+            "tokenizeddeposits": "Design a new tokenized deposit"
+          },
+          "trigger-label": {
+            "bonds": "Issue a new bond",
+            "cryptocurrencies": "Issue a new cryptocurrency",
+            "equities": "Issue a new equity",
+            "funds": "Issue a new fund",
+            "stablecoins": "Issue a new stablecoin",
+            "tokenizeddeposits": "Issue a new tokenized deposit"
+          }
+        },
+        "parameters": {
+          "bonds": {
             "cap-description": "Maximum amount of tokens that can be issued",
             "cap-label": "Maximum supply",
-            "description": "Configure the properties of the bond",
             "face-value-description": "Nominal value of a single bond unit",
             "face-value-label": "Face value",
+            "isin-placeholder": "US000000AA00",
             "maturity-date-label": "Maturity date",
-            "title": "Bond configuration",
+            "name-placeholder": "Company XYZ Bond 2023",
+            "symbol-placeholder": "XYZ23",
             "underlying-asset-description": "Address of the asset that backs this bond",
             "underlying-asset-label": "Underlying asset"
           },
-          "description": "Issue a new bond on the blockchain",
-          "summary": {
-            "asset-basics-description": "Basic information about the bond",
-            "asset-basics-title": "Basic information",
-            "cap-label": "Maximum supply",
-            "configuration-description": "Technical configuration of the bond",
-            "configuration-title": "Bond configuration",
+          "common": {
+            "collateral-proof-validity-label": "Collateral proof validity",
             "decimals-label": "Decimals",
-            "description": "Review the bond details before creating",
-            "face-value-label": "Face value",
             "isin-label": "ISIN",
-            "maturity-date-label": "Maturity date",
             "name-label": "Name",
+            "seconds-unit-label": "seconds",
             "symbol-label": "Symbol",
-            "title": "Review and confirm",
-            "underlying-asset-label": "Underlying asset"
+            "value-in-base-currency-label": "Value in {baseCurrency}"
           },
-          "title": "Create new bond",
-          "trigger-label": "Issue a new bond"
-        },
-        "cryptocurrencies": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Define essential details such as name, symbol, and visibility.",
-            "name-label": "Name",
+          "cryptocurrencies": {
+            "initial-supply-description": "Initial amount of tokens to be minted",
+            "initial-supply-label": "Initial supply",
             "name-placeholder": "Bitcoin",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "BTC",
-            "title": "Basic Information"
+            "symbol-placeholder": "BTC"
           },
-          "button-label": "Issue a new cryptocurrency",
-          "configuration": {
-            "description": "Specify advanced settings for your cryptocurrency.",
-            "initial-supply-description": "The amount of tokens to mint at creation",
-            "initial-supply-label": "Initial Supply",
-            "title": "Configuration"
-          },
-          "description": "Define and launch a new cryptocurrency asset.",
-          "summary": {
-            "asset-basics-description": "Basic asset information and settings.",
-            "asset-basics-title": "Asset Basics",
-            "configuration-description": "Asset supply and additional settings.",
-            "configuration-title": "Configuration",
-            "decimals-label": "Decimals",
-            "description": "Review and confirm the details of your new cryptocurrency before creation.",
-            "initial-supply-label": "Initial Supply",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Review and confirm"
-          },
-          "title": "Create Cryptocurrency",
-          "trigger-label": "Issue a new cryptocurrency"
-        },
-        "equities": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Define essential details such as name, symbol, and visibility.",
-            "isin-label": "ISIN",
+          "equities": {
+            "equity-category-label": "Equity category",
+            "equity-class-label": "Equity class",
             "isin-placeholder": "US1234567890",
-            "name-label": "Name",
             "name-placeholder": "Global Equity",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "GLEQ",
-            "title": "Basic Information"
+            "symbol-placeholder": "GLEQ"
           },
-          "button-label": "Issue a new equity",
-          "configuration": {
-            "description": "Configure the equity classification details",
-            "equity-category-label": "Equity Category",
-            "equity-class-label": "Equity Class",
-            "title": "Configuration"
-          },
-          "description": "Issue a new equity on the blockchain",
-          "summary": {
-            "asset-basics-description": "Basic asset information and settings.",
-            "asset-basics-title": "Asset Basics",
-            "configuration-description": "Equity classification details.",
-            "configuration-title": "Configuration",
-            "decimals-label": "Decimals",
-            "description": "Review and confirm the details of your new equity before creation.",
-            "equity-category-label": "Equity Category",
-            "equity-class-label": "Equity Class",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Review and confirm"
-          },
-          "title": "Create new equity",
-          "trigger-label": "Mint"
-        },
-        "funds": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Define essential details such as name, symbol, and visibility.",
-            "isin-label": "ISIN",
+          "funds": {
+            "basis-points": "bps",
+            "fund-category-label": "Fund category",
+            "fund-class-label": "Fund class",
             "isin-placeholder": "US1234567890",
-            "name-label": "Name",
-            "name-placeholder": "Global Growth Fund",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "GGF",
-            "title": "Basic Information"
-          },
-          "button-label": "Issue a new fund",
-          "configuration": {
-            "basis-points": "bps",
-            "description": "Specify fund category, class, and management fee.",
-            "fund-category-label": "Fund Category",
-            "fund-class-label": "Fund Class",
             "management-fee-description": "Annual management fee in basis points (100 bps = 1%)",
-            "management-fee-label": "Management Fee",
-            "title": "Fund Configuration"
+            "management-fee-label": "Management fee",
+            "name-placeholder": "Global Growth Fund",
+            "symbol-placeholder": "GGF"
           },
-          "description": "Define and launch a new fund asset.",
-          "summary": {
-            "asset-basics-description": "Basic asset information and settings.",
-            "asset-basics-title": "Asset Basics",
-            "basis-points": "bps",
-            "configuration-description": "Fund category, class, and fee settings.",
-            "configuration-title": "Fund Configuration",
-            "decimals-label": "Decimals",
-            "description": "Review and confirm the details of your new fund before creation.",
-            "fund-category-label": "Fund Category",
-            "fund-class-label": "Fund Class",
-            "isin-label": "ISIN",
-            "management-fee-label": "Management Fee",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Review and confirm"
-          },
-          "title": "Create Fund",
-          "trigger-label": "Issue a new fund"
-        },
-        "stablecoins": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Define essential details such as name, symbol, and visibility.",
-            "isin-label": "ISIN",
+          "stablecoins": {
             "isin-placeholder": "DEFI4EVER2024",
-            "name-label": "Name",
             "name-placeholder": "TotallyNotTether",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "SAFU",
-            "title": "Basic Information"
+            "symbol-placeholder": "SAFU"
           },
-          "button-label": "Issue a new stablecoin",
-          "configuration": {
-            "collateral-proof-validity-label": "Collateral Proof Validity",
-            "description": "Specify advanced settings like collateral proof validity.",
-            "title": "Configuration"
-          },
-          "description": "Define and launch a new stablecoin asset.",
-          "summary": {
-            "asset-basics-description": "Basic asset information and settings.",
-            "asset-basics-title": "Asset Basics",
-            "collateral-proof-validity-label": "Collateral Proof Validity",
-            "configuration-description": "Advanced settings like collateral proof validity.",
-            "configuration-title": "Configuration",
-            "decimals-label": "Decimals",
-            "description": "Review and confirm the details of your new stablecoin before creation.",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "seconds": "seconds",
-            "symbol-label": "Symbol",
-            "title": "Review and confirm the details of your new stablecoin before creation."
-          },
-          "title": "Create Stablecoin",
-          "trigger-label": "Issue a new stablecoin"
-        },
-        "tokenizeddeposits": {
-          "basics": {
-            "decimals-label": "Decimals",
-            "description": "Define essential details such as name, symbol, and visibility.",
-            "isin-label": "ISIN",
+          "tokenizeddeposits": {
             "isin-placeholder": "EU1234567890",
-            "name-label": "Name",
             "name-placeholder": "Tokenized Euro",
-            "symbol-label": "Symbol",
-            "symbol-placeholder": "TEUR",
-            "title": "Basic Information"
-          },
-          "configuration": {
-            "collateral-proof-validity-label": "Collateral Proof Validity",
-            "description": "Specify advanced settings like collateral proof validity.",
-            "title": "Configuration"
-          },
-          "button-label": "Issue a new tokenized deposit",
-          "description": "Define and launch a new tokenized deposit asset.",
-          "summary": {
-            "asset-basics-description": "Basic asset information and settings.",
-            "asset-basics-title": "Asset Basics",
-            "decimals-label": "Decimals",
-            "description": "Review and confirm the details of your new tokenized deposit before creation.",
-            "isin-label": "ISIN",
-            "name-label": "Name",
-            "symbol-label": "Symbol",
-            "title": "Review and confirm the details of your new tokenized deposit before creation.",
-            "configuration-title": "Configuration",
-            "configuration-description": "Advanced settings like collateral proof validity.",
-            "collateral-proof-validity-label": "Collateral Proof Validity",
-            "seconds": "seconds"
-          },
-          "title": "Create Tokenized Deposit",
-          "trigger-label": "Issue a new tokenized deposit"
+            "symbol-placeholder": "TEUR"
+          }
+        },
+        "summary": {
+          "asset-basics-description": "General information about your asset.",
+          "asset-basics-title": "Basic information",
+          "configuration-description": "Specific parameters for your asset.",
+          "configuration-title": "Configuration",
+          "description": "This is the final step before creating your asset. Please review all the details you have entered.",
+          "title": "Summary"
         }
       },
       "detail": {
@@ -806,8 +746,8 @@
             "top-up": "Top up",
             "unpause": "Unpause contract",
             "update-collateral": "Update collateral",
-            "withdraw": "Withdraw",
-            "view-events": "View events"
+            "view-events": "View events",
+            "withdraw": "Withdraw"
           },
           "manage": "Manage"
         }
@@ -1295,6 +1235,8 @@
         "not-available": "N/A",
         "ownership-concentration": "Ownership concentration",
         "ownership-concentration-info": "Percentage owned by the top 5 holders",
+        "price": "Price",
+        "price-header": "Price",
         "proven-collateral": "Proven collateral",
         "proven-collateral-info": "The amount of collateral that has been proven to be held by the token",
         "redeemed": "Redeemed",

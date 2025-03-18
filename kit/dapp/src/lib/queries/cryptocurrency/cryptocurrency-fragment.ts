@@ -1,6 +1,6 @@
-import { hasuraGraphql } from '@/lib/settlemint/hasura';
-import { theGraphGraphqlKit } from '@/lib/settlemint/the-graph';
-import { type ZodInfer, z } from '@/lib/utils/zod';
+import { hasuraGraphql } from "@/lib/settlemint/hasura";
+import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph
@@ -62,6 +62,8 @@ export type CryptoCurrency = ZodInfer<typeof CryptoCurrencyFragmentSchema>;
 export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
   fragment OffchainCryptoCurrencyFragment on asset {
     id
+    isin
+    value_in_base_currency
   }
 `);
 
@@ -71,6 +73,8 @@ export const OffchainCryptoCurrencyFragment = hasuraGraphql(`
  */
 export const OffchainCryptoCurrencyFragmentSchema = z.object({
   id: z.address(),
+  isin: z.isin().nullish(),
+  value_in_base_currency: z.fiatCurrencyAmount(),
 });
 
 /**

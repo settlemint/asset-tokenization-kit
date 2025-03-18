@@ -1,11 +1,11 @@
-'use server';
-import { getUser } from '@/lib/auth/utils';
-import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
-import type { CreateEquityInput } from '@/lib/mutations/equity/create/create-schema';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseWithLogging, z } from '@/lib/utils/zod';
-import { cache } from 'react';
-import type { Address } from 'viem';
+"use server";
+import { getUser } from "@/lib/auth/utils";
+import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
+import type { CreateEquityInput } from "@/lib/mutations/equity/create/create-schema";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseWithLogging, z } from "@/lib/utils/zod";
+import { cache } from "react";
+import type { Address } from "viem";
 
 /**
  * GraphQL query for predicting the address of a new equity
@@ -61,7 +61,7 @@ export const getPredictedAddress = cache(async (input: CreateEquityInput) => {
   const predictedAddress = safeParseWithLogging(
     PredictedAddressSchema,
     data,
-    'equity'
+    "equity"
   );
 
   return predictedAddress.EquityFactory.predictAddress.predicted;

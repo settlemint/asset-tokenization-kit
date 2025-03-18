@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { ColumnAssetStatus } from '@/components/blocks/asset-info/column-asset-status';
-import { ColumnHolderType } from '@/components/blocks/asset-info/column-holder-type';
-import { AssetStatusPill } from '@/components/blocks/asset-status-pill/asset-status-pill';
-import { DataTableRowActions } from '@/components/blocks/data-table/data-table-row-actions';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { EvmAddressBalances } from '@/components/blocks/evm-address/evm-address-balances';
-import type { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { formatDate } from '@/lib/utils/date';
-import { formatNumber } from '@/lib/utils/number';
-import { createColumnHelper } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
-import { getAddress } from 'viem';
-import { BlockForm } from '../_components/block-form/form';
-import { FreezeForm } from '../_components/freeze-form/form';
-import { MintForm } from '../_components/mint-form/form';
+import { ColumnAssetStatus } from "@/components/blocks/asset-info/column-asset-status";
+import { ColumnHolderType } from "@/components/blocks/asset-info/column-holder-type";
+import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
+import { DataTableRowActions } from "@/components/blocks/data-table/data-table-row-actions";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
+import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { formatDate } from "@/lib/utils/date";
+import { formatNumber } from "@/lib/utils/number";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
+import { getAddress } from "viem";
+import { BlockForm } from "../_components/block-form/form";
+import { FreezeForm } from "../_components/freeze-form/form";
+import { MintForm } from "../_components/mint-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
-
-  const t = useTranslations('private.assets.details.holders');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const t = useTranslations("private.assets.details.holders");
 
   return [
-    columnHelper.accessor('account.id', {
-      header: t('fields.wallet-header'),
+    columnHelper.accessor("account.id", {
+      header: t("fields.wallet-header"),
       cell: ({ getValue }) => {
         const wallet = getAddress(getValue());
         return (
@@ -37,59 +37,59 @@ export function columns() {
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor('value', {
-      header: t('fields.balance-header'),
+    columnHelper.accessor("value", {
+      header: t("fields.balance-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
-        variant: 'numeric',
+        variant: "numeric",
       },
     }),
-    columnHelper.accessor('asset', {
-      id: t('holder-type-header'),
-      header: t('holder-type-header'),
+    columnHelper.accessor("asset", {
+      id: t("holder-type-header"),
+      header: t("holder-type-header"),
       cell: ({ row }) => {
         return <ColumnHolderType assetBalance={row.original} />;
       },
     }),
-    columnHelper.accessor('frozen', {
-      header: t('frozen-header'),
+    columnHelper.accessor("frozen", {
+      header: t("frozen-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
       meta: {
-        variant: 'numeric',
+        variant: "numeric",
       },
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
-      id: t('status-header'),
-      header: t('status-header'),
+      id: t("status-header"),
+      header: t("status-header"),
       cell: ({ row }) => {
         return <AssetStatusPill assetBalance={row.original} />;
       },
     }),
-    columnHelper.accessor('lastActivity', {
-      header: t('last-activity-header'),
+    columnHelper.accessor("lastActivity", {
+      header: t("last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
-          ? formatDate(lastActivity, { type: 'distance' })
-          : '-';
+          ? formatDate(lastActivity, { type: "distance" })
+          : "-";
       },
       enableColumnFilter: false,
     }),
     columnHelper.display({
-      id: 'actions',
-      header: t('actions-header'),
+      id: "actions",
+      header: t("actions-header"),
       cell: ({ row }) => {
-        const t = useTranslations('private.assets.details.forms');
+        const t = useTranslations("private.assets.details.forms");
         return (
           <DataTableRowActions
             actions={[
               {
-                id: 'block-form',
-                label: t('block.form.trigger-label'),
+                id: "block-form",
+                label: t("block.form.trigger-label"),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
@@ -101,8 +101,8 @@ export function columns() {
                 ),
               },
               {
-                id: 'freeze-form',
-                label: t('freeze.trigger-label'),
+                id: "freeze-form",
+                label: t("freeze.trigger-label"),
                 component: ({ open, onOpenChange }) => (
                   <FreezeForm
                     address={row.original.asset.id}
@@ -116,8 +116,8 @@ export function columns() {
                 ),
               },
               {
-                id: 'mint-form',
-                label: t('mint.trigger-label'),
+                id: "mint-form",
+                label: t("mint.trigger-label"),
                 component: ({ open, onOpenChange }) => (
                   <MintForm
                     address={row.original.asset.id}

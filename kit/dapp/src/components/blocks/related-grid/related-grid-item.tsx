@@ -4,8 +4,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import type { PropsWithChildren } from 'react';
+} from "@/components/ui/card";
+import type { PropsWithChildren } from "react";
 
 interface RelatedGridItemProps extends PropsWithChildren {
   title: string;

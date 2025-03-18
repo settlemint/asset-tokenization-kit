@@ -1,18 +1,18 @@
-import { fetchAllHasuraPages, fetchAllTheGraphPages } from '@/lib/pagination';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
+import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { cache } from 'react';
-import { getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { cache } from "react";
+import { getAddress } from "viem";
 import {
   CryptoCurrencyFragment,
   CryptoCurrencyFragmentSchema,
   OffchainCryptoCurrencyFragment,
   OffchainCryptoCurrencyFragmentSchema,
-} from './cryptocurrency-fragment';
+} from "./cryptocurrency-fragment";
 
 /**
  * GraphQL query to fetch on-chain cryptocurrency list from The Graph
@@ -84,7 +84,7 @@ export const getCryptoCurrencyList = cache(async () => {
       safeParseWithLogging(
         CryptoCurrencyFragmentSchema,
         cryptocurrency,
-        'cryptocurrency'
+        "cryptocurrency"
       )
   );
 
@@ -92,7 +92,7 @@ export const getCryptoCurrencyList = cache(async () => {
     safeParseWithLogging(
       OffchainCryptoCurrencyFragmentSchema,
       asset,
-      'offchain cryptocurrency'
+      "offchain cryptocurrency"
     )
   );
 

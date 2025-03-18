@@ -1,45 +1,63 @@
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormAssets } from '@/components/blocks/form/inputs/form-assets';
-import { FormInput } from '@/components/blocks/form/inputs/form-input';
-import type { CreateBondInput } from '@/lib/mutations/bond/create/create-schema';
-import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormAssets } from "@/components/blocks/form/inputs/form-assets";
+import { FormInput } from "@/components/blocks/form/inputs/form-input";
+import type { CurrencyCode } from "@/lib/db/schema-settings";
+import type { CreateBondInput } from "@/lib/mutations/bond/create/create-schema";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
-export function Configuration() {
+interface ConfigurationProps {
+  baseCurrency: CurrencyCode;
+}
+
+export function Configuration({ baseCurrency }: ConfigurationProps) {
   const { control } = useFormContext<CreateBondInput>();
-  const t = useTranslations('private.assets.create.bonds.configuration');
+  const t = useTranslations("private.assets.create");
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep
+      title={t("configuration.bonds.title")}
+      description={t("configuration.bonds.description")}
+    >
       <div className="grid grid-cols-2 gap-6">
         <FormInput
           control={control}
           name="cap"
           type="number"
-          label={t('cap-label')}
-          description={t('cap-description')}
+          label={t("parameters.bonds.cap-label")}
+          description={t("parameters.bonds.cap-description")}
           required
         />
         <FormInput
           control={control}
           name="faceValue"
           type="number"
-          label={t('face-value-label')}
-          description={t('face-value-description')}
+          label={t("parameters.bonds.face-value-label")}
+          description={t("parameters.bonds.face-value-description")}
           required
         />
         <FormInput
           control={control}
           type="date"
           name="maturityDate"
-          label={t('maturity-date-label')}
+          label={t("parameters.bonds.maturity-date-label")}
           required
         />
         <FormAssets
           control={control}
           name="underlyingAsset"
-          label={t('underlying-asset-label')}
-          description={t('underlying-asset-description')}
+          label={t("parameters.bonds.underlying-asset-label")}
+          description={t("parameters.bonds.underlying-asset-description")}
+          required
+        />
+        <FormInput
+          control={control}
+          name="valueInBaseCurrency"
+          type="number"
+          step={0.01}
+          label={t("parameters.common.value-in-base-currency-label", {
+            baseCurrency,
+          })}
           required
         />
       </div>
@@ -48,8 +66,8 @@ export function Configuration() {
 }
 
 Configuration.validatedFields = [
-  'cap',
-  'faceValue',
-  'maturityDate',
-  'underlyingAsset',
+  "cap",
+  "faceValue",
+  "maturityDate",
+  "underlyingAsset",
 ] as const;

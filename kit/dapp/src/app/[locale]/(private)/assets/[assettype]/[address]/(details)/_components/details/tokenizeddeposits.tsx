@@ -1,11 +1,13 @@
-import { DetailGrid } from '@/components/blocks/detail-grid/detail-grid';
-import { DetailGridItem } from '@/components/blocks/detail-grid/detail-grid-item';
-import { EvmAddress } from '@/components/blocks/evm-address/evm-address';
-import { getTokenizedDepositDetail } from '@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail';
-import { formatNumber } from '@/lib/utils/number';
-import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
-import type { Address } from 'viem';
+import { DetailGrid } from "@/components/blocks/detail-grid/detail-grid";
+import { DetailGridItem } from "@/components/blocks/detail-grid/detail-grid-item";
+import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
+import { getSetting } from "@/lib/config/settings";
+import { SETTING_KEYS } from "@/lib/db/schema-settings";
+import { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import { formatNumber } from "@/lib/utils/number";
+import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import type { Address } from "viem";
 
 interface TokenizedDepositsDetailsProps {
   address: Address;
@@ -15,23 +17,24 @@ export async function TokenizedDepositsDetails({
   address,
 }: TokenizedDepositsDetailsProps) {
   const tokenizedDeposit = await getTokenizedDepositDetail({ address });
-  const t = await getTranslations('private.assets.fields');
+  const t = await getTranslations("private.assets.fields");
+  const baseCurrency = await getSetting(SETTING_KEYS.BASE_CURRENCY);
 
   return (
     <Suspense>
       <DetailGrid>
-        <DetailGridItem label={t('name')}>
+        <DetailGridItem label={t("name")}>
           {tokenizedDeposit.name}
         </DetailGridItem>
-        <DetailGridItem label={t('symbol')}>
+        <DetailGridItem label={t("symbol")}>
           {tokenizedDeposit.symbol}
         </DetailGridItem>
         {tokenizedDeposit.isin && (
-          <DetailGridItem label={t('isin')}>
+          <DetailGridItem label={t("isin")}>
             {tokenizedDeposit.isin}
           </DetailGridItem>
         )}
-        <DetailGridItem label={t('contract-address')}>
+        <DetailGridItem label={t("contract-address")}>
           <EvmAddress
             address={tokenizedDeposit.id}
             prettyNames={false}
@@ -39,38 +42,44 @@ export async function TokenizedDepositsDetails({
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t('creator')}>
+        <DetailGridItem label={t("creator")}>
           <EvmAddress
             address={tokenizedDeposit.creator.id}
             hoverCard={false}
             copyToClipboard={true}
           />
         </DetailGridItem>
-        <DetailGridItem label={t('decimals')}>
+        <DetailGridItem label={t("decimals")}>
           {tokenizedDeposit.decimals}
         </DetailGridItem>
-        <DetailGridItem label={t('total-supply')} info={t('total-supply-info')}>
+        <DetailGridItem label={t("total-supply")} info={t("total-supply-info")}>
           {formatNumber(tokenizedDeposit.totalSupply, {
             token: tokenizedDeposit.symbol,
           })}
         </DetailGridItem>
-        <DetailGridItem label={t('total-burned')} info={t('total-burned-info')}>
+        <DetailGridItem label={t("total-burned")} info={t("total-burned-info")}>
           {formatNumber(tokenizedDeposit.totalBurned, {
             token: tokenizedDeposit.symbol,
           })}
         </DetailGridItem>
         <DetailGridItem
-          label={t('total-holders')}
-          info={t('total-holders-info')}
+          label={t("total-holders")}
+          info={t("total-holders-info")}
         >
           {formatNumber(tokenizedDeposit.totalHolders, { decimals: 0 })}
         </DetailGridItem>
         <DetailGridItem
-          label={t('ownership-concentration')}
-          info={t('ownership-concentration-info')}
+          label={t("ownership-concentration")}
+          info={t("ownership-concentration-info")}
         >
           {formatNumber(tokenizedDeposit.concentration, {
             percentage: true,
+            decimals: 2,
+          })}
+        </DetailGridItem>
+        <DetailGridItem label={t("price")}>
+          {formatNumber(tokenizedDeposit.value_in_base_currency, {
+            currency: baseCurrency,
             decimals: 2,
           })}
         </DetailGridItem>

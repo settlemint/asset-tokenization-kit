@@ -1,10 +1,10 @@
-import { BarChartComponent } from '@/components/blocks/charts/bar-charts/horizontal-bar-chart';
-import { ChartSkeleton } from '@/components/blocks/charts/chart-skeleton';
-import { ChartColumnIncreasingIcon } from '@/components/ui/animated-icons/chart-column-increasing';
-import type { ChartConfig } from '@/components/ui/chart';
-import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
+import { BarChartComponent } from "@/components/blocks/charts/bar-charts/horizontal-bar-chart";
+import { ChartSkeleton } from "@/components/blocks/charts/chart-skeleton";
+import { ChartColumnIncreasingIcon } from "@/components/ui/animated-icons/chart-column-increasing";
+import type { ChartConfig } from "@/components/ui/chart";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
 
 interface WalletDistributionProps {
   address: Address;
@@ -17,16 +17,16 @@ interface DistributionBucket {
 }
 
 export async function WalletDistribution({ address }: WalletDistributionProps) {
-  const t = await getTranslations('components.charts.assets');
+  const t = await getTranslations("components.charts.assets");
   const data = await getAssetBalanceList({ address });
 
   // If there's no data, return a skeleton state
   if (!data || data.length === 0) {
     return (
-      <ChartSkeleton title={t('wallet-distribution')} variant="noData">
+      <ChartSkeleton title={t("wallet-distribution")} variant="noData">
         <div className="flex flex-col items-center gap-2 text-center">
           <ChartColumnIncreasingIcon className="h-8 w-8 text-muted-foreground" />
-          <p>{t('wallet-distribution-no-data')}</p>
+          <p>{t("wallet-distribution-no-data")}</p>
         </div>
       </ChartSkeleton>
     );
@@ -74,7 +74,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
   if (buckets.length > 0) {
     // Get last bucket safely
     const lastBucket = buckets[buckets.length - 1];
-    const [min, max] = lastBucket.range.split('-').map(Number);
+    const [min, max] = lastBucket.range.split("-").map(Number);
     // Recount the last bucket to include holders with exactly the maximum value
     lastBucket.count = sortedBalances.filter(
       (b) => b.value >= min && b.value <= max
@@ -83,28 +83,28 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
 
   const chartConfig = {
     count: {
-      label: 'Number of Wallets',
-      color: 'var(--chart-1)',
+      label: "Number of Wallets",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 
   // Define colors for each bucket
   const bucketColors = [
-    'var(--chart-1)',
-    'var(--chart-2)',
-    'var(--chart-3)',
-    'var(--chart-4)',
-    'var(--chart-5)',
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
   ];
 
   return (
     <BarChartComponent
       data={buckets}
       config={chartConfig}
-      title={t('wallet-distribution')}
-      description={t('wallet-distribution-description')}
+      title={t("wallet-distribution")}
+      description={t("wallet-distribution-description")}
       xAxis={{
-        key: 'range',
+        key: "range",
         tickMargin: 20,
       }}
       showYAxis={true}

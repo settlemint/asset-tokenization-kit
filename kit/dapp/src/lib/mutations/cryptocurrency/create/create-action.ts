@@ -1,12 +1,13 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from '@/lib/contracts';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../../safe-action';
-import { CreateCryptoCurrencySchema } from './create-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { CRYPTO_CURRENCY_FACTORY_ADDRESS } from "@/lib/contracts";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../../safe-action";
+import { CreateCryptoCurrencySchema } from "./create-schema";
 
 /**
  * GraphQL mutation for creating a new cryptocurrency
@@ -33,25 +34,38 @@ const CryptoCurrencyFactoryCreate = portalGraphql(`
  * @remarks
  * Stores additional metadata about the cryptocurrency in Hasura
  */
-// const CreateOffchainCryptoCurrency = hasuraGraphql(`
-//   mutation CreateOffchainCryptoCurrency($id: String!) {
-//     insert_asset_one(object: {id: $id}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
-//       id
-//     }
-//   }
-// `);
+const CreateOffchainCryptoCurrency = hasuraGraphql(`
+  mutation CreateOffchainCryptoCurrency($id: String!, $value_in_base_currency: numeric) {
+    insert_asset_one(object: {id: $id, value_in_base_currency: $value_in_base_currency}) {
+      id
+    }
+  }
+`);
 
 export const createCryptoCurrency = action
   .schema(CreateCryptoCurrencySchema)
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { assetName, symbol, decimals, pincode, initialSupply },
+      parsedInput: {
+        assetName,
+        symbol,
+        decimals,
+        pincode,
+        initialSupply,
+        predictedAddress,
+        valueInBaseCurrency,
+      },
       ctx: { user },
     }) => {
       const initialSupplyExact = String(
         parseUnits(String(initialSupply), decimals)
       );
+
+      await hasuraClient.request(CreateOffchainCryptoCurrency, {
+        id: predictedAddress,
+        value_in_base_currency: String(valueInBaseCurrency),
+      });
 
       const data = await portalClient.request(CryptoCurrencyFactoryCreate, {
         address: CRYPTO_CURRENCY_FACTORY_ADDRESS,

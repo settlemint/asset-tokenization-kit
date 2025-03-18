@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { createStablecoin } from '@/lib/mutations/stablecoin/create/create-action';
-import { CreateStablecoinSchema } from '@/lib/mutations/stablecoin/create/create-schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { Basics } from './steps/basics';
-import { Configuration } from './steps/configuration';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { useSettings } from "@/hooks/use-settings";
+import { createStablecoin } from "@/lib/mutations/stablecoin/create/create-action";
+import { CreateStablecoinSchema } from "@/lib/mutations/stablecoin/create/create-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { Basics } from "./steps/basics";
+import { Configuration } from "./steps/configuration";
+import { Summary } from "./steps/summary";
 
 interface CreateStablecoinFormProps {
   open?: boolean;
@@ -22,36 +23,40 @@ export function CreateStablecoinForm({
   onOpenChange,
   asButton = false,
 }: CreateStablecoinFormProps) {
-  const t = useTranslations('private.assets.create.stablecoins');
+  const t = useTranslations("private.assets.create.form");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [localOpen, setLocalOpen] = useState(false);
+  const baseCurrency = useSettings("baseCurrency");
 
   return (
     <FormSheet
       open={open ?? localOpen}
       onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
-      title={t('title')}
-      description={t('description')}
+      title={t("title.stablecoins")}
+      description={t("description.stablecoins")}
       asButton={asButton}
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
+      triggerLabel={
+        isExternallyControlled ? undefined : t("trigger-label.stablecoins")
+      }
     >
       <Form
         action={createStablecoin}
         resolver={zodResolver(CreateStablecoinSchema)}
         onOpenChange={isExternallyControlled ? onOpenChange : setLocalOpen}
         buttonLabels={{
-          label: t('button-label'),
+          label: t("trigger-label.stablecoins"),
         }}
         defaultValues={{
           collateralLivenessSeconds: 3600 * 24 * 365,
+          valueInBaseCurrency: 1,
         }}
         onAnyFieldChange={({ clearErrors }) => {
-          clearErrors(['predictedAddress']);
+          clearErrors(["predictedAddress"]);
         }}
       >
         <Basics />
-        <Configuration />
+        <Configuration baseCurrency={baseCurrency} />
         <Summary />
       </Form>
     </FormSheet>

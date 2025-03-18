@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { getAssetBalanceList } from '@/lib/queries/asset-balance/asset-balance-list';
-import { useEffect, useState } from 'react';
-import type { Address } from 'viem';
-import { getAddress } from 'viem';
+import { Skeleton } from "@/components/ui/skeleton";
+import { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
+import { useEffect, useState } from "react";
+import type { Address } from "viem";
+import { getAddress } from "viem";
 
 interface EvmAddressBalancesProps {
   address: Address;

@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { FreezeSchema } from './freeze-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { FreezeSchema } from "./freeze-schema";
 
 /**
  * GraphQL mutation to freeze a specific user account from a bond
@@ -112,34 +112,34 @@ export const freeze = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondFreeze, params);
           return safeParseTransactionHash([
             response.BondFreeze?.transactionHash,
           ]);
         }
-        case 'cryptocurrency': {
-          throw new Error('Cryptocurrency does not support freeze operations');
+        case "cryptocurrency": {
+          throw new Error("Cryptocurrency does not support freeze operations");
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(EquityFreeze, params);
           return safeParseTransactionHash([
             response.EquityFreeze?.transactionHash,
           ]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(FundFreeze, params);
           return safeParseTransactionHash([
             response.FundFreeze?.transactionHash,
           ]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(StableCoinFreeze, params);
           return safeParseTransactionHash([
             response.StableCoinFreeze?.transactionHash,
           ]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositFreeze,
             params
@@ -149,7 +149,7 @@ export const freeze = action
             .parse([response.TokenizedDepositFreeze?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );

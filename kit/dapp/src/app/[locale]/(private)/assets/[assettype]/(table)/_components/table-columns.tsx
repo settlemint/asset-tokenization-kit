@@ -1,26 +1,26 @@
-import type { AssetType } from '@/lib/utils/zod';
-import { bondColumns } from './columns/bonds';
-import { cryptocurrencyColumns } from './columns/cryptocurrencies';
-import { equityColumns } from './columns/equities';
-import { fundColumns } from './columns/funds';
-import { stablecoinColumns } from './columns/stablecoins';
-import { tokenizedDepositColumns } from './columns/tokenizeddeposits';
+import type { AssetType } from "@/lib/utils/zod";
+import { bondColumns } from "./columns/bonds";
+import { cryptocurrencyColumns } from "./columns/cryptocurrencies";
+import { equityColumns } from "./columns/equities";
+import { fundColumns } from "./columns/funds";
+import { stablecoinColumns } from "./columns/stablecoins";
+import { tokenizedDepositColumns } from "./columns/tokenizeddeposits";
 
 export function getTableColumns(assettype: AssetType) {
   switch (assettype) {
-    case 'bond':
+    case "bond":
       return bondColumns;
-    case 'cryptocurrency':
+    case "cryptocurrency":
       return cryptocurrencyColumns;
-    case 'stablecoin':
+    case "stablecoin":
       return stablecoinColumns;
-    case 'tokenizeddeposit':
+    case "tokenizeddeposit":
       return tokenizedDepositColumns;
-    case 'equity':
+    case "equity":
       return equityColumns;
-    case 'fund':
+    case "fund":
       return fundColumns;
     default:
-      throw new Error(`Invalid asset type: ${assettype}`);
+      throw new Error("Invalid asset type");
   }
 }

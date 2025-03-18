@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { EQUITY_FACTORY_ADDRESS } from '@/lib/contracts';
-import { hasuraClient, hasuraGraphql } from '@/lib/settlemint/hasura';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { action } from '../../safe-action';
-import { CreateEquitySchema } from './create-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { EQUITY_FACTORY_ADDRESS } from "@/lib/contracts";
+import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { action } from "../../safe-action";
+import { CreateEquitySchema } from "./create-schema";
 
 /**
  * GraphQL mutation for creating a new equity
@@ -34,10 +34,10 @@ const EquityFactoryCreate = portalGraphql(`
  * Stores additional metadata about the equity in Hasura
  */
 const CreateOffchainEquity = hasuraGraphql(`
-  mutation CreateOffchainEquity($id: String!, $isin: String) {
-    insert_asset_one(object: {id: $id, isin: $isin}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
-      id
-    }
+    mutation CreateOffchainEquity($id: String!, $isin: String, $value_in_base_currency: numeric) {
+      insert_asset_one(object: {id: $id, isin: $isin, value_in_base_currency: $value_in_base_currency}, on_conflict: {constraint: asset_pkey, update_columns: isin}) {
+        id
+      }
   }
 `);
 
@@ -55,12 +55,14 @@ export const createEquity = action
         equityCategory,
         equityClass,
         predictedAddress,
+        valueInBaseCurrency,
       },
       ctx: { user },
     }) => {
       await hasuraClient.request(CreateOffchainEquity, {
         id: predictedAddress,
         isin: isin,
+        value_in_base_currency: String(valueInBaseCurrency),
       });
 
       const data = await portalClient.request(EquityFactoryCreate, {

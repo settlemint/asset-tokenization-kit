@@ -14,19 +14,19 @@ export async function BondsRelated({
   address,
   totalSupply,
 }: BondsRelatedProps) {
-  const t = await getTranslations('private.assets.details.related');
+  const t = await getTranslations("private.assets.details.related");
 
   return (
-    <RelatedGrid title={t('title')}>
+    <RelatedGrid title={t("title")}>
       <RelatedGridItem
-        title={t('bonds.increase-supply.title')}
-        description={t('bonds.increase-supply.description')}
+        title={t("bonds.increase-supply.title")}
+        description={t("bonds.increase-supply.description")}
       >
         <MintForm address={address} assettype="bond" asButton />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t('bonds.decrease-supply.title')}
-        description={t('bonds.decrease-supply.description')}
+        title={t("bonds.decrease-supply.title")}
+        description={t("bonds.decrease-supply.description")}
       >
         <BurnForm
           address={address}

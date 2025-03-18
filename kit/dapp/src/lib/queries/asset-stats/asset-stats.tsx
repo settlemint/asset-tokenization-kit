@@ -1,16 +1,16 @@
-import { fetchAllTheGraphPages } from '@/lib/pagination';
+import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
   theGraphClientKit,
   theGraphGraphqlKit,
-} from '@/lib/settlemint/the-graph';
-import { safeParseWithLogging } from '@/lib/utils/zod';
-import { getUnixTime, startOfDay, subDays } from 'date-fns';
-import { cache } from 'react';
-import { type Address, getAddress } from 'viem';
+} from "@/lib/settlemint/the-graph";
+import { safeParseWithLogging } from "@/lib/utils/zod";
+import { getUnixTime, startOfDay, subDays } from "date-fns";
+import { cache } from "react";
+import { type Address, getAddress } from "viem";
 import {
   AssetStatsFragment,
   AssetStatsFragmentSchema,
-} from './asset-stats-fragment';
+} from "./asset-stats-fragment";
 
 /**
  * GraphQL query to fetch asset statistics from The Graph
@@ -78,7 +78,7 @@ export const getAssetStats = cache(
       const validatedItem = safeParseWithLogging(
         AssetStatsFragmentSchema,
         item,
-        'asset stats'
+        "asset stats"
       );
 
       return {

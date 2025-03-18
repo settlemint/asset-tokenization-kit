@@ -1,9 +1,9 @@
-import { FormStep } from '@/components/blocks/form/form-step';
-import { FormCheckbox } from '@/components/blocks/form/inputs/form-checkbox';
-import { ROLES, type RoleKey } from '@/lib/config/roles';
-import type { UpdateRolesInput } from '@/lib/mutations/asset/access-control/update-role/update-role-schema';
-import { useTranslations } from 'next-intl';
-import { useFormContext } from 'react-hook-form';
+import { FormStep } from "@/components/blocks/form/form-step";
+import { FormCheckbox } from "@/components/blocks/form/inputs/form-checkbox";
+import { ROLES, type RoleKey } from "@/lib/config/roles";
+import type { UpdateRolesInput } from "@/lib/mutations/asset/access-control/update-role/update-role-schema";
+import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
 
 interface RolesProps {
   disableEditAdminRole: boolean;
@@ -12,11 +12,11 @@ interface RolesProps {
 export function Roles({ disableEditAdminRole }: RolesProps) {
   const { control } = useFormContext<UpdateRolesInput>();
   const t = useTranslations(
-    'private.assets.details.permissions.edit-form.roles'
+    "private.assets.details.permissions.edit-form.roles"
   );
 
   return (
-    <FormStep title={t('title')} description={t('description')}>
+    <FormStep title={t("title")} description={t("description")}>
       <div className="space-y-3">
         {(Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][]).map(
           ([key, role]) => (
@@ -38,4 +38,4 @@ export function Roles({ disableEditAdminRole }: RolesProps) {
   );
 }
 
-Roles.validatedFields = ['roles'] as const;
+Roles.validatedFields = ["roles"] as const;

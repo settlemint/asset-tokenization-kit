@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { LanguagesIcon } from '@/components/ui/animated-icons/languages';
-import { Button } from '@/components/ui/button';
+import { LanguagesIcon } from "@/components/ui/animated-icons/languages";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { routing, usePathname, useRouter } from '@/i18n/routing';
-import { Check } from 'lucide-react';
-import type { Locale } from 'next-intl';
-import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { routing, usePathname, useRouter } from "@/i18n/routing";
+import { Check } from "lucide-react";
+import type { Locale } from "next-intl";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // Language display names mapping
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  de: 'Deutsch',
-  ja: '日本語',
-  ar: 'العربية',
+  en: "English",
+  de: "Deutsch",
+  ja: "日本語",
+  ar: "العربية",
 };
 
 /**
@@ -28,9 +28,9 @@ const LANGUAGE_NAMES: Record<string, string> = {
  */
 interface LanguageToggleProps {
   /** The variant of the button. */
-  variant?: Parameters<typeof Button>[0]['variant'];
+  variant?: Parameters<typeof Button>[0]["variant"];
   /** The size of the button. */
-  size?: Parameters<typeof Button>[0]['size'];
+  size?: Parameters<typeof Button>[0]["size"];
   /** Additional CSS classes to apply to the button. */
   className?: string;
 }
@@ -39,10 +39,10 @@ interface LanguageToggleProps {
  * Mapping of button sizes to skeleton sizes.
  */
 const skeletonSizes = {
-  icon: 'h-10 w-10',
-  default: 'h-10 w-16',
-  sm: 'size-94',
-  lg: 'h-11 w-20',
+  icon: "h-10 w-10",
+  default: "h-10 w-16",
+  sm: "size-94",
+  lg: "h-11 w-20",
 } as const;
 
 /**
@@ -51,8 +51,8 @@ const skeletonSizes = {
  * @returns A dropdown menu for language selection.
  */
 export function LanguageToggle({
-  variant = 'outline',
-  size = 'icon',
+  variant = "outline",
+  size = "icon",
   className,
 }: LanguageToggleProps) {
   const router = useRouter();
@@ -107,10 +107,10 @@ export function LanguageToggle({
           disabled={isPending}
         >
           <LanguagesIcon className="h-[1.2rem] w-[1.2rem]" />
-          {size !== 'icon' && (
+          {size !== "icon" && (
             <span className="ml-2">
               {isPending
-                ? 'Changing...'
+                ? "Changing..."
                 : LANGUAGE_NAMES[currentLocale] || currentLocale}
             </span>
           )}

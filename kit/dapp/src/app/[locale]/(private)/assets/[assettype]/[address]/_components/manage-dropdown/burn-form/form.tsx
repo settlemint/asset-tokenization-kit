@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Form } from '@/components/blocks/form/form';
-import { FormSheet } from '@/components/blocks/form/form-sheet';
-import { burn } from '@/lib/mutations/burn/burn-action';
-import { BurnSchema } from '@/lib/mutations/burn/burn-schema';
-import type { AssetType } from '@/lib/utils/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import type { Address } from 'viem';
-import { Amount } from './steps/amount';
-import { Summary } from './steps/summary';
+import { Form } from "@/components/blocks/form/form";
+import { FormSheet } from "@/components/blocks/form/form-sheet";
+import { burn } from "@/lib/mutations/burn/burn-action";
+import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
+import type { AssetType } from "@/lib/utils/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Address } from "viem";
+import { Amount } from "./steps/amount";
+import { Summary } from "./steps/summary";
 
 interface BurnFormProps {
   address: Address;
@@ -29,7 +29,7 @@ export function BurnForm({
   open,
   onOpenChange,
 }: BurnFormProps) {
-  const t = useTranslations('private.assets.details.forms.burn');
+  const t = useTranslations("private.assets.details.forms.burn");
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
   const [internalOpenState, setInternalOpenState] = useState(false);
@@ -40,9 +40,9 @@ export function BurnForm({
       onOpenChange={
         isExternallyControlled ? onOpenChange : setInternalOpenState
       }
-      triggerLabel={isExternallyControlled ? undefined : t('trigger-label')}
-      title={t('title')}
-      description={t('description')}
+      triggerLabel={isExternallyControlled ? undefined : t("trigger-label")}
+      title={t("title")}
+      description={t("description")}
       asButton={asButton}
     >
       <Form
@@ -52,7 +52,7 @@ export function BurnForm({
           isExternallyControlled ? onOpenChange : setInternalOpenState
         }
         buttonLabels={{
-          label: t('button-label'),
+          label: t("button-label"),
         }}
         defaultValues={{
           address,

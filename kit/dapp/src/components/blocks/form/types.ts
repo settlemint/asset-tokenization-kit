@@ -1,6 +1,6 @@
-import type { ZodInfer, ZodType } from '@/lib/utils/zod';
-import type { ComponentType, ReactElement } from 'react';
-import type { UseFormReturn } from 'react-hook-form';
+import type { ZodInfer, ZodType } from "@/lib/utils/zod";
+import type { ComponentType, ReactElement } from "react";
+import type { UseFormReturn } from "react-hook-form";
 
 export type Schema = ZodType;
 export type ValidatedFields<S extends Schema> = {

@@ -1,45 +1,45 @@
-import { TranslatableFormFieldMessage } from '@/components/blocks/form/form-field-translatable-message';
-import { Button } from '@/components/ui/button';
+import { TranslatableFormFieldMessage } from "@/components/blocks/form/form-field-translatable-message";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { useDebounce } from '@/hooks/use-debounce';
-import { getUserSearch } from '@/lib/queries/user/user-search';
-import { cn } from '@/lib/utils';
-import { CommandEmpty, useCommandState } from 'cmdk';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
-import type { FieldValues } from 'react-hook-form';
-import type { Address } from 'viem';
-import { EvmAddress } from '../../evm-address/evm-address';
+} from "@/components/ui/popover";
+import { useDebounce } from "@/hooks/use-debounce";
+import { getUserSearch } from "@/lib/queries/user/user-search";
+import { cn } from "@/lib/utils";
+import { CommandEmpty, useCommandState } from "cmdk";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import type { FieldValues } from "react-hook-form";
+import type { Address } from "viem";
+import { EvmAddress } from "../../evm-address/evm-address";
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
   getAriaAttributes,
-} from './types';
+} from "./types";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
   WithPlaceholderProps & {
     /** The default selected value */
     defaultValue?: string;
     /** Filter users by role */
-    role?: 'admin' | 'issuer' | 'user';
+    role?: "admin" | "issuer" | "user";
   };
 
 export function FormUsers<T extends FieldValues>({
@@ -53,8 +53,8 @@ export function FormUsers<T extends FieldValues>({
   ...props
 }: FormSearchSelectProps<T>) {
   const [open, setOpen] = useState(false);
-  const t = useTranslations('components.form.users');
-  const defaultPlaceholder = t('default-placeholder');
+  const t = useTranslations("components.form.users");
+  const defaultPlaceholder = t("default-placeholder");
 
   return (
     <FormField
@@ -65,7 +65,7 @@ export function FormUsers<T extends FieldValues>({
           <FormItem className="flex flex-col space-y-1">
             {label && (
               <FormLabel
-                className={cn(disabled && 'cursor-not-allowed opacity-70')}
+                className={cn(disabled && "cursor-not-allowed opacity-70")}
                 htmlFor={field.name}
                 id={`${field.name}-label`}
               >
@@ -97,7 +97,7 @@ export function FormUsers<T extends FieldValues>({
               <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder={t('search-placeholder')}
+                    placeholder={t("search-placeholder")}
                     className="h-9"
                   />
                   <FormUsersList
@@ -134,15 +134,15 @@ function FormUsersList({
   onValueChange: (value: string) => void;
   setOpen: (open: boolean) => void;
   value: string;
-  role?: 'admin' | 'issuer' | 'user';
+  role?: "admin" | "issuer" | "user";
 }) {
-  const search = (useCommandState((state) => state.search) || '') as string;
+  const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
   const [users, setUsers] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
     []
   );
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations('components.form.users');
+  const t = useTranslations("components.form.users");
 
   useEffect(() => {
     let isMounted = true;
@@ -164,7 +164,7 @@ function FormUsersList({
           setUsers(filteredUsers);
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
         if (isMounted) {
           setUsers([]);
         }
@@ -185,7 +185,7 @@ function FormUsersList({
   return (
     <CommandList>
       <CommandEmpty className="pt-2 text-center text-muted-foreground text-sm">
-        {isLoading ? t('loading') : t('no-user-found')}
+        {isLoading ? t("loading") : t("no-user-found")}
       </CommandEmpty>
       <CommandGroup>
         {users.map((user) => (
@@ -200,8 +200,8 @@ function FormUsersList({
             <EvmAddress address={user.wallet} hoverCard={false} />
             <Check
               className={cn(
-                'ml-auto',
-                value === user.wallet ? 'opacity-100' : 'opacity-0'
+                "ml-auto",
+                value === user.wallet ? "opacity-100" : "opacity-0"
               )}
             />
           </CommandItem>

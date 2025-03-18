@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { handleChallenge } from '@/lib/challenge';
-import { getAssetDetail } from '@/lib/queries/asset-detail';
-import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
-import { safeParseTransactionHash, z } from '@/lib/utils/zod';
-import { parseUnits } from 'viem';
-import { action } from '../safe-action';
-import { MintSchema } from './mint-schema';
+import { handleChallenge } from "@/lib/challenge";
+import { getAssetDetail } from "@/lib/queries/asset-detail";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import { safeParseTransactionHash, z } from "@/lib/utils/zod";
+import { parseUnits } from "viem";
+import { action } from "../safe-action";
+import { MintSchema } from "./mint-schema";
 
 /**
  * GraphQL mutation to mint new bond tokens
@@ -128,11 +128,11 @@ export const mint = action
       };
 
       switch (assettype) {
-        case 'bond': {
+        case "bond": {
           const response = await portalClient.request(BondMint, params);
           return safeParseTransactionHash([response.BondMint?.transactionHash]);
         }
-        case 'cryptocurrency': {
+        case "cryptocurrency": {
           const response = await portalClient.request(
             CryptoCurrencyMint,
             params
@@ -141,23 +141,23 @@ export const mint = action
             .hashes()
             .parse([response.CryptoCurrencyMint?.transactionHash]);
         }
-        case 'equity': {
+        case "equity": {
           const response = await portalClient.request(EquityMint, params);
           return safeParseTransactionHash([
             response.EquityMint?.transactionHash,
           ]);
         }
-        case 'fund': {
+        case "fund": {
           const response = await portalClient.request(FundMint, params);
           return safeParseTransactionHash([response.FundMint?.transactionHash]);
         }
-        case 'stablecoin': {
+        case "stablecoin": {
           const response = await portalClient.request(StableCoinMint, params);
           return safeParseTransactionHash([
             response.StableCoinMint?.transactionHash,
           ]);
         }
-        case 'tokenizeddeposit': {
+        case "tokenizeddeposit": {
           const response = await portalClient.request(
             TokenizedDepositMint,
             params
@@ -167,7 +167,7 @@ export const mint = action
             .parse([response.TokenizedDepositMint?.transactionHash]);
         }
         default:
-          throw new Error('Invalid asset type');
+          throw new Error("Invalid asset type");
       }
     }
   );
