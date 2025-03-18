@@ -1,15 +1,16 @@
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import type { BurnInput } from "@/lib/mutations/burn/burn-schema";
-import { formatNumber } from "@/lib/utils/number";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
-  maxBurnAmount: number;
+  maxLimit?: number;
+  maxLimitDescription?: string | ReactNode;
 }
 
-export function Amount({ maxBurnAmount }: AmountProps) {
+export function Amount({ maxLimit, maxLimitDescription }: AmountProps) {
   const { control } = useFormContext<BurnInput>();
   const t = useTranslations("private.assets.details.forms.burn.amount");
 
@@ -22,10 +23,8 @@ export function Amount({ maxBurnAmount }: AmountProps) {
           label={t("amount-label")}
           type="number"
           min={1}
-          max={maxBurnAmount}
-          description={t("available-balance", {
-            balance: formatNumber(maxBurnAmount),
-          })}
+          max={maxLimit}
+          description={maxLimitDescription}
           required
         />
       </div>

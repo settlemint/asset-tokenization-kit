@@ -17,6 +17,7 @@ interface RedeemFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function RedeemForm({
@@ -25,6 +26,7 @@ export function RedeemForm({
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: RedeemFormProps) {
   const t = useTranslations("portfolio.my-assets.bond");
   const isExternallyControlled =
@@ -43,6 +45,7 @@ export function RedeemForm({
       title={t("redeem-form.title")}
       description={t("redeem-form.description")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={redeem}

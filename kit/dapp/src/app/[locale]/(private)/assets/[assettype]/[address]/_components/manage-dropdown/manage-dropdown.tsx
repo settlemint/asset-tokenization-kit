@@ -9,8 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/routing";
+import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
+import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
+import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/zod";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -28,13 +31,15 @@ import { WithdrawForm } from "./withdraw-form/form";
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
-  detail: Awaited<ReturnType<typeof getAssetDetail>>;
+  assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+  userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
 }
 
 export function ManageDropdown({
   address,
-  detail,
   assettype,
+  assetDetails,
+  userBalance,
 }: ManageDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -59,7 +64,7 @@ export function ManageDropdown({
   let canMature = false;
   let hasUnderlyingAsset = false;
   if (assettype === "bond") {
-    const bond = detail as Awaited<ReturnType<typeof getBondDetail>>;
+    const bond = assetDetails as Awaited<ReturnType<typeof getBondDetail>>;
     hasUnderlyingAsset = true;
     canMature = Boolean(
       !bond.isMatured &&
@@ -69,12 +74,38 @@ export function ManageDropdown({
     );
   }
 
+  let mintMaxLimit: number | undefined = undefined;
+  let mintMaxLimitDescription: string | undefined = undefined;
+  if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
+    const tokenizedDeposit = assetDetails as Awaited<
+      ReturnType<typeof getTokenizedDepositDetail>
+    >;
+    const freeCollateral = tokenizedDeposit.freeCollateral;
+    mintMaxLimit = freeCollateral;
+    mintMaxLimitDescription = t("max-mint-amount", {
+      limit: formatNumber(freeCollateral),
+    });
+  }
+
+  const isBlocked = userBalance?.blocked ?? false;
+  const isPaused = "paused" in assetDetails && assetDetails.paused;
+
+  const userIsSupplyManager = userBalance?.asset.supplyManagers.some(
+    (manager) => manager.id === userBalance?.account.id
+  );
+  const userIsUserManager = userBalance?.asset.userManagers.some(
+    (manager) => manager.id === userBalance?.account.id
+  );
+  const userIsAdmin = userBalance?.asset.admins.some(
+    (admin) => admin.id === userBalance?.account.id
+  );
+
   const contractActions = [
     {
       id: "mint",
       label: t("actions.mint"),
       hidden: false,
-      disabled: false,
+      disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <MintForm
           key="mint"
@@ -82,6 +113,8 @@ export function ManageDropdown({
           assettype={assettype}
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
+          maxLimit={mintMaxLimit}
+          maxLimitDescription={mintMaxLimitDescription}
         />
       ),
     },
@@ -89,13 +122,16 @@ export function ManageDropdown({
       id: "burn",
       label: t("actions.burn"),
       hidden: false,
-      disabled: false,
+      disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <BurnForm
           key="burn"
           address={address}
           assettype={assettype}
-          balance={Number(detail.totalSupply)}
+          maxLimit={userBalance?.available}
+          maxLimitDescription={t("available-balance", {
+            maxLimit: formatNumber(userBalance?.available ?? 0),
+          })}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
         />
@@ -104,7 +140,7 @@ export function ManageDropdown({
     {
       id: "mature",
       label: t("actions.mature"),
-      disabled: !canMature,
+      disabled: !canMature || isBlocked || isPaused || !userIsSupplyManager,
       hidden: assettype !== "bond",
       form: (
         <MatureForm
@@ -119,13 +155,15 @@ export function ManageDropdown({
       id: "top-up",
       label: t("actions.top-up"),
       hidden: !hasUnderlyingAsset,
-      disabled: false,
+      disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <TopUpForm
           key="top-up"
           address={address}
           underlyingAssetAddress={
-            "underlyingAsset" in detail ? detail.underlyingAsset : "0x0"
+            "underlyingAsset" in assetDetails
+              ? assetDetails.underlyingAsset
+              : "0x0"
           }
           open={openMenuItem === "top-up"}
           onOpenChange={onFormOpenChange}
@@ -136,13 +174,15 @@ export function ManageDropdown({
       id: "withdraw",
       label: t("actions.withdraw"),
       hidden: !hasUnderlyingAsset,
-      disabled: false,
+      disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <WithdrawForm
           key="withdraw"
           address={address}
           underlyingAssetAddress={
-            "underlyingAsset" in detail ? detail.underlyingAsset : "0x0"
+            "underlyingAsset" in assetDetails
+              ? assetDetails.underlyingAsset
+              : "0x0"
           }
           open={openMenuItem === "withdraw"}
           onOpenChange={onFormOpenChange}
@@ -154,7 +194,7 @@ export function ManageDropdown({
       id: "update-collateral",
       label: t("actions.update-collateral"),
       hidden: assettype !== "stablecoin",
-      disabled: false,
+      disabled: isBlocked || isPaused || !userIsSupplyManager,
       form: (
         <UpdateCollateralForm
           key="update-collateral"
@@ -168,17 +208,17 @@ export function ManageDropdown({
     {
       id: "pause",
       label:
-        "paused" in detail && detail.paused
+        "paused" in assetDetails && assetDetails.paused
           ? t("actions.unpause")
           : t("actions.pause"),
-      hidden: !("paused" in detail),
-      disabled: false,
+      hidden: !("paused" in assetDetails),
+      disabled: isBlocked || !userIsAdmin,
       form: (
         <PauseForm
           key="pause"
           address={address}
           assettype={assettype}
-          isPaused={"paused" in detail && detail.paused}
+          isPaused={"paused" in assetDetails && assetDetails.paused}
           open={openMenuItem === "pause"}
           onOpenChange={onFormOpenChange}
         />
@@ -190,7 +230,7 @@ export function ManageDropdown({
     {
       id: "grant-role",
       label: t("actions.grant-role"),
-      hidden: false,
+      hidden: isBlocked || isPaused || !userIsUserManager,
       form: (
         <GrantRoleForm
           key="grant-role"

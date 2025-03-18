@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { AssetType } from "@/lib/utils/zod";
 import { ChevronDown } from "lucide-react";
@@ -19,13 +20,15 @@ import { TransferForm } from "./transfer-form/form";
 interface ManageDropdownProps {
   address: Address;
   assettype: AssetType;
-  detail: Awaited<ReturnType<typeof getAssetDetail>>;
+  assetDetails: Awaited<ReturnType<typeof getAssetDetail>>;
+  userBalance: Awaited<ReturnType<typeof getAssetBalanceDetail>>;
 }
 
 export function ManageDropdown({
   address,
   assettype,
-  detail,
+  assetDetails,
+  userBalance,
 }: ManageDropdownProps) {
   const t = useTranslations("portfolio.my-assets.detail");
 
@@ -54,6 +57,9 @@ export function ManageDropdown({
     }
   };
 
+  const isBlocked = userBalance?.blocked ?? false;
+  const isPaused = "paused" in assetDetails && assetDetails.paused;
+
   return (
     <>
       <DropdownMenu>
@@ -80,16 +86,20 @@ export function ManageDropdown({
       <TransferForm
         address={address}
         assettype={assettype}
-        balance={Number(detail.totalSupply)}
+        balance={Number(userBalance?.available ?? 0)}
         open={openMenuItem === "transfer"}
         onOpenChange={onFormOpenChange}
+        disabled={isBlocked || isPaused || (userBalance?.available ?? 0) === 0}
       />
-      <RedeemForm
-        address={address}
-        balance={Number(detail.totalSupply)}
-        open={openMenuItem === "redeem"}
-        onOpenChange={onFormOpenChange}
-      />
+      {assettype === "bond" && (
+        <RedeemForm
+          address={address}
+          balance={Number(userBalance?.available ?? 0)}
+          open={openMenuItem === "redeem"}
+          onOpenChange={onFormOpenChange}
+          disabled={isBlocked || isPaused}
+        />
+      )}
     </>
   );
 }
