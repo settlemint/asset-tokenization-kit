@@ -43,7 +43,6 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       href: `/assets/${assettype}/${address}/holders`,
       badge: details.totalHolders,
     },
-    // Only show yield tab for bond assets
     ...(assettype === "bond" ? [
       {
         name: t("tabs.yield"),
@@ -60,11 +59,13 @@ const tabs = async (params: LayoutProps["params"]): Promise<TabItemProps[]> => {
       name: t("tabs.permissions"),
       href: `/assets/${assettype}/${address}/permissions`,
     },
-    {
-      name:  t("tabs.underlying-assets"),
-      href: `/assets/${assettype}/${address}/underlying-assets`,
-      badge: balances.length,
-    },
+    ...(assettype === "bond" || assettype === "fund" ? [
+      {
+        name:  t("tabs.underlying-assets"),
+        href: `/assets/${assettype}/${address}/underlying-assets`,
+        badge: balances.length,
+      },
+    ] : []),
   ];
 };
 

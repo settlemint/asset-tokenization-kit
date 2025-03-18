@@ -39,6 +39,7 @@ export function Schedule() {
         label={t("interval.label")}
         options={intervalOptions}
         description={t("interval.description")}
+        className="w-full"
       />
     </div>
   );

@@ -33,8 +33,8 @@
         "underlying-asset-balance": "Underlying Asset Balance",
         "yield-coverage": "Yield Coverage",
         "set-schedule": {
-          "trigger-label": "Set Yield Schedule",
-          "title": "Set Yield Schedule",
+          "trigger-label": "Set yield schedule",
+          "title": "Set yield schedule",
           "description": "Set the yield schedule for this bond. This will automatically distribute interest payments to bondholders at the specified intervals.",
           "button-label": "Set yield schedule",
           "start-time": {
