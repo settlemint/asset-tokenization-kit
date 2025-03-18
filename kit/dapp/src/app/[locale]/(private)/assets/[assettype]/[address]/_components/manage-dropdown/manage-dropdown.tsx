@@ -74,16 +74,12 @@ export function ManageDropdown({
   }
 
   let mintMaxLimit: number | undefined = undefined;
-  let mintMaxLimitDescription: string | undefined = undefined;
   if (assettype === "stablecoin" || assettype === "tokenizeddeposit") {
     const tokenizedDeposit = assetDetails as Awaited<
       ReturnType<typeof getTokenizedDepositDetail>
     >;
     const freeCollateral = tokenizedDeposit.freeCollateral;
     mintMaxLimit = freeCollateral;
-    mintMaxLimitDescription = t("max-mint-amount", {
-      limit: formatNumber(freeCollateral),
-    });
   }
 
   const isBlocked = userBalance?.blocked ?? false;
@@ -113,7 +109,6 @@ export function ManageDropdown({
           open={openMenuItem === "mint"}
           onOpenChange={onFormOpenChange}
           maxLimit={mintMaxLimit}
-          maxLimitDescription={mintMaxLimitDescription}
         />
       ),
     },

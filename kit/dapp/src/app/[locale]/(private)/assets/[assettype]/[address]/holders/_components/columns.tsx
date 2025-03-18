@@ -20,7 +20,7 @@ import { FreezeForm } from "./freeze-form/form";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export function columns() {
+export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.details.holders");
@@ -85,6 +85,7 @@ export function columns() {
       header: t("actions-header"),
       cell: ({ row }) => {
         const t = useTranslations("private.assets.details.forms");
+
         return (
           <DataTableRowActions
             actions={[
@@ -127,6 +128,7 @@ export function columns() {
                     assettype={row.original.asset.type}
                     open={open}
                     onOpenChange={onOpenChange}
+                    maxLimit={mintMaxLimit}
                   />
                 ),
               },

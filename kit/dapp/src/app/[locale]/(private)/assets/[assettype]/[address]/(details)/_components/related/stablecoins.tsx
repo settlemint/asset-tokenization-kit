@@ -34,9 +34,6 @@ export async function StablecoinsRelated({
   >;
   const freeCollateral = stablecoin.freeCollateral;
   const mintMaxLimit = freeCollateral;
-  const mintMaxLimitDescription = t("max-mint-amount", {
-    limit: formatNumber(freeCollateral),
-  });
 
   return (
     <RelatedGrid title={t("title")}>
@@ -61,7 +58,6 @@ export async function StablecoinsRelated({
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}
           maxLimit={mintMaxLimit}
-          maxLimitDescription={mintMaxLimitDescription}
         />
       </RelatedGridItem>
       <RelatedGridItem

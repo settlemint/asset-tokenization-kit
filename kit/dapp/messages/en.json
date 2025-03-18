@@ -826,7 +826,7 @@
             "wallet-balance": "Wallet balance",
             "description": {
               "mint": "Input the amount you wish to mint. Ensure the amount stays within the collateral limits.",
-              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total balance of the selected wallet.",
+              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total unfrozen balance of the selected wallet.",
               "burn": "Input the amount you wish to burn. Ensure you have the necessary permissions and sufficient balance in the selected wallet.",
               "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
               "withdraw": "Input the amount you wish to withdraw.",
@@ -836,6 +836,9 @@
               "mint": "Available to mint",
               "freeze": "Available to freeze",
               "burn": "Available to burn"
+            },
+            "max-amount": {
+              "mint": "Collateral available to mint: {limit}"
             }
           },
           "roles": {
@@ -971,7 +974,6 @@
               "title": "Issue Bonds"
             }
           },
-          "max-mint-amount": "Collateral available to mint: {limit}",
           "stablecoins": {
             "decrease-supply": {
               "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
