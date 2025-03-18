@@ -126,8 +126,8 @@ function getRevertReason(error: Error): string | undefined {
   // Then try the GraphQL-specific pattern
   const graphqlMatch = message.match(GRAPHQL_REVERT_REGEX);
   if (graphqlMatch) {
-    // Convert camelCase to readable format (e.g., "InvalidStartDate" -> "Invalid Start Date")
-    return graphqlMatch[1].replace(/([A-Z])/g, ' $1').trim();
+    // Convert camelCase to readable format and lowercase
+    return graphqlMatch[1].replace(/([A-Z])/g, ' $1').trim().toLowerCase();
   }
 
   return undefined;
