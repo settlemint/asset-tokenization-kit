@@ -4,7 +4,7 @@ import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
 import type { FreezeInput } from "@/lib/mutations/freeze/freeze-schema";
 import { formatNumber } from "@/lib/utils/number";
 import { useTranslations } from "next-intl";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import type { Address } from "viem";
 
 interface SummaryProps {
@@ -12,11 +12,9 @@ interface SummaryProps {
 }
 
 export function Summary({ address }: SummaryProps) {
-  const { control } = useFormContext<FreezeInput>();
+  const { getValues } = useFormContext<FreezeInput>();
   const t = useTranslations("private.assets.details.forms.summary");
-  const values = useWatch({
-    control: control,
-  });
+  const values = getValues();
 
   return (
     <FormStep title={t("title.freeze")} description={t("description.freeze")}>
@@ -27,6 +25,10 @@ export function Summary({ address }: SummaryProps) {
       <FormSummaryDetailItem
         label={t("amount-label")}
         value={formatNumber(values.amount)}
+      />
+      <FormSummaryDetailItem
+        label={t("account-label.default")}
+        value={<EvmAddress address={values.userAddress} />}
       />
     </FormStep>
   );

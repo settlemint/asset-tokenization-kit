@@ -15,6 +15,7 @@ import { getAddress } from "viem";
 import { blockUserEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
 import { MintForm } from "../../_components/mint-form/form";
+import { freezeUserAssetsEnabled } from "./freeze-form/enabled";
 import { FreezeForm } from "./freeze-form/form";
 
 const columnHelper =
@@ -111,12 +112,14 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
                     address={row.original.asset.id}
                     userAddress={row.original.account.id}
                     balance={row.original.value}
-                    frozen={row.original.frozen}
                     symbol={row.original.asset.symbol}
+                    assettype={row.original.asset.type}
+                    decimals={row.original.asset.decimals}
                     open={open}
                     onOpenChange={onOpenChange}
                   />
                 ),
+                hidden: !freezeUserAssetsEnabled(row.original.asset.type),
               },
               {
                 id: "mint-form",

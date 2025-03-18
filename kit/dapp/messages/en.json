@@ -826,7 +826,7 @@
             "wallet-balance": "Wallet balance",
             "description": {
               "mint": "Input the amount you wish to mint. Ensure the amount stays within the collateral limits.",
-              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total unfrozen balance of the selected wallet.",
+              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total balance of the selected wallet.",
               "burn": "Input the amount you wish to burn. Ensure you have the necessary permissions and sufficient balance in the selected wallet.",
               "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
               "withdraw": "Input the amount you wish to withdraw.",
@@ -839,7 +839,8 @@
             },
             "max-limit": {
               "mint": "Collateral available to mint: {limit}",
-              "burn": "Balance available to burn: {limit}"
+              "burn": "Balance available to burn: {limit}",
+              "freeze": "Balance available to freeze: {limit}"
             }
           },
           "roles": {
