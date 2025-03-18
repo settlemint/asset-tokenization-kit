@@ -9,7 +9,6 @@ import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-
 import type { getAssetBalanceList } from "@/lib/queries/asset-balance/asset-balance-list";
 import { formatDate } from "@/lib/utils/date";
 import { formatNumber } from "@/lib/utils/number";
-import type { AssetType } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
@@ -21,7 +20,7 @@ import { MintForm } from "../../_components/mint-form/form";
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
 
-export function columns({ assettype }: { assettype: AssetType }) {
+export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const t = useTranslations("private.assets.details.holders");
@@ -101,7 +100,7 @@ export function columns({ assettype }: { assettype: AssetType }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: !blockUserEnabled(assettype),
+                hidden: !blockUserEnabled(row.original.asset.type),
               },
               {
                 id: "freeze-form",
