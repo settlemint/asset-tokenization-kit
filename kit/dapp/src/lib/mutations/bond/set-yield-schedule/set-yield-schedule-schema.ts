@@ -5,8 +5,7 @@ export const SetYieldScheduleSchema = z.object({
   address: z.address(),
   startTime: z.string(),
   endTime: z.string(),
-  rate: z.number()
-    .min(0, "Rate must be between 0 and 100")
+  rate: z.string().min(0, "Rate must be between 0 and 100")
     .max(100, "Rate must be between 0 and 100"),
   interval: z.nativeEnum(IntervalPeriod),
   pincode: z.pincode(),

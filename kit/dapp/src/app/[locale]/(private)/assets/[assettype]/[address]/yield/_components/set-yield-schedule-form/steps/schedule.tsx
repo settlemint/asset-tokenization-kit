@@ -19,11 +19,13 @@ export function Schedule() {
         name="startTime"
         type="datetime-local"
         label={t("start-time.label")}
+        required
       />
       <FormInput
         name="endTime"
         type="datetime-local"
         label={t("end-time.label")}
+        required
       />
       <FormInput
         name="rate"
@@ -33,6 +35,7 @@ export function Schedule() {
         min="0"
         max="100"
         description={t("rate.description")}
+        required
       />
       <FormSelect
         name="interval"
@@ -40,6 +43,7 @@ export function Schedule() {
         options={intervalOptions}
         description={t("interval.description")}
         className="w-full"
+        required
       />
     </div>
   );
