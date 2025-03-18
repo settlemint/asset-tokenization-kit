@@ -89,7 +89,6 @@ export const BondFragmentSchema = z.object({
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
-<<<<<<< HEAD
   yieldSchedule: z.object({
     id: z.string(),
     token: z.object({
@@ -117,7 +116,6 @@ export const BondFragmentSchema = z.object({
       })
     ),
   }).nullable(),
-=======
   redeemedAmount: z.bigInt(),
   faceValue: z.bigInt(),
   underlyingBalance: z.bigInt(),
@@ -125,7 +123,6 @@ export const BondFragmentSchema = z.object({
   totalUnderlyingNeededExact: z.bigInt(),
   cap: z.bigInt(),
   deployedOn: z.bigInt(),
->>>>>>> origin/main
 });
 
 /**

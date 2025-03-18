@@ -11,6 +11,65 @@
       },
       "view-all": "View All"
     },
+    "bonds": {
+      "yield": {
+        "no-yield": {
+          "title": "No Yield Schedule Found",
+          "description": "This bond does not have a yield schedule configured yet. Set up a yield schedule to enable automated interest payments to bondholders."
+        },
+        "type": "Yield Type",
+        "type-fixed": "Fixed Rate",
+        "contract-address": "Contract Address",
+        "creator": "Creator",
+        "rate": "Interest Rate",
+        "start-date": "Start Date",
+        "end-date": "End Date",
+        "interval": "Payment Interval",
+        "yearly": "Annual",
+        "periods": "Total Periods",
+        "yield-per-period": "Yield Per Period",
+        "total-yield-distributed": "Total Yield Distributed",
+        "total-unclaimed-yield": "Total Unclaimed Yield",
+        "underlying-asset-balance": "Underlying Asset Balance",
+        "yield-coverage": "Yield Coverage",
+        "set-schedule": {
+          "trigger-label": "Set Yield Schedule",
+          "title": "Set Yield Schedule",
+          "description": "Set the yield schedule for this bond. This will automatically distribute interest payments to bondholders at the specified intervals.",
+          "button-label": "Set yield schedule",
+          "start-time": {
+            "label": "Start Time"
+          },
+          "end-time": {
+            "label": "End Time"
+          },
+          "rate": {
+            "label": "Rate",
+            "description": "The interest rate to be paid to bondholders, expressed as a percentage."
+          },
+          "interval": {
+            "label": "Interval",
+            "description": "The interval at which interest payments are made to bondholders.",
+            "options": {
+              "daily": "Daily",
+              "weekly": "Weekly",
+              "monthly": "Monthly",
+              "quarterly": "Quarterly",
+              "semi-annually": "Semi-annually",
+              "annually": "Annually"
+            }
+          },
+          "summary": {
+            "title": "Yield schedule summary",
+            "contract-address": "Contract address",
+            "start-time": "Start time",
+            "end-time": "End time",
+            "rate": "Rate",
+            "interval": "Interval"
+          }
+        }
+      }
+    },
     "charts": {
       "asset-type-formatter": {
         "bonds": "Bonds",
@@ -1093,7 +1152,8 @@
           "events": "Events",
           "holders": "Holders",
           "permissions": "Permissions",
-          "underlying-assets": "Underlying Assets"
+          "underlying-assets": "Underlying assets",
+          "yield": "Yield"
         }
       },
       "fields": {
@@ -1261,7 +1321,7 @@
         "total-supply-header": "Total supply",
         "total-supply-info": "The total supply of the asset",
         "underlying-asset": "Underlying asset",
-        "underlying-asset-balance": "Underlying asset balance",
+        "underlying-asset-balance": "Underlying Asset Balance",
         "wallet-header": "Wallet",
         "yield-type": "Yield type"
       },

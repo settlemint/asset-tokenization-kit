@@ -1088,11 +1088,12 @@
           }
         },
         "tabs": {
-          "details": "Einzelheiten",
-          "events": "Ereignisse",
+          "details": "Details",
+          "events": "Ereignisse", 
           "holders": "Inhaber",
           "permissions": "Berechtigungen",
-          "underlying-assets": "Unterliegende Vermögenswerte"
+          "underlying-assets": "Zugrunde liegende Vermögenswerte",
+          "yield": "Rendite"
         }
       },
       "fields": {
