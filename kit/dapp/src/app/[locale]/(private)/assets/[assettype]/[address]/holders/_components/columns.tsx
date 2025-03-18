@@ -100,7 +100,9 @@ export function columns({ assettype }: { assettype: AssetType }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden: assettype === "cryptocurrency",
+                hidden:
+                  assettype === "cryptocurrency" ||
+                  assettype === "tokenizeddeposit",
               },
               {
                 id: "freeze-form",
