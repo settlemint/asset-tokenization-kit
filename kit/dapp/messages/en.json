@@ -935,69 +935,46 @@
           "table-title": "Permissions"
         },
         "related": {
-          "bonds": {
-            "decrease-supply": {
-              "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
-              "title": "Redeem Bonds"
-            },
-            "increase-supply": {
-              "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
-              "title": "Issue Bonds"
-            }
-          },
-          "cryptocurrencies": {
-            "increase-supply": {
-              "description": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
-              "title": "Mint Tokens"
-            }
-          },
-          "equities": {
-            "decrease-supply": {
-              "description": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
-              "title": "Reduce Share Supply"
-            },
-            "increase-supply": {
-              "description": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
-              "title": "Issue New Shares"
-            }
-          },
-          "funds": {
-            "decrease-supply": {
-              "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
-              "title": "Redeem Bonds"
-            },
-            "increase-supply": {
-              "description": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
-              "title": "Issue Bonds"
-            }
-          },
-          "stablecoins": {
-            "decrease-supply": {
-              "description": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
-              "title": "Decrease the supply"
-            },
-            "increase-supply": {
-              "description": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
-              "title": "Increase the supply"
-            },
-            "update-collateral": {
-              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
-              "title": "Update collateral"
-            }
-          },
           "title": "Related Actions",
-          "tokenizeddeposits": {
-            "decrease-supply": {
-              "description": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available.",
-              "title": "Reduce Tokenized Deposit Supply"
+          "decrease-supply": {
+            "title": {
+              "bonds": "Redeem bonds",
+              "equities": "Reduce share supply",
+              "funds": "Redeem bonds",
+              "stablecoins": "Decrease the supply",
+              "tokenizeddeposits": "Reduce tokenized deposit supply"
             },
-            "increase-supply": {
-              "description": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available.",
-              "title": "Increase Tokenized Deposit Supply"
+            "description": {
+              "bonds": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",
+              "equities": "An equity manager can reduce the total supply of shares through a buyback program or capital reduction.",
+              "funds": "A fund manager can reduce the total supply through fund redemption at maturity or early repurchase programs.",
+              "stablecoins": "A supply manager can burn existing stablecoins, provided sufficient collateral is available.",
+              "tokenizeddeposits": "A supply manager can burn existing tokenized deposits, provided sufficient collateral is available."
+            }
+          },
+          "increase-supply": {
+            "title": {
+              "bonds": "Issue bonds",
+              "cryptocurrencies": "Mint tokens",
+              "equities": "Issue new shares",
+              "funds": "Issue bonds",
+              "stablecoins": "Increase the supply",
+              "tokenizeddeposits": "Increase the supply"
             },
-            "update-collateral": {
-              "description": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
-              "title": "Update collateral"
+            "description": {
+              "bonds": "A bond manager can issue new bonds through primary issuance or tap issuance with defined face value and maturity.",
+              "cryptocurrencies": "A token manager can mint new tokens according to the tokenomics plan and emission schedule.",
+              "equities": "An equity manager can issue new shares through various mechanisms like rights issues, private placements, or stock splits.",
+              "funds": "A fund manager can issue new funds through primary issuance or tap issuance with defined face value and maturity.",
+              "stablecoins": "A supply manager can mint new stablecoins, provided sufficient collateral is available.",
+              "tokenizeddeposits": "A supply manager can mint new tokenized deposits, provided sufficient collateral is available."
+            }
+          },
+          "update-collateral": {
+            "title": "Update collateral",
+            "description": {
+              "stablecoins": "A supply manager needs to refresh and verify the collateral backing the stablecoin. This ensures the asset remains fully collateralized at all times.",
+              "tokenizeddeposits": "A supply manager needs to refresh and verify the collateral backing the tokenized deposit. This ensures the asset remains fully collateralized at all times."
             }
           }
         },

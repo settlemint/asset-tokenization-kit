@@ -29,8 +29,8 @@ export async function EquitiesRelated({
   return (
     <RelatedGrid title={t("title")}>
       <RelatedGridItem
-        title={t("equities.increase-supply.title")}
-        description={t("equities.increase-supply.description")}
+        title={t("increase-supply.title.equities")}
+        description={t("increase-supply.description.equities")}
       >
         <MintForm
           address={address}
@@ -40,8 +40,8 @@ export async function EquitiesRelated({
         />
       </RelatedGridItem>
       <RelatedGridItem
-        title={t("equities.decrease-supply.title")}
-        description={t("equities.decrease-supply.description")}
+        title={t("decrease-supply.title.equities")}
+        description={t("decrease-supply.description.equities")}
       >
         <BurnForm
           address={address}
