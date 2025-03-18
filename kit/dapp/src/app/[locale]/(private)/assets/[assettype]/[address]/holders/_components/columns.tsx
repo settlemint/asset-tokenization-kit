@@ -14,8 +14,8 @@ import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
 import { blockUserEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
-import { FreezeForm } from "../../_components/freeze-form/form";
 import { MintForm } from "../../_components/mint-form/form";
+import { FreezeForm } from "./freeze-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();

@@ -18,11 +18,11 @@ export function User() {
           {isManualEntry ? (
             <FormInput
               control={control}
-              name="user"
+              name="userAddress"
               placeholder={t("search-user-placeholder")}
             />
           ) : (
-            <FormUsers control={control} name="user" />
+            <FormUsers control={control} name="userAddress" />
           )}
           <div className="flex justify-end">
             <button

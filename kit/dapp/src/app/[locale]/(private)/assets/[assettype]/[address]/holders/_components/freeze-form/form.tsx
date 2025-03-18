@@ -18,7 +18,6 @@ interface FreezeFormProps {
   symbol: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: Address;
 }
 
 export function FreezeForm({
@@ -29,7 +28,6 @@ export function FreezeForm({
   symbol,
   open,
   onOpenChange,
-  user,
 }: FreezeFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
 
@@ -55,7 +53,7 @@ export function FreezeForm({
         }}
         defaultValues={{
           address,
-          user,
+          userAddress,
           amount: 0,
         }}
       >
