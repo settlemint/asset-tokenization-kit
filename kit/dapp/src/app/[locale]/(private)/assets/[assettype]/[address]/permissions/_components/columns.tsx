@@ -8,7 +8,7 @@ import { DataTableRowActions } from "@/components/blocks/data-table/data-table-r
 import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { EvmAddressBalances } from "@/components/blocks/evm-address/evm-address-balances";
 import { ROLES } from "@/lib/config/roles";
-import type { PermissionWithRoles } from "@/lib/queries/asset/asset-detail";
+import type { PermissionWithRoles } from "@/lib/queries/asset/asset-users-detail";
 import { formatDate } from "@/lib/utils/date";
 import type { AssetType } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";

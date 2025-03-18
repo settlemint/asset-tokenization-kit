@@ -1,7 +1,7 @@
 import {
   PermissionFragment,
   PermissionFragmentSchema,
-} from "@/lib/queries/asset/asset-fragment";
+} from "@/lib/queries/asset/asset-users-fragment";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { type ZodInfer, z } from "@/lib/utils/zod";
 

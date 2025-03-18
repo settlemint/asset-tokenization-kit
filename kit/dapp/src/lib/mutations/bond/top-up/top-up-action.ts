@@ -1,7 +1,7 @@
 "use server";
 
 import { handleChallenge } from "@/lib/challenge";
-import { getAssetDetail } from "@/lib/queries/asset/asset-detail";
+import { getAssetUsersDetail } from "@/lib/queries/asset/asset-users-detail";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { parseUnits } from "viem";
@@ -58,7 +58,9 @@ export const topUpUnderlyingAsset = action
       parsedInput: { address, pincode, amount, underlyingAssetAddress },
       ctx: { user },
     }) => {
-      const asset = await getAssetDetail({ address: underlyingAssetAddress });
+      const asset = await getAssetUsersDetail({
+        address: underlyingAssetAddress,
+      });
 
       const formattedAmount = parseUnits(
         amount.toString(),
