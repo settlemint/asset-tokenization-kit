@@ -3,7 +3,6 @@ import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-i
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getStableCoinDetail } from "@/lib/queries/stablecoin/stablecoin-detail";
-import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
@@ -67,9 +66,6 @@ export async function StablecoinsRelated({
         <BurnForm
           address={address}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           assettype="stablecoin"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

@@ -13,7 +13,7 @@ export function Amount({ maxLimit }: AmountProps) {
   const { control } = useFormContext<MintInput>();
   const t = useTranslations("private.assets.details.forms.amount");
   const maxLimitDescription = maxLimit
-    ? t("max-amount.mint", { limit: formatNumber(maxLimit) })
+    ? t("max-limit.mint", { limit: formatNumber(maxLimit) })
     : undefined;
   return (
     <FormStep title={t("title")} description={t("description.mint")}>

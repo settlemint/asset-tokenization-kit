@@ -2,7 +2,6 @@ import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
 import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
 import { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import { getAssetDetail } from "@/lib/queries/asset-detail";
-import { formatNumber } from "@/lib/utils/number";
 import { getTranslations } from "next-intl/server";
 import type { Address } from "viem";
 import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
@@ -47,9 +46,6 @@ export async function FundsRelated({
         <BurnForm
           address={address}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           assettype="fund"
           asButton
           disabled={isBlocked || isPaused || !userIsSupplyManager}

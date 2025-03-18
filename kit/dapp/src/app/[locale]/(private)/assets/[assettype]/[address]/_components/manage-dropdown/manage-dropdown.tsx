@@ -13,7 +13,6 @@ import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-ba
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
 import type { getTokenizedDepositDetail } from "@/lib/queries/tokenizeddeposit/tokenizeddeposit-detail";
-import { formatNumber } from "@/lib/utils/number";
 import type { AssetType } from "@/lib/utils/zod";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -123,9 +122,6 @@ export function ManageDropdown({
           address={address}
           assettype={assettype}
           maxLimit={userBalance?.available}
-          maxLimitDescription={t("available-balance", {
-            maxLimit: formatNumber(userBalance?.available ?? 0),
-          })}
           open={openMenuItem === "burn"}
           onOpenChange={onFormOpenChange}
         />

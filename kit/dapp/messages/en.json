@@ -837,8 +837,9 @@
               "freeze": "Available to freeze",
               "burn": "Available to burn"
             },
-            "max-amount": {
-              "mint": "Collateral available to mint: {limit}"
+            "max-limit": {
+              "mint": "Collateral available to mint: {limit}",
+              "burn": "Balance available to burn: {limit}"
             }
           },
           "roles": {
@@ -937,7 +938,6 @@
           "table-title": "Permissions"
         },
         "related": {
-          "available-balance": "Balance available to burn: {maxLimit}",
           "bonds": {
             "decrease-supply": {
               "description": "A bond manager can reduce the total supply through bond redemption at maturity or early repurchase programs.",

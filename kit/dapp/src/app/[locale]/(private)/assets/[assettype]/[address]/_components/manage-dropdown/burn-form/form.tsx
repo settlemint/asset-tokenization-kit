@@ -7,7 +7,7 @@ import { BurnSchema } from "@/lib/mutations/burn/burn-schema";
 import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import type { Address } from "viem";
 import { Amount } from "./steps/amount";
 import { Summary } from "./steps/summary";
@@ -16,7 +16,6 @@ interface BurnFormProps {
   address: Address;
   assettype: AssetType;
   maxLimit?: number;
-  maxLimitDescription?: string | ReactNode;
   disabled?: boolean;
   asButton?: boolean;
   open?: boolean;
@@ -27,7 +26,6 @@ export function BurnForm({
   address,
   assettype,
   maxLimit,
-  maxLimitDescription,
   disabled = false,
   asButton = false,
   open,
@@ -66,7 +64,7 @@ export function BurnForm({
           assettype,
         }}
       >
-        <Amount maxLimit={maxLimit} maxLimitDescription={maxLimitDescription} />
+        <Amount maxLimit={maxLimit} />
         <Summary address={address} />
       </Form>
     </FormSheet>

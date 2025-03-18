@@ -25,6 +25,7 @@ export function Amount({ balance, frozen, symbol }: AmountProps) {
           max={balance}
           required
         />
+
         {/* description={t("balance-description", {
             balance: formatNumber(balance, { token: symbol }),
             frozen: formatNumber(frozen, { token: symbol }),
