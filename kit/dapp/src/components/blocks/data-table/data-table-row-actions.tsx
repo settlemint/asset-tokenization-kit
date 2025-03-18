@@ -41,20 +41,21 @@ interface DataTableColumnCellProps
       | ReactNode
       | ((renderProps: DataTableColumnCellRenderProps) => ReactNode);
     disabled?: boolean;
+    hidden?: boolean;
   }[];
 }
 
 export function DataTableRowActions({
   className,
   variant = "default",
-  actions,
+  actions: actionsProp,
   detailUrl,
   ...props
 }: DataTableColumnCellProps) {
   const t = useTranslations("components.data-table");
   const [isOpen, setIsOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
-
+  const actions = actionsProp?.filter((action) => !action.hidden);
   if (!actions && !detailUrl) {
     return null;
   }
