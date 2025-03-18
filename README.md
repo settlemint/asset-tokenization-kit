@@ -30,15 +30,90 @@
 
 The SettleMint Asset Tokenization Kit is a full-stack solution designed to accelerate the development of digital asset platforms. With built-in tools for smart contract deployment, asset tracking, and seamless blockchain interactions, the kit simplifies the creation of secure and scalable tokenization solutions.
 
-### Key Features
+## Complete Feature List
 
-- **Ready-to-use ERC20 smart contract templates** - Pre-built templates make it easy to issue, manage, and transfer tokenized assets such as stablecoins, bonds, securities, and real-world assets (RWAs).
+### Supported Asset Types
 
-- **Pre-built dApp web UI** - The kit's low-code approach and ready-to-use dApp web UI streamline the deployment process, reducing time-to-market and ensuring compliance with regulatory frameworks.
+The Asset Tokenization Kit supports a wide range of digital assets, each with specialized features:
 
-- **Easy Management** - Includes detailed dashboards and advanced analytics, providing real-time insights into tokenized assets, transactions, and user activity. Track token issuance, transfers, holdings, and on-chain interactions through an intuitive interface.
+1. **StableCoins**
+   - Fully collateralized digital currencies backed by real-world assets
+   - Designed for stable value maintenance and secure transactions
+   - Ideal for cross-border settlements, treasury management, and supply chain finance
 
-- **Fully Customizable Code** - Our opensource dApp templates enable further customizations of the application for your branding, look and feel. You can add more features and integrations and still deploy in minutes.
+2. **Bonds**
+   - Digital representation of traditional fixed-income securities
+   - Features include maturity dates, yield distribution, and redemption mechanisms
+   - Perfect for institutional investments and treasury optimization
+
+3. **Equity Tokens**
+   - Digital shares with voting rights and governance capabilities
+   - Support for different equity classes and categories (Common, Preferred, Series A, etc.)
+   - Streamlines shareholder management and corporate governance
+
+4. **Investment Funds**
+   - Digital fund shares with automated fee management
+   - Supports various fund types (Hedge Funds, Mutual Funds, etc.)
+   - Simplifies fund administration and investor participation
+
+5. **Tokenized Deposits**
+   - Digital representation of traditional banking deposits
+   - Enhanced with compliance features like allowlisting
+   - Streamlines interbank settlements and deposit management
+
+6. **Cryptocurrency**
+   - Custom cryptocurrency token creation and management
+   - Configurable tokenomics and distribution mechanisms
+   - Supports various use cases from loyalty programs to utility tokens
+
+7. **Fixed Yield Assets**
+   - Digital assets with predetermined yield returns
+   - Automated distribution of yields to token holders
+   - Ideal for structured financial products
+
+### Platform Features
+
+#### User Interface & Experience
+
+- **Intuitive Dashboard** - Comprehensive overview of all tokenized assets, transactions, and platform activities
+- **Asset Management Interface** - Create, issue, transfer, and manage digital assets through a user-friendly interface
+- **Portfolio Management** - Track holdings, transaction history, and asset performance
+- **Activity Monitoring** - Real-time tracking of all on-chain activities and transactions
+- **Multi-language Support** - Interface available in multiple languages including English, Arabic, German, and Japanese
+
+#### Asset Management
+
+- **Token Creation Wizard** - Step-by-step process to create and deploy new tokenized assets
+- **Asset Issuance Controls** - Secure mechanisms for minting and distributing tokens
+- **Transfer Management** - Initiate, approve, and track token transfers
+- **Holder Management** - View and manage token holders with detailed information
+- **Underlying Asset Tracking** - Monitor and manage the real-world assets backing digital tokens
+
+#### Security & Compliance
+
+- **Role-Based Access Control** - Granular permission management for different user roles:
+  - Supply Management - Control token issuance and supply
+  - User Management - Manage user permissions and restrictions
+  - Administrator - Overall platform governance and emergency controls
+- **Compliance Tools**:
+  - Blocklist/Allowlist Functionality - Restrict or permit specific users
+  - Pause Mechanisms - Temporarily halt operations during emergencies
+  - KYC/AML Integration Capabilities - Connect with identity verification systems
+- **Custodial Support** - Institutional-grade custody solutions for digital assets
+
+#### Technical Features
+
+- **Smart Contract Templates** - Pre-built, audited contract templates for various asset types
+- **Meta-Transaction Support** - Gas-free transactions for improved user experience
+- **Customizable Code** - Fully open-source and customizable for specific business needs
+- **Multi-chain Compatibility** - Deploy on various blockchain networks
+- **Subgraph Integration** - Efficient indexing and querying of blockchain data
+
+#### Platform Administration
+
+- **User Management** - Add, remove, and manage platform users
+- **Platform Settings** - Configure and customize platform behavior
+- **Branding Customization** - Adapt the interface to match your brand identity
 
 ## Overcoming the Blockchain Challenges
 
