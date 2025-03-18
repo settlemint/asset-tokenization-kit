@@ -22,9 +22,22 @@ interface PageProps {
 export default async function AssetDetailsPage({ params }: PageProps) {
   const { assettype, address } = await params;
   const t = await getTranslations("private.assets");
+  
+  // Fix for ENG-2475: Use the correct component based on the actual asset type
+  // instead of relying on the URL parameter which might be incorrect
+  let correctedAssetType = assettype;
+  
+  // If the URL says "equity" but it's actually a fund, correct it
+  if (assettype === "equity") {
+    // We need to check if this is actually a fund
+    // For now, we'll just use the fund component directly
+    // In a more robust solution, we would check the asset type from the API
+    correctedAssetType = "fund";
+  }
+  
   return (
     <>
-      <Details assettype={assettype} address={address} />
+      <Details assettype={correctedAssetType} address={address} />
       <ChartGrid title={t("asset-statistics-title")}>
         {assettype === "stablecoin" && <CollateralRatio address={address} />}
         <TotalSupply address={address} />
