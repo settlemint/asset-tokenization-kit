@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 import type { getAssetBalanceDetail } from "@/lib/queries/asset-balance/asset-balance-detail";
 import type { getAssetDetail } from "@/lib/queries/asset-detail";
 import type { getBondDetail } from "@/lib/queries/bond/bond-detail";
@@ -44,9 +44,6 @@ export function ManageDropdown({
   userBalance,
 }: ManageDropdownProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const isInPortfolio = pathname.includes("portfolio");
-
   const t = useTranslations("private.assets.detail.forms");
   const [openMenuItem, setOpenMenuItem] = useState<
     | (
@@ -228,11 +225,12 @@ export function ManageDropdown({
     },
   ] as const;
 
+  const canPerformUserActions = !isBlocked && !isPaused && userIsUserManager;
   const userActions = [
     {
       id: "grant-role",
       label: t("actions.grant-role"),
-      hidden: isBlocked || isPaused || !userIsUserManager,
+      hidden: !canPerformUserActions,
       form: (
         <GrantRoleForm
           key="grant-role"
@@ -246,7 +244,7 @@ export function ManageDropdown({
     {
       id: "block-user",
       label: t("actions.block-user"),
-      hidden: !blockUserEnabled(assettype),
+      hidden: !blockUserEnabled(assettype) || !canPerformUserActions,
       form: (
         <BlockForm
           key="block-user"
@@ -269,6 +267,11 @@ export function ManageDropdown({
     },
   ] as const;
 
+  const availableContractActions = contractActions.filter(
+    (item) => !item.hidden
+  );
+  const availableUserActions = userActions.filter((item) => !item.hidden);
+
   return (
     <>
       <DropdownMenu>
@@ -282,29 +285,25 @@ export function ManageDropdown({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
-          {contractActions
-            .filter((item) => !item.hidden)
-            .map((item) => (
-              <DropdownMenuItem
-                key={item.id}
-                onSelect={() => setOpenMenuItem(item.id)}
-                disabled={item.disabled}
-              >
-                {item.label}
-              </DropdownMenuItem>
-            ))}
+          {availableContractActions.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              onSelect={() => setOpenMenuItem(item.id)}
+              disabled={item.disabled}
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
 
-          <DropdownMenuSeparator />
-          {userActions
-            .filter((item) => !item.hidden)
-            .map((item) => (
-              <DropdownMenuItem
-                key={item.id}
-                onSelect={() => setOpenMenuItem(item.id)}
-              >
-                {item.label}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuSeparator hidden={availableUserActions.length === 0} />
+          {availableUserActions.map((item) => (
+            <DropdownMenuItem
+              key={item.id}
+              onSelect={() => setOpenMenuItem(item.id)}
+            >
+              {item.label}
+            </DropdownMenuItem>
+          ))}
 
           <DropdownMenuSeparator />
           {events.map((item) => (
