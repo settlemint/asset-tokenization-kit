@@ -755,222 +755,132 @@
       "details": {
         "asset-management": "Asset management",
         "forms": {
-          "burn": {
-            "amount": {
-              "amount-label": "Amount",
-              "available-balance": "Available balance: {balance}",
-              "description": "Input the amount you wish to burn.",
-              "title": "Enter Amount"
+          "form": {
+            "description": {
+              "burn": "Permanently remove bond tokens from circulation to reduce supply.",
+              "grant-role": "Assign administrative permissions to a new user.",
+              "block": "Prevent this user from performing any transactions or interactions.",
+              "mature": "Mature your bond and receive the underlying asset",
+              "mint": "Issue new tokens to increase the bond's circulating supply.",
+              "freeze": "Temporarily restrict a user's access to their funds.",
+              "pause": "Temporarily halt all transactions and interactions for this bond.",
+              "unpause": "Resume transactions and interactions for this bond.",
+              "top-up": "Add more underlying asset to your bond",
+              "update-collateral": "Adjust the collateral backing the stablecoin to reflect current requirements.",
+              "withdraw": "Withdraw underlying asset from your bond"
             },
-            "button-label": "Burn Assets",
-            "description": "Permanently remove bond tokens from circulation to reduce supply.",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "burn-description": "Burning operation details",
-              "burn-title": "Burn",
-              "description": "Verify the details of your burn before proceeding.",
-              "title": "Review and confirm burn"
+            "title": {
+              "burn": "Burn",
+              "grant-role": "Grant Role",
+              "block": "Block user",
+              "mature": "Mature Bond",
+              "mint": "Mint",
+              "freeze": "Restrict User Funds",
+              "pause": "Pause Bond Transactions",
+              "unpause": "Resume Bond Transactions",
+              "top-up": "Top up underlying asset",
+              "update-collateral": "Update collateral",
+              "withdraw": "Withdraw underlying asset"
             },
-            "title": "Burn",
-            "trigger-label": "Burn"
-          },
-          "grant-role": {
-            "address": {
-              "address-label": "Admin Wallet Address",
-              "description": "Search for a user by their name or email, or manually enter a wallet address.",
-              "manual-placeholder": "0x0000000000000000000000000000000000000000",
-              "manual-toggle": "Enter address manually...",
-              "search-placeholder": "Search for a user",
-              "search-toggle": "Search for a user instead...",
-              "title": "Select New Admin"
-            },
-            "button-label": "Assign Roles",
-            "description": "Assign administrative permissions to a new user.",
-            "roles": {
-              "description": "Choose the roles to grant to the new admin. At least one role must be selected.",
-              "title": "Select Admin Roles"
-            },
-            "summary": {
-              "admin-address-label": "Admin Address",
-              "asset-label": "Asset",
-              "description": "Verify the details of your role grant before proceeding.",
-              "grant-description": "Granting role operation details",
-              "grant-title": "Grant Role",
-              "roles-label": "Roles",
-              "title": "Review and confirm role grant"
-            },
-            "title": "Grant Role"
-          },
-          "mature": {
-            "button-label": "Mature Bond",
-            "description": "Mature your bond and receive the underlying asset",
-            "summary": {
-              "asset-label": "Bond",
-              "description": "Verify the details of your bond maturity before proceeding.",
-              "mature-description": "Bond maturity details",
-              "mature-title": "Mature",
-              "title": "Review and confirm maturity"
-            },
-            "title": "Mature Bond",
-            "trigger-label": "Mature"
-          },
-          "mint": {
-            "amount": {
-              "amount-label": "Amount",
-              "description": "Input the amount you wish to mint.",
-              "title": "Enter Amount"
-            },
-            "button-label": "Mint Assets",
-            "description": "Issue new tokens to increase the bond's circulating supply.",
-            "recipients": {
-              "description": "Choose who will receive the minted tokens",
-              "title": "Select Recipients"
-            },
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "description": "Verify the details of your mint before proceeding.",
-              "mint-description": "Minting operation details",
-              "mint-title": "Mint",
-              "title": "Review and confirm mint"
-            },
-            "title": "Mint",
-            "trigger-label": "Mint"
-          },
-          "block": {
-            "form": {
-              "title": "Block user",
-              "description": "Prevent this user from performing any transactions or interactions.",
-              "trigger-label": "Block user"
-            },
-            "parameters": {
-              "asset-label": "Asset",
-              "account-label": "User",
-              "search-placeholder": "Search for a user",
-              "search-toggle": "Search for a user instead...",
-              "enter-address-manually": "Enter address manually..."
-            },
-            "account": {
-              "title": "Select user",
-              "description": "Search for a user by their name or email, or enter a wallet address manually."
-            },
-            "summary": {
-              "title": "Summary",
-              "description": "This is the final step of the block operation. Please review the details before proceeding.",
-              "operation-description": "Information"
+
+            "trigger-label": {
+              "burn": "Burn",
+              "grant-role": "Grant Role",
+              "block": "Block user",
+              "mature": "Mature",
+              "mint": "Mint",
+              "freeze": "Freeze",
+              "pause": "Pause",
+              "unpause": "Unpause",
+              "top-up": "Top up",
+              "update-collateral": "Update collateral",
+              "withdraw": "Withdraw"
             }
           },
-          "freeze": {
-            "amount": {
-              "amount-label": "Amount",
-              "balance-description": "Available balance: {balance} Currently frozen: {frozen}",
-              "description": "Input the amount you wish to freeze.",
-              "title": "Enter Amount"
+          "account": {
+            "search-user-placeholder": "Enter an address, name or email",
+            "enter-wallet-address-placeholder": "Enter a wallet address",
+            "enter-user-address-manually": "Enter address manually...",
+            "search-user-instead": "Search for a user instead...",
+            "title": {
+              "mint": "Select recipient",
+              "burn": "Select user",
+              "grant-role": "Select user",
+              "freeze": "Select user",
+              "block": "Select user",
+              "withdraw": "Select user"
             },
-            "button-label": "Freeze Funds",
-            "description": "Temporarily restrict a user's access to their funds.",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "description": "Verify the details of your freeze operation before proceeding.",
-              "freeze-title": "Freeze",
-              "operation-description": "Freezing operation details",
-              "title": "Review and confirm freeze operation"
-            },
-            "title": "Restrict User Funds",
-            "trigger-label": "Freeze"
-          },
-          "pause": {
-            "pause": {
-              "button-label": "Pause Transactions",
-              "description": "Temporarily halt all transactions and interactions for this bond.",
-              "title": "Pause Bond Transactions"
-            },
-            "summary": {
-              "asset-label": "Asset",
-              "current-state-label": "Current state",
-              "description": "Verify the details of your pause operation before proceeding.",
-              "pause-description": "Pausing operation details",
-              "pause-title": "Pause",
-              "state-active": "Active",
-              "state-paused": "Paused",
-              "target-state-label": "Target state",
-              "title": "Review and confirm pause operation"
-            },
-            "unpause": {
-              "button-label": "Resume Transactions",
-              "description": "Resume transactions and interactions for this bond.",
-              "title": "Resume Bond Transactions"
+            "description": {
+              "mint": "Enter a wallet address to send tokens directly, or search for a user by their name, email or wallet address.",
+              "burn": "Enter a wallet address from which the tokens will be burned, or search for a user by their name, email or wallet address.",
+              "grant-role": "Enter a wallet address to grant roles to, or search for a user by their name, email or wallet address.",
+              "freeze": "Enter a wallet address from which the tokens will be frozen, or search for a user by their name, email or wallet address.",
+              "block": "Enter a wallet address to block, or search for a user by their name, email or wallet address.",
+              "withdraw": "Enter a wallet address to withdraw tokens to, or search for a user by their name, email or wallet address."
             }
           },
-          "top-up": {
-            "amount": {
-              "amount": {
-                "description": "Enter the amount to top up",
-                "label": "Amount"
-              },
-              "description": "Specify the amount to top up the underlying asset.",
-              "title": "Enter amount"
+          "amount": {
+            "title": "Enter amount",
+            "wallet-balance": "Wallet balance",
+            "description": {
+              "mint": "Input the amount you wish to mint. Ensure the amount stays within the collateral limits.",
+              "freeze": "Input the amount you wish to freeze. Ensure the amount stays within the total balance of the selected wallet.",
+              "burn": "Input the amount you wish to burn. Ensure you have the necessary permissions and sufficient balance in the selected wallet.",
+              "update-collateral": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
+              "withdraw": "Input the amount you wish to withdraw.",
+              "top-up": "Input the amount you wish to top up the underlying asset to."
             },
-            "button-label": "Top up",
-            "description": "Add more underlying asset to your bond",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Underlying asset",
-              "description": "Verify the details of your top-up before proceeding.",
-              "title": "Review and confirm top-up"
-            },
-            "title": "Top up underlying asset",
-            "trigger-label": "Top up"
+            "available-to": {
+              "mint": "Available to mint",
+              "freeze": "Available to freeze",
+              "burn": "Available to burn"
+            }
           },
-          "update-collateral": {
-            "amount": {
-              "amount-label": "Amount",
-              "description": "Input the amount you wish to update the collateral to. Ensure the amount is bigger or equal to the current supply.",
-              "title": "Enter Amount"
-            },
-            "button-label": "Update Collateral Amount",
-            "description": "Adjust the collateral backing the stablecoin to reflect current requirements.",
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Asset",
-              "description": "Verify the details of your update proven collateral before proceeding.",
-              "title": "Review and confirm update proven collateral",
-              "update-description": "Updating collateral operation details",
-              "update-title": "Update Collateral"
-            },
-            "title": "Update collateral",
-            "trigger-label": "Update collateral"
+          "roles": {
+            "title": "Roles",
+            "description": "Roles are a way to manage permissions for users. They can be assigned to users to control their access to the asset.",
+            "roles-label": "Roles",
+            "role-label": "Role",
+            "role-description": "Role description",
+            "role-actions": "Role actions"
           },
-          "withdraw": {
-            "amount": {
-              "amount": {
-                "description": "Enter the amount to withdraw",
-                "label": "Amount"
-              },
-              "description": "Specify the amount to withdraw.",
-              "title": "Enter amount"
+          "summary": {
+            "amount-label": "Amount",
+            "asset-label": "Asset",
+            "account-label": {
+              "default": "User",
+              "recipient": "Recipient"
             },
-            "button-label": "Withdraw",
-            "description": "Withdraw underlying asset from your bond",
-            "recipient": {
-              "description": "Choose who will receive the underlying asset.",
-              "label": "Recipient",
-              "manual-instead": "Enter address manually...",
-              "placeholder": "Search for a user or enter address",
-              "search-instead": "Search for a user instead...",
-              "title": "Select recipient"
+            "current-state-label": "Current state",
+            "target-state-label": "Target state",
+            "paused-label": "Paused",
+            "active-label": "Active",
+            "title": {
+              "mint": "Review and confirm mint",
+              "burn": "Review and confirm burn",
+              "grant-role": "Review and confirm role grant",
+              "freeze": "Review and confirm freeze",
+              "block": "Review and confirm block",
+              "mature": "Review and confirm maturity",
+              "top-up": "Review and confirm top-up",
+              "update-collateral": "Review and confirm update collateral",
+              "withdraw": "Review and confirm withdrawal",
+              "pause": "Review and confirm pause",
+              "unpause": "Review and confirm unpause"
             },
-            "summary": {
-              "amount-label": "Amount",
-              "asset-label": "Underlying asset",
-              "description": "Verify the details of your withdrawal before proceeding.",
-              "recipient-label": "Recipient",
-              "title": "Review and confirm withdrawal"
-            },
-            "title": "Withdraw underlying asset",
-            "trigger-label": "Withdraw"
+            "description": {
+              "mint": "Verify the details of your mint before proceeding.",
+              "burn": "Verify the details of your burn before proceeding.",
+              "grant-role": "Verify the details of your role grant before proceeding.",
+              "freeze": "Verify the details of your freeze before proceeding.",
+              "block": "Verify the details of your block before proceeding.",
+              "mature": "Verify the details of your maturity before proceeding.",
+              "top-up": "Verify the details of your top-up before proceeding.",
+              "update-collateral": "Verify the details of your update collateral before proceeding.",
+              "withdraw": "Verify the details of your withdrawal before proceeding.",
+              "pause": "Verify the details of your pause before proceeding.",
+              "unpause": "Verify the details of your unpause before proceeding."
+            }
           }
         },
         "holders": {

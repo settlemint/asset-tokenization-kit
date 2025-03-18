@@ -90,12 +90,12 @@ export function columns() {
             actions={[
               {
                 id: "block-form",
-                label: t("block.form.trigger-label"),
+                label: t("form.trigger-label.block"),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
                     assettype={row.original.asset.type}
-                    account={row.original.account.id}
+                    user={row.original.account.id}
                     open={open}
                     onOpenChange={onOpenChange}
                   />
@@ -104,7 +104,7 @@ export function columns() {
               },
               {
                 id: "freeze-form",
-                label: t("freeze.trigger-label"),
+                label: t("form.trigger-label.freeze"),
                 component: ({ open, onOpenChange }) => (
                   <FreezeForm
                     address={row.original.asset.id}
@@ -119,7 +119,7 @@ export function columns() {
               },
               {
                 id: "mint-form",
-                label: t("mint.trigger-label"),
+                label: t("form.trigger-label.mint"),
                 component: ({ open, onOpenChange }) => (
                   <MintForm
                     address={row.original.asset.id}

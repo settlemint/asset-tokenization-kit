@@ -1,37 +1,28 @@
-"use client";
-
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormInput } from "@/components/blocks/form/inputs/form-input";
 import { FormUsers } from "@/components/blocks/form/inputs/form-users";
-import type { WithdrawInput } from "@/lib/mutations/withdraw/withdraw-schema";
+import type { BlockUserInput } from "@/lib/mutations/block-user/block-user-schema";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-export function Recipient() {
-  const { control } = useFormContext<WithdrawInput>();
+export function User() {
+  const { control } = useFormContext<BlockUserInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
   const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep
-      title={t("title.withdraw")}
-      description={t("description.withdraw")}
-    >
+    <FormStep title={t("title.freeze")} description={t("description.freeze")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput
               control={control}
-              name="to"
-              placeholder={t("enter-wallet-address-placeholder")}
-            />
-          ) : (
-            <FormUsers
-              control={control}
-              name="to"
+              name="user"
               placeholder={t("search-user-placeholder")}
             />
+          ) : (
+            <FormUsers control={control} name="user" />
           )}
           <div className="flex justify-end">
             <button
@@ -50,4 +41,4 @@ export function Recipient() {
   );
 }
 
-Recipient.validatedFields = ["to"] as const;
+User.validatedFields = ["user"] as const;

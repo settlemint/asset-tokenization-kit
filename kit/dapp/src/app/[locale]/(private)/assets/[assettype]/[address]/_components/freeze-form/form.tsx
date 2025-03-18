@@ -18,6 +18,7 @@ interface FreezeFormProps {
   symbol: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  user?: Address;
 }
 
 export function FreezeForm({
@@ -28,8 +29,9 @@ export function FreezeForm({
   symbol,
   open,
   onOpenChange,
+  user,
 }: FreezeFormProps) {
-  const t = useTranslations("private.assets.details.forms.freeze");
+  const t = useTranslations("private.assets.details.forms.form");
 
   // Convert to numbers for component use
   const balanceNum =
@@ -41,19 +43,19 @@ export function FreezeForm({
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={t("trigger-label.freeze")}
+      title={t("title.freeze")}
+      description={t("description.freeze")}
     >
       <Form
         action={freeze}
         resolver={zodResolver(FreezeSchema)}
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.freeze"),
         }}
         defaultValues={{
           address,
-          userAddress,
+          user,
           amount: 0,
         }}
       >

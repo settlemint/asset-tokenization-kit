@@ -8,47 +8,47 @@ import type { AssetType } from "@/lib/utils/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import type { Address } from "viem";
-import { Account } from "./steps/account";
 import { Summary } from "./steps/summary";
+import { User } from "./steps/user";
 
 interface BlockFormProps {
   address: Address;
   assettype: AssetType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  account?: Address;
+  user?: Address;
 }
 
 export function BlockForm({
   address,
   assettype,
-  account,
+  user,
   open,
   onOpenChange,
 }: BlockFormProps) {
-  const t = useTranslations("private.assets.details.forms.block.form");
-  const steps = account
+  const t = useTranslations("private.assets.details.forms.form");
+  const steps = user
     ? [<Summary key="summary" />]
-    : [<Account key="account" />, <Summary key="summary" />];
+    : [<User key="user" />, <Summary key="summary" />];
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      triggerLabel={t("trigger-label")}
-      title={t("title")}
-      description={t("description")}
+      triggerLabel={t("trigger-label.block")}
+      title={t("title.block")}
+      description={t("description.block")}
     >
       <Form
         action={blockUser}
         resolver={zodResolver(BlockUserSchema)}
         buttonLabels={{
-          label: t("trigger-label"),
+          label: t("trigger-label.block"),
         }}
         onOpenChange={onOpenChange}
         defaultValues={{
           address,
-          account,
+          user,
           assettype,
         }}
       >

@@ -10,25 +10,23 @@ export function Recipients() {
   const { control } = useFormContext<MintInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
 
-  const t = useTranslations("private.assets.details.forms.mint.recipients");
+  const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep title={t("title.mint")} description={t("description.mint")}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput
               control={control}
               name="to"
-              label="Wallet Address"
-              placeholder="0x0000000000000000000000000000000000000000"
+              placeholder={t("search-user-placeholder")}
             />
           ) : (
             <FormUsers
               control={control}
               name="to"
-              label="Wallet Address"
-              placeholder="Search for a user"
+              placeholder={t("search-user-placeholder")}
             />
           )}
           <div className="flex justify-end">
@@ -38,8 +36,8 @@ export function Recipients() {
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
               {isManualEntry
-                ? "Search for a user instead..."
-                : "Enter address manually..."}
+                ? t("search-user-instead")
+                : t("enter-user-address-manually")}
             </button>
           </div>
         </div>

@@ -7,20 +7,17 @@ import { useFormContext } from "react-hook-form";
 
 export function Amount() {
   const { control } = useFormContext<MintInput>();
-  const t = useTranslations("private.assets.details.forms.mint.amount");
+  const t = useTranslations("private.assets.details.forms.amount");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
-      <div className="grid grid-cols-1 gap-6">
-        <FormInput
-          control={control}
-          name="amount"
-          label={t("amount-label")}
-          type="number"
-          min={1}
-          required
-        />
-      </div>
+    <FormStep title={t("title")} description={t("description.mint")}>
+      <FormInput
+        control={control}
+        name="amount"
+        type="number"
+        min={1}
+        required
+      />
     </FormStep>
   );
 }

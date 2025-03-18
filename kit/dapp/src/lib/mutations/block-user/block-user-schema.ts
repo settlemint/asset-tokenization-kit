@@ -11,7 +11,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
 export const BlockUserSchema = z.object({
   address: z.address(),
   pincode: z.pincode(),
-  account: z.address(),
+  user: z.address(),
   assettype: z.assetType(),
 });
 
