@@ -1,9 +1,9 @@
-import { RelatedGrid } from '@/components/blocks/related-grid/related-grid';
-import { RelatedGridItem } from '@/components/blocks/related-grid/related-grid-item';
-import { getTranslations } from 'next-intl/server';
-import type { Address } from 'viem';
-import { BurnForm } from '../../../_components/manage-dropdown/burn-form/form';
-import { MintForm } from '../../../_components/mint-form/form';
+import { RelatedGrid } from "@/components/blocks/related-grid/related-grid";
+import { RelatedGridItem } from "@/components/blocks/related-grid/related-grid-item";
+import { getTranslations } from "next-intl/server";
+import type { Address } from "viem";
+import { BurnForm } from "../../../_components/manage-dropdown/burn-form/form";
+import { MintForm } from "../../../_components/mint-form/form";
 
 interface BondsRelatedProps {
   address: Address;
