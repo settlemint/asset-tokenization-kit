@@ -15,8 +15,8 @@ import { getAddress } from "viem";
 import { blockUserEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
 import { MintForm } from "../../_components/mint-form/form";
-import { freezeUserAssetsEnabled } from "./freeze-form/enabled";
-import { FreezeForm } from "./freeze-form/form";
+import { freezeUserAssetsEnabled } from "./actions/freeze-form/enabled";
+import { FreezeForm } from "./actions/freeze-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
