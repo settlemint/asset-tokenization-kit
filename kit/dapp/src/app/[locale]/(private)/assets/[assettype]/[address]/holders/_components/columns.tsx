@@ -24,11 +24,11 @@ const columnHelper =
 export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("private.assets.details.holders");
+  const t = useTranslations("private.assets.details");
 
   return [
     columnHelper.accessor("account.id", {
-      header: t("fields.wallet-header"),
+      header: t("holders.fields.wallet-header"),
       cell: ({ getValue }) => {
         const wallet = getAddress(getValue());
         return (
@@ -40,7 +40,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
       enableColumnFilter: false,
     }),
     columnHelper.accessor("value", {
-      header: t("fields.balance-header"),
+      header: t("holders.fields.balance-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
@@ -49,14 +49,14 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
       },
     }),
     columnHelper.accessor("asset", {
-      id: t("holder-type-header"),
-      header: t("holder-type-header"),
+      id: t("holders.holder-type-header"),
+      header: t("holders.holder-type-header"),
       cell: ({ row }) => {
         return <ColumnHolderType assetBalance={row.original} />;
       },
     }),
     columnHelper.accessor("frozen", {
-      header: t("frozen-header"),
+      header: t("holders.frozen-header"),
       cell: ({ getValue, row }) =>
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
@@ -65,14 +65,14 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
       },
     }),
     columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
-      id: t("status-header"),
-      header: t("status-header"),
+      id: t("holders.status-header"),
+      header: t("holders.status-header"),
       cell: ({ row }) => {
         return <AssetStatusPill assetBalance={row.original} />;
       },
     }),
     columnHelper.accessor("lastActivity", {
-      header: t("last-activity-header"),
+      header: t("holders.last-activity-header"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();
         return lastActivity
@@ -83,16 +83,14 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
     }),
     columnHelper.display({
       id: "actions",
-      header: t("actions-header"),
+      header: t("holders.actions-header"),
       cell: ({ row }) => {
-        const t = useTranslations("private.assets.details.forms");
-
         return (
           <DataTableRowActions
             actions={[
               {
                 id: "block-form",
-                label: t("form.trigger-label.block"),
+                label: t("forms.form.trigger-label.block"),
                 component: ({ open, onOpenChange }) => (
                   <BlockForm
                     address={row.original.asset.id}
@@ -106,7 +104,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
               },
               {
                 id: "freeze-form",
-                label: t("form.trigger-label.freeze"),
+                label: t("forms.form.trigger-label.freeze"),
                 component: ({ open, onOpenChange }) => (
                   <FreezeForm
                     address={row.original.asset.id}
@@ -123,7 +121,7 @@ export function columns({ mintMaxLimit }: { mintMaxLimit?: number }) {
               },
               {
                 id: "mint-form",
-                label: t("form.trigger-label.mint"),
+                label: t("forms.form.trigger-label.mint"),
                 component: ({ open, onOpenChange }) => (
                   <MintForm
                     address={row.original.asset.id}

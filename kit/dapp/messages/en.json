@@ -772,22 +772,21 @@
               "withdraw": "Withdraw underlying asset from your bond"
             },
             "title": {
-              "burn": "Burn",
-              "grant-role": "Grant Role",
+              "burn": "Burn assets",
+              "grant-role": "Grant role",
               "block": "Block user",
-              "mature": "Mature Bond",
-              "mint": "Mint",
-              "freeze": "Restrict User Funds",
-              "pause": "Pause Bond Transactions",
-              "unpause": "Resume Bond Transactions",
+              "mature": "Mature bond",
+              "mint": "Mint assets",
+              "freeze": "Restrict user assets",
+              "pause": "Pause contract",
+              "unpause": "Resume contract",
               "top-up": "Top up underlying asset",
               "update-collateral": "Update collateral",
               "withdraw": "Withdraw underlying asset"
             },
-
             "trigger-label": {
               "burn": "Burn",
-              "grant-role": "Grant Role",
+              "grant-role": "Grant role",
               "block": "Block user",
               "mature": "Mature",
               "mint": "Mint",
