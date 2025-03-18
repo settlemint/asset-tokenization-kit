@@ -29,6 +29,19 @@ export const CreateFundSchema = z.object({
         .number()
         .min(0)
         .max(100 * 100) // 100 bps = 1%,
+        .refine(
+          (val) => {
+            // Check if the value is a valid positive number that doesn't start with 0
+            // unless it's a decimal less than 1 (e.g., 0.5 is valid)
+            const strVal = String(val);
+            return (
+              val === 0 || // Allow exactly 0
+              (val > 0 && 
+               (strVal.indexOf('.') !== 1 || strVal.charAt(0) !== '0' || val < 1))
+            );
+          },
+          { message: "Value cannot start with 0 unless it's a decimal less than 1" }
+        )
     ),
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "fund.duplicate",
