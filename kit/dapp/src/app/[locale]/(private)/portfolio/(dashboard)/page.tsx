@@ -56,11 +56,12 @@ export default async function PortfolioDashboard({
       </div>
 
       <PageHeader title={t("dashboard.my-assets")} className="mt-8" />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y md:grid-cols-2 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
         <AssetDistribution address={user.wallet as Address} />
         <MyAssetsTable
           wallet={user.wallet as Address}
           title={t("dashboard.my-assets")}
+          variant="small"
         />
       </div>
       <PageHeader title={t("dashboard.latest-events")} className="mt-8" />

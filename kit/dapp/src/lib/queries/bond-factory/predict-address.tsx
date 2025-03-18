@@ -6,7 +6,7 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { formatDate } from "@/lib/utils/date";
 import { safeParseWithLogging, z } from "@/lib/utils/zod";
 import { cache } from "react";
-import { parseUnits, type Address } from "viem";
+import { type Address, parseUnits } from "viem";
 
 /**
  * GraphQL query for predicting the address of a new bond

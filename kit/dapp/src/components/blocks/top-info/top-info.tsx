@@ -5,18 +5,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import type { PropsWithChildren } from "react";
 
 const topInfoVariants = cva("w-full", {
   variants: {
     variant: {
-      default: "rounded-md px-4 mb-4 linear-gradient-related",
+      default: "linear-gradient-related mb-4 rounded-md px-4",
       warning:
-        "bg-state-warning-background border-sm-state-warning text-sm-state-warning rounded-md px-4 mb-4",
+        "mb-4 rounded-md border-sm-state-warning bg-state-warning-background px-4 text-sm-state-warning",
       destructive:
-        "bg-state-error-background border-sm-state-error text-sm-state-error rounded-md px-4 mb-4",
+        "mb-4 rounded-md border-sm-state-error bg-state-error-background px-4 text-sm-state-error",
     },
   },
   defaultVariants: {

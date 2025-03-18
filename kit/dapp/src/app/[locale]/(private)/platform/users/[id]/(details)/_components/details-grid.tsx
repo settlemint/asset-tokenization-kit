@@ -15,15 +15,17 @@ type DetailsGridProps = {
 
 export async function DetailsGrid({ id }: DetailsGridProps) {
   const user = await getUserDetail({ id });
-  const t = await getTranslations("admin.users.detail.fields");
-  const tStatus = await getTranslations("admin.users.status");
-  const tValues = await getTranslations("admin.users.detail.values");
+  const t = await getTranslations("private.users");
 
   return (
     <DetailGrid>
-      <DetailGridItem label={t("name")}>{user.name}</DetailGridItem>
-      <DetailGridItem label={t("email")}>{user.email}</DetailGridItem>
-      <DetailGridItem label={t("status")}>
+      <DetailGridItem label={t("detail.values.name")}>
+        {user.name}
+      </DetailGridItem>
+      <DetailGridItem label={t("detail.values.email")}>
+        {user.email}
+      </DetailGridItem>
+      <DetailGridItem label={t("detail.values.status")}>
         <Badge
           variant={user.banned ? "destructive" : "default"}
           className={cn(
@@ -34,25 +36,25 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
           {user.banned ? (
             <>
               <Ban className="mr-1 size-3" />
-              <span>{tStatus("banned")}</span>
+              <span>{t("status.banned")}</span>
             </>
           ) : (
             <>
               <Check className="mr-1 size-3" />
-              <span>{tStatus("active")}</span>
+              <span>{t("status.active")}</span>
             </>
           )}
         </Badge>
       </DetailGridItem>
-      <DetailGridItem label={t("created_at")}>
+      <DetailGridItem label={t("detail.values.created_at")}>
         {formatDate(user.created_at, { type: "distance" })}
       </DetailGridItem>
-      <DetailGridItem label={t("verified_at")}>
-        {user.kyc_verified
-          ? formatDate(user.kyc_verified, { type: "distance" })
-          : tValues("not_verified")}
+      <DetailGridItem label={t("detail.values.verified_at")}>
+        {user.kyc_verified_at
+          ? formatDate(user.kyc_verified_at, { type: "distance" })
+          : t("status.not_verified")}
       </DetailGridItem>
-      <DetailGridItem label={t("wallet")}>
+      <DetailGridItem label={t("detail.values.wallet")}>
         <EvmAddress
           address={user.wallet}
           prettyNames={false}
@@ -60,21 +62,21 @@ export async function DetailsGrid({ id }: DetailsGridProps) {
           copyToClipboard={true}
         />
       </DetailGridItem>
-      <DetailGridItem label={t("asset_supply")}>
+      <DetailGridItem label={t("detail.values.asset_supply")}>
         {formatNumber(user.assetCount, { decimals: 0 })}
       </DetailGridItem>
-      <DetailGridItem label={t("transactions")}>
+      <DetailGridItem label={t("detail.values.transactions")}>
         {formatNumber(user.transactionCount, { decimals: 0 })}
       </DetailGridItem>
-      <DetailGridItem label={t("last_activity")}>
-        {user.lastActivity
-          ? formatDate(user.lastActivity, { type: "distance" })
-          : tValues("never")}
+      <DetailGridItem label={t("detail.values.last_activity")}>
+        {user.last_activity_at
+          ? formatDate(user.last_activity_at, { type: "distance" })
+          : t("status.never")}
       </DetailGridItem>
-      <DetailGridItem label={t("last_login")}>
-        {user.last_login
-          ? formatDate(user.last_login, { type: "distance" })
-          : tValues("never")}
+      <DetailGridItem label={t("detail.values.last_login")}>
+        {user.last_login_at
+          ? formatDate(user.last_login_at, { type: "distance" })
+          : t("status.never")}
       </DetailGridItem>
     </DetailGrid>
   );

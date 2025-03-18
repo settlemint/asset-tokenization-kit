@@ -1,7 +1,7 @@
 import { useFormField } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import React from "react";
+import type React from "react";
 
 /**
  * TranslatableFormMessage component

@@ -1,5 +1,5 @@
 import { isAddressAvailable } from "@/lib/queries/stablecoin-factory/address-available";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating stablecoin creation inputs
@@ -24,6 +24,7 @@ export const CreateStablecoinSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "stablecoin.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateStablecoinInput = ZodInfer<typeof CreateStablecoinSchema>;

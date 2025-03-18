@@ -94,5 +94,5 @@
   "i18n-ally.pathMatcher": "{locale}.json",
   "i18n-ally.defaultNamespace": "",
   "i18n-ally.translate.engines": ["openai", "google"],
-  "sherlock.previewLanguageTag": "en"
+  "biome.enabled": false
 }

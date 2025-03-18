@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import {
+  type ColumnFiltersState,
+  type RowData,
+  type SortingState,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -19,13 +23,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  type ColumnFiltersState,
-  type RowData,
-  type SortingState,
-  type VisibilityState,
 } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { useMemo, useState, type ComponentType } from "react";
+import { type ComponentType, useMemo, useState } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -182,7 +182,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       <div
         data-slot="data-table"
         className={cn(
-          "w-full rounded-xl bg-card text-sidebar-foreground shadow-sm overflow-x-auto",
+          "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
           className
         )}
       >

@@ -18,7 +18,6 @@ type Asset = UserAsset["asset"] & {
 
 export function MyAssetsTransferForm() {
   const t = useTranslations("portfolio.transfer-form");
-  const tAssetTypes = useTranslations("portfolio.asset-types");
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [open, setOpen] = useState(false);
   return (
@@ -35,7 +34,6 @@ export function MyAssetsTransferForm() {
             symbol: selectedAsset?.symbol,
           })}`}
           description={t("description", {
-            type: tAssetTypes(selectedAsset?.type),
             name: selectedAsset?.name,
             symbol: selectedAsset?.symbol,
           })}

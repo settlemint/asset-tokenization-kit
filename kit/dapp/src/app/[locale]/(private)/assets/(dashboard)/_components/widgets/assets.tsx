@@ -28,6 +28,7 @@ export async function AssetsWidget() {
         cryptocurrencies: formatNumber(getAssetSupply("cryptocurrency")),
         equities: formatNumber(getAssetSupply("equity")),
         funds: formatNumber(getAssetSupply("fund")),
+        tokenizedDeposits: formatNumber(getAssetSupply("tokenizeddeposit")),
       })}
     />
   );

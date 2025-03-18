@@ -1,14 +1,17 @@
 import { fetchAllHasuraPages, fetchAllTheGraphPages } from "@/lib/pagination";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { getAddress } from "viem";
 import {
-    BondFragment,
-    BondFragmentSchema,
-    OffchainBondFragment,
-    OffchainBondFragmentSchema,
+  BondFragment,
+  BondFragmentSchema,
+  OffchainBondFragment,
+  OffchainBondFragmentSchema,
 } from "./bond-fragment";
 
 /**
@@ -91,12 +94,22 @@ export const getBondList = cache(async () => {
   const bonds = validatedBonds.map((bond) => {
     const dbAsset = assetsById.get(getAddress(bond.id));
 
+    const topHoldersSum = bond.holders.reduce(
+      (sum, holder) => sum + holder.valueExact,
+      0n
+    );
+    const concentration =
+      bond.totalSupplyExact === 0n
+        ? 0
+        : Number((topHoldersSum * 100n) / bond.totalSupplyExact);
+
     return {
       ...bond,
       ...{
         private: false,
         ...dbAsset,
       },
+      concentration,
     };
   });
 

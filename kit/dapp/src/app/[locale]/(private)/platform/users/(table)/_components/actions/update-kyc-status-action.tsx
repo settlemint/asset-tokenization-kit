@@ -17,9 +17,9 @@ import { toast } from "sonner";
 
 const UpdateKycStatusMutation = hasuraGraphql(`
   mutation UpdateKycStatus($userId: String!, $kycVerified: timestamptz) {
-    update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified: $kycVerified}) {
+    update_user_by_pk(pk_columns: {id: $userId}, _set: {kyc_verified_at: $kycVerified}) {
       id
-      kyc_verified
+      kyc_verified_at
     }
   }
 `);
@@ -43,7 +43,7 @@ export function UpdateKycStatusAction({
       setIsLoading(true);
       await hasuraClient.request(UpdateKycStatusMutation, {
         userId: user.id,
-        kycVerified: user.kyc_verified ? null : new Date().toJSON(),
+        kycVerified: user.kyc_verified_at ? null : new Date().toJSON(),
       });
 
       toast.success("KYC status updated successfully");
@@ -64,10 +64,10 @@ export function UpdateKycStatusAction({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {user.kyc_verified ? "Remove KYC Verification" : "Verify KYC"}
+              {user.kyc_verified_at ? "Remove KYC Verification" : "Verify KYC"}
             </DialogTitle>
             <DialogDescription>
-              {user.kyc_verified
+              {user.kyc_verified_at
                 ? `Are you sure you want to remove KYC verification for ${user.name}?`
                 : `Are you sure you want to verify KYC for ${user.name}?`}
             </DialogDescription>
@@ -83,7 +83,7 @@ export function UpdateKycStatusAction({
               Cancel
             </Button>
             <Button
-              variant={user.kyc_verified ? "destructive" : "default"}
+              variant={user.kyc_verified_at ? "destructive" : "default"}
               onClick={(e) => {
                 handleStatusChange(e).catch((error) => {
                   toast.error(
@@ -95,7 +95,7 @@ export function UpdateKycStatusAction({
             >
               {isLoading
                 ? "Updating..."
-                : user.kyc_verified
+                : user.kyc_verified_at
                   ? "Remove Verification"
                   : "Verify"}
             </Button>

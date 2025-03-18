@@ -204,7 +204,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               <h2 className="mx-auto bg-[linear-gradient(180deg,_hsl(var(--foreground))_0%,_(var(--foreground)/75%)_100%)] bg-clip-text text-4xl tracking-tighter md:text-6xl">
                 {subtitle.regular}
                 <br />
-                <span className="bg-linear-to-r from-[var(--accent)] to-[var(--chart-2)] bg-clip-text text-transparent font-bold">
+                <span className="bg-linear-to-r from-[var(--accent)] to-[var(--chart-2)] bg-clip-text font-bold text-transparent">
                   {subtitle.gradient}
                 </span>
               </h2>

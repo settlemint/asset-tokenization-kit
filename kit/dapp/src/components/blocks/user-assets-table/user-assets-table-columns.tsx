@@ -3,24 +3,18 @@
 import { AssetStatusPill } from "@/components/blocks/asset-status-pill/asset-status-pill";
 import type { UserAsset } from "@/lib/queries/asset-balance/asset-balance-user";
 import { formatDate } from "@/lib/utils/date";
-import { formatAssetStatus } from "@/lib/utils/format-asset-status";
-import { formatHolderType } from "@/lib/utils/format-holder-type";
 import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import { ColumnAssetStatus } from "../asset-info/column-asset-status";
+import { ColumnAssetType } from "../asset-info/column-asset-type";
+import { ColumnHolderType } from "../asset-info/column-holder-type";
 
 const columnHelper = createColumnHelper<UserAsset>();
 
 export function columns() {
-  // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.users.holdings.table");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tHolderType = useTranslations("holder-type");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetType = useTranslations("asset-type");
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const tAssetStatus = useTranslations("asset-status");
+  const t = useTranslations("private.users.holdings.table");
 
   return [
     columnHelper.accessor("asset.name", {
@@ -31,9 +25,12 @@ export function columns() {
       header: t("symbol-header"),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => tAssetType(row.asset.type), {
+    columnHelper.accessor("asset.type", {
       id: t("type-header"),
       header: t("type-header"),
+      cell: ({ getValue }) => {
+        return <ColumnAssetType assettype={getValue()} />;
+      },
     }),
     columnHelper.accessor("value", {
       header: t("balance-header"),
@@ -44,11 +41,14 @@ export function columns() {
         formatNumber(getValue(), { token: row.original.asset.symbol }),
       enableColumnFilter: false,
     }),
-    columnHelper.accessor((row) => formatHolderType(row, tHolderType), {
+    columnHelper.accessor("asset", {
       id: t("holder-type-header"),
       header: t("holder-type-header"),
+      cell: ({ row }) => {
+        return <ColumnHolderType assetBalance={row.original} />;
+      },
     }),
-    columnHelper.accessor((row) => formatAssetStatus(row, tAssetStatus), {
+    columnHelper.accessor((row) => <ColumnAssetStatus assetOrBalance={row} />, {
       id: t("status-header"),
       header: t("status-header"),
       cell: ({ row }) => {

@@ -8,6 +8,6 @@ export default defineConfig({
   schema: "./src/lib/db/schema-*.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.SETTLEMINT_HASURA_DATABASE_URL!,
+    url: process.env.SETTLEMINT_HASURA_DATABASE_URL ?? "",
   },
 });

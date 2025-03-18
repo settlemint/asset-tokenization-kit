@@ -1,12 +1,15 @@
 "use server"; // because this needs to be fetched client side in the address hover
 
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import type { Address } from "viem";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "./asset-balance-fragment";
 
 /**

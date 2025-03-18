@@ -32,15 +32,13 @@ export function TransferForm({
   onCloseAction: () => void;
 }) {
   const t = useTranslations("portfolio.transfer-form");
-  const tAssetTypes = useTranslations("portfolio.asset-types");
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onCloseAction}
-      title={`${t("transfer")} ${tAssetTypes(assetType)} ${name} (${symbol})`}
+      title={t("transfer-title", { name, symbol })}
       description={t("description", {
-        type: tAssetTypes(assetType),
         name,
         symbol,
       })}

@@ -1,14 +1,12 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { authClient } from "@/lib/auth/client";
 import {
   AuthUIProvider,
   type SocialProvider,
 } from "@daveyplate/better-auth-ui";
 import { useTranslations } from "next-intl";
-// eslint-disable-next-line no-restricted-imports
-import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 interface AuthProviderProps extends PropsWithChildren {
@@ -28,14 +26,12 @@ export const AuthProvider = ({
   githubEnabled,
 }: AuthProviderProps) => {
   const router = useRouter();
-  const t = useTranslations("auth");
+  const t = useTranslations("private.auth");
 
   return (
     <AuthUIProvider
       authClient={authClient}
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       navigate={router.push}
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       replace={router.replace}
       onSessionChange={() => router.refresh()}
       LinkComponent={Link}

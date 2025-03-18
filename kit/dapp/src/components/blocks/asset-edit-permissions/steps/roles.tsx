@@ -6,12 +6,14 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 interface RolesProps {
-  adminsCount: number;
+  disableEditAdminRole: boolean;
 }
 
-export function Roles({ adminsCount }: RolesProps) {
+export function Roles({ disableEditAdminRole }: RolesProps) {
   const { control } = useFormContext<UpdateRolesInput>();
-  const t = useTranslations("admin.asset-permissions-tab.edit-form.roles");
+  const t = useTranslations(
+    "private.assets.details.permissions.edit-form.roles"
+  );
 
   return (
     <FormStep title={t("title")} description={t("description")}>
@@ -25,7 +27,7 @@ export function Roles({ adminsCount }: RolesProps) {
               label={role.displayName}
               description={role.description}
               disabled={
-                adminsCount === 1 &&
+                disableEditAdminRole &&
                 role.contractRole === ROLES.DEFAULT_ADMIN_ROLE.contractRole
               }
             />

@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import { getServerEnvironment } from "@/lib/config/environment";
 import { cn } from "@/lib/utils";
 import type { Viewport } from "next";
-import { NextIntlClientProvider, type Locale } from "next-intl";
+import { type Locale, NextIntlClientProvider } from "next-intl";
 import { Figtree, Roboto_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -21,6 +21,8 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
+
+export { metadata } from "@/lib/config/metadata";
 
 const figTree = Figtree({
   subsets: ["latin"],

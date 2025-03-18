@@ -72,6 +72,7 @@ export async function WalletDistribution({ address }: WalletDistributionProps) {
 
   // Special handling for the last bucket to include the maximum value
   if (buckets.length > 0) {
+    // Get last bucket safely
     const lastBucket = buckets[buckets.length - 1];
     const [min, max] = lastBucket.range.split("-").map(Number);
     // Recount the last bucket to include holders with exactly the maximum value

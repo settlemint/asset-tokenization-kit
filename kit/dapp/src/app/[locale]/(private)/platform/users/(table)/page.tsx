@@ -6,7 +6,7 @@ import { columns, icons } from "./_components/columns";
 
 export default async function UsersPage() {
   const users = await getUserList();
-  const t = await getTranslations("admin.users");
+  const t = await getTranslations("private.users");
 
   return (
     <>

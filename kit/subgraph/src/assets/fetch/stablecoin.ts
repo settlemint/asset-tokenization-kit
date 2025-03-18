@@ -42,6 +42,7 @@ export function fetchStableCoin(address: Address): StableCoin {
     stableCoin.paused = paused.reverted ? false : paused.value;
     stableCoin.liveness = liveness.reverted ? BigInt.zero() : liveness.value;
     stableCoin.lastCollateralUpdate = BigInt.zero();
+    stableCoin.deployedOn = BigInt.zero();
     stableCoin.save();
 
     account.asAsset = stableCoin.id;

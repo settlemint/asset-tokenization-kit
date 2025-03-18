@@ -1,6 +1,6 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph
@@ -52,6 +52,13 @@ export const BondFragment = theGraphGraphqlKit(`
         totalClaimedExact
       }
     }
+    redeemedAmount
+    faceValue
+    underlyingBalance
+    totalUnderlyingNeeded
+    totalUnderlyingNeededExact
+    cap
+    deployedOn
   }
 `);
 
@@ -82,6 +89,7 @@ export const BondFragmentSchema = z.object({
   maturityDate: z.bigInt().optional(),
   isMatured: z.boolean(),
   hasSufficientUnderlying: z.boolean(),
+<<<<<<< HEAD
   yieldSchedule: z.object({
     id: z.string(),
     token: z.object({
@@ -109,6 +117,15 @@ export const BondFragmentSchema = z.object({
       })
     ),
   }).nullable(),
+=======
+  redeemedAmount: z.bigInt(),
+  faceValue: z.bigInt(),
+  underlyingBalance: z.bigInt(),
+  totalUnderlyingNeeded: z.bigDecimal(),
+  totalUnderlyingNeededExact: z.bigInt(),
+  cap: z.bigInt(),
+  deployedOn: z.bigInt(),
+>>>>>>> origin/main
 });
 
 /**
@@ -126,6 +143,7 @@ export const OffchainBondFragment = hasuraGraphql(`
   fragment OffchainBondFragment on asset {
     id
     isin
+    value_in_base_currency
   }
 `);
 
@@ -136,6 +154,7 @@ export const OffchainBondFragment = hasuraGraphql(`
 export const OffchainBondFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
+  value_in_base_currency: z.fiatCurrencyAmount(),
 });
 
 /**

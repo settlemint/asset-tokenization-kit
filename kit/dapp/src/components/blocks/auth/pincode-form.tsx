@@ -34,7 +34,7 @@ interface PincodeFormProps {
 }
 
 export function PincodeForm({ onSubmit }: PincodeFormProps) {
-  const t = useTranslations("auth.pincode-form");
+  const t = useTranslations("private.auth.pincode-form");
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),

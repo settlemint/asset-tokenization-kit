@@ -1,11 +1,14 @@
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { formatNumber } from "@/lib/utils/number";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
 import { type Address, getAddress } from "viem";
 import {
-    AssetBalanceFragment,
-    AssetBalanceFragmentSchema,
+  AssetBalanceFragment,
+  AssetBalanceFragmentSchema,
 } from "./asset-balance-fragment";
 
 /**

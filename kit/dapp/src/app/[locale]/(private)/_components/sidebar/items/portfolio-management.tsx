@@ -1,6 +1,7 @@
 import { NavMain } from "@/components/layout/nav-main";
 import { ActivityIcon } from "@/components/ui/animated-icons/activity";
 import { ChartScatterIcon } from "@/components/ui/animated-icons/chart-scatter";
+import { ConnectIcon } from "@/components/ui/animated-icons/connect";
 import { SettingsGearIcon } from "@/components/ui/animated-icons/settings-gear";
 import { UsersIcon } from "@/components/ui/animated-icons/users";
 import { WalletIcon } from "@/components/ui/animated-icons/wallet";
@@ -31,6 +32,11 @@ export async function PortfolioManagement() {
               path: "/portfolio/my-activity",
             },
             {
+              label: "My Contacts",
+              icon: <UsersIcon className="h-4 w-4" />,
+              path: "/portfolio/my-contacts",
+            },
+            {
               label: "Settings",
               icon: <SettingsGearIcon className="size-4" />,
               path: "/portfolio/settings",
@@ -39,6 +45,11 @@ export async function PortfolioManagement() {
                   label: "Profile",
                   icon: <UsersIcon className="size-4" />,
                   path: "/portfolio/settings/profile",
+                },
+                {
+                  label: "API Keys",
+                  icon: <ConnectIcon className="size-4" />,
+                  path: "/portfolio/settings/api-keys",
                 },
               ],
             },

@@ -1,5 +1,5 @@
 import { isAddressAvailable } from "@/lib/queries/fund-factory/address-available";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating fund creation inputs
@@ -33,6 +33,7 @@ export const CreateFundSchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "fund.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateFundInput = ZodInfer<typeof CreateFundSchema>;

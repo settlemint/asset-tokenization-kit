@@ -134,7 +134,7 @@ function ChartTooltipContent({
     }
 
     const [item] = payload;
-    const key = `${labelKey || item.dataKey || item.name || "value"}`;
+    const key = `${labelKey || item?.dataKey || item?.name || "value"}`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === "string"
@@ -232,8 +232,8 @@ function ChartTooltipContent({
                         {itemConfig?.label || item.name}
                       </span>
                     </div>
-                    {item.value !== undefined && (
-                      <span className="text-foreground ml-4 font-mono font-medium tabular-nums">
+                    {item.value && (
+                      <span className="text-foreground font-mono font-medium tabular-nums">
                         {item.value.toLocaleString()}
                       </span>
                     )}
@@ -290,7 +290,7 @@ function ChartLegendContent({
               <itemConfig.icon />
             ) : (
               <div
-                className="size-2 shrink-0 rounded-[2px]"
+                className="h-2 w-2 shrink-0 rounded-[2px]"
                 style={{
                   backgroundColor: item.color,
                 }}

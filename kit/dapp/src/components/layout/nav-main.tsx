@@ -23,7 +23,13 @@ import { useState } from "react";
 
 export type NavItem = {
   id?: string;
-  assetType?: "bond" | "cryptocurrency" | "equity" | "fund" | "stablecoin";
+  assetType?:
+    | "bond"
+    | "cryptocurrency"
+    | "equity"
+    | "fund"
+    | "stablecoin"
+    | "tokenizeddeposit";
   label: ReactNode;
   path: string;
   icon?: ReactNode;
@@ -62,7 +68,7 @@ function NavItemComponent({
         >
           <Link href={item.path} className="flex w-full items-center">
             {Icon ?? null}
-            <span className="truncate flex-1 min-w-0">{item.label}</span>
+            <span className="min-w-0 flex-1 truncate">{item.label}</span>
             {item.badge && (
               <span className="ml-2 flex-shrink-0 text-muted-foreground text-xs">
                 {item.badge}
@@ -92,13 +98,13 @@ function NavItemComponent({
             className={isGroupActive ? "font-bold" : undefined}
           >
             {Icon ?? null}
-            <span className="truncate flex-1 min-w-0">{item.label}</span>
+            <span className="min-w-0 flex-1 truncate">{item.label}</span>
             {item.badge && (
               <span className="ml-2 flex-shrink-0 text-muted-foreground text-xs">
                 {item.badge}
               </span>
             )}
-            <ChevronRight className="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 ml-2 flex-shrink-0" />
+            <ChevronRight className="ml-2 size-4 flex-shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -119,7 +125,7 @@ function NavItemComponent({
                       className="flex w-full items-center"
                     >
                       {SubIcon ?? null}
-                      <span className="truncate flex-1 min-w-0">
+                      <span className="min-w-0 flex-1 truncate">
                         {subItem.label}
                       </span>
                       {subItem.badge && (

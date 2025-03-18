@@ -2,9 +2,9 @@
 import { AreaChartComponent } from "@/components/blocks/charts/area-chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
+  type TimeSeriesOptions,
   formatChartDate,
   formatInterval,
-  type TimeSeriesOptions,
 } from "@/lib/charts";
 import { useTranslations } from "next-intl";
 
@@ -81,5 +81,7 @@ function getTickFormatter(
       return (tick: string) => formatChartDate(new Date(tick), "month");
     case "hour":
       return (tick: string) => formatChartDate(new Date(tick), "hour");
+    default:
+      throw new Error("Invalid granularity");
   }
 }

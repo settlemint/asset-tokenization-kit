@@ -19,7 +19,7 @@ interface EditUserDropdownProps {
 }
 
 export function EditUserDropdown({ user }: EditUserDropdownProps) {
-  const t = useTranslations("admin.users.detail");
+  const t = useTranslations("private.users.detail");
 
   const menuItems = [
     {
@@ -46,12 +46,12 @@ export function EditUserDropdown({ user }: EditUserDropdownProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="bg-accent text-accent-foreground hover:bg-accent-hover shadow-inset">
+          <Button className="bg-accent text-accent-foreground shadow-inset hover:bg-accent-hover">
             {t("edit_user")}
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded p-0 shadow-dropdown">
+        <DropdownMenuContent className="relative right-4 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded shadow-dropdown">
           {menuItems.map((item) => (
             <DropdownMenuItem
               key={item.id}

@@ -16,6 +16,7 @@ export function handleCryptoCurrencyCreated(
   const creator = fetchAccount(event.params.creator);
   const asset = fetchCryptoCurrency(event.params.token);
   asset.creator = creator.id;
+  asset.deployedOn = event.block.timestamp;
   asset.save();
 
   const assetCount = fetchAssetCount(AssetType.cryptocurrency);

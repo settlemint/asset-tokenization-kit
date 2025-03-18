@@ -20,7 +20,7 @@ import {
   User2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Suspense, type ComponentType } from "react";
+import { type ComponentType, Suspense } from "react";
 import { BanUserAction } from "./actions/ban-user-action";
 import { ChangeRoleAction } from "./actions/change-role-action";
 import { UpdateKycStatusAction } from "./actions/update-kyc-status-action";
@@ -41,7 +41,7 @@ export const icons: Record<string, ComponentType<{ className?: string }>> = {
 export function columns() {
   // https://next-intl.dev/docs/environments/server-client-components#shared-components
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const t = useTranslations("admin.users");
+  const t = useTranslations("private.users");
 
   return [
     columnHelper.accessor("name", {
@@ -93,7 +93,13 @@ export function columns() {
         return (
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{t(`roles.${role as "admin" | "issuer" | "user"}`)}</span>
+            <span>
+              {role === "admin"
+                ? t("roles.admin")
+                : role === "issuer"
+                  ? t("roles.issuer")
+                  : t("roles.user")}
+            </span>
           </>
         );
       },
@@ -122,7 +128,7 @@ export function columns() {
         },
       }
     ),
-    columnHelper.accessor("kyc_verified", {
+    columnHelper.accessor("kyc_verified_at", {
       header: t("columns.kyc_status"),
       cell: ({ getValue }) => {
         const verified = getValue();
@@ -131,13 +137,17 @@ export function columns() {
         return (
           <>
             {Icon && <Icon className="size-4 text-muted-foreground" />}
-            <span>{t(`kyc_status.${status}`)}</span>
+            <span>
+              {status === "verified"
+                ? t("status.verified")
+                : t("status.not_verified")}
+            </span>
           </>
         );
       },
       enableColumnFilter: false,
     }),
-    columnHelper.accessor("lastActivity", {
+    columnHelper.accessor("last_activity_at", {
       header: t("columns.last_activity"),
       cell: ({ getValue }) => {
         const lastActivity = getValue();

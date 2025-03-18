@@ -66,7 +66,6 @@ export function Form<
 }: FormProps<ServerError, S, BAS, CVE, CBAVE, Data, FormContext>) {
   const [currentStep, setCurrentStep] = useState(0);
   const t = useTranslations("transactions");
-  const tError = useTranslations("error");
   const totalSteps = Array.isArray(children) ? children.length : 1;
   const [showFormSecurityConfirmation, setShowFormSecurityConfirmation] =
     useState(false);
@@ -82,11 +81,13 @@ export function Form<
       actionProps: {
         onSuccess: ({ data }) => {
           const hashes = z.hashes().parse(data);
-          toast.promise(waitForTransactions(hashes), {
-            loading: toastMessages?.loading || t("sending"),
-            success: toastMessages?.success || t("success"),
-            error: (error: Error) => `Failed to submit: ${error.message}`,
-          });
+          if (secureForm) {
+            toast.promise(waitForTransactions(hashes), {
+              loading: toastMessages?.loading || t("sending"),
+              success: toastMessages?.success || t("success"),
+              error: (error: Error) => `Failed to submit: ${error.message}`,
+            });
+          }
           resetFormAndAction();
           onOpenChange?.(false);
         },
@@ -166,21 +167,21 @@ export function Form<
   const hasError = Object.keys(form.formState.errors).length > 0;
   const formatError = (key: string, errorMessage?: string, type?: string) => {
     const error = errorMessage ?? "unknown-error";
-    const translatedErrorMessage = tError.has(error as never)
-      ? tError(error as never)
+    const translatedErrorMessage = t.has(error as never)
+      ? t(error as never)
       : error;
     const errorKey = key && type !== "custom" ? `${key}: ` : "";
 
     return `${errorKey}${translatedErrorMessage}`;
   };
   return (
-    <div className="space-y-6 h-full">
-      <div className="container p-6 flex flex-col h-full">
+    <div className="h-full space-y-6">
+      <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
             onSubmit={handleSubmitWithAction}
             noValidate
-            className="flex flex-col flex-1"
+            className="flex flex-1 flex-col"
           >
             {totalSteps > 1 && (
               <FormProgress currentStep={currentStep} totalSteps={totalSteps} />
@@ -189,9 +190,9 @@ export function Form<
               {isLastStep && hasError && (
                 <Alert
                   variant="destructive"
-                  className="text-destructive border-destructive mb-4"
+                  className="mb-4 border-destructive text-destructive"
                 >
-                  <AlertTitle>{tError("validation-errors")}</AlertTitle>
+                  <AlertTitle>{t("validation-errors")}</AlertTitle>
                   <AlertDescription className="whitespace-pre-wrap">
                     {Object.entries(form.formState.errors)
                       .map(([key, error]) => {

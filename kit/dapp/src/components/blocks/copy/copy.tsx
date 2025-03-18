@@ -63,7 +63,7 @@ export function CopyToClipboard({
       <Button
         variant="ghost"
         size="icon"
-        className="size-4 hover:bg-theme-accent-background ml-1 cursor-pointer"
+        className="ml-1 size-4 cursor-pointer hover:bg-theme-accent-background"
         onClick={handleCopy}
         title="Copy to clipboard"
       >

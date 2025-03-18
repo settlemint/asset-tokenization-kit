@@ -1,8 +1,8 @@
 import {
-  getActiveRoles,
-  getRoleDisplayName,
   type Role,
   type RolesInput,
+  getActiveRoles,
+  getRoleDisplayName,
 } from "@/lib/config/roles";
 import type { ReactElement } from "react";
 

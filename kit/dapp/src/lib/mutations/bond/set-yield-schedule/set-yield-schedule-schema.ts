@@ -1,5 +1,5 @@
 import { IntervalPeriod } from "@/lib/utils/yield";
-import { z } from "@/lib/utils/zod";
+import { z, type ZodInfer } from "@/lib/utils/zod";
 
 export const SetYieldScheduleSchema = z.object({
   address: z.address(),
@@ -11,3 +11,5 @@ export const SetYieldScheduleSchema = z.object({
   interval: z.nativeEnum(IntervalPeriod),
   pincode: z.pincode(),
 });
+
+export type SetYieldScheduleInput = ZodInfer<typeof SetYieldScheduleSchema>;

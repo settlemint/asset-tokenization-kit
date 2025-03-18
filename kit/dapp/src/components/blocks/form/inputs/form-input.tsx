@@ -12,12 +12,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { ChangeEvent, ComponentPropsWithoutRef } from "react";
-import { useFormContext, type FieldValues } from "react-hook-form";
+import { type FieldValues, useFormContext } from "react-hook-form";
 import {
-  getAriaAttributes,
   type BaseFormInputProps,
   type WithPostfixProps,
   type WithTextOnlyProps,
+  getAriaAttributes,
 } from "./types";
 
 const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;

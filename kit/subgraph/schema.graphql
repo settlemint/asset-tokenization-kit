@@ -21,6 +21,7 @@ interface Asset {
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
+  deployedOn: BigInt!
 }
 
 type Factory @entity {
@@ -48,6 +49,7 @@ type Bond implements Asset @entity {
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: Int!
+  deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -83,6 +85,7 @@ type Equity implements Asset @entity {
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: Int!
+  deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -108,6 +111,7 @@ type Fund implements Asset @entity {
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: Int!
+  deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -135,6 +139,7 @@ type StableCoin implements Asset @entity {
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: Int!
+  deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
@@ -165,11 +170,44 @@ type CryptoCurrency implements Asset @entity {
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
   totalHolders: Int!
+  deployedOn: BigInt!
   # Access Control
   admins: [Account!]!
   supplyManagers: [Account!]!
   userManagers: [Account!]!
   # CryptoCurrency-Specific Fields
+}
+
+type TokenizedDeposit implements Asset @entity {
+  id: Bytes!
+  type: String!
+  asAccount: Account!
+  holders: [AssetBalance!]! @derivedFrom(field: "asset")
+  name: String!
+  symbol: String!
+  decimals: Int!
+  totalSupply: BigDecimal!
+  totalSupplyExact: BigInt!
+  lastActivity: BigInt!
+  creator: Account!
+  totalBurned: BigDecimal!
+  totalBurnedExact: BigInt!
+  totalHolders: Int!
+  deployedOn: BigInt!
+  # Access Control
+  admins: [Account!]!
+  supplyManagers: [Account!]!
+  userManagers: [Account!]!
+  # TokenizedDeposit-Specific Fields
+  paused: Boolean!
+  # Collateral Fields
+  collateral: BigDecimal!
+  collateralExact: BigInt!
+  collateralRatio: BigDecimal!
+  freeCollateral: BigDecimal!
+  freeCollateralExact: BigInt!
+  liveness: BigInt!
+  lastCollateralUpdate: BigInt!
 }
 
 # --------------------------------------------------
@@ -450,6 +488,34 @@ type UserUnblockedEvent implements AssetEvent @entity(immutable: true) {
   sender: Account!
   assetType: String!
   user: Account! # The unblocked user's address
+}
+
+"""
+Entity for allowlist events.
+Emitted when a user is allowed for token operations.
+"""
+type UserAllowedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  user: Account! # The allowed user's address
+}
+
+"""
+Entity for allowlist events.
+Emitted when a user is disallowed from token operations.
+"""
+type UserDisallowedEvent implements AssetEvent @entity(immutable: true) {
+  id: Bytes!
+  eventName: String!
+  timestamp: BigInt!
+  emitter: Asset!
+  sender: Account!
+  assetType: String!
+  user: Account! # The disallowed user's address
 }
 
 """

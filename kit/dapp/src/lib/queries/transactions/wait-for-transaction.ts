@@ -5,9 +5,9 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { z } from "@/lib/utils/zod";
 import { revalidatePath, revalidateTag } from "next/cache";
 import {
+  type Receipt,
   ReceiptFragment,
   ReceiptFragmentSchema,
-  type Receipt,
 } from "./transaction-fragment";
 
 /**
@@ -110,7 +110,7 @@ export async function waitForTransactions(
 
   const response = WaitForTransactionsResponseSchema.parse({
     receipts: results,
-    lastTransaction: results.at(-1)!,
+    lastTransaction: results.at(-1),
   });
 
   await waitForIndexing(response.lastTransaction.blockNumber);

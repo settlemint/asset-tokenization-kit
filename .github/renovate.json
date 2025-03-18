@@ -1,44 +1,36 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":automergeMinor",
-    ":automergePr",
-    ":automergeRequireAllStatusChecks",
-    ":gitSignOff",
-    ":pinAllExceptPeerDependencies",
-    ":semanticCommits",
-    ":semanticCommitTypeAll(chore)",
-    ":enableVulnerabilityAlerts",
-    ":combinePatchMinorReleases",
-    ":prConcurrentLimitNone",
-    ":prHourlyLimitNone",
-    ":widenPeerDependencies",
-    ":updateNotScheduled",
-    "security:openssf-scorecard",
-    "schedule:nonOfficeHours"
-  ],
-  "labels": ["dependencies"],
-  "rebaseWhen": "conflicted",
-  "customManagers": [
-    {
-      "customType": "regex",
-      "datasourceTemplate": "npm",
-      "depNameTemplate": "@biomejs/biome",
-      "fileMatch": ["(^|/)biome.jsonc?$"],
-      "matchStrings": ["\"https://biomejs.dev/schemas/(?<currentValue>[^\"]+)/schema.json\""]
-    }
-  ],
-  "packageRules": [
-    {
-      "groupName": "SettleMint SDK",
-      "groupSlug": "settlemint",
-      "matchPackageNames": ["/^@settlemint//"]
-    }
-  ],
-  "hostRules": [
-    {
-      "timeout": 3000000
-    }
-  ]
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:recommended",
+		":automergeMinor",
+		":automergePr",
+		":automergeRequireAllStatusChecks",
+		":gitSignOff",
+		":pinAllExceptPeerDependencies",
+		":semanticCommits",
+		":semanticCommitTypeAll(chore)",
+		":enableVulnerabilityAlerts",
+		":combinePatchMinorReleases",
+		":prConcurrentLimitNone",
+		":prHourlyLimitNone",
+		":widenPeerDependencies",
+		":updateNotScheduled",
+		"security:openssf-scorecard",
+		"schedule:nonOfficeHours",
+		"customManagers:biomeVersions"
+	],
+	"labels": ["dependencies"],
+	"rebaseWhen": "conflicted",
+	"packageRules": [
+		{
+			"groupName": "SettleMint SDK",
+			"groupSlug": "settlemint",
+			"matchPackageNames": ["/^@settlemint//"]
+		}
+	],
+	"hostRules": [
+		{
+			"timeout": 3000000
+		}
+	]
 }

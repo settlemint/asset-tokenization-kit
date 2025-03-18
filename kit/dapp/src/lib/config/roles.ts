@@ -1,5 +1,5 @@
 import { type Hex, keccak256, stringToBytes } from "viem";
-import { z, type ZodInfer } from "../utils/zod";
+import { type ZodInfer, z } from "../utils/zod";
 
 /**
  * Role configuration for the access control system.

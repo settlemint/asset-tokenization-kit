@@ -29,9 +29,9 @@ import type { FieldValues } from "react-hook-form";
 import type { Address } from "viem";
 import { EvmAddress } from "../../evm-address/evm-address";
 import {
-  getAriaAttributes,
   type BaseFormInputProps,
   type WithPlaceholderProps,
+  getAriaAttributes,
 } from "./types";
 
 type FormSearchSelectProps<T extends FieldValues> = BaseFormInputProps<T> &
@@ -136,7 +136,7 @@ function FormUsersList({
   value: string;
   role?: "admin" | "issuer" | "user";
 }) {
-  const search = (useCommandState((state) => state.search) || "") as string;
+  const search = useCommandState((state) => state.search) || "";
   const debounced = useDebounce<string>(search, 250);
   const [users, setUsers] = useState<Awaited<ReturnType<typeof getUserSearch>>>(
     []

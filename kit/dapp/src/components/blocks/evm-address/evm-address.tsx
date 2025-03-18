@@ -16,9 +16,9 @@ import type { User } from "@/lib/queries/user/user-fragment";
 import { getUserSearch } from "@/lib/queries/user/user-search";
 import { shortHex } from "@/lib/utils/hex";
 import {
-  cache,
   type FC,
   type PropsWithChildren,
+  cache,
   useEffect,
   useState,
 } from "react";

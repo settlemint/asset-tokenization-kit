@@ -31,7 +31,7 @@ export function PercentageProgressBar({
           <ProgressPrimitive.Indicator
             data-slot="progress-indicator"
             className={cn(
-              "bg-primary h-full w-full flex-1 transition-all",
+              "h-full w-full flex-1 bg-primary transition-all",
               percentageNumber === 0
                 ? "bg-primary"
                 : percentageNumber > 90
@@ -46,7 +46,7 @@ export function PercentageProgressBar({
           />
         </ProgressPrimitive.Root>
       </div>
-      <div className="text-right mr-4">
+      <div className="mr-4 text-right">
         {formatNumber(percentage, {
           percentage: true,
         })}

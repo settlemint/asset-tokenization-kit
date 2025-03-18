@@ -1,14 +1,17 @@
 import {
-    AccountFragment,
-    AccountFragmentSchema,
+  AccountFragment,
+  AccountFragmentSchema,
 } from "@/lib/queries/accounts/accounts-fragment";
 import { hasuraClient, hasuraGraphql } from "@/lib/settlemint/hasura";
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { getAddress, type Address } from "viem";
-import { UserFragment, UserFragmentSchema, type User } from "./user-fragment";
+import { type Address, getAddress } from "viem";
+import { type User, UserFragment, UserFragmentSchema } from "./user-fragment";
 
 /**
  * GraphQL query to fetch a single user by ID from Hasura

@@ -131,11 +131,11 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
   const usersWithRoles = new Map<string, PermissionWithRoles>();
 
   // Process all role configurations
-  roleConfigs.forEach(({ permissions, role }) => {
+  for (const { permissions, role } of roleConfigs) {
     const validatedPermissions = permissions.map((permission) =>
       safeParseWithLogging(PermissionFragmentSchema, permission, "permission")
     );
-    validatedPermissions.forEach((validatedPermission) => {
+    for (const validatedPermission of validatedPermissions) {
       const userId = validatedPermission.id;
       const existing = usersWithRoles.get(userId);
 
@@ -150,8 +150,8 @@ export const getAssetDetail = cache(async ({ address }: AssetDetailProps) => {
           assetName: validatedAsset.name,
         });
       }
-    });
-  });
+    }
+  }
 
   return {
     ...validatedAsset,

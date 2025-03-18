@@ -7,12 +7,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 interface FormSheetProps extends PropsWithChildren {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string | React.ReactNode;
+  title: string | ReactNode;
   description: string;
   triggerLabel?: string;
   asButton?: boolean;
@@ -39,7 +39,7 @@ export function FormSheet({
           <SheetTitle>{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <div className="overflow-auto h-full">{children}</div>
+        <div className="h-full overflow-auto">{children}</div>
       </SheetContent>
     </Sheet>
   );

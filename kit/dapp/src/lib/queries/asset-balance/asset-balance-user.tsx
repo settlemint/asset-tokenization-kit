@@ -1,8 +1,8 @@
 import { fetchAllTheGraphPages } from "@/lib/pagination";
 import {
+  type AssetBalance,
   AssetBalanceFragment,
   AssetBalanceFragmentSchema,
-  type AssetBalance,
 } from "@/lib/queries/asset-balance/asset-balance-fragment";
 import {
   theGraphClientKit,
@@ -11,7 +11,7 @@ import {
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import BigNumber from "bignumber.js";
 import { cache } from "react";
-import { getAddress, type Address } from "viem";
+import { type Address, getAddress } from "viem";
 
 const UserAssetsBalance = theGraphGraphqlKit(
   `

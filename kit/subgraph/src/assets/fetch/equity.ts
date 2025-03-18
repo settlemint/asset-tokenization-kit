@@ -38,6 +38,7 @@ export function fetchEquity(address: Address): Equity {
     equity.equityClass = equityClass.reverted ? "" : equityClass.value;
     equity.equityCategory = equityCategory.reverted ? "" : equityCategory.value;
     equity.paused = paused.reverted ? false : paused.value;
+    equity.deployedOn = BigInt.zero();
     equity.save();
 
     account.asAsset = equity.id;

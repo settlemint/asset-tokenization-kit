@@ -1,4 +1,4 @@
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating grant role mutation inputs
@@ -13,6 +13,7 @@ export const GrantRoleSchema = z.object({
   roles: z.roles(),
   userAddress: z.address(),
   pincode: z.pincode(),
+  assettype: z.assetType(),
 });
 
 export type GrantRoleInput = ZodInfer<typeof GrantRoleSchema>;

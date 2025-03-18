@@ -59,7 +59,7 @@ export function formatNumber(
   }).format(numberValue);
 
   // Check if the number is very small (less than the smallest displayable value based on decimals)
-  const minimumValue = new BigNumber(1).div(Math.pow(10, decimals));
+  const minimumValue = new BigNumber(1).div(10 ** decimals);
   if (
     value.isGreaterThan(0) &&
     value.isLessThan(percentage ? minimumValue : minimumValue)

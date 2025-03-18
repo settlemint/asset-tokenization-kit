@@ -16,7 +16,7 @@ export function Summary({
   currentRoles: Role[];
 }) {
   const t = useTranslations(
-    "admin.asset-permissions-tab.revoke-all-form.summary"
+    "private.assets.details.permissions.revoke-all-form.summary"
   );
 
   return (

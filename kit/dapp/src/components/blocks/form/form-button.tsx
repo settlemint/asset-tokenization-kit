@@ -82,7 +82,7 @@ export function FormButton({
       );
     }
     if (isSecurityDialogOpen) {
-      return <Loader2 size={16} className="animate-spin min-w-20" />;
+      return <Loader2 size={16} className="min-w-20 animate-spin" />;
     }
     return isLastStep ? finalLabels.label : t("next");
   };

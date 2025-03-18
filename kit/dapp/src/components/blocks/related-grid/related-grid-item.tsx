@@ -18,7 +18,7 @@ export function RelatedGridItem({
   children,
 }: RelatedGridItemProps) {
   return (
-    <Card className="linear-gradient-related flex flex-col h-full">
+    <Card className="linear-gradient-related flex h-full flex-col">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

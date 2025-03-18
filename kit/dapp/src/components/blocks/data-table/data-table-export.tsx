@@ -25,7 +25,6 @@ function formatCellValue(value: unknown): string {
 
   // At this point, value can only be number, boolean, bigint, symbol, or function
   // Functions shouldn't be in table data, and we can safely stringify primitives
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   return String(value);
 }
 

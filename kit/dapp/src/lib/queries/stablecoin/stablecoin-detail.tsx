@@ -6,7 +6,7 @@ import {
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { addSeconds } from "date-fns";
 import { cache } from "react";
-import { getAddress, type Address } from "viem";
+import { type Address, getAddress } from "viem";
 import {
   OffchainStableCoinFragment,
   OffchainStableCoinFragmentSchema,

@@ -2,7 +2,6 @@
   "recommendations": [
     "oven.bun-vscode",
     "editorconfig.editorconfig",
-    "dbaeumer.vscode-eslint",
     "graphql.vscode-graphql-syntax",
     "nhoizey.gremlins",
     "yoavbls.pretty-ts-errors",
@@ -10,7 +9,8 @@
     "shardulm94.trailing-spaces",
     "nomicfoundation.hardhat-solidity",
     "bruceyuhb.hsl-preview",
+    "nize.oklch-preview",
     "esbenp.prettier-vscode",
-    "nize.oklch-preview"
+    "dbaeumer.vscode-eslint"
   ]
 }

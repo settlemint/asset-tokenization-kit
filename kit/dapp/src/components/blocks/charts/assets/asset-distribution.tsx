@@ -9,8 +9,7 @@ interface AssetDistributionProps {
 }
 
 export async function AssetDistribution({ address }: AssetDistributionProps) {
-  const tAssets = await getTranslations("components.charts.assets");
-  const tAssetTypes = await getTranslations("portfolio.asset-types");
+  const t = await getTranslations("components.charts.assets");
   const data = await getUserAssetsBalance(address);
   const chartData = data.distribution.map((item) => {
     return {
@@ -25,31 +24,35 @@ export async function AssetDistribution({ address }: AssetDistributionProps) {
 
   const config: Record<AssetType, { label: string; color: string }> = {
     bond: {
-      label: tAssetTypes("bond"),
+      label: t("bond"),
       color: getAssetColor("bond", "color"),
     },
     equity: {
-      label: tAssetTypes("equity"),
+      label: t("equity"),
       color: getAssetColor("equity", "color"),
     },
     fund: {
-      label: tAssetTypes("fund"),
+      label: t("fund"),
       color: getAssetColor("fund", "color"),
     },
     stablecoin: {
-      label: tAssetTypes("stablecoin"),
+      label: t("stablecoin"),
       color: getAssetColor("stablecoin", "color"),
     },
     cryptocurrency: {
-      label: tAssetTypes("cryptocurrency"),
+      label: t("cryptocurrency"),
       color: getAssetColor("cryptocurrency", "color"),
+    },
+    tokenizeddeposit: {
+      label: t("tokenizeddeposit"),
+      color: getAssetColor("tokenizeddeposit", "color"),
     },
   };
 
   return (
     <PieChartComponent
-      description={tAssets("asset-distribution-description")}
-      title={tAssets("asset-distribution")}
+      description={t("asset-distribution-description")}
+      title={t("asset-distribution")}
       data={chartData}
       dataKey="percentage"
       nameKey="assetType"

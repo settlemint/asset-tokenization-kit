@@ -12,7 +12,7 @@ export default async function UserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const t = await getTranslations("admin.users.detail.charts");
+  const t = await getTranslations("private.users.detail.charts");
   const user = await getUserDetail({ id });
   const oneMonthAgo = startOfDay(subMonths(new Date(), 1));
   const oneYearAgo = startOfDay(subYears(new Date(), 1));
@@ -30,7 +30,7 @@ export default async function UserDetailPage({
   return (
     <>
       <DetailsGrid id={id} />
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 divide-x-0 divide-y lg:divide-x lg:divide-y-0">
+      <div className="mt-8 grid grid-cols-1 gap-4 divide-x-0 divide-y md:grid-cols-2 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
         <AssetDistribution address={user.wallet} />
         <TransactionsHistory
           title={t("transaction-history-last-month.title")}

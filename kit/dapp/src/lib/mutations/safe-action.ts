@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth/auth";
 import type { User } from "better-auth";
 import {
-  createSafeActionClient,
   type ValidationErrors,
+  createSafeActionClient,
 } from "next-safe-action";
 import { headers } from "next/headers";
 import { unauthorized } from "next/navigation";
@@ -30,7 +30,7 @@ export const action = createSafeActionClient({
   throwValidationErrors: true,
   defaultValidationErrorsShape: "formatted",
   handleServerError: (error: Error, { clientInput, metadata }) => {
-    console.error("\n" + "=".repeat(80));
+    console.error(`\n${"=".repeat(80)}`);
     console.error("🚨 Server Action Error");
     console.error("=".repeat(80));
 
@@ -46,7 +46,7 @@ export const action = createSafeActionClient({
     console.error("\n🔍 Validation Info:");
     consoleErrorValidationErrors(error);
 
-    console.error("\n" + "=".repeat(80) + "\n");
+    console.error(`\n${"=".repeat(80)}\n`);
 
     return getErrorMessage(error);
   },
@@ -54,21 +54,22 @@ export const action = createSafeActionClient({
   .use(async ({ next, clientInput, metadata }) => {
     const result = await next({ ctx: undefined });
 
-    console.log("\n" + "=".repeat(80));
-    console.log("🔍 Server Action");
-    console.log("=".repeat(80));
+    if (process.env.NODE_ENV === "development") {
+      console.log(`\n${"=".repeat(80)}`);
+      console.log("🔍 Server Action");
+      console.log("=".repeat(80));
 
-    console.log("\n📥 Input Data:");
-    console.log(redactSensitiveFields(clientInput));
+      console.log("\n📥 Input Data:");
+      console.log(redactSensitiveFields(clientInput));
 
-    console.log("\n🔍 Metadata:");
-    console.log(redactSensitiveFields(metadata));
+      console.log("\n🔍 Metadata:");
+      console.log(redactSensitiveFields(metadata));
 
-    console.log("\n📤 Output:");
-    console.log(redactSensitiveFields(result.data));
+      console.log("\n📤 Output:");
+      console.log(redactSensitiveFields(result.data));
 
-    console.log("\n" + "=".repeat(80) + "\n");
-
+      console.log(`\n${"=".repeat(80)}\n`);
+    }
     return result;
   })
   .use(async ({ next }) => {
@@ -107,7 +108,7 @@ function getErrorMessage(error: Error): string {
 }
 
 const REVERT_REGEX =
-  /^The\s+contract\s+function\s+\".*?\"\s+reverted\.\s+Error:\s+(.*?)\(/i;
+  /^The\s+contract\s+function\s+".*?"\s+reverted\.\s+Error:\s+(.*?)\(/i;
 
 function getRevertReason(error: Error): string | undefined {
   const match = error.message.replace(/\n/g, " ").match(REVERT_REGEX);

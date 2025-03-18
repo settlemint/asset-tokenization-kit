@@ -1,5 +1,5 @@
 import { isAddressAvailable } from "@/lib/queries/equity-factory/address-available";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * Zod schema for validating equity creation inputs
@@ -23,6 +23,7 @@ export const CreateEquitySchema = z.object({
   predictedAddress: z.address().refine(isAddressAvailable, {
     message: "equity.duplicate",
   }),
+  valueInBaseCurrency: z.fiatCurrencyAmount(),
 });
 
 export type CreateEquityInput = ZodInfer<typeof CreateEquitySchema>;

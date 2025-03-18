@@ -47,7 +47,7 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
   if (!balances || balances.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-4 text-center">
-        <p className="text-sm text-muted-foreground">No assets found</p>
+        <p className="text-muted-foreground text-sm">No assets found</p>
       </div>
     );
   }
@@ -56,8 +56,8 @@ export function EvmAddressBalances({ address }: EvmAddressBalancesProps) {
     <div className="flex flex-col gap-1">
       {balances.map((balance, index) => (
         <div key={index} className="flex items-center justify-between">
-          <span className="text-sm font-medium">{balance.asset.symbol}</span>
-          <span className="text-sm text-muted-foreground">{balance.value}</span>
+          <span className="font-medium text-sm">{balance.asset.symbol}</span>
+          <span className="text-muted-foreground text-sm">{balance.value}</span>
         </div>
       ))}
     </div>

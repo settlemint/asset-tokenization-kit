@@ -1,4 +1,7 @@
-import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
+import {
+  theGraphClientKit,
+  theGraphGraphqlKit,
+} from "@/lib/settlemint/the-graph";
 import { sanitizeSearchTerm } from "@/lib/utils/string";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";

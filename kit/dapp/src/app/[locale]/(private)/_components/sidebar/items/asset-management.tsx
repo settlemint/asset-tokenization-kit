@@ -15,32 +15,38 @@ export async function AssetManagement() {
     {
       assetType: "bond",
       label: t("bonds"),
-      path: `/assets/bonds`,
+      path: "/assets/bond",
       icon: <AssetTypeIcon type="bond" />,
     },
     {
       assetType: "cryptocurrency",
       label: t("cryptocurrencies"),
-      path: `/assets/cryptocurrencies`,
+      path: "/assets/cryptocurrency",
       icon: <AssetTypeIcon type="cryptocurrency" />,
     },
     {
       assetType: "equity",
       label: t("equities"),
-      path: `/assets/equities`,
+      path: "/assets/equity",
       icon: <AssetTypeIcon type="equity" />,
     },
     {
       assetType: "fund",
       label: t("funds"),
-      path: `/assets/funds`,
+      path: "/assets/fund",
       icon: <AssetTypeIcon type="fund" />,
     },
     {
       assetType: "stablecoin",
       label: t("stablecoins"),
-      path: `/assets/stablecoins`,
+      path: "/assets/stablecoin",
       icon: <AssetTypeIcon type="stablecoin" />,
+    },
+    {
+      assetType: "tokenizeddeposit",
+      label: t("tokenized-deposits"),
+      path: "/assets/tokenizeddeposit",
+      icon: <AssetTypeIcon type="tokenizeddeposit" />,
     },
   ];
 

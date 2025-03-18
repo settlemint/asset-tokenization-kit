@@ -1,6 +1,6 @@
 import { hasuraGraphql } from "@/lib/settlemint/hasura";
 import { theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
-import { z, type ZodInfer } from "@/lib/utils/zod";
+import { type ZodInfer, z } from "@/lib/utils/zod";
 
 /**
  * GraphQL fragment for on-chain stablecoin data from The Graph
@@ -52,8 +52,8 @@ export const FundFragmentSchema = z.object({
   totalBurnedExact: z.bigInt(),
   totalHolders: z.number(),
   paused: z.boolean(),
-  fundCategory: z.string(),
-  fundClass: z.string(),
+  fundCategory: z.fundCategory(),
+  fundClass: z.fundClass(),
   managementFeeBps: z.number(),
   creator: z.object({
     id: z.address(),
@@ -87,6 +87,7 @@ export const OffchainFundFragment = hasuraGraphql(`
   fragment OffchainFundFragment on asset {
     id
     isin
+    value_in_base_currency
   }
 `);
 
@@ -97,6 +98,7 @@ export const OffchainFundFragment = hasuraGraphql(`
 export const OffchainFundFragmentSchema = z.object({
   id: z.address(),
   isin: z.isin().nullish(),
+  value_in_base_currency: z.fiatCurrencyAmount(),
 });
 
 /**

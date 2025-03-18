@@ -148,8 +148,9 @@ export function getInterval(
     case "year":
       start = subYears(roundedNow, intervalLength);
       break;
-    default:
-      throw new Error(`Invalid interval type`);
+    default: {
+      throw new Error("Invalid interval type");
+    }
   }
 
   return { start, end: roundedNow };

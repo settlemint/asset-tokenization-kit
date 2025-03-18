@@ -2,11 +2,11 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import { useTranslations } from "next-intl";
-import { memo, useMemo } from "react";
+import { type HTMLAttributes, memo, useMemo } from "react";
 import { getGravatarUrl } from "react-awesome-gravatar";
-import { getAddress, isAddress, type Address } from "viem";
+import { type Address, getAddress, isAddress } from "viem";
 
 /**
  * Avatar component variant styles using class-variance-authority
@@ -50,7 +50,7 @@ const indicatorVariants = cva("-top-0.5 -right-0.5 absolute flex size-3", {
  * Props for the AddressAvatar component
  */
 export interface AddressAvatarProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof addressAvatarVariants> {
   /** Ethereum address to generate avatar for */
   address?: Address;
@@ -145,7 +145,7 @@ function AddressAvatarComponent({
           src={avatarSrc}
           alt={altText}
           loading="lazy"
-          className="border-1 border-muted-foreground rounded-full"
+          className="rounded-full border-1 border-muted-foreground"
         />
         <AvatarFallback>{fallbackText}</AvatarFallback>
       </Avatar>

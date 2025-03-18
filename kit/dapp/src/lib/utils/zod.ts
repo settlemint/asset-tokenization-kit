@@ -10,6 +10,7 @@ import { fromUnixTime } from "date-fns";
 import type { Address, Hash } from "viem";
 import { getAddress, isAddress, isHash } from "viem";
 import { z } from "zod";
+import { FiatCurrencies } from "../db/schema-settings";
 
 /**
  * Safely parses data with a Zod schema and provides standardized error logging
@@ -33,6 +34,126 @@ export function safeParseWithLogging<Output, Input, Def extends z.ZodTypeDef>(
     throw error; // Re-throw to maintain original behavior
   }
 }
+
+export function safeParseTransactionHash(
+  transactionHashes: (string | undefined | null)[]
+) {
+  return safeParseWithLogging(extendedZod.hashes(), transactionHashes);
+}
+
+export const equityClasses = [
+  "COMMON_EQUITY",
+  "PREFERRED_EQUITY",
+  "MARKET_CAPITALIZATION_EQUITY",
+  "GEOGRAPHIC_EQUITY",
+  "SECTOR_INDUSTRY_EQUITY",
+  "INVESTMENT_STYLE_EQUITY",
+  "INVESTMENT_STAGE_PRIVATE_EQUITY",
+  "SPECIAL_CLASSES_EQUITY",
+] as const;
+
+export const equityCategories = [
+  "COMMON_EQUITY",
+  "VOTING_COMMON_STOCK",
+  "NON_VOTING_COMMON_STOCK",
+  "CUMULATIVE_PREFERRED_STOCK",
+  "NON_CUMULATIVE_PREFERRED_STOCK",
+  "CONVERTIBLE_PREFERRED_STOCK",
+  "REDEEMABLE_PREFERRED_STOCK",
+  "LARGE_CAP_EQUITY",
+  "MID_CAP_EQUITY",
+  "SMALL_CAP_EQUITY",
+  "MICRO_CAP_EQUITY",
+  "DOMESTIC_EQUITY",
+  "INTERNATIONAL_EQUITY",
+  "GLOBAL_EQUITY",
+  "EMERGING_MARKET_EQUITY",
+  "FRONTIER_MARKET_EQUITY",
+  "TECHNOLOGY",
+  "FINANCIALS",
+  "HEALTHCARE",
+  "ENERGY",
+  "CONSUMER_STAPLES",
+  "CONSUMER_DISCRETIONARY",
+  "INDUSTRIALS",
+  "MATERIALS",
+  "UTILITIES",
+  "COMMUNICATION_SERVICES",
+  "REAL_ESTATE",
+  "GROWTH_EQUITY",
+  "VALUE_EQUITY",
+  "BLEND_EQUITY",
+  "INCOME_EQUITY",
+  "VENTURE_CAPITAL",
+  "GROWTH_CAPITAL",
+  "LEVERAGED_BUYOUTS",
+  "MEZZANINE_FINANCING",
+  "DISTRESSED_EQUITY",
+  "RESTRICTED_STOCK",
+  "ESOP_SHARES",
+  "TRACKING_STOCKS",
+  "DUAL_CLASS_SHARES",
+] as const;
+
+export const fundCategories = [
+  "ACTIVIST",
+  "COMMODITY_TRADING",
+  "CONVERTIBLE_ARBITRAGE",
+  "CREDIT",
+  "CURRENCY_FX",
+  "DISTRESSED_DEBT",
+  "EMERGING_MARKETS",
+  "EQUITY_HEDGE",
+  "EVENT_DRIVEN",
+  "FIXED_INCOME_ARBITRAGE",
+  "FUND_OF_FUNDS",
+  "GLOBAL_MACRO",
+  "HIGH_FREQUENCY_TRADING",
+  "MANAGED_FUTURES_CTA",
+  "MARKET_NEUTRAL",
+  "MERGER_ARBITRAGE",
+  "MULTI_STRATEGY",
+  "PRIVATE_EQUITY",
+  "VENTURE_CAPITAL",
+] as const;
+
+export const fundClasses = [
+  "ABSOLUTE_RETURN",
+  "CORE_BLEND",
+  "DIVERSIFIED",
+  "EARLY_STAGE",
+  "FACTOR_BASED",
+  "GROWTH_FOCUSED",
+  "INCOME_FOCUSED",
+  "LARGE_CAP",
+  "LONG_EQUITY",
+  "LONG_SHORT_EQUITY",
+  "MARKET_NEUTRAL",
+  "MID_CAP",
+  "MOMENTUM_ORIENTED",
+  "OPPORTUNISTIC",
+  "PRE_SERIES_B",
+  "QUANTITATIVE_ALGORITHMIC",
+  "REGIONAL",
+  "SECTOR_SPECIFIC",
+  "SEED_PRE_SEED",
+  "SERIES_B_LATE_STAGE",
+  "SHORT_EQUITY",
+  "SMALL_CAP",
+  "TACTICAL_ASSET_ALLOCATION",
+  "VALUE_FOCUSED",
+] as const;
+
+const assetTypes = [
+  "bond",
+  "cryptocurrency",
+  "equity",
+  "fund",
+  "stablecoin",
+  "tokenizeddeposit",
+] as const;
+
+export type AssetType = (typeof assetTypes)[number];
 
 // Create a custom extension of Zod
 // This approach avoids TypeScript errors with namespace merging
@@ -256,8 +377,55 @@ const extendedZod = {
    *
    * @returns A Zod schema that validates asset types
    */
-  assetType: () =>
-    z.enum(["bond", "cryptocurrency", "equity", "fund", "stablecoin"]),
+  assetType: () => z.enum(assetTypes),
+
+  /**
+   * Validates an equity category
+   *
+   * @returns A Zod schema that validates equity categories
+   */
+  equityCategory: () => z.enum(equityCategories),
+
+  /**
+   * Validates an equity class
+   *
+   * @returns A Zod schema that validates equity classes
+   */
+  equityClass: () => z.enum(equityClasses),
+
+  /**
+   * Validates a fund category
+   *
+   * @returns A Zod schema that validates fund categories
+   */
+  fundCategory: () => z.enum(fundCategories),
+
+  /**
+   * Validates a fund class
+   *
+   * @returns A Zod schema that validates fund classes
+   */
+  fundClass: () => z.enum(fundClasses),
+
+  /**
+   * Validates a value in base currency
+   *
+   * @returns A Zod schema that validates a value in base currency
+   */
+  fiatCurrency: () => z.enum(FiatCurrencies),
+
+  /**
+   * Validates a currency amount with proper decimal handling
+   *
+   * @returns A Zod schema that validates currency amounts
+   */
+  fiatCurrencyAmount: () =>
+    z
+      .number()
+      .or(z.string())
+      .nullish()
+      .transform((val) => (val === null || val === undefined ? 0 : val))
+      .pipe(z.coerce.number().min(0, { message: "Amount must be positive" })),
 };
 
 /**

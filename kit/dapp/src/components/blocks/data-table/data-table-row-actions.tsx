@@ -84,35 +84,37 @@ export function DataTableRowActions({
         </Button>
       )}
 
-      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+      {(actions ?? []).length > 0 && (
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
+            >
+              <MoreHorizontal />
+              <span className="sr-only">{t("open-menu")}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] dark:bg-theme-accent-background"
           >
-            <MoreHorizontal />
-            <span className="sr-only">{t("open-menu")}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-[160px] dark:bg-theme-accent-background"
-        >
-          {actions?.map((action) => (
-            <Fragment key={action.id}>
-              <DropdownMenuItem
-                onSelect={() => handleMenuItemClick(action.id)}
-                disabled={action.disabled}
-              >
-                {action.label}
-              </DropdownMenuItem>
-            </Fragment>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            {actions?.map((action) => (
+              <Fragment key={action.id}>
+                <DropdownMenuItem
+                  onSelect={() => handleMenuItemClick(action.id)}
+                  disabled={action.disabled}
+                >
+                  {action.label}
+                </DropdownMenuItem>
+              </Fragment>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {actionItem && (
-        <Fragment>
+        <span>
           {typeof actionItem.component === "function"
             ? actionItem.component({
                 open: true,
@@ -121,7 +123,7 @@ export function DataTableRowActions({
                 },
               })
             : actionItem.component}
-        </Fragment>
+        </span>
       )}
     </div>
   );

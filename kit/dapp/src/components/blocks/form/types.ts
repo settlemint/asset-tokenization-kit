@@ -9,9 +9,7 @@ export type ValidatedFields<S extends Schema> = {
 
 export type FormStepComponent<S extends Schema> = ComponentType & {
   validatedFields: readonly (keyof ZodInfer<S>)[];
-  beforeValidate?: {
-    (form: UseFormReturn<ZodInfer<S>>): Promise<unknown>;
-  }[];
+  beforeValidate?: ((form: UseFormReturn<ZodInfer<S>>) => Promise<unknown>)[];
 };
 
 export type FormStepElement<S extends Schema> = ReactElement<

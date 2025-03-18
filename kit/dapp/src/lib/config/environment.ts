@@ -29,15 +29,9 @@ const serverEnvironmentSchema = z
 
 type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 
-const clientEnvironmentSchema = z
-  .object({
-    NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
-    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  })
-  .transform((env) => ({
-    ...env,
-    APP_URL: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-  }));
+const clientEnvironmentSchema = z.object({
+  NEXT_PUBLIC_EXPLORER_URL: z.string().url().optional(),
+});
 
 type ClientEnvironment = z.infer<typeof clientEnvironmentSchema>;
 

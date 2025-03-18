@@ -37,7 +37,7 @@ export function TransactionDetailSheet({
           <SheetTitle>{t("title")}</SheetTitle>
           <SheetDescription>{t("description")}</SheetDescription>
         </SheetHeader>
-        <div className="overflow-auto mx-4 mb-6">
+        <div className="mx-4 mb-6 overflow-auto">
           <Card>
             <CardHeader>
               <CardTitle>{t("transaction-title")}</CardTitle>

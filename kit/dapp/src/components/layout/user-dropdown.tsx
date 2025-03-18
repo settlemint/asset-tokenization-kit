@@ -2,7 +2,6 @@
 
 import { AddressAvatar } from "@/components/blocks/address-avatar/address-avatar";
 import { LanguageMenuItem } from "@/components/blocks/language/language-menu-item";
-import { PasskeyModal } from "@/components/blocks/passkeys/passkey-modal";
 import { ThemeMenuItem } from "@/components/blocks/theme/theme-menu-item";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
@@ -20,7 +19,13 @@ import { cn } from "@/lib/utils";
 import { shortHex } from "@/lib/utils/hex";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Suspense, useCallback, useEffect, useRef } from "react";
+import {
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import type { Address } from "viem";
 import {
   BookTextIcon,
@@ -40,7 +45,7 @@ function TextOrSkeleton({
   skeletonClassName,
 }: {
   condition: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   skeletonClassName?: string;
 }) {
@@ -89,7 +94,7 @@ export function UserDropdown() {
     return (
       <Alert
         variant="destructive"
-        className="text-destructive border-destructive"
+        className="border-destructive text-destructive"
       >
         <AlertTitle>{error.message}</AlertTitle>
       </Alert>
@@ -166,7 +171,6 @@ export function UserDropdown() {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <PasskeyModal />
           <DropdownMenuItem
             onSelect={() => void handleSignOut()}
             onMouseEnter={() => logoutIconRef.current?.startAnimation()}
