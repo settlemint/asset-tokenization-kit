@@ -4,6 +4,7 @@ import { EvmAddress } from "@/components/blocks/evm-address/evm-address";
 import { FormStep } from "@/components/blocks/form/form-step";
 import { FormSummaryDetailCard } from "@/components/blocks/form/summary/card";
 import { FormSummaryDetailItem } from "@/components/blocks/form/summary/item";
+import { formatDate } from "@/lib/utils/date";
 import { IntervalPeriod, getIntervalLabel } from "@/lib/utils/yield";
 import { Percent } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -34,11 +35,11 @@ export function Summary({ address }: SummaryProps) {
         />
         <FormSummaryDetailItem
           label={t("summary.start-time")}
-          value={values.startTime}
+          value={formatDate(values.startTime)}
         />
         <FormSummaryDetailItem
           label={t("summary.end-time")}
-          value={values.endTime}
+          value={formatDate(values.endTime)}
         />
         <FormSummaryDetailItem
           label={t("summary.rate")}
