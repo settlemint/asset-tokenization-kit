@@ -32,24 +32,24 @@ export async function PortfolioManagement() {
               path: "/portfolio/my-activity",
             },
             {
-              label: "My Contacts",
-              icon: <UsersIcon className="h-4 w-4" />,
+              label: t("my-contacts"),
+              icon: <UsersIcon className="size-4" />,
               path: "/portfolio/my-contacts",
             },
             {
-              label: "Settings",
+              label: t("settings"),
               icon: <SettingsGearIcon className="size-4" />,
               path: "/portfolio/settings",
               subItems: [
                 {
-                  label: "Profile",
+                  label: t("profile"),
                   icon: <UsersIcon className="size-4" />,
                   path: "/portfolio/settings/profile",
                 },
                 {
-                  label: "API Keys",
+                  label: t("api"),
                   icon: <ConnectIcon className="size-4" />,
-                  path: "/portfolio/settings/api-keys",
+                  path: "/portfolio/settings/api",
                 },
               ],
             },

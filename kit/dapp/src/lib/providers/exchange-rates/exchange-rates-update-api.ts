@@ -1,3 +1,4 @@
+import { defaultErrorSchema } from "@/lib/api/default-error-schema";
 import { betterAuth, superJson } from "@/lib/utils/elysia";
 import { Elysia, t } from "elysia";
 import { updateExchangeRates } from "./exchange-rates";
@@ -39,43 +40,14 @@ export const ExchangeRateUpdateApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Update Exchange Rates",
+        summary: "Update",
         description:
           "Updates all exchange rates by fetching current data from Yahoo Finance.",
-        tags: ["Providers"],
+        tags: ["provider"],
       },
       response: {
         200: ExchangeRateUpdateResponseSchema,
-        400: t.Object({
-          error: t.String({
-            description: "Bad Request - Invalid parameters or request format",
-          }),
-          details: t.Optional(t.Array(t.String())),
-        }),
-        401: t.Object({
-          error: t.String({
-            description: "Unauthorized - Authentication is required",
-          }),
-        }),
-        403: t.Object({
-          error: t.String({
-            description:
-              "Forbidden - Insufficient permissions to access the resource",
-          }),
-        }),
-        429: t.Object({
-          error: t.String({
-            description: "Too Many Requests - Rate limit exceeded",
-          }),
-          retryAfter: t.Optional(t.Number()),
-        }),
-        500: t.Object({
-          error: t.String({
-            description:
-              "Internal Server Error - Something went wrong on the server",
-          }),
-          requestId: t.Optional(t.String()),
-        }),
+        ...defaultErrorSchema,
       },
     }
   );

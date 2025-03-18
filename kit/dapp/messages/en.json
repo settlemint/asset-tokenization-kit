@@ -125,10 +125,14 @@
         "user-management": "User management"
       },
       "portfolio-management": {
+        "api": "API",
         "dashboard": "Dashboard",
         "group-title": "My portfolio",
         "my-activity": "My activity",
-        "my-assets": "My assets"
+        "my-assets": "My assets",
+        "my-contacts": "My contacts",
+        "profile": "Profile",
+        "settings": "Settings"
       }
     }
   },
@@ -541,17 +545,27 @@
     },
     "settings": {
       "api-keys": {
+        "api-docs": "API Documentation",
         "api-key-copied": "API key copied to clipboard",
         "api-key-created-description": "Your API key has been created. Make sure to copy it now as you won't be able to see it again.",
         "api-key-save-warning": "Make sure to copy your API key now. You won't be able to see it again!",
+        "api-keys": "API Keys",
         "cancel": "Cancel",
         "close": "Close",
+        "columns": {
+          "expiresAt": "Expires at",
+          "lastRequest": "Last request",
+          "name": "Name",
+          "rateLimit": "Rate limit"
+        },
         "create": "Create",
         "create-api-key": "Create API Key",
         "create-api-key-description": "Create a new API key to access the API programmatically.",
         "create-error": "Failed to create API key",
         "created-at": "Created at",
         "creating-api-key": "Creating API key...",
+        "disabled": "Disabled",
+        "expired": "Expired",
         "expires-at": "Expires at",
         "expiry-label": "Expiry",
         "expiry-options": {
@@ -570,7 +584,7 @@
         "swagger-description": "All API requests must include your API key within the x-api-key header for authentication. This header ensures secure and authorized access to our API endpoints, allowing your applications to safely interact with our services.",
         "swagger-link-text": "Open API documentation",
         "swagger-title": "Create, view, and manage API keys to securely integrate your applications with our platform. API keys allow you to programmatically access all available features, documented clearly through our OpenAPI specification.",
-        "title": "API Keys"
+        "title": "API"
       },
       "profile": {
         "portfolio-management": "Portfolio Management",
