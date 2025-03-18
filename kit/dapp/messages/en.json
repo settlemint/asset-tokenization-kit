@@ -844,12 +844,8 @@
             }
           },
           "roles": {
-            "title": "Roles",
-            "description": "Roles are a way to manage permissions for users. They can be assigned to users to control their access to the asset.",
-            "roles-label": "Roles",
-            "role-label": "Role",
-            "role-description": "Role description",
-            "role-actions": "Role actions"
+            "title": "Select roles",
+            "description": "Choose the roles to grant to the user. At least one role must be selected."
           },
           "summary": {
             "amount-label": "Amount",
@@ -858,6 +854,7 @@
               "default": "User",
               "recipient": "Recipient"
             },
+            "roles-label": "Roles",
             "current-state-label": "Current state",
             "target-state-label": "Target state",
             "paused-label": "Paused",
