@@ -16,6 +16,7 @@ import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Address } from "viem";
+import { blockUserEnabled } from "../block-form/enabled";
 import { BlockForm } from "../block-form/form";
 import { MintForm } from "../mint-form/form";
 import { BurnForm } from "./burn-form/form";
@@ -205,7 +206,7 @@ export function ManageDropdown({
     {
       id: "block-user",
       label: t("actions.block-user"),
-      hidden: assettype !== "bond",
+      hidden: !blockUserEnabled(assettype),
       form: (
         <BlockForm
           key="block-user"

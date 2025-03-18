@@ -13,6 +13,7 @@ import type { AssetType } from "@/lib/utils/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
+import { blockUserEnabled } from "../../_components/block-form/enabled";
 import { BlockForm } from "../../_components/block-form/form";
 import { FreezeForm } from "../../_components/freeze-form/form";
 import { MintForm } from "../../_components/mint-form/form";
@@ -100,9 +101,7 @@ export function columns({ assettype }: { assettype: AssetType }) {
                     onOpenChange={onOpenChange}
                   />
                 ),
-                hidden:
-                  assettype === "cryptocurrency" ||
-                  assettype === "tokenizeddeposit",
+                hidden: !blockUserEnabled(assettype),
               },
               {
                 id: "freeze-form",
