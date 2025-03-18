@@ -11,7 +11,7 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  */
 export const FreezeSchema = z.object({
   address: z.address(),
-  user: z.address(),
+  userAddress: z.address(),
   amount: z.amount(),
   pincode: z.pincode(),
   assettype: z.assetType(),

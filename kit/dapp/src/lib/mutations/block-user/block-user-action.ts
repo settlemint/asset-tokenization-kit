@@ -51,13 +51,13 @@ export const blockUser = action
   .outputSchema(z.hashes())
   .action(
     async ({
-      parsedInput: { address, pincode, account, assettype },
+      parsedInput: { address, pincode, userAddress, assettype },
       ctx: { user },
     }) => {
       // Common parameters for all mutations
       const params = {
         address,
-        account,
+        account: userAddress,
         from: user.wallet,
         challengeResponse: await handleChallenge(user.wallet, pincode),
       };

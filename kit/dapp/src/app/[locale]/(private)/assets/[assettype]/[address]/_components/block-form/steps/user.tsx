@@ -18,13 +18,13 @@ export function User() {
           {isManualEntry ? (
             <FormInput
               control={control}
-              name="user"
+              name="userAddress"
               placeholder="0x0000000000000000000000000000000000000000"
             />
           ) : (
             <FormUsers
               control={control}
-              name="user"
+              name="userAddress"
               placeholder={t("search-user-placeholder")}
             />
           )}
@@ -45,4 +45,4 @@ export function User() {
   );
 }
 
-User.validatedFields = ["user"] as const;
+User.validatedFields = ["userAddress"] as const;

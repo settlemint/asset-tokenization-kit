@@ -95,7 +95,7 @@ export function columns() {
                   <BlockForm
                     address={row.original.asset.id}
                     assettype={row.original.asset.type}
-                    user={row.original.account.id}
+                    userAddress={row.original.account.id}
                     open={open}
                     onOpenChange={onOpenChange}
                   />

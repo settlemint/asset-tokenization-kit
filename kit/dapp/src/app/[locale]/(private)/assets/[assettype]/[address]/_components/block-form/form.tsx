@@ -16,18 +16,18 @@ interface BlockFormProps {
   assettype: AssetType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user?: Address;
+  userAddress?: Address;
 }
 
 export function BlockForm({
   address,
   assettype,
-  user,
+  userAddress,
   open,
   onOpenChange,
 }: BlockFormProps) {
   const t = useTranslations("private.assets.details.forms.form");
-  const steps = user
+  const steps = userAddress
     ? [<Summary key="summary" />]
     : [<User key="user" />, <Summary key="summary" />];
 
@@ -48,7 +48,7 @@ export function BlockForm({
         onOpenChange={onOpenChange}
         defaultValues={{
           address,
-          user,
+          userAddress,
           assettype,
         }}
       >

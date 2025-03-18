@@ -8,7 +8,7 @@ import { useFormContext } from "react-hook-form";
 export function Summary() {
   const t = useTranslations("private.assets.details.forms.summary");
   const { getValues } = useFormContext<BlockUserInput>();
-  const { user, address } = getValues();
+  const { userAddress, address } = getValues();
 
   return (
     <FormStep title={t("title.block")} description={t("description.block")}>
@@ -18,7 +18,7 @@ export function Summary() {
       />
       <FormSummaryDetailItem
         label={t("account-label.default")}
-        value={<EvmAddress address={user} />}
+        value={<EvmAddress address={userAddress} />}
       />
     </FormStep>
   );
