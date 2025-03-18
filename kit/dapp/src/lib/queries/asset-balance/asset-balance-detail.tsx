@@ -72,6 +72,7 @@ export const getAssetBalanceDetail = cache(
       ...validatedBalance,
       value: formatNumber(validatedBalance.value),
       frozen: formatNumber(validatedBalance.frozen),
+      available: validatedBalance.value - validatedBalance.frozen,
     };
   }
 );

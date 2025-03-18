@@ -18,6 +18,7 @@ interface UpdateCollateralFormProps {
   asButton?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function UpdateCollateralForm({
@@ -26,6 +27,7 @@ export function UpdateCollateralForm({
   asButton = false,
   open,
   onOpenChange,
+  disabled = false,
 }: UpdateCollateralFormProps) {
   const isExternallyControlled =
     open !== undefined && onOpenChange !== undefined;
@@ -46,6 +48,7 @@ export function UpdateCollateralForm({
       }
       description={t("description.update-collateral")}
       asButton={asButton}
+      disabled={disabled}
     >
       <Form
         action={updateCollateral}

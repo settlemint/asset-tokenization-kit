@@ -83,6 +83,7 @@ export const getStableCoinDetail = cache(
       (sum, holder) => sum + holder.valueExact,
       0n
     );
+
     const concentration =
       stableCoin.totalSupplyExact === 0n
         ? 0
