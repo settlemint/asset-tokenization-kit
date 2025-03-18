@@ -217,8 +217,8 @@ export function ManageDropdown({
   ] as const;
 
   const assetSupportsUserManagement = assettype !== "cryptocurrency";
-  
-  const canPerformUserActions = !isBlocked && !isPaused && 
+
+  const canPerformUserActions = !isBlocked && !isPaused &&
     (assetSupportsUserManagement ? userIsUserManager : userIsAdmin);
 
   const userActions = [

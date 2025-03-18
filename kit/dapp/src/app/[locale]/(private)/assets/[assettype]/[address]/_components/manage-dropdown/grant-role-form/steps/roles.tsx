@@ -12,7 +12,7 @@ export function AdminRoles() {
 
   // Filter out USER_MANAGEMENT_ROLE for cryptocurrency assets
   const roleEntries = Object.entries(ROLES) as [RoleKey, (typeof ROLES)[RoleKey]][];
-  const filteredRoles = assettype === "cryptocurrency" 
+  const filteredRoles = assettype === "cryptocurrency"
     ? roleEntries.filter(([key]) => key !== "USER_MANAGEMENT_ROLE")
     : roleEntries;
 
