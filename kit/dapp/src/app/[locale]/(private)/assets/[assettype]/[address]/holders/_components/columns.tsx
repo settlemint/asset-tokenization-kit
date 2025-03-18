@@ -12,9 +12,9 @@ import { formatNumber } from "@/lib/utils/number";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
-import { BlockForm } from "../_components/block-form/form";
-import { FreezeForm } from "../_components/freeze-form/form";
-import { MintForm } from "../_components/mint-form/form";
+import { BlockForm } from "../../_components/block-form/form";
+import { FreezeForm } from "../../_components/freeze-form/form";
+import { MintForm } from "../../_components/mint-form/form";
 
 const columnHelper =
   createColumnHelper<Awaited<ReturnType<typeof getAssetBalanceList>>[number]>();
