@@ -26,6 +26,8 @@ export const setYieldSchedule = action
   .schema(SetYieldScheduleSchema)
   .outputSchema(z.hashes())
   .action(async ({ parsedInput: { address, startTime, endTime, rate, interval, pincode }, ctx: { user } }) => {
+    console.log("setYieldSchedule", address, startTime, endTime, rate, interval, pincode);
+
     const startTimeTimestamp = formatDate(startTime, {
       type: "unixSeconds",
     });
@@ -39,7 +41,7 @@ export const setYieldSchedule = action
       token: address,
       startTime: startTimeTimestamp,
       endTime: endTimeTimestamp,
-      rate: percentageToBasisPoints(rate),
+      rate: percentageToBasisPoints(Number(rate)),
       interval: intervalToSeconds(interval),
       challengeResponse: await handleChallenge(user.wallet, pincode),
     });

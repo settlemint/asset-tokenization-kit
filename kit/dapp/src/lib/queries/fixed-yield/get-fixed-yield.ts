@@ -1,7 +1,7 @@
 import { theGraphClientKit, theGraphGraphqlKit } from "@/lib/settlemint/the-graph";
 import { safeParseWithLogging } from "@/lib/utils/zod";
 import { cache } from "react";
-import { type Address } from "viem";
+import type { Address } from "viem";
 import { FixedYieldFragment, FixedYieldFragmentSchema } from "./fixed-yield-fragment";
 
 /**
@@ -27,7 +27,7 @@ interface GetFixedYieldParams {
 
 /**
  * Fetches fixed yield schedule data for a bond
- * 
+ *
  * @param params - Object containing the bond address
  * @returns Fixed yield schedule data or null if no yield schedule exists
  */
@@ -45,4 +45,4 @@ export const getFixedYield = cache(async ({ bondAddress }: GetFixedYieldParams) 
     data.bond.yieldSchedule,
     "fixed yield"
   );
-}); 
+});
