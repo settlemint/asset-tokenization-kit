@@ -59,6 +59,7 @@ export function FormInput<T extends FieldValues>({
   ...props
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
+  const { register } = form;
   const t = useTranslations("components.form.input");
 
   return (
@@ -104,6 +105,9 @@ export function FormInput<T extends FieldValues>({
                 <Input
                   {...field}
                   {...props}
+                  {...register(field.name, {
+                    valueAsNumber: props.type === "number",
+                  })}
                   className={cn(
                     className,
                     postfix &&
