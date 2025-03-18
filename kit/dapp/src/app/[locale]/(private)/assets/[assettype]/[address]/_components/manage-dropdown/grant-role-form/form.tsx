@@ -25,21 +25,21 @@ export function GrantRoleForm({
   onOpenChange,
   assettype,
 }: GrantRoleFormProps) {
-  const t = useTranslations("private.assets.details.forms.grant-role");
+  const t = useTranslations("private.assets.details.forms.form");
 
   return (
     <FormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t("title")}
-      description={t("description")}
+      title={t("title.grant-role")}
+      description={t("description.grant-role")}
     >
       <Form
         action={grantRole}
         resolver={zodResolver(GrantRoleSchema)}
         onOpenChange={onOpenChange}
         buttonLabels={{
-          label: t("button-label"),
+          label: t("trigger-label.grant-role"),
         }}
         defaultValues={{
           address,

@@ -7,33 +7,29 @@ import { useFormContext } from "react-hook-form";
 
 interface AmountProps {
   balance: number;
-  frozen: number;
   symbol: string;
+  decimals: number;
 }
 
-export function Amount({ balance, frozen, symbol }: AmountProps) {
+export function Amount({ balance, symbol, decimals }: AmountProps) {
   const { control } = useFormContext<FreezeInput>();
-  const t = useTranslations(
-    "private.assets.details.holders.forms.freeze.amount"
-  );
+  const t = useTranslations("private.assets.details.forms.amount");
+  const maxLimit = balance;
+  const maxLimitDescription = t("max-limit.freeze", {
+    limit: formatNumber(maxLimit, { token: symbol, decimals }),
+  });
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
-      <div className="grid grid-cols-1 gap-6">
-        <FormInput
-          control={control}
-          name="amount"
-          label={t("amount-label")}
-          type="number"
-          min={1}
-          max={balance}
-          description={t("balance-description", {
-            balance: formatNumber(balance, { token: symbol }),
-            frozen: formatNumber(frozen, { token: symbol }),
-          })}
-          required
-        />
-      </div>
+    <FormStep title={t("title")} description={t("description.freeze")}>
+      <FormInput
+        control={control}
+        name="amount"
+        type="number"
+        min={1}
+        max={maxLimit}
+        description={maxLimitDescription}
+        required
+      />
     </FormStep>
   );
 }

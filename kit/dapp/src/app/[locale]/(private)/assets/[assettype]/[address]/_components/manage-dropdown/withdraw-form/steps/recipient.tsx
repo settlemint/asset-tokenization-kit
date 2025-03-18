@@ -11,25 +11,26 @@ import { useFormContext } from "react-hook-form";
 export function Recipient() {
   const { control } = useFormContext<WithdrawInput>();
   const [isManualEntry, setIsManualEntry] = useState(false);
-  const t = useTranslations("private.assets.details.forms.withdraw.recipient");
+  const t = useTranslations("private.assets.details.forms.account");
 
   return (
-    <FormStep title={t("title")} description={t("description")}>
+    <FormStep
+      title={t("title.withdraw")}
+      description={t("description.withdraw")}
+    >
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-1">
           {isManualEntry ? (
             <FormInput
               control={control}
               name="to"
-              label={t("label")}
-              placeholder={t("placeholder")}
+              placeholder={t("enter-wallet-address-placeholder")}
             />
           ) : (
             <FormUsers
               control={control}
               name="to"
-              label={t("label")}
-              placeholder={t("placeholder")}
+              placeholder={t("search-user-placeholder")}
             />
           )}
           <div className="flex justify-end">
@@ -38,7 +39,9 @@ export function Recipient() {
               onClick={() => setIsManualEntry(!isManualEntry)}
               className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             >
-              {isManualEntry ? t("search-instead") : t("manual-instead")}
+              {isManualEntry
+                ? t("search-user-instead")
+                : t("enter-user-address-manually")}
             </button>
           </div>
         </div>

@@ -5,13 +5,13 @@ import { type ZodInfer, z } from "@/lib/utils/zod";
  *
  * @property {string} address - The contract address
  * @property {string} pincode - The pincode for signing the transaction
- * @property {string} account - The account to block
+ * @property {string} userAddress - The address of the user to block
  * @property {string} assetType - The type of asset
  */
 export const BlockUserSchema = z.object({
   address: z.address(),
   pincode: z.pincode(),
-  account: z.address(),
+  userAddress: z.address(),
   assettype: z.assetType(),
 });
 
