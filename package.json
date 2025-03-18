@@ -48,7 +48,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@settlemint/sdk-cli": "1.2.2",
     "@types/rtl-detect": "1.0.3",
     "prettier": "3.5.3",
@@ -56,7 +55,6 @@
     "typescript": "5.8.2"
   },
   "trustedDependencies": [
-    "@biomejs/biome",
     "@prisma/client",
     "@prisma/engines",
     "better-sqlite3",
