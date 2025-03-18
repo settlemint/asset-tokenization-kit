@@ -80,10 +80,10 @@ export const EquityDetailApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Equity Detail",
+        summary: "Details",
         description:
           "Retrieves an equity token by address with details including supply and holder information.",
-        tags: ["Equities"],
+        tags: ["equity"],
       },
       params: t.Object({
         address: t.String({

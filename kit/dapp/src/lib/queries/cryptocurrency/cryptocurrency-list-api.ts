@@ -35,10 +35,10 @@ export const CryptoCurrencyListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Cryptocurrency List",
+        summary: "List",
         description:
           "Retrieves a list of all cryptocurrency tokens in the system with their details including supply and holder information.",
-        tags: ["Cryptocurrencies"],
+        tags: ["cryptocurrency"],
       },
       response: {
         200: CryptoCurrencyListResponseSchema,

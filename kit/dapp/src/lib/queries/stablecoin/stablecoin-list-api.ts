@@ -17,10 +17,10 @@ export const StablecoinListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Stablecoin List",
+        summary: "List",
         description:
           "Retrieves a list of all stablecoins in the system with their details including supply, collateral, and holder information.",
-        tags: ["Stablecoins"],
+        tags: ["stablecoin"],
       },
       response: {
         200: StablecoinListResponseSchema,

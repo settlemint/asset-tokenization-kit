@@ -33,10 +33,10 @@ export const EquityListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Equity List",
+        summary: "List",
         description:
           "Retrieves a list of all equity tokens in the system with their details including supply and holder information.",
-        tags: ["Equities"],
+        tags: ["equity"],
       },
       response: {
         200: EquityListResponseSchema,

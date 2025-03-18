@@ -45,10 +45,10 @@ export const ExchangeRatesApi = new Elysia()
         }),
       }),
       detail: {
-        summary: "Exchange Rates",
+        summary: "List",
         description:
           "Retrieves all exchange rates for a specific base currency.",
-        tags: ["Providers"],
+        tags: ["provider"],
       },
       response: {
         200: ExchangeRatesResponseSchema,

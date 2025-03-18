@@ -17,10 +17,10 @@ export const FundListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Fund List",
+        summary: "List",
         description:
           "Retrieves a list of all funds in the system with their details including supply, assets, and holder information.",
-        tags: ["Funds"],
+        tags: ["fund"],
       },
       response: {
         200: FundListResponseSchema,

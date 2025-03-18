@@ -40,10 +40,10 @@ export const ExchangeRateUpdateApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Update Exchange Rates",
+        summary: "Update",
         description:
           "Updates all exchange rates by fetching current data from Yahoo Finance.",
-        tags: ["Providers"],
+        tags: ["provider"],
       },
       response: {
         200: ExchangeRateUpdateResponseSchema,
