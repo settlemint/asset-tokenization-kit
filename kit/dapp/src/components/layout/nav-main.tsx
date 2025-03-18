@@ -61,7 +61,9 @@ function NavItemComponent({
   // Regular menu item without subitems
   if (!item.subItems?.length || state !== "expanded") {
     return (
-      <SidebarMenuItem className={isActiveFn(item.path) ? "active" : undefined}>
+      <SidebarMenuItem
+        className={cn(isActiveFn(item.path) ? "active" : undefined, "py-1")}
+      >
         <SidebarMenuButton
           asChild
           className={isActiveFn(item.path) ? "font-bold" : undefined}
@@ -92,7 +94,7 @@ function NavItemComponent({
       open={isOpen || isGroupActive}
       onOpenChange={setIsOpen}
     >
-      <SidebarMenuItem>
+      <SidebarMenuItem className="py-1">
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
             className={isGroupActive ? "font-bold" : undefined}
