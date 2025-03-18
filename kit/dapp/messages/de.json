@@ -128,7 +128,11 @@
         "dashboard": "Dashboard",
         "group-title": "Mein Portfolio",
         "my-activity": "Meine Aktivitäten",
-        "my-assets": "Meine Vermögenswerte"
+        "my-assets": "Meine Vermögenswerte",
+        "api": "API",
+        "my-contacts": "Meine Kontakte",
+        "profile": "Profil",
+        "settings": "Einstellungen"
       }
     }
   },
@@ -570,7 +574,17 @@
         "swagger-description": "Alle API-Anfragen müssen Ihren API-Schlüssel im x-api-key-Header zur Authentifizierung enthalten. Dieser Header gewährleistet einen sicheren und autorisierten Zugriff auf unsere API-Endpunkte, sodass Ihre Anwendungen sicher mit unseren Diensten interagieren können.",
         "swagger-link-text": "API-Dokumentation öffnen",
         "swagger-title": "Erstellen, anzeigen und verwalten Sie API-Schlüssel, um Ihre Anwendungen sicher mit unserer Plattform zu integrieren. API-Schlüssel ermöglichen Ihnen den programmgesteuerten Zugriff auf alle verfügbaren Funktionen, die klar durch unsere OpenAPI-Spezifikation dokumentiert sind.",
-        "title": "API-Schlüssel"
+        "title": "API",
+        "api-docs": "API-Dokumentation",
+        "api-keys": "API-Schlüssel",
+        "columns": {
+          "expiresAt": "Läuft ab am",
+          "lastRequest": "Letzte Anfrage",
+          "name": "Name",
+          "rateLimit": "Ratenlimit"
+        },
+        "disabled": "Deaktiviert",
+        "expired": "Abgelaufen"
       },
       "profile": {
         "portfolio-management": "Portfolioverwaltung",
@@ -688,7 +702,8 @@
             "isin-label": "ISIN",
             "name-label": "Name",
             "seconds-unit-label": "Sekunden",
-            "symbol-label": "Symbol"
+            "symbol-label": "Symbol",
+            "value-in-base-currency-label": "Wert in {baseCurrency}"
           },
           "cryptocurrencies": {
             "initial-supply-description": "Anfängliche Menge an Token, die geprägt werden sollen",
@@ -745,9 +760,12 @@
             "unpause": "Vertrag fortsetzen",
             "update-collateral": "Sicherheiten aktualisieren",
             "view-events": "Ereignisse anzeigen",
-            "withdraw": "Abheben"
+            "withdraw": "Abheben",
+            "block-user": "Benutzer blockieren"
           },
-          "manage": "Verwalten"
+          "manage": "Verwalten",
+          "available-balance": "Verfügbares Guthaben zum Verbrennen: {maxLimit}",
+          "max-mint-amount": "Verfügbares Sicherheiten zum Minten: {limit}"
         }
       },
       "details": {
@@ -926,6 +944,134 @@
             },
             "title": "Basiswert abheben",
             "trigger-label": "Abheben"
+          },
+          "form": {
+            "description": {
+              "burn": "Bonds dauerhaft aus dem Umlauf entfernen, um das Angebot zu reduzieren.",
+              "grant-role": "Verwaltungsberechtigungen einem neuen Benutzer zuweisen.",
+              "block": "Diesen Benutzer daran hindern, Transaktionen oder Interaktionen durchzuführen.",
+              "mature": "Bonds fällig machen und den zugrunde liegenden Vermögenswert erhalten",
+              "mint": "Neue Token ausgeben, um das umlaufende Angebot des Bonds zu erhöhen.",
+              "freeze": "Zugriff eines Benutzers auf seine Gelder vorübergehend einschränken.",
+              "pause": "Alle Transaktionen und Interaktionen für diesen Bond vorübergehend einstellen.",
+              "unpause": "Transaktionen und Interaktionen für diesen Bond wieder aufnehmen.",
+              "top-up": "Fügen Sie Ihrem Bond mehr zugrunde liegenden Vermögenswert hinzu",
+              "update-collateral": "Passen Sie die Sicherheiten, die den Stablecoin unterstützen, an die aktuellen Anforderungen an.",
+              "withdraw": "Zugrunde liegenden Vermögenswert von Ihrem Bond abheben"
+            },
+            "title": {
+              "burn": "Vermögenswerte verbrennen",
+              "grant-role": "Rolle gewähren",
+              "block": "Benutzer blockieren",
+              "mature": "Bond fällig machen",
+              "mint": "Vermögenswerte minten",
+              "freeze": "Benutzervermögen einschränken",
+              "pause": "Vertrag pausieren",
+              "unpause": "Vertrag fortsetzen",
+              "top-up": "Zugrunde liegenden Vermögenswert aufladen",
+              "update-collateral": "Sicherheiten aktualisieren",
+              "withdraw": "Zugrunde liegenden Vermögenswert abheben"
+            },
+            "trigger-label": {
+              "burn": "Verbrennen",
+              "grant-role": "Rolle gewähren",
+              "block": "Benutzer blockieren",
+              "mature": "Fällig machen",
+              "mint": "Minten",
+              "freeze": "Einfrieren",
+              "pause": "Pausieren",
+              "unpause": "Wieder aktivieren",
+              "top-up": "Aufladen",
+              "update-collateral": "Sicherheiten aktualisieren",
+              "withdraw": "Abheben"
+            }
+          },
+          "account": {
+            "search-user-placeholder": "Geben Sie eine Adresse, einen Namen oder eine E-Mail ein",
+            "enter-wallet-address-placeholder": "Geben Sie eine Wallet-Adresse ein",
+            "enter-user-address-manually": "Adresse manuell eingeben...",
+            "search-user-instead": "Stattdessen nach einem Benutzer suchen...",
+            "title": {
+              "mint": "Empfänger auswählen",
+              "burn": "Benutzer auswählen",
+              "grant-role": "Benutzer auswählen",
+              "freeze": "Benutzer auswählen",
+              "block": "Benutzer auswählen",
+              "withdraw": "Benutzer auswählen"
+            },
+            "description": {
+              "mint": "Geben Sie eine Wallet-Adresse ein, um Token direkt zu senden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "burn": "Geben Sie eine Wallet-Adresse ein, von der die Token verbrannt werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "grant-role": "Geben Sie eine Wallet-Adresse ein, um Rollen zu gewähren, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "freeze": "Geben Sie eine Wallet-Adresse ein, von der die Token eingefroren werden, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "block": "Geben Sie eine Wallet-Adresse ein, um zu blockieren, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse.",
+              "withdraw": "Geben Sie eine Wallet-Adresse ein, um Token abzuheben, oder suchen Sie nach einem Benutzer anhand seines Namens, seiner E-Mail oder Wallet-Adresse."
+            }
+          },
+          "amount": {
+            "title": "Betrag eingeben",
+            "wallet-balance": "Wallet-Guthaben",
+            "description": {
+              "mint": "Geben Sie den Betrag ein, den Sie minten möchten. Stellen Sie sicher, dass der Betrag innerhalb der Sicherheitenlimits bleibt.",
+              "freeze": "Geben Sie den Betrag ein, den Sie einfrieren möchten. Stellen Sie sicher, dass der Betrag innerhalb des Gesamtsaldos der ausgewählten Wallet bleibt.",
+              "burn": "Geben Sie den Betrag ein, den Sie verbrennen möchten. Stellen Sie sicher, dass Sie die erforderlichen Berechtigungen und ein ausreichendes Guthaben in der ausgewählten Wallet haben.",
+              "update-collateral": "Geben Sie den Betrag ein, auf den Sie die Sicherheiten aktualisieren möchten. Stellen Sie sicher, dass der Betrag größer oder gleich dem aktuellen Angebot ist.",
+              "withdraw": "Geben Sie den Betrag ein, den Sie abheben möchten.",
+              "top-up": "Geben Sie den Betrag ein, auf den Sie den zugrunde liegenden Vermögenswert aufladen möchten."
+            },
+            "available-to": {
+              "mint": "Verfügbar zum Minten",
+              "freeze": "Verfügbar zum Einfrieren",
+              "burn": "Verfügbar zum Verbrennen"
+            },
+            "max-limit": {
+              "mint": "Verfügbare Sicherheiten zum Minten: {limit}",
+              "burn": "Verfügbares Guthaben zum Verbrennen: {limit}",
+              "freeze": "Verfügbares Guthaben zum Einfrieren: {limit}"
+            }
+          },
+          "roles": {
+            "title": "Rollen auswählen",
+            "description": "Wählen Sie die Rollen aus, die dem Benutzer gewährt werden sollen. Es muss mindestens eine Rolle ausgewählt werden."
+          },
+          "summary": {
+            "amount-label": "Betrag",
+            "asset-label": "Vermögenswert",
+            "account-label": {
+              "default": "Benutzer",
+              "recipient": "Empfänger"
+            },
+            "roles-label": "Rollen",
+            "current-state-label": "Aktueller Zustand",
+            "target-state-label": "Zielzustand",
+            "paused-label": "Pausiert",
+            "active-label": "Aktiv",
+            "title": {
+              "mint": "Überprüfen und Mint bestätigen",
+              "burn": "Überprüfen und Verbrennen bestätigen",
+              "grant-role": "Überprüfen und Rollen gewähren bestätigen",
+              "freeze": "Überprüfen und Einfrieren bestätigen",
+              "block": "Überprüfen und Blockieren bestätigen",
+              "mature": "Überprüfen und Fälligkeit bestätigen",
+              "top-up": "Überprüfen und Aufladen bestätigen",
+              "update-collateral": "Überprüfen und Sicherheiten aktualisieren bestätigen",
+              "withdraw": "Überprüfen und Abhebung bestätigen",
+              "pause": "Überprüfung und Bestätigung der Pause",
+              "unpause": "Überprüfung und Bestätigung der Wiederaufnahme"
+            },
+            "description": {
+              "mint": "Überprüfen Sie die Einzelheiten Ihres Mintings, bevor Sie fortfahren.",
+              "burn": "Überprüfen Sie die Einzelheiten Ihres Burns, bevor Sie fortfahren.",
+              "grant-role": "Überprüfen Sie die Einzelheiten Ihrer Rollenzuteilung, bevor Sie fortfahren.",
+              "freeze": "Überprüfen Sie die Einzelheiten Ihrer Einfrierung, bevor Sie fortfahren.",
+              "block": "Überprüfen Sie die Einzelheiten Ihres Blocks, bevor Sie fortfahren.",
+              "mature": "Überprüfen Sie die Einzelheiten Ihrer Fälligkeit, bevor Sie fortfahren.",
+              "top-up": "Überprüfen Sie die Einzelheiten Ihrer Aufladung, bevor Sie fortfahren.",
+              "update-collateral": "Überprüfen Sie die Einzelheiten Ihrer Sicherheitenaktualisierung, bevor Sie fortfahren.",
+              "withdraw": "Überprüfen Sie die Einzelheiten Ihres Abhebungsantrags, bevor Sie fortfahren.",
+              "pause": "Überprüfen Sie die Einzelheiten Ihrer Pause, bevor Sie fortfahren.",
+              "unpause": "Überprüfen Sie die Einzelheiten Ihrer Wiederaufnahme, bevor Sie fortfahren."
+            }
           }
         },
         "holders": {
@@ -1084,6 +1230,47 @@
             "update-collateral": {
               "description": "Ein Supply-Manager muss die Sicherheiten, die den Stablecoin absichern, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
               "title": "Aktualisieren Sie Sicherheiten"
+            }
+          },
+          "decrease-supply": {
+            "title": {
+              "bonds": "Anleihen einlösen",
+              "equities": "Angebotsmenge der Anteile reduzieren",
+              "funds": "Anleihen einlösen",
+              "stablecoins": "Die Menge reduzieren",
+              "tokenizeddeposits": "Angebotsmenge der tokenisierten Einlagen reduzieren"
+            },
+            "description": {
+              "bonds": "Ein Anleihemanager kann die Gesamtmenge durch Anleiheneinlösung bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
+              "equities": "Ein Aktienmanager kann die Gesamtmenge der Anteile durch ein Rückkaufprogramm oder eine Kapitalherabsetzung reduzieren.",
+              "funds": "Ein Fondsmanager kann die Gesamtmenge durch Fondsrücknahme bei Fälligkeit oder durch vorzeitige Rückkaufprogramme reduzieren.",
+              "stablecoins": "Ein Angebotsmanager kann bestehende Stablecoins verbrennen, sofern ausreichende Sicherheiten vorhanden sind.",
+              "tokenizeddeposits": "Ein Angebotsmanager kann bestehende tokenisierte Einlagen verbrennen, sofern ausreichende Sicherheiten vorhanden sind."
+            }
+          },
+          "increase-supply": {
+            "title": {
+              "bonds": "Anleihen ausgeben",
+              "cryptocurrencies": "Tokens minten",
+              "equities": "Neue Anteile ausgeben",
+              "funds": "Anleihen ausgeben",
+              "stablecoins": "Die Menge erhöhen",
+              "tokenizeddeposits": "Die Menge erhöhen"
+            },
+            "description": {
+              "bonds": "Ein Anleihemanager kann neue Anleihen durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
+              "cryptocurrencies": "Ein Tokenmanager kann neue Tokens gemäß dem Tokenomics-Plan und dem Emissionszeitplan minten.",
+              "equities": "Ein Aktienmanager kann neue Anteile durch verschiedene Mechanismen wie Bezugsrechte, Privatplatzierungen oder Aktiensplits ausgeben.",
+              "funds": "Ein Fondsmanager kann neue Fonds durch Primärausgabe oder Tap-Ausgabe mit festgelegtem Nennwert und Fälligkeit ausgeben.",
+              "stablecoins": "Ein Angebotsmanager kann neue Stablecoins minten, sofern ausreichende Sicherheiten vorhanden sind.",
+              "tokenizeddeposits": "Ein Angebotsmanager kann neue tokenisierte Einlagen minten, sofern ausreichende Sicherheiten vorhanden sind."
+            }
+          },
+          "update-collateral": {
+            "title": "Sicherheiten aktualisieren",
+            "description": {
+              "stablecoins": "Ein Angebotsmanager muss die Sicherheiten, die den Stablecoin unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt.",
+              "tokenizeddeposits": "Ein Angebotsmanager muss die Sicherheiten, die die tokenisierte Einlage unterstützen, aktualisieren und überprüfen. Dies stellt sicher, dass das Asset jederzeit vollständig besichert bleibt."
             }
           }
         },
@@ -1260,7 +1447,9 @@
         "underlying-asset": "Unterliegender Vermögenswert",
         "underlying-asset-balance": "Saldo des unterliegenden Vermögenswerts",
         "wallet-header": "Wallet",
-        "yield-type": "Ertragsart"
+        "yield-type": "Ertragsart",
+        "price": "Preis",
+        "price-header": "Preis"
       },
       "table": {
         "asset-management": "Vermögensverwaltung",
