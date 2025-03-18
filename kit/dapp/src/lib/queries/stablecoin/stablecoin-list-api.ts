@@ -17,7 +17,7 @@ export const StablecoinListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Stablecoin List",
+        summary: "Stablecoin List",
         description:
           "Retrieves a list of all stablecoins in the system with their details including supply, collateral, and holder information.",
         tags: ["Stablecoins"],

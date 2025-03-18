@@ -70,7 +70,7 @@ export const CryptoCurrencyDetailApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Cryptocurrency",
+        summary: "Cryptocurrency Detail",
         description:
           "Retrieves a cryptocurrency token by address with details including supply and holder information.",
         tags: ["Cryptocurrencies"],

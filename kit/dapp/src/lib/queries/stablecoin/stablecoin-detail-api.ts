@@ -98,7 +98,7 @@ export const StablecoinDetailApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Stablecoin",
+        summary: "Stablecoin Detail",
         description:
           "Retrieves a stablecoin by address with details including supply, collateral, and holder information.",
         tags: ["Stablecoins"],

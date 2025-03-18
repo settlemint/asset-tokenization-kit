@@ -87,7 +87,7 @@ export const FundDetailApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Fund",
+        summary: "Fund Detail",
         description:
           "Retrieves a fund by address with details including supply, assets, and holder information.",
         tags: ["Funds"],

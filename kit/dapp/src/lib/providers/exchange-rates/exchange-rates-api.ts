@@ -45,7 +45,7 @@ export const ExchangeRatesApi = new Elysia()
         }),
       }),
       detail: {
-        summary: "Get Exchange Rates",
+        summary: "Exchange Rates",
         description:
           "Retrieves all exchange rates for a specific base currency.",
         tags: ["Providers"],

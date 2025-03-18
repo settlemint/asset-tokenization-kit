@@ -19,7 +19,7 @@ export const TokenizedDepositListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Tokenized Deposit List",
+        summary: "Tokenized Deposit List",
         description:
           "Retrieves a list of all tokenized deposits in the system with their details including supply, collateral, and holder information.",
         tags: ["Tokenized Deposits"],

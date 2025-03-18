@@ -17,7 +17,7 @@ export const BondListApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Bond List",
+        summary: "Bond List",
         description:
           "Retrieves a list of all bonds in the system with their details including supply, maturity, and holder information.",
         tags: ["Bonds"],

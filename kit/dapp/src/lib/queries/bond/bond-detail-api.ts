@@ -80,7 +80,7 @@ export const BondDetailApi = new Elysia()
     {
       auth: true,
       detail: {
-        summary: "Get Bond",
+        summary: "Bond Detail",
         description:
           "Retrieves a bond by address with details including supply, maturity, and holder information.",
         tags: ["Bonds"],
